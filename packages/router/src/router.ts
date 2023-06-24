@@ -7,10 +7,11 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, SubscriptionLike} from 'rxjs';
 
-import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
+import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
+import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Event, IMPERATIVE_NAVIGATION, NavigationTrigger} from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
@@ -22,12 +23,11 @@ import {ROUTES} from './router_config_loader';
 import {createEmptyState, RouterState} from './router_state';
 import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
-import {flatten} from './utils/collection';
+import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
+import {afterNextNavigation} from './utils/navigations';
 
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function defaultErrorHandler(error: any): any {
   throw error;
@@ -65,7 +65,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  *
  * A service that provides navigation among views and URL manipulation capabilities.
  *
- * @see `Route`.
+ * @see {@link Route}.
  * @see [Routing and Navigation Guide](guide/router).
  *
  * @ngModule RouterModule
@@ -153,6 +153,9 @@ export class Router {
    * page id in the browser history is 1 more than the previous entry.
    */
   private get browserPageId(): number|undefined {
+    if (this.canceledNavigationResolution !== 'computed') {
+      return undefined;
+    }
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
   private console = inject(Console);
@@ -175,12 +178,14 @@ export class Router {
 
   private options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
 
+  private pendingTasks = inject(InitialRenderPendingTasks);
+
   /**
    * A handler for navigation errors in this NgModule.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   `provideRouter` has the `withErrorHandler` feature to make this easier.
-   * @see `withErrorHandler`
+   *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
+   * @see {@link withNavigationErrorHandler}
    */
   errorHandler = this.options.errorHandler || defaultErrorHandler;
 
@@ -192,7 +197,7 @@ export class Router {
    *
    * @deprecated URI parsing errors should be handled in the `UrlSerializer`.
    *
-   * @see `RouterModule`
+   * @see {@link RouterModule}
    */
   malformedUriErrorHandler =
       this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
@@ -221,9 +226,6 @@ export class Router {
    */
   routeReuseStrategy = inject(RouteReuseStrategy);
 
-  /** Strategy used to create a UrlTree. */
-  private readonly urlCreationStrategy = inject(CreateUrlTreeStrategy);
-
   /**
    * A strategy for setting the title based on the `routerState`.
    *
@@ -237,9 +239,9 @@ export class Router {
    *
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   onSameUrlNavigation: OnSameUrlNavigation = this.options.onSameUrlNavigation || 'ignore';
 
@@ -253,9 +255,9 @@ export class Router {
    * for all child routes.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   paramsInheritanceStrategy: 'emptyOnly'|'always' =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
@@ -268,9 +270,9 @@ export class Router {
    * you can show an error message with the URL that failed.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   urlUpdateStrategy: 'deferred'|'eager' = this.options.urlUpdateStrategy || 'deferred';
 
@@ -296,18 +298,26 @@ export class Router {
    * The default value is `replace`.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   canceledNavigationResolution: 'replace'|'computed' =
       this.options.canceledNavigationResolution || 'replace';
 
-  config: Routes = flatten(inject(ROUTES, {optional: true}) ?? []);
+  config: Routes = inject(ROUTES, {optional: true})?.flat() ?? [];
 
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
+
+  /**
+   * Indicates whether the the application has opted in to binding Router data to component inputs.
+   *
+   * This option is enabled by the `withComponentInputBinding` feature of `provideRouter` or
+   * `bindToComponentInputs` in the `ExtraOptions` of `RouterModule.forRoot`.
+   */
+  readonly componentInputBindingEnabled = !!inject(INPUT_BINDER, {optional: true});
 
   constructor() {
     this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
@@ -322,7 +332,7 @@ export class Router {
     this.navigationTransitions.setupNavigations(this).subscribe(
         t => {
           this.lastSuccessfulId = t.id;
-          this.currentPageId = t.targetPageId;
+          this.currentPageId = this.browserPageId ?? 0;
         },
         e => {
           this.console.warn(`Unhandled Navigation Error: ${e}`);
@@ -421,6 +431,14 @@ export class Router {
   }
 
   /**
+   * The `Navigation` object of the most recent navigation to succeed and `null` if there
+   *     has not been a successful navigation yet.
+   */
+  get lastSuccessfulNavigation(): Navigation|null {
+    return this.navigationTransitions.lastSuccessfulNavigation;
+  }
+
+  /**
    * Resets the route configuration used for navigation and generating links.
    *
    * @param config The route array for the new configuration.
@@ -437,7 +455,7 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    NG_DEV_MODE && validateConfig(config);
+    (typeof ngDevMode === 'undefined' || ngDevMode) && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
@@ -524,8 +542,30 @@ export class Router {
     if (q !== null) {
       q = this.removeEmptyProps(q);
     }
-    return this.urlCreationStrategy.createUrlTree(
-        relativeTo, this.routerState, this.currentUrlTree, commands, q, f ?? null);
+
+    let relativeToUrlSegmentGroup: UrlSegmentGroup|undefined;
+    try {
+      const relativeToSnapshot = relativeTo ? relativeTo.snapshot : this.routerState.snapshot.root;
+      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
+    } catch (e: unknown) {
+      // This is strictly for backwards compatibility with tests that create
+      // invalid `ActivatedRoute` mocks.
+      // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
+      // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
+      // the moment.
+      if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
+        // Navigations that were absolute in the old way of creating UrlTrees
+        // would still work because they wouldn't attempt to match the
+        // segments in the `ActivatedRoute` to the `currentUrlTree` but
+        // instead just replace the root segment with the navigation result.
+        // Non-absolute navigations would fail to apply the commands because
+        // the logic could not find the segment to replace (so they'd act like there were no
+        // commands).
+        commands = [];
+      }
+      relativeToUrlSegmentGroup = this.currentUrlTree.root;
+    }
+    return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, q, f ?? null);
   }
 
   /**
@@ -555,10 +595,11 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationBehaviorOptions = {
     skipLocationChange: false
   }): Promise<boolean> {
-    if (typeof ngDevMode === 'undefined' ||
-        ngDevMode && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
-      this.console.warn(
-          `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+        this.console.warn(
+            `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+      }
     }
 
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
@@ -687,29 +728,15 @@ export class Router {
       });
     }
 
-    let targetPageId: number;
-    if (this.canceledNavigationResolution === 'computed') {
-      // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
-      // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
-      // target id to the previously set value for that page.
-      if (restoredState && restoredState.ɵrouterPageId) {
-        targetPageId = restoredState.ɵrouterPageId;
-      } else {
-        // If we're replacing the URL or doing a silent navigation, we do not want to increment the
-        // page id because we aren't pushing a new entry to history.
-        if (extras.replaceUrl || extras.skipLocationChange) {
-          targetPageId = this.browserPageId ?? 0;
-        } else {
-          targetPageId = (this.browserPageId ?? 0) + 1;
-        }
-      }
-    } else {
-      // This is unused when `canceledNavigationResolution` is not computed.
-      targetPageId = 0;
-    }
+    // Indicate that the navigation is happening.
+    const taskId = this.pendingTasks.add();
+    afterNextNavigation(this, () => {
+      // Remove pending task in a microtask to allow for cancelled
+      // initial navigations and redirects within the same task.
+      queueMicrotask(() => this.pendingTasks.remove(taskId));
+    });
 
     this.navigationTransitions.handleNavigationRequest({
-      targetPageId,
       source,
       restoredState,
       currentUrlTree: this.currentUrlTree,
@@ -733,13 +760,19 @@ export class Router {
   /** @internal */
   setBrowserUrl(url: UrlTree, transition: NavigationTransition) {
     const path = this.urlSerializer.serialize(url);
-    const state = {
-      ...transition.extras.state,
-      ...this.generateNgRouterState(transition.id, transition.targetPageId)
-    };
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
+      // replacements do not update the target page
+      const currentBrowserPageId = this.browserPageId;
+      const state = {
+        ...transition.extras.state,
+        ...this.generateNgRouterState(transition.id, currentBrowserPageId)
+      };
       this.location.replaceState(path, '', state);
     } else {
+      const state = {
+        ...transition.extras.state,
+        ...this.generateNgRouterState(transition.id, (this.browserPageId ?? 0) + 1)
+      };
       this.location.go(path, '', state);
     }
   }
@@ -751,16 +784,9 @@ export class Router {
    */
   restoreHistory(transition: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
-      const targetPagePosition = this.currentPageId - transition.targetPageId;
-      // The navigator change the location before triggered the browser event,
-      // so we need to go back to the current url if the navigation is canceled.
-      // Also, when navigation gets cancelled while using url update strategy eager, then we need to
-      // go back. Because, when `urlUpdateStrategy` is `eager`; `setBrowserUrl` method is called
-      // before any verification.
-      const browserUrlUpdateOccurred =
-          (transition.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||
-           this.currentUrlTree === this.getCurrentNavigation()?.finalUrl);
-      if (browserUrlUpdateOccurred && targetPagePosition !== 0) {
+      const currentBrowserPageId = this.browserPageId ?? this.currentPageId;
+      const targetPagePosition = this.currentPageId - currentBrowserPageId;
+      if (targetPagePosition !== 0) {
         this.location.historyGo(targetPagePosition);
       } else if (
           this.currentUrlTree === this.getCurrentNavigation()?.finalUrl &&
@@ -820,7 +846,8 @@ function validateCommands(commands: string[]): void {
     if (cmd == null) {
       throw new RuntimeError(
           RuntimeErrorCode.NULLISH_COMMAND,
-          NG_DEV_MODE && `The requested path contains ${cmd} segment at index ${i}`);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `The requested path contains ${cmd} segment at index ${i}`);
     }
   }
 }

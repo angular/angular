@@ -26,18 +26,11 @@ For more information, see the [TypeScript Handbook](https://www.typescriptlang.o
 
 The following options are available for configuring the AOT template compiler.
 
-### `allowEmptyCodegenFiles`
-
-When `true`, create all possible files even if they are empty.
-Default is `false`.
-Used by the Bazel build rules to simplify how Bazel rules track file dependencies.
-Do not use this option outside of the Bazel rules.
-
 ### `annotationsAs`
 
 Modifies how Angular-specific annotations are emitted to improve tree-shaking.
 Non-Angular annotations are not affected.
-One of `static fields` or `decorators`. The default value is `static fields`. 
+One of `static fields` or `decorators`. The default value is `static fields`.
 
 *   By default, the compiler replaces decorators with a static field in the class, which allows advanced tree-shakers like [Closure compiler](https://github.com/google/closure-compiler) to remove unused classes
 *   The `decorators` value leaves the decorators in place, which makes compilation faster.
@@ -165,6 +158,12 @@ Do this when using factory summaries.
 When `false`, the default, removes blank text nodes from compiled templates, which results in smaller emitted template factory modules.
 Set to `true` to preserve blank text nodes.
 
+<div class="alert is-helpful">
+
+When using hydration, it is recommended that you use `preserveWhitespaces: false`, which is the default value. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to your tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration. Ensure this is also consistently set between the server and client tsconfig files. See the [hydration guide](guide/hydration#preserve-whitespaces) for more details.
+
+</div>
+
 ### `skipMetadataEmit`
 
 When `true`, does not produce `.metadata.json` files.
@@ -220,7 +219,7 @@ When you use the Angular CLI command `ng new --strict`, it is set to `true` in t
 
 When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode).
 
-The strictness flags that this open enables allow you to turn on and off specific types of strict template type checking.
+The strictness flags that this option enables allow you to turn on and off specific types of strict template type checking.
 See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
 When you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
@@ -247,4 +246,4 @@ Besides the configuration file, you can also use [`tsc` command line options](ht
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-04-19

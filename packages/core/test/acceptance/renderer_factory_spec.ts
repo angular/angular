@@ -10,15 +10,16 @@ import {AnimationEvent} from '@angular/animations';
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule, DOCUMENT} from '@angular/common';
+import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
-import {EventManager, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ServerRendererFactory2} from '@angular/platform-server/src/server_renderer';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -321,8 +322,10 @@ describe('animation renderer factory', () => {
 function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
-  const rendererFactory = new ServerRendererFactory2(
-      eventManager, fakeNgZone, document, new ɵDomSharedStylesHost(document));
+  const appId = 'app-id';
+  const rendererFactory = new DomRendererFactory2(
+      eventManager, new ɵSharedStylesHost(document, appId), appId, true, document,
+      isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID, fakeNgZone);
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
     const renderer = origCreateRenderer.call(this, element, type);

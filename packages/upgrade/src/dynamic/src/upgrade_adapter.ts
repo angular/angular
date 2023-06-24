@@ -573,8 +573,7 @@ export class UpgradeAdapter {
                   {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
                   this.upgradedProviders
                 ],
-                imports: [resolveForwardRef(this.ng2AppModule)],
-                entryComponents: this.downgradedComponents
+                imports: [resolveForwardRef(this.ng2AppModule)]
               })
               class DynamicNgUpgradeModule {
                 ngDoBootstrap() {}

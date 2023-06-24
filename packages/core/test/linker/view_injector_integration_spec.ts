@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, EmbeddedViewRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, createComponent as coreCreateComponent, createEnvironmentInjector, DebugElement, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -250,7 +250,7 @@ describe('View injector', () => {
     it('should instantiate directives that have no dependencies', () => {
       TestBed.configureTestingModule({declarations: [SimpleDirective]});
       const el = createComponent('<div simpleDirective>');
-      expect(el.children[0].injector.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
+      expect(el.children[0].injector.get(SimpleDirective)).toBeInstanceOf(SimpleDirective);
     });
 
     it('should instantiate directives that depend on another directive', () => {
@@ -259,8 +259,8 @@ describe('View injector', () => {
 
       const d = el.children[0].injector.get(NeedsDirective);
 
-      expect(d).toBeAnInstanceOf(NeedsDirective);
-      expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+      expect(d).toBeInstanceOf(NeedsDirective);
+      expect(d.dependency).toBeInstanceOf(SimpleDirective);
     });
 
     it('should support useValue with different values', () => {
@@ -665,8 +665,8 @@ describe('View injector', () => {
          const el = createComponent('<div simpleDirective><div needsDirective></div></div>');
          const d = el.children[0].children[0].injector.get(NeedsDirective);
 
-         expect(d).toBeAnInstanceOf(NeedsDirective);
-         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+         expect(d).toBeInstanceOf(NeedsDirective);
+         expect(d.dependency).toBeInstanceOf(SimpleDirective);
        }));
 
     it('should throw when a dependency cannot be resolved', fakeAsync(() => {
@@ -689,7 +689,7 @@ describe('View injector', () => {
           SimpleComponent, {set: {template: '<div needsComponentFromHost></div>'}});
       const el = createComponent('<div simpleComponent></div>');
       const d = el.children[0].children[0].injector.get(NeedsComponentFromHost);
-      expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
+      expect(d.dependency).toBeInstanceOf(SimpleComponent);
     });
 
     it('should not instantiate directives that depend on other directives on the host element', () => {
@@ -854,15 +854,11 @@ describe('View injector', () => {
         constructor(public vcr: ViewContainerRef) {}
       }
 
-      const testInjector = <Injector>{
-        get: (token: any, notFoundValue: any) =>
-            token === 'someToken' ? 'someNewValue' : notFoundValue
-      };
+      TestBed.configureTestingModule({declarations: [TestComp]});
+      const environmentInjector = createEnvironmentInjector(
+          [{provide: 'someToken', useValue: 'someNewValue'}], TestBed.inject(EnvironmentInjector));
 
-      const compFactory = TestBed.configureTestingModule({declarations: [TestComp]})
-                              .inject(ComponentFactoryResolver)
-                              .resolveComponentFactory(TestComp);
-      const component = compFactory.create(testInjector);
+      const component = coreCreateComponent(TestComp, {environmentInjector});
       expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
     });
 
@@ -902,7 +898,7 @@ describe('View injector', () => {
       TestBed.configureTestingModule(
           {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
       const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
-      expect(el.children[0].injector.get(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+      expect(el.children[0].injector.get(SimpleDirective).value).toBeInstanceOf(DuplicatePipe2);
     });
 
     it('should inject ChangeDetectorRef into pipes', () => {
@@ -924,12 +920,12 @@ describe('View injector', () => {
       const impurePipe2 = el.children[1].injector.get(SimpleDirective).value;
       const impurePipe3 = el.children[2].injector.get(SimpleDirective).value;
       const impurePipe4 = el.children[3].injector.get(SimpleDirective).value;
-      expect(impurePipe1).toBeAnInstanceOf(ImpurePipe);
-      expect(impurePipe2).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe1).toBeInstanceOf(ImpurePipe);
+      expect(impurePipe2).toBeInstanceOf(ImpurePipe);
       expect(impurePipe2).not.toBe(impurePipe1);
-      expect(impurePipe3).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe3).toBeInstanceOf(ImpurePipe);
       expect(impurePipe3).not.toBe(impurePipe1);
-      expect(impurePipe4).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe4).toBeInstanceOf(ImpurePipe);
       expect(impurePipe4).not.toBe(impurePipe1);
     });
   });
@@ -941,16 +937,12 @@ describe('View injector', () => {
 
     @Component({selector: 'listener-and-on-destroy', template: ''})
     class ComponentThatLoadsAnotherComponentThenMovesIt {
-      constructor(
-          private viewContainerRef: ViewContainerRef,
-          private componentFactoryResolver: ComponentFactoryResolver) {}
+      constructor(private viewContainerRef: ViewContainerRef) {}
 
       ngOnInit() {
         // Dynamically load some component.
-        const componentFactory =
-            this.componentFactoryResolver.resolveComponentFactory(SomeComponent);
-        const componentRef =
-            this.viewContainerRef.createComponent(componentFactory, this.viewContainerRef.length);
+        const componentRef = this.viewContainerRef.createComponent(
+            SomeComponent, {index: this.viewContainerRef.length});
 
         // Manually move the loaded component to some arbitrary DOM node.
         const componentRootNode =

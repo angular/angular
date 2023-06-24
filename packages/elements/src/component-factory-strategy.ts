@@ -20,8 +20,6 @@ const DESTROY_DELAY = 10;
 /**
  * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
  * constructor's injector's factory resolver and passes that factory to each strategy.
- *
- * @publicApi
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
   componentFactory: ComponentFactory<any>;
@@ -39,8 +37,6 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 /**
  * Creates and destroys a component ref using a component factory and handles change detection
  * in response to input changes.
- *
- * @publicApi
  */
 export class ComponentNgElementStrategy implements NgElementStrategy {
   // Subject of `NgElementStrategyEvent` observables corresponding to the component's outputs.
@@ -81,17 +77,21 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * fired.
    * (This helps detect the first change of an input, even if it is explicitly set to `undefined`.)
    */
-  private readonly unchangedInputs =
-      new Set<string>(this.componentFactory.inputs.map(({propName}) => propName));
+  private readonly unchangedInputs: Set<string>;
 
   /** Service for setting zone context. */
-  private readonly ngZone = this.injector.get<NgZone>(NgZone);
+  private readonly ngZone: NgZone;
 
   /** The zone the element was created in or `null` if Zone.js is not loaded. */
-  private readonly elementZone =
-      (typeof Zone === 'undefined') ? null : this.ngZone.run(() => Zone.current);
+  private readonly elementZone: Zone|null;
 
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
+
+  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {
+    this.unchangedInputs =
+        new Set<string>(this.componentFactory.inputs.map(({propName}) => propName));
+    this.ngZone = this.injector.get<NgZone>(NgZone);
+    this.elementZone = (typeof Zone === 'undefined') ? null : this.ngZone.run(() => Zone.current);
+  }
 
   /**
    * Initializes a new component if one has not yet been created and cancels any scheduled
@@ -154,8 +154,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * Sets the input value for the property. If the component has not yet been created, the value is
    * cached and set when the component is created.
    */
-  setInputValue(property: string, value: any): void {
+  setInputValue(property: string, value: any, transform?: (value: any) => any): void {
     this.runInZone(() => {
+      if (transform) {
+        value = transform.call(this.componentRef?.instance, value);
+      }
+
       if (this.componentRef === null) {
         this.initialInputValues.set(property, value);
         return;
@@ -205,11 +209,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Set any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
-    this.componentFactory.inputs.forEach(({propName}) => {
+    this.componentFactory.inputs.forEach(({propName, transform}) => {
       if (this.initialInputValues.has(propName)) {
         // Call `setInputValue()` now that the component has been instantiated to update its
         // properties and fire `ngOnChanges()`.
-        this.setInputValue(propName, this.initialInputValues.get(propName));
+        this.setInputValue(propName, this.initialInputValues.get(propName), transform);
       }
     });
 

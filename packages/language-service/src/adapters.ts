@@ -24,7 +24,6 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
   readonly ignoreForEmit: Set<ts.SourceFile> = new Set();
-  readonly factoryTracker = null;      // no .ngfactory shims
   readonly unifiedModulesHost = null;  // only used in Bazel
   readonly rootDirs: AbsoluteFsPath[];
 

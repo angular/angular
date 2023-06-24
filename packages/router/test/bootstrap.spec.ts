@@ -8,12 +8,13 @@
 
 import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {BrowserPlatformLocation} from '@angular/common/src/location/platform_location';
+import {NullViewportScroller, ViewportScroller} from '@angular/common/src/viewport_scroller';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, ENVIRONMENT_INITIALIZER, inject, Injectable, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, provideRouter, Resolve, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
+import {NavigationEnd, provideRouter, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -26,12 +27,6 @@ import {NavigationEnd, provideRouter, Resolve, Router, RouterModule, RouterOutle
 declare var window: Window;
 
 describe('bootstrap', () => {
-  if (isNode) {
-    // Jasmine will throw if there are no tests.
-    it('should pass', () => {});
-    return;
-  }
-
   let log: any[] = [];
   let testProviders: any[] = null!;
 
@@ -51,7 +46,7 @@ describe('bootstrap', () => {
   }
 
   @Injectable({providedIn: 'root'})
-  class TestResolver implements Resolve<unknown> {
+  class TestResolver {
     resolve() {
       let resolve: (value: unknown) => void;
       const res = new Promise(r => resolve = r);
@@ -78,6 +73,8 @@ describe('bootstrap', () => {
     navigationEndPromise = promise;
     log = [];
     testProviders = [
+      {provide: DOCUMENT, useValue: doc},
+      {provide: ViewportScroller, useClass: isNode ? NullViewportScroller : ViewportScroller},
       {provide: PlatformLocation, useClass: MockPlatformLocation},
       provideNavigationEndAction(resolveFn)
     ];
@@ -257,6 +254,9 @@ describe('bootstrap', () => {
       const router = ref.injector.get(Router);
       const data = router.routerState.snapshot.root.firstChild!.data;
       expect(data['test']).toEqual('test-data');
+      // Also ensure that the navigation completed. The navigation transition clears the
+      // current navigation in its `finalize` operator.
+      expect(router.getCurrentNavigation()).toBeNull();
     });
     await Promise.all([bootstrapPromise, navigationEndPromise]);
   });
@@ -425,11 +425,11 @@ describe('bootstrap', () => {
        });
      });
 
-
-  it('should restore the scrolling position', async () => {
-    @Component({
-      selector: 'component-a',
-      template: `
+  if (!isNode) {
+    it('should restore the scrolling position', async () => {
+      @Component({
+        selector: 'component-a',
+        template: `
            <div style="height: 3000px;"></div>
            <div id="marker1"></div>
            <div style="height: 3000px;"></div>
@@ -438,97 +438,102 @@ describe('bootstrap', () => {
            <a name="marker3"></a>
            <div style="height: 3000px;"></div>
       `
-    })
-    class TallComponent {
-    }
-    @NgModule({
-      imports: [
-        BrowserModule,
-        RouterModule.forRoot(
-            [
-              {path: '', pathMatch: 'full', redirectTo: '/aa'},
-              {path: 'aa', component: TallComponent}, {path: 'bb', component: TallComponent},
-              {path: 'cc', component: TallComponent},
-              {path: 'fail', component: TallComponent, canActivate: [() => false]}
-            ],
-            {
-              scrollPositionRestoration: 'enabled',
-              anchorScrolling: 'enabled',
-              scrollOffset: [0, 100],
-              onSameUrlNavigation: 'reload'
-            })
-      ],
-      declarations: [TallComponent, RootCmp],
-      bootstrap: [RootCmp],
-      providers: [...testProviders],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    class TestModule {
-    }
+      })
+      class TallComponent {
+      }
+      @NgModule({
+        imports: [
+          BrowserModule,
+          RouterModule.forRoot(
+              [
+                {path: '', pathMatch: 'full', redirectTo: '/aa'},
+                {path: 'aa', component: TallComponent}, {path: 'bb', component: TallComponent},
+                {path: 'cc', component: TallComponent},
+                {path: 'fail', component: TallComponent, canActivate: [() => false]}
+              ],
+              {
+                scrollPositionRestoration: 'enabled',
+                anchorScrolling: 'enabled',
+                scrollOffset: [0, 100],
+                onSameUrlNavigation: 'ignore',
+              })
+        ],
+        declarations: [TallComponent, RootCmp],
+        bootstrap: [RootCmp],
+        providers: [...testProviders],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      })
+      class TestModule {
+      }
 
-    function resolveAfter(milliseconds: number) {
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, milliseconds);
-      });
-    }
+      function resolveAfter(milliseconds: number) {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            resolve();
+          }, milliseconds);
+        });
+      }
 
-    const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
-    const router = res.injector.get(Router);
+      const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+      const router = res.injector.get(Router);
 
-    await router.navigateByUrl('/aa');
-    window.scrollTo(0, 5000);
+      await router.navigateByUrl('/aa');
+      window.scrollTo(0, 5000);
 
-    await router.navigateByUrl('/fail');
-    expect(window.pageYOffset).toEqual(5000);
+      await router.navigateByUrl('/fail');
+      expect(window.pageYOffset).toEqual(5000);
 
-    await router.navigateByUrl('/bb');
-    window.scrollTo(0, 3000);
+      await router.navigateByUrl('/bb');
+      window.scrollTo(0, 3000);
 
-    expect(window.pageYOffset).toEqual(3000);
+      expect(window.pageYOffset).toEqual(3000);
 
-    await router.navigateByUrl('/cc');
-    await resolveAfter(100);
-    expect(window.pageYOffset).toEqual(0);
+      await router.navigateByUrl('/cc');
+      await resolveAfter(100);
+      expect(window.pageYOffset).toEqual(0);
 
-    await router.navigateByUrl('/aa#marker2');
-    await resolveAfter(100);
-    expect(window.pageYOffset).toBeGreaterThanOrEqual(5900);
-    expect(window.pageYOffset).toBeLessThan(6000);  // offset
+      await router.navigateByUrl('/aa#marker2');
+      await resolveAfter(100);
+      expect(window.scrollY).toBeGreaterThanOrEqual(5900);
+      expect(window.scrollY).toBeLessThan(6000);  // offset
 
-    await router.navigateByUrl('/aa#marker3');
-    await resolveAfter(100);
-    expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
-    expect(window.pageYOffset).toBeLessThan(9000);
-  });
+      // Scroll somewhere else, then navigate to the hash again. Even though the same url navigation
+      // is ignored by the Router, we should still scroll.
+      window.scrollTo(0, 3000);
+      await router.navigateByUrl('/aa#marker2');
+      await resolveAfter(100);
+      expect(window.scrollY).toBeGreaterThanOrEqual(5900);
+      expect(window.scrollY).toBeLessThan(6000);  // offset
+    });
 
-  it('should cleanup "popstate" and "hashchange" listeners', async () => {
-    @NgModule({
-      imports: [BrowserModule, RouterModule.forRoot([])],
-      declarations: [RootCmp],
-      bootstrap: [RootCmp],
-      providers: [...testProviders, {provide: PlatformLocation, useClass: BrowserPlatformLocation}],
-    })
-    class TestModule {
-    }
+    it('should cleanup "popstate" and "hashchange" listeners', async () => {
+      @NgModule({
+        imports: [BrowserModule, RouterModule.forRoot([])],
+        declarations: [RootCmp],
+        bootstrap: [RootCmp],
+        providers:
+            [...testProviders, {provide: PlatformLocation, useClass: BrowserPlatformLocation}],
+      })
+      class TestModule {
+      }
 
-    spyOn(window, 'addEventListener').and.callThrough();
-    spyOn(window, 'removeEventListener').and.callThrough();
+      spyOn(window, 'addEventListener').and.callThrough();
+      spyOn(window, 'removeEventListener').and.callThrough();
 
-    const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
-    ngModuleRef.destroy();
+      const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+      ngModuleRef.destroy();
 
-    expect(window.addEventListener).toHaveBeenCalledTimes(2);
+      expect(window.addEventListener).toHaveBeenCalledTimes(2);
 
-    expect(window.addEventListener)
-        .toHaveBeenCalledWith('popstate', jasmine.any(Function), jasmine.any(Boolean));
-    expect(window.addEventListener)
-        .toHaveBeenCalledWith('hashchange', jasmine.any(Function), jasmine.any(Boolean));
+      expect(window.addEventListener)
+          .toHaveBeenCalledWith('popstate', jasmine.any(Function), jasmine.any(Boolean));
+      expect(window.addEventListener)
+          .toHaveBeenCalledWith('hashchange', jasmine.any(Function), jasmine.any(Boolean));
 
-    expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
-    expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
-  });
+      expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
+      expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
+    });
+  }
 
   it('can schedule a navigation from the NavigationEnd event #37460', (done) => {
     @NgModule({

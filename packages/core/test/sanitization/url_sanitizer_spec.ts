@@ -47,6 +47,7 @@ import {_sanitizeUrl} from '../../src/sanitization/url_sanitizer';
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',  // Truncated.
         'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
         'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'unknown-scheme:abc',
       ];
       for (const url of validUrls) {
         it(`valid ${url}`, () => expect(_sanitizeUrl(url)).toEqual(url));
@@ -57,7 +58,7 @@ import {_sanitizeUrl} from '../../src/sanitization/url_sanitizer';
       const invalidUrls = [
         'javascript:evil()',
         'JavaScript:abc',
-        'evilNewProtocol:abc',
+        ' javascript:abc',
         ' \n Java\n Script:abc',
         '&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;',
         '&#106&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;',

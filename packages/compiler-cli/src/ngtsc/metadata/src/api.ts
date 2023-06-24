@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
+import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from './property_mapping';
 
 /**
  * Metadata collected for an `NgModule`.
@@ -55,6 +55,14 @@ export interface NgModuleMeta {
    * If this is `null`, no decorator exists, meaning it's probably from a .d.ts file.
    */
   decorator: ts.Decorator|null;
+
+  /**
+   * Whether this NgModule may declare providers.
+   *
+   * If the compiler does not know if the NgModule may declare providers, this will be `true` (for
+   * example, NgModules declared outside the current compilation are assumed to declare providers).
+   */
+  mayDeclareProviders: boolean;
 }
 
 /**
@@ -123,6 +131,18 @@ export enum MatchSource {
   HostDirective,
 }
 
+/** Metadata for a single input mapping. */
+export type InputMapping = InputOrOutput&{
+  required: boolean;
+  transform: InputTransform|null
+};
+
+/** Metadata for an input's transform function. */
+export interface InputTransform {
+  node: ts.Node;
+  type: ts.TypeNode;
+}
+
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
@@ -142,7 +162,7 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   /**
    * A mapping of input field names to the property names.
    */
-  inputs: ClassPropertyMapping;
+  inputs: ClassPropertyMapping<InputMapping>;
 
   /**
    * A mapping of output field names to the property names.
@@ -174,6 +194,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   isStandalone: boolean;
 
   /**
+   * Whether the directive is a signal entity.
+   */
+  isSignal: boolean;
+
+  /**
    * For standalone components, the list of imported types.
    */
   imports: Reference<ClassDeclaration>[]|null;
@@ -192,6 +217,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
 
   /** Additional directives applied to the directive host. */
   hostDirectives: HostDirectiveMeta[]|null;
+
+  /**
+   * Whether the directive should be assumed to export providers if imported as a standalone type.
+   */
+  assumedToExportProviders: boolean;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */

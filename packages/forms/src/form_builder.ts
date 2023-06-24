@@ -112,7 +112,7 @@ export class FormBuilder {
 
   /**
    * @description
-   * Returns a FormBuilder in which automatically constructed @see FormControl} elements
+   * Returns a FormBuilder in which automatically constructed `FormControl` elements
    * have `{nonNullable: true}` and are non-nullable.
    *
    * **Constructing non-nullable controls**
@@ -413,7 +413,7 @@ export abstract class NonNullableFormBuilder {
 }
 
 /**
- * UntypedFormBuilder is the same as @see FormBuilder, but it provides untyped controls.
+ * UntypedFormBuilder is the same as `FormBuilder`, but it provides untyped controls.
  */
 @Injectable({providedIn: 'root'})
 export class UntypedFormBuilder extends FormBuilder {

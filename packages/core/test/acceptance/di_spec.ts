@@ -7,7 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -894,15 +895,12 @@ describe('di', () => {
           childOrigin!: ViewContainerRef;
           @ViewChild('childOriginWithDirB', {read: ViewContainerRef, static: true})
           childOriginWithDirB!: ViewContainerRef;
-          childFactory = this.resolver.resolveComponentFactory(Child);
-
-          constructor(readonly resolver: ComponentFactoryResolver, readonly injector: Injector) {}
 
           addChild() {
-            return this.childOrigin.createComponent(this.childFactory);
+            return this.childOrigin.createComponent(Child);
           }
           addChildWithDirB() {
-            return this.childOriginWithDirB.createComponent(this.childFactory);
+            return this.childOriginWithDirB.createComponent(Child);
           }
         }
 
@@ -912,15 +910,18 @@ describe('di', () => {
         const child = fixture.componentInstance.addChild();
         expect(child).toBeDefined();
         expect(child.instance.dirA)
-            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+            .withContext('dirA should be found. It is on the parent of the viewContainerRef.')
+            .not.toBeNull();
         const child2 = fixture.componentInstance.addChildWithDirB();
         expect(child2).toBeDefined();
         expect(child2.instance.dirA)
-            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+            .withContext('dirA should be found. It is on the parent of the viewContainerRef.')
+            .not.toBeNull();
         expect(child2.instance.dirB)
-            .toBeNull(
+            .withContext(
                 'dirB appears on the ng-container and should not be found because the ' +
-                'viewContainerRef.createComponent node is inserted next to the container.');
+                'viewContainerRef.createComponent node is inserted next to the container.')
+            .toBeNull();
       });
     });
 
@@ -2428,7 +2429,7 @@ describe('di', () => {
       }
 
       const testBedInjector: Injector = TestBed.get(Injector);
-      const childInjector = Injector.create([], testBedInjector);
+      const childInjector = Injector.create({providers: [], parent: testBedInjector});
 
       const anyService = childInjector.get(AnyService);
       expect(anyService.injector).toBe(childInjector);
@@ -2878,12 +2879,10 @@ describe('di', () => {
         class RootComp {
           public childCompRef!: ComponentRef<ChildComp>;
 
-          constructor(
-              public factoryResolver: ComponentFactoryResolver, public vcr: ViewContainerRef) {}
+          constructor(public vcr: ViewContainerRef) {}
 
           create() {
-            const factory = this.factoryResolver.resolveComponentFactory(ChildComp);
-            this.childCompRef = this.vcr.createComponent(factory);
+            this.childCompRef = this.vcr.createComponent(ChildComp);
             this.childCompRef.changeDetectorRef.detectChanges();
           }
         }
@@ -3691,6 +3690,158 @@ describe('di', () => {
     });
   });
 
+  describe('runInInjectionContext', () => {
+    it('should return the function\'s return value', () => {
+      const injector = TestBed.inject(EnvironmentInjector);
+      const returnValue = runInInjectionContext(injector, () => 3);
+      expect(returnValue).toBe(3);
+    });
+
+    it('should work with an NgModuleRef injector', () => {
+      const ref = TestBed.inject(NgModuleRef);
+      const returnValue = runInInjectionContext(ref.injector, () => 3);
+      expect(returnValue).toBe(3);
+    });
+
+    it('should return correct injector reference', () => {
+      const ngModuleRef = TestBed.inject(NgModuleRef);
+      const ref1 = runInInjectionContext(ngModuleRef.injector, () => inject(Injector));
+      const ref2 = ngModuleRef.injector.get(Injector);
+      expect(ref1).toBe(ref2);
+    });
+
+    it('should make inject() available', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = createEnvironmentInjector(
+          [{provide: TOKEN, useValue: 'from injector'}], TestBed.inject(EnvironmentInjector));
+
+      const result = runInInjectionContext(injector, () => inject(TOKEN));
+      expect(result).toEqual('from injector');
+    });
+
+    it('should properly clean up after the function returns', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = TestBed.inject(EnvironmentInjector);
+      runInInjectionContext(injector, () => {});
+      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+    });
+
+    it('should properly clean up after the function throws', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = TestBed.inject(EnvironmentInjector);
+      expect(() => runInInjectionContext(injector, () => {
+               throw new Error('crashes!');
+             })).toThrow();
+      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+    });
+
+    it('should set the correct inject implementation', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'from root',
+      });
+
+      @Component({
+        standalone: true,
+        template: '',
+        providers: [{provide: TOKEN, useValue: 'from component'}],
+      })
+      class TestCmp {
+        envInjector = inject(EnvironmentInjector);
+
+        tokenFromComponent = inject(TOKEN);
+        tokenFromEnvContext = runInInjectionContext(this.envInjector, () => inject(TOKEN));
+
+        // Attempt to inject ViewContainerRef within the environment injector's context. This should
+        // not be available, so the result should be `null`.
+        vcrFromEnvContext = runInInjectionContext(
+            this.envInjector, () => inject(ViewContainerRef, InjectFlags.Optional));
+      }
+
+      const instance = TestBed.createComponent(TestCmp).componentInstance;
+      expect(instance.tokenFromComponent).toEqual('from component');
+      expect(instance.tokenFromEnvContext).toEqual('from root');
+      expect(instance.vcrFromEnvContext).toBeNull();
+    });
+
+    it('should support node injectors', () => {
+      @Component({
+        standalone: true,
+        template: '',
+      })
+      class TestCmp {
+        injector = inject(Injector);
+
+        vcrFromEnvContext =
+            runInInjectionContext(this.injector, () => inject(ViewContainerRef, {optional: true}));
+      }
+
+      const instance = TestBed.createComponent(TestCmp).componentInstance;
+      expect(instance.vcrFromEnvContext).not.toBeNull();
+    });
+
+    it('should be reentrant', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'from root',
+      });
+
+      const parentInjector = TestBed.inject(EnvironmentInjector);
+      const childInjector =
+          createEnvironmentInjector([{provide: TOKEN, useValue: 'from child'}], parentInjector);
+
+      const results = runInInjectionContext(parentInjector, () => {
+        const fromParentBefore = inject(TOKEN);
+        const fromChild = runInInjectionContext(childInjector, () => inject(TOKEN));
+        const fromParentAfter = inject(TOKEN);
+        return {fromParentBefore, fromChild, fromParentAfter};
+      });
+
+      expect(results.fromParentBefore).toEqual('from root');
+      expect(results.fromChild).toEqual('from child');
+      expect(results.fromParentAfter).toEqual('from root');
+    });
+
+    it('should not function on a destroyed injector', () => {
+      const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+      injector.destroy();
+      expect(() => runInInjectionContext(injector, () => {})).toThrow();
+    });
+  });
+
+  describe('assertInInjectionContext', () => {
+    function placeholder() {}
+
+    it('should throw if not in an injection context', () => {
+      expect(() => assertInInjectionContext(placeholder))
+          .toThrowMatching(
+              (e: Error) => e instanceof RuntimeError &&
+                  e.code === RuntimeErrorCode.MISSING_INJECTION_CONTEXT);
+    });
+
+    it('should not throw if in an EnvironmentInjector context', () => {
+      expect(() => {
+        TestBed.runInInjectionContext(() => {
+          assertInInjectionContext(placeholder);
+        });
+      }).not.toThrow();
+    });
+
+
+    it('should not throw if in an element injector context', () => {
+      expect(() => {
+        @Component({template: ''})
+        class EmptyCmp {
+        }
+
+        const fixture = TestBed.createComponent(EmptyCmp);
+        runInInjectionContext(fixture.componentRef.injector, () => {
+          assertInInjectionContext(placeholder);
+        });
+      }).not.toThrow();
+    });
+  });
+
   it('should be able to use Host in `useFactory` dependency config', () => {
     // Scenario:
     // ---------
@@ -4365,6 +4516,38 @@ describe('di', () => {
 
       expect(fixture.componentInstance.menu.tokenValue).toBe('hello');
     });
+
+    it('should check only the current node with @Self when providing an injection token through an embedded view injector',
+       () => {
+         @Directive({selector: 'menu'})
+         class Menu {
+           constructor(@Inject(token) @Self() @Optional() public tokenValue: string) {}
+         }
+
+         @Component({
+           template: `
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
+           providers: [{provide: token, useValue: 'root'}]
+         })
+         class App {
+           @ViewChild(MenuTrigger) trigger!: MenuTrigger;
+           @ViewChild(Menu) menu!: Menu;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, MenuTrigger, Menu]});
+         const injector = Injector.create({providers: [{provide: token, useValue: 'hello'}]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.componentInstance.trigger.open(injector);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.menu.tokenValue).toBeNull();
+       });
 
     it('should be able to provide an injection token to a nested template through a custom injector',
        () => {

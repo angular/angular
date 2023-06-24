@@ -286,5 +286,18 @@ describe('Location Class', () => {
       expect(location.normalize(baseHref + matrixParams)).toBe(matrixParams);
       expect(location.normalize(baseHref + fragment)).toBe(fragment);
     });
+
+    it('in case APP_BASE_HREF contains characters that have special meaning in a regex', () => {
+      const baseHref = 'c:/users/name(test)/en';
+      const path = '/test-path';
+
+      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
+
+      const location = TestBed.inject(Location);
+
+      expect(location.normalize(path)).toBe(path);
+      expect(location.normalize(baseHref)).toBe('');
+      expect(location.normalize(baseHref + path)).toBe(path);
+    });
   });
 });

@@ -9,10 +9,10 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reexport} from '../../imports';
+import {Reexport, ReferenceEmitter} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {ClassDeclaration, Decorator} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
@@ -31,6 +31,12 @@ export enum CompilationMode {
    * Generates code using a stable, but intermediate format suitable to be published to NPM.
    */
   PARTIAL,
+
+  /**
+   * Generates code based on each individual source file without using its
+   * dependencies (suitable for local dev edit/refresh workflow).
+   */
+  LOCAL,
 }
 
 export enum HandlerPrecedence {
@@ -55,28 +61,6 @@ export enum HandlerPrecedence {
    */
   WEAK,
 }
-
-/**
- * A set of options which can be passed to a `DecoratorHandler` by a consumer, to tailor the output
- * of compilation beyond the decorators themselves.
- */
-export enum HandlerFlags {
-  /**
-   * No flags set.
-   */
-  NONE = 0x0,
-
-  /**
-   * Indicates that this decorator is fully inherited from its parent at runtime. In addition to
-   * normally inherited aspects such as inputs and queries, full inheritance applies to every aspect
-   * of the component or directive, such as the template function itself.
-   *
-   * Its primary effect is to cause the `CopyDefinitionFeature` to be applied to the definition
-   * being compiled. See that class for more information.
-   */
-  FULL_INHERITANCE = 0x00000001,
-}
-
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -128,8 +112,7 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
    * builds. Any side effects required for compilation (e.g. registration of metadata) should happen
    * in the `register` phase, which is guaranteed to run even for incremental builds.
    */
-  analyze(node: ClassDeclaration, metadata: Readonly<D>, handlerFlags?: HandlerFlags):
-      AnalysisOutput<A>;
+  analyze(node: ClassDeclaration, metadata: Readonly<D>): AnalysisOutput<A>;
 
   /**
    * React to a change in a resource file by updating the `analysis` or `resolution`, under the
@@ -255,7 +238,7 @@ export interface AnalysisOutput<A> {
  */
 export interface CompileResult {
   name: string;
-  initializer: Expression;
+  initializer: Expression|null;
   statements: Statement[];
   type: Type;
 }
@@ -272,5 +255,6 @@ export interface DtsTransform {
       (element: ts.FunctionDeclaration, imports: ImportManager): ts.FunctionDeclaration;
   transformClass?
       (clazz: ts.ClassDeclaration, elements: ReadonlyArray<ts.ClassElement>,
+       reflector: ReflectionHost, refEmitter: ReferenceEmitter,
        imports: ImportManager): ts.ClassDeclaration;
 }

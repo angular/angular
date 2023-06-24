@@ -1,4 +1,4 @@
-import { createNgModuleRef, Inject, Injectable, NgModuleRef, Type } from '@angular/core';
+import { createNgModule, Inject, Injectable, NgModuleRef, Type } from '@angular/core';
 import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
 import { from, Observable, of } from 'rxjs';
 import { createCustomElement } from '@angular/elements';
@@ -46,7 +46,7 @@ export class ElementsLoader {
       const loadedAndRegistered =
         (modulePathLoader() as Promise<Type<WithCustomElementComponent>>)
           .then(elementModule => {
-            const elementModuleRef = createNgModuleRef(elementModule, this.moduleRef.injector);
+            const elementModuleRef = createNgModule(elementModule, this.moduleRef.injector);
             const injector = elementModuleRef.injector;
             const CustomElementComponent = elementModuleRef.instance.customElementComponent;
             const CustomElement = createCustomElement(CustomElementComponent, {injector});

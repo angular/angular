@@ -45,7 +45,7 @@ export class HttpHeaders {
 
   /**  Constructs a new HTTP header object with the given values.*/
 
-  constructor(headers?: string|{[name: string]: string | string[]}) {
+  constructor(headers?: string|{[name: string]: string | number | (string | number)[]}|Headers) {
     if (!headers) {
       this.headers = new Map<string, string[]>();
     } else if (typeof headers === 'string') {
@@ -66,22 +66,19 @@ export class HttpHeaders {
           }
         });
       };
+    } else if (typeof Headers !== 'undefined' && headers instanceof Headers) {
+      this.headers = new Map<string, string[]>();
+      headers.forEach((values: string, name: string) => {
+        this.setHeaderEntries(name, values);
+      });
     } else {
       this.lazyInit = () => {
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
           assertValidHeaders(headers);
         }
         this.headers = new Map<string, string[]>();
-        Object.keys(headers).forEach(name => {
-          let values: string|string[] = headers[name];
-          const key = name.toLowerCase();
-          if (typeof values === 'string') {
-            values = [values];
-          }
-          if (values.length > 0) {
-            this.headers.set(key, values);
-            this.maybeSetNormalizedName(name, key);
-          }
+        Object.entries(headers).forEach(([name, values]) => {
+          this.setHeaderEntries(name, values);
         });
       };
     }
@@ -252,6 +249,14 @@ export class HttpHeaders {
     }
   }
 
+  private setHeaderEntries(name: string, values: any) {
+    const headerValues =
+        (Array.isArray(values) ? values : [values]).map((value) => value.toString());
+    const key = name.toLowerCase();
+    this.headers.set(key, headerValues);
+    this.maybeSetNormalizedName(name, key);
+  }
+
   /**
    * @internal
    */
@@ -264,16 +269,16 @@ export class HttpHeaders {
 
 /**
  * Verifies that the headers object has the right shape: the values
- * must be either strings or arrays. Throws an error if an invalid
+ * must be either strings, numbers or arrays. Throws an error if an invalid
  * header value is present.
  */
-function assertValidHeaders(headers: Record<string, unknown>):
-    asserts headers is Record<string, string|string[]> {
+function assertValidHeaders(headers: Record<string, unknown>|Headers):
+    asserts headers is Record<string, string|string[]|number|number[]> {
   for (const [key, value] of Object.entries(headers)) {
-    if (typeof value !== 'string' && !Array.isArray(value)) {
+    if (!(typeof value === 'string' || typeof value === 'number') && !Array.isArray(value)) {
       throw new Error(
           `Unexpected value of the \`${key}\` header provided. ` +
-          `Expecting either a string or an array, but got: \`${value}\`.`);
+          `Expecting either a string, a number or an array, but got: \`${value}\`.`);
     }
   }
 }

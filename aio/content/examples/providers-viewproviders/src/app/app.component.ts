@@ -20,7 +20,7 @@ export class AppComponent  {
 
 // viewProviders: [{ provide: AnimalService, useValue: { emoji: '🦔' } }]
 
-// So, the entire @ChildComponent() decorator and its
+// So, the entire ChildComponent @Component() decorator and its
 // metadata should be as follows:
 
 // @Component({

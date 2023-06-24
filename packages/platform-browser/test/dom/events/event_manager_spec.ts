@@ -16,7 +16,7 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
 (function() {
 if (isNode) return;
 let domEventPlugin: DomEventsPlugin;
-let doc: any;
+let doc: Document;
 let zone: NgZone;
 
 describe('EventManager', () => {
@@ -29,7 +29,7 @@ describe('EventManager', () => {
   it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
      () => {
        const element = el('<div></div>');
-       const handler = (e: any /** TODO #9100 */) => e;
+       const handler = (e: Event) => e;
        const plugin = new FakeEventManagerPlugin(doc, ['click']);
        const manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
        manager.addEventListener(element, 'click', handler);
@@ -38,8 +38,8 @@ describe('EventManager', () => {
 
   it('should delegate event bindings to the first plugin supporting the event', () => {
     const element = el('<div></div>');
-    const clickHandler = (e: any /** TODO #9100 */) => e;
-    const dblClickHandler = (e: any /** TODO #9100 */) => e;
+    const clickHandler = (e: Event) => e;
+    const dblClickHandler = (e: Event) => e;
     const plugin1 = new FakeEventManagerPlugin(doc, ['dblclick']);
     const plugin2 = new FakeEventManagerPlugin(doc, ['click', 'dblclick']);
     const manager = new EventManager([plugin2, plugin1], new FakeNgZone());
@@ -54,7 +54,7 @@ describe('EventManager', () => {
     const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
     const manager = new EventManager([plugin], new FakeNgZone());
     expect(() => manager.addEventListener(element, 'click', null!))
-        .toThrowError('No event manager plugin found for event click');
+        .toThrowError('NG05101: No event manager plugin found for event click');
   });
 
   it('events are caught when fired from a child', () => {
@@ -64,8 +64,8 @@ describe('EventManager', () => {
 
     const child = element.firstChild as Element;
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvent: any /** TODO #9100 */ = null;
-    const handler = (e: any /** TODO #9100 */) => {
+    let receivedEvent: MouseEvent|undefined;
+    const handler = (e: MouseEvent) => {
       receivedEvent = e;
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -75,52 +75,32 @@ describe('EventManager', () => {
     expect(receivedEvent).toBe(dispatchedEvent);
   });
 
-  it('should add and remove global event listeners', () => {
-    const element = el('<div><div></div></div>');
-    doc.body.appendChild(element);
-    const dispatchedEvent = createMouseEvent('click');
-    let receivedEvent: any /** TODO #9100 */ = null;
-    const handler = (e: any /** TODO #9100 */) => {
-      receivedEvent = e;
-    };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
-
-    const remover = manager.addGlobalEventListener('document', 'click', handler);
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(dispatchedEvent);
-
-    receivedEvent = null;
-    remover();
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(null);
-  });
-
   it('should keep zone when addEventListener', () => {
     const Zone = (window as any)['Zone'];
 
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvent: any /** TODO #9100 */ = null;
-    let receivedZone: any = null;
-    const handler = (e: any /** TODO #9100 */) => {
+    let receivedEvent: MouseEvent|undefined;
+    let receivedZone: Zone|undefined;
+    const handler = (e: MouseEvent) => {
       receivedEvent = e;
       receivedZone = Zone.current;
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover: any = null;
+    let remover: Function|undefined;
     Zone.root.run(() => {
       remover = manager.addEventListener(element, 'click', handler);
     });
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvent).toBe(dispatchedEvent);
-    expect(receivedZone.name).toBe(Zone.root.name);
+    expect(receivedZone?.name).toBe(Zone.root.name);
 
-    receivedEvent = null;
-    remover && remover();
+    receivedEvent = undefined;
+    remover?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(null);
+    expect(receivedEvent).toBe(undefined);
   });
 
   it('should keep zone when addEventListener multiple times', () => {
@@ -129,20 +109,20 @@ describe('EventManager', () => {
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvents: any[] /** TODO #9100 */ = [];
-    let receivedZones: any[] = [];
-    const handler1 = (e: any /** TODO #9100 */) => {
+    let receivedEvents: MouseEvent[] = [];
+    let receivedZones: Zone[] = [];
+    const handler1 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
-    const handler2 = (e: any /** TODO #9100 */) => {
+    const handler2 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover1: any = null;
-    let remover2: any = null;
+    let remover1: Function|undefined;
+    let remover2: Function|undefined;
     Zone.root.run(() => {
       remover1 = manager.addEventListener(element, 'click', handler1);
     });
@@ -154,8 +134,8 @@ describe('EventManager', () => {
     expect(receivedZones).toEqual([Zone.root.name, 'test']);
 
     receivedEvents = [];
-    remover1 && remover1();
-    remover2 && remover2();
+    remover1?.();
+    remover2?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([]);
   });
@@ -166,21 +146,21 @@ describe('EventManager', () => {
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvents: any[] /** TODO #9100 */ = [];
-    let receivedZones: any[] = [];
-    const handler1 = (e: any /** TODO #9100 */) => {
+    let receivedEvents: MouseEvent[] = [];
+    let receivedZones: Zone[] = [];
+    const handler1 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
       e.stopImmediatePropagation();
     };
-    const handler2 = (e: any /** TODO #9100 */) => {
+    const handler2 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover1: any = null;
-    let remover2: any = null;
+    let remover1: Function|undefined;
+    let remover2: Function|undefined;
     Zone.root.run(() => {
       remover1 = manager.addEventListener(element, 'click', handler1);
     });
@@ -192,8 +172,8 @@ describe('EventManager', () => {
     expect(receivedZones).toEqual([Zone.root.name]);
 
     receivedEvents = [];
-    remover1 && remover1();
-    remover2 && remover2();
+    remover1?.();
+    remover2?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([]);
   });
@@ -204,16 +184,16 @@ describe('EventManager', () => {
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvents: any[] /** TODO #9100 */ = [];
-    let receivedZones: any[] = [];
-    let remover1: any = null;
-    let remover2: any = null;
-    const handler1 = (e: any /** TODO #9100 */) => {
+    let receivedEvents: MouseEvent[] = [];
+    let receivedZones: Zone[] = [];
+    let remover1: Function|undefined;
+    let remover2: Function|undefined;
+    const handler1 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
       remover1 && remover1();
     };
-    const handler2 = (e: any /** TODO #9100 */) => {
+    const handler2 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
@@ -230,8 +210,8 @@ describe('EventManager', () => {
     expect(receivedZones).toEqual([Zone.root.name, 'test']);
 
     receivedEvents = [];
-    remover1 && remover1();
-    remover2 && remover2();
+    remover1?.();
+    remover2?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([]);
   });
@@ -242,16 +222,16 @@ describe('EventManager', () => {
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvents: any[] /** TODO #9100 */ = [];
-    let receivedZones: any[] = [];
-    const handler = (e: any /** TODO #9100 */) => {
+    let receivedEvents: MouseEvent[] = [];
+    let receivedZones: Zone[] = [];
+    const handler = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover1: any = null;
-    let remover2: any = null;
+    let remover1: Function|undefined;
+    let remover2: Function|undefined;
     Zone.root.run(() => {
       remover1 = manager.addEventListener(element, 'click', handler);
     });
@@ -263,8 +243,8 @@ describe('EventManager', () => {
     expect(receivedZones).toEqual([Zone.root.name]);
 
     receivedEvents = [];
-    remover1 && remover1();
-    remover2 && remover2();
+    remover1?.();
+    remover2?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([]);
   });
@@ -275,20 +255,20 @@ describe('EventManager', () => {
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
     const dispatchedEvent = createMouseEvent('click');
-    let receivedEvents: any[] /** TODO #9100 */ = [];
-    let receivedZones: any[] = [];
-    const handler1 = (e: any /** TODO #9100 */) => {
+    let receivedEvents: MouseEvent[] = [];
+    let receivedZones: Zone[] = [];
+    const handler1 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
-    const handler2 = (e: any /** TODO #9100 */) => {
+    const handler2 = (e: MouseEvent) => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
     const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover1: any = null;
-    let remover2: any = null;
+    let remover1: Function|undefined;
+    let remover2: Function|undefined;
     // handler1 is added in root zone
     Zone.root.run(() => {
       remover1 = manager.addEventListener(element, 'click', handler1);
@@ -302,8 +282,8 @@ describe('EventManager', () => {
     expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
 
     receivedEvents = [];
-    remover1 && remover1();
-    remover2 && remover2();
+    remover1?.();
+    remover2?.();
     getDOM().dispatchEvent(element, dispatchedEvent);
     // handler1 and handler2 are added in different zone
     // one is angular zone, the other is not
@@ -352,20 +332,20 @@ describe('EventManager', () => {
        element.appendChild(child);
        doc.body.appendChild(element);
        const dispatchedEvent = createMouseEvent('click');
-       let receivedEvents: any = [];
-       let stables: any = [];
-       const handler = (e: any) => {
+       let receivedEvents: MouseEvent[] = [];
+       let stables: boolean[] = [];
+       const handler = (e: MouseEvent) => {
          receivedEvents.push(e);
        };
        const manager = new EventManager([domEventPlugin], zone);
-       let removerChild: any;
-       let removerParent: any;
+       let removerChild: Function;
+       let removerParent: Function;
 
        zone.run(() => {
          removerChild = manager.addEventListener(child, 'click', handler);
          removerParent = manager.addEventListener(element, 'click', handler);
        });
-       zone.onStable.subscribe((isStable: any) => {
+       zone.onStable.subscribe((isStable: boolean) => {
          stables.push(isStable);
        });
        getDOM().dispatchEvent(child, dispatchedEvent);
@@ -389,20 +369,20 @@ describe('EventManager', () => {
        element.appendChild(child);
        doc.body.appendChild(element);
        const dispatchedEvent = createMouseEvent('click');
-       let receivedEvents: any = [];
-       let stables: any = [];
-       const handler = (e: any) => {
+       let receivedEvents: MouseEvent[] = [];
+       let stables: boolean[] = [];
+       const handler = (e: MouseEvent) => {
          receivedEvents.push(e);
        };
        const manager = new EventManager([domEventPlugin], zone);
-       let removerChild: any;
-       let removerParent: any;
+       let removerChild: Function;
+       let removerParent: Function;
 
        zone.run(() => {
          removerChild = manager.addEventListener(child, 'click', handler);
          removerParent = manager.addEventListener(element, 'click', handler);
        });
-       zone.onStable.subscribe((isStable: any) => {
+       zone.onStable.subscribe((isStable: boolean) => {
          stables.push(isStable);
        });
        getDOM().dispatchEvent(child, dispatchedEvent);
@@ -428,15 +408,15 @@ describe('EventManager', () => {
        const dispatchedBlurEvent: FocusEvent =
            getDOM().getDefaultDocument().createEvent('FocusEvent');
        dispatchedBlurEvent.initEvent('blur', true, true);
-       let logs: any = [];
+       let logs: string[] = [];
        const handler = () => {};
 
-       const blurHandler = (e: any) => {
+       const blurHandler = (e: Event) => {
          logs.push('blur');
        };
        const manager = new EventManager([domEventPlugin], zone);
-       let removerParent: any;
-       let removerChildFocus: any;
+       let removerParent: Function;
+       let removerChildFocus: Function;
 
        zone.run(() => {
          removerParent = manager.addEventListener(element, 'click', handler);
@@ -445,7 +425,7 @@ describe('EventManager', () => {
        const sub = zone.onStable.subscribe(() => {
          sub.unsubscribe();
          logs.push('begin');
-         Promise.resolve().then(() => {
+         queueMicrotask(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
@@ -456,8 +436,8 @@ describe('EventManager', () => {
        requestAnimationFrame(() => {
          expect(logs).toEqual(['begin', 'blur', 'end', 'promise resolved']);
 
-         removerParent && removerParent();
-         removerChildFocus && removerChildFocus();
+         removerParent();
+         removerChildFocus();
          done();
        });
      });
@@ -474,15 +454,15 @@ describe('EventManager', () => {
        const dispatchedBlurEvent: FocusEvent =
            getDOM().getDefaultDocument().createEvent('FocusEvent');
        dispatchedBlurEvent.initEvent('blur', true, true);
-       let logs: any = [];
+       let logs: string[] = [];
        const handler = () => {};
 
-       const blurHandler = (e: any) => {
+       const blurHandler = (e: Event) => {
          logs.push('blur');
        };
        const manager = new EventManager([domEventPlugin], zone);
-       let removerParent: any;
-       let removerChildFocus: any;
+       let removerParent: Function;
+       let removerChildFocus: Function;
 
        zone.run(() => {
          removerParent = manager.addEventListener(element, 'click', handler);
@@ -491,7 +471,7 @@ describe('EventManager', () => {
        const sub = zone.onStable.subscribe(() => {
          sub.unsubscribe();
          logs.push('begin');
-         Promise.resolve().then(() => {
+         queueMicrotask(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
@@ -514,7 +494,7 @@ describe('EventManager', () => {
 class FakeEventManagerPlugin extends EventManagerPlugin {
   eventHandler: {[event: string]: Function} = {};
 
-  constructor(doc: any, public supportedEvents: string[]) {
+  constructor(doc: Document, public supportedEvents: string[]) {
     super(doc);
   }
 
@@ -522,7 +502,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     return this.supportedEvents.indexOf(eventName) > -1;
   }
 
-  override addEventListener(element: any, eventName: string, handler: Function) {
+  override addEventListener(element: Element, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
     return () => {
       delete this.eventHandler[eventName];

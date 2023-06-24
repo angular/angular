@@ -7,10 +7,12 @@
  */
 
 import {Injector} from '../di/injector';
+import {DehydratedContainerView} from '../hydration/interfaces';
 import {assertLContainer} from '../render3/assert';
-import {createLView, renderView} from '../render3/instructions/shared';
+import {renderView} from '../render3/instructions/render';
+import {createLView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
+import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
@@ -31,7 +33,7 @@ import {EmbeddedViewRef} from './view_ref';
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
- * @see `ViewContainerRef`
+ * @see {@link ViewContainerRef}
  * @see [Navigate the Component Tree with DI](guide/dependency-injection-navtree)
  *
  * @publicApi
@@ -61,6 +63,27 @@ export abstract class TemplateRef<C> {
   abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
 
   /**
+   * Implementation of the `createEmbeddedView` function.
+   *
+   * This implementation is internal and allows framework code
+   * to invoke it with extra parameters (e.g. for hydration) without
+   * affecting public API.
+   *
+   * @internal
+   */
+  abstract createEmbeddedViewImpl(
+      context: C, injector?: Injector,
+      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<C>;
+
+  /**
+   * Returns an `ssrId` associated with a TView, which was used to
+   * create this instance of the `TemplateRef`.
+   *
+   * @internal
+   */
+  abstract get ssrId(): string|null;
+
+  /**
    * @internal
    * @nocollapse
    */
@@ -78,11 +101,33 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     super();
   }
 
+  /**
+   * Returns an `ssrId` associated with a TView, which was used to
+   * create this instance of the `TemplateRef`.
+   *
+   * @internal
+   */
+  override get ssrId(): string|null {
+    return this._declarationTContainer.tView?.ssrId || null;
+  }
+
   override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
-    const embeddedTView = this._declarationTContainer.tViews as TView;
+    return this.createEmbeddedViewImpl(context, injector, null);
+  }
+
+  /**
+   * @internal
+   */
+  override createEmbeddedViewImpl(
+      context: T, injector?: Injector,
+      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<T> {
+    // Embedded views follow the change detection strategy of the view they're declared in.
+    const isSignalView = this._declarationLView[FLAGS] & LViewFlags.SignalView;
+    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
+    const embeddedTView = this._declarationTContainer.tView as TView;
     const embeddedLView = createLView(
-        this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null, null, injector || null);
+        this._declarationLView, embeddedTView, context, viewFlags, null, embeddedTView.declTNode,
+        null, null, null, injector || null, hydrationInfo || null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);
@@ -117,7 +162,7 @@ export function injectTemplateRef<T>(): TemplateRef<T>|null {
  */
 export function createTemplateRef<T>(hostTNode: TNode, hostLView: LView): TemplateRef<T>|null {
   if (hostTNode.type & TNodeType.Container) {
-    ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
+    ngDevMode && assertDefined(hostTNode.tView, 'TView must be allocated');
     return new R3TemplateRef(
         hostLView, hostTNode as TContainerNode, createElementRef(hostTNode, hostLView));
   }

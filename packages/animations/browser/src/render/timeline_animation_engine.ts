@@ -49,8 +49,7 @@ export class TimelineAnimationEngine {
       i: AnimationTimelineInstruction, preStyles: ɵStyleDataMap,
       postStyles?: ɵStyleDataMap): AnimationPlayer {
     const element = i.element;
-    const keyframes = normalizeKeyframes(
-        this._driver, this._normalizer, element, i.keyframes, preStyles, postStyles);
+    const keyframes = normalizeKeyframes(this._normalizer, i.keyframes, preStyles, postStyles);
     return this._driver.animate(element, keyframes, i.duration, i.delay, i.easing, [], true);
   }
 

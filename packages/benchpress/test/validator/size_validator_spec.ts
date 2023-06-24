@@ -15,8 +15,10 @@ import {Injector, MeasureValues, SizeValidator} from '../../index';
     function createValidator(size: number) {
       validator =
           Injector
-              .create(
-                  [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}])
+              .create({
+                providers:
+                    [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}]
+              })
               .get(SizeValidator);
     }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, isStandalone, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, isStandalone, Type, ɵisNgModule as isNgModule, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {RuntimeErrorCode} from '../errors';
@@ -57,7 +57,13 @@ export function validateConfig(
 }
 
 export function assertStandalone(fullPath: string, component: Type<unknown>|undefined) {
-  if (component && !isStandalone(component)) {
+  if (component && isNgModule(component)) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${
+            fullPath}'. You are using 'loadComponent' with a module, ` +
+            `but it must be used with standalone components. Use 'loadChildren' instead.`);
+  } else if (component && !isStandalone(component)) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
         `Invalid configuration of route '${fullPath}'. The component must be standalone.`);

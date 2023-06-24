@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    generate_ve_shims = True,
     module_name = "app_built",
     deps = [
         "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib2",

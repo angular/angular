@@ -65,6 +65,14 @@ Angular maintainers who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
 
+### Appeal
+
+If you are banned you may contest the decision. To do so email conduct@angular.io with the subject line "Repeal Ban for {{your name here}}" and body with the responses to the following:
+
+* Why do you believe you did not violate the Code of Conduct?
+* Were other factors involved in this situation the leadership team may have been unaware of?
+* Why do you wish to be a part of the Angular community?
+
 ## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 1.4,

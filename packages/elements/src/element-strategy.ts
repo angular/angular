@@ -30,7 +30,7 @@ export interface NgElementStrategy {
   connect(element: HTMLElement): void;
   disconnect(): void;
   getInputValue(propName: string): any;
-  setInputValue(propName: string, value: string): void;
+  setInputValue(propName: string, value: string, transform?: (value: any) => any): void;
 }
 
 /**

@@ -36,7 +36,7 @@ export class BrowserAnimationsModule {
    * Configures the module based on the specified object.
    *
    * @param config Object used to configure the behavior of the `BrowserAnimationsModule`.
-   * @see `BrowserAnimationsModuleConfig`
+   * @see {@link BrowserAnimationsModuleConfig}
    *
    * @usageNotes
    * When registering the `BrowserAnimationsModule`, you can use the `withConfig`

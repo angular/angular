@@ -1,4 +1,4 @@
-import * as XRegExp from 'xregexp';
+import XRegExp from 'xregexp';
 
 // The `XRegExp` typings are not accurate.
 interface XRegExp extends RegExp {
@@ -44,7 +44,7 @@ export class FirebaseRedirectSource {
                   })
               .replace(namedParam, '$1(?<$2>[^/]+)')
               .replace(doubleStar, '$1.🐷$2')  // use the pig to avoid replacing ** in next rule
-              .replace(star, '[^/]*')         // match a single segment
+              .replace(star, '[^/]*')          // match a single segment
               .replace(possiblyEmptyInitialSegments, '(?:.*)')  // deal with **/ special cases
               .replace(possiblyEmptySegments, '(?:/|/.*/)')     // deal with /**/ special cases
               .replace(willBeStar, '*');                        // other ** matches

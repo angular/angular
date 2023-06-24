@@ -45,7 +45,7 @@ export interface NgElementStrategy {
     // (undocumented)
     getInputValue(propName: string): any;
     // (undocumented)
-    setInputValue(propName: string, value: string): void;
+    setInputValue(propName: string, value: string, transform?: (value: any) => any): void;
 }
 
 // @public

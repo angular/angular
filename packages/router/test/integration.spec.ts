@@ -12,13 +12,13 @@ import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreI
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
-import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, Data, ResolveFn} from '../src/models';
+import {CanActivateChildFn, CanActivateFn, CanMatchFn, Data, ResolveFn} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
-import {forEach, wrapIntoObservable} from '../src/utils/collection';
+import {wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 
 const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
@@ -486,7 +486,7 @@ describe('Integration', () => {
 
       @NgModule({
         declarations: [Parent, NamedOutletHost, Child1, Child2, Child3],
-        imports: [RouterModule]
+        imports: [RouterModule.forRoot([])]
       })
       class TestModule {
       }
@@ -670,7 +670,7 @@ describe('Integration', () => {
 
        @NgModule({
          declarations: [OnPushOutlet, NeedCdCmp],
-         imports: [RouterModule],
+         imports: [RouterModule.forRoot([])],
        })
        class TestModule {
        }
@@ -865,7 +865,7 @@ describe('Integration', () => {
 
   describe('"eager" urlUpdateStrategy', () => {
     @Injectable()
-    class AuthGuard implements CanActivate {
+    class AuthGuard {
       canActivateResult = true;
 
       canActivate() {
@@ -873,7 +873,7 @@ describe('Integration', () => {
       }
     }
     @Injectable()
-    class DelayedGuard implements CanActivate {
+    class DelayedGuard {
       canActivate() {
         return of('').pipe(delay(1000), mapTo(true));
       }
@@ -2055,7 +2055,7 @@ describe('Integration', () => {
 
 
   describe('data', () => {
-    class ResolveSix implements Resolve<number> {
+    class ResolveSix {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number {
         return 6;
       }
@@ -3242,7 +3242,7 @@ describe('Integration', () => {
       });
 
       describe('should work when given a class', () => {
-        class AlwaysTrue implements CanActivate {
+        class AlwaysTrue {
           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
             return true;
           }
@@ -4130,7 +4130,7 @@ describe('Integration', () => {
            router.navigateByUrl('/b');
            advance(fixture);
 
-           expect(log[0].component).toBeAnInstanceOf(AdminComponent);
+           expect(log[0].component).toBeInstanceOf(AdminComponent);
          })));
 
       it('should not create a route state if navigation is canceled',
@@ -4215,7 +4215,7 @@ describe('Integration', () => {
       describe('next state', () => {
         let log: string[];
 
-        class ClassWithNextState implements CanDeactivate<TeamCmp> {
+        class ClassWithNextState {
           canDeactivate(
               component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
               currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): boolean {
@@ -4285,7 +4285,7 @@ describe('Integration', () => {
       });
 
       describe('should work when given a class', () => {
-        class AlwaysTrue implements CanDeactivate<TeamCmp> {
+        class AlwaysTrue {
           canDeactivate(): boolean {
             return true;
           }
@@ -4912,7 +4912,7 @@ describe('Integration', () => {
 
     describe('canMatch', () => {
       @Injectable({providedIn: 'root'})
-      class ConfigurableGuard implements CanMatch {
+      class ConfigurableGuard {
         result: Promise<boolean|UrlTree>|Observable<boolean|UrlTree>|boolean|UrlTree = false;
         canMatch() {
           return this.result;
@@ -5008,7 +5008,7 @@ describe('Integration', () => {
            class ChildLazyLoadedComponent {
            }
            @Injectable()
-           class LazyCanMatchFalse implements CanMatch {
+           class LazyCanMatchFalse {
              canMatch() {
                return false;
              }
@@ -5708,15 +5708,15 @@ describe('Integration', () => {
 
          expect(pInj.get('moduleName')).toEqual('parent');
          expect(pInj.get('fromParent')).toEqual('from parent');
-         expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
+         expect(pInj.get(Parent)).toBeInstanceOf(Parent);
          expect(pInj.get('fromChild', null)).toEqual(null);
          expect(pInj.get(Child, null)).toEqual(null);
 
          expect(cInj.get('moduleName')).toEqual('child');
          expect(cInj.get('fromParent')).toEqual('from parent');
          expect(cInj.get('fromChild')).toEqual('from child');
-         expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
-         expect(cInj.get(Child)).toBeAnInstanceOf(Child);
+         expect(cInj.get(Parent)).toBeInstanceOf(Parent);
+         expect(cInj.get(Child)).toBeInstanceOf(Child);
          // The child module can not shadow the parent component
          expect(cInj.get('shadow')).toEqual('from parent component');
 
@@ -5775,7 +5775,7 @@ describe('Integration', () => {
          }
 
          @Injectable()
-         class Resolver implements Resolve<Service> {
+         class Resolver {
            constructor(public service: Service) {}
            resolve() {
              return this.service;
@@ -6084,7 +6084,7 @@ describe('Integration', () => {
       class LoadedModule {
       }
 
-      @NgModule({declarations: [EagerParentComponent], imports: [RouterModule]})
+      @NgModule({declarations: [EagerParentComponent], imports: [RouterModule.forRoot([])]})
       class TestModule {
       }
 
@@ -6345,7 +6345,7 @@ describe('Integration', () => {
             children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
           }
 
-          forEach(wholeUrl.root.children, (v: any, k: any) => {
+          Object.entries(wholeUrl.root.children).forEach(([k, v]: [string, any]) => {
             if (k !== PRIMARY_OUTLET) {
               children[k] = v;
             }
@@ -6376,7 +6376,7 @@ describe('Integration', () => {
                  [{path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}]
            }]);
 
-           const events: RouterEvent[] = [];
+           const events: Event[] = [];
            router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            // supported URL
@@ -6440,7 +6440,7 @@ describe('Integration', () => {
                  [{path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}]
            }]);
 
-           const events: RouterEvent[] = [];
+           const events: Event[] = [];
            router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            location.simulateHashChange('/include/user/kate(aux:excluded)');
@@ -6712,7 +6712,7 @@ describe('Integration', () => {
          router.navigateByUrl('/c');
          advance(fixture);
          expect(location.path()).toEqual('/c');
-         expect(fixture.debugElement.children[1].componentInstance).toBeAnInstanceOf(UserCmp);
+         expect(fixture.debugElement.children[1].componentInstance).toBeInstanceOf(UserCmp);
          // We have still not encountered a route that should be reattached
          expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 

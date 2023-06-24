@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, ForwardRefHandling, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, ForwardRefHandling, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr,} from '@angular/compiler';
 import ts from 'typescript';
 
 import {InjectableClassRegistry, isAbstractClassDeclaration} from '../../annotations/common';
@@ -14,7 +14,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {checkInheritanceOfInjectable, compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference,} from '../common';
 
 export interface InjectableHandlerData {
@@ -33,6 +33,7 @@ export class InjectableDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private includeClassMetadata: boolean,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -42,7 +43,7 @@ export class InjectableDecoratorHandler implements
       private errorOnDuplicateProv = true) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
-  readonly name = InjectableDecoratorHandler.name;
+  readonly name = 'InjectableDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -72,7 +73,9 @@ export class InjectableDecoratorHandler implements
         meta,
         ctorDeps: extractInjectableCtorDeps(
             node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps),
-        classMetadata: extractClassMetadata(node, this.reflector, this.isCore),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(node, this.reflector, this.isCore) :
+            null,
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
         needsFactory: !decorators ||
@@ -166,19 +169,16 @@ function extractInjectableMetadata(
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
   const type = wrapTypeReference(reflector, clazz);
-  const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
-        '@Injectable must be called');
+        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
   }
   if (decorator.args.length === 0) {
     return {
       name,
       type,
       typeArgumentCount,
-      internalType,
       providedIn: createMayBeForwardRefExpression(new LiteralExpr(null), ForwardRefHandling.None),
     };
   } else if (decorator.args.length === 1) {
@@ -210,7 +210,7 @@ function extractInjectableMetadata(
       deps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
 
-    const result: R3InjectableMetadata = {name, type, typeArgumentCount, internalType, providedIn};
+    const result: R3InjectableMetadata = {name, type, typeArgumentCount, providedIn};
     if (meta.has('useValue')) {
       result.useValue = getProviderExpression(meta.get('useValue')!, reflector);
     } else if (meta.has('useExisting')) {
@@ -249,8 +249,7 @@ function extractInjectableCtorDeps(
     reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
-        '@Injectable must be called');
+        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
   }
 
   let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;

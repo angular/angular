@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injectable, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, EmbeddedViewRef, Injectable, Injector, Input, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -491,12 +491,12 @@ describe('view insertion', () => {
           @ViewChild('insert', {static: true}) insertTpl!: TemplateRef<{}>;
           @ViewChild('vi', {static: true}) viewInsertingDir!: ViewInsertingDir;
 
-          constructor(private _cfr: ComponentFactoryResolver, private _injector: Injector) {}
+          constructor(private _vcr: ViewContainerRef, private _injector: Injector) {}
 
           insert() {
             // create a dynamic component view to act as an "insert before" view
-            const componentFactory = this._cfr.resolveComponentFactory(DynamicComponent);
-            const beforeView = componentFactory.create(this._injector).hostView;
+            const beforeView =
+                this._vcr.createComponent(DynamicComponent, {injector: this._injector}).hostView;
             // change-detect the "before view" to create all child views
             beforeView.detectChanges();
             this.viewInsertingDir.insert(beforeView, this.insertTpl);
@@ -539,10 +539,8 @@ describe('view insertion', () => {
          class AppComponent {
            @ViewChild('container', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
 
-           constructor(private _cfr: ComponentFactoryResolver) {}
-
            click() {
-             this.vcr.createComponent(this._cfr.resolveComponentFactory(DynamicComponent));
+             this.vcr.createComponent(DynamicComponent);
            }
          }
 

@@ -261,7 +261,7 @@ Angular applications can configure dependency injection by specifying a set of a
 
 #### Environment injectors
 
-Making `NgModule`s optional will require new ways of configuring "module" injectors with application-wide providers (for example, [HttpClient](https://angular.io/api/common/http/HttpClient)). In the standalone application (one created with `bootstrapApplication`), “module” providers can be configured during the bootstrap process, in the `providers` option: 
+Making `NgModule`s optional will require new ways of configuring "module" injectors with application-wide providers (for example, [HttpClient](/api/common/http/HttpClient)). In the standalone application (one created with `bootstrapApplication`), “module” providers can be configured during the bootstrap process, in the `providers` option: 
 
 ```ts
 bootstrapApplication(PhotoAppComponent, {
@@ -273,7 +273,7 @@ bootstrapApplication(PhotoAppComponent, {
 });
 ```
 
-The new bootstrap API gives us back the means of configuring “module injectors” without using `NgModule`s. In this sense, the “module” part of the name is no longer relevant and we’ve decided to introduce a new term: “environment injectors”. 
+The new bootstrap API gives us back the means of configuring “module injectors” without using `NgModule`s. In this sense, the “module” part of the name is no longer relevant, and we’ve decided to introduce a new term: “environment injectors”. 
 
 Environment injectors can be configured using one of the following:
 
@@ -320,7 +320,7 @@ class DatePickerComponent {
 
 @NgModule({
         declarations: [DatePickerComponent],
-        exports: [DatePickerComponent]
+        exports: [DatePickerComponent],
         providers: [CalendarService],
 })
 class DatePickerModule {
@@ -338,6 +338,45 @@ class DateModalComponent {
 
 In the above example, the component `DateModalComponent` is standalone - it can be consumed directly and has no NgModule which needs to be imported in order to use it. However, `DateModalComponent` has a dependency, the `DatePickerComponent,` which is imported via its NgModule (the `DatePickerModule`). This NgModule may declare providers (in this case: `CalendarService`) which are required for the `DatePickerComponent` to function correctly.
 
-When Angular creates a standalone component, it needs to know that the current injector has all of the necessary services for the standalone component's dependencies, including those based on NgModules. To guarantee that, in some cases Angular will create a new "standalone injector" as a child of the current environment injector. Today, this happens for all bootstrapped standalone components: it will be a child of the root environment injector. The same rule applies to the dynamically created (for example, by the router or the `ViewContainerRef` API) standalone components. 
+When Angular creates a standalone component, it needs to know that the current injector has all the necessary services for the standalone component's dependencies, including those based on NgModules. To guarantee that, in some cases Angular will create a new "standalone injector" as a child of the current environment injector. Today, this happens for all bootstrapped standalone components: it will be a child of the root environment injector. The same rule applies to the dynamically created (for example, by the router or the `ViewContainerRef` API) standalone components. 
 
 A separate standalone injector is created to ensure that providers imported by a standalone component are “isolated” from the rest of the application. This lets us think of standalone components as truly self-contained pieces that can’t “leak” their implementation details to the rest of the application.
+
+#### Resolve circular dependencies with a forward class reference
+
+The order of class declaration matters in TypeScript. You can't refer directly to a class until it's been defined.
+
+This isn't usually a problem but sometimes circular references are unavoidable. For example, when class 'A' refers to class 'B' and 'B' refers to 'A'. One of them has to be defined first.
+
+The Angular `forwardRef()` function creates an indirect reference that Angular can resolve later. 
+
+For example, this situation happens when a standalone parent component imports a standalone child component and vice-versa. You can resolve this circular dependency issue by using the `forwardRef` function.
+
+```ts
+@Component({
+  standalone: true, 
+  imports: [ChildComponent],
+  selector: 'app-parent',
+  template: `<app-child [hideParent]="hideParent"></app-child>`,
+})
+export class ParentComponent {
+  @Input() hideParent: boolean;
+}
+
+
+@Component({
+  standalone: true,
+  imports: [CommonModule, forwardRef(() => ParentComponent)],
+  selector: 'app-child',
+  template: `<app-parent *ngIf="!hideParent"></app-parent>`,
+})
+export class ChildComponent {
+  @Input() hideParent: boolean;
+}
+```
+
+<div class="alert is-important">
+
+This kind of imports may result in an infinite recursion during component instantiation. Make sure that this recursion has an exit condition that stops it at some point.
+
+</div>

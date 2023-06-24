@@ -30,15 +30,6 @@ export interface R3DirectiveMetadata {
   type: R3Reference;
 
   /**
-   * An expression representing a reference to the directive being compiled, intended for use within
-   * a class definition itself.
-   *
-   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
-   * an IIFE structure that uses a different name internally.
-   */
-  internalType: o.Expression;
-
-  /**
    * Number of generic type parameters of the type itself.
    */
   typeArgumentCount: number;
@@ -89,7 +80,7 @@ export interface R3DirectiveMetadata {
    * A mapping of inputs from class property names to binding property names, or to a tuple of
    * binding property name and class property name if the names are different.
    */
-  inputs: {[field: string]: string|[string, string]};
+  inputs: {[field: string]: R3InputMetadata};
 
   /**
    * A mapping of outputs from class property names to binding property names, or to a tuple of
@@ -122,6 +113,11 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive is standalone.
    */
   isStandalone: boolean;
+
+  /**
+   * Whether or not the component or directive is signal-based.
+   */
+  isSignal: boolean;
 
   /**
    * Additional directives applied to the directive host.
@@ -250,6 +246,15 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   changeDetection?: ChangeDetectionStrategy;
 }
 
+/**
+ * Metadata for an individual input on a directive.
+ */
+export interface R3InputMetadata {
+  classPropertyName: string;
+  bindingPropertyName: string;
+  required: boolean;
+  transformFunction: o.Expression|null;
+}
 
 export enum R3TemplateDependencyKind {
   Directive = 0,

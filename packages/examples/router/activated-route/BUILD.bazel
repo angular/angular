@@ -7,7 +7,6 @@ ng_module(
     srcs = glob(
         ["**/*.ts"],
     ),
-    generate_ve_shims = True,
     deps = [
         "//packages/core",
         "//packages/platform-browser",

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,6 +14,7 @@ ng_module(
     deps = [
         "//packages:types",
         "//packages/common",
+        "//packages/common/http",
         "//packages/core",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
@@ -59,6 +60,16 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/platform-browser",
     npm_package = "angular/packages/platform-browser/npm_package",
+)
+
+api_golden_test(
+    name = "platform-browser_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/platform-browser",
+    ],
+    entry_point = "angular/packages/platform-browser/src/errors.d.ts",
+    golden = "angular/goldens/public-api/platform-browser/errors.md",
 )
 
 filegroup(

@@ -52,4 +52,4 @@ disk into the in-memory mock file-system.
 * `loadFakeCore()` - use this to load a fake version of `@angular/core`
 into the mock file-system.
 
-All ngcc and ngtsc source and tests now use this virtual file-system setup.
+All ngtsc source and tests now use this virtual file-system setup.

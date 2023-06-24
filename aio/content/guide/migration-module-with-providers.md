@@ -71,14 +71,10 @@ It should match the type of whichever `NgModule` is returned in the `ModuleWithP
 
 Libraries should add the generic type to any usages of the `ModuleWithProviders` type.
 
-## What about applications using non-migrated libraries?
-
-The [Angular compatibility compiler](guide/glossary#ngcc) \(`ngcc`\) should automatically transform any non-migrated libraries to generate the proper code.
-
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-02-16

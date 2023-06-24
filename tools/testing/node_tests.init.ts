@@ -17,7 +17,7 @@ import '@angular/compiler'; // For JIT mode. Must be in front of any other @angu
 import {TestBed} from '@angular/core/testing';
 import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing/src/server';
 import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
-import domino from 'domino';
+import domino from '../../packages/platform-server/src/bundled-domino';
 
 TestBed.initTestEnvironment(ServerTestingModule, platformServerTesting());
 DominoAdapter.makeCurrent();

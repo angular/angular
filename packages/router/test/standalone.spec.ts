@@ -10,7 +10,6 @@ import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
 
 @Component({template: '<div>simple standalone</div>', standalone: true})
 export class SimpleStandaloneComponent {
@@ -32,7 +31,7 @@ describe('standalone in Router API', () => {
   describe('loadChildren => routes', () => {
     it('can navigate to and render standalone component', fakeAsync(() => {
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([
+           imports: [RouterModule.forRoot([
              {
                path: 'lazy',
                component: RootCmp,
@@ -52,7 +51,7 @@ describe('standalone in Router API', () => {
     it('throws an error when loadChildren=>routes has a component that is not standalone',
        fakeAsync(() => {
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([
+           imports: [RouterModule.forRoot([
              {
                path: 'lazy',
                component: RootCmp,
@@ -81,7 +80,7 @@ describe('standalone in Router API', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule.withRoutes([{
+             RouterModule.forRoot([{
                path: 'simple',
                providers: [ConfigurableGuard],
                canActivate: [ConfigurableGuard],
@@ -118,8 +117,7 @@ describe('standalone in Router API', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule.withRoutes(
-                 [{path: 'home', providers: [Service], component: MyComponent}]),
+             RouterModule.forRoot([{path: 'home', providers: [Service], component: MyComponent}]),
            ],
            declarations: [MyComponent],
          });
@@ -150,7 +148,7 @@ describe('standalone in Router API', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule.withRoutes(
+             RouterModule.forRoot(
                  [{path: 'home', loadChildren: () => LazyModule, component: MyComponent}]),
            ],
            declarations: [MyComponent],
@@ -183,7 +181,7 @@ describe('standalone in Router API', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule.withRoutes([{path: 'home', loadChildren: () => LazyModule}]),
+             RouterModule.forRoot([{path: 'home', loadChildren: () => LazyModule}]),
            ],
          });
          const root = TestBed.createComponent(RootCmp);
@@ -258,7 +256,7 @@ describe('standalone in Router API', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule.withRoutes([{
+             RouterModule.forRoot([{
                path: 'home',
                // This component and guard should get Service1 since it's provided on this route
                component: ParentCmp,
@@ -299,7 +297,7 @@ describe('standalone in Router API', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{
+           imports: [RouterModule.forRoot([{
              path: 'home',
              loadComponent: loadComponentSpy,
              canActivate: [Guard],
@@ -313,7 +311,7 @@ describe('standalone in Router API', () => {
 
     it('loads and renders lazy component', fakeAsync(() => {
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{
+           imports: [RouterModule.forRoot([{
              path: 'home',
              loadComponent: () => SimpleStandaloneComponent,
            }])],
@@ -327,7 +325,7 @@ describe('standalone in Router API', () => {
 
     it('throws error when loadComponent is not standalone', fakeAsync(() => {
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{
+           imports: [RouterModule.forRoot([{
              path: 'home',
              loadComponent: () => NotStandaloneComponent,
            }])],
@@ -337,11 +335,28 @@ describe('standalone in Router API', () => {
          TestBed.inject(Router).navigateByUrl('/home');
          expect(() => advance(root)).toThrowError(/.*home.*component must be standalone/);
        }));
+
+    it('throws error when loadComponent is used with a module', fakeAsync(() => {
+         @NgModule()
+         class LazyModule {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterModule.forRoot([{
+             path: 'home',
+             loadComponent: () => LazyModule,
+           }])],
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+         TestBed.inject(Router).navigateByUrl('/home');
+         expect(() => advance(root)).toThrowError(/.*home.*Use 'loadChildren' instead/);
+       }));
   });
   describe('default export unwrapping', () => {
     it('should work for loadComponent', async () => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes([{
+        imports: [RouterModule.forRoot([{
           path: 'home',
           loadComponent: () => import('./default_export_component'),
         }])],
@@ -356,7 +371,7 @@ describe('standalone in Router API', () => {
 
     it('should work for loadChildren', async () => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes([{
+        imports: [RouterModule.forRoot([{
           path: 'home',
           loadChildren: () => import('./default_export_routes'),
         }])],
@@ -372,7 +387,7 @@ describe('standalone in Router API', () => {
 });
 
 describe('provideRoutes', () => {
-  it('warns if provideRoutes is used without provideRouter, RouterTestingModule, or RouterModule.forRoot',
+  it('warns if provideRoutes is used without provideRouter, RouterModule, or RouterModule.forRoot',
      () => {
        spyOn(console, 'warn');
        TestBed.configureTestingModule({providers: [provideRoutes([])]});

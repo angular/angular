@@ -40,7 +40,7 @@ export interface TestSupport {
 function createTestSupportFor(basePath: string) {
   // Typescript uses identity comparison on `paths` and other arrays in order to determine
   // if program structure can be reused for incremental compilation, so we reuse the default
-  // values unless overriden, and freeze them so that they can't be accidentaly changed somewhere
+  // values unless overriden, and freeze them so that they can't be accidentally changed somewhere
   // in tests.
   const defaultCompilerOptions = {
     basePath,
@@ -56,7 +56,7 @@ function createTestSupportFor(basePath: string) {
     'target': ts.ScriptTarget.ES5,
     'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
-    'moduleResolution': ts.ModuleResolutionKind.NodeJs,
+    'moduleResolution': ts.ModuleResolutionKind.Node10,
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],

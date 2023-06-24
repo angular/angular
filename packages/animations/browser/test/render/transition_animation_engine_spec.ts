@@ -116,7 +116,7 @@ describe('TransitionAnimationEngine', () => {
 
       expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
 
-      engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
+      engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
       engine.flush();
 
       expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
@@ -171,7 +171,7 @@ describe('TransitionAnimationEngine', () => {
       expect(engine.statesByElement.has(element)).toBe(true, 'Expected parent data to be defined.');
       expect(engine.statesByElement.has(child)).toBe(true, 'Expected child data to be defined.');
 
-      engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
+      engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
       engine.flush();
       engine.players[0].finish();
 

@@ -56,8 +56,8 @@ enum TranslationType {
  *
  * @returns The formatted date string.
  *
- * @see `DatePipe`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
+ * @see {@link DatePipe}
+ * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
  */

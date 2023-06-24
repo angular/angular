@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
-import {IMAGE_LOADER, ImageLoader, noopImageLoader} from './image_loaders/image_loader';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, noopImageLoader} from './image_loaders/image_loader';
 import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
 import {imgixLoaderInfo} from './image_loaders/imgix_loader';
 import {LCPImageObserver} from './lcp_image_observer';
@@ -107,7 +107,7 @@ const defaultConfig: ImageConfig = {
 /**
  * Injection token that configures the image optimized image functionality.
  *
- * @see `NgOptimizedImage`
+ * @see {@link NgOptimizedImage}
  * @publicApi
  * @developerPreview
  */
@@ -229,7 +229,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkChecker = inject(PreloadLinkCreator);
+  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
   // a LCP image observer - should be injected only in the dev mode
   private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
@@ -247,7 +247,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input() ngSrc!: string;
+  @Input({required: true}) ngSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.
@@ -272,30 +272,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * For responsive images: the intrinsic width of the image in pixels.
    * For fixed size images: the desired rendered width of the image in pixels.
    */
-  @Input()
-  set width(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZero(this, value, 'width');
-    this._width = inputToInteger(value);
-  }
-  get width(): number|undefined {
-    return this._width;
-  }
-  private _width?: number;
+  @Input({transform: numberAttribute}) width: number|undefined;
 
   /**
    * For responsive images: the intrinsic height of the image in pixels.
    * For fixed size images: the desired rendered height of the image in pixels.* The intrinsic
    * height of the image in pixels.
    */
-  @Input()
-  set height(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZero(this, value, 'height');
-    this._height = inputToInteger(value);
-  }
-  get height(): number|undefined {
-    return this._height;
-  }
-  private _height?: number;
+  @Input({transform: numberAttribute}) height: number|undefined;
 
   /**
    * The desired loading behavior (lazy, eager, or auto).
@@ -308,26 +292,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Indicates whether this image should have a high priority.
    */
-  @Input()
-  set priority(value: string|boolean|undefined) {
-    this._priority = inputToBoolean(value);
-  }
-  get priority(): boolean {
-    return this._priority;
-  }
-  private _priority = false;
+  @Input({transform: booleanAttribute}) priority = false;
+
+  /**
+   * Data to pass through to custom loaders.
+   */
+  @Input() loaderParams?: {[key: string]: any};
 
   /**
    * Disables automatic srcset generation for this image.
    */
-  @Input()
-  set disableOptimizedSrcset(value: string|boolean|undefined) {
-    this._disableOptimizedSrcset = inputToBoolean(value);
-  }
-  get disableOptimizedSrcset(): boolean {
-    return this._disableOptimizedSrcset;
-  }
-  private _disableOptimizedSrcset = false;
+  @Input({transform: booleanAttribute}) disableOptimizedSrcset = false;
 
   /**
    * Sets the image to "fill mode", which eliminates the height/width requirement and adds
@@ -335,14 +310,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    *
    * @developerPreview
    */
-  @Input()
-  set fill(value: string|boolean|undefined) {
-    this._fill = inputToBoolean(value);
-  }
-  get fill(): boolean {
-    return this._fill;
-  }
-  private _fill = false;
+  @Input({transform: booleanAttribute}) fill = false;
 
   /**
    * Value of the `src` attribute if set on the host `<img>` element.
@@ -363,6 +331,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /** @nodoc */
   ngOnInit() {
     if (ngDevMode) {
+      const ngZone = this.injector.get(NgZone);
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
       assertValidNgSrcset(this, this.ngSrcset);
       assertNoConflictingSrc(this);
@@ -373,12 +342,22 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotBlobUrl(this);
       if (this.fill) {
         assertEmptyWidthAndHeight(this);
-        assertNonZeroRenderedHeight(this, this.imgElement, this.renderer);
+        // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
+        // `load` tasks are invoked on images.
+        ngZone.runOutsideAngular(
+            () => assertNonZeroRenderedHeight(this, this.imgElement, this.renderer));
       } else {
         assertNonEmptyWidthAndHeight(this);
+        if (this.height !== undefined) {
+          assertGreaterThanZero(this, this.height, 'height');
+        }
+        if (this.width !== undefined) {
+          assertGreaterThanZero(this, this.width, 'width');
+        }
         // Only check for distorted images when not in fill mode, where
         // images may be intentionally stretched, cropped or letterboxed.
-        assertNoImageDistortion(this, this.imgElement, this.renderer);
+        ngZone.runOutsideAngular(
+            () => assertNoImageDistortion(this, this.imgElement, this.renderer));
       }
       assertValidLoadingInput(this);
       if (!this.ngSrcset) {
@@ -386,6 +365,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
+      assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -394,7 +374,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         // the `priority` attribute is missing. Otherwise, an image
         // has the necessary settings and no extra checks are required.
         if (this.lcpObserver !== null) {
-          const ngZone = this.injector.get(NgZone);
           ngZone.runOutsideAngular(() => {
             this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc);
           });
@@ -445,7 +424,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.isServer && this.priority) {
-      this.preloadLinkChecker.createPreloadLinkTag(
+      this.preloadLinkCreator.createPreloadLinkTag(
           this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
     }
   }
@@ -462,9 +441,19 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         'fill',
         'loading',
         'sizes',
+        'loaderParams',
         'disableOptimizedSrcset',
       ]);
     }
+  }
+
+  private callImageLoader(configWithoutCustomParams: Omit<ImageLoaderConfig, 'loaderParams'>):
+      string {
+    let augmentedConfig: ImageLoaderConfig = configWithoutCustomParams;
+    if (this.loaderParams) {
+      augmentedConfig.loaderParams = this.loaderParams;
+    }
+    return this.imageLoader(augmentedConfig);
   }
 
   private getLoadingBehavior(): string {
@@ -485,7 +474,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     if (!this._renderedSrc) {
       const imgConfig = {src: this.ngSrc};
       // Cache calculated image src to reuse it later in the code.
-      this._renderedSrc = this.imageLoader(imgConfig);
+      this._renderedSrc = this.callImageLoader(imgConfig);
     }
     return this._renderedSrc;
   }
@@ -495,7 +484,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const finalSrcs = this.ngSrcset.split(',').filter(src => src !== '').map(srcStr => {
       srcStr = srcStr.trim();
       const width = widthSrcSet ? parseFloat(srcStr) : parseFloat(srcStr) * this.width!;
-      return `${this.imageLoader({src: this.ngSrc, width})} ${srcStr}`;
+      return `${this.callImageLoader({src: this.ngSrc, width})} ${srcStr}`;
     });
     return finalSrcs.join(', ');
   }
@@ -518,20 +507,21 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       filteredBreakpoints = breakpoints!.filter(bp => bp >= VIEWPORT_BREAKPOINT_CUTOFF);
     }
 
-    const finalSrcs =
-        filteredBreakpoints.map(bp => `${this.imageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
+    const finalSrcs = filteredBreakpoints.map(
+        bp => `${this.callImageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
     return finalSrcs.join(', ');
   }
 
   private getFixedSrcset(): string {
-    const finalSrcs = DENSITY_SRCSET_MULTIPLIERS.map(
-        multiplier => `${this.imageLoader({src: this.ngSrc, width: this.width! * multiplier})} ${
-            multiplier}x`);
+    const finalSrcs = DENSITY_SRCSET_MULTIPLIERS.map(multiplier => `${this.callImageLoader({
+                                                       src: this.ngSrc,
+                                                       width: this.width! * multiplier
+                                                     })} ${multiplier}x`);
     return finalSrcs.join(', ');
   }
 
   private shouldGenerateAutomaticSrcset(): boolean {
-    return !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
+    return !this.disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
         !(this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT);
   }
 
@@ -550,20 +540,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 }
 
 /***** Helpers *****/
-
-/**
- * Convert input value to integer.
- */
-function inputToInteger(value: string|number|undefined): number|undefined {
-  return typeof value === 'string' ? parseInt(value, 10) : value;
-}
-
-/**
- * Convert input value to boolean.
- */
-function inputToBoolean(value: unknown): boolean {
-  return value != null && `${value}` !== 'false';
-}
 
 /**
  * Sorts provided config breakpoints and uses defaults.
@@ -761,9 +737,8 @@ function assertGreaterThanZero(dir: NgOptimizedImage, inputValue: unknown, input
   if (!validNumber && !validString) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` has an invalid value ` +
-            `(\`${inputValue}\`). To fix this, provide \`${inputName}\` ` +
-            `as a number greater than 0.`);
+        `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` has an invalid value. ` +
+            `To fix this, provide \`${inputName}\` as a number greater than 0.`);
   }
 }
 
@@ -776,8 +751,20 @@ function assertNoImageDistortion(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    const renderedWidth = img.clientWidth;
-    const renderedHeight = img.clientHeight;
+    const computedStyle = window.getComputedStyle(img);
+    let renderedWidth = parseFloat(computedStyle.getPropertyValue('width'));
+    let renderedHeight = parseFloat(computedStyle.getPropertyValue('height'));
+    const boxSizing = computedStyle.getPropertyValue('box-sizing');
+
+    if (boxSizing === 'border-box') {
+      const paddingTop = computedStyle.getPropertyValue('padding-top');
+      const paddingRight = computedStyle.getPropertyValue('padding-right');
+      const paddingBottom = computedStyle.getPropertyValue('padding-bottom');
+      const paddingLeft = computedStyle.getPropertyValue('padding-left');
+      renderedWidth -= parseFloat(paddingRight) + parseFloat(paddingLeft);
+      renderedHeight -= parseFloat(paddingTop) + parseFloat(paddingBottom);
+    }
+
     const renderedAspectRatio = renderedWidth / renderedHeight;
     const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
 
@@ -805,8 +792,10 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the image does not match ` +
               `the aspect ratio indicated by the width and height attributes. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nSupplied width and height attributes: ` +
-              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
+              `(aspect-ratio: ${
+                  round(intrinsicAspectRatio)}). \nSupplied width and height attributes: ` +
+              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${
+                  round(suppliedAspectRatio)}). ` +
               `\nTo fix this, update the width and height attributes.`));
     } else if (stylingDistortion) {
       console.warn(formatRuntimeError(
@@ -814,9 +803,9 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the rendered image ` +
               `does not match the image's intrinsic aspect ratio. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nRendered image size: ` +
+              `(aspect-ratio: ${round(intrinsicAspectRatio)}). \nRendered image size: ` +
               `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
-              `${renderedAspectRatio}). \nThis issue can occur if "width" and "height" ` +
+              `${round(renderedAspectRatio)}). \nThis issue can occur if "width" and "height" ` +
               `attributes are added to an image without updating the corresponding ` +
               `image styling. To fix this, adjust image styling. In most cases, ` +
               `adding "height: auto" or "width: auto" to the image styling will fix ` +
@@ -961,10 +950,30 @@ function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) 
 function assertNoNgSrcsetWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
   if (dir.ngSrcset && imageLoader === noopImageLoader) {
     console.warn(formatRuntimeError(
-        RuntimeErrorCode.NGSRCSET_WITHOUT_LOADER,
+        RuntimeErrorCode.MISSING_NECESSARY_LOADER,
         `${imgDirectiveDetails(dir.ngSrc)} the \`ngSrcset\` attribute is present but ` +
             `no image loader is configured (i.e. the default one is being used), ` +
             `which would result in the same image being used for all configured sizes. ` +
             `To fix this, provide a loader or remove the \`ngSrcset\` attribute from the image.`));
   }
+}
+
+/**
+ * Warns if loaderParams is present and no loader is configured (i.e. the default one is being
+ * used).
+ */
+function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  if (dir.loaderParams && imageLoader === noopImageLoader) {
+    console.warn(formatRuntimeError(
+        RuntimeErrorCode.MISSING_NECESSARY_LOADER,
+        `${imgDirectiveDetails(dir.ngSrc)} the \`loaderParams\` attribute is present but ` +
+            `no image loader is configured (i.e. the default one is being used), ` +
+            `which means that the loaderParams data will not be consumed and will not affect the URL. ` +
+            `To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
+  }
+}
+
+
+function round(input: number): number|string {
+  return Number.isInteger(input) ? input : input.toFixed(2);
 }

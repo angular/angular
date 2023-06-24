@@ -83,13 +83,7 @@ export class HttpClientXsrfModule {
    * with supporting services for HTTP communications.
    */
   providers: [
-    provideHttpClient(
-        withInterceptorsFromDi(),
-        withXsrfConfiguration({
-          cookieName: XSRF_DEFAULT_COOKIE_NAME,
-          headerName: XSRF_DEFAULT_HEADER_NAME,
-        }),
-        ),
+    provideHttpClient(withInterceptorsFromDi()),
   ],
 })
 export class HttpClientModule {

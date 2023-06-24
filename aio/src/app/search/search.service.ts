@@ -1,8 +1,8 @@
-import { NgZone, Injectable } from '@angular/core';
-import { ConnectableObservable, Observable, race, ReplaySubject, timer } from 'rxjs';
-import { concatMap, first, publishReplay } from 'rxjs/operators';
-import { WebWorkerClient } from 'app/shared/web-worker';
-import { SearchResults } from 'app/search/interfaces';
+import {NgZone, Injectable} from '@angular/core';
+import {connectable, Observable, race, ReplaySubject, timer} from 'rxjs';
+import {concatMap, first} from 'rxjs/operators';
+import {WebWorkerClient} from 'app/shared/web-worker';
+import {SearchResults} from 'app/search/interfaces';
 
 @Injectable()
 export class SearchService {
@@ -20,22 +20,23 @@ export class SearchService {
    */
   initWorker(initDelay: number) {
     // Wait for the initDelay or the first search
-    const ready = this.ready = race<any>(
-        timer(initDelay),
-        this.searchesSubject.asObservable().pipe(first()),
-      )
-      .pipe(
-        concatMap(() => {
-          // Create the worker and load the index
-          const worker = new Worker(new URL('./search.worker', import.meta.url), { type: 'module' });
-          this.worker = WebWorkerClient.create(worker, this.zone);
-          return this.worker.sendMessage<boolean>('load-index');
-        }),
-        publishReplay(1),
-      );
+    const readySource = (this.ready = race(
+      timer(initDelay),
+      this.searchesSubject.asObservable().pipe(first())
+    ).pipe(
+      concatMap(() => {
+        // Create the worker and load the index
+        const worker = new Worker(new URL('./search.worker', import.meta.url), {type: 'module'});
+        this.worker = WebWorkerClient.create(worker, this.zone);
+        return this.worker.sendMessage<boolean>('load-index');
+      })
+    ));
+    const ready = connectable(readySource, {
+      connector: () => new ReplaySubject(1),
+    });
 
     // Connect to the observable to kick off the timer
-    (ready as ConnectableObservable<boolean>).connect();
+    ready.connect();
     return ready;
   }
 
@@ -49,6 +50,8 @@ export class SearchService {
     // Trigger the searches subject to override the init delay timer
     this.searchesSubject.next(query);
     // Once the index has loaded, switch to listening to the searches coming in.
-    return this.ready.pipe(concatMap(() => this.worker.sendMessage<SearchResults>('query-index', query)));
+    return this.ready.pipe(
+      concatMap(() => this.worker.sendMessage<SearchResults>('query-index', query))
+    );
   }
 }

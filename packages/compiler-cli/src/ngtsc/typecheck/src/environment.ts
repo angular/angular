@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpressionType, ExternalExpr, Type, TypeModifier} from '@angular/compiler';
+import {ExpressionType, ExternalExpr, TransplantedType, Type, TypeModifier} from '@angular/compiler';
 import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
@@ -77,8 +77,7 @@ export class Environment implements ReferenceEmitEnvironment {
         fnName,
         body: true,
         fields: {
-          inputs: dir.inputs.classPropertyNames,
-          outputs: dir.outputs.classPropertyNames,
+          inputs: dir.inputs,
           // TODO: support queries
           queries: dir.queries,
         },
@@ -149,7 +148,9 @@ export class Environment implements ReferenceEmitEnvironment {
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
-    return translateType(new ExpressionType(ngExpr.expression), this.importManager);
+    return translateType(
+        new ExpressionType(ngExpr.expression), this.contextFile, this.reflector, this.refEmitter,
+        this.importManager);
   }
 
   private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
@@ -167,8 +168,18 @@ export class Environment implements ReferenceEmitEnvironment {
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
     return translateType(
-        new ExpressionType(external, /* modifiers */ TypeModifier.None, typeParams),
-        this.importManager);
+        new ExpressionType(external, TypeModifier.None, typeParams), this.contextFile,
+        this.reflector, this.refEmitter, this.importManager);
+  }
+
+  /**
+   * Generates a `ts.TypeNode` representing a type that is being referenced from a different place
+   * in the program. Any type references inside the transplanted type will be rewritten so that
+   * they can be imported in the context fiel.
+   */
+  referenceTransplantedType(type: TransplantedType<ts.TypeNode>): ts.TypeNode {
+    return translateType(
+        type, this.contextFile, this.reflector, this.refEmitter, this.importManager);
   }
 
   getPreludeStatements(): ts.Statement[] {

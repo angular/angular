@@ -24,34 +24,6 @@ describe('NgModule', () => {
   class TestCmp2 {
   }
 
-  describe('entryComponents', () => {
-    it('should throw when specified entry component is not added to a module', () => {
-      @NgModule({entryComponents: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
-
-      TestBed.configureTestingModule({imports: [MyModule]});
-
-      expect(() => {
-        TestBed.createComponent(TestCmp);
-        TestBed.createComponent(TestCmp2);
-      }).toThrowError(/not part of any NgModule/);
-    });
-
-    it('should not throw when specified entry component is added to a module', () => {
-      @NgModule({declarations: [TestCmp, TestCmp2], entryComponents: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
-
-      TestBed.configureTestingModule({imports: [MyModule]});
-
-      expect(() => {
-        TestBed.createComponent(TestCmp);
-        TestBed.createComponent(TestCmp2);
-      }).not.toThrow();
-    });
-  });
-
   describe('bootstrap', () => {
     it('should throw when specified bootstrap component is not added to a module', () => {
       @NgModule({bootstrap: [TestCmp, [TestCmp2]]})
@@ -1000,13 +972,13 @@ describe('NgModule', () => {
 
       // Simple case, just passing NgModule class.
       const ngModuleRef = createNgModule(AppModule);
-      expect(ngModuleRef).toBeAnInstanceOf(NgModuleRef);
+      expect(ngModuleRef).toBeInstanceOf(NgModuleRef);
       expect(ngModuleRef.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef.injector.get(TOKEN_B, null)).toBe(null);
 
       // Both NgModule and parent Injector are present.
       const ngModuleRef2 = createNgModule(ChildModule, ngModuleRef.injector /* parent injector */);
-      expect(ngModuleRef2).toBeAnInstanceOf(NgModuleRef);
+      expect(ngModuleRef2).toBeInstanceOf(NgModuleRef);
       expect(ngModuleRef2.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef2.injector.get(TOKEN_B)).toBe('TokenValueB');
     });
@@ -1050,6 +1022,6 @@ describe('NgModule', () => {
 
        TestBed.configureTestingModule({imports: [MyModule]});
        TestBed.createComponent(TestCmp);
-       expect(componentInstance).toBeAnInstanceOf(TestCmp);
+       expect(componentInstance).toBeInstanceOf(TestCmp);
      });
 });

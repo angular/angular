@@ -282,7 +282,7 @@ describe('instructions', () => {
   });
 
   describe('performance counters', () => {
-    it('should create tViews only once for each nested level', () => {
+    it('should create tView only once for each nested level', () => {
       @Component({
         selector: 'nested-loops',
         standalone: true,
@@ -512,7 +512,7 @@ class LocalSanitizedValue {
 }
 
 class LocalMockSanitizer implements Sanitizer {
-  // TODO(issue/24571): remove '!'.
+  // using a non-null assertion because it's (re)set by sanitize()
   public lastSanitizedValue!: string|null;
 
   constructor(private _interceptor: (value: string|null|any) => string) {}

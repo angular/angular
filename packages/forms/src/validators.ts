@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵisPromise as isPromise, ɵisSubscribable as isSubscribable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -14,7 +14,6 @@ import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, Validator
 import {RuntimeErrorCode} from './errors';
 import {AbstractControl} from './model/abstract_model';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function isEmptyInputValue(value: any): boolean {
   /**
@@ -36,7 +35,7 @@ function hasValidLength(value: any): boolean {
  * An `InjectionToken` for registering additional synchronous validators used with
  * `AbstractControl`s.
  *
- * @see `NG_ASYNC_VALIDATORS`
+ * @see {@link NG_ASYNC_VALIDATORS}
  *
  * @usageNotes
  *
@@ -66,7 +65,7 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  * An `InjectionToken` for registering additional asynchronous validators used with
  * `AbstractControl`s.
  *
- * @see `NG_VALIDATORS`
+ * @see {@link NG_VALIDATORS}
  *
  * @usageNotes
  *
@@ -155,7 +154,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static min(min: number): ValidatorFn {
@@ -179,7 +178,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static max(max: number): ValidatorFn {
@@ -203,7 +202,7 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static required(control: AbstractControl): ValidationErrors|null {
@@ -228,7 +227,7 @@ export class Validators {
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
@@ -268,7 +267,7 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static email(control: AbstractControl): ValidationErrors|null {
@@ -302,7 +301,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `minlength` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static minLength(minLength: number): ValidatorFn {
@@ -333,7 +332,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
@@ -386,7 +385,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
@@ -397,7 +396,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors|null {
@@ -412,7 +411,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static compose(validators: null): null;
@@ -429,7 +428,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
@@ -572,7 +571,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(value: any): Observable<any> {
   const obs = isPromise(value) ? from(value) : value;
-  if (NG_DEV_MODE && !(isObservable(obs))) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !(isSubscribable(obs))) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {
@@ -586,9 +585,6 @@ export function toObservable(value: any): Observable<any> {
 
 function mergeErrors(arrayOfErrors: (ValidationErrors|null)[]): ValidationErrors|null {
   let res: {[key: string]: any} = {};
-
-  // Not using Array.reduce here due to a Chrome 80 bug
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
   arrayOfErrors.forEach((errors: ValidationErrors|null) => {
     res = errors != null ? {...res!, ...errors} : res!;
   });

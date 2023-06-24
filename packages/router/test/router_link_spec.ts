@@ -9,8 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+import {Router, RouterLink, RouterModule} from '@angular/router';
 
 describe('RouterLink', () => {
   it('does not modify tabindex if already set on non-anchor element', () => {
@@ -18,7 +17,8 @@ describe('RouterLink', () => {
     class LinkComponent {
       link: string|null|undefined = '/';
     }
-    TestBed.configureTestingModule({imports: [RouterTestingModule], declarations: [LinkComponent]});
+    TestBed.configureTestingModule(
+        {imports: [RouterModule.forRoot([])], declarations: [LinkComponent]});
     const fixture = TestBed.createComponent(LinkComponent);
     fixture.detectChanges();
     const link = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -30,9 +30,20 @@ describe('RouterLink', () => {
   });
 
   describe('on a non-anchor', () => {
-    @Component({template: `<div [routerLink]="link"></div>`})
+    @Component({
+      template: `
+        <div
+          [routerLink]="link"
+          [preserveFragment]="preserveFragment"
+          [skipLocationChange]="skipLocationChange"
+          [replaceUrl]="replaceUrl"></div>
+      `
+    })
     class LinkComponent {
       link: string|null|undefined = '/';
+      preserveFragment: unknown;
+      skipLocationChange: unknown;
+      replaceUrl: unknown;
     }
     let fixture: ComponentFixture<LinkComponent>;
     let link: HTMLDivElement;
@@ -40,7 +51,7 @@ describe('RouterLink', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
+        imports: [RouterModule.forRoot([])],
         declarations: [LinkComponent],
       });
       fixture = TestBed.createComponent(LinkComponent);
@@ -76,18 +87,20 @@ describe('RouterLink', () => {
       const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
 
       for (const truthy of [true, '', 'true', 'anything']) {
-        dir.preserveFragment = truthy;
-        dir.skipLocationChange = truthy;
-        dir.replaceUrl = truthy;
+        fixture.componentInstance.preserveFragment = truthy;
+        fixture.componentInstance.skipLocationChange = truthy;
+        fixture.componentInstance.replaceUrl = truthy;
+        fixture.detectChanges();
         expect(dir.preserveFragment).toBeTrue();
         expect(dir.skipLocationChange).toBeTrue();
         expect(dir.replaceUrl).toBeTrue();
       }
 
       for (const falsy of [false, null, undefined, 'false']) {
-        dir.preserveFragment = falsy;
-        dir.skipLocationChange = falsy;
-        dir.replaceUrl = falsy;
+        fixture.componentInstance.preserveFragment = falsy;
+        fixture.componentInstance.skipLocationChange = falsy;
+        fixture.componentInstance.replaceUrl = falsy;
+        fixture.detectChanges();
         expect(dir.preserveFragment).toBeFalse();
         expect(dir.skipLocationChange).toBeFalse();
         expect(dir.replaceUrl).toBeFalse();
@@ -97,16 +110,27 @@ describe('RouterLink', () => {
 
   describe('on an anchor', () => {
     describe('RouterLink for elements with `href` attributes', () => {
-      @Component({template: `<a [routerLink]="link"></a>`})
+      @Component({
+        template: `
+          <a
+            [routerLink]="link"
+            [preserveFragment]="preserveFragment"
+            [skipLocationChange]="skipLocationChange"
+            [replaceUrl]="replaceUrl"></a>
+        `
+      })
       class LinkComponent {
         link: string|null|undefined = '/';
+        preserveFragment: unknown;
+        skipLocationChange: unknown;
+        replaceUrl: unknown;
       }
       let fixture: ComponentFixture<LinkComponent>;
       let link: HTMLAnchorElement;
 
       beforeEach(() => {
         TestBed.configureTestingModule({
-          imports: [RouterTestingModule],
+          imports: [RouterModule.forRoot([])],
           declarations: [LinkComponent],
         });
         fixture = TestBed.createComponent(LinkComponent);
@@ -132,18 +156,20 @@ describe('RouterLink', () => {
         const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
 
         for (const truthy of [true, '', 'true', 'anything']) {
-          dir.preserveFragment = truthy;
-          dir.skipLocationChange = truthy;
-          dir.replaceUrl = truthy;
+          fixture.componentInstance.preserveFragment = truthy;
+          fixture.componentInstance.skipLocationChange = truthy;
+          fixture.componentInstance.replaceUrl = truthy;
+          fixture.detectChanges();
           expect(dir.preserveFragment).toBeTrue();
           expect(dir.skipLocationChange).toBeTrue();
           expect(dir.replaceUrl).toBeTrue();
         }
 
         for (const falsy of [false, null, undefined, 'false']) {
-          dir.preserveFragment = falsy;
-          dir.skipLocationChange = falsy;
-          dir.replaceUrl = falsy;
+          fixture.componentInstance.preserveFragment = falsy;
+          fixture.componentInstance.skipLocationChange = falsy;
+          fixture.componentInstance.replaceUrl = falsy;
+          fixture.detectChanges();
           expect(dir.preserveFragment).toBeFalse();
           expect(dir.skipLocationChange).toBeFalse();
           expect(dir.replaceUrl).toBeFalse();
@@ -157,7 +183,7 @@ describe('RouterLink', () => {
       }
 
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
+        imports: [RouterModule.forRoot([])],
         declarations: [LinkComponent],
       });
       const fixture = TestBed.createComponent(LinkComponent);

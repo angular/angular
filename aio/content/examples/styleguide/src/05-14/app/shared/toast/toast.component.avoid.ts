@@ -20,7 +20,7 @@ export class ToastComponent implements OnInit {
   // private methods
   private hide() {
     this.toastElement.style.opacity = 0;
-    window.setTimeout(() => this.toastElement.style.zIndex = 0, 400);
+    setTimeout(() => this.toastElement.style.zIndex = 0, 400);
   }
 
   activate(message = this.defaults.message, title = this.defaults.title) {
@@ -34,7 +34,7 @@ export class ToastComponent implements OnInit {
     this.toastElement.style.opacity = 1;
     this.toastElement.style.zIndex = 9999;
 
-    window.setTimeout(() => this.hide(), 2500);
+    setTimeout(() => this.hide(), 2500);
   }
 }
 // #enddocregion example

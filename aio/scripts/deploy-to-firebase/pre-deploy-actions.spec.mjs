@@ -164,6 +164,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
   describe('undo.checkPayloadSize()', () => {
     // This method is a no-op, so there is nothing to test.
+    // eslint-disable-next-line jasmine/expect-single-argument
     it('does not need tests', () => expect().nothing());
   });
 

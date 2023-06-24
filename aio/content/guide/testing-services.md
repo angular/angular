@@ -129,7 +129,7 @@ Although this testing guide follows the traditional style and the default [CLI s
 
 ## Testing HTTP services
 
-Data services that make HTTP calls to remote servers typically inject and delegate to the Angular [`HttpClient`](guide/http) service for XHR calls.
+Data services that make HTTP calls to remote servers typically inject and delegate to the Angular [`HttpClient`](guide/http-test-requests) service for XHR calls.
 
 You can test a data service with an injected `HttpClient` spy as you would test any service with a dependency.
 
@@ -152,7 +152,7 @@ Extended interactions between a data service and the `HttpClient` can be complex
 
 The `HttpClientTestingModule` can make these testing scenarios more manageable.
 
-While the *code sample* accompanying this guide demonstrates `HttpClientTestingModule`, this page defers to the [Http guide](guide/http#testing-http-requests), which covers testing with the `HttpClientTestingModule` in detail.
+While the *code sample* accompanying this guide demonstrates `HttpClientTestingModule`, this page defers to the [Http guide](guide/http-test-requests), which covers testing with the `HttpClientTestingModule` in detail.
 
 <!-- links -->
 

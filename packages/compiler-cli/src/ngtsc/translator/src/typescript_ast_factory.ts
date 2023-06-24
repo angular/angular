@@ -7,8 +7,6 @@
  */
 import ts from 'typescript';
 
-import {createFunctionDeclaration, createParameterDeclaration} from '../../ts_compatibility';
-
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
 
 /**
@@ -110,10 +108,10 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
     }
-    return createFunctionDeclaration(
+    return ts.factory.createFunctionDeclaration(
         undefined, undefined, functionName, undefined,
-        parameters.map(param => createParameterDeclaration(undefined, undefined, param)), undefined,
-        body);
+        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+        undefined, body);
   }
 
   createFunctionExpression(functionName: string|null, parameters: string[], body: ts.Statement):
@@ -123,8 +121,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     }
     return ts.factory.createFunctionExpression(
         undefined, undefined, functionName ?? undefined, undefined,
-        parameters.map(param => createParameterDeclaration(undefined, undefined, param)), undefined,
-        body);
+        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+        undefined, body);
   }
 
   createIdentifier = ts.factory.createIdentifier;

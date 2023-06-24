@@ -83,7 +83,7 @@
   {%- if method.name !== 'constructor' %}
   <thead><tr><th>
     <div class="with-github-links">
-      <h3>
+      <h3 {% if method.deprecated %} class="deprecated-api-item"{% endif %}>
         {%- if method.isCallMember %}<i>call signature</i>
         {%- elseif method.isNewMember %}<i>construct signature</i>
         {%- else %}{$ method.name $}()
@@ -93,6 +93,9 @@
       <label class="api-status-label dev-preview" title="This API is in Developer Preview">
         <a href="guide/releases#developer-preview">developer preview</a>
       </label>
+      {% endif %}
+      {%- if method.deprecated %}
+      <label class="api-status-label deprecated" title="This API is deprecated">Deprecated</label>
       {% endif %}
       {$ github.githubLinks(method, versionInfo) $}
     </div>
@@ -230,6 +233,9 @@
           <label class="api-status-label dev-preview" title="This API is in Developer Preview">
             <a href="guide/releases#developer-preview">developer preview</a>
           </label>
+          {% endif %}
+          {%- if property.deprecated %}
+          <label class="api-status-label deprecated" title="This API is deprecated">Deprecated</label>
           {% endif %}
 
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}

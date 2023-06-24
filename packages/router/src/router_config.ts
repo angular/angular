@@ -11,7 +11,6 @@ import {InjectionToken} from '@angular/core';
 import {OnSameUrlNavigation} from './models';
 import {UrlSerializer, UrlTree} from './url_tree';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -40,7 +39,7 @@ export type ErrorHandler = (error: any) => any;
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * @see `forRoot()`
+ * @see {@link forRoot()}
  *
  * @publicApi
  */
@@ -80,7 +79,7 @@ export interface RouterConfigOptions {
    *
    * If unset, the `Router` will use `'ignore'`.
    *
-   * @see `OnSameUrlNavigation`
+   * @see {@link OnSameUrlNavigation}
    */
   onSameUrlNavigation?: OnSameUrlNavigation;
 
@@ -167,7 +166,7 @@ export interface InMemoryScrollingOptions {
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see `forRoot()`
+ * @see {@link forRoot()}
  *
  *
  * @publicApi
@@ -197,6 +196,12 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * starts its initial navigation due to some complex initialization logic.
    */
   initialNavigation?: InitialNavigation;
+
+  /**
+   * When true, enables binding information from the `Router` state directly to the inputs of the
+   * component in `Route` configurations.
+   */
+  bindToComponentInputs?: boolean;
 
   /**
    * A custom error handler for failed navigations.
@@ -244,8 +249,8 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION =
-    new InjectionToken<ExtraOptions>(NG_DEV_MODE ? 'router config' : '', {
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router config' : '', {
       providedIn: 'root',
       factory: () => ({}),
     });

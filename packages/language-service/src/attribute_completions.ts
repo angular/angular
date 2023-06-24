@@ -220,16 +220,16 @@ export function buildAttributeCompletionTable(
         continue;
       }
 
-      for (const [classPropertyName, rawProperyName] of meta.inputs) {
+      for (const {classPropertyName, bindingPropertyName} of meta.inputs) {
         let propertyName: string;
 
         if (dirSymbol.isHostDirective) {
-          if (!dirSymbol.exposedInputs?.hasOwnProperty(rawProperyName)) {
+          if (!dirSymbol.exposedInputs?.hasOwnProperty(bindingPropertyName)) {
             continue;
           }
-          propertyName = dirSymbol.exposedInputs[rawProperyName];
+          propertyName = dirSymbol.exposedInputs[bindingPropertyName];
         } else {
-          propertyName = rawProperyName;
+          propertyName = bindingPropertyName;
         }
 
         if (table.has(propertyName)) {
@@ -245,16 +245,16 @@ export function buildAttributeCompletionTable(
         });
       }
 
-      for (const [classPropertyName, rawProperyName] of meta.outputs) {
+      for (const {classPropertyName, bindingPropertyName} of meta.outputs) {
         let propertyName: string;
 
         if (dirSymbol.isHostDirective) {
-          if (!dirSymbol.exposedOutputs?.hasOwnProperty(rawProperyName)) {
+          if (!dirSymbol.exposedOutputs?.hasOwnProperty(bindingPropertyName)) {
             continue;
           }
-          propertyName = dirSymbol.exposedOutputs[rawProperyName];
+          propertyName = dirSymbol.exposedOutputs[bindingPropertyName];
         } else {
-          propertyName = rawProperyName;
+          propertyName = bindingPropertyName;
         }
 
         if (table.has(propertyName)) {

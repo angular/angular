@@ -1,0 +1,48 @@
+@use 'sass:map';
+@use 'external/npm/node_modules/@angular/material/index' as mat;
+@include mat.all-legacy-component-typographies();
+@include mat.legacy-core();
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+// Light theme
+$light-primary: mat.define-palette(mat.$grey-palette, 700, 200);
+$light-accent: mat.define-palette(mat.$blue-palette, 800);
+$light-theme: mat.define-light-theme($light-primary, $light-accent);
+
+// Dark theme
+$dark-primary: mat.define-palette(mat.$blue-grey-palette, 50);
+$dark-accent: mat.define-palette(mat.$blue-palette, 200);
+$dark-theme: map.deep-merge(
+  mat.define-dark-theme($dark-primary, $dark-accent),
+  (
+    'color': (
+      'background': (
+        background: #202124,
+        card: #202124,
+      ),
+      'foreground': (
+        text: #bcc5ce,
+      ),
+    ),
+    'background': (
+      background: #202124,
+      card: #202124,
+    ),
+    'foreground': (
+      'text': #bcc5ce,
+    ),
+  )
+);
+
+.light-theme {
+  @include mat.all-legacy-component-themes($light-theme);
+}
+
+.dark-theme {
+  @include mat.all-legacy-component-themes($dark-theme);
+}

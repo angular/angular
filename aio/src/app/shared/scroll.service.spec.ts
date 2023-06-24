@@ -192,7 +192,7 @@ describe('ScrollService', () => {
 
     it('should return `<body>` if unable to find the top-of-page element', () => {
       (document.getElementById as jasmine.Spy).and.returnValue(null);
-      expect(scrollService.topOfPageElement).toBe(document.body as any);
+      expect(scrollService.topOfPageElement).toBe(document.body);
     });
   });
 
@@ -274,14 +274,14 @@ describe('ScrollService', () => {
     it('should scroll all the way to the top if close enough', () => {
       const element: HTMLElement = new MockElement() as any;
 
-      (window as any).pageYOffset = 25;
+      window.scrollY = 25;
       scrollService.scrollToElement(element);
 
       expect(element.scrollIntoView).toHaveBeenCalled();
       expect(window.scrollBy).toHaveBeenCalledWith(0, -scrollService.topOffset);
       (window.scrollBy as jasmine.Spy).calls.reset();
 
-      (window as any).pageYOffset = 15;
+      window.scrollY = 15;
       scrollService.scrollToElement(element);
 
       expect(element.scrollIntoView).toHaveBeenCalled();
@@ -297,7 +297,7 @@ describe('ScrollService', () => {
 
   describe('#scrollToTop', () => {
     it('should scroll to top', () => {
-      const topOfPageElement = new MockElement() as any as Element;
+      const topOfPageElement = new MockElement();
       document.getElementById.and.callFake(
           (id: string) => id === 'top-of-page' ? topOfPageElement : null);
 

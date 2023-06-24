@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import ts from 'typescript';
+
 import {LanguageServiceTestEnv} from './env';
 import {Project, ProjectFiles, TestableOptions} from './project';
 
@@ -47,7 +49,7 @@ function getFirstClassDeclaration(declaration: string) {
 
 export function createModuleAndProjectWithDeclarations(
     env: LanguageServiceTestEnv, projectName: string, projectFiles: ProjectFiles,
-    options: TestableOptions = {}, standaloneFiles: ProjectFiles = {}): Project {
+    angularCompilerOptions: TestableOptions = {}, standaloneFiles: ProjectFiles = {}): Project {
   const externalClasses: string[] = [];
   const externalImports: string[] = [];
   for (const [fileName, fileContents] of Object.entries(projectFiles)) {
@@ -70,7 +72,7 @@ export function createModuleAndProjectWithDeclarations(
         export class AppModule {}
       `;
   projectFiles['app-module.ts'] = moduleContents;
-  return env.addProject(projectName, {...projectFiles, ...standaloneFiles}, options);
+  return env.addProject(projectName, {...projectFiles, ...standaloneFiles}, angularCompilerOptions);
 }
 
 export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(

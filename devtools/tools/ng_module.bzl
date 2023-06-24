@@ -4,7 +4,6 @@ def ng_module(name, tsconfig = "//devtools:tsconfig.json", srcs = [], angular_as
     _ng_module(
         name = name,
         tsconfig = tsconfig,
-        generate_ve_shims = False,
         srcs = srcs,
         assets = angular_assets,
         **kwargs

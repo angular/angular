@@ -42,7 +42,7 @@ import {Injector, MeasureValues, Metric, Options, Reporter, Sampler, Validator, 
         providers.push({provide: Options.PREPARE, useValue: prepare});
       }
 
-      sampler = Injector.create(providers).get(Sampler);
+      sampler = Injector.create({providers}).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor', done => {

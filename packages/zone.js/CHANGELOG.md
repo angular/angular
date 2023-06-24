@@ -1,33 +1,57 @@
-# [0.12.0](https://github.com/angular/angular/compare/zone.js-0.11.8...zone.js-0.12.0) (2022-10-27)
+## [v0.13.1](https://github.com/angular/angular/compare/zone.js-0.13.0...zone.js-v0.13.1) (2023-06-09)
 
 
 ### Bug Fixes
 
-* **zone.js:** cancel tasks only when they are scheduled or running ([#46435](https://github.com/angular/angular/issues/46435)) ([b618b5a](https://github.com/angular/angular/commit/b618b5aa86138c900055c5496967e3348a7b98fc)), closes [#45711](https://github.com/angular/angular/issues/45711)
-* **zone.js:** Fix ConsoleTask interface typo ([#47090](https://github.com/angular/angular/issues/47090)) ([91954cf](https://github.com/angular/angular/commit/91954cf20e17a386d71cc8ea25d1d17b9ae1e31c))
-
-
-
-## [0.11.8](https://github.com/angular/angular/compare/zone.js-0.11.7...zone.js-0.11.8) (2022-08-08)
+* **zone.js:** enable monkey patching of the `queueMicrotask()` API in node.js ([#50467](https://github.com/angular/angular/issues/50467)) ([381cb98](https://github.com/angular/angular/commit/381cb982264d30e8c79e77e9186acd6da006e718))
+* **zone.js:** enable monkey patching of the `queueMicrotask()` API in node.js ([#50530](https://github.com/angular/angular/issues/50530)) ([7837f71](https://github.com/angular/angular/commit/7837f7119f8cdfb0ae95551f48608f156985113a))
+* **zone.js:** patch entire promise in node ([#50552](https://github.com/angular/angular/issues/50552)) ([cb31dbc](https://github.com/angular/angular/commit/cb31dbc75ca4141d61cec3ba6e60505198208a0a)), closes [#50513](https://github.com/angular/angular/issues/50513) [#50457](https://github.com/angular/angular/issues/50457) [#50414](https://github.com/angular/angular/issues/50414) [#49930](https://github.com/angular/angular/issues/49930)
+* **zone.js:** revert Mocha it.skip, describe.skip method patch ([#49329](https://github.com/angular/angular/issues/49329)) ([5a2b622](https://github.com/angular/angular/commit/5a2b6227b30a4d3f2090077e8881c753db00798c))
 
 
 ### Features
 
-* **zone.js:** Update to the simpler Async Stack Tagging v2 API ([#46958](https://github.com/angular/angular/issues/46958)) ([f23232f](https://github.com/angular/angular/commit/f23232ff66559ddc28aec26d461355568c25530d))
+* **zone.js:** jest 29 should ignore uncaught error console log ([#49325](https://github.com/angular/angular/issues/49325)) ([bc412fd](https://github.com/angular/angular/commit/bc412fd537f965b20dce69232ef66f152962dc06)), closes [#49110](https://github.com/angular/angular/issues/49110)
 
 
+### Reverts
+
+* Revert "fix(zone.js): enable monkey patching of the `queueMicrotask()` API in node.js (#50467)" (#50529) ([7567348](https://github.com/angular/angular/commit/7567348c54917b2f881d6c68d45f7c15d101954b)), closes [#50467](https://github.com/angular/angular/issues/50467) [#50529](https://github.com/angular/angular/issues/50529) [#50529](https://github.com/angular/angular/issues/50529)
+
+
+
+# [0.13](https://github.com/angular/angular/compare/zone.js-0.12.0...zone.js-0.13) (2023-02-28)
+
+### Bug Fixes
+
+- **zone.js:** cancel tasks only when they are scheduled or running ([#46435](https://github.com/angular/angular/issues/46435)) ([b618b5a](https://github.com/angular/angular/commit/b618b5aa86138c900055c5496967e3348a7b98fc)), closes [#45711](https://github.com/angular/angular/issues/45711)
+- **zone.js:** Fix ConsoleTask interface typo ([#47090](https://github.com/angular/angular/issues/47090)) ([91954cf](https://github.com/angular/angular/commit/91954cf20e17a386d71cc8ea25d1d17b9ae1e31c))
+- **zone.js:** zone-node only patch Promise.prototype.then ([#49144](https://github.com/angular/angular/issues/49144)) ([d1ac3aa](https://github.com/angular/angular/commit/d1ac3aa14e5d3c5415937199a6fb63437ddee0b8)), closes [#47872](https://github.com/angular/angular/issues/47872)
+
+# [0.12.0](https://github.com/angular/angular/compare/zone.js-0.11.8...zone.js-0.12.0) (2022-10-27)
+
+### Bug Fixes
+
+- **zone.js:** cancel tasks only when they are scheduled or running ([#46435](https://github.com/angular/angular/issues/46435)) ([b618b5a](https://github.com/angular/angular/commit/b618b5aa86138c900055c5496967e3348a7b98fc)), closes [#45711](https://github.com/angular/angular/issues/45711)
+- **zone.js:** Fix ConsoleTask interface typo ([#47090](https://github.com/angular/angular/issues/47090)) ([91954cf](https://github.com/angular/angular/commit/91954cf20e17a386d71cc8ea25d1d17b9ae1e31c))
+
+## [0.11.8](https://github.com/angular/angular/compare/zone.js-0.11.7...zone.js-0.11.8) (2022-08-08)
+
+### Features
+
+- **zone.js:** Update to the simpler Async Stack Tagging v2 API ([#46958](https://github.com/angular/angular/issues/46958)) ([f23232f](https://github.com/angular/angular/commit/f23232ff66559ddc28aec26d461355568c25530d))
 
 ## [0.11.7](https://github.com/angular/angular/compare/zone.js-0.11.6...zone.js-0.11.7) (2022-07-20)
 
 ### Bug Fixes
 
-* **zone.js:** do not invoke jasmine done callback multiple times with `waitForAsync` ([4e77c7fbf38](https://github.com/angular/angular/commit/4e77c7fbf38f27741617303165068e1cb1ef6354))
+- **zone.js:** do not invoke jasmine done callback multiple times with `waitForAsync` ([4e77c7fbf38](https://github.com/angular/angular/commit/4e77c7fbf38f27741617303165068e1cb1ef6354))
 
 ### Features
 
-* **zone.js:** add AsyncStackTaggingZoneSpec implementation ([#46693](https://github.com/angular/angular/issues/46693)) ([848a009](https://github.com/angular/angular/commit/848a00956e693ba8ab648c86cca034ed2e3c807c))
-* **zone.js:** include jasmine `describe` block name when raising unexpected task error ([de86285](https://github.com/angular/angular/commit/de86285f2ee1c3a78489c8c40a15fc78f75e2620))
-* **zone.js:** include zone name when sync-test zone reports tasks ([72c2567](https://github.com/angular/angular/commit/72c2567847c37b07e468a501a4b13edc791ae9ed))
+- **zone.js:** add AsyncStackTaggingZoneSpec implementation ([#46693](https://github.com/angular/angular/issues/46693)) ([848a009](https://github.com/angular/angular/commit/848a00956e693ba8ab648c86cca034ed2e3c807c))
+- **zone.js:** include jasmine `describe` block name when raising unexpected task error ([de86285](https://github.com/angular/angular/commit/de86285f2ee1c3a78489c8c40a15fc78f75e2620))
+- **zone.js:** include zone name when sync-test zone reports tasks ([72c2567](https://github.com/angular/angular/commit/72c2567847c37b07e468a501a4b13edc791ae9ed))
 
 ## [0.11.6](https://github.com/angular/angular/compare/zone.js-0.11.5...zone.js-0.11.6) (2022-06-02)
 
@@ -589,7 +613,7 @@ import 'zone.js/dist/zone';
 - **patch:** fix [#744](https://github.com/angular/zone.js/issues/744), add namespace to load patch name ([#774](https://github.com/angular/zone.js/issues/774)) ([89f990a](https://github.com/angular/zone.js/commit/89f990a))
 - **task:** fix [#778](https://github.com/angular/zone.js/issues/778), sometimes task will run after being canceled ([#780](https://github.com/angular/zone.js/issues/780)) ([b7238c8](https://github.com/angular/zone.js/commit/b7238c8))
 - **webcomponents:** fix [#782](https://github.com/angular/zone.js/issues/782), fix conflicts with shadydom of webcomponents ([#784](https://github.com/angular/zone.js/issues/784)) ([245f8e9](https://github.com/angular/zone.js/commit/245f8e9))
-- **webpack:** access `process` through `_global` so that WebPack does not accidently browserify ([#786](https://github.com/angular/zone.js/issues/786)) ([1919b36](https://github.com/angular/zone.js/commit/1919b36))
+- **webpack:** access `process` through `_global` so that WebPack does not accidentally browserify ([#786](https://github.com/angular/zone.js/issues/786)) ([1919b36](https://github.com/angular/zone.js/commit/1919b36))
 
 <a name="0.8.10"></a>
 
@@ -892,7 +916,7 @@ import 'zone.js/dist/zone';
 
 ### Bug Fixes
 
-- provide a more usefull error when configuring properties ([1fe4df0](https://github.com/angular/zone.js/commit/1fe4df0))
+- provide a more useful error when configuring properties ([1fe4df0](https://github.com/angular/zone.js/commit/1fe4df0))
 - **jasmine:** propagate all arguments of it/describe/etc... ([a85fd68](https://github.com/angular/zone.js/commit/a85fd68))
 - **long-stack:** Safer writing of stack traces. ([6767ff5](https://github.com/angular/zone.js/commit/6767ff5))
 - **promise:** support more aggressive optimization. ([#431](https://github.com/angular/zone.js/issues/431)) ([26fc3da](https://github.com/angular/zone.js/commit/26fc3da))

@@ -440,7 +440,8 @@ function sortListeners(a: Listener, b: Listener) {
  * See call site for more info.
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
-  return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
+  return obj.type !== undefined && obj.declaredInputs !== undefined &&
+      obj.findHostDirectiveDefs !== undefined;
 }
 
 /**

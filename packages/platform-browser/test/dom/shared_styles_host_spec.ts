@@ -7,18 +7,18 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {DomSharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
+import {SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
-  describe('DomSharedStylesHost', () => {
+  describe('SharedStylesHost', () => {
     let doc: Document;
-    let ssh: DomSharedStylesHost;
+    let ssh: SharedStylesHost;
     let someHost: Element;
     beforeEach(() => {
       doc = getDOM().createHtmlDocument();
       doc.title = '';
-      ssh = new DomSharedStylesHost(doc);
+      ssh = new SharedStylesHost(doc, 'app-id');
       someHost = getDOM().createElement('div');
     });
 
@@ -46,15 +46,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       expect(doc.head).toHaveText('a {};b {};');
     });
 
-    it('should remove style nodes when the host is removed', () => {
-      ssh.addStyles(['a {};']);
-      ssh.addHost(someHost);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
-
-      ssh.removeHost(someHost);
-      expect(someHost.innerHTML).toEqual('');
-    });
-
     it('should remove style nodes on destroy', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
@@ -62,6 +53,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       ssh.ngOnDestroy();
       expect(someHost.innerHTML).toEqual('');
+    });
+
+    it(`should add 'nonce' attribute when a nonce value is provided`, () => {
+      ssh = new SharedStylesHost(doc, 'app-id', '{% nonce %}');
+      ssh.addStyles(['a {};']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style nonce="{% nonce %}">a {};</style>');
     });
   });
 }

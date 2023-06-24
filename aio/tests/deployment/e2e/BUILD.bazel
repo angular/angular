@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
+
+ts_library(
+    name = "e2e_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = ["@npm//protractor"],
+)
+
+TEST_TAGS = [
+    # Test is run manually in `test-production.sh`, and requires an URL to be set.
+    "manual",
+    # Never cache this test because it's non-hermetic and relies on
+    # the remote URL. Bazel will not know when the target site changed.
+    "no-cache",
+    # Cannot run remotely because `protractor_web_test_suite` does not support `exec_properties`.
+    "no-remote-exec",
+    # This test requires an external host. If running in sandbox, allow network access.
+    "requires-network",
+]
+
+protractor_web_test_suite(
+    name = "e2e",
+    data = [
+        "//aio/tests/deployment/shared",
+        "@aio_npm//cjson",
+    ],
+    on_prepare = "on-prepare.js",
+    tags = TEST_TAGS,
+    test_suite_tags = TEST_TAGS,
+    wrapped_test_tags = TEST_TAGS,
+    deps = [
+        ":e2e_lib",
+    ],
+)

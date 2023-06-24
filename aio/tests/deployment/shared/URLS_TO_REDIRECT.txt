@@ -124,8 +124,6 @@
 /docs/js/latest/api/platform-browser/index/Title-class.html --> /api/platform-browser/Title
 /docs/js/latest/api/platform-server/index/PlatformState-class --> /api/platform-server/PlatformState
 /docs/js/latest/api/platform-server/index/PlatformState-class.html --> /api/platform-server/PlatformState
-/docs/js/latest/api/platform-webworker --> /api/platform-webworker
-/docs/js/latest/api/platform-webworker/index/MessageBus-class --> /api/platform-webworker/MessageBus
 /docs/js/latest/api/router/index/ActivatedRoute-interface --> /api/router/ActivatedRoute
 /docs/js/latest/api/router/index/CanActivate-interface.html --> /api/router/CanActivate
 /docs/js/latest/api/router/index/CanActivateChild-interface --> /api/router/CanActivateChild
@@ -188,7 +186,8 @@
 /docs/ts/latest/cookbook/someCookbook.html --> /guide/someCookbook
 /docs/ts/latest/cookbook/ts-to-js.html --> https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html
 /docs/ts/latest/glossary.html --> /guide/glossary
-/docs/ts/latest/guide/server-communication.html --> /guide/http
+/docs/ts/latest/guide/http --> /guide/understanding-communicating-with-http
+/docs/ts/latest/guide/server-communication.html --> /guide/understanding-communicating-with-http
 /docs/ts/latest/guide/style-guide.html --> /guide/styleguide
 /docs/ts/latest/quickstart.html --> /start
 /foo/bar/some-file.html --> /foo/bar/some-file
@@ -214,7 +213,7 @@
 /guide/service-worker-configref --> /guide/service-worker-config
 /guide/setup --> /guide/setup-local
 /guide/setup-systemjs-anatomy --> /guide/file-structure
-/guide/update-to-latest-version --> /guide/update-to-version-15
+/guide/update-to-latest-version --> /guide/update-to-version-16
 /guide/updating-to-version-10 --> https://v10.angular.io/guide/updating-to-version-10
 /guide/updating-to-version-11 --> https://v11.angular.io/guide/updating-to-version-11
 /guide/updating-to-version-12 --> https://v12.angular.io/guide/updating-to-version-12

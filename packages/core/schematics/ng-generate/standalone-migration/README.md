@@ -6,12 +6,12 @@ has the following options:
 * `mode` - Configures the mode that migration should run in. The different modes are clarified
 further down in this document.
 * `path` - Relative path within the project that the migration should apply to. Can be used to
-migrate specific subdirectories individually. Defaults to the project root.
+migrate specific sub-directories individually. Defaults to the project root.
 
 ## Migration flow
 The standalone migration involves multiple distinct operations, and as such has to be run multiple
 times. Authors should verify that the app still works between each of the steps. If the application
-is large, it can be easier to use the `path` option to migrate specific subsections of the app
+is large, it can be easier to use the `path` option to migrate specific sub-sections of the app
 individually.
 
 **Note:** The schematic often needs to generate new code or copy existing code to different places.
@@ -63,7 +63,9 @@ export class AppModule {}
   selector: 'my-comp',
   template: '<div my-dir *ngIf="showGreeting">{{ "Hello" | myPipe }}</div>',
 })
-export class MyComp {}
+export class MyComp {
+  public showGreeting = true;
+}
 ```
 
 ```typescript
@@ -95,7 +97,9 @@ export class AppModule {}
   standalone: true,
   imports: [NgIf, MyDir, MyPipe]
 })
-export class MyComp {}
+export class MyComp {
+  public showGreeting = true;
+}
 ```
 
 ```typescript
@@ -122,7 +126,7 @@ A module is considered "safe to remove" if it:
 * Has no `providers`.
 * Has no `bootstrap` components.
 * Has no `imports` that reference a `ModuleWithProviders` symbol or a module that can't be removed.
-* Has no class members. Empty construstors are ignored.
+* Has no class members. Empty constructors are ignored.
 
 **Before:**
 ```typescript
@@ -190,8 +194,7 @@ modules were skipped explicitly in the first step of the migration.
 5. Adjust any dynamic import paths so that they're correct when they're copied over.
 6. If an API with a standalone equivalent is detected, it may be converted automatically as well.
 E.g. `RouterModule.forRoot` will become `provideRouter`.
-7. Comment out the module metadata of the root class and leave a TODO to remove it. This can also
-be done automatically by running the "Remove unnecessary NgModules" step again.
+7. Remove the root module.
 
 If the migration detects that the `providers` or `imports` of the root module are referencing code
 outside of the class declaration, it will attempt to carry over as much of it as it can to the new
@@ -225,7 +228,9 @@ export class ExportedConfigClass {}
     RouterModule.forRoot([{
       path: 'shop',
       loadComponent: () => import('./shop/shop.component').then(m => m.ShopComponent)
-    }])
+    }], {
+      initialNavigation: 'enabledBlocking'
+    })
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
@@ -270,26 +275,6 @@ interface NonImportedInterface {
 const token = new InjectionToken<NonImportedInterface>('token');
 
 export class ExportedConfigClass {}
-
-@NgModule(/*
-TODO(standalone-migration): clean up removed NgModule class manually or run the "Remove unnecessary NgModule classes" step of the migration again.
-{
-  imports: [
-    SharedModule,
-    BrowserAnimationsModule,
-    RouterModule.forRoot([{
-      path: 'shop',
-      loadComponent: () => import('./shop/shop.component').then(m => m.ShopComponent)
-    }])
-  ],
-  declarations: [AppComponent],
-  bootstrap: [AppComponent],
-  providers: [
-    {provide: token, useValue: {foo: true, bar: {baz: false}}},
-    {provide: CONFIG, useClass: ExportedConfigClass}
-  ]
-}*/)
-export class AppModule {}
 ```
 
 ```typescript
@@ -302,7 +287,7 @@ export class AppComponent {}
 // ./main.ts
 import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
 import {InjectionToken, importProvidersFrom} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {withEnabledBlockingInitialNavigation, provideRouter} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {AppModule, ExportedConfigClass} from './app/app.module';
 import {AppComponent} from './app/app.component';
@@ -326,7 +311,7 @@ bootstrapApplication(AppComponent, {
     provideRouter([{
       path: 'shop',
       loadComponent: () => import('./app/shop/shop.component').then(m => m.ShopComponent)
-    }])
+    }], withEnabledBlockingInitialNavigation())
   ]
 }).catch(e => console.error(e));
 ```

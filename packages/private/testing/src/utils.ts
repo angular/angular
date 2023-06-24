@@ -112,15 +112,17 @@ let savedDocument: Document|undefined = undefined;
 let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number)|undefined = undefined;
 let savedNode: typeof Node|undefined = undefined;
 let requestAnimationFrameCount = 0;
-let domino: typeof import('domino')|null|undefined = undefined;
+let domino: typeof import('../../../platform-server/src/bundled-domino')['default']|null|undefined =
+    undefined;
 
-async function loadDominoOrNull(): Promise<typeof import('domino')|null> {
+async function loadDominoOrNull():
+    Promise<typeof import('../../../platform-server/src/bundled-domino')['default']|null> {
   if (domino !== undefined) {
     return domino;
   }
 
   try {
-    return domino = (await import('domino')).default;
+    return domino = (await import('../../../platform-server/src/bundled-domino')).default;
   } catch {
     return domino = null;
   }

@@ -16,7 +16,7 @@ import { TitleComponent } from './title.component';
     TitleComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule,
     RouterModule.forRoot([]),
   ],
   schemas: [

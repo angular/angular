@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, destroyPlatform, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, ContentChild, createComponent, destroyPlatform, Directive, EnvironmentInjector, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {BrowserModule, By} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -70,8 +70,7 @@ describe('regressions', () => {
          @Directive({selector: '[myDir]'})
          class MyDir {
            setterCalls: {[key: string]: any} = {};
-           // TODO(issue/24571): remove '!'.
-           changes!: SimpleChanges;
+           changes: SimpleChanges|undefined;
 
            @Input()
            set a(v: number) {
@@ -93,7 +92,7 @@ describe('regressions', () => {
 
          fixture.detectChanges();
          expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
-         expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
+         expect(Object.keys(dir.changes ?? {})).toEqual(['a', 'b']);
 
          dir.setterCalls = {};
          dir.changes = {};
@@ -120,8 +119,7 @@ describe('regressions', () => {
     it('should evaluate a conditional in a statement binding', () => {
       @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
       class SomeComponent {
-        // TODO(issue/24571): remove '!'.
-        nullValue!: SomeReferencedClass;
+        nullValue: SomeReferencedClass|undefined;
       }
 
       class SomeReferencedClass {
@@ -185,19 +183,6 @@ describe('regressions', () => {
       const data = [new TestClass(1), new TestClass(2)];
       const injector = createInjector([{provide: 'someToken', useValue: data}]);
       expect(injector.get('someToken')).toEqual(data);
-    });
-
-    describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
-      it('should support class instances', () => {
-        class SomeObject {
-          someMethod() {}
-        }
-
-        expect(
-            () => createInjector(
-                [{provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}]))
-            .not.toThrow();
-      });
     });
   });
 
@@ -266,8 +251,7 @@ describe('regressions', () => {
 
     @Directive({selector: '[someDir]'})
     class MyDir {
-      // TODO(issue/24571): remove '!'.
-      @Input('someDir') template!: TemplateRef<any>;
+      @Input('someDir') template: TemplateRef<any>|undefined;
     }
 
     const ctx =
@@ -287,7 +271,6 @@ describe('regressions', () => {
   it('should not recreate ViewContainerRefs in queries', () => {
     @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
     class MyComp {
-      // TODO(issue/24571): remove '!'.
       @ViewChildren('vc', {read: ViewContainerRef}) viewContainers!: QueryList<ViewContainerRef>;
 
       show = true;
@@ -330,7 +313,7 @@ describe('regressions', () => {
   it('should throw if @ContentChild and @Input are on the same property', () => {
     @Directive({selector: 'test'})
     class Test {
-      @Input() @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
+      @Input() @ContentChild(TemplateRef, {static: true}) tpl: TemplateRef<any>|undefined;
     }
 
     @Component({selector: 'my-app', template: `<test></test>`})
@@ -347,9 +330,8 @@ describe('regressions', () => {
     class App {
     }
 
-    const modRef = TestBed.configureTestingModule({declarations: [App]}).inject(NgModuleRef);
     const compRef =
-        modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
+        createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
 
     expect(compRef.location.nativeElement.hasAttribute('ng-version')).toBe(false);
   });

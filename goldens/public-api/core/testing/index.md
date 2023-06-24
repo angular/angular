@@ -49,10 +49,10 @@ export class ComponentFixture<T> {
 }
 
 // @public (undocumented)
-export const ComponentFixtureAutoDetect: InjectionToken<boolean[]>;
+export const ComponentFixtureAutoDetect: InjectionToken<boolean>;
 
 // @public (undocumented)
-export const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
+export const ComponentFixtureNoNgZone: InjectionToken<boolean>;
 
 // @public
 export function discardPeriodicTasks(): void;

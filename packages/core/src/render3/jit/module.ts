@@ -19,7 +19,7 @@ import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadat
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef, isStandalone} from '../definition';
+import {GENERATED_COMP_IDS, getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef, isStandalone} from '../definition';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
@@ -239,7 +239,6 @@ function verifySemanticsOfNgModuleDef(
   ];
   exports.forEach(verifyExportsAreDeclaredOrReExported);
   declarations.forEach(decl => verifyDeclarationIsUnique(decl, allowDuplicateDeclarationsInRoot));
-  declarations.forEach(verifyComponentEntryComponentsIsPartOfNgModule);
 
   const ngModule = getAnnotation<NgModule>(moduleType, 'NgModule');
   if (ngModule) {
@@ -250,8 +249,6 @@ function verifySemanticsOfNgModuleDef(
         });
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyCorrectBootstrapType);
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyComponentIsPartOfNgModule);
-    ngModule.entryComponents &&
-        deepForEach(ngModule.entryComponents, verifyComponentIsPartOfNgModule);
   }
 
   // Throw Error if any errors were detected.
@@ -346,17 +343,6 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
-  function verifyComponentEntryComponentsIsPartOfNgModule(type: Type<any>) {
-    type = resolveForwardRef(type);
-    if (getComponentDef(type)) {
-      // We know we are component
-      const component = getAnnotation<Component>(type, 'Component');
-      if (component && component.entryComponents) {
-        deepForEach(component.entryComponents, verifyComponentIsPartOfNgModule);
-      }
-    }
-  }
-
   function verifySemanticsOfNgModuleImport(type: Type<any>, importingModule: Type<any>) {
     type = resolveForwardRef(type);
 
@@ -421,6 +407,7 @@ export function resetCompiledComponents(): void {
   ownerNgModule = new WeakMap<Type<any>, NgModuleType<any>>();
   verifiedNgModule = new WeakMap<NgModuleType<any>, boolean>();
   moduleQueue.length = 0;
+  GENERATED_COMP_IDS.clear();
 }
 
 /**
@@ -437,7 +424,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     return [type];
   }
 
-  return [...flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
+  return flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
       verifySemanticsOfNgModuleDef(type as any as NgModuleType, false);
@@ -445,7 +432,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     } else {
       return type;
     }
-  }))];
+  }));
 }
 
 /**

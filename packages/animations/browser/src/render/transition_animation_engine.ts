@@ -744,7 +744,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  removeNode(namespaceId: string, element: any, isHostElement: boolean, context: any): void {
+  removeNode(namespaceId: string, element: any, context: any): void {
     if (isElementNode(element)) {
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
@@ -753,11 +753,9 @@ export class TransitionAnimationEngine {
         this.markElementAsRemoved(namespaceId, element, false, context);
       }
 
-      if (isHostElement) {
-        const hostNS = this.namespacesByHostElement.get(element);
-        if (hostNS && hostNS.id !== namespaceId) {
-          hostNS.removeNode(element, context);
-        }
+      const hostNS = this.namespacesByHostElement.get(element);
+      if (hostNS && hostNS.id !== namespaceId) {
+        hostNS.removeNode(element, context);
       }
     } else {
       this._onRemovalComplete(element, context);
@@ -1168,9 +1166,7 @@ export class TransitionAnimationEngine {
     replaceNodes.forEach(node => {
       const post = postStylesMap.get(node);
       const pre = preStylesMap.get(node);
-      postStylesMap.set(
-          node,
-          new Map([...Array.from(post?.entries() ?? []), ...Array.from(pre?.entries() ?? [])]));
+      postStylesMap.set(node, new Map([...(post?.entries() ?? []), ...(pre?.entries() ?? [])]));
     });
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
@@ -1438,8 +1434,7 @@ export class TransitionAnimationEngine {
       const postStyles = postStylesMap.get(element);
 
       const keyframes = normalizeKeyframes(
-          this.driver, this._normalizer, element, timelineInstruction.keyframes, preStyles,
-          postStyles);
+          this._normalizer, timelineInstruction.keyframes, preStyles, postStyles);
       const player = this._buildPlayer(timelineInstruction, keyframes, previousPlayers);
 
       // this means that this particular player belongs to a sub trigger. It is
@@ -1499,8 +1494,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   private _queuedCallbacks = new Map<string, ((event: any) => any)[]>();
   public readonly destroyed = false;
-  // TODO(issue/24571): remove '!'.
-  public parentPlayer!: AnimationPlayer;
+  public parentPlayer: AnimationPlayer|null = null;
 
   public markedForDestroy: boolean = false;
   public disabled = false;
@@ -1599,7 +1593,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
     !this.queued && this._player.reset();
   }
 
-  setPosition(p: any): void {
+  setPosition(p: number): void {
     if (!this.queued) {
       this._player.setPosition(p);
     }

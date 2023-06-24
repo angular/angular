@@ -52,6 +52,7 @@
         {
           "name": "app-id",
           "type": "string",
+          "deprecated": "This option is no longer used.",
           "default": "serverApp",
           "description": "The application ID to use in withServerTransition()."
         },
@@ -75,7 +76,7 @@
         {
           "name": "root-module-file-name",
           "type": "string",
-          "default": "app.server.module.ts",
+          "default": "app.module.server.ts",
           "description": "The name of the root module file"
         },
         {
@@ -161,6 +162,12 @@
           ],
           "default": false,
           "description": "Do not create \"spec.ts\" test files for the application."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": false,
+          "description": "Creates an application based upon the standalone API, without NgModules."
         },
         {
           "name": "strict",
@@ -532,7 +539,7 @@
         {
           "name": "functional",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Specifies whether to generate a guard as a function."
         },
         {
@@ -685,6 +692,12 @@
           "type": "boolean",
           "default": false,
           "description": "Do not update \"tsconfig.json\" to add a path mapping for the new library. The path mapping is needed to use the library in an app, but can be disabled here to simplify development."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": false,
+          "description": "Creates a library based upon the standalone API, without NgModules."
         }
       ],
       "aliases": [
@@ -823,7 +836,7 @@
         {
           "name": "functional",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Creates the resolver as a `ResolveFn`."
         },
         {

@@ -204,7 +204,7 @@ function validateMappings(
 
       const remappedPublicName = hostDirectiveBindings[publicName];
 
-      if (bindings.hasOwnProperty(remappedPublicName) &&
+      if (bindings.hasOwnProperty(remappedPublicName) && remappedPublicName !== publicName &&
           bindings[remappedPublicName] !== publicName) {
         throw new RuntimeError(
             RuntimeErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,

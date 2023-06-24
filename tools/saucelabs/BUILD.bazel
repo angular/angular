@@ -1,5 +1,3 @@
-load("//tools:defaults.bzl", "nodejs_binary")
-
 package(default_visibility = ["//visibility:public"])
 
 sh_binary(
@@ -49,17 +47,4 @@ sh_binary(
     srcs = ["sauce-service.sh"],
     args = ["log"],
     data = ["@npm//sauce-connect"],
-)
-
-nodejs_binary(
-    name = "karma-saucelabs",
-    data = [
-        "sauce-service.sh",
-        "@npm//@bazel/runfiles",
-        "@npm//karma",
-        "@npm//sauce-connect",
-        "@npm//shelljs",
-    ],
-    entry_point = "karma-saucelabs.mjs",
-    templated_args = ["$(rootpath sauce-service.sh)"],
 )

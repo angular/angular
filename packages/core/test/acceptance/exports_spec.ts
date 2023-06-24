@@ -55,7 +55,7 @@ describe('exports', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/);
     });
 
     it('should not support reference on the same node', () => {
@@ -66,7 +66,7 @@ describe('exports', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/);
     });
 
     it('should support input referenced by host binding on that directive', () => {

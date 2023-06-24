@@ -42,23 +42,32 @@ export function performNpmReleaseBuild(): BuiltPackage[] {
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
 export function performDefaultSnapshotBuild(): BuiltPackage[] {
-  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true);
+  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true, [
+    // For snapshot builds, the Bazel package is still built. We want to have
+    // GitHub snapshot builds for it.
+    '//packages/bazel:npm_package',
+  ]);
 }
 
 /**
  * Builds the release packages with the given compile mode and copies
  * the package output into the given directory.
  */
-function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): BuiltPackage[] {
+function buildReleasePackages(
+  distPath: string,
+  isSnapshotBuild: boolean,
+  additionalTargets: string[] = []
+): BuiltPackage[] {
   console.info('######################################');
   console.info('  Building release packages...');
   console.info('######################################');
 
   // List of targets to build. e.g. "packages/core:npm_package", or "packages/forms:npm_package".
-  const targets = exec(queryPackagesCmd, true).split(/\r?\n/);
+  const targets = exec(queryPackagesCmd, true).split(/\r?\n/).concat(additionalTargets);
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
-  const getBazelOutputPath = (pkgName: string) => join(bazelBinPath, 'packages', pkgName, 'npm_package');
+  const getBazelOutputPath = (pkgName: string) =>
+    join(bazelBinPath, 'packages', pkgName, 'npm_package');
   const getDistPath = (pkgName: string) => join(distPath, pkgName);
 
   // Build with "--config=release" or `--config=snapshot-build` so that Bazel

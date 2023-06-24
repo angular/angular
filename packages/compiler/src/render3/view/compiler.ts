@@ -15,6 +15,9 @@ import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util'
 import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
+import {emitTemplateFn, transformTemplate} from '../../template/pipeline/src/emit';
+import {ingest} from '../../template/pipeline/src/ingest';
+import {USE_TEMPLATE_PIPELINE} from '../../template/pipeline/switch';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error} from '../../util';
 import {BoundEvent} from '../r3_ast';
@@ -24,7 +27,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3Co
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
@@ -43,7 +46,7 @@ function baseDirectiveFields(
   const selectors = core.parseSelectorToR3Selector(meta.selector);
 
   // e.g. `type: MyDirective`
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   // e.g. `selectors: [['', 'someDir', '']]`
   if (selectors.length > 0) {
@@ -69,10 +72,10 @@ function baseDirectiveFields(
           meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
-  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
+  definitionMap.set('inputs', conditionallyCreateDirectiveBindingLiteral(meta.inputs, true));
 
   // e.g 'outputs: {a: 'a'}`
-  definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
+  definitionMap.set('outputs', conditionallyCreateDirectiveBindingLiteral(meta.outputs));
 
   if (meta.exportAs !== null) {
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
@@ -80,6 +83,9 @@ function baseDirectiveFields(
 
   if (meta.isStandalone) {
     definitionMap.set('standalone', o.literal(true));
+  }
+  if (meta.isSignal) {
+    definitionMap.set('signals', o.literal(true));
   }
 
   return definitionMap;
@@ -96,6 +102,8 @@ function addFeatures(
 
   const providers = meta.providers;
   const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
+  const inputKeys = Object.keys(meta.inputs);
+
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
     if (viewProviders) {
@@ -103,7 +111,12 @@ function addFeatures(
     }
     features.push(o.importExpr(R3.ProvidersFeature).callFn(args));
   }
-
+  for (const key of inputKeys) {
+    if (meta.inputs[key].transformFunction !== null) {
+      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
+      break;
+    }
+  }
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
@@ -173,42 +186,68 @@ export function compileComponentFromMetadata(
 
   const changeDetection = meta.changeDetection;
 
-  const template = meta.template;
-  const templateBuilder = new TemplateDefinitionBuilder(
-      constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
-      R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds);
+  // Template compilation is currently conditional as we're in the process of rewriting it.
+  if (!USE_TEMPLATE_PIPELINE) {
+    // This is the main path currently used in compilation, which compiles the template with the
+    // legacy `TemplateDefinitionBuilder`.
 
-  const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
+    const template = meta.template;
+    const templateBuilder = new TemplateDefinitionBuilder(
+        constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
+        R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds);
 
-  // We need to provide this so that dynamically generated components know what
-  // projected content blocks to pass through to the component when it is instantiated.
-  const ngContentSelectors = templateBuilder.getNgContentSelectors();
-  if (ngContentSelectors) {
-    definitionMap.set('ngContentSelectors', ngContentSelectors);
-  }
+    const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
-  // e.g. `decls: 2`
-  definitionMap.set('decls', o.literal(templateBuilder.getConstCount()));
-
-  // e.g. `vars: 2`
-  definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
-
-  // Generate `consts` section of ComponentDef:
-  // - either as an array:
-  //   `consts: [['one', 'two'], ['three', 'four']]`
-  // - or as a factory function in case additional statements are present (to support i18n):
-  //   `consts: function() { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0]; }`
-  const {constExpressions, prepareStatements} = templateBuilder.getConsts();
-  if (constExpressions.length > 0) {
-    let constsExpr: o.LiteralArrayExpr|o.FunctionExpr = o.literalArr(constExpressions);
-    // Prepare statements are present - turn `consts` into a function.
-    if (prepareStatements.length > 0) {
-      constsExpr = o.fn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
+    // We need to provide this so that dynamically generated components know what
+    // projected content blocks to pass through to the component when it is
+    //     instantiated.
+    const ngContentSelectors = templateBuilder.getNgContentSelectors();
+    if (ngContentSelectors) {
+      definitionMap.set('ngContentSelectors', ngContentSelectors);
     }
-    definitionMap.set('consts', constsExpr);
-  }
 
-  definitionMap.set('template', templateFunctionExpression);
+    // e.g. `decls: 2`
+    // definitionMap.set('decls', o.literal(tpl.root.decls!));
+    definitionMap.set('decls', o.literal(templateBuilder.getConstCount()));
+
+    // e.g. `vars: 2`
+    // definitionMap.set('vars', o.literal(tpl.root.vars!));
+    definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
+
+    // Generate `consts` section of ComponentDef:
+    // - either as an array:
+    //   `consts: [['one', 'two'], ['three', 'four']]`
+    // - or as a factory function in case additional statements are present (to support i18n):
+    //   `consts: function() { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
+    //   }`
+    const {constExpressions, prepareStatements} = templateBuilder.getConsts();
+    if (constExpressions.length > 0) {
+      let constsExpr: o.LiteralArrayExpr|o.FunctionExpr = o.literalArr(constExpressions);
+      // Prepare statements are present - turn `consts` into a function.
+      if (prepareStatements.length > 0) {
+        constsExpr = o.fn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
+      }
+      definitionMap.set('consts', constsExpr);
+    }
+
+    definitionMap.set('template', templateFunctionExpression);
+  } else {
+    // This path compiles the template using the prototype template pipeline. First the template is
+    // ingested into IR:
+    const tpl = ingest(meta.name, meta.template.nodes, constantPool);
+
+    // Then the IR is transformed to prepare it for cod egeneration.
+    transformTemplate(tpl);
+
+    // Finally we emit the template function:
+    const templateFn = emitTemplateFn(tpl, constantPool);
+    definitionMap.set('decls', o.literal(tpl.root.decls as number));
+    definitionMap.set('vars', o.literal(tpl.root.vars as number));
+    if (tpl.consts.length > 0) {
+      definitionMap.set('consts', o.literalArr(tpl.consts));
+    }
+    definitionMap.set('template', templateFn);
+  }
 
   if (meta.declarations.length > 0) {
     definitionMap.set(
@@ -273,6 +312,12 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
+  // TODO(signals): Always include this metadata starting with v17. Right
+  // now Angular v16.0.x does not support this field and library distributions
+  // would then be incompatible with v16.0.x framework users.
+  if (meta.isSignal) {
+    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
+  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -414,7 +459,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
@@ -423,10 +468,24 @@ export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
-    o.expressionType(stringMapAsLiteralExpression(meta.inputs)),
+    o.expressionType(getInputsTypeExpression(meta)),
     o.expressionType(stringMapAsLiteralExpression(meta.outputs)),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
   ];
+}
+
+function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
+  return o.literalMap(Object.keys(meta.inputs).map(key => {
+    const value = meta.inputs[key];
+    return {
+      key,
+      value: o.literalMap([
+        {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
+        {key: 'required', value: o.literal(value.required), quoted: true}
+      ]),
+      quoted: true
+    };
+  }));
 }
 
 /**
@@ -440,6 +499,12 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
+  // TODO(signals): Always include this metadata starting with v17. Right
+  // now Angular v16.0.x does not support this field and library distributions
+  // would then be incompatible with v16.0.x framework users.
+  if (meta.isSignal) {
+    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
+  }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 

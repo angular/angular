@@ -115,7 +115,7 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return mochaOriginal.describe.apply(this, wrapDescribeInZone(arguments));
   };
 
-  global.xdescribe = global.suite.skip = function() {
+  global.xdescribe = global.suite.skip = global.describe.skip = function() {
     return mochaOriginal.describe.skip.apply(this, wrapDescribeInZone(arguments));
   };
 
@@ -127,7 +127,7 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return mochaOriginal.it.apply(this, wrapTestInZone(arguments));
   };
 
-  global.xit = global.xspecify = function() {
+  global.xit = global.xspecify = global.it.skip = function() {
     return mochaOriginal.it.skip.apply(this, wrapTestInZone(arguments));
   };
 

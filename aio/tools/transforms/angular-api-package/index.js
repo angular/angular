@@ -17,6 +17,7 @@ module.exports =
 
         // Register the processors
         .processor(require('./processors/mergeParameterInfo'))
+        .processor(require('./processors/processSeeTags'))
         .processor(require('./processors/processPseudoClasses'))
         .processor(require('./processors/convertPrivateClassesToInterfaces'))
         .processor(require('./processors/generateApiListDoc'))
@@ -37,7 +38,7 @@ module.exports =
         .processor(require('./processors/computeSearchTitle'))
         .processor(require('./processors/simplifyMemberAnchors'))
         .processor(require('./processors/computeStability'))
-        .processor(require('./processors/removeInjectableConstructors'))
+        .processor(require('./processors/removeInjectableAndInternalConstructors'))
         .processor(require('./processors/processSpecialElements'))
         .processor(require('./processors/collectPackageContentDocs'))
         .processor(require('./processors/processPackages'))
@@ -102,6 +103,7 @@ module.exports =
             'common/upgrade/index.ts',
             'core/index.ts',
             'core/global/index.ts',
+            'core/rxjs-interop/index.ts',
             'core/testing/index.ts',
             'elements/index.ts',
             'forms/index.ts',
@@ -115,8 +117,6 @@ module.exports =
             'platform-server/index.ts',
             'platform-server/init/index.ts',
             'platform-server/testing/index.ts',
-            'platform-webworker/index.ts',
-            'platform-webworker-dynamic/index.ts',
             'router/index.ts',
             'router/testing/index.ts',
             'router/upgrade/index.ts',

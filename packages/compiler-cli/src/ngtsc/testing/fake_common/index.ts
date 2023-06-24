@@ -57,17 +57,16 @@ export declare class NgIf<T = unknown> {
       ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
 }
 
-export declare class NgTemplateOutlet {
-  ngTemplateOutlet: TemplateRef<any>|null;
-  ngTemplateOutletContext: Object|null;
+export declare class NgTemplateOutlet<C = unknown> {
+  ngTemplateOutlet: TemplateRef<C>|null;
+  ngTemplateOutletContext: C|null;
 
-  static ɵdir: ɵɵDirectiveDeclaration < NgTemplateOutlet, '[ngTemplateOutlet]', never, {
+  static ɵdir: ɵɵDirectiveDeclaration < NgTemplateOutlet<any>, '[ngTemplateOutlet]', never, {
     'ngTemplateOutlet': 'ngTemplateOutlet';
     'ngTemplateOutletContext': 'ngTemplateOutletContext';
   }
   , {}, never > ;
-  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any):
-      ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
+  static ngTemplateContextGuard<T>(dir: NgTemplateOutlet<T>, ctx: any): ctx is T;
 }
 
 export declare class DatePipe {

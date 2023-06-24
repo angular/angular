@@ -33,16 +33,12 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "progress": false
+            "progress": false,
+            "buildOptimizer": false,
+            "optimization": false
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -135,17 +131,12 @@
             "outputPath": "dist/cli-elements-universal/server",
             "main": "src/main.server.ts",
             "tsConfig": "tsconfig.server.json",
-            "progress": false
+            "progress": false,
+            "optimization": false
           },
           "configurations": {
             "production": {
               "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "sourceMap": false,
               "optimization": true
             }

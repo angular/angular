@@ -31,7 +31,7 @@ The `package.json` is organized into two groups of packages:
 | Packages                                               | Details |
 |:---                                                    |:---     |
 | [Dependencies](guide/npm-packages#dependencies)        | Essential to *running* applications.      |
-| [DevDependencies](guide/npm-packages#dev-dependencies) | Only necessary to *develop* applications. |
+| [DevDependencies](guide/npm-packages#dev-dependencies) | Only necessary to *develop* and *build* applications. |
 
 <div class="alert is-helpful">
 
@@ -68,7 +68,7 @@ For a complete list of Angular packages, see the [API reference](api?type=packag
 | Package name                                                        | Details |
 |:---                                                                 |:---     |
 | [`@angular/animations`](api/animations)                             | Angular's animations library makes it easy to define and apply animation effects such as page and list transitions. For more information, see the [Animations guide](guide/animations).                                                                                                                                                                                       |
-| [`@angular/common`](api/common)                                     | The commonly-needed services, pipes, and directives provided by the Angular team. The [`HttpClientModule`](api/common/http/HttpClientModule) is also here, in the [`@angular/common/http`](api/common/http) subfolder. For more information, see the [HttpClient guide](guide/http).                                                                                          |
+| [`@angular/common`](api/common)                                     | The commonly-needed services, pipes, and directives provided by the Angular team. The [`HttpClientModule`](api/common/http/HttpClientModule) is also here, in the [`@angular/common/http`](api/common/http) subfolder. For more information, see the [HttpClient guide](guide/understanding-communicating-with-http).                                                                                          |
 | `@angular/compiler`                                                 | Angular's template compiler. It understands templates and can convert them to code that makes the application run and render. Typically you don't interact with the compiler directly; rather, you use it indirectly using `platform-browser-dynamic` when JIT compiling in the browser. For more information, see the [Ahead-of-time Compilation guide](guide/aot-compiler). |
 | [`@angular/core`](api/core)                                         | Critical runtime parts of the framework that are needed by every application. Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.                                                                                                                                                                           |
 | [`@angular/forms`](api/forms)                                       | Support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms). For information about choosing the best forms approach for your app, see [Introduction to forms](guide/forms-overview).                                                                                                                                                           |

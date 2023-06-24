@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
@@ -287,7 +287,7 @@ export class TestBedCompiler {
     this.componentToModuleScope.clear();
 
     const parentInjector = this.platform.injector;
-    this.testModuleRef = new NgModuleRef(this.testModuleType, parentInjector);
+    this.testModuleRef = new NgModuleRef(this.testModuleType, parentInjector, []);
 
     // ApplicationInitStatus.runInitializers() is marked @internal to core.
     // Cast it to any before accessing it.
@@ -580,20 +580,21 @@ export class TestBedCompiler {
   }
 
   private queueTypesFromModulesArray(arr: any[]): void {
-    // Because we may encounter the same NgModule while processing the imports and exports of an
-    // NgModule tree, we cache them in this set so we can skip ones that have already been seen
-    // encountered. In some test setups, this caching resulted in 10X runtime improvement.
-    const processedNgModuleDefs = new Set();
+    // Because we may encounter the same NgModule or a standalone Component while processing
+    // the dependencies of an NgModule or a standalone Component, we cache them in this set so we
+    // can skip ones that have already been seen encountered. In some test setups, this caching
+    // resulted in 10X runtime improvement.
+    const processedDefs = new Set();
     const queueTypesFromModulesArrayRecur = (arr: any[]): void => {
       for (const value of arr) {
         if (Array.isArray(value)) {
           queueTypesFromModulesArrayRecur(value);
         } else if (hasNgModuleDef(value)) {
           const def = value.ɵmod;
-          if (processedNgModuleDefs.has(def)) {
+          if (processedDefs.has(def)) {
             continue;
           }
-          processedNgModuleDefs.add(def);
+          processedDefs.add(def);
           // Look through declarations, imports, and exports, and queue
           // everything found there.
           this.queueTypeArray(maybeUnwrapFn(def.declarations), value);
@@ -604,6 +605,12 @@ export class TestBedCompiler {
         } else if (isStandaloneComponent(value)) {
           this.queueType(value, null);
           const def = getComponentDef(value);
+
+          if (processedDefs.has(def)) {
+            continue;
+          }
+          processedDefs.add(def);
+
           const dependencies = maybeUnwrapFn(def.dependencies ?? []);
           dependencies.forEach((dependency) => {
             // Note: in AOT, the `dependencies` might also contain regular
@@ -746,9 +753,8 @@ export class TestBedCompiler {
       providers: [...this.rootProviderOverrides],
     });
 
-    const ngZone = new NgZone({enableLongStackTrace: true});
-    const providers: Provider[] = [
-      {provide: NgZone, useValue: ngZone},
+    const providers = [
+      provideZoneChangeDetection(),
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
       ...this.providers,
       ...this.providerOverrides,
@@ -772,7 +778,7 @@ export class TestBedCompiler {
       return this._injector;
     }
 
-    const providers: Provider[] = [];
+    const providers: StaticProvider[] = [];
     const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
     compilerOptions.forEach(opts => {
       if (opts.providers) {
@@ -780,15 +786,10 @@ export class TestBedCompiler {
       }
     });
     if (this.compilerProviders !== null) {
-      providers.push(...this.compilerProviders);
+      providers.push(...this.compilerProviders as StaticProvider[]);
     }
 
-    // TODO(ocombe): make this work with an Injector directly instead of creating a module for it
-    class CompilerModule {}
-    compileNgModuleDefs(CompilerModule as NgModuleType<any>, {providers});
-
-    const CompilerModuleFactory = new R3NgModuleFactory(CompilerModule);
-    this._injector = CompilerModuleFactory.create(this.platform.injector).injector;
+    this._injector = Injector.create({providers, parent: this.platform.injector});
     return this._injector;
   }
 

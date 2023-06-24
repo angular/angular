@@ -9,7 +9,6 @@
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../file_system';
-import {FactoryTracker} from '../../../shims/api';
 
 import {ExtendedTsCompilerHost, UnifiedModulesHost} from './interfaces';
 
@@ -67,13 +66,6 @@ export interface NgCompilerAdapter extends
    * command-line ngc.
    */
   readonly ignoreForEmit: Set<ts.SourceFile>;
-
-  /**
-   * A tracker for usage of symbols in `.ngfactory` shims.
-   *
-   * This can be left `null` if such shims are not a part of the `ts.Program`.
-   */
-  readonly factoryTracker: FactoryTracker|null;
 
   /**
    * A specialized interface provided in some environments (such as Bazel) which overrides how

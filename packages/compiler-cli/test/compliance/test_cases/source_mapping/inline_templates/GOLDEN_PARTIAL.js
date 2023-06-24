@@ -911,7 +911,7 @@ export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -982,7 +982,7 @@ export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -1053,7 +1053,7 @@ export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -1124,7 +1124,7 @@ export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;

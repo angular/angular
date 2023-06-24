@@ -13,6 +13,8 @@ import {InjectFlags, InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {DehydratedView} from '../hydration/interfaces';
+import {retrieveHydrationInfo} from '../hydration/utils';
 import {Type} from '../interface/type';
 import {ComponentFactory as AbstractComponentFactory, ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -31,20 +33,23 @@ import {getNodeInjectable, NodeInjector} from './di';
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
-import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
+import {markViewDirty} from './instructions/mark_view_dirty';
+import {renderView} from './instructions/render';
+import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, setInputsForProperty} from './instructions/shared';
 import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
-import {Renderer, RendererFactory} from './interfaces/renderer';
+import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
+import {EffectManager} from './reactivity/effect';
 import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
 import {stringifyForError} from './util/stringify_utils';
-import {getNativeByTNode, getTNode} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
@@ -113,8 +118,28 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override ngContentSelectors: string[];
   isBoundToModule: boolean;
 
-  override get inputs(): {propName: string; templateName: string;}[] {
-    return toRefArray(this.componentDef.inputs);
+  override get inputs(): {
+    propName: string,
+    templateName: string,
+    transform?: (value: any) => any,
+  }[] {
+    const componentDef = this.componentDef;
+    const inputTransforms = componentDef.inputTransforms;
+    const refArray = toRefArray(componentDef.inputs) as {
+      propName: string,
+      templateName: string,
+      transform?: (value: any) => any,
+    }[];
+
+    if (inputTransforms !== null) {
+      for (const input of refArray) {
+        if (inputTransforms.hasOwnProperty(input.propName)) {
+          input.transform = inputTransforms[input.propName];
+        }
+      }
+    }
+
+    return refArray;
   }
 
   override get outputs(): {propName: string; templateName: string;}[] {
@@ -163,22 +188,36 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
+    const effectManager = rootViewInjector.get(EffectManager, null);
+
+    const environment: LViewEnvironment = {
+      rendererFactory,
+      sanitizer,
+      effectManager,
+    };
+
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
     // Determine a tag name used for creating host elements when this component is created
     // dynamically. Default to 'div' if this component did not specify any tag name in its selector.
     const elementName = this.componentDef.selectors[0][0] as string || 'div';
     const hostRNode = rootSelectorOrNode ?
-        locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
+        locateHostElement(
+            hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
         createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
-    const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                                 LViewFlags.CheckAlways | LViewFlags.IsRoot;
+    // Signal components use the granular "RefreshView"  for change detection
+    const signalFlags = (LViewFlags.SignalView | LViewFlags.IsRoot);
+    // Non-signal components use the traditional "CheckAlways or OnPush/Dirty" change detection
+    const nonSignalFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
+                                                      LViewFlags.CheckAlways | LViewFlags.IsRoot;
+    const rootFlags = this.componentDef.signals ? signalFlags : nonSignalFlags;
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
+    const rootTView =
+        createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
     const rootLView = createLView(
-        null, rootTView, null, rootFlags, null, null, rendererFactory, hostRenderer, sanitizer,
-        rootViewInjector, null);
+        null, rootTView, null, rootFlags, null, null, environment, hostRenderer, rootViewInjector,
+        null, null);
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -206,7 +245,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
 
       const hostTNode = createRootComponentTNode(rootLView, hostRNode);
       const componentView = createRootComponentView(
-          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, rendererFactory,
+          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, environment,
           hostRenderer);
 
       tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
@@ -252,6 +291,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   override hostView: ViewRef<T>;
   override changeDetectorRef: ChangeDetectorRef;
   override componentType: Type<T>;
+  private previousInputValues: Map<string, unknown>|null = null;
 
   constructor(
       componentType: Type<T>, instance: T, public location: ElementRef, private _rootLView: LView,
@@ -266,9 +306,19 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     const inputData = this._tNode.inputs;
     let dataValue: PropertyAliasValue|undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
+      this.previousInputValues ??= new Map();
+      // Do not set the input if it is the same as the last value
+      // This behavior matches `bindingUpdated` when binding inputs in templates.
+      if (this.previousInputValues.has(name) &&
+          Object.is(this.previousInputValues.get(name), value)) {
+        return;
+      }
+
       const lView = this._rootLView;
       setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
-      markDirtyIfOnPush(lView, this._tNode.index);
+      this.previousInputValues.set(name, value);
+      const childComponentLView = getComponentLViewByIndex(this._tNode.index, lView);
+      markViewDirty(childComponentLView);
     } else {
       if (ngDevMode) {
         const cmpNameForError = stringifyForError(this.componentType);
@@ -320,7 +370,7 @@ function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
 /**
  * Creates the root component view and the root component node.
  *
- * @param rNode Render host element.
+ * @param hostRNode Render host element.
  * @param rootComponentDef ComponentDef
  * @param rootView The parent view where the host node is stored
  * @param rendererFactory Factory to be used for creating child renderers.
@@ -330,17 +380,28 @@ function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
  * @returns Component view created
  */
 function createRootComponentView(
-    tNode: TElementNode, rNode: RElement|null, rootComponentDef: ComponentDef<any>,
-    rootDirectives: DirectiveDef<any>[], rootView: LView, rendererFactory: RendererFactory,
-    hostRenderer: Renderer, sanitizer?: Sanitizer|null): LView {
+    tNode: TElementNode, hostRNode: RElement|null, rootComponentDef: ComponentDef<any>,
+    rootDirectives: DirectiveDef<any>[], rootView: LView, environment: LViewEnvironment,
+    hostRenderer: Renderer): LView {
   const tView = rootView[TVIEW];
-  applyRootComponentStyling(rootDirectives, tNode, rNode, hostRenderer);
+  applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
 
-  const viewRenderer = rendererFactory.createRenderer(rNode, rootComponentDef);
+  // Hydration info is on the host element and needs to be retreived
+  // and passed to the component LView.
+  let hydrationInfo: DehydratedView|null = null;
+  if (hostRNode !== null) {
+    hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
+  }
+  const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
+  let lViewFlags = LViewFlags.CheckAlways;
+  if (rootComponentDef.signals) {
+    lViewFlags = LViewFlags.SignalView;
+  } else if (rootComponentDef.onPush) {
+    lViewFlags = LViewFlags.Dirty;
+  }
   const componentView = createLView(
-      rootView, getOrCreateComponentTView(rootComponentDef), null,
-      rootComponentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[tNode.index],
-      tNode, rendererFactory, viewRenderer, sanitizer || null, null, null);
+      rootView, getOrCreateComponentTView(rootComponentDef), null, lViewFlags,
+      rootView[tNode.index], tNode, environment, viewRenderer, null, null, hydrationInfo);
 
   if (tView.firstCreatePass) {
     markAsComponentHost(tView, tNode, rootDirectives.length - 1);

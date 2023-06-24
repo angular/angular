@@ -12,7 +12,7 @@ interface WindowWithAnalytics extends Window {
   gtag?(...args: any[]): void;
   /** Legacy Universal Analytics `analytics.js` field. */
   ga?(...args: any[]): void;
-};
+}
 
 @Injectable()
 /**

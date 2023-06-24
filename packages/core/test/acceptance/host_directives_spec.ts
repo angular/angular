@@ -3219,5 +3219,65 @@ describe('host directives', () => {
         fixture.detectChanges();
       }).not.toThrow();
     });
+
+    it('should not throw when exposing an aliased binding', () => {
+      @Directive({
+        outputs: ['opened: triggerOpened'],
+        selector: '[trigger]',
+        standalone: true,
+      })
+      class Trigger {
+        opened = new EventEmitter();
+      }
+
+      @Directive({
+        standalone: true,
+        selector: '[host]',
+        hostDirectives: [{directive: Trigger, outputs: ['triggerOpened']}]
+      })
+      class Host {
+      }
+
+      @Component({template: '<div host></div>', standalone: true, imports: [Host]})
+      class App {
+      }
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should not throw when exposing an inherited aliased binding', () => {
+      @Directive({standalone: true})
+      abstract class Base {
+        opened = new EventEmitter();
+      }
+
+      @Directive({
+        outputs: ['opened: triggerOpened'],
+        selector: '[trigger]',
+        standalone: true,
+      })
+      class Trigger extends Base {
+      }
+
+      @Directive({
+        standalone: true,
+        selector: '[host]',
+        hostDirectives: [{directive: Trigger, outputs: ['triggerOpened: hostOpened']}]
+      })
+      class Host {
+      }
+
+      @Component({template: '<div host></div>', standalone: true, imports: [Host]})
+      class App {
+      }
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
   });
 });

@@ -719,12 +719,24 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     const emitted = emittedRef.expression;
     if (emitted instanceof WrappedNodeExpr) {
+      if (refTo.node === inContext) {
+        // Suppress self-imports since components do not have to import themselves.
+        return null;
+      }
+
+      let isForwardReference = false;
+      if (emitted.node.getStart() > inContext.getStart()) {
+        const declaration = this.programDriver.getProgram()
+                                .getTypeChecker()
+                                .getTypeAtLocation(emitted.node)
+                                .getSymbol()
+                                ?.declarations?.[0];
+        if (declaration && declaration.getSourceFile() === inContext.getSourceFile()) {
+          isForwardReference = true;
+        }
+      }
       // An appropriate identifier is already in scope.
-      return {
-        kind,
-        symbolName: emitted.node.text,
-        isForwardReference: emitted.node.getStart() > inContext.getStart()
-      };
+      return {kind, symbolName: emitted.node.text, isForwardReference};
     } else if (
         emitted instanceof ExternalExpr && emitted.value.moduleName !== null &&
         emitted.value.name !== null) {

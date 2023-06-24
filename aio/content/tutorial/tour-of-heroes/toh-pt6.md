@@ -51,16 +51,6 @@ npm install angular-in-memory-web-api --save
 
 </code-example>
 
-In the `AppModule`, import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, which you create next.
-
-<code-example header="src/app/app.module.ts (In-memory Web API imports)" path="toh-pt6/src/app/app.module.ts" region="import-in-mem-stuff"></code-example>
-
-After the `HttpClientModule`, add the `HttpClientInMemoryWebApiModule` to the `AppModule` `imports` array and configure it with the `InMemoryDataService`.
-
-<code-example header="src/app/app.module.ts (imports array excerpt)" path="toh-pt6/src/app/app.module.ts" region="in-mem-web-api-imports"></code-example>
-
-The `forRoot()` configuration method takes an `InMemoryDataService` class that primes the in-memory database.
-
 Generate the class `src/app/in-memory-data.service.ts` with the following command:
 
 <code-example format="shell" language="shell">
@@ -72,6 +62,16 @@ ng generate service InMemoryData
 Replace the default contents of `in-memory-data.service.ts` with the following:
 
 <code-example header="src/app/in-memory-data.service.ts" path="toh-pt6/src/app/in-memory-data.service.ts" region="init"></code-example>
+
+In the `AppModule`, import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, which you create next.
+
+<code-example header="src/app/app.module.ts (In-memory Web API imports)" path="toh-pt6/src/app/app.module.ts" region="import-in-mem-stuff"></code-example>
+
+After the `HttpClientModule`, add the `HttpClientInMemoryWebApiModule` to the `AppModule` `imports` array and configure it with the `InMemoryDataService`.
+
+<code-example header="src/app/app.module.ts (imports array excerpt)" path="toh-pt6/src/app/app.module.ts" region="in-mem-web-api-imports"></code-example>
+
+The `forRoot()` configuration method takes an `InMemoryDataService` class that primes the in-memory database.
 
 The `in-memory-data.service.ts` file takes over the function of `mock-heroes.ts`.
 Don't delete `mock-heroes.ts` yet. You still need it for a few more steps of this tutorial.
@@ -179,10 +179,10 @@ Because each service method returns a different kind of `Observable` result, `ha
 
 ### Tap into the Observable
 
-The `HeroService` methods taps into the flow of observable values and send a message, using the `log()` method, to the message area at the bottom of the page.
+The `getHeros()` method taps into the flow of observable values and sends a message, using the `log()` method, to the message area at the bottom of the page.
 
 The RxJS `tap()` operator enables this ability by looking at the observable values, doing something with those values, and passing them along.
-The `tap()` call back doesn't access the values themselves.
+The `tap()` callback doesn't access the values themselves.
 
 Here is the final version of `getHeroes()` with the `tap()` that logs the operation.
 
@@ -422,7 +422,7 @@ The `searchTerms` becomes an `Observable` emitting a steady stream of search ter
 
 ### Chaining RxJS operators
 
-Passing a new search term directly to the `searchHeroes()` after every user keystroke creates excessive HTTP requests, which taxes server resources and burning through data plans.
+Passing a new search term directly to the `searchHeroes()` after every user keystroke creates excessive HTTP requests, which taxes server resources and burns through data plans.
 
 Instead, the `ngOnInit()` method pipes the `searchTerms` observable through a sequence of RxJS operators that reduce the number of calls to the `searchHeroes()`. Ultimately, this returns an observable of timely hero search results where each one is a `Hero[]`.
 

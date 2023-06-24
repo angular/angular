@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//:yarn.bzl", "YARN_PATH")
 
 package(default_visibility = ["//visibility:public"])
@@ -24,6 +25,14 @@ filegroup(
 alias(
     name = "tsconfig.json",
     actual = "//packages:tsconfig-build.json",
+)
+
+js_library(
+    name = "browser-providers",
+    srcs = [
+        "browser-providers.conf.d.ts",
+        "browser-providers.conf.js",
+    ],
 )
 
 filegroup(
@@ -54,10 +63,19 @@ config_setting(
 
 nodejs_binary(
     name = "yarn_vendored",
-    data = [".yarn/releases/yarn-1.22.17.cjs"],
-    entry_point = ".yarn/releases/yarn-1.22.17.cjs",
+    data = [".yarn/releases/yarn-1.22.19.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.19.cjs",
     visibility = [
         "//aio/tools/examples/shared:__pkg__",
         "//integration:__subpackages__",
     ],
+)
+
+alias(
+    name = "sauce_connect",
+    actual = select({
+        "@npm//@angular/build-tooling/bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
+        "@npm//@angular/build-tooling/bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
+        "@npm//@angular/build-tooling/bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
+    }),
 )

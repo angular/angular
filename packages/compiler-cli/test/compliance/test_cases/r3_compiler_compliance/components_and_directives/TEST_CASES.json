@@ -3,194 +3,144 @@
   "cases": [
     {
       "description": "should instantiate directives in a closure when they are forward referenced",
-      "inputFiles": [
-        "forward_referenced_directive.ts"
-      ],
+      "inputFiles": ["forward_referenced_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "forward_referenced_directive.js"
-          ]
+          "files": ["forward_referenced_directive.js"]
         }
       ]
     },
     {
       "description": "should instantiate pipes in a closure when they are forward referenced",
-      "inputFiles": [
-        "forward_referenced_pipe.ts"
-      ],
+      "inputFiles": ["forward_referenced_pipe.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "forward_referenced_pipe.js"
-          ]
+          "files": ["forward_referenced_pipe.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should split multiple `exportAs` values into an array",
-      "inputFiles": [
-        "export_as.ts"
-      ],
+      "inputFiles": ["export_as.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect SomeDirective.ɵdir",
-          "files": [
-            "export_as.js"
-          ]
+          "files": ["export_as.js"]
         }
       ]
     },
     {
       "description": "should not generate a selectors array if the directive does not have a selector",
-      "inputFiles": [
-        "no_selector.ts"
-      ],
+      "inputFiles": ["no_selector.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid directive definition",
-          "files": [
-            "no_selector.js"
-          ]
+          "files": ["no_selector.js"]
         }
       ]
     },
     {
       "description": "should generate a pure function for constant object literals",
-      "inputFiles": [
-        "constant_object_literals.ts"
-      ],
+      "inputFiles": ["constant_object_literals.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "constant_object_literals.js"
-          ]
+          "files": ["constant_object_literals.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a pure function for constant array literals",
-      "inputFiles": [
-        "constant_array_literals.ts"
-      ],
+      "inputFiles": ["constant_array_literals.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "constant_array_literals.js"
-          ]
+          "files": ["constant_array_literals.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not share pure functions between null and object literals",
-      "inputFiles": [
-        "object_literals_null_vs_empty.ts"
-      ],
+      "inputFiles": ["object_literals_null_vs_empty.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "object_literals_null_vs_empty.js"
-          ]
+          "files": ["object_literals_null_vs_empty.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not share pure functions between null and array literals",
-      "inputFiles": [
-        "array_literals_null_vs_empty.ts"
-      ],
+      "inputFiles": ["array_literals_null_vs_empty.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "array_literals_null_vs_empty.js"
-          ]
+          "files": ["array_literals_null_vs_empty.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not share pure functions between null and function calls",
-      "inputFiles": [
-        "object_literals_null_vs_function.ts"
-      ],
+      "inputFiles": ["object_literals_null_vs_function.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "object_literals_null_vs_function.js"
-          ]
+          "files": ["object_literals_null_vs_function.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should emit a valid setClassMetadata call in ES5 if a class with a custom decorator is referencing itself inside its own metadata",
-      "inputFiles": [
-        "custom_decorator_es5.ts"
-      ],
+      "inputFiles": ["custom_decorator_es5.ts"],
       "compilerOptions": {
         "target": "ES5"
       },
-      "compilationModeFilter": [
-        "full compile"
-      ],
+      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "failureMessage": "Incorrect setClassMetadata call",
-          "files": [
-            "custom_decorator_es5.js"
-          ]
+          "files": ["custom_decorator_es5.js"]
         }
       ]
     },
     {
       "description": "should support empty property bindings on ng-template",
-      "inputFiles": [
-        "ng_template_empty_binding.ts"
-      ],
+      "inputFiles": ["ng_template_empty_binding.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "ng_template_empty_binding.js"
-          ]
+          "files": ["ng_template_empty_binding.js"]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support inline non-literal templates",
-      "inputFiles": [
-        "non_literal_template.ts"
-      ]
+      "inputFiles": ["non_literal_template.ts"]
     },
     {
       "description": "should support inline non-literal templates using substitution",
-      "inputFiles": [
-        "non_literal_template_with_substitution.ts"
-      ]
+      "inputFiles": ["non_literal_template_with_substitution.ts"]
     },
     {
       "description": "should support inline non-literal templates using string concatenation",
-      "inputFiles": [
-        "non_literal_template_with_concatenation.ts"
-      ]
+      "inputFiles": ["non_literal_template_with_concatenation.ts"]
     },
     {
       "description": "should not use reexport names inside declarations when a direct export is available",
-      "inputFiles": [
-        "external_library.d.ts",
-        "library_exports.ts"
-      ],
+      "inputFiles": ["external_library.d.ts", "library_exports.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid list of directives",
-          "files": [
-            "library_exports.js"
-          ]
+          "files": ["library_exports.js"]
         }
       ],
       "compilerOptions": {

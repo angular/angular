@@ -1,6 +1,6 @@
 <h1 class="no-toc">Your first Angular app</h1>
 
-A few lines of TypeScript are all it takes to create your first Angular app. As you your app grows, you can separate the markup and code into different files.
+A few lines of TypeScript are all it takes to create your first Angular app. As your app grows, you can separate the markup and code into different files.
 
 ## Try your first Angular app
 
@@ -41,7 +41,7 @@ To give your component a reset button that sets the counter back to 0:
 
 1.  Click **Add one** several times and then click **Reset**. The counter value should return to zero.
 
-The new line adds a new `<button>` element. When the `click` event occurs in the button, the TypeScript code in the double-quotes sets the `count` property to `0`.
+The new line adds a new `<button>` element. When the `click` event occurs in the button, the TypeScript code in the double quotes sets the `count` property to `0`.
 
 You can also add styles to your new component.
 
@@ -55,7 +55,7 @@ You can also add styles to your new component.
 
     </code-example>
 
-1.  The buttons in your new Angular app should now have bold text and rounded corner.
+1.  The buttons in your new Angular app should now have bold text and rounded corners.
 
 ### Create a new Angular app from the command line
 

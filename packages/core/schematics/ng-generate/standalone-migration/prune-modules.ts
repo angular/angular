@@ -9,42 +9,53 @@
 import {NgtscProgram} from '@angular/compiler-cli';
 import ts from 'typescript';
 
+import {ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
-
-/** Mapping between a file name and spans for node references inside of it. */
-type ReferencesByFile = Map<string, [start: number, end: number][]>;
+import {findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Keeps track of the places from which we need to remove AST nodes. */
 interface RemovalLocations {
   arrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>;
   imports: UniqueItemTracker<ts.NamedImports, ts.Node>;
   exports: UniqueItemTracker<ts.NamedExports, ts.Node>;
-  classes: Set<ts.ClassDeclaration>;
   unknown: Set<ts.Node>;
 }
 
 export function pruneNgModules(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer) {
+    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper,
+    referenceLookupExcludedFiles?: RegExp) {
   const filesToRemove = new Set<ts.SourceFile>();
-  const tracker = new ChangeTracker(printer);
-  const typeChecker = program.getTsProgram().getTypeChecker();
-  const languageService = createLanguageService(program, host, rootFileNames, basePath);
+  const tracker = new ChangeTracker(printer, importRemapper);
+  const tsProgram = program.getTsProgram();
+  const typeChecker = tsProgram.getTypeChecker();
+  const referenceResolver =
+      new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
   const removalLocations: RemovalLocations = {
     arrays: new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>(),
     imports: new UniqueItemTracker<ts.NamedImports, ts.Node>(),
     exports: new UniqueItemTracker<ts.NamedExports, ts.Node>(),
-    classes: new Set<ts.ClassDeclaration>(),
     unknown: new Set<ts.Node>()
   };
+  const classesToRemove = new Set<ts.ClassDeclaration>();
+  const barrelExports = new UniqueItemTracker<ts.SourceFile, ts.ExportDeclaration>();
+  const nodesToRemove = new Set<ts.Node>();
 
   sourceFiles.forEach(function walk(node: ts.Node) {
     if (ts.isClassDeclaration(node) && canRemoveClass(node, typeChecker)) {
-      collectRemovalLocations(node, removalLocations, languageService, program);
-      removalLocations.classes.add(node);
+      collectRemovalLocations(node, removalLocations, referenceResolver, program);
+      classesToRemove.add(node);
+    } else if (
+        ts.isExportDeclaration(node) && !node.exportClause && node.moduleSpecifier &&
+        ts.isStringLiteralLike(node.moduleSpecifier) && node.moduleSpecifier.text.startsWith('.')) {
+      const exportedSourceFile =
+          typeChecker.getSymbolAtLocation(node.moduleSpecifier)?.valueDeclaration?.getSourceFile();
+
+      if (exportedSourceFile) {
+        barrelExports.track(exportedSourceFile, node);
+      }
     }
     node.forEachChild(walk);
   });
@@ -56,10 +67,27 @@ export function pruneNgModules(
   removeExportReferences(removalLocations.exports, tracker);
   addRemovalTodos(removalLocations.unknown, tracker);
 
-  for (const node of removalLocations.classes) {
+  // Collect all the nodes to be removed before determining which files to delete since we need
+  // to know it ahead of time when deleting barrel files that export other barrel files.
+  (function trackNodesToRemove(nodes: Set<ts.Node>) {
+    for (const node of nodes) {
+      const sourceFile = node.getSourceFile();
+
+      if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, nodes)) {
+        const barrelExportsForFile = barrelExports.get(sourceFile);
+        nodesToRemove.add(node);
+        filesToRemove.add(sourceFile);
+        barrelExportsForFile && trackNodesToRemove(barrelExportsForFile);
+      } else {
+        nodesToRemove.add(node);
+      }
+    }
+  })(classesToRemove);
+
+  for (const node of nodesToRemove) {
     const sourceFile = node.getSourceFile();
 
-    if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, removalLocations.classes)) {
+    if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, nodesToRemove)) {
       filesToRemove.add(sourceFile);
     } else {
       tracker.removeNode(node);
@@ -73,13 +101,13 @@ export function pruneNgModules(
  * Collects all the nodes that a module needs to be removed from.
  * @param ngModule Module being removed.
  * @param removalLocations
- * @param languageService
+ * @param referenceResolver
  * @param program
  */
 function collectRemovalLocations(
     ngModule: ts.ClassDeclaration, removalLocations: RemovalLocations,
-    languageService: ts.LanguageService, program: NgtscProgram) {
-  const refsByFile = extractReferences(ngModule, languageService);
+    referenceResolver: ReferenceResolver, program: NgtscProgram) {
+  const refsByFile = referenceResolver.findReferencesInProject(ngModule.name!);
   const tsProgram = program.getTsProgram();
   const nodes = new Set<ts.Node>();
 
@@ -124,7 +152,10 @@ function removeArrayReferences(
     tracker: ChangeTracker): void {
   for (const [array, toRemove] of locations.getEntries()) {
     const newElements = filterRemovedElements(array.elements, toRemove);
-    tracker.replaceNode(array, ts.factory.updateArrayLiteralExpression(array, newElements));
+    tracker.replaceNode(
+        array,
+        ts.factory.updateArrayLiteralExpression(
+            array, ts.factory.createNodeArray(newElements, array.elements.hasTrailingComma)));
   }
 }
 
@@ -277,50 +308,22 @@ function isNonEmptyNgModuleProperty(node: ts.Node): node is ts.PropertyAssignmen
  * Determines if a file is safe to delete. A file is safe to delete if all it contains are
  * import statements, class declarations that are about to be deleted and non-exported code.
  * @param sourceFile File that is being checked.
- * @param classesToBeRemoved Classes that are being removed as a part of the migration.
+ * @param nodesToBeRemoved Nodes that are being removed as a part of the migration.
  */
-function canRemoveFile(sourceFile: ts.SourceFile, classesToBeRemoved: Set<ts.ClassDeclaration>) {
+function canRemoveFile(sourceFile: ts.SourceFile, nodesToBeRemoved: Set<ts.Node>) {
   for (const node of sourceFile.statements) {
-    if (ts.isImportDeclaration(node) ||
-        (ts.isClassDeclaration(node) && classesToBeRemoved.has(node))) {
+    if (ts.isImportDeclaration(node) || nodesToBeRemoved.has(node)) {
       continue;
     }
 
-    if (ts.canHaveModifiers(node) &&
-        ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) {
+    if (ts.isExportDeclaration(node) ||
+        (ts.canHaveModifiers(node) &&
+         ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword))) {
       return false;
     }
   }
 
   return true;
-}
-
-
-/**
- * Finds all the locations in a file where a node is referenced.
- * @param node Node that is being looked up.
- * @param languageService Language service used to find the references.
- */
-function extractReferences(
-    node: ts.ClassDeclaration, languageService: ts.LanguageService): ReferencesByFile {
-  const result: ReferencesByFile = new Map();
-  const referencedSymbols =
-      languageService.findReferences(node.getSourceFile().fileName, node.name!.getStart()) || [];
-
-  for (const symbol of referencedSymbols) {
-    for (const ref of symbol.references) {
-      if (!ref.isDefinition || symbol.definition.kind === ts.ScriptElementKind.alias) {
-        if (!result.has(ref.fileName)) {
-          result.set(ref.fileName, []);
-        }
-
-        result.get(ref.fileName)!.push(
-            [ref.textSpan.start, ref.textSpan.start + ref.textSpan.length]);
-      }
-    }
-  }
-
-  return result;
 }
 
 /**

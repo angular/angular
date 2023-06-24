@@ -85,7 +85,7 @@ import {TestBed} from '@angular/core/testing';
 }
 
 class TestLocalization extends NgLocalization {
-  getPluralCategory(value: number): string {
+  override getPluralCategory(value: number): string {
     return value > 1 && value < 6 ? 'many' : 'other';
   }
 }

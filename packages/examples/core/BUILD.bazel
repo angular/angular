@@ -11,7 +11,6 @@ ng_module(
             "**/*_howto.ts",
         ],
     ),
-    generate_ve_shims = True,
     deps = [
         "//packages/animations",
         "//packages/core",

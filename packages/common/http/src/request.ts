@@ -113,6 +113,8 @@ export class HttpRequest<T> {
    *
    * Progress events are expensive (change detection runs on each event) and so
    * they should only be requested if the consumer intends to monitor them.
+   *
+   * Note: The `FetchBackend` doesn't support progress report on uploads.
    */
   readonly reportProgress: boolean = false;
 
@@ -274,7 +276,7 @@ export class HttpRequest<T> {
    * Transform the free-form body into a serialized format suitable for
    * transmission to the server.
    */
-  serializeBody(): ArrayBuffer|Blob|FormData|string|null {
+  serializeBody(): ArrayBuffer|Blob|FormData|URLSearchParams|string|null {
     // If no body is present, no need to serialize it.
     if (this.body === null) {
       return null;

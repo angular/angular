@@ -44,25 +44,27 @@ export class JitCompilerFactory implements CompilerFactory {
   }
   createCompiler(options: CompilerOptions[] = []): Compiler {
     const opts = _mergeOptions(this._defaultOptions.concat(options));
-    const injector = Injector.create([
-      COMPILER_PROVIDERS, {
-        provide: CompilerConfig,
-        useFactory: () => {
-          return new CompilerConfig({
-            // let explicit values from the compiler options overwrite options
-            // from the app providers
-            useJit: opts.useJit,
-            // let explicit values from the compiler options overwrite options
-            // from the app providers
-            defaultEncapsulation: opts.defaultEncapsulation,
-            missingTranslation: opts.missingTranslation,
-            preserveWhitespaces: opts.preserveWhitespaces,
-          });
+    const injector = Injector.create({
+      providers: [
+        COMPILER_PROVIDERS, {
+          provide: CompilerConfig,
+          useFactory: () => {
+            return new CompilerConfig({
+              // let explicit values from the compiler options overwrite options
+              // from the app providers
+              useJit: opts.useJit,
+              // let explicit values from the compiler options overwrite options
+              // from the app providers
+              defaultEncapsulation: opts.defaultEncapsulation,
+              missingTranslation: opts.missingTranslation,
+              preserveWhitespaces: opts.preserveWhitespaces,
+            });
+          },
+          deps: []
         },
-        deps: []
-      },
-      opts.providers!
-    ]);
+        opts.providers!
+      ]
+    });
     return injector.get(Compiler);
   }
 }

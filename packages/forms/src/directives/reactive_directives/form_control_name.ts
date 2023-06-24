@@ -33,8 +33,8 @@ const controlNameBinding: Provider = {
  * element by name.
  *
  * @see [Reactive Forms Guide](guide/reactive-forms)
- * @see `FormControl`
- * @see `AbstractControl`
+ * @see {@link FormControl}
+ * @see {@link AbstractControl}
  *
  * @usageNotes
  *
@@ -86,8 +86,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * while the numerical form allows for form controls to be bound
    * to indices when iterating over controls in a `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('formControlName') override name!: string|number|null;
+  @Input('formControlName') override name: string|number|null = null;
 
   /**
    * @description

@@ -16,6 +16,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     toolchains = kwargs.pop("toolchains", [])
     environment = kwargs.pop("environment", {})
     track_payload_size = kwargs.pop("track_payload_size", None)
+    track_payload_paths = kwargs.pop("track_payload_paths", [""])
     data = kwargs.pop("data", [])
 
     if setup_chromium:
@@ -36,9 +37,13 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     if track_payload_size:
         commands += [
             "yarn build",
-            # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
-            "$(rootpath //:scripts/ci/bazel-payload-size.sh) %s 'dist/*.js' true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % track_payload_size,
         ]
+        for path in track_payload_paths:
+            commands += [
+                # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
+                "$(rootpath //:scripts/ci/bazel-payload-size.sh) {bundle}{path} 'dist{path}/*.js' true ${runfiles}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)".format(bundle = track_payload_size, path = path, runfiles = "${RUNFILES}"),
+            ]
+
         data += [
             "//goldens:size-tracking/integration-payloads.json",
             "//:scripts/ci/bazel-payload-size.sh",

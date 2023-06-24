@@ -64,21 +64,29 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
 export function getImportSpecifier(
     sourceFile: ts.SourceFile, moduleName: string|RegExp,
     specifierName: string): ts.ImportSpecifier|null {
+  return getImportSpecifiers(sourceFile, moduleName, [specifierName])[0] ?? null;
+}
+
+export function getImportSpecifiers(
+    sourceFile: ts.SourceFile, moduleName: string|RegExp,
+    specifierNames: string[]): ts.ImportSpecifier[] {
+  const matches: ts.ImportSpecifier[] = [];
   for (const node of sourceFile.statements) {
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
       const isMatch = typeof moduleName === 'string' ? node.moduleSpecifier.text === moduleName :
                                                        moduleName.test(node.moduleSpecifier.text);
       const namedBindings = node.importClause?.namedBindings;
       if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
-        const match = findImportSpecifier(namedBindings.elements, specifierName);
-        if (match) {
-          return match;
+        for (const specifierName of specifierNames) {
+          const match = findImportSpecifier(namedBindings.elements, specifierName);
+          if (match) {
+            matches.push(match);
+          }
         }
       }
     }
   }
-
-  return null;
+  return matches;
 }
 
 

@@ -358,7 +358,7 @@ withEachNg1Version(() => {
                  upgradeRef.dispose();
                });
 
-               Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+               queueMicrotask(() => this.valueFromPromise = changes['value'].currentValue);
              }
            }
 

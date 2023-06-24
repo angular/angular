@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode,} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
@@ -111,15 +111,7 @@ export type TemplateDeclaration = InlineTemplateDeclaration|ExternalTemplateDecl
 
 /** Determines the node to use for debugging purposes for the given TemplateDeclaration. */
 export function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): ts.Node {
-  // TODO(zarend): Change this to if/else when that is compatible with g3. This uses a switch
-  // because if/else fails to compile on g3. That is because g3 compiles this in non-strict mode
-  // where type inference does not work correctly.
-  switch (declaration.isInline) {
-    case true:
-      return declaration.expression;
-    case false:
-      return declaration.templateUrlExpression;
-  }
+  return declaration.isInline ? declaration.expression : declaration.templateUrlExpression;
 }
 
 export interface ExtractTemplateOptions {
@@ -199,9 +191,7 @@ export function extractTemplate(
       sourceMapping: {
         type: 'external',
         componentClass: node,
-        // TODO(alxhub): TS in g3 is unable to make this inference on its own, so cast it here
-        // until g3 is able to figure this out.
-        node: (template as ExternalTemplateDeclaration).templateUrlExpression,
+        node: template.templateUrlExpression,
         template: templateContent,
         templateUrl: template.resolvedTemplateUrl,
       },
@@ -262,9 +252,9 @@ function parseExtractedTemplate(
 }
 
 export function parseTemplateDeclaration(
-    decorator: Decorator, component: Map<string, ts.Expression>, containingFile: string,
-    evaluator: PartialEvaluator, resourceLoader: ResourceLoader,
-    defaultPreserveWhitespaces: boolean): TemplateDeclaration {
+    node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
+    containingFile: string, evaluator: PartialEvaluator, depTracker: DependencyTracker|null,
+    resourceLoader: ResourceLoader, defaultPreserveWhitespaces: boolean): TemplateDeclaration {
   let preserveWhitespaces: boolean = defaultPreserveWhitespaces;
   if (component.has('preserveWhitespaces')) {
     const expr = component.get('preserveWhitespaces')!;
@@ -305,6 +295,12 @@ export function parseTemplateDeclaration(
         resolvedTemplateUrl: resourceUrl,
       };
     } catch (e) {
+      if (depTracker !== null) {
+        // The analysis of this file cannot be re-used if the template URL could
+        // not be resolved. Future builds should re-analyze and re-attempt resolution.
+        depTracker.recordDependencyAnalysisFailure(node.getSourceFile());
+      }
+
       throw makeResourceNotFoundError(
           templateUrl, templateUrlExpr, ResourceTypeForDiagnostics.Template);
     }
@@ -319,8 +315,7 @@ export function parseTemplateDeclaration(
     };
   } else {
     throw new FatalDiagnosticError(
-        ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
-        'component is missing a template');
+        ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
   }
 }
 
@@ -348,7 +343,7 @@ export function preloadAndParseTemplate(
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
           const templateDecl = parseTemplateDeclaration(
-              decorator, component, containingFile, evaluator, resourceLoader,
+              node, decorator, component, containingFile, evaluator, depTracker, resourceLoader,
               defaultPreserveWhitespaces);
           const template =
               extractTemplate(node, templateDecl, evaluator, depTracker, resourceLoader, options);
@@ -359,12 +354,18 @@ export function preloadAndParseTemplate(
         return Promise.resolve(null);
       }
     } catch (e) {
+      if (depTracker !== null) {
+        // The analysis of this file cannot be re-used if the template URL could
+        // not be resolved. Future builds should re-analyze and re-attempt resolution.
+        depTracker.recordDependencyAnalysisFailure(node.getSourceFile());
+      }
+
       throw makeResourceNotFoundError(
           templateUrl, templateUrlExpr, ResourceTypeForDiagnostics.Template);
     }
   } else {
     const templateDecl = parseTemplateDeclaration(
-        decorator, component, containingFile, evaluator, resourceLoader,
+        node, decorator, component, containingFile, evaluator, depTracker, resourceLoader,
         defaultPreserveWhitespaces);
     const template =
         extractTemplate(node, templateDecl, evaluator, depTracker, resourceLoader, options);

@@ -51,6 +51,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
        'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,
        'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
+       'ɵɵInputTransformsFeature': r3.ɵɵInputTransformsFeature,
        'ɵɵStandaloneFeature': r3.ɵɵStandaloneFeature,
        'ɵɵnextContext': r3.ɵɵnextContext,
        'ɵɵnamespaceHTML': r3.ɵɵnamespaceHTML,

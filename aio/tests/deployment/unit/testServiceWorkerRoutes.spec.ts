@@ -1,4 +1,4 @@
-import { getSwNavigationUrlChecker, loadLegacyUrls, loadLocalSitemapUrls } from '../shared/helpers';
+import {getSwNavigationUrlChecker, loadLegacyUrls, loadLocalSitemapUrls} from '../shared/helpers';
 
 describe('ServiceWorker navigation URLs', () => {
   const isNavigationUrl = getSwNavigationUrlChecker();

@@ -220,17 +220,11 @@ export class DebugElement extends DebugNode {
       }
     }
 
-    const eAttrs = element.attributes;
-    for (let i = 0; i < eAttrs.length; i++) {
-      const attr = eAttrs[i];
-      const lowercaseName = attr.name.toLowerCase();
-
+    for (const attr of element.attributes) {
       // Make sure that we don't assign the same attribute both in its
       // case-sensitive form and the lower-cased one from the browser.
-      if (lowercaseTNodeAttrs.indexOf(lowercaseName) === -1) {
-        // Save the lowercase name to align the behavior between browsers.
-        // IE preserves the case, while all other browser convert it to lower case.
-        attributes[lowercaseName] = attr.value;
+      if (!lowercaseTNodeAttrs.includes(attr.name)) {
+        attributes[attr.name] = attr.value;
       }
     }
 
@@ -658,11 +652,6 @@ export function getDebugNode(nativeNode: any): DebugNode|null {
     }
     return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
-  return null;
-}
-
-// TODO: cleanup all references to this function and remove it.
-export function getDebugNodeR2(_nativeNode: any): DebugNode|null {
   return null;
 }
 

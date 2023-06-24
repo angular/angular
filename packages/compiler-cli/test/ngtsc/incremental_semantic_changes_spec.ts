@@ -870,6 +870,73 @@ runInEachFileSystem(() => {
           '/cmp.js',
         ]);
       });
+
+      it('should recompile dependent components when an input becomes required', () => {
+        // Testing setup: Cmp is a component with a template that matches a directive Dep with the
+        // initial selector '[dep]'.
+        //
+        // During the test, an input of Dep becomes required, and the test verifies that Cmp is
+        // re-emitted.
+
+        env.write('dep.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dep]',
+          })
+          export class Dep {
+            @Input() input!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'cmp',
+            template: '<div dep input="hello"></div>',
+          })
+          export class Cmp {}
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dep} from './dep';
+
+          @NgModule({
+            declarations: [Cmp, Dep],
+          })
+          export class Mod {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        env.write('dep.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dep]',
+          })
+          export class Dep {
+            @Input({required: true}) input!: string; // making this required changes the public API
+          }
+        `);
+        env.driveMain();
+
+        expectToHaveWritten([
+          // Dep is written because it was directly updated.
+          '/dep.js',
+
+          // Dep is written because it was directly updated.
+          '/dep.d.ts',
+
+          // Mod is written because it has a direct dependency on Dep.
+          '/mod.js',
+
+          // Mod is written because it depends on Dep, which has changed in its public API.
+          '/mod.d.ts',
+        ]);
+      });
     });
 
     describe('external declarations', () => {

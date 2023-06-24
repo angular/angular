@@ -18,7 +18,7 @@ import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
-import {FactoryFn, getFactoryDef} from './definition_factory';
+import {getFactoryDef} from './definition_factory';
 import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
@@ -399,7 +399,10 @@ export function getOrCreateInjectable<T>(
   if (tNode !== null) {
     // If the view or any of its ancestors have an embedded
     // view injector, we have to look it up there first.
-    if (lView[FLAGS] & LViewFlags.HasEmbeddedViewInjector) {
+    if (lView[FLAGS] & LViewFlags.HasEmbeddedViewInjector &&
+        // The token must be present on the current node injector when the `Self`
+        // flag is set, so the lookup on embedded view injector(s) can be skipped.
+        !(flags & InjectFlags.Self)) {
       const embeddedInjectorValue =
           lookupTokenUsingEmbeddedInjector(tNode, lView, token, flags, NOT_FOUND);
       if (embeddedInjectorValue !== NOT_FOUND) {
@@ -746,7 +749,7 @@ export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => 
     // (no Angular decorator on the superclass) or there is no constructor at all
     // in the inheritance chain. Since the two cases cannot be distinguished, the
     // latter has to be assumed.
-    return t => new t();
+    return (t: Type<T>) => new t();
   });
 }
 

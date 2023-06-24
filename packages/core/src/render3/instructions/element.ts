@@ -6,17 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {invalidSkipHydrationHost, validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
+import {locateNextRNode} from '../../hydration/node_lookup_utils';
+import {hasSkipHydrationAttrOnRElement, hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
+import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
+import {hasI18n, isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild, createElementNode, setupStaticAttributes} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
+import {appendChild, clearElementContents, createElementNode, setupStaticAttributes} from '../node_manipulation';
+import {decreaseElementDepthCount, enterSkipHydrationBlock, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, isInSkipHydrationBlock, isSkipHydrationRootTNode, lastNodeWasCreated, leaveSkipHydrationBlock, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -26,8 +31,8 @@ import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, reso
 
 
 function elementStartFirstCreatePass(
-    index: number, tView: TView, lView: LView, native: RElement, name: string,
-    attrsIndex?: number|null, localRefsIndex?: number): TElementNode {
+    index: number, tView: TView, lView: LView, name: string, attrsIndex?: number|null,
+    localRefsIndex?: number): TElementNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
 
@@ -35,11 +40,7 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
 
-  const hasDirectives =
-      resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  if (ngDevMode) {
-    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
-  }
+  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -85,15 +86,23 @@ export function ɵɵelementStart(
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
-  const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
   const tNode = tView.firstCreatePass ?
-      elementStartFirstCreatePass(
-          adjustedIndex, tView, lView, native, name, attrsIndex, localRefsIndex) :
+      elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementNode;
+
+  const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
+  lView[adjustedIndex] = native;
+
+  const hasDirectives = isDirectiveHost(tNode);
+
+  if (ngDevMode && tView.firstCreatePass) {
+    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
+  }
+
   setCurrentTNode(tNode, true);
   setupStaticAttributes(renderer, native, tNode);
 
-  if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
+  if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached && wasLastNodeCreated()) {
     // In the i18n case, the translation may have removed this element, so only add it if it is not
     // detached. See `TNodeType.Placeholder` and `LFrame.inI18n` for more context.
     appendChild(tView, lView, native, tNode);
@@ -107,8 +116,7 @@ export function ɵɵelementStart(
   }
   increaseElementDepthCount();
 
-
-  if (isDirectiveHost(tNode)) {
+  if (hasDirectives) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
@@ -138,6 +146,9 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   const tNode = currentTNode;
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
 
+  if (isSkipHydrationRootTNode(tNode)) {
+    leaveSkipHydrationBlock();
+  }
 
   decreaseElementDepthCount();
 
@@ -176,4 +187,71 @@ export function ɵɵelement(
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
   return ɵɵelement;
+}
+
+let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl =
+    (tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string, index: number) => {
+      lastNodeWasCreated(true);
+      return createElementNode(renderer, name, getNamespace());
+    };
+
+/**
+ * Enables hydration code path (to lookup existing elements in DOM)
+ * in addition to the regular creation mode of element nodes.
+ */
+function locateOrCreateElementNodeImpl(
+    tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string,
+    index: number): RElement {
+  const hydrationInfo = lView[HYDRATION];
+  const isNodeCreationMode =
+      !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
+  lastNodeWasCreated(isNodeCreationMode);
+
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createElementNode(renderer, name, getNamespace());
+  }
+
+  // Hydration mode, looking up an existing element in DOM.
+  const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
+  ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
+  ngDevMode && markRNodeAsClaimedByHydration(native);
+
+  // This element might also be an anchor of a view container.
+  if (getSerializedContainerViews(hydrationInfo, index)) {
+    // Important note: this element acts as an anchor, but it's **not** a part
+    // of the embedded view, so we start the segment **after** this element, taking
+    // a reference to the next sibling. For example, the following template:
+    // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
+    // so while processing a `<div>` instruction, point to the next sibling as a
+    // start of a segment.
+    ngDevMode && validateNodeExists(native.nextSibling, lView, tNode);
+    setSegmentHead(hydrationInfo, index, native.nextSibling);
+  }
+
+  // Checks if the skip hydration attribute is present during hydration so we know to
+  // skip attempting to hydrate this block. We check both TNode and RElement for an
+  // attribute: the RElement case is needed for i18n cases, when we add it to host
+  // elements during the annotation phase (after all internal data structures are setup).
+  if (hydrationInfo &&
+      (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native))) {
+    if (isComponentHost(tNode)) {
+      enterSkipHydrationBlock(tNode);
+
+      // Since this isn't hydratable, we need to empty the node
+      // so there's no duplicate content after render
+      clearElementContents(native);
+
+      ngDevMode && ngDevMode.componentsSkippedHydration++;
+    } else if (ngDevMode) {
+      // If this is not a component host, throw an error.
+      // Hydration can be skipped on per-component basis only.
+      throw invalidSkipHydrationHost(native);
+    }
+  }
+  return native;
+}
+
+export function enableLocateOrCreateElementNodeImpl() {
+  _locateOrCreateElementNode = locateOrCreateElementNodeImpl;
 }

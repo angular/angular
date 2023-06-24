@@ -312,9 +312,20 @@
           "tooltip": "A list of developer guides for building Angular applications."
         },
         {
-          "url": "guide/standalone-components",
-          "title": "Standalone components",
-          "tooltip": "Standalone components, directives, and pipes"
+          "title": "Standalone",
+          "tooltip": "Learn about Angular's standalone APIs and how to convert your application to them.",
+          "children": [
+            {
+              "url": "guide/standalone-components",
+              "title": "Standalone components",
+              "tooltip": "Standalone components, directives, and pipes"
+            },
+            {
+              "url": "guide/standalone-migration",
+              "title": "Migrating to standalone",
+              "tooltip": "Migrate your application to Angular's standalone APIs"
+            }
+          ]
         },
         {
           "title": "Change detection",
@@ -410,9 +421,95 @@
           ]
         },
         {
-          "url": "guide/http",
+          "url": "guide/esbuild",
+          "title": "esbuild-based Builds",
+          "tooltip": "Getting started with the CLI's esbuild-based build system."
+        },
+        {
           "title": "HTTP client",
-          "tooltip": "Use HTTP to talk to a remote server."
+          "tooltip": "Use HTTP to talk to a remote server.",
+          "children": [
+            {
+              "url": "guide/understanding-communicating-with-http",
+              "title": "Understanding HTTP",
+              "tooltip": "Understanding communicating with backend services using HTTP"
+            },
+            {
+              "url": "guide/http-setup-server-communication",
+              "title": "Setup for server communication",
+              "tooltip": "Setup a server communication for HTTP"
+            },
+            {
+              "url": "guide/http-server-communication",
+              "title": "Communicating with backend services",
+              "tooltip": "Understanding communicating with backend services using HTTP"
+            },
+            {
+              "url": "guide/http-request-data-from-server",
+              "title": "Request data from a server",
+              "tooltip": "Learn how to request data from the server via the HTTP client"
+            },
+            {
+              "url": "guide/http-make-jsonp-request",
+              "title": "Make a JSONP request",
+              "tooltip": "Make a cross-origin request via JSONP"
+            },
+            {
+              "url": "guide/http-handle-request-errors",
+              "title": "Handle request errors",
+              "tooltip": "Error handling"
+            },
+            {
+              "url": "guide/http-send-data-to-server",
+              "title": "Send data to a server",
+              "tooltip": "Learn how to send data to a server via the HTTP client"
+            },
+            {
+              "url": "guide/http-configure-http-url-parameters",
+              "title": "Configure URL parameters",
+              "tooltip": "Learn how to configure parameters of the URL when sending requests over HTTP"
+            },
+            {
+              "url": "guide/http-intercept-requests-and-responses",
+              "title": "Intercept requests and responses",
+              "tooltip": "Learn how to use HTTP interceptors to transform requests and responses"
+            },
+            {
+              "url": "guide/http-interceptor-use-cases",
+              "title": "Interceptor use-cases",
+              "tooltip": "Learn when to use HTTP interceptors"
+            },
+            {
+              "url": "guide/http-pass-metadata-to-interceptors",
+              "title": "Pass metadata to interceptors",
+              "tooltip": "Learn how to pass metadata to interceptors"
+            },
+            {
+              "url": "guide/http-track-show-request-progress",
+              "title": "Track and show request progress",
+              "tooltip": "Learn how to track and show progress when sending HTTP requests"
+            },
+            {
+              "url": "guide/http-optimize-server-interaction",
+              "title": "Optimize server communication",
+              "tooltip": "Learn how to use debouncing to optimize server interaction"
+            },
+            {
+              "url": "guide/http-security-xsrf-protection",
+              "title": "Cross-Site Request Forgery (XSRF) protection",
+              "tooltip": "Learn how to secure your website against Cross-Site Request Forgery"
+            },
+            {
+              "url": "guide/http-test-requests",
+              "title": "Test requests",
+              "tooltip": "Learn how to test logic that uses the HTTP client"
+            }
+          ]
+        },
+        {
+          "url": "guide/hydration",
+          "title": "Hydration",
+          "tooltip": "How to enable hydration on your server rendered applications."
         },
         {
           "url": "guide/image-directive",
@@ -670,6 +767,22 @@
               "tooltip": "Information about the Angular Package Format."
             }
           ]
+        },
+        {
+          "title": "Feature preview",
+          "tooltip": "Angular preview features and APIs",
+          "children": [
+            {
+              "url": "guide/signals",
+              "title": "Signals",
+              "tooltip": "Angular signals for optimized change detection"
+            },
+            {
+              "url": "guide/rxjs-interop",
+              "title": "RxJS Interop for Signals",
+              "tooltip": "Angular signals and Observable interop"
+            }
+          ]
         }
       ]
     },
@@ -798,6 +911,87 @@
       "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
       "children": [
         {
+          "title": "Tutorial: Your first Angular app",
+          "tooltip": "Learn how to get started in Angular by building an Angular app",
+          "children": [
+            {
+              "url": "tutorial/first-app",
+              "title": "Introduction",
+              "tooltip": "Introduction to the first Angular app and tutorial"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-01",
+              "title": "Hello world",
+              "tooltip": "Start coding in Angular with Hello World"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-02",
+              "title": "Create home component",
+              "tooltip": "Create the app's HomeComponent"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-03",
+              "title": "Create housing location component",
+              "tooltip": "Create the app's HousingLocation"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-04",
+              "title": "Create an interface",
+              "tooltip": "Create an interface for your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-05",
+              "title": "Add inputs to components",
+              "tooltip": "Add inputs to components in your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-06",
+              "title": "Add property binding to components",
+              "tooltip": "Add property binding to components in your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-07",
+              "title": "Add dynamic values to templates",
+              "tooltip": "Add dynamic values to your templates in your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-08",
+              "title": "Use *ngFor in templates",
+              "tooltip": "Use *ngFor in your templates in your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-09",
+              "title": "Angular services",
+              "tooltip": "Add an Angular service to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-10",
+              "title": "Add routing",
+              "tooltip": "Add routing to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-11",
+              "title": "Customize the details page",
+              "tooltip": "Add styles, links and more to the details page"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-12",
+              "title": "Integrate Angular forms",
+              "tooltip": "Add an Angular form to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-13",
+              "title": "Add search functionality",
+              "tooltip": "Add search functionality to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-14",
+              "title": "Add HTTP communication",
+              "tooltip": "Add HTTP communication to your app"
+            }
+          ]
+        },
+        {
           "title": "Tutorial: Tour of Heroes",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
@@ -855,7 +1049,7 @@
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
-          "url": "guide/update-to-version-15",
+          "url": "guide/update-to-version-16",
           "title": "Update Angular to the latest version",
           "tooltip": "Update your Angular application to the latest version."
         },
@@ -868,6 +1062,11 @@
           "url": "guide/releases",
           "title": "Release practices",
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+        },
+        {
+          "url": "guide/versions",
+          "title": "Version compatibility",
+          "tooltip": "Angular, Node.js, TypeScript, and RxJS version compatibility."
         },
         {
           "url": "guide/browser-support",
@@ -933,6 +1132,11 @@
                   "url": "guide/architecture-components",
                   "title": "Intro to components",
                   "tooltip": "About Components, Templates, and Views."
+                },
+                {
+                  "url": "guide/architecture-services",
+                  "title": "Intro to services and DI",
+                  "tooltip": "About services and dependency injection."
                 },
                 {
                   "url": "guide/architecture-next-steps",
@@ -1016,11 +1220,6 @@
                   "url": "guide/module-types",
                   "title": "Types of feature modules",
                   "tooltip": "Description of the different types of feature modules."
-                },
-                {
-                  "url": "guide/entry-components",
-                  "title": "Entry components",
-                  "tooltip": "All about entry components in Angular."
                 },
                 {
                   "url": "guide/feature-modules",

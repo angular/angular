@@ -367,9 +367,11 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
  * Instead, `LogicalProjectPath`s are used.
  */
 export class LogicalProjectStrategy implements ReferenceEmitStrategy {
-  private relativePathStrategy = new RelativePathStrategy(this.reflector);
+  private relativePathStrategy: RelativePathStrategy;
 
-  constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {}
+  constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {
+    this.relativePathStrategy = new RelativePathStrategy(this.reflector);
+  }
 
   emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): ReferenceEmitResult|null {
     const destSf = getSourceFile(ref.node);

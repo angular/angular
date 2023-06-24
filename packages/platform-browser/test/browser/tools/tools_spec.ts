@@ -7,7 +7,10 @@
  */
 
 import {ApplicationRef, Injector, ɵglobal as global} from '@angular/core';
+import {ComponentRef} from '@angular/core/src/render3';
 import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
+
+import {AngularProfiler} from '../../../src/browser/tools/common_tools';
 
 {
   describe('profiler', () => {
@@ -19,13 +22,15 @@ import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
     beforeEach(() => {
       enableDebugTools({
-        injector: Injector.create([{
-          provide: ApplicationRef,
-          useValue: jasmine.createSpyObj(
-              'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
-          deps: []
-        }])
-      } as any);
+        injector: Injector.create({
+          providers: [{
+            provide: ApplicationRef,
+            useValue: jasmine.createSpyObj(
+                'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
+            deps: []
+          }]
+        })
+      } as ComponentRef<any>);
     });
 
     afterEach(() => {
@@ -42,6 +47,6 @@ import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
   });
 }
 
-export function callNgProfilerTimeChangeDetection(config?: any /** TODO #9100 */): void {
-  (<any>global).ng.profiler.timeChangeDetection(config);
+export function callNgProfilerTimeChangeDetection(config?: {record: true}): void {
+  (global.ng.profiler as AngularProfiler).timeChangeDetection(config);
 }

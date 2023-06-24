@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {scheduleMicroTask} from '../util';
 import {AnimationPlayer} from './animation_player';
 
 /**
  * A programmatic controller for a group of reusable animations.
  * Used internally to control animations.
  *
- * @see `AnimationPlayer`
- * @see `{@link animations/group group()}`
+ * @see {@link AnimationPlayer}
+ * @see {@link animations/group group}
  *
  */
 export class AnimationGroupPlayer implements AnimationPlayer {
@@ -37,7 +36,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     const total = this.players.length;
 
     if (total == 0) {
-      scheduleMicroTask(() => this._onFinish());
+      queueMicrotask(() => this._onFinish());
     } else {
       this.players.forEach(player => {
         player.onDone(() => {

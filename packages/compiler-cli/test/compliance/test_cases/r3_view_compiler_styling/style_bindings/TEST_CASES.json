@@ -13,7 +13,8 @@
             "style_binding.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should correctly count the total slots required when style/class bindings include interpolation",
@@ -27,7 +28,8 @@
             "binding_slots.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should place initial, multi, singular and application followed by attribute style instructions in the template code in that order",
@@ -41,7 +43,8 @@
             "binding_slots_interpolations.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected",
@@ -55,7 +58,8 @@
             "style_ordering.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support [style.foo.suffix] style bindings with a suffix",
@@ -69,7 +73,8 @@
             "style_binding_suffixed.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not create instructions for empty style bindings",
@@ -83,7 +88,8 @@
             "empty_style_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

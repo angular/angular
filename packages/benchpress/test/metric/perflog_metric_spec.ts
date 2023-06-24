@@ -62,7 +62,7 @@ function createMetric(
   if (ignoreNavigation != null) {
     providers.push({provide: PerflogMetric.IGNORE_NAVIGATION, useValue: ignoreNavigation});
   }
-  return Injector.create(providers).get(PerflogMetric);
+  return Injector.create({providers}).get(PerflogMetric);
 }
 
 describe('perflog metric', () => {

@@ -34,8 +34,8 @@
 <a href="#ref-vars">Template reference variables</a><br>
 <a href="#inputs-and-outputs">Inputs and outputs</a><br>
 <a href="#pipes">Pipes</a><br>
-<a href="#safe-navigation-operator">Safe navigation operator <i>?.</i></a><br>
-<a href="#non-null-assertion-operator">Non-null assertion operator <i>!.</i></a><br>
+<a href="#safe-navigation-operator">Safe navigation operator <em>?.</em></a><br>
+<a href="#non-null-assertion-operator">Non-null assertion operator <em>!.</em></a><br>
 <a href="#enums">Enums</a><br>
 <a href="#svg-templates">SVG Templates</a><br>
 
@@ -180,18 +180,18 @@ button</button>
 
 <a class="to-toc" href="#toc">top</a>
 
-<!-- eslint-disable @angular-eslint/template/accessibility-alt-text -->
+<!-- eslint-disable @angular-eslint/template/alt-text -->
 <!-- property vs. attribute -->
 <hr><h2 id="prop-vs-attrib">Property vs. Attribute (img examples)</h2>
 <!-- examine the following <img> tag in the browser tools -->
 <img src="images/ng-logo.svg"
-    [src]="heroImageUrl">
+    [src]="heroImageUrl" [alt]="hero.name">
 
 <br><br>
 
-<img [src]="iconUrl"/>
-<img [attr.src]="villainImageUrl"/>
-<!-- eslint-enable @angular-eslint/template/accessibility-alt-text -->
+<img [src]="iconUrl" alt="icon"/>
+<img [attr.src]="villainImageUrl" alt="villain-image"/>
+<!-- eslint-enable @angular-eslint/template/alt-text -->
 <a class="to-toc" href="#toc">top</a>
 
 <!-- buttons -->
@@ -223,22 +223,22 @@ button</button>
 
 <p>
   <img src="{{heroImageUrl}}" alt="interpolated image of {{currentHero.name}}">
-  is the <i>interpolated</i> image.
+  is the <em>interpolated</em> image.
 </p>
 <p>
   <img [src]="heroImageUrl" [alt]="'property bounded image of ' + currentHero.name">
-  is the <i>property bound</i> image.
+  is the <em>property bound</em> image.
 </p>
 
-<p><span>"{{title}}" is the <i>interpolated</i> title.</span></p>
-<p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
+<p><span>"{{title}}" is the <em>interpolated</em> title.</span></p>
+<p>"<span [innerHTML]="title"></span>" is the <em>property bound</em> title.</p>
 
 <!--
   Angular generates warnings for these two lines as it sanitizes them
   WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
  -->
-<p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
-<p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
+<p><span>"{{evilTitle}}" is the <em>interpolated</em> evil title.</span></p>
+<p>"<span [innerHTML]="evilTitle"></span>" is the <em>property bound</em> evil title.</p>
 
 <a class="to-toc" href="#toc">top</a>
 
@@ -484,12 +484,12 @@ without NgModel
 <a class="to-toc" href="#toc">top</a>
 
 <h4 id="ngFor-index">*ngFor with index</h4>
-<p>with <i>semi-colon</i> separator</p>
+<p>with <em>semi-colon</em> separator</p>
 <div class="box">
   <div *ngFor="let hero of heroes; let i=index">{{i + 1}} - {{hero.name}}</div>
 </div>
 
-<p>with <i>comma</i> separator</p>
+<p>with <em>comma</em> separator</p>
 <div class="box">
   <!-- Ex: "1 - Hercules" -->
   <div *ngFor="let hero of heroes, let i=index">{{i + 1}} - {{hero.name}}</div>
@@ -502,7 +502,7 @@ without NgModel
 <button type="button" (click)="changeIds()">Change ids</button>
 <button type="button" (click)="clearTrackByCounts()">Clear counts</button>
 
-<p><i>without</i> trackBy</p>
+<p><em>without</em> trackBy</p>
 <div class="box">
   <div #noTrackBy *ngFor="let hero of heroes">({{hero.id}}) {{hero.name}}</div>
 
@@ -522,24 +522,24 @@ without NgModel
 
 <br><br><br>
 
-<p>with trackBy and <i>semi-colon</i> separator</p>
+<p>with trackBy and <em>semi-colon</em> separator</p>
 <div class="box">
   <div *ngFor="let hero of heroes; trackBy: trackByHeroes">
     ({{hero.id}}) {{hero.name}}
   </div>
 </div>
 
-<p>with trackBy and <i>comma</i> separator</p>
+<p>with trackBy and <em>comma</em> separator</p>
 <div class="box">
   <div *ngFor="let hero of heroes, trackBy: trackByHeroes">({{hero.id}}) {{hero.name}}</div>
 </div>
 
-<p>with trackBy and <i>space</i> separator</p>
+<p>with trackBy and <em>space</em> separator</p>
 <div class="box">
   <div *ngFor="let hero of heroes trackBy: trackByHeroes">({{hero.id}}) {{hero.name}}</div>
 </div>
 
-<p>with <i>generic</i> trackById function</p>
+<p>with <em>generic</em> trackById function</p>
 <div class="box">
   <div *ngFor="let hero of heroes, trackBy: trackById">({{hero.id}}) {{hero.name}}</div>
 </div>
@@ -624,7 +624,7 @@ without NgModel
 <a class="to-toc" href="#toc">top</a>
 
 <!-- Null values and the safe navigation operator -->
-<hr><h2 id="safe-navigation-operator">Safe navigation operator <i>?.</i></h2>
+<hr><h2 id="safe-navigation-operator">Safe navigation operator <em>?.</em></h2>
 
 <div>
   The title is {{title}}
@@ -662,7 +662,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 <a class="to-toc" href="#toc">top</a>
 
 <!-- non-null assertion operator -->
-<hr><h2 id="non-null-assertion-operator">Non-null assertion operator <i>!.</i></h2>
+<hr><h2 id="non-null-assertion-operator">Non-null assertion operator <em>!.</em></h2>
 
 <div>
   <!--No hero, no text -->
@@ -674,7 +674,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 <a class="to-toc" href="#toc">top</a>
 
 <!-- non-null assertion operator -->
-<hr><h2 id="any-type-cast-function">$any type cast function <i>$any( )</i>.</h2>
+<hr><h2 id="any-type-cast-function">$any type cast function <em>$any( )</em>.</h2>
 
 <div>
   <!-- Accessing an undeclared member -->

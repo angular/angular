@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {DOCUMENT, NgIf} from '@angular/common';
+import {ApplicationRef, Component, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, forwardRef, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -76,7 +76,6 @@ describe('component', () => {
        })
        class App {
          @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
-         constructor(public componentFactoryResolver: ComponentFactoryResolver) {}
        }
 
        TestBed.configureTestingModule({declarations: [App, Wrapper, HelloComponent]});
@@ -84,8 +83,7 @@ describe('component', () => {
        fixture.detectChanges();
 
        const instance = fixture.componentInstance;
-       const factory = instance.componentFactoryResolver.resolveComponentFactory(HelloComponent);
-       instance.viewContainerRef.createComponent(factory);
+       instance.viewContainerRef.createComponent(HelloComponent);
 
        expect(fixture.nativeElement.textContent.trim()).toBe('hello');
      });
@@ -233,13 +231,15 @@ describe('component', () => {
          componentRef!: ComponentRef<DynamicComponent>;
 
          constructor(
-             private cfr: ComponentFactoryResolver, private injector: Injector,
-             private appRef: ApplicationRef) {}
+             private injector: EnvironmentInjector, private appRef: ApplicationRef,
+             private elementRef: ElementRef) {}
 
          create() {
-           const factory = this.cfr.resolveComponentFactory(DynamicComponent);
            // Component to be bootstrapped into an element with the `app-root` id.
-           this.componentRef = factory.create(this.injector, undefined, '#app-root');
+           this.componentRef = createComponent(DynamicComponent, {
+             environmentInjector: this.injector,
+             hostElement: this.elementRef.nativeElement.querySelector('#app-root')!
+           });
            this.appRef.attachView(this.componentRef.hostView);
          }
 
@@ -301,11 +301,11 @@ describe('component', () => {
            class App {
              @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
 
-             constructor(private cfr: ComponentFactoryResolver, private injector: Injector) {}
+             constructor(private vcr: ViewContainerRef, private injector: Injector) {}
 
              create() {
-               const factory = this.cfr.resolveComponentFactory(DynamicComponent);
-               const componentRef = factory.create(this.injector);
+               const componentRef =
+                   this.vcr.createComponent(DynamicComponent, {injector: this.injector});
                componentRef.onDestroy(() => {
                  wasOnDestroyCalled = true;
                });
@@ -399,6 +399,68 @@ describe('component', () => {
       expect(() => TestBed.createComponent(App))
           .toThrowError(
               /NG0300: Multiple components match node with tagname comp: CompA and CompB/);
+    });
+
+    it('should not throw if a standalone component imports itself', () => {
+      @Component({
+        selector: 'comp',
+        template: '<comp *ngIf="recurse"/>hello',
+        standalone: true,
+        imports: [Comp, NgIf]
+      })
+      class Comp {
+        @Input() recurse = false;
+      }
+
+      @Component({
+        template: '<comp [recurse]="true"/>',
+        standalone: true,
+        imports: [Comp],
+      })
+      class App {
+      }
+
+      let textContent = '';
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        textContent = fixture.nativeElement.textContent.trim();
+      }).not.toThrow();
+
+      // Ensure that the component actually rendered.
+      expect(textContent).toBe('hellohello');
+    });
+
+    it('should not throw if a standalone component imports itself using a forwardRef', () => {
+      @Component({
+        selector: 'comp',
+        template: '<comp *ngIf="recurse"/>hello',
+        standalone: true,
+        imports: [forwardRef(() => Comp), NgIf]
+      })
+      class Comp {
+        @Input() recurse = false;
+      }
+
+      @Component({
+        template: '<comp [recurse]="true"/>',
+        standalone: true,
+        imports: [Comp],
+      })
+      class App {
+      }
+
+      let textContent = '';
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        textContent = fixture.nativeElement.textContent.trim();
+      }).not.toThrow();
+
+      // Ensure that the component actually rendered.
+      expect(textContent).toBe('hellohello');
     });
   });
 
@@ -502,26 +564,23 @@ describe('component', () => {
 
     @Component({template: `<span></span>`})
     class MyCompA {
-      constructor(
-          private _componentFactoryResolver: ComponentFactoryResolver,
-          private _injector: Injector) {}
+      constructor(private _injector: EnvironmentInjector) {}
 
       createComponent() {
-        const componentFactoryA = this._componentFactoryResolver.resolveComponentFactory(CompA);
-        const compRefA =
-            componentFactoryA.create(this._injector, [], document.createElement('div'));
-        return compRefA;
+        return createComponent(
+            CompA,
+            {environmentInjector: this._injector, hostElement: document.createElement('div')});
       }
     }
 
     @Component({template: `<span></span>`})
     class MyCompB {
-      constructor(private cfr: ComponentFactoryResolver, private injector: Injector) {}
+      constructor(private envInjector: EnvironmentInjector) {}
 
       createComponent() {
-        const componentFactoryB = this.cfr.resolveComponentFactory(CompB);
-        const compRefB = componentFactoryB.create(this.injector, [], document.createElement('div'));
-        return compRefB;
+        return createComponent(
+            CompB,
+            {environmentInjector: this.envInjector, hostElement: document.createElement('div')});
       }
     }
 
@@ -561,11 +620,9 @@ describe('component', () => {
     class AttSelectorCmp {
     }
 
-    TestBed.configureTestingModule({declarations: [AttSelectorCmp]});
-    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
-    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(AttSelectorCmp);
+    const selector = reflectComponentType(AttSelectorCmp)?.selector;
 
-    expect(cmpFactory.selector).toBe('[foo]');
+    expect(selector).toBe('[foo]');
   });
 
   it('should preserve complex component selector in a component factory', () => {
@@ -573,11 +630,9 @@ describe('component', () => {
     class ComplexSelectorCmp {
     }
 
-    TestBed.configureTestingModule({declarations: [ComplexSelectorCmp]});
-    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
-    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(ComplexSelectorCmp);
+    const selector = reflectComponentType(ComplexSelectorCmp)?.selector;
 
-    expect(cmpFactory.selector).toBe('[foo],div:not(.bar)');
+    expect(selector).toBe('[foo],div:not(.bar)');
   });
 
   it('should clear host element if provided in ComponentFactory.create', () => {
@@ -602,11 +657,11 @@ describe('component', () => {
       `,
     })
     class App {
-      constructor(public injector: Injector, public cfr: ComponentFactoryResolver) {}
+      constructor(public injector: EnvironmentInjector) {}
 
       createDynamicComponent(target: any) {
-        const dynamicCompFactory = this.cfr.resolveComponentFactory(DynamicComponent);
-        dynamicCompFactory.create(this.injector, [], target);
+        createComponent(
+            DynamicComponent, {hostElement: target, environmentInjector: this.injector});
       }
     }
 
@@ -869,6 +924,8 @@ describe('component', () => {
 
   describe('reflectComponentType', () => {
     it('should create an ComponentMirror for a standalone component', () => {
+      function transformFn() {}
+
       @Component({
         selector: 'standalone-component',
         standalone: true,
@@ -882,6 +939,7 @@ describe('component', () => {
         outputs: ['output-a', 'output-b:output-alias-b'],
       })
       class StandaloneComponent {
+        @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
       }
 
       const mirror = reflectComponentType(StandaloneComponent)!;
@@ -891,7 +949,8 @@ describe('component', () => {
       expect(mirror.isStandalone).toEqual(true);
       expect(mirror.inputs).toEqual([
         {propName: 'input-a', templateName: 'input-a'},
-        {propName: 'input-b', templateName: 'input-alias-b'}
+        {propName: 'input-b', templateName: 'input-alias-b'},
+        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},
@@ -903,6 +962,8 @@ describe('component', () => {
     });
 
     it('should create an ComponentMirror for a non-standalone component', () => {
+      function transformFn() {}
+
       @Component({
         selector: 'non-standalone-component',
         template: `
@@ -915,6 +976,7 @@ describe('component', () => {
         outputs: ['output-a', 'output-b:output-alias-b'],
       })
       class NonStandaloneComponent {
+        @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
       }
 
       const mirror = reflectComponentType(NonStandaloneComponent)!;
@@ -924,7 +986,8 @@ describe('component', () => {
       expect(mirror.isStandalone).toEqual(false);
       expect(mirror.inputs).toEqual([
         {propName: 'input-a', templateName: 'input-a'},
-        {propName: 'input-b', templateName: 'input-alias-b'}
+        {propName: 'input-b', templateName: 'input-alias-b'},
+        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},

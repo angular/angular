@@ -26,6 +26,8 @@ function main(argv: [string, string, string]|[string, string]): boolean {
   const goldenFilePath = runfiles.resolveWorkspaceRelative(argv[1]);
   const doUpdate = argv[2] == '--accept';
 
+  console.info('Input javascript file:', javascriptFilePath);
+
   const javascriptContent = fs.readFileSync(javascriptFilePath).toString();
   const goldenContent = fs.readFileSync(goldenFilePath).toString();
 

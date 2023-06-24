@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
+import {DESCENDANT_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -160,25 +161,77 @@ export function getConstant<T>(consts: TConstants|null, index: number|null|undef
  * @param lView the LView on which the flags are reset
  */
 export function resetPreOrderHookFlags(lView: LView) {
-  lView[PREORDER_HOOK_FLAGS] = 0;
+  lView[PREORDER_HOOK_FLAGS] = 0 as PreOrderHookFlags;
 }
 
 /**
- * Updates the `TRANSPLANTED_VIEWS_TO_REFRESH` counter on the `LContainer` as well as the parents
- * whose
+ * Adds the `RefreshView` flag from the lView and updates DESCENDANT_VIEWS_TO_REFRESH counters of
+ * parents.
+ */
+export function markViewForRefresh(lView: LView) {
+  if ((lView[FLAGS] & LViewFlags.RefreshView) === 0) {
+    lView[FLAGS] |= LViewFlags.RefreshView;
+    updateViewsToRefresh(lView, 1);
+  }
+}
+
+/**
+ * Removes the `RefreshView` flag from the lView and updates DESCENDANT_VIEWS_TO_REFRESH counters of
+ * parents.
+ */
+export function clearViewRefreshFlag(lView: LView) {
+  if (lView[FLAGS] & LViewFlags.RefreshView) {
+    lView[FLAGS] &= ~LViewFlags.RefreshView;
+    updateViewsToRefresh(lView, -1);
+  }
+}
+
+/**
+ * Updates the `DESCENDANT_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the
+ * parents above that whose
  *  1. counter goes from 0 to 1, indicating that there is a new child that has a view to refresh
  *  or
  *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
  */
-export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 1) {
-  lContainer[TRANSPLANTED_VIEWS_TO_REFRESH] += amount;
-  let viewOrContainer: LView|LContainer = lContainer;
-  let parent: LView|LContainer|null = lContainer[PARENT];
+function updateViewsToRefresh(lView: LView, amount: 1|- 1) {
+  let parent: LView|LContainer|null = lView[PARENT];
+  if (parent === null) {
+    return;
+  }
+  parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
+  let viewOrContainer: LView|LContainer = parent;
+  parent = parent[PARENT];
   while (parent !== null &&
-         ((amount === 1 && viewOrContainer[TRANSPLANTED_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[TRANSPLANTED_VIEWS_TO_REFRESH] === 0))) {
-    parent[TRANSPLANTED_VIEWS_TO_REFRESH] += amount;
+         ((amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1) ||
+          (amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0))) {
+    parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
     viewOrContainer = parent;
     parent = parent[PARENT];
+  }
+}
+
+/**
+ * Stores a LView-specific destroy callback.
+ */
+export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+    throw new RuntimeError(
+        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+  }
+  if (lView[ON_DESTROY_HOOKS] === null) {
+    lView[ON_DESTROY_HOOKS] = [];
+  }
+  lView[ON_DESTROY_HOOKS].push(onDestroyCallback);
+}
+
+/**
+ * Removes previously registered LView-specific destroy callback.
+ */
+export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if (lView[ON_DESTROY_HOOKS] === null) return;
+
+  const destroyCBIdx = lView[ON_DESTROY_HOOKS].indexOf(onDestroyCallback);
+  if (destroyCBIdx !== -1) {
+    lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
   }
 }

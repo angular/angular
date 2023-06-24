@@ -33,6 +33,9 @@
     "name": "NG_COMP_DEF"
   },
   {
+    "name": "NG_ENV_ID"
+  },
+  {
     "name": "NG_FACTORY_DEF"
   },
   {
@@ -52,6 +55,9 @@
   },
   {
     "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NullInjector"
   },
   {
     "name": "R3Injector"

@@ -140,11 +140,6 @@ export function createCustomElement<P>(
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
     protected override get ngElementStrategy(): NgElementStrategy {
-      // NOTE:
-      // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
-      // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
-      // available inside the methods.
-      //
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
       if (!this._ngElementStrategy) {
@@ -153,7 +148,7 @@ export function createCustomElement<P>(
 
         // Re-apply pre-existing input values (set as properties on the element) through the
         // strategy.
-        inputs.forEach(({propName}) => {
+        inputs.forEach(({propName, transform}) => {
           if (!this.hasOwnProperty(propName)) {
             // No pre-existing value for `propName`.
             return;
@@ -162,7 +157,7 @@ export function createCustomElement<P>(
           // Delete the property from the instance and re-apply it through the strategy.
           const value = (this as any)[propName];
           delete (this as any)[propName];
-          strategy.setInputValue(propName, value);
+          strategy.setInputValue(propName, value, transform);
         });
       }
 
@@ -177,8 +172,8 @@ export function createCustomElement<P>(
 
     override attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      const propName = attributeToPropertyInputs[attrName]!;
-      this.ngElementStrategy.setInputValue(propName, newValue);
+      const [propName, transform] = attributeToPropertyInputs[attrName]!;
+      this.ngElementStrategy.setInputValue(propName, newValue, transform);
     }
 
     override connectedCallback(): void {
@@ -230,13 +225,13 @@ export function createCustomElement<P>(
   }
 
   // Add getters and setters to the prototype for each property input.
-  inputs.forEach(({propName}) => {
+  inputs.forEach(({propName, transform}) => {
     Object.defineProperty(NgElementImpl.prototype, propName, {
       get(): any {
         return this.ngElementStrategy.getInputValue(propName);
       },
       set(newValue: any): void {
-        this.ngElementStrategy.setInputValue(propName, newValue);
+        this.ngElementStrategy.setInputValue(propName, newValue, transform);
       },
       configurable: true,
       enumerable: true,

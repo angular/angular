@@ -21,13 +21,13 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic, TypeCheckScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
-import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
+import {combineResolvers, compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
+import {extractDirectiveMetadata, parseFieldStringArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
@@ -36,7 +36,6 @@ import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResour
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
-const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
 
 /**
@@ -57,11 +56,18 @@ export class ComponentDecoratorHandler implements
       private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
-      private depTracker: DependencyTracker|null,
+      private referencesRegistry: ReferencesRegistry, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {}
+      private hostDirectivesResolver: HostDirectivesResolver,
+      private includeClassMetadata: boolean) {
+    this.extractTemplateOptions = {
+      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+      usePoisonedData: this.usePoisonedData,
+    };
+  }
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -74,14 +80,13 @@ export class ComponentDecoratorHandler implements
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
   private preanalyzeStylesCache = new Map<DeclarationNode, string[]|null>();
 
-  private extractTemplateOptions = {
-    enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
-    usePoisonedData: this.usePoisonedData,
+  private extractTemplateOptions: {
+    enableI18nLegacyMessageIdFormat: boolean; i18nNormalizeLineEndingsInICUs: boolean;
+    usePoisonedData: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
-  readonly name = ComponentDecoratorHandler.name;
+  readonly name = 'ComponentDecoratorHandler';
 
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
@@ -153,7 +158,7 @@ export class ComponentDecoratorHandler implements
     // Extract inline styles, process, and cache for use in synchronous analyze phase
     let inlineStyles;
     if (component.has('styles')) {
-      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+      const litStyles = parseFieldStringArrayValue(component, 'styles', this.evaluator);
       if (litStyles === null) {
         this.preanalyzeStylesCache.set(node, null);
       } else {
@@ -178,9 +183,8 @@ export class ComponentDecoratorHandler implements
         .then(() => undefined);
   }
 
-  analyze(
-      node: ClassDeclaration, decorator: Readonly<Decorator>,
-      flags: HandlerFlags = HandlerFlags.NONE): AnalysisOutput<ComponentAnalysisData> {
+  analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<ComponentAnalysisData> {
     this.perf.eventCount(PerfEvent.AnalyzeComponent);
     const containingFile = node.getSourceFile().fileName;
     this.literalCache.delete(decorator);
@@ -190,8 +194,8 @@ export class ComponentDecoratorHandler implements
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.isCore, flags,
-        this.annotateForClosureCompiler,
+        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
+        this.isCore, this.annotateForClosureCompiler,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
@@ -318,8 +322,8 @@ export class ComponentDecoratorHandler implements
       template = preanalyzed;
     } else {
       const templateDecl = parseTemplateDeclaration(
-          decorator, component, containingFile, this.evaluator, this.resourceLoader,
-          this.defaultPreserveWhitespaces);
+          node, decorator, component, containingFile, this.evaluator, this.depTracker,
+          this.resourceLoader, this.defaultPreserveWhitespaces);
       template = extractTemplate(
           node, templateDecl, this.evaluator, this.depTracker, this.resourceLoader, {
             enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -353,6 +357,13 @@ export class ComponentDecoratorHandler implements
           this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
         }
       } catch {
+        if (this.depTracker !== null) {
+          // The analysis of this file cannot be re-used if one of the style URLs could
+          // not be resolved or loaded. Future builds should re-analyze and re-attempt
+          // resolution/loading.
+          this.depTracker.recordDependencyAnalysisFailure(node.getSourceFile());
+        }
+
         if (diagnostics === undefined) {
           diagnostics = [];
         }
@@ -396,7 +407,7 @@ export class ComponentDecoratorHandler implements
       }
 
       if (component.has('styles')) {
-        const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+        const litStyles = parseFieldStringArrayValue(component, 'styles', this.evaluator);
         if (litStyles !== null) {
           inlineStyles = [...litStyles];
           styles.push(...litStyles);
@@ -432,9 +443,11 @@ export class ComponentDecoratorHandler implements
           relativeContextFilePath,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
-        classMetadata: extractClassMetadata(
-            node, this.reflector, this.isCore, this.annotateForClosureCompiler,
-            dec => transformDecoratorResources(dec, component, styles, template)),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(
+                node, this.reflector, this.isCore, this.annotateForClosureCompiler,
+                dec => transformDecoratorResources(dec, component, styles, template)) :
+            null,
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -488,10 +501,12 @@ export class ComponentDecoratorHandler implements
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
+      isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,
       decorator: analysis.decorator,
+      assumedToExportProviders: false,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -927,10 +942,11 @@ export class ComponentDecoratorHandler implements
     const meta: R3ComponentMetadata<R3TemplateDependency> = {...analysis.meta, ...resolution};
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp');
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
 
   compilePartial(
@@ -950,11 +966,12 @@ export class ComponentDecoratorHandler implements
     const meta:
         R3ComponentMetadata<R3TemplateDependencyMetadata> = {...analysis.meta, ...resolution};
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp');
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
 
   /**

@@ -465,7 +465,7 @@ export class TestBedImpl implements TestBed {
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): this {
     if (config.useJit != null) {
-      throw new Error('the Render3 compiler JiT mode is not configurable !');
+      throw new Error('JIT compiler is not configurable via TestBed APIs.');
     }
 
     if (config.providers !== undefined) {
@@ -475,7 +475,7 @@ export class TestBedImpl implements TestBed {
   }
 
   configureTestingModule(moduleDef: TestModuleMetadata): this {
-    this.assertNotInstantiated('R3TestBed.configureTestingModule', 'configure the test module');
+    this.assertNotInstantiated('TestBed.configureTestingModule', 'configure the test module');
 
     // Trigger module scoping queue flush before executing other TestBed operations in a test.
     // This is needed for the first test invocation to ensure that globally declared modules have
@@ -555,7 +555,7 @@ export class TestBedImpl implements TestBed {
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): this {
     this.assertNotInstantiated(
-        'R3TestBed.overrideTemplateUsingTestingModule',
+        'TestBed.overrideTemplateUsingTestingModule',
         'Cannot override template when the test module has already been instantiated');
     this.compiler.overrideTemplateUsingTestingModule(component, template);
     return this;
@@ -598,11 +598,8 @@ export class TestBedImpl implements TestBed {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
     }
 
-    // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
-    const noNgZone = this.inject(ComponentFixtureNoNgZone as InjectionToken<boolean>, false);
-    // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
-    const autoDetect: boolean =
-        this.inject(ComponentFixtureAutoDetect as InjectionToken<boolean>, false);
+    const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
+    const autoDetect: boolean = this.inject(ComponentFixtureAutoDetect, false);
     const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {

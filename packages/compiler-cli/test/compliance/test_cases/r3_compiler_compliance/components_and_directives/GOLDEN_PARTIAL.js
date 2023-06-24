@@ -205,7 +205,7 @@ export declare class SomeComp {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": { "alias": "prop"; "required": false; }; "otherProp": { "alias": "otherProp"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
@@ -260,7 +260,7 @@ export declare class SomeComp {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": { "alias": "prop"; "required": false; }; "otherProp": { "alias": "otherProp"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
@@ -426,7 +426,7 @@ var token = new InjectionToken('token');
 export function Custom() {
     return function (target) { };
 }
-var Comp = /** @class */ (function () {
+export var Comp = /** @class */ (function () {
     function Comp() {
     }
     Comp_1 = Comp;
@@ -438,7 +438,6 @@ var Comp = /** @class */ (function () {
     ], Comp);
     return Comp;
 }());
-export { Comp };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
             args: [{

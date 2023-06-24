@@ -7,7 +7,7 @@
  */
 
 import {TestBed, waitForAsync} from '@angular/core/testing';
-import {RouterTestingModule} from '@angular/router/testing';
+import {RouterModule} from '@angular/router';
 import {ApplicationOperations} from 'ng-devtools';
 
 import {AppComponent} from './app.component';
@@ -18,7 +18,7 @@ describe('AppComponent', () => {
     TestBed
         .configureTestingModule({
           declarations: [AppComponent],
-          imports: [RouterTestingModule],
+          imports: [RouterModule.forRoot([])],
           providers: [
             {
               provide: ApplicationOperations,

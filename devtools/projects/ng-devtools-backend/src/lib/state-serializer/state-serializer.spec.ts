@@ -33,6 +33,15 @@ const QUERY_1_2 = [
               },
             ],
           },
+          {
+            name: 3,
+            children: [
+              {
+                name: 0,
+                children: [],
+              },
+            ],
+          },
         ],
       },
     ],
@@ -52,6 +61,7 @@ const dir1 = {
           two: 1,
         },
       ],
+      new Set(['foo', 'bar']),
     ],
   },
 };
@@ -93,7 +103,7 @@ describe('deeplySerializeSelectedProperties', () => {
             type: PropType.Array,
             expandable: true,
             editable: false,
-            preview: 'Array(3)',
+            preview: 'Array(4)',
           },
         },
       },
@@ -120,7 +130,7 @@ describe('deeplySerializeSelectedProperties', () => {
             type: PropType.Array,
             editable: false,
             expandable: true,
-            preview: 'Array(3)',
+            preview: 'Array(4)',
             value: [
               {
                 type: PropType.Array,
@@ -144,6 +154,13 @@ describe('deeplySerializeSelectedProperties', () => {
                     },
                   },
                 ],
+              },
+              {
+                type: PropType.Set,
+                editable: false,
+                expandable: false,
+                preview: 'Set(2)',
+
               },
             ],
           },

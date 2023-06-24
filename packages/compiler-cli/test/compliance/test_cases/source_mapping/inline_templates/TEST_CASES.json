@@ -11,7 +11,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map simple element with content (partial compile)",
@@ -45,7 +46,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map void element (partial compile)",
@@ -79,7 +81,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a mix of interpolated and static content (partial compile)",
@@ -113,7 +116,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a complex interpolated expression (partial compile)",
@@ -147,7 +151,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map interpolated properties (partial compile)",
@@ -181,7 +186,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map interpolation with pipe (partial compile)",
@@ -215,7 +221,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a simple input binding expression (partial compile)",
@@ -249,7 +256,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a complex input binding expression (partial compile)",
@@ -283,7 +291,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a longhand input binding expression (partial compile)",
@@ -317,7 +326,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a simple output binding expression (partial compile)",
@@ -351,7 +361,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a complex output binding expression (partial compile)",
@@ -385,7 +396,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a longhand output binding expression (partial compile)",
@@ -419,7 +431,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a two-way binding expression (partial compile)",
@@ -453,7 +466,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a longhand two-way binding expression (partial compile)",
@@ -487,7 +501,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map a class input binding (partial compile)",
@@ -521,7 +536,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map *ngIf scenario (partial compile)",
@@ -555,7 +571,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map ng-template [ngIf] scenario (partial compile)",
@@ -589,7 +606,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map *ngFor scenario (partial compile)",
@@ -623,7 +641,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map ng-template [ngFor] scenario (partial compile)",
@@ -657,7 +676,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should map default and selected projection (partial compile)",
@@ -691,7 +711,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create simple i18n message source-mapping (partial compile)",
@@ -725,7 +746,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create placeholder i18n message source-mappings (partial compile)",
@@ -759,7 +781,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle encoded entities in i18n message source-mappings (partial compile)",
@@ -793,7 +816,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should correctly handle collapsed whitespace in interpolation placeholder i18n message source-mappings (partial compile)",
@@ -827,7 +851,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should correctly handle collapsed whitespace in element placeholder i18n message source-mappings (partial compile)",
@@ -861,7 +886,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create tag (container) placeholder i18n message source-mappings (partial compile)",
@@ -895,7 +921,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create (simple string) inline template source-mapping (partial compile)",
@@ -929,7 +956,8 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create correct inline template source-mapping when the source contains escape sequences (partial compile)",

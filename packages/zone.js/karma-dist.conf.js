@@ -8,7 +8,6 @@
 
 module.exports = function(config) {
   require('./karma-base.conf.js')(config);
-  config.files.push('node_modules/core-js-bundle/index.js');
   config.files.push('build/test/browser-env-setup.js');
   config.files.push('build/test/wtf_mock.js');
   config.files.push('build/test/test_fake_polyfill.js');

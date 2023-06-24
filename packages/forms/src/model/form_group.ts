@@ -598,7 +598,7 @@ interface UntypedFormGroupCtor {
 }
 
 /**
- * UntypedFormGroup is a non-strongly-typed version of @see FormGroup.
+ * UntypedFormGroup is a non-strongly-typed version of `FormGroup`.
  */
 export type UntypedFormGroup = FormGroup<any>;
 

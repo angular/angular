@@ -1,43 +1,53 @@
 {
-  "name": "platform-server-integration",
+  "name": "platform-server",
   "version": "0.0.0",
-  "license": "MIT",
-  "description": "Integration tests for @angular/platform-server",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/angular/angular.git"
+  "scripts": {
+    "ng": "ng",
+    "#comment-1": "The below is used is for payload size checks",
+    "build": "ng build standalone && ng build ngmodule",
+    "#comment-2": "The below is used is for integration tests",
+    "build:ngmodule": "ng run ngmodule:build:development && ng run ngmodule:server:development",
+    "serve:ngmodule": "node ./dist/ngmodule/server/main.js",
+    "test:ngmodule": "yarn build:ngmodule && concurrently \"yarn serve:ngmodule\" \"yarn ng e2e ngmodule\" --kill-others --success first",
+    "build:standalone": "ng run standalone:build:development && ng run standalone:server:development",
+    "serve:standalone": "node ./dist/standalone/server/main.js",
+    "test:standalone": "yarn build:standalone && concurrently \"yarn serve:standalone\" \"yarn ng e2e standalone\" --kill-others --success first",
+    "test": "ng version && yarn test:standalone && yarn test:ngmodule"
   },
+  "private": true,
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/router": "file:../../dist/packages-dist/router",
     "express": "4.16.4",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
+    "tslib": "file:../../node_modules/tslib",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
-    "babel-loader": "^8.2.2",
     "concurrently": "3.1.0",
+    "jasmine-core": "3.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "karma": "4.4.0",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-coverage-istanbul-reporter": "2.1.0",
+    "karma-jasmine": "2.0.1",
+    "karma-jasmine-html-reporter": "1.4.2",
     "protractor": "file:../../node_modules/protractor",
-    "raw-loader": "^4.0.2",
-    "webpack": "^5.53.0",
-    "webpack-cli": "^4.8.0"
-  },
-  "scripts": {
-    "build": "./build.sh",
-    "test": "yarn build && concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
-    "serve": "node webpack-out/server-bundle.js",
-    "preprotractor": "tsc -p e2e",
-    "protractor": "protractor e2e/protractor.config.js"
+    "ts-node": "8.3.0",
+    "typescript": "file:../../node_modules/typescript"
   }
 }

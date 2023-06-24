@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
@@ -23,12 +24,12 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjecti
 import {Renderer} from './interfaces/renderer';
 import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, QUERIES, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TVIEW, TView, TViewType} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {setUpAttributes} from './util/attrs_utils';
 import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
+import {clearViewRefreshFlag, getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -315,12 +316,8 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(insertionLContainer);
 
   // If the view was marked for refresh but then detached before it was checked (where the flag
-  // would be cleared and the counter decremented), we need to decrement the view counter here
-  // instead.
-  if (lView[FLAGS] & LViewFlags.RefreshTransplantedView) {
-    lView[FLAGS] &= ~LViewFlags.RefreshTransplantedView;
-    updateTransplantedViewCount(insertionLContainer, -1);
-  }
+  // would be cleared and the counter decremented), we need to update the status here.
+  clearViewRefreshFlag(lView);
 
   movedViews.splice(declarationViewIndex, 1);
 }
@@ -378,6 +375,10 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
 export function destroyLView(tView: TView, lView: LView) {
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
     const renderer = lView[RENDERER];
+
+    lView[REACTIVE_TEMPLATE_CONSUMER]?.destroy();
+    lView[REACTIVE_HOST_BINDING_CONSUMER]?.destroy();
+
     if (renderer.destroyNode) {
       applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
     }
@@ -439,10 +440,6 @@ function cleanUpView(tView: TView, lView: LView): void {
 function processCleanups(tView: TView, lView: LView): void {
   const tCleanup = tView.cleanup;
   const lCleanup = lView[CLEANUP]!;
-  // `LCleanup` contains both share information with `TCleanup` as well as instance specific
-  // information appended at the end. We need to know where the end of the `TCleanup` information
-  // is, and we track this with `lastLCleanupIndex`.
-  let lastLCleanupIndex = -1;
   if (tCleanup !== null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
@@ -452,26 +449,32 @@ function processCleanups(tView: TView, lView: LView): void {
         ngDevMode && assertNumber(targetIdx, 'cleanup target must be a number');
         if (targetIdx >= 0) {
           // unregister
-          lCleanup[lastLCleanupIndex = targetIdx]();
+          lCleanup[targetIdx]();
         } else {
           // Subscription
-          lCleanup[lastLCleanupIndex = -targetIdx].unsubscribe();
+          lCleanup[-targetIdx].unsubscribe();
         }
         i += 2;
       } else {
         // This is a cleanup function that is grouped with the index of its context
-        const context = lCleanup[lastLCleanupIndex = tCleanup[i + 1]];
+        const context = lCleanup[tCleanup[i + 1]];
         tCleanup[i].call(context);
       }
     }
   }
   if (lCleanup !== null) {
-    for (let i = lastLCleanupIndex + 1; i < lCleanup.length; i++) {
-      const instanceCleanupFn = lCleanup[i];
-      ngDevMode && assertFunction(instanceCleanupFn, 'Expecting instance cleanup function.');
-      instanceCleanupFn();
-    }
     lView[CLEANUP] = null;
+  }
+  const destroyHooks = lView[ON_DESTROY_HOOKS];
+  if (destroyHooks !== null) {
+    // Reset the ON_DESTROY_HOOKS array before iterating over it to prevent hooks that unregister
+    // themselves from mutating the array during iteration.
+    lView[ON_DESTROY_HOOKS] = null;
+    for (let i = 0; i < destroyHooks.length; i++) {
+      const destroyHooksFn = destroyHooks[i];
+      ngDevMode && assertFunction(destroyHooksFn, 'Expecting destroy hook to be a function.');
+      destroyHooksFn();
+    }
   }
 }
 
@@ -731,7 +734,7 @@ export function appendChild(
  *
  * Native nodes are returned in the order in which those appear in the native tree (DOM).
  */
-function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
+export function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
   if (tNode !== null) {
     ngDevMode &&
         assertTNodeType(
@@ -818,6 +821,15 @@ export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement
   if (nativeParent) {
     nativeRemoveChild(renderer, nativeParent, rNode, isHostElement);
   }
+}
+
+/**
+ * Clears the contents of a given RElement.
+ *
+ * @param rElement the native RElement to be cleared
+ */
+export function clearElementContents(rElement: RElement): void {
+  rElement.textContent = '';
 }
 
 
@@ -955,6 +967,11 @@ function applyProjectionRecursive(
   } else {
     let nodeToProject: TNode|null = nodeToProjectOrRNodes;
     const projectedComponentLView = componentLView[PARENT] as LView;
+    // If a parent <ng-content> is located within a skip hydration block,
+    // annotate an actual node that is being projected with the same flag too.
+    if (hasInSkipHydrationBlockFlag(tProjectionNode)) {
+      nodeToProject.flags |= TNodeFlags.inSkipHydrationBlock;
+    }
     applyNodes(
         renderer, action, nodeToProject, projectedComponentLView, parentRElement, beforeNode, true);
   }

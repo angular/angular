@@ -168,7 +168,7 @@ synchronous, because that would block the browser as it waits to return data.
 
 In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can
 use the Angular `HttpClient.get` method to fetch the heroes
-and have [`HttpClient.get()`](guide/http) return an `Observable`.
+and have [`HttpClient.get()`](guide/understanding-communicating-with-http) return an `Observable`.
 
 ### Observable `HeroService`
 
@@ -329,7 +329,7 @@ This template binds directly to the component's `messageService`.
 
 The messages look better after you add the private CSS styles to `messages.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
 
-## Add messages to hero service
+## Add MessageService to HeroesComponent
 
 The following example shows how to display a history of each time the user clicks on a hero.
 This helps when you get to the next section on [Routing](tutorial/tour-of-heroes/toh-pt5).

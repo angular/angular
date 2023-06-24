@@ -7,10 +7,9 @@
  */
 
 import {ConstantPool} from '../../constant_pool';
-import {Interpolation} from '../../expression_parser/ast';
+import {BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
-import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
@@ -163,39 +162,54 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(
-    keys: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression|null {
-  if (Object.getOwnPropertyNames(keys).length > 0) {
-    return mapToExpression(keys, keepDeclared);
-  }
-  return null;
-}
+export function conditionallyCreateDirectiveBindingLiteral(
+    map: Record<string, string|{
+      classPropertyName: string;
+      bindingPropertyName: string;
+      transformFunction: o.Expression|null;
+    }>, keepDeclared?: boolean): o.Expression|null {
+  const keys = Object.getOwnPropertyNames(map);
 
-function mapToExpression(
-    map: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression {
-  return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
-    // canonical syntax: `dirProp: publicProp`
+  if (keys.length === 0) {
+    return null;
+  }
+
+  return o.literalMap(keys.map(key => {
     const value = map[key];
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
-    let needsDeclaredName: boolean;
-    if (Array.isArray(value)) {
-      [publicName, declaredName] = value;
+    let expressionValue: o.Expression;
+
+    if (typeof value === 'string') {
+      // canonical syntax: `dirProp: publicProp`
+      declaredName = key;
       minifiedName = key;
-      needsDeclaredName = publicName !== declaredName;
-    } else {
-      minifiedName = declaredName = key;
       publicName = value;
-      needsDeclaredName = false;
+      expressionValue = asLiteral(publicName);
+    } else {
+      minifiedName = key;
+      declaredName = value.classPropertyName;
+      publicName = value.bindingPropertyName;
+
+      if (keepDeclared && (publicName !== declaredName || value.transformFunction != null)) {
+        const expressionKeys = [asLiteral(publicName), asLiteral(declaredName)];
+
+        if (value.transformFunction != null) {
+          expressionKeys.push(value.transformFunction);
+        }
+
+        expressionValue = o.literalArr(expressionKeys);
+      } else {
+        expressionValue = asLiteral(publicName);
+      }
     }
+
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters
       quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: (keepDeclared && needsDeclaredName) ?
-          o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
-          asLiteral(publicName)
+      value: expressionValue,
     };
   }));
 }
@@ -277,7 +291,9 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
     });
 
     elOrTpl.inputs.forEach(i => {
-      attributesMap[i.name] = '';
+      if (i.type === BindingType.Property) {
+        attributesMap[i.name] = '';
+      }
     });
     elOrTpl.outputs.forEach(o => {
       attributesMap[o.name] = '';

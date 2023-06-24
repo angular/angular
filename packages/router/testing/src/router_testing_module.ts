@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, withPreloading, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {
@@ -28,7 +28,7 @@ function throwInvalidConfigError(parameter: string): never {
  * Router setup factory function used for testing.
  *
  * @publicApi
- * @deprecated Use `provideRouter` or `RouterTestingModule` instead.
+ * @deprecated Use `provideRouter` or `RouterModule` instead.
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -101,7 +101,7 @@ export function setupTestingRouter(
  * beforeEach(() => {
  *   TestBed.configureTestingModule({
  *     imports: [
- *       RouterTestingModule.withRoutes(
+ *       RouterModule.forRoot(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]
  *       )
  *     ]

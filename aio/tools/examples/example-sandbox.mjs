@@ -25,7 +25,7 @@ export async function constructExampleSandbox(examplePath, destPath, nodeModules
   await constructSymlinkedNodeModules(destPath, nodeModulesPath, localPackages);
 
   // Add preserveSymlinks fixups to various files --- needed when linkin in local deps
-  preserveSymlinksWhenUsingLocalPackages(localPackages, destPath);
+  ensurePreserveSymlinks(destPath);
 }
 
 async function constructSymlinkedNodeModules(examplePath, exampleDepsNodeModules, localPackages) {
@@ -132,32 +132,29 @@ function pointBinSymlinksToLocalPackages(linkedNodeModules, exampleDepsNodeModul
   });
 }
 
-// When local packages are symlinked in, node has trouble resolving some peer deps. Setting
-// preserveSymlinks in relevant files fixes this. This isn't required without local packages
-// because in the worst case we would leak into the original Bazel repository and it would
-// still find a node_modules folder for resolution. Add the preserveSymlinks options to various
-// files that are used by the cli and systemjs tests (and sometimes both).
-function preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir) {
-  if (Object.keys(LOCAL_PACKAGES).length === 0) {
-    return;
-  }
-
+/**
+ * When local packages are symlinked in, node will by default resolve local packages to
+ * their output location in the `bazel-bin`. This will then cause transitive dependencies
+ * to be incorrectly resolved from `bazel-bin`, instead of from within the example sandbox.
+ *
+ * Setting `preserveSymlinks` in relevant files fixes this. Note that we are intending to
+ * preserve symlinks in general (regardless of local packages being used), because it
+ * allows us to safely enable `NODE_PRESERVE_SYMLINKS=1` when executing commands inside. 
+ */
+function ensurePreserveSymlinks(appDir) {
   // Set preserveSymlinks in angular.json
   const angularJsonPath = path.join(appDir, 'angular.json');
   if (fs.existsSync(angularJsonPath)) {
-    const angularJson = jsonc.load(angularJsonPath, {
-      encoding: 'utf-8'
-    });
+    const angularJson = jsonc.load(angularJsonPath, {encoding: 'utf-8'});
     angularJson.projects['angular.io-example'].architect.build.options.preserveSymlinks = true;
+    angularJson.projects['angular.io-example'].architect.test.options.preserveSymlinks = true;
     fs.writeFileSync(angularJsonPath, JSON.stringify(angularJson, undefined, 2));
   }
 
   // Set preserveSymlinks in any tsconfig.json files
   const tsConfigPaths = globbySync([path.join(appDir, 'tsconfig*.json')]);
   for (const tsConfigPath of tsConfigPaths) {
-    const tsConfig = jsonc.load(tsConfigPath, {
-      encoding: 'utf-8'
-    });
+    const tsConfig = jsonc.load(tsConfigPath, {encoding: 'utf-8'});
     const isRootConfig = !tsConfig.extends;
     if (isRootConfig) {
       tsConfig.compilerOptions.preserveSymlinks = true;
@@ -167,9 +164,7 @@ function preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir) {
 
   // Call rollup with --preserveSymlinks
   const packageJsonPath = path.join(appDir, 'package.json');
-  const packageJson = jsonc.load(packageJsonPath, {
-    encoding: 'utf-8'
-  });
+  const packageJson = jsonc.load(packageJsonPath, {encoding: 'utf-8'});
   if ('rollup' in packageJson.dependencies || 'rollup' in packageJson.devDependencies) {
     packageJson.scripts.rollup = 'rollup --preserveSymlinks';
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, undefined, 2));
