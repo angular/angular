@@ -8,6 +8,7 @@ import { ItemOutputComponent } from './item-output/item-output.component';
 import { InputOutputComponent } from './input-output/input-output.component';
 import { InTheMetadataComponent } from './in-the-metadata/in-the-metadata.component';
 import { AliasingComponent } from './aliasing/aliasing.component';
+import { ItemDetailMetadataComponent } from './item-details-metadata/item-details-metadata.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { AliasingComponent } from './aliasing/aliasing.component';
     ItemOutputComponent,
     InputOutputComponent,
     InTheMetadataComponent,
-    AliasingComponent
+    AliasingComponent,
+    ItemDetailMetadataComponent
   ],
   imports: [
     BrowserModule
