@@ -30,6 +30,8 @@ In this step, you create a new component for your app.
 
 In the **Terminal** pane of your IDE:
 
+1. In your project directory, navigate to the `first-app` directory.
+
 1. Run this command to create a new `HousingLocationComponent`
 
     <code-example format="shell" language="shell">
