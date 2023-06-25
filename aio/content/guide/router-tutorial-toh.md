@@ -578,6 +578,8 @@ Follow these steps:
 
     *   Change the component class name to `HeroListComponent`.
     *   Change the `selector` to `app-hero-list`.
+    *   Change the `templateUrl` to `./hero-list.component.html`.
+    *   Change the `styleUrls` to `./hero-list.component.css`.
 
         <div class="alert is-helpful">
 
