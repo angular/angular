@@ -43,7 +43,6 @@ describe('Signal component input interpolations', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    debugger;
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('Hello, Angular!');
