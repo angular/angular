@@ -292,7 +292,6 @@ describe('Signal component inputs', () => {
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-
       expect(fixture.nativeElement.textContent).toBe('true');
     });
   });
