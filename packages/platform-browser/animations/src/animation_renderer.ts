@@ -138,24 +138,19 @@ export class AnimationRendererFactory implements RendererFactory2 {
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
       protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine,
-      private _onDestroy?: () => void) {}
+      private _onDestroy?: () => void) {
+    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode!(n) : null;
+  }
 
   get data() {
     return this.delegate.data;
   }
 
-  destroyNode(node: any): void {
-    this.delegate.destroyNode?.(node);
-  }
+  destroyNode: ((n: any) => void)|null;
 
   destroy(): void {
     this.engine.destroy(this.namespaceId, this.delegate);
-    this.engine.afterFlushAnimationsDone(() => {
-      // Call the renderer destroy method after the animations has finished as otherwise styles will
-      // be removed too early which will cause an unstyled animation.
-      this.delegate.destroy();
-    });
-
+    this.delegate.destroy();
     this._onDestroy?.();
   }
 
