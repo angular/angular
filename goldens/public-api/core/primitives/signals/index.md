@@ -5,6 +5,43 @@
 ```ts
 
 // @public
+export const COMPUTED_NODE: {
+    value: any;
+    dirty: boolean;
+    error: null;
+    equal: typeof defaultEquals;
+    producerMustRecompute(node: ComputedNode<unknown>): boolean;
+    producerRecomputeValue(node: ComputedNode<unknown>): void;
+    version: number & {
+        __brand: "Version";
+    };
+    producerNode: ReactiveNode[] | undefined;
+    producerLastReadVersion: (number & {
+        __brand: "Version";
+    })[] | undefined;
+    producerIndexOfThis: number[] | undefined;
+    nextProducerIndex: number;
+    liveConsumerNode: ReactiveNode[] | undefined;
+    liveConsumerIndexOfThis: number[] | undefined;
+    consumerAllowSignalWrites: boolean;
+    consumerIsAlwaysLive: boolean;
+    consumerMarkedDirty(node: unknown): void;
+    consumerOnSignalRead(node: unknown): void;
+};
+
+// @public
+export interface ComputedNode<T> extends ReactiveNode {
+    computation: () => T;
+    // (undocumented)
+    equal: ValueEqualityFn<T>;
+    error: unknown;
+    value: T;
+}
+
+// @public
+export const COMPUTING: any;
+
+// @public
 export function consumerAfterComputation(node: ReactiveNode | null, prevConsumer: ReactiveNode | null): void;
 
 // @public
@@ -24,6 +61,9 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
+
+// @public
+export const ERRORED: any;
 
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
@@ -115,6 +155,9 @@ export function signalSetFn<T>(node: SignalNode<T>, newValue: T): void;
 
 // @public (undocumented)
 export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void;
+
+// @public
+export const UNSET: any;
 
 // @public
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;

@@ -228,6 +228,7 @@ export interface Component extends Directive {
     moduleId?: string;
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
+    signals?: boolean;
     standalone?: boolean;
     styles?: string | string[];
     styleUrl?: string;
@@ -523,6 +524,7 @@ export interface Directive {
         [key: string]: any;
     };
     selector?: string;
+    signals?: boolean;
     standalone?: boolean;
 }
 
@@ -863,11 +865,55 @@ export interface Input {
 export const Input: InputDecorator;
 
 // @public (undocumented)
+export function input(): InputSignal<undefined, undefined>;
+
+// @public (undocumented)
+export function input<T>(): InputSignal<T | undefined, T>;
+
+// @public (undocumented)
+export function input<T>(initialValue: T & (string | number | boolean), opts?: PrimaryInputOptions<T, T> & {
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(initialValue: WriteT & (string | number | boolean), opts: PrimaryInputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<T>(opts: InputOptions<T, T> & {
+    required: true;
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT> & {
+    required: true;
+}): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<T>(opts: InputOptions<T, T> & {
+    initialValue: T;
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT> & {
+    initialValue: ReadT;
+}): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT>): InputSignal<ReadT | undefined, WriteT>;
+
+// @public (undocumented)
 export interface InputDecorator {
     (arg?: string | Input): any;
     // (undocumented)
     new (arg?: string | Input): any;
 }
+
+// @public
+export type InputSignal<ReadT, WriteT> = Signal<ReadT> & {
+    [BRAND_WRITE_TYPE]: WriteT;
+};
 
 // @public
 export function isDevMode(): boolean;
@@ -987,6 +1033,9 @@ export enum MissingTranslationStrategy {
     // (undocumented)
     Warning = 1
 }
+
+// @public
+export type ModelSignal<ReadT, WriteT> = InputSignal<ReadT, WriteT> & Pick<WritableSignal<WriteT>, 'set' | 'update'>;
 
 // @public @deprecated
 export class ModuleWithComponentFactories<T> {
