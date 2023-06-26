@@ -702,9 +702,27 @@ class TcbDirectiveInputsOp extends TcbOp {
 
     for (const attr of boundAttrs) {
       // For bound inputs, the property is assigned the binding expression.
-      const expr = widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
+      const exprForDiag =
+          widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
+      const sharedExprId = this.tcb.allocateId();
 
-      const statements: ts.Statement[] = [];
+      const inputTestStatements: ts.Statement[] = [
+        // The expression itself is always added as test statement. In case no target
+        // can be found (e.g. there is no class member for the input)- we'd still want to
+        // evaluate the expression to detect potential issues. e.g. the expression may
+        // want to access a field that does not exist in the component context.
+        // i.e. `const <tmpId> = bindingExpr;`.
+        ts.factory.createVariableStatement(
+            undefined,
+            ts.factory.createVariableDeclarationList(
+                [ts.factory.createVariableDeclaration(
+                    sharedExprId,
+                    undefined,
+                    undefined,
+                    exprForDiag,
+                    )],
+                ts.NodeFlags.Const))
+      ];
 
       for (const {fieldName, required, transformType} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
@@ -740,7 +758,7 @@ class TcbDirectiveInputsOp extends TcbOp {
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
-          // assignment target available, so this field is skipped.
+          // assignment target available, so the target is skipped.
           continue;
         } else if (
             !this.tcb.env.config.honorAccessModifiersForInputBindings &&
@@ -789,19 +807,20 @@ class TcbDirectiveInputsOp extends TcbOp {
           const toWritableSignalExpr =
               this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵɵtoWritableSignal');
 
-          statements.push(ts.factory.createExpressionStatement(ts.factory.createCallExpression(
-              ts.factory.createPropertyAccessExpression(
-                  ts.factory.createCallExpression(toWritableSignalExpr, undefined, [target]),
-                  ts.factory.createIdentifier('set')),
-              undefined, [wrapForDiagnostics(expr)])));
+          inputTestStatements.push(
+              ts.factory.createExpressionStatement(ts.factory.createCallExpression(
+                  ts.factory.createPropertyAccessExpression(
+                      ts.factory.createCallExpression(toWritableSignalExpr, undefined, [target]),
+                      ts.factory.createIdentifier('set')),
+                  undefined, [sharedExprId])));
         } else {
-          // Finally the assignment is extended by assigning it into the target expression.
-          statements.push(ts.factory.createExpressionStatement(ts.factory.createBinaryExpression(
-              target, ts.SyntaxKind.EqualsToken, wrapForDiagnostics(expr))));
+          // Finally the statement for assigning the expression into the target expression.
+          inputTestStatements.push(ts.factory.createExpressionStatement(
+              ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, sharedExprId)));
         }
       }
 
-      for (const st of statements) {
+      for (const st of inputTestStatements) {
         addParseSpanInfo(st, attr.attribute.sourceSpan);
         // Ignore diagnostics for text attributes if configured to do so.
         if (!this.tcb.env.config.checkTypeOfAttributes &&
