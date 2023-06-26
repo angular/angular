@@ -159,58 +159,59 @@ describe('Signal component inputs', () => {
         expect(fixture.nativeElement.textContent).toBe('3:3');
       });
 
-      it('should reveal dragon no 1: shared expression value for non-primitive literals', () => {
-        @Directive({
-          selector: '[dir1]',
-          standalone: true,
-          signals: true,
-        })
-        class Dir1 {
-          @Input() testInputArr = input<string[]>({initialValue: []});
-          @Input()
-          testInputObj =
-              input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
-        }
+      it('should evaluate expression only once when binding to multiple inputs with the same name',
+         () => {
+           @Directive({
+             selector: '[dir1]',
+             standalone: true,
+             signals: true,
+           })
+           class Dir1 {
+             @Input() testInputArr = input<string[]>({initialValue: []});
+             @Input()
+             testInputObj =
+                 input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
+           }
 
-        @Directive({
-          selector: '[dir2]',
-          standalone: true,
-          signals: true,
-        })
-        class Dir2 {
-          @Input() testInputArr = input<string[]>({initialValue: []});
-          @Input()
-          testInputObj =
-              input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
-        }
+           @Directive({
+             selector: '[dir2]',
+             standalone: true,
+             signals: true,
+           })
+           class Dir2 {
+             @Input() testInputArr = input<string[]>({initialValue: []});
+             @Input()
+             testInputObj =
+                 input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
+           }
 
-        @Component({
-          signals: true,
-          template: `
+           @Component({
+             signals: true,
+             template: `
             <div dir1 dir2 
               [testInputArr]="['foo', 'bar']"
               [testInputObj]="{foo: 'foo', bar: 'bar'}"
             ></div>`,
-          imports: [Dir1, Dir2],
-          standalone: true,
-        })
-        class App {
-        }
+             imports: [Dir1, Dir2],
+             standalone: true,
+           })
+           class App {
+           }
 
-        const fixture = TestBed.createComponent(App);
-        fixture.detectChanges();
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
 
-        const dir1Instance = fixture.debugElement.children[0].injector.get(Dir1);
-        const dir2Instance = fixture.debugElement.children[0].injector.get(Dir2);
+           const dir1Instance = fixture.debugElement.children[0].injector.get(Dir1);
+           const dir2Instance = fixture.debugElement.children[0].injector.get(Dir2);
 
-        expect(dir1Instance.testInputArr()).toEqual(['foo', 'bar']);
-        expect(dir2Instance.testInputArr()).toEqual(['foo', 'bar']);
-        expect(dir1Instance.testInputArr()).toBe(dir2Instance.testInputArr());
+           expect(dir1Instance.testInputArr()).toEqual(['foo', 'bar']);
+           expect(dir2Instance.testInputArr()).toEqual(['foo', 'bar']);
+           expect(dir1Instance.testInputArr()).toBe(dir2Instance.testInputArr());
 
-        expect(dir1Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
-        expect(dir2Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
-        expect(dir1Instance.testInputObj()).toBe(dir2Instance.testInputObj());
-      });
+           expect(dir1Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
+           expect(dir2Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
+           expect(dir1Instance.testInputObj()).toBe(dir2Instance.testInputObj());
+         });
 
       it('should be able to bind a variable', () => {
         @Component({
@@ -301,6 +302,56 @@ describe('Signal component inputs', () => {
   });
 
   describe('to a mix of zone-based and signal-based targets', () => {
-    it('works', () => {});
+    it('should evaluate expression only once when binding to multiple inputs with the same name',
+       () => {
+         @Directive({
+           selector: '[dirZone]',
+           standalone: true,
+           signals: false,
+         })
+         class DirZone {
+           @Input() testInputArr: string[] = [];
+           @Input() testInputObj = {foo: 'before', bar: 'before'};
+         }
+
+         @Directive({
+           selector: '[dirSignal]',
+           standalone: true,
+           signals: true,
+         })
+         class DirSignal {
+           @Input() testInputArr = input<string[]>({initialValue: []});
+           @Input()
+           testInputObj =
+               input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
+         }
+
+         @Component({
+           signals: true,
+           template: `
+          <div dirZone dirSignal 
+            [testInputArr]="['foo', 'bar']"
+            [testInputObj]="{foo: 'foo', bar: 'bar'}"
+          ></div>`,
+           imports: [DirZone, DirSignal],
+           standalone: true,
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirZoneInstance = fixture.debugElement.children[0].injector.get(DirZone);
+         const dirSignalInstance = fixture.debugElement.children[0].injector.get(DirSignal);
+
+         expect(dirZoneInstance.testInputArr).toEqual(['foo', 'bar']);
+         expect(dirSignalInstance.testInputArr()).toEqual(['foo', 'bar']);
+         expect(dirZoneInstance.testInputArr).toBe(dirSignalInstance.testInputArr());
+
+         expect(dirZoneInstance.testInputObj).toEqual({foo: 'foo', bar: 'bar'});
+         expect(dirSignalInstance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
+         expect(dirZoneInstance.testInputObj).toBe(dirSignalInstance.testInputObj());
+       });
   });
 });
