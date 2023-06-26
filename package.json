@@ -81,7 +81,7 @@
     "@types/babel__template": "7.4.1",
     "@types/babel__traverse": "7.20.1",
     "@types/bluebird": "^3.5.27",
-    "@types/chrome": "^0.0.237",
+    "@types/chrome": "^0.0.238",
     "@types/convert-source-map": "^1.5.1",
     "@types/diff": "^5.0.0",
     "@types/hammerjs": "2.0.41",
@@ -204,6 +204,6 @@
   "resolutions": {
     "**/graceful-fs": "4.2.11",
     "**/https-proxy-agent": "7.0.0",
-    "**/saucelabs": "7.2.1"
+    "**/saucelabs": "7.2.2"
   }
 }

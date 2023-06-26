@@ -3246,10 +3246,10 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
-"@types/chrome@^0.0.237":
-  version "0.0.237"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.237.tgz#20a38e1d1134e2725fc7eb43c881e55e1b24ddd7"
-  integrity sha512-krsRmyfMlck5r+H1EapsrrucDRq6iRm0NAi5fapr93CgnpVMDdK+h2+z4x79GegdW7BNH9Vb//gkptORwwwVIQ==
+"@types/chrome@^0.0.238":
+  version "0.0.238"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.238.tgz#a21105960077402fcc478d08ced47ae482c394cf"
+  integrity sha512-WManYZwAkCjaBcJXV/Dj/UwGOUm1qFpqyasovWmqSlvbTWzjYFUUZW4IRnZsjxmu2r5VtNWWHexgFcHVFbWGuQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -6650,7 +6650,7 @@ decamelize@^1.1.0, decamelize@^1.1.1, decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==
 
-decode-uri-component@^0.2.0:
+decode-uri-component@^0.2.0, decode-uri-component@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
   integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
@@ -8038,6 +8038,11 @@ fill-range@^7.0.1:
   integrity sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
   dependencies:
     to-regex-range "^5.0.1"
+
+filter-obj@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/filter-obj/-/filter-obj-1.1.0.tgz#9b311112bc6c6127a16e016c6c5d7f19e0805c5b"
+  integrity sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==
 
 finalhandler@1.1.0:
   version "1.1.0"
@@ -13225,6 +13230,16 @@ query-string@^5.0.1:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
+query-string@^7.0.1:
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.3.tgz#a1cf90e994abb113a325804a972d98276fe02328"
+  integrity sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==
+  dependencies:
+    decode-uri-component "^0.2.2"
+    filter-obj "^1.1.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -13982,16 +13997,17 @@ sass@1.63.2:
   version "0.0.0"
   resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
-saucelabs@7.2.1, saucelabs@^1.5.0, saucelabs@^4.6.3:
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-7.2.1.tgz#d9aba144f419d32b20d5c9af81b03e45a27c74c8"
-  integrity sha512-HKrppXGiOD5B9XMCeg9QtKiyve4duafDv5Jof+7HZ6eRWqRYsDSYxIzMSYszeqvrbYUufd0nVPbhZDlFhe3atg==
+saucelabs@7.2.2, saucelabs@^1.5.0, saucelabs@^4.6.3:
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-7.2.2.tgz#8c5765e8fffaf5b607788598adc7fe2e7d005fed"
+  integrity sha512-rxbazYeKw0RDoXnGCfTeY6or9QM42Nn/LcZyO4Wi11h1d5k7EkoXU58g6FrYZgC7+UtI1t4CZu5Z1a2F/YQzvg==
   dependencies:
     change-case "^4.1.2"
     download "^8.0.0"
     form-data "^4.0.0"
     got "^11.8.2"
     hash.js "^1.1.7"
+    query-string "^7.0.1"
     tunnel "^0.0.6"
     yargs "^17.2.1"
 
@@ -14671,6 +14687,11 @@ spdy@^4.0.2:
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
 
+split-on-first@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/split-on-first/-/split-on-first-1.1.0.tgz#f610afeee3b12bce1d0c30425e76398b78249a5f"
+  integrity sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
+
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/split-string/-/split-string-3.1.0.tgz#7cb09dda3a86585705c64b39a6466038682e8fe2"
@@ -14814,6 +14835,11 @@ strict-uri-encode@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-1.1.0.tgz#279b225df1d582b1f54e65addd4352e18faa0713"
   integrity sha512-R3f198pcvnB+5IpnBlRkphuE9n46WyVl8I39W/ZUTZLz4nqSP/oLYUrcnJrw462Ds8he4YKMov2efsTIw1BDGQ==
+
+strict-uri-encode@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
+  integrity sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==
 
 string-argv@~0.3.1:
   version "0.3.2"
