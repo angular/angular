@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
-import {getContextLView} from '../state';
+import {getContextLView, getLView} from '../state';
 import {load} from '../util/view_utils';
 
 
@@ -34,4 +34,15 @@ export function store<T>(tView: TView, lView: LView, index: number, value: T): v
 export function ɵɵreference<T>(index: number) {
   const contextLView = getContextLView();
   return load<T>(contextLView, HEADER_OFFSET + index);
+}
+
+/**
+ * Retrieves a local reference from the current `LView`.
+ *
+ * @param index The relative index of the local ref in `LView`.
+ *
+ * @codeGenApi
+ */
+export function ɵɵshallowReference<T>(index: number): T {
+  return load<T>(getLView(), HEADER_OFFSET + index);
 }

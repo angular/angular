@@ -106,6 +106,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵloadQuery': r3.ɵɵloadQuery,
        'ɵɵcontentQuery': r3.ɵɵcontentQuery,
        'ɵɵreference': r3.ɵɵreference,
+       'ɵɵshallowReference': r3.ɵɵshallowReference,
        'ɵɵclassMap': r3.ɵɵclassMap,
        'ɵɵclassMapInterpolate1': r3.ɵɵclassMapInterpolate1,
        'ɵɵclassMapInterpolate2': r3.ɵɵclassMapInterpolate2,

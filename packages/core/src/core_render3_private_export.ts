@@ -173,6 +173,7 @@ export {
 
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
+  ɵɵshallowReference,
   ɵɵStandaloneFeature,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,

@@ -279,14 +279,32 @@ export class OpList<OpT extends Op<OpT>> {
 
     op.debugListId = before.debugListId;
 
-    // Just in case.
-    op.prev = null;
-
     before.prev!.next = op;
     op.prev = before.prev;
 
     op.next = before;
     before.prev = op;
+  }
+
+  /**
+   * Insert `op` after `after`.
+   */
+  static insertAfter<OpT extends Op<OpT>>(op: OpT, after: OpT): void {
+    OpList.assertIsOwned(after);
+    if (after.next === null) {
+      throw new Error(`AssertionError: illegal operation on list end`);
+    }
+
+    OpList.assertIsNotEnd(op);
+    OpList.assertIsUnowned(op);
+
+    op.debugListId = after.debugListId;
+
+    after.next!.prev = op;
+    op.next = after.next;
+
+    op.prev = after;
+    after.next = op;
   }
 
   /**
