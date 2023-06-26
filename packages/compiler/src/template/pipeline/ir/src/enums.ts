@@ -252,6 +252,11 @@ export enum ExpressionKind {
   Reference,
 
   /**
+   * Runtime operation to retrieve the value of a shallow local reference.
+   */
+  ShallowReference,
+
+  /**
    * Runtime operation to snapshot the current view context.
    */
   GetCurrentView,

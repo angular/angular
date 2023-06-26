@@ -267,11 +267,11 @@ describe('Signal component inputs', () => {
       });
     });
 
-    xit('should be able to pass local refs as inputs in expressions', () => {
+    it('should be able to pass local refs as inputs in expressions', () => {
       @Component({
         standalone: true,
         signals: true,
-        template: '{{testInput() !== undefined}}',
+        template: '{{testInput() != null}}',
         selector: 'test-cmp',
       })
       class TestComponent {
@@ -282,6 +282,34 @@ describe('Signal component inputs', () => {
         template: `
             <div #d></div>
             <test-cmp [testInput]="d" />
+          `,
+        signals: true,
+        standalone: true,
+        imports: [TestComponent],
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('true');
+    });
+
+    it('should be able to pass forward local refs as inputs in expressions', () => {
+      @Component({
+        standalone: true,
+        signals: true,
+        template: '{{testInput() != null}}',
+        selector: 'test-cmp',
+      })
+      class TestComponent {
+        @Input() testInput = input<HTMLElement>({required: true});
+      }
+
+      @Component({
+        template: `
+            <test-cmp [testInput]="d" />
+            <div #d></div>
           `,
         signals: true,
         standalone: true,

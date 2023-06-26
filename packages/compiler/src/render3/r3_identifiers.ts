@@ -250,6 +250,7 @@ export class Identifiers {
   static projectionDef: o.ExternalReference = {name: 'ɵɵprojectionDef', moduleName: CORE};
 
   static reference: o.ExternalReference = {name: 'ɵɵreference', moduleName: CORE};
+  static shallowReference: o.ExternalReference = {name: 'ɵɵshallowReference', moduleName: CORE};
 
   static inject: o.ExternalReference = {name: 'ɵɵinject', moduleName: CORE};
 

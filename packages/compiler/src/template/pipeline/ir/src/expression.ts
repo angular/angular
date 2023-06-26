@@ -20,11 +20,11 @@ import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, Use
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ShallowReferenceExpr|ContextExpr|
+    NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|
+    PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|
+    SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|
+    ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -112,6 +112,40 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
 
   override clone(): ReferenceExpr {
     const expr = new ReferenceExpr(this.target, this.offset);
+    expr.targetSlot = this.targetSlot;
+    return expr;
+  }
+}
+
+
+/**
+ * Runtime operation to retrieve the value of a local reference.
+ */
+export class ShallowReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait {
+  override readonly kind = ExpressionKind.ShallowReference;
+
+  readonly[UsesSlotIndex] = true;
+
+  targetSlot: number|null = null;
+
+  constructor(readonly target: XrefId, readonly offset: number) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof ShallowReferenceExpr && e.target === this.target;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): ShallowReferenceExpr {
+    const expr = new ShallowReferenceExpr(this.target, this.offset);
     expr.targetSlot = this.targetSlot;
     return expr;
   }
@@ -1032,7 +1066,6 @@ export function transformExpressionsInStatement(
 /**
  * Checks whether the given expression is a string literal.
  */
-export function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{
-  value: string
+export function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{value: string} {
+  return expr instanceof o.LiteralExpr && typeof expr.value === 'string';
 }
-{ return expr instanceof o.LiteralExpr && typeof expr.value === 'string'; }

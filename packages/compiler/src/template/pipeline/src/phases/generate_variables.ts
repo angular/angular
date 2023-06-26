@@ -8,7 +8,6 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
@@ -53,9 +52,9 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|nu
     }
   }
 
-  // Prepend the declarations for all available variables in scope to the `update` block.
-  const preambleOps = generateVariablesInScopeForView(view, scope);
-  view.update.prepend(preambleOps);
+  // Prepend the declarations for all available variables in scope to both blocks.
+  view.create.prepend(generateVariablesInScopeForView(view, scope));
+  view.update.prepend(generateVariablesInScopeForView(view, scope));
 }
 
 /**
@@ -131,6 +130,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
       kind: ir.SemanticVariableKind.Identifier,
       name: null,
       identifier,
+      target: null,
     });
   }
 
@@ -153,6 +153,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
               kind: ir.SemanticVariableKind.Identifier,
               name: null,
               identifier: op.localRefs[offset].name,
+              target: op.xref,
             },
           });
         }
@@ -169,9 +170,9 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
  * This is a recursive process, as views inherit variables available from their parent view, which
  * itself may have inherited variables, etc.
  */
-function generateVariablesInScopeForView(
-    view: ViewCompilationUnit, scope: Scope): ir.VariableOp<ir.UpdateOp>[] {
-  const newOps: ir.VariableOp<ir.UpdateOp>[] = [];
+function generateVariablesInScopeForView<OpT extends ir.Op<OpT>>(
+    view: ViewCompilationUnit, scope: Scope): ir.VariableOp<OpT>[] {
+  const newOps: ir.VariableOp<OpT>[] = [];
 
   if (scope.view !== view.xref) {
     // Before generating variables for a parent view, we need to switch to the context of the parent
@@ -199,7 +200,7 @@ function generateVariablesInScopeForView(
 
   if (scope.parent !== null) {
     // Recursively add variables from the parent scope.
-    newOps.push(...generateVariablesInScopeForView(view, scope.parent));
+    newOps.push(...generateVariablesInScopeForView<OpT>(view, scope.parent));
   }
   return newOps;
 }

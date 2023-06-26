@@ -51,6 +51,12 @@ export interface IdentifierVariable extends SemanticVariableBase {
    * The identifier whose value in the template is tracked in this variable.
    */
   identifier: string;
+
+  /**
+   * The target in the template associated with this identifier (or `null` if no such target
+   * exists).
+   */
+  target: XrefId|null;
 }
 
 /**
