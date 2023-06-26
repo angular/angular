@@ -18,6 +18,7 @@ const UNARY_OPERATORS = new Map<o.UnaryOperator, UnaryOperator>([
 
 const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.And, '&&'],
+  [o.BinaryOperator.Assign, '='],
   [o.BinaryOperator.Bigger, '>'],
   [o.BinaryOperator.BiggerEquals, '>='],
   [o.BinaryOperator.BitwiseAnd, '&'],
