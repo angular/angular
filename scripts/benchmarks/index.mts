@@ -164,7 +164,9 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
 
   try {
     Log.log(green('Fetching comparison revision.'));
-    git.run(['fetch', '--depth=1', git.getRepoGitUrl(), compareRef]);
+    // Note: Not using a shallow fetch here as that would convert the local
+    // user repository into an incomplete repository.
+    git.run(['fetch', git.getRepoGitUrl(), compareRef]);
     Log.log(green('Checking out comparison revision.'));
     git.run(['checkout', 'FETCH_HEAD']);
 
