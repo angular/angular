@@ -113,8 +113,4 @@ export class AnimationEngine {
   whenRenderingDone(): Promise<any> {
     return this._transitionEngine.whenRenderingDone();
   }
-
-  afterFlushAnimationsDone(cb: VoidFunction): void {
-    this._transitionEngine.afterFlushAnimationsDone(cb);
-  }
 }
