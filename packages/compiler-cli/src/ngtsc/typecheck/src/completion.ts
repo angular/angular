@@ -78,25 +78,22 @@ export class CompletionEngine {
     }
 
     let nodeContext: TcbLocation|null = null;
-    if (node instanceof EmptyExpr) {
-      const nodeLocation = findFirstMatchingNode(this.tcb, {
-        filter: ts.isIdentifier,
-        withSpan: node.sourceSpan,
-      });
-      if (nodeLocation !== null) {
-        nodeContext = {
-          tcbPath: this.tcbPath,
-          isShimFile: this.tcbIsShim,
-          positionInFile: nodeLocation.getStart(),
-        };
-      }
-    }
 
-    if (node instanceof PropertyRead && node.receiver instanceof ImplicitReceiver) {
+    // Two types of expressions:
+    //  - `[bla]=""` — Empty expression
+    //  - `[bla]="smth"` - Property Read with implicit receiver.
+    if (node instanceof EmptyExpr ||
+        (node instanceof PropertyRead && node.receiver instanceof ImplicitReceiver)) {
       const nodeLocation = findFirstMatchingNode(this.tcb, {
-        filter: ts.isPropertyAccessExpression,
+        // We look for input binding TCBs of the following formats:
+        //  `const _t1 = <value>; myDir.inputField = *_t1`.
+        //  `const _t1 = <value>; myDir.inputField.set(*_t1)`;
+        // Note: We would like to autocomplete at the `*` character,
+        // so that we get suggestions in the context of input target.
+        filter: isInputTcbValueExpression,
         withSpan: node.sourceSpan,
       });
+
       if (nodeLocation) {
         nodeContext = {
           tcbPath: this.tcbPath,
@@ -165,37 +162,48 @@ export class CompletionEngine {
       return this.expressionCompletionCache.get(expr)!;
     }
 
-    let tsExpr: ts.StringLiteral|ts.NumericLiteral|null = null;
+    let completionIndex: number|undefined = undefined;
 
-    if (expr instanceof TmplAstTextAttribute) {
-      const strNode = findFirstMatchingNode(this.tcb, {
-        filter: ts.isParenthesizedExpression,
+    completionIndex =
+        findFirstMatchingNode(this.tcb, {
+          // We look for input binding TCBs of the following formats:
+          //  `const _t1 = <value>; myDir.inputField = *_t1`.
+          //  `const _t1 = <value>; myDir.inputField.set(*_t1)`;
+          // Note: We would like to autocomplete at the `*` character,
+          // so that we get suggestions in the context of input target.
+          filter: isInputTcbValueExpression,
+          withSpan: expr instanceof TmplAstTextAttribute && expr.valueSpan !== undefined ?
+              expr.valueSpan :
+              expr.sourceSpan,
+        })?.getStart();
+
+    // If we are completing in the middle of an expression, in a literal,
+    // we look for the actual string literal or numeric literal and complete there.
+    if (completionIndex === undefined && expr instanceof LiteralPrimitive) {
+      const literalNode = findFirstMatchingNode(this.tcb, {
+        filter: (n: ts.Node): n is ts.StringLiteral | ts.NumericLiteral =>
+            ts.isStringLiteralLike(n) || ts.isNumericLiteral(n),
         withSpan: expr.sourceSpan,
       });
-      if (strNode !== null && ts.isStringLiteral(strNode.expression)) {
-        tsExpr = strNode.expression;
+
+      completionIndex = literalNode?.getStart();
+
+      if (literalNode !== null && ts.isStringLiteralLike(literalNode)) {
+        // Completion needs to be inside the string literal, so we account
+        // for the opening quotes.
+        completionIndex = literalNode.getStart() + 1;
       }
-    } else {
-      tsExpr = findFirstMatchingNode(this.tcb, {
-        filter: (n: ts.Node): n is ts.NumericLiteral | ts.StringLiteral =>
-            ts.isStringLiteral(n) || ts.isNumericLiteral(n),
-        withSpan: expr.sourceSpan,
-      });
     }
 
-    if (tsExpr === null) {
+
+    if (completionIndex === undefined) {
       return null;
     }
 
-    let positionInShimFile = tsExpr.getEnd();
-    if (ts.isStringLiteral(tsExpr)) {
-      // In the shimFile, if `tsExpr` is a string, the position should be in the quotes.
-      positionInShimFile -= 1;
-    }
     const res: TcbLocation = {
       tcbPath: this.tcbPath,
       isShimFile: this.tcbIsShim,
-      positionInFile: positionInShimFile,
+      positionInFile: completionIndex,
     };
     this.expressionCompletionCache.set(expr, res);
     return res;
@@ -232,4 +240,15 @@ export class CompletionEngine {
     this.templateContextCache.set(context, templateContext);
     return templateContext;
   }
+}
+
+/**
+ * Whether the given node refers to an TCB input value binding. e.g.
+ * with the formats:
+ *
+ *   `const _t1 = <value>; myDir.inputField = *_t1*`.
+ *   `const _t1 = <value>; myDir.inputField.set(*_t1*)`;
+ */
+function isInputTcbValueExpression(n: ts.Node): n is ts.Identifier {
+  return (ts.isBinaryExpression(n.parent) || ts.isCallExpression(n.parent)) && ts.isIdentifier(n);
 }

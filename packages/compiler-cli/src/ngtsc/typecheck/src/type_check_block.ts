@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -706,6 +706,13 @@ class TcbDirectiveInputsOp extends TcbOp {
           widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
       const sharedExprId = this.tcb.allocateId();
 
+      // Add the value span to the shared expression. This will be useful for completion
+      // purposes so that we can find a position for global completion in the context
+      // of assignment to a specific directive/component input. See `completion.ts`.
+      if (attr.attribute.valueSpan !== undefined) {
+        addParseSpanInfo(sharedExprId, attr.attribute.valueSpan);
+      }
+
       const inputTestStatements: ts.Statement[] = [
         // The expression itself is always added as test statement. In case no target
         // can be found (e.g. there is no class member for the input)- we'd still want to
@@ -721,7 +728,7 @@ class TcbDirectiveInputsOp extends TcbOp {
                     undefined,
                     exprForDiag,
                     )],
-                ts.NodeFlags.Const))
+                ts.NodeFlags.Const)),
       ];
 
       for (const {fieldName, required, transformType} of attr.inputs) {
@@ -804,8 +811,8 @@ class TcbDirectiveInputsOp extends TcbOp {
 
         // TODO(signals)
         if (this.dir.isSignal) {
-          const toWritableSignalExpr =
-              this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵɵtoWritableSignal');
+          const toWritableSignalExpr = this.tcb.env.referenceExternalSymbol(
+              R3Identifiers.toWriteableSignal.moduleName, R3Identifiers.toWriteableSignal.name);
 
           inputTestStatements.push(
               ts.factory.createExpressionStatement(ts.factory.createCallExpression(
