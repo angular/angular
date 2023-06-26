@@ -48,7 +48,6 @@ describe('dom property bindings in signal based components', () => {
     const div = fixture.nativeElement.firstChild;
 
     fixture.detectChanges();
-    debugger;
     expect(div.title).toBe('Hello, Angular!');
   });
 });
