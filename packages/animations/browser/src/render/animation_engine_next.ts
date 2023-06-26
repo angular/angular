@@ -106,10 +106,8 @@ export class AnimationEngine {
   }
 
   get players(): AnimationPlayer[] {
-    return [
-      ...this._transitionEngine.players,
-      ...this._timelineEngine.players,
-    ];
+    return (this._transitionEngine.players as AnimationPlayer[])
+        .concat(this._timelineEngine.players as AnimationPlayer[]);
   }
 
   whenRenderingDone(): Promise<any> {
