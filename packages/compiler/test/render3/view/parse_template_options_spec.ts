@@ -39,9 +39,13 @@ describe('collectCommentNodes', () => {
         .toEqual('eslint-disable-next-line');
     expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan)
         .toBeInstanceOf(ParseSourceSpan);
+    expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan.toString())
+        .toEqual('<!-- eslint-disable-next-line -->');
     expect(templateCommentsOptionEnabled.commentNodes![1]).toBeInstanceOf(Comment);
     expect(templateCommentsOptionEnabled.commentNodes![1].value).toEqual('some nested comment');
     expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan)
         .toBeInstanceOf(ParseSourceSpan);
+    expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan.toString())
+        .toEqual('<!-- some nested comment -->');
   });
 });
