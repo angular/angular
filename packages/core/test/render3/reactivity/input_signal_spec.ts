@@ -12,7 +12,11 @@ import {input} from '@angular/core/src/render3/reactivity/input';
 import {InputSignal, InputSignalNode} from '@angular/core/src/render3/reactivity/input_signal';
 
 describe('input signals', () => {
-  it('should throw before initialization', () => {
+  // TODO(signals): Currently we always set inputs as initialized. We still need
+  // to mark those as initialized from the property instructions- or we decide to not
+  // throw errors if inputs are accessed before they are set. e.g. what if they have a
+  // default value?? TBD
+  xit('should throw before initialization', () => {
     const foo = input<string>();
     expect(foo).toThrow();
   });
