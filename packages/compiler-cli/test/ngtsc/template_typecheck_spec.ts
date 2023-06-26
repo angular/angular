@@ -446,9 +446,9 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
+        expect(diags[0].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
       });
 
       it('should check expressions and their type when overall strictness is enabled', () => {
@@ -456,9 +456,9 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
+        expect(diags[0].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
       });
 
       it('should check expressions but not their type when not enabled', () => {
@@ -502,10 +502,10 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-            .toEqual(`Type 'boolean | null | undefined' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText)
+        expect(diags[0].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect((diags[1].messageText as ts.DiagnosticMessageChain).messageText)
+            .toEqual(`Type 'boolean | null | undefined' is not assignable to type 'boolean'.`);
       });
 
       it('should check expressions and their nullability when overall strictness is enabled',
@@ -514,10 +514,10 @@ export declare class AnimationEvent {
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
-           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-               .toEqual(`Type 'boolean | null | undefined' is not assignable to type 'boolean'.`);
-           expect(diags[1].messageText)
+           expect(diags[0].messageText)
                .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+           expect((diags[1].messageText as ts.DiagnosticMessageChain).messageText)
+               .toEqual(`Type 'boolean | null | undefined' is not assignable to type 'boolean'.`);
          });
 
       it('should check expressions but not their nullability when not enabled', () => {
@@ -565,10 +565,10 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-            .toEqual(`Type 'boolean | undefined' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText)
+        expect(diags[0].messageText)
             .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect((diags[1].messageText as ts.DiagnosticMessageChain).messageText)
+            .toEqual(`Type 'boolean | undefined' is not assignable to type 'boolean'.`);
       });
 
       it('should infer result type for safe navigation expressions when overall strictness is enabled',
@@ -577,10 +577,10 @@ export declare class AnimationEvent {
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
-           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-               .toEqual(`Type 'boolean | undefined' is not assignable to type 'boolean'.`);
-           expect(diags[1].messageText)
+           expect(diags[0].messageText)
                .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+           expect((diags[1].messageText as ts.DiagnosticMessageChain).messageText)
+               .toEqual(`Type 'boolean | undefined' is not assignable to type 'boolean'.`);
          });
 
       it('should not infer result type for safe navigation expressions when not enabled', () => {
