@@ -74,6 +74,8 @@ export class TypeCheckFile extends Environment {
     // is somehow more expensive than the initial parse.
     source += '\nexport const IS_A_MODULE = true;\n';
 
+    console.error(source);
+
     return source;
   }
 

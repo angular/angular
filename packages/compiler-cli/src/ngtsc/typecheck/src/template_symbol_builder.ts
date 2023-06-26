@@ -347,10 +347,12 @@ export class SymbolBuilder {
       return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
     }
 
-    const nodes = findAllMatchingNodes(
-        this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
+    const inputStatementNodes = findAllMatchingNodes(
+        this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isInputStatement});
     const bindings: BindingSymbol[] = [];
-    for (const node of nodes) {
+    for (const statementNode of inputStatementNodes) {
+      const node = statementNode.expression;
+
       if (!isAccessExpression(node.left)) {
         continue;
       }
@@ -650,6 +652,19 @@ export class SymbolBuilder {
       return node.getStart();
     }
   }
+}
+
+function isInputStatement(n: ts.Node): n is ts.ExpressionStatement&{
+  expression: ts.BinaryExpression
+}
+{
+  if (ts.isExpressionStatement(n) && isAssignment(n.expression)) {
+    return true;
+  }
+
+  // TODO(signals): Handle signal statements.
+
+  return false;
 }
 
 /** Filter predicate function that matches any AST node. */

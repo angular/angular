@@ -24,6 +24,7 @@ jasmine_node_test(
         "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
+    shard_count = 4,
     deps = [
         ":test_lib",
     ],
