@@ -251,7 +251,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             ],
             [html.Element, 'span', 1, '<span>x {{ expr }<!---->} y</span>', '<span>', '</span>'],
             [html.Text, 'x {{ expr }', 2, ['x '], ['{{', ' expr }'], [''], 'x {{ expr }'],
-            [html.Comment, '', 2, '<!--'],
+            [html.Comment, '', 2, '<!---->'],
             [html.Text, '} y', 2, ['} y'], '} y'],
             [html.Element, 'div', 1, '<div></div>', '<div>', '</div>'],
           ]);
