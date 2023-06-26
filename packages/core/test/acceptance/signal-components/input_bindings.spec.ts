@@ -35,7 +35,6 @@ describe('Signal component inputs', () => {
       it('should bind literal values', () => {
         @Component({
           signals: true,
-          // TODO: why aren't we failing for the unclosed <print> tag?
           template: `<print [num]="3">`,
           imports: [Print],
           standalone: true,
@@ -160,14 +159,17 @@ describe('Signal component inputs', () => {
         expect(fixture.nativeElement.textContent).toBe('3:3');
       });
 
-      xit('should reveal dragon no 1: shared expression value for non-primitive literals', () => {
+      it('should reveal dragon no 1: shared expression value for non-primitive literals', () => {
         @Directive({
           selector: '[dir1]',
           standalone: true,
           signals: true,
         })
         class Dir1 {
-          @Input() testInput = input<string[]>({initialValue: []});
+          @Input() testInputArr = input<string[]>({initialValue: []});
+          @Input()
+          testInputObj =
+              input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
         }
 
         @Directive({
@@ -176,12 +178,19 @@ describe('Signal component inputs', () => {
           signals: true,
         })
         class Dir2 {
-          @Input() testInput = input<string[]>({initialValue: []});
+          @Input() testInputArr = input<string[]>({initialValue: []});
+          @Input()
+          testInputObj =
+              input<{foo: string, bar: string}>({initialValue: {foo: 'before', bar: 'before'}});
         }
 
         @Component({
           signals: true,
-          template: `<div dir1 dir2 [testInput]="['foo', 'bar']"></div>`,
+          template: `
+            <div dir1 dir2 
+              [testInputArr]="['foo', 'bar']"
+              [testInputObj]="{foo: 'foo', bar: 'bar'}"
+            ></div>`,
           imports: [Dir1, Dir2],
           standalone: true,
         })
@@ -194,9 +203,13 @@ describe('Signal component inputs', () => {
         const dir1Instance = fixture.debugElement.children[0].injector.get(Dir1);
         const dir2Instance = fixture.debugElement.children[0].injector.get(Dir2);
 
-        expect(dir1Instance.testInput()).toEqual(['foo', 'bar']);
-        expect(dir2Instance.testInput()).toEqual(['foo', 'bar']);
-        expect(dir1Instance.testInput()).toBe(dir2Instance.testInput());
+        expect(dir1Instance.testInputArr()).toEqual(['foo', 'bar']);
+        expect(dir2Instance.testInputArr()).toEqual(['foo', 'bar']);
+        expect(dir1Instance.testInputArr()).toBe(dir2Instance.testInputArr());
+
+        expect(dir1Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
+        expect(dir2Instance.testInputObj()).toEqual({foo: 'foo', bar: 'bar'});
+        expect(dir1Instance.testInputObj()).toBe(dir2Instance.testInputObj());
       });
 
       it('should be able to bind a variable', () => {
@@ -253,36 +266,27 @@ describe('Signal component inputs', () => {
       });
     });
 
-    /*
-
-Error: AssertionError: unresolved LexicalRead of i
-
-
-cannot bind to lexical read, implicit receiver read without function
-call expression.
-
-    */
-    xit('should be able to bind to local refs in expressions', () => {
+    xit('should be able to pass local refs as inputs in expressions', () => {
       @Component({
         standalone: true,
         signals: true,
-        template: '{{elementBinding() !== undefined}}',
-        selector: 'whatever',
+        template: '{{testInput() !== undefined}}',
+        selector: 'test-cmp',
       })
-      class Whatever {
-        @Input() elementBinding = input<HTMLElement>({required: true});
+      class TestComponent {
+        @Input() testInput = input<HTMLElement>({required: true});
       }
 
       @Component({
         template: `
-            <whatever [elementBinding]="varx">
+            <div #d></div>
+            <test-cmp [testInput]="d" />
           `,
         signals: true,
         standalone: true,
-        imports: [Whatever],
+        imports: [TestComponent],
       })
       class App {
-        varx = () => (true);
       }
 
       const fixture = TestBed.createComponent(App);
