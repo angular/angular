@@ -114,6 +114,7 @@ export enum UnaryOperator {
 }
 
 export enum BinaryOperator {
+  Assign,
   Equals,
   NotEquals,
   Identical,

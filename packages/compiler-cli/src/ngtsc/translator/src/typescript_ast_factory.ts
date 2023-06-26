@@ -31,6 +31,7 @@ const UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> = {
 };
 
 const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
+  '=': ts.SyntaxKind.EqualsToken,
   '&&': ts.SyntaxKind.AmpersandAmpersandToken,
   '>': ts.SyntaxKind.GreaterThanToken,
   '>=': ts.SyntaxKind.GreaterThanEqualsToken,
