@@ -837,10 +837,43 @@ export interface Input {
 export const Input: InputDecorator;
 
 // @public (undocumented)
-export function input<ReadT>(): InputSignal<ReadT | undefined, ReadT>;
+export function input(): InputSignal<undefined, undefined>;
 
 // @public (undocumented)
-export function input<ReadT>(defaultValue: ReadT): InputSignal<ReadT, ReadT>;
+export function input<T>(): InputSignal<T | undefined, T>;
+
+// @public (undocumented)
+export function input<T>(initialValue: T & (string | number | boolean), opts?: PrimaryInputOptions<T, T> & {
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(initialValue: WriteT & (string | number | boolean), opts: PrimaryInputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<T>(opts: InputOptions<T, T> & {
+    required: true;
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT> & {
+    required: true;
+}): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<T>(opts: InputOptions<T, T> & {
+    initialValue: T;
+    transform?: undefined;
+}): InputSignal<T, T>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT> & {
+    initialValue: ReadT;
+}): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT>): InputSignal<ReadT | undefined, WriteT>;
 
 // @public (undocumented)
 export interface InputDecorator {
