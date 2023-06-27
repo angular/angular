@@ -5,9 +5,8 @@
     (click)="barClick.emit(originalData[i])"
     class="bar"
     [style.backgroundColor]="color"
-    [style.width.%]="bar.value"
-    [matTooltip]="bar.label"
-  >
-    <span>{{ bar.label }}</span>
+    [style.width.%]="bar.width"
+    [matTooltip]="bar.text">
+    <span>{{ bar.text }}</span>
   </div>
 </div>

@@ -50,7 +50,7 @@ export class BargraphVisualizerComponent implements OnInit, OnDestroy {
   }
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
-    return formatDirectiveProfile(bargraphNode.original.directives);
+    return formatDirectiveProfile(bargraphNode.directives ?? []);
   }
 
   selectNode(node: BargraphNode): void {
