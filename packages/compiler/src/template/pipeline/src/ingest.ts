@@ -118,7 +118,7 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, cpl);
   } else if (ast instanceof e.PropertyRead) {
-    if (ast.receiver instanceof e.ImplicitReceiver) {
+    if (ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver)) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(convertAst(ast.receiver, cpl), ast.name);
