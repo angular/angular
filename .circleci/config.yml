@@ -249,21 +249,6 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
-  lint:
-    executor: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-
-      - run: yarn -s tslint
-      - run: yarn -s --cwd aio lint
-      - run: yarn -s ng-dev format changed $CI_GIT_BASE_REVISION --check
-      - run: yarn -s ts-circular-deps:check
-      - run: yarn -s ng-dev pullapprove verify
-      - run: yarn -s ng-dev ngbot verify
-      - run: yarn -s ng-dev commit-message validate-range $CI_GIT_BASE_REVISION $CI_GIT_REVISION
-      - run: yarn -s check-tooling-setup
-
   test:
     executor:
       name: test-browser-executor
@@ -668,9 +653,6 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
       - test:
           requires:
             - setup
