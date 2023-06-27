@@ -36,7 +36,7 @@
     "directory": "packages/zone.js"
   },
   "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
+    "flatten(manifest.publishConfig, opts)"
   },
   "author": "Brian Ford",
   "license": "MIT",
