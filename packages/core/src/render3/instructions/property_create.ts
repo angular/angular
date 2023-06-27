@@ -18,6 +18,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {renderStringify} from '../util/stringify_utils';
 import {getNativeByTNode} from '../util/view_utils';
 
 import {handleUnknownPropertyError, isPropertyValid} from './element_validation';
@@ -65,13 +66,9 @@ export function ɵɵpropertyCreate<T>(
   zoneTargets ??= EMPTY_ARRAY;
   signalInputs ??= EMPTY_ARRAY;
 
-  // If there are multiple signal targets, or any zone targets, then wrap `expr` in a computed. This
-  // ensures that the expression is only evaluated once, even if it has multiple consumers. Zone
-  // targets always use a computed as this memoizes all object/literal creation (which would
-  // otherwise have used pure functions).
-  if (zoneTargets.length > 0 || signalInputs.length > 1) {
-    expr = computed(expr);
-  }
+  // PERF(pk): I could avoid wrapping into computed for the case of a single binding to a signal
+  // based component
+  expr = computed(expr);
 
   lView[expressionSlot] = expr;
   for (const inputSignal of signalInputs) {
@@ -86,7 +83,7 @@ export function ɵɵpropertyCreate<T>(
         instruction: () =>
             propertyUpdateDom(tNode.index, propName, expressionSlot, sanitizer ?? null),
       });
-    } else if (zoneTargets?.length ?? 0 > 0) {
+    } else if (zoneTargets.length) {
       // Some binding targets were zone-based, so we need an update instruction to process them.
       (tView.virtualUpdate ??= []).push({
         slot: expressionSlot,
@@ -164,4 +161,16 @@ export function propertyUpdateInput(
   if (ngDevMode) {
     setNgReflectProperties(lView, element, tNode.type, targets, value);
   }
+}
+
+export function ɵɵstringifyInterpolation(
+    staticStrings: TemplateStringsArray, ...expressionValues: any[]): string {
+  // Build the updated content
+
+  let content = staticStrings[0];
+  for (let i = 1; i < staticStrings.length; i++) {
+    content += expressionValues[i - 1] + renderStringify(staticStrings[i]);
+  }
+
+  return content;
 }
