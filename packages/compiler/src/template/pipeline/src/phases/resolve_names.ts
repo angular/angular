@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation, ViewCompilation} from '../compilation';
+import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Resolves lexical references in views (`ir.LexicalReadExpr`) to either a target variable or to
@@ -17,7 +17,7 @@ import {ComponentCompilation, ViewCompilation} from '../compilation';
  * Also matches `ir.RestoreViewExpr` expressions with the variables of their corresponding saved
  * views.
  */
-export function phaseResolveNames(cpl: ComponentCompilation): void {
+export function phaseResolveNames(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     processLexicalScope(view, view.create, null);
     processLexicalScope(view, view.update, null);
@@ -25,7 +25,7 @@ export function phaseResolveNames(cpl: ComponentCompilation): void {
 }
 
 function processLexicalScope(
-    view: ViewCompilation, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>,
+    view: ViewCompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>,
     savedView: SavedView|null): void {
   // Maps names defined in the lexical scope of this template to the `ir.XrefId`s of the variable
   // declarations which represent those values.

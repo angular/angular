@@ -12,16 +12,16 @@ import * as o from '../../../output/output_ast';
 import * as t from '../../../render3/r3_ast';
 import * as ir from '../ir';
 
-import {ComponentCompilation, ViewCompilation} from './compilation';
+import {ComponentCompilationJob, ViewCompilationUnit} from './compilation';
 import {BINARY_OPERATORS} from './conversion';
 
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
  * representation.
  */
-export function ingest(
-    componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
-  const cpl = new ComponentCompilation(componentName, constantPool);
+export function ingest(componentName: string, template: t.Node[], constantPool: ConstantPool):
+    ComponentCompilationJob {
+  const cpl = new ComponentCompilationJob(componentName, constantPool);
   ingestNodes(cpl.root, template);
   return cpl;
 }
@@ -29,7 +29,7 @@ export function ingest(
 /**
  * Ingest the nodes of a template AST into the given `ViewCompilation`.
  */
-function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
+function ingestNodes(view: ViewCompilationUnit, template: t.Node[]): void {
   for (const node of template) {
     if (node instanceof t.Element) {
       ingestElement(view, node);
@@ -48,7 +48,7 @@ function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
 /**
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
-function ingestElement(view: ViewCompilation, element: t.Element): void {
+function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
   const staticAttributes: Record<string, string> = {};
   for (const attr of element.attributes) {
     staticAttributes[attr.name] = attr.value;
@@ -68,7 +68,7 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
 /**
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
-function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
+function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
   const childView = view.tpl.allocateView(view.xref);
 
   // TODO: validate the fallback tag name here.
@@ -88,14 +88,14 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
 /**
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
-function ingestText(view: ViewCompilation, text: t.Text): void {
+function ingestText(view: ViewCompilationUnit, text: t.Text): void {
   view.create.push(ir.createTextOp(view.tpl.allocateXrefId(), text.value));
 }
 
 /**
  * Ingest an interpolated text node from the AST into the given `ViewCompilation`.
  */
-function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
+function ingestBoundText(view: ViewCompilationUnit, text: t.BoundText): void {
   let value = text.value;
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
@@ -114,7 +114,7 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
 /**
  * Convert a template AST expression into an output AST expression.
  */
-function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
+function convertAst(ast: e.AST, cpl: ComponentCompilationJob): o.Expression {
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, cpl);
   } else if (ast instanceof e.PropertyRead) {
@@ -198,7 +198,7 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
  * to their IR representation.
  */
 function ingestBindings(
-    view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
+    view: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       if (attr instanceof t.TextAttribute) {
@@ -252,7 +252,7 @@ function ingestBindings(
 }
 
 function ingestPropertyBinding(
-    view: ViewCompilation, xref: ir.XrefId,
+    view: ViewCompilationUnit, xref: ir.XrefId,
     bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
     {name, value, type, unit}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {

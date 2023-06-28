@@ -10,11 +10,36 @@ import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
 import * as ir from '../ir';
 
+// A compilation unit is compiled into a template function.
+// Some example units are views and host bindings.
+export abstract class CompilationUnit {
+  /**
+   * List of creation operations for this view.
+   *
+   * Creation operations may internally contain other operations, including update operations.
+   */
+  readonly create = new ir.OpList<ir.CreateOp>();
+
+  /**
+   * List of update operations for this view.
+   */
+  readonly update = new ir.OpList<ir.UpdateOp>();
+}
+
+export class HostBindingCompilationJob extends CompilationUnit implements CompilationJob {
+  readonly units = [this];
+}
+
+export interface CompilationJob {
+  get units(): Iterable<CompilationUnit>;
+}
+
 /**
  * Compilation-in-progress of a whole component's template, including the main template and any
  * embedded views or host bindings.
  */
-export class ComponentCompilation {
+// TODO: rename `ComponentCompilationJob`
+export class ComponentCompilationJob implements CompilationJob {
   /**
    * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
    */
@@ -23,7 +48,11 @@ export class ComponentCompilation {
   /**
    * Map of view IDs to `ViewCompilation`s.
    */
-  readonly views = new Map<ir.XrefId, ViewCompilation>();
+  readonly views = new Map<ir.XrefId, ViewCompilationUnit>();
+
+  get units(): Iterable<ViewCompilationUnit> {
+    return this.views.values();
+  }
 
   /**
    * Constant expressions used by operations within this component's compilation.
@@ -35,11 +64,11 @@ export class ComponentCompilation {
   /**
    * The root view, representing the component's template.
    */
-  readonly root: ViewCompilation;
+  readonly root: ViewCompilationUnit;
 
   constructor(readonly componentName: string, readonly pool: ConstantPool) {
     // Allocate the root view.
-    const root = new ViewCompilation(this, this.allocateXrefId(), null);
+    const root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(root.xref, root);
     this.root = root;
   }
@@ -47,8 +76,8 @@ export class ComponentCompilation {
   /**
    * Add a `ViewCompilation` for a new embedded view to this compilation.
    */
-  allocateView(parent: ir.XrefId): ViewCompilation {
-    const view = new ViewCompilation(this, this.allocateXrefId(), parent);
+  allocateView(parent: ir.XrefId): ViewCompilationUnit {
+    const view = new ViewCompilationUnit(this, this.allocateXrefId(), parent);
     this.views.set(view.xref, view);
     return view;
   }
@@ -78,10 +107,12 @@ export class ComponentCompilation {
 /**
  * Compilation-in-progress of an individual view within a template.
  */
-export class ViewCompilation {
+export class ViewCompilationUnit extends CompilationUnit {
   constructor(
-      readonly tpl: ComponentCompilation, readonly xref: ir.XrefId,
-      readonly parent: ir.XrefId|null) {}
+      readonly tpl: ComponentCompilationJob, readonly xref: ir.XrefId,
+      readonly parent: ir.XrefId|null) {
+    super();
+  }
 
   /**
    * Name of the function which will be generated for this view.
@@ -89,18 +120,6 @@ export class ViewCompilation {
    * May be `null` if not yet determined.
    */
   fnName: string|null = null;
-
-  /**
-   * List of creation operations for this view.
-   *
-   * Creation operations may internally contain other operations, including update operations.
-   */
-  readonly create = new ir.OpList<ir.CreateOp>();
-
-  /**
-   * List of update operations for this view.
-   */
-  readonly update = new ir.OpList<ir.UpdateOp>();
 
   /**
    * Map of declared variables available within this view to the property on the context object

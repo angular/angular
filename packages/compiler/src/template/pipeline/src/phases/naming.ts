@@ -8,7 +8,7 @@
 
 import * as ir from '../../ir';
 
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Generate names for functions and variables across all views.
@@ -16,11 +16,11 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * This includes propagating those names into any `ir.ReadVariableExpr`s of those variables, so that
  * the reads can be emitted correctly.
  */
-export function phaseNaming(cpl: ComponentCompilation): void {
+export function phaseNaming(cpl: ComponentCompilationJob): void {
   addNamesToView(cpl.root, cpl.componentName, {index: 0});
 }
 
-function addNamesToView(view: ViewCompilation, baseName: string, state: {index: number}): void {
+function addNamesToView(view: ViewCompilationUnit, baseName: string, state: {index: number}): void {
   if (view.fnName === null) {
     view.fnName = `${baseName}_Template`;
   }

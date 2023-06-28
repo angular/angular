@@ -8,10 +8,10 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 
 
-export function phaseNullishCoalescing(cpl: ComponentCompilation): void {
+export function phaseNullishCoalescing(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     for (const op of view.ops()) {
       ir.transformExpressionsInOp(op, expr => {

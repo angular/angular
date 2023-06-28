@@ -546,6 +546,15 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
     definitionMap: DefinitionMap): o.Expression|null {
+  if (USE_TEMPLATE_PIPELINE) {
+    // (host binding metadata is not parsed, so we need to extract that code from below to above
+    // this switch)
+    //
+    // * ingest new hostbindingjob
+    // * run phases
+    // * return results
+    return null!;
+  }
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
 

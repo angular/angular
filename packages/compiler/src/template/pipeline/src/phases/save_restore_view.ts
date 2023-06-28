@@ -8,9 +8,9 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 
-export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
+export function phaseSaveRestoreView(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     if (view === cpl.root) {
       // Save/restore operations are not necessary for the root view.

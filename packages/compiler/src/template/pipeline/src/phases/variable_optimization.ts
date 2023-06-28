@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 export interface VariableOptimizationOptions {
   conservative: boolean;
@@ -33,12 +33,12 @@ export interface VariableOptimizationOptions {
  * which optimizations are safe to perform.
  */
 export function phaseVariableOptimization(
-    cpl: ComponentCompilation, options: VariableOptimizationOptions): void {
-  for (const [_, view] of cpl.views) {
-    optimizeVariablesInOpList(view.create, options);
-    optimizeVariablesInOpList(view.update, options);
+    cpl: CompilationJob, options: VariableOptimizationOptions): void {
+  for (const unit of cpl.units) {
+    optimizeVariablesInOpList(unit.create, options);
+    optimizeVariablesInOpList(unit.update, options);
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.Listener) {
         optimizeVariablesInOpList(op.handlerOps, options);
       }

@@ -8,21 +8,22 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation, ViewCompilation} from '../compilation';
+import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Resolves `ir.ContextExpr` expressions (which represent embedded view or component contexts) to
  * either the `ctx` parameter to component functions (for the current view context) or to variables
  * that store those contexts (for contexts accessed via the `nextContext()` instruction).
  */
-export function phaseResolveContexts(cpl: ComponentCompilation): void {
+export function phaseResolveContexts(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     processLexicalScope(view, view.create);
     processLexicalScope(view, view.update);
   }
 }
 
-function processLexicalScope(view: ViewCompilation, ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
+function processLexicalScope(
+    view: ViewCompilationUnit, ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
   // Track the expressions used to access all available contexts within the current view, by the
   // view `ir.XrefId`.
   const scope = new Map<ir.XrefId, o.Expression>();

@@ -8,13 +8,13 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
 
 /**
  * Finds all unresolved safe read expressions, and converts them into the appropriate output AST
  * reads, guarded by null checks.
  */
-export function phaseExpandSafeReads(cpl: ComponentCompilation): void {
+export function phaseExpandSafeReads(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     for (const op of view.ops()) {
       ir.transformExpressionsInOp(op, safeTransform, ir.VisitorContextFlag.None);

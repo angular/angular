@@ -10,7 +10,7 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import type {ComponentCompilation, ViewCompilation} from './compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit, HostBindingCompilationJob} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
@@ -41,44 +41,57 @@ import {phaseExpandSafeReads} from './phases/expand_safe_reads';
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
-export function transformTemplate(cpl: ComponentCompilation): void {
-  phaseAttributeExtraction(cpl, true);
-  phasePipeCreation(cpl);
-  phasePipeVariadic(cpl);
-  phasePureLiteralStructures(cpl);
-  phaseGenerateVariables(cpl);
-  phaseSaveRestoreView(cpl);
-  phaseResolveNames(cpl);
-  phaseResolveContexts(cpl);
-  phaseLocalRefs(cpl);
-  phaseConstCollection(cpl);
-  phaseNullishCoalescing(cpl);
-  phaseExpandSafeReads(cpl);
-  phaseSlotAllocation(cpl);
-  phaseVarCounting(cpl);
-  phaseGenerateAdvance(cpl);
-  phaseNaming(cpl);
-  phaseVariableOptimization(cpl, {conservative: true});
-  phaseMergeNextContext(cpl);
-  phaseNgContainer(cpl);
-  phaseEmptyElements(cpl);
-  phasePureFunctionExtraction(cpl);
-  phaseAlignPipeVariadicVarOffset(cpl);
-  phaseReify(cpl);
-  phaseChaining(cpl);
+export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseAttributeExtraction(job, true);
+  phasePipeCreation(job);
+  phasePipeVariadic(job);
+  phasePureLiteralStructures(job);
+  phaseGenerateVariables(job);
+  phaseSaveRestoreView(job);
+  phaseResolveNames(job);
+  phaseResolveContexts(job);
+  phaseLocalRefs(job);
+  phaseConstCollection(job);
+  phaseNullishCoalescing(job);
+  phaseExpandSafeReads(job);
+  phaseSlotAllocation(job);
+  phaseVarCounting(job);
+  phaseGenerateAdvance(job);
+  phaseVariableOptimization(job, {conservative: true});
+  phaseNaming(job);
+  phaseMergeNextContext(job);
+  phaseNgContainer(job);
+  phaseEmptyElements(job);
+  phasePureFunctionExtraction(job);
+  phaseAlignPipeVariadicVarOffset(job);
+  phaseReify(job);
+  phaseChaining(job);
+}
+
+export function transformHostBindingFunction(job: HostBindingCompilationJob): void {
+  // phasePureLiteralStructures(job);
+  // phaseGenerateVariables(job);
+  // phaseSaveRestoreView(job); ?
+  // phaseNullishCoalescing(job);
+  // phaseExpandSafeReads(job);
+  phaseVariableOptimization(job, {conservative: true});
+  // phaseNaming(job);
+  // phasePureFunctionExtraction(job);
+  phaseReify(job);
+  phaseChaining(job);
 }
 
 /**
  * Compile all views in the given `ComponentCompilation` into the final template function, which may
  * reference constants defined in a `ConstantPool`.
  */
-export function emitTemplateFn(tpl: ComponentCompilation, pool: ConstantPool): o.FunctionExpr {
+export function emitTemplateFn(tpl: ComponentCompilationJob, pool: ConstantPool): o.FunctionExpr {
   const rootFn = emitView(tpl.root);
   emitChildViews(tpl.root, pool);
   return rootFn;
 }
 
-function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
+function emitChildViews(parent: ViewCompilationUnit, pool: ConstantPool): void {
   for (const view of parent.tpl.views.values()) {
     if (view.parent !== parent.xref) {
       continue;
@@ -96,7 +109,7 @@ function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
  * Emit a template function for an individual `ViewCompilation` (which may be either the root view
  * or an embedded view).
  */
-function emitView(view: ViewCompilation): o.FunctionExpr {
+function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   if (view.fnName === null) {
     throw new Error(`AssertionError: view ${view.xref} is unnamed`);
   }

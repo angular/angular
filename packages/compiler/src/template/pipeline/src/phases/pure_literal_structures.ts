@@ -8,9 +8,9 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 
-export function phasePureLiteralStructures(cpl: ComponentCompilation): void {
+export function phasePureLiteralStructures(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     for (const op of view.update) {
       ir.transformExpressionsInOp(op, (expr, flags) => {
