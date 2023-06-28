@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -702,34 +702,9 @@ class TcbDirectiveInputsOp extends TcbOp {
 
     for (const attr of boundAttrs) {
       // For bound inputs, the property is assigned the binding expression.
-      const exprForDiag =
-          widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
-      const sharedExprId = this.tcb.allocateId();
+      const expr = widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
 
-      // Add the value span to the shared expression. This will be useful for completion
-      // purposes so that we can find a position for global completion in the context
-      // of assignment to a specific directive/component input. See `completion.ts`.
-      if (attr.attribute.valueSpan !== undefined) {
-        addParseSpanInfo(sharedExprId, attr.attribute.valueSpan);
-      }
-
-      const inputTestStatements: ts.Statement[] = [
-        // The expression itself is always added as test statement. In case no target
-        // can be found (e.g. there is no class member for the input)- we'd still want to
-        // evaluate the expression to detect potential issues. e.g. the expression may
-        // want to access a field that does not exist in the component context.
-        // i.e. `const <tmpId> = bindingExpr;`.
-        ts.factory.createVariableStatement(
-            undefined,
-            ts.factory.createVariableDeclarationList(
-                [ts.factory.createVariableDeclaration(
-                    sharedExprId,
-                    undefined,
-                    undefined,
-                    exprForDiag,
-                    )],
-                ts.NodeFlags.Const)),
-      ];
+      let assignment: ts.Expression = wrapForDiagnostics(expr);
 
       for (const {fieldName, required, transformType} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
@@ -765,7 +740,7 @@ class TcbDirectiveInputsOp extends TcbOp {
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
-          // assignment target available, so the target is skipped.
+          // assignment target available, so this field is skipped.
           continue;
         } else if (
             !this.tcb.env.config.honorAccessModifiersForInputBindings &&
@@ -808,35 +783,19 @@ class TcbDirectiveInputsOp extends TcbOp {
         if (attr.attribute.keySpan !== undefined) {
           addParseSpanInfo(target, attr.attribute.keySpan);
         }
-
-        // TODO(signals)
-        if (this.dir.isSignal) {
-          const toWritableSignalExpr = this.tcb.env.referenceExternalSymbol(
-              R3Identifiers.toWriteableSignal.moduleName, R3Identifiers.toWriteableSignal.name);
-
-          inputTestStatements.push(
-              ts.factory.createExpressionStatement(ts.factory.createCallExpression(
-                  ts.factory.createPropertyAccessExpression(
-                      ts.factory.createCallExpression(toWritableSignalExpr, undefined, [target]),
-                      ts.factory.createIdentifier('set')),
-                  undefined, [sharedExprId])));
-        } else {
-          // Finally the statement for assigning the expression into the target expression.
-          inputTestStatements.push(ts.factory.createExpressionStatement(
-              ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, sharedExprId)));
-        }
+        // Finally the assignment is extended by assigning it into the target expression.
+        assignment =
+            ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, assignment);
       }
 
-      for (const st of inputTestStatements) {
-        addParseSpanInfo(st, attr.attribute.sourceSpan);
-        // Ignore diagnostics for text attributes if configured to do so.
-        if (!this.tcb.env.config.checkTypeOfAttributes &&
-            attr.attribute instanceof TmplAstTextAttribute) {
-          markIgnoreDiagnostics(st);
-        }
-
-        this.scope.addStatement(st);
+      addParseSpanInfo(assignment, attr.attribute.sourceSpan);
+      // Ignore diagnostics for text attributes if configured to do so.
+      if (!this.tcb.env.config.checkTypeOfAttributes &&
+          attr.attribute instanceof TmplAstTextAttribute) {
+        markIgnoreDiagnostics(assignment);
       }
+
+      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
     }
 
     this.checkRequiredInputs(seenRequiredInputs);
@@ -1598,7 +1557,7 @@ class Scope {
 
       if (!dir.isGeneric) {
         // The most common case is that when a directive is not generic, we use the normal
-        // `TcbNonGenericDirectiveTypeOp`.
+        // `TcbNonDirectiveTypeOp`.
         directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
       } else if (
           !requiresInlineTypeCtor(dirRef.node, host, this.tcb.env) ||
@@ -1885,13 +1844,7 @@ function tcbCallTypeCtor(
 
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      let expr = widenBinding(input.expression, tcb);
-
-      // TODO(signals)
-      if (dir.isSignal) {
-        const signalCtor = tcb.env.referenceExternalSymbol('@angular/core', 'signal');
-        expr = ts.factory.createCallExpression(signalCtor, undefined, [expr]);
-      }
+      const expr = widenBinding(input.expression, tcb);
 
       const assignment =
           ts.factory.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));

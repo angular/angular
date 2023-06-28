@@ -136,8 +136,6 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       if (this.isValidNodeContextCompletion(result)) {
         ngResults.push({
           ...result,
-          // Remove the leading/trailing quotes from the TS completion entries.
-          name: result.name.replace(/(^['"`]|['"~]$)/g, ''),
           replacementSpan,
         });
       }

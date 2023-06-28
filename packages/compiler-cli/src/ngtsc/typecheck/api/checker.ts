@@ -123,7 +123,7 @@ export interface TemplateTypeChecker {
       expr: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): TcbLocation|null;
 
   /**
-   * For the given node represents a `LiteralPrimitive` (the `TextAttribute` represents a string
+   * For the given node represents a `LiteralPrimitive`(the `TextAttribute` represents a string
    * literal), retrieve a `TcbLocation` that can be used to perform autocompletion at that point in
    * the node, if such a location exists.
    */
