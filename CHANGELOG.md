@@ -1,3 +1,21 @@
+<a name="16.1.3"></a>
+# 16.1.3 (2023-06-28)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd6fc5785f](https://github.com/angular/angular/commit/dd6fc5785fcf10b88db8b87d726af604668bc143) | fix | expose input transform function on ComponentFactory and ComponentMirror ([#50713](https://github.com/angular/angular/pull/50713)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1bbe47c23](https://github.com/angular/angular/commit/e1bbe47c234a495766cc07a9741a194954a6b9b4) | fix | support input transform functions ([#50713](https://github.com/angular/angular/pull/50713)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79dd6a847a](https://github.com/angular/angular/commit/79dd6a847a742ccf69597b122026758ad2b0b629) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
+| [a797f41d1b](https://github.com/angular/angular/commit/a797f41d1bcf11945673ef6d0474f33ad4614602) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0-next.0"></a>
 # 16.2.0-next.0 (2023-06-21)
 ### compiler-cli
