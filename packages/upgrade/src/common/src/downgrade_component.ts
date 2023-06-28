@@ -98,6 +98,11 @@ export function downgradeComponent(info: {
       restrict: 'E',
       terminal: true,
       require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
+      // Controller needs to be set so that `angular-component-router.js` (from beta Angular 2)
+      // configuration properties can be made available. See:
+      // See G3: javascript/angular2/angular1_router_lib.js
+      // https://github.com/angular/angular.js/blob/47bf11ee94664367a26ed8c91b9b586d3dd420f5/src/ng/compile.js#L1670-L1691.
+      controller: function() {},
       link: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
         // We might have to compile the contents asynchronously, because this might have been
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
