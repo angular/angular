@@ -391,10 +391,4 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
   static validateIframeAttribute:
       o.ExternalReference = {name: 'ɵɵvalidateIframeAttribute', moduleName: CORE};
-
-  // type-checking helpers
-  static toWriteableSignal = {
-    name: 'ɵɵtoWritableSignal',
-    moduleName: CORE,
-  };
 }
