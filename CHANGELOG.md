@@ -1,3 +1,25 @@
+<a name="16.2.0-next.1"></a>
+# 16.2.0-next.1 (2023-06-28)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd850b2ab7](https://github.com/angular/angular/commit/dd850b2ab781f24065550f8a948ced498e0f1e99) | fix | correctly report GC memory amounts ([#50760](https://github.com/angular/angular/pull/50760)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29340a0678](https://github.com/angular/angular/commit/29340a06789652e359e61b32f1814dcd20d9bd26) | fix | expose input transform function on ComponentFactory and ComponentMirror ([#50713](https://github.com/angular/angular/pull/50713)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d64864e95e](https://github.com/angular/angular/commit/d64864e95e193e46180aeaf0d634152327650871) | fix | support input transform functions ([#50713](https://github.com/angular/angular/pull/50713)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b55103e94](https://github.com/angular/angular/commit/2b55103e94578ab1cb765147077e82e1228b0dbb) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
+| [0380564f85](https://github.com/angular/angular/commit/0380564f8562f5971cff671319439ad0f2b40a7e) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.3"></a>
 # 16.1.3 (2023-06-28)
 ### core
