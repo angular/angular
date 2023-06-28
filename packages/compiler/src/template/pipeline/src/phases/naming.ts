@@ -89,6 +89,9 @@ function addNamesToView(
 function getVariableName(variable: ir.SemanticVariable, state: {index: number}): string {
   if (variable.name === null) {
     switch (variable.kind) {
+      case ir.SemanticVariableKind.Context:
+        variable.name = `ctx_r${state.index++}`;
+        break;
       case ir.SemanticVariableKind.Identifier:
         variable.name = `${variable.identifier}_${state.index++}`;
         break;

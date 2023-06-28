@@ -54,7 +54,8 @@ export function phaseGenerateAdvance(cpl: ComponentCompilation): void {
           throw new Error(`AssertionError: slot counter should never need to move backwards`);
         }
 
-        ir.OpList.insertBefore<ir.UpdateOp>(ir.createAdvanceOp(delta), op);
+        ir.OpList.insertBefore<ir.UpdateOp>(
+            ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
         slotContext = slot;
       }
     }

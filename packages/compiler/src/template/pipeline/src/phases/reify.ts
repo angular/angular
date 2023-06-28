@@ -33,34 +33,38 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
 
     switch (op.kind) {
       case ir.OpKind.Text:
-        ir.OpList.replace(op, ng.text(op.slot!, op.initialValue));
+        ir.OpList.replace(op, ng.text(op.slot!, op.initialValue, op.sourceSpan));
         break;
       case ir.OpKind.ElementStart:
         ir.OpList.replace(
             op,
             ng.elementStart(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
             op,
             ng.element(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.ElementEnd:
-        ir.OpList.replace(op, ng.elementEnd());
+        ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
         break;
       case ir.OpKind.ContainerStart:
         ir.OpList.replace(
             op,
             ng.elementContainerStart(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.Container:
         ir.OpList.replace(
             op,
             ng.elementContainer(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.ContainerEnd:
         ir.OpList.replace(op, ng.elementContainerEnd());
@@ -76,6 +80,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 childView.vars!,
                 op.tag,
                 op.attributes as number,
+                op.sourceSpan,
                 ),
         );
         break;
@@ -117,10 +122,10 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
 
     switch (op.kind) {
       case ir.OpKind.Advance:
-        ir.OpList.replace(op, ng.advance(op.delta));
+        ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        ir.OpList.replace(op, ng.property(op.name, op.expression));
+        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleProp:
         ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
@@ -135,7 +140,8 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.classMap(op.expression));
         break;
       case ir.OpKind.InterpolateProperty:
-        ir.OpList.replace(op, ng.propertyInterpolate(op.name, op.strings, op.expressions));
+        ir.OpList.replace(
+            op, ng.propertyInterpolate(op.name, op.strings, op.expressions, op.sourceSpan));
         break;
       case ir.OpKind.InterpolateStyleProp:
         ir.OpList.replace(
@@ -148,7 +154,7 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.classMapInterpolate(op.strings, op.expressions));
         break;
       case ir.OpKind.InterpolateText:
-        ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
+        ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions, op.sourceSpan));
         break;
       case ir.OpKind.Attribute:
         ir.OpList.replace(op, ng.attribute(op.name, op.value));
