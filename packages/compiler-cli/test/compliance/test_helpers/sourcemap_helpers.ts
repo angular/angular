@@ -35,6 +35,7 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 export function checkMappings(
     fs: ReadonlyFileSystem, generated: string, generatedPath: AbsoluteFsPath,
     expectedSource: string, expectedPath: AbsoluteFsPath): string {
+  // Generate the candidate source maps.
   const actualMappings = getMappedSegments(fs, generatedPath, generated);
 
   const {expected, mappings} = extractMappings(fs, expectedSource);
