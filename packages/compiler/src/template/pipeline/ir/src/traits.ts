@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {ParseSourceSpan} from '../../../../parse_util';
 import type {Op, XrefId} from './operations';
 import type {Expression} from './expression';
 
@@ -78,6 +79,8 @@ export interface DependsOnSlotContextOpTrait {
    * this operation can be executed.
    */
   target: XrefId;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 
@@ -142,9 +145,10 @@ export const TRAIT_USES_SLOT_INDEX: Omit<UsesSlotIndexTrait, 'target'> = {
  * Default values for most `DependsOnSlotContextOpTrait` fields (used with the spread operator to
  * initialize implementors of the trait).
  */
-export const TRAIT_DEPENDS_ON_SLOT_CONTEXT: Omit<DependsOnSlotContextOpTrait, 'target'> = {
-  [DependsOnSlotContext]: true,
-} as const;
+export const TRAIT_DEPENDS_ON_SLOT_CONTEXT:
+    Omit<DependsOnSlotContextOpTrait, 'target'|'sourceSpan'> = {
+      [DependsOnSlotContext]: true,
+    } as const;
 
 /**
  * Default values for `UsesVars` fields (used with the spread operator to initialize

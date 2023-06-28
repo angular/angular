@@ -55,14 +55,14 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
   }
   const id = view.tpl.allocateXrefId();
 
-  const startOp = ir.createElementStartOp(element.name, id);
+  const startOp = ir.createElementStartOp(element.name, id, element.startSourceSpan);
   view.create.push(startOp);
 
   ingestBindings(view, startOp, element);
   ingestReferences(startOp, element);
 
   ingestNodes(view, element.children);
-  view.create.push(ir.createElementEndOp(id));
+  view.create.push(ir.createElementEndOp(id, element.endSourceSpan));
 }
 
 /**
@@ -72,7 +72,8 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
   const childView = view.tpl.allocateView(view.xref);
 
   // TODO: validate the fallback tag name here.
-  const tplOp = ir.createTemplateOp(childView.xref, tmpl.tagName ?? 'ng-template');
+  const tplOp =
+      ir.createTemplateOp(childView.xref, tmpl.tagName ?? 'ng-template', tmpl.startSourceSpan);
   view.create.push(tplOp);
 
   ingestBindings(view, tplOp, tmpl);
@@ -89,7 +90,7 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestText(view: ViewCompilation, text: t.Text): void {
-  view.create.push(ir.createTextOp(view.tpl.allocateXrefId(), text.value));
+  view.create.push(ir.createTextOp(view.tpl.allocateXrefId(), text.value, text.sourceSpan));
 }
 
 /**
@@ -106,9 +107,10 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
   }
 
   const textXref = view.tpl.allocateXrefId();
-  view.create.push(ir.createTextOp(textXref, ''));
+  view.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
   view.update.push(ir.createInterpolateTextOp(
-      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
+      text.sourceSpan));
 }
 
 /**
@@ -257,7 +259,7 @@ function ingestBindings(
 function ingestPropertyBinding(
     view: ViewCompilation, xref: ir.XrefId,
     bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
-    {name, value, type, unit}: t.BoundAttribute): void {
+    {name, value, type, unit, sourceSpan}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
@@ -280,7 +282,7 @@ function ingestPropertyBinding(
         } else {
           view.update.push(ir.createInterpolatePropertyOp(
               xref, bindingKind, name, value.strings,
-              value.expressions.map(expr => convertAst(expr, view.tpl))));
+              value.expressions.map(expr => convertAst(expr, view.tpl)), sourceSpan));
         }
         break;
       case e.BindingType.Style:
@@ -297,7 +299,7 @@ function ingestPropertyBinding(
         }
         const attributeInterpolate = ir.createInterpolateAttributeOp(
             xref, bindingKind, name, value.strings,
-            value.expressions.map(expr => convertAst(expr, view.tpl)));
+            value.expressions.map(expr => convertAst(expr, view.tpl)), sourceSpan);
         view.update.push(attributeInterpolate);
         break;
       case e.BindingType.Class:
@@ -322,8 +324,8 @@ function ingestPropertyBinding(
           }
           view.update.push(ir.createClassMapOp(xref, convertAst(value, view.tpl)));
         } else {
-          view.update.push(
-              ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+          view.update.push(ir.createPropertyOp(
+              xref, bindingKind, name, convertAst(value, view.tpl), sourceSpan));
         }
         break;
       case e.BindingType.Style:

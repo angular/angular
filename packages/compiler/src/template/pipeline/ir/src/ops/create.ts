@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseSourceSpan} from '../../../../../parse_util';
 import {ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
@@ -91,6 +92,8 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    * compilation.
    */
   localRefs: LocalRef[]|ConstIndex|null;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
@@ -112,13 +115,15 @@ export interface ElementStartOp extends ElementOpBase {
 /**
  * Create an `ElementStartOp`.
  */
-export function createElementStartOp(tag: string, xref: XrefId): ElementStartOp {
+export function createElementStartOp(
+    tag: string, xref: XrefId, sourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
     xref,
     tag,
     attributes: new ElementAttributes(),
     localRefs: [],
+    sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -153,7 +158,8 @@ export interface TemplateOp extends ElementOpBase {
 /**
  * Create a `TemplateOp`.
  */
-export function createTemplateOp(xref: XrefId, tag: string): TemplateOp {
+export function createTemplateOp(
+    xref: XrefId, tag: string, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
@@ -162,6 +168,7 @@ export function createTemplateOp(xref: XrefId, tag: string): TemplateOp {
     decls: null,
     vars: null,
     localRefs: [],
+    sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -179,15 +186,18 @@ export interface ElementEndOp extends Op<CreateOp> {
    * The `XrefId` of the element declared via `ElementStart`.
    */
   xref: XrefId;
+
+  sourceSpan: ParseSourceSpan|null;
 }
 
 /**
  * Create an `ElementEndOp`.
  */
-export function createElementEndOp(xref: XrefId): ElementEndOp {
+export function createElementEndOp(xref: XrefId, sourceSpan: ParseSourceSpan|null): ElementEndOp {
   return {
     kind: OpKind.ElementEnd,
     xref,
+    sourceSpan,
     ...NEW_OP,
   };
 }
@@ -218,6 +228,8 @@ export interface ContainerEndOp extends Op<CreateOp> {
    * The `XrefId` of the element declared via `ContainerStart`.
    */
   xref: XrefId;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
@@ -235,16 +247,20 @@ export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    * The static initial value of the text node.
    */
   initialValue: string;
+
+  sourceSpan: ParseSourceSpan|null;
 }
 
 /**
  * Create a `TextOp`.
  */
-export function createTextOp(xref: XrefId, initialValue: string): TextOp {
+export function createTextOp(
+    xref: XrefId, initialValue: string, sourceSpan: ParseSourceSpan|null): TextOp {
   return {
     kind: OpKind.Text,
     xref,
     initialValue,
+    sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };

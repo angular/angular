@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../output/output_ast';
+import {ParseSourceSpan} from '../../../parse_util';
 import {Identifiers} from '../../../render3/r3_identifiers';
 import * as ir from '../ir';
 
@@ -15,18 +16,22 @@ import * as ir from '../ir';
 // depending on the exact arguments.
 
 export function element(
-    slot: number, tag: string, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
-  return elementOrContainerBase(Identifiers.element, slot, tag, constIndex, localRefIndex);
+    slot: number, tag: string, constIndex: number|null, localRefIndex: number|null,
+    sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return elementOrContainerBase(
+      Identifiers.element, slot, tag, constIndex, localRefIndex, sourceSpan);
 }
 
 export function elementStart(
-    slot: number, tag: string, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
-  return elementOrContainerBase(Identifiers.elementStart, slot, tag, constIndex, localRefIndex);
+    slot: number, tag: string, constIndex: number|null, localRefIndex: number|null,
+    sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return elementOrContainerBase(
+      Identifiers.elementStart, slot, tag, constIndex, localRefIndex, sourceSpan);
 }
 
 function elementOrContainerBase(
     instruction: o.ExternalReference, slot: number, tag: string|null, constIndex: number|null,
-    localRefIndex: number|null): ir.CreateOp {
+    localRefIndex: number|null, sourceSpan: ParseSourceSpan): ir.CreateOp {
   const args: o.Expression[] = [o.literal(slot)];
   if (tag !== null) {
     args.push(o.literal(tag));
@@ -40,60 +45,75 @@ function elementOrContainerBase(
     args.push(o.literal(constIndex));
   }
 
-  return call(instruction, args);
+  return call(instruction, args, sourceSpan);
 }
 
-export function elementEnd(): ir.CreateOp {
-  return call(Identifiers.elementEnd, []);
+export function elementEnd(sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  return call(Identifiers.elementEnd, [], sourceSpan);
 }
 
 export function elementContainerStart(
-    slot: number, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
+    slot: number, constIndex: number|null, localRefIndex: number|null,
+    sourceSpan: ParseSourceSpan): ir.CreateOp {
   return elementOrContainerBase(
-      Identifiers.elementContainerStart, slot, /* tag */ null, constIndex, localRefIndex);
+      Identifiers.elementContainerStart, slot, /* tag */ null, constIndex, localRefIndex,
+      sourceSpan);
 }
 
 export function elementContainer(
-    slot: number, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
+    slot: number, constIndex: number|null, localRefIndex: number|null,
+    sourceSpan: ParseSourceSpan): ir.CreateOp {
   return elementOrContainerBase(
-      Identifiers.elementContainer, slot, /* tag */ null, constIndex, localRefIndex);
+      Identifiers.elementContainer, slot, /* tag */ null, constIndex, localRefIndex, sourceSpan);
 }
 
 export function elementContainerEnd(): ir.CreateOp {
-  return call(Identifiers.elementContainerEnd, []);
+  return call(Identifiers.elementContainerEnd, [], null);
 }
 
 export function template(
     slot: number, templateFnRef: o.Expression, decls: number, vars: number, tag: string,
-    constIndex: number): ir.CreateOp {
-  return call(Identifiers.templateCreate, [
-    o.literal(slot),
-    templateFnRef,
-    o.literal(decls),
-    o.literal(vars),
-    o.literal(tag),
-    o.literal(constIndex),
-  ]);
+    constIndex: number, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(
+      Identifiers.templateCreate,
+      [
+        o.literal(slot),
+        templateFnRef,
+        o.literal(decls),
+        o.literal(vars),
+        o.literal(tag),
+        o.literal(constIndex),
+      ],
+      sourceSpan);
 }
 
 export function listener(name: string, handlerFn: o.Expression): ir.CreateOp {
-  return call(Identifiers.listener, [
-    o.literal(name),
-    handlerFn,
-  ]);
+  return call(
+      Identifiers.listener,
+      [
+        o.literal(name),
+        handlerFn,
+      ],
+      null);
 }
 
 export function pipe(slot: number, name: string): ir.CreateOp {
-  return call(Identifiers.pipe, [
-    o.literal(slot),
-    o.literal(name),
-  ]);
+  return call(
+      Identifiers.pipe,
+      [
+        o.literal(slot),
+        o.literal(name),
+      ],
+      null);
 }
 
-export function advance(delta: number): ir.UpdateOp {
-  return call(Identifiers.advance, [
-    o.literal(delta),
-  ]);
+export function advance(delta: number, sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  return call(
+      Identifiers.advance,
+      [
+        o.literal(delta),
+      ],
+      sourceSpan);
 }
 
 export function reference(slot: number): o.Expression {
@@ -125,23 +145,28 @@ export function resetView(returnValue: o.Expression): o.Expression {
   ]);
 }
 
-export function text(slot: number, initialValue: string): ir.CreateOp {
-  const args: o.Expression[] = [o.literal(slot)];
+export function text(
+    slot: number, initialValue: string, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  const args: o.Expression[] = [o.literal(slot, null)];
   if (initialValue !== '') {
     args.push(o.literal(initialValue));
   }
-  return call(Identifiers.text, args);
+  return call(Identifiers.text, args, sourceSpan);
 }
 
-export function property(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.property, [
-    o.literal(name),
-    expression,
-  ]);
+export function property(
+    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  return call(
+      Identifiers.property,
+      [
+        o.literal(name),
+        expression,
+      ],
+      sourceSpan);
 }
 
 export function attribute(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.attribute, [o.literal(name), expression]);
+  return call(Identifiers.attribute, [o.literal(name), expression], null);
 }
 
 export function styleProp(name: string, expression: o.Expression, unit: string|null): ir.UpdateOp {
@@ -149,19 +174,19 @@ export function styleProp(name: string, expression: o.Expression, unit: string|n
   if (unit !== null) {
     args.push(o.literal(unit));
   }
-  return call(Identifiers.styleProp, args);
+  return call(Identifiers.styleProp, args, null);
 }
 
 export function classProp(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.classProp, [o.literal(name), expression]);
+  return call(Identifiers.classProp, [o.literal(name), expression], null);
 }
 
 export function styleMap(expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.styleMap, [expression]);
+  return call(Identifiers.styleMap, [expression], null);
 }
 
 export function classMap(expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.classMap, [expression]);
+  return call(Identifiers.classMap, [expression], null);
 }
 
 const PIPE_BINDINGS: o.ExternalReference[] = [
@@ -192,7 +217,8 @@ export function pipeBindV(slot: number, varOffset: number, args: o.Expression): 
   ]);
 }
 
-export function textInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+export function textInterpolate(
+    strings: string[], expressions: o.Expression[], sourceSpan: ParseSourceSpan): ir.UpdateOp {
   if (strings.length < 1 || expressions.length !== strings.length - 1) {
     throw new Error(
         `AssertionError: expected specific shape of args for strings/expressions in interpolation`);
@@ -210,15 +236,17 @@ export function textInterpolate(strings: string[], expressions: o.Expression[]):
     interpolationArgs.push(o.literal(strings[idx]));
   }
 
-  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs);
+  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
 
 export function propertyInterpolate(
-    name: string, strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+    name: string, strings: string[], expressions: o.Expression[],
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(PROPERTY_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs);
+  return callVariadicInstruction(
+      PROPERTY_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, [], sourceSpan);
 }
 
 export function attributeInterpolate(
@@ -226,7 +254,7 @@ export function attributeInterpolate(
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
   return callVariadicInstruction(
-      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs);
+      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, [], null);
 }
 
 export function stylePropInterpolate(
@@ -238,19 +266,19 @@ export function stylePropInterpolate(
   }
 
   return callVariadicInstruction(
-      STYLE_PROP_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs);
+      STYLE_PROP_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, null);
 }
 
 export function styleMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
+  return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], null);
 }
 
 export function classMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
+  return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], null);
 }
 
 export function pureFunction(
@@ -262,6 +290,8 @@ export function pureFunction(
         fn,
       ],
       args,
+      [],
+      null,
   );
 }
 
@@ -290,8 +320,9 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
 }
 
 function call<OpT extends ir.CreateOp|ir.UpdateOp>(
-    instruction: o.ExternalReference, args: o.Expression[]): OpT {
-  return ir.createStatementOp(o.importExpr(instruction).callFn(args).toStmt()) as OpT;
+    instruction: o.ExternalReference, args: o.Expression[], sourceSpan: ParseSourceSpan|null): OpT {
+  const expr = o.importExpr(instruction).callFn(args, sourceSpan);
+  return ir.createStatementOp(new o.ExpressionStatement(expr, sourceSpan)) as OpT;
 }
 
 /**
@@ -467,18 +498,16 @@ const PURE_FUNCTION_CONFIG: VariadicInstructionConfig = {
 
 function callVariadicInstructionExpr(
     config: VariadicInstructionConfig, baseArgs: o.Expression[], interpolationArgs: o.Expression[],
-    extraArgs: o.Expression[] = []): o.Expression {
+    extraArgs: o.Expression[], sourceSpan: ParseSourceSpan|null): o.Expression {
   const n = config.mapping(interpolationArgs.length);
   if (n < config.constant.length) {
     // Constant calling pattern.
-    return o.importExpr(config.constant[n]).callFn([
-      ...baseArgs, ...interpolationArgs, ...extraArgs
-    ]);
+    return o.importExpr(config.constant[n])
+        .callFn([...baseArgs, ...interpolationArgs, ...extraArgs], sourceSpan);
   } else if (config.variable !== null) {
     // Variable calling pattern.
-    return o.importExpr(config.variable).callFn([
-      ...baseArgs, o.literalArr(interpolationArgs), ...extraArgs
-    ]);
+    return o.importExpr(config.variable)
+        .callFn([...baseArgs, o.literalArr(interpolationArgs), ...extraArgs], sourceSpan);
   } else {
     throw new Error(`AssertionError: unable to call variadic function`);
   }
@@ -486,7 +515,8 @@ function callVariadicInstructionExpr(
 
 function callVariadicInstruction(
     config: VariadicInstructionConfig, baseArgs: o.Expression[], interpolationArgs: o.Expression[],
-    extraArgs: o.Expression[] = []): ir.UpdateOp {
+    extraArgs: o.Expression[], sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
   return ir.createStatementOp(
-      callVariadicInstructionExpr(config, baseArgs, interpolationArgs, extraArgs).toStmt());
+      callVariadicInstructionExpr(config, baseArgs, interpolationArgs, extraArgs, sourceSpan)
+          .toStmt());
 }

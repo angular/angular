@@ -64,8 +64,8 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);
-  phaseNaming(cpl, /* compatibility */ true);
   phaseVariableOptimization(cpl, {conservative: true});
+  phaseNaming(cpl, true);
   phaseMergeNextContext(cpl);
   phaseNgContainer(cpl);
   phaseEmptyElements(cpl);

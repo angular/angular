@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../../output/output_ast';
+import {ParseSourceSpan} from '../../../../../parse_util';
 import {ElementAttributeKind} from '../element';
 import {OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
@@ -50,18 +51,22 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
    * Conceptually interwoven in between the `strings`.
    */
   expressions: o.Expression[];
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateTextOp {
+    xref: XrefId, strings: string[], expressions: o.Expression[],
+    sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
     strings,
     expressions,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -93,6 +98,8 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
    * The kind of binding represented by this op, either a template binding or a normal binding.
    */
   bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
@@ -100,13 +107,14 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  */
 export function createPropertyOp(
     xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
-    name: string, expression: o.Expression): PropertyOp {
+    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
     target: xref,
     bindingKind,
     name,
     expression,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -149,6 +157,7 @@ export function createStylePropOp(
     name,
     expression,
     unit,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -187,6 +196,7 @@ export function createClassPropOp(
     target: xref,
     name,
     expression,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -216,6 +226,7 @@ export function createStyleMapOp(xref: XrefId, expression: o.Expression): StyleM
     kind: OpKind.StyleMap,
     target: xref,
     expression,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -247,6 +258,7 @@ export function createClassMapOp(xref: XrefId, expression: o.Expression): ClassM
     kind: OpKind.ClassMap,
     target: xref,
     expression,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -333,6 +345,8 @@ export interface InterpolatePropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
    * The kind of binding represented by this op, either a template binding or a normal binding.
    */
   bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
@@ -340,7 +354,8 @@ export interface InterpolatePropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
  */
 export function createInterpolatePropertyOp(
     xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
-    name: string, strings: string[], expressions: o.Expression[]): InterpolatePropertyOp {
+    name: string, strings: string[], expressions: o.Expression[],
+    sourceSpan: ParseSourceSpan): InterpolatePropertyOp {
   return {
     kind: OpKind.InterpolateProperty,
     target: xref,
@@ -348,6 +363,7 @@ export function createInterpolatePropertyOp(
     name,
     strings,
     expressions,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -389,7 +405,7 @@ export interface InterpolateAttributeOp extends Op<UpdateOp>, ConsumesVarsTrait,
 
 export function createInterpolateAttributeOp(
     target: XrefId, attributeKind: ElementAttributeKind, name: string, strings: string[],
-    expressions: o.Expression[]): InterpolateAttributeOp {
+    expressions: o.Expression[], sourceSpan: ParseSourceSpan): InterpolateAttributeOp {
   return {
     kind: OpKind.InterpolateAttribute,
     target: target,
@@ -397,6 +413,7 @@ export function createInterpolateAttributeOp(
     name,
     strings,
     expressions,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -453,6 +470,7 @@ export function createInterpolateStylePropOp(
     strings,
     expressions,
     unit,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -496,6 +514,7 @@ export function createInterpolateStyleMapOp(
     target: xref,
     strings,
     expressions,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -539,6 +558,7 @@ export function createInterpolateClassMapOp(
     target: xref,
     strings,
     expressions,
+    sourceSpan: null!,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -555,15 +575,19 @@ export interface AdvanceOp extends Op<UpdateOp> {
    * Delta by which to advance the pointer.
    */
   delta: number;
+
+  // Source span of the binding that caused the advance
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create an `AdvanceOp`.
  */
-export function createAdvanceOp(delta: number): AdvanceOp {
+export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): AdvanceOp {
   return {
     kind: OpKind.Advance,
     delta,
+    sourceSpan,
     ...NEW_OP,
   };
 }
