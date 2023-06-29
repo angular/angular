@@ -2992,10 +2992,10 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
-"@types/chrome@^0.0.238":
-  version "0.0.238"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.238.tgz#a21105960077402fcc478d08ced47ae482c394cf"
-  integrity sha512-WManYZwAkCjaBcJXV/Dj/UwGOUm1qFpqyasovWmqSlvbTWzjYFUUZW4IRnZsjxmu2r5VtNWWHexgFcHVFbWGuQ==
+"@types/chrome@^0.0.239":
+  version "0.0.239"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.239.tgz#aa78dffec5ef292bf687ee46c6dce1bceff3c47b"
+  integrity sha512-s/v0pAdpjqfYdwYPDIRiIQDyXfaLi5u+OyHW2NexhqoTm/KZVqKqS1isK11DVu/iUrAUULtbfKtzLKt3+kHgXQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -3358,6 +3358,7 @@
     "@types/node" "*"
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.15", "@types/selenium-webdriver@^4.0.18":
+  name "@types/selenium-webdriver4"
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.15.tgz#d346b674b96f5ba43f1ad5343f997030559e5b23"
   integrity sha512-oQ15G3q3EZ0dS049SB/5zx2tQkIS2kmDQWC/TSfAHJYKvXLZoUiLaPXnfSwbLP8Q5lcJeu5oYjKVSEV0t3H6Bg==
@@ -13802,6 +13803,7 @@ select-hose@^2.0.0:
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
 "selenium-webdriver4@npm:selenium-webdriver@4.10.0", selenium-webdriver@4.10.0:
+  name selenium-webdriver4
   version "4.10.0"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.10.0.tgz#0508cdfbb5ad8470d8fd19db1a69d3e87f474b79"
   integrity sha512-hSQPw6jgc+ej/UEcdQPG/iBwwMeCEgZr9HByY/J8ToyXztEqXzU9aLsIyrlj1BywBcStO4JQK/zMUWWrV8+riA==
