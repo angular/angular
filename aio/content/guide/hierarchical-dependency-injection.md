@@ -643,13 +643,13 @@ The `AnimalService` in the logical tree would look like this:
             &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
           &lt;/app-inspector&gt;
         &lt;/div&gt;
-  
+
+        &lt;app-inspector&gt;
+          &lt;#VIEW &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
+            &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
+          &lt;/#VIEW&gt;
+        &lt;/app-inspector&gt;
       &lt;/#VIEW&gt;
-      &lt;app-inspector&gt;
-        &lt;#VIEW&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;/#VIEW&gt;
-      &lt;/app-inspector&gt;
     &lt;/app-child&gt;
   &lt;/#VIEW&gt;
 &lt;/app-root&gt;
