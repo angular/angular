@@ -196,8 +196,8 @@ The following code example shows the value of the [`$localize`][AioApiLocalizeIn
 
 <div class="callout is-helpful">
 
-<header>
-<a name="how-meanings-control-text-extraction-and-merges"></a> How meanings control text extraction and merges
+<header id="how-meanings-control-text-extraction-and-merges">
+How meanings control text extraction and merges
 </header>
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
@@ -306,9 +306,7 @@ For more information about pluralization categories, see [Choosing plural catego
 
 <div class="callout is-important">
 
-<a name="background-locales-may-not-support-some-pluralization-categories"></a>
-
-<header>Background: Locales may not support some pluralization categories</header>
+<header id="background-locales-may-not-support-some-pluralization-categories">Background: Locales may not support some pluralization categories</header>
 
 Many locales don't support some of the pluralization categories.
 The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.
