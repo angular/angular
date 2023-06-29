@@ -273,7 +273,7 @@ class Person {
 ### `@Host()`
 
 `@Host()` lets you designate a component as the last stop in the injector tree when searching for providers.
-Even if there is a service instance further up the tree, Angular won't continue looking
+Even if there is a service instance further up the tree, Angular won't continue looking.
 Use `@Host()` as follows:
 
 <code-example header="src/app/host/host.component.ts" path="resolution-modifiers/src/app/host/host.component.ts" region="host-component"></code-example>
