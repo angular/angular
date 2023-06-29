@@ -32,7 +32,7 @@ export const COMPILER_PROVIDERS =
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
 
-  /* @internal */
+  /** @internal */
   constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
       useJit: true,
@@ -42,6 +42,7 @@ export class JitCompilerFactory implements CompilerFactory {
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];
   }
+
   createCompiler(options: CompilerOptions[] = []): Compiler {
     const opts = _mergeOptions(this._defaultOptions.concat(options));
     const injector = Injector.create({
