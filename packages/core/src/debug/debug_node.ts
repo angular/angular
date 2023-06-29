@@ -178,9 +178,10 @@ export class DebugElement extends DebugNode {
   /**
    *  A map of attribute names to attribute values for an element.
    */
+  // TODO: replace null by undefined in the return type
   get attributes(): {[key: string]: string|null} {
     const attributes: {[key: string]: string|null} = {};
-    const element = this.nativeElement;
+    const element = this.nativeElement as Element | undefined;
 
     if (!element) {
       return attributes;
@@ -233,16 +234,11 @@ export class DebugElement extends DebugNode {
 
   /**
    * The inline styles of the DOM element.
-   *
-   * Will be `null` if there is no `style` property on the underlying DOM element.
-   *
-   * @see [ElementCSSInlineStyle](https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style)
    */
+  // TODO: replace null by undefined in the return type
   get styles(): {[key: string]: string|null} {
-    if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
-      return (this.nativeElement as HTMLElement).style as {[key: string]: any};
-    }
-    return {};
+    const element = this.nativeElement as HTMLElement | null;
+    return (element?.style ?? {}) as {[key: string]: string | null};
   }
 
   /**
