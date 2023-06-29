@@ -21,6 +21,9 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵPipeDeclaration',
   'ɵɵFactoryDeclaration',
   'ModuleWithProviders',
+
+  // Type-only needed for type checking.
+  'ɵɵGetInputSignalWriteType',
 ]);
 
 /**

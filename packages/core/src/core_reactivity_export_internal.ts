@@ -20,7 +20,6 @@ export {
   CreateSignalOptions,
   signal,
   WritableSignal,
-  ɵɵtoWritableSignal
 } from './render3/reactivity/signal';
 export {
   untracked,
@@ -38,6 +37,6 @@ export {
   assertNotInReactiveContext,
 } from './render3/reactivity/asserts';
 export {input} from './render3/reactivity/input';
-export {InputSignal} from './render3/reactivity/input_signal';
+export {InputSignal, ɵɵGetInputSignalWriteType} from './render3/reactivity/input_signal';
 export {ModelSignal} from './render3/reactivity/model_signal';
 // clang-format on

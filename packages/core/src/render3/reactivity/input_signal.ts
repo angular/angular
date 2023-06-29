@@ -24,6 +24,9 @@ export type InputSignal<ReadT, WriteT> = Signal<ReadT>&{
   [BRAND_WRITE_TYPE]: WriteT;
 };
 
+// TODO(signals)
+export type ɵɵGetInputSignalWriteType<T> = T extends InputSignal<any, infer X>? X : never;
+
 export interface InputSignalNode<ReadT, WriteT> extends ComputedNode<ReadT> {
   /**
    * Whether the input signal is initialized. If not, accessing the node results in an error.

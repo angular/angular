@@ -754,6 +754,8 @@ class TcbDirectiveInputsOp extends TcbOp {
             dirId = this.scope.resolve(this.node, this.dir);
           }
 
+          // TODO(signals): signal input with a restricted modifier
+
           const id = this.tcb.allocateId();
           const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
           if (!ts.isTypeReferenceNode(dirTypeRef)) {
@@ -771,14 +773,42 @@ class TcbDirectiveInputsOp extends TcbOp {
             dirId = this.scope.resolve(this.node, this.dir);
           }
 
-          // To get errors assign directly to the fields on the instance, using property access
-          // when possible. String literal fields may not be valid JS identifiers so we use
-          // literal element access instead for those cases.
-          target = this.dir.stringLiteralInputFields.has(fieldName) ?
-              ts.factory.createElementAccessExpression(
-                  dirId, ts.factory.createStringLiteral(fieldName)) :
-              ts.factory.createPropertyAccessExpression(
-                  dirId, ts.factory.createIdentifier(fieldName));
+          if (this.dir.isSignal) {
+            const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+            if (!ts.isTypeReferenceNode(dirTypeRef)) {
+              throw new Error(
+                  `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+            }
+
+            const getSignalWriteType = this.tcb.env.referenceExternalType(
+                R3Identifiers.getInputSignalWriteType.moduleName,
+                R3Identifiers.getInputSignalWriteType.name);
+            if (!ts.isTypeReferenceNode(getSignalWriteType)) {
+              throw new Error(`Expected TypeReferenceNode from reference to ${
+                  R3Identifiers.getInputSignalWriteType.name}`);
+            }
+
+            const inputFieldType = ts.factory.createIndexedAccessTypeNode(
+                ts.factory.createTypeQueryNode(dirId as ts.Identifier),
+                ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(fieldName)));
+
+            const inputWriteTypeId = this.tcb.allocateId();
+            const inputWriteTypeSt = tsDeclareVariable(
+                inputWriteTypeId,
+                ts.factory.createTypeReferenceNode(getSignalWriteType.typeName, [inputFieldType]));
+            this.scope.addStatement(inputWriteTypeSt);
+
+            target = inputWriteTypeId;
+          } else {
+            // To get errors assign directly to the fields on the instance, using property access
+            // when possible. String literal fields may not be valid JS identifiers so we use
+            // literal element access instead for those cases.
+            target = this.dir.stringLiteralInputFields.has(fieldName) ?
+                ts.factory.createElementAccessExpression(
+                    dirId, ts.factory.createStringLiteral(fieldName)) :
+                ts.factory.createPropertyAccessExpression(
+                    dirId, ts.factory.createIdentifier(fieldName));
+          }
         }
 
         if (attr.attribute.keySpan !== undefined) {
