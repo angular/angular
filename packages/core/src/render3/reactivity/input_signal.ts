@@ -21,6 +21,11 @@ export type InputSignal<ReadT, WriteT> = Signal<ReadT>&{
   [BRAND_WRITE_TYPE]: WriteT;
 };
 
+
+// TODO(signals)
+// This will be replaced, depending on how we implement `InputSignal`
+export type ɵɵGetInputSignalWriteType<T> = T extends InputSignal<any, infer X>? X : never;
+
 /**
  * A `Signal` representing a component or directive model input.
  *

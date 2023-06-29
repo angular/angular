@@ -10,7 +10,7 @@ export {createSignalFromFunction, defaultEquals, isSignal, Signal, SIGNAL, Value
 export {computed, ComputedImpl, COMPUTING, CreateComputedOptions, ERRORED, UNSET} from './src/computed';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {ReactiveNode, setActiveConsumer} from './src/graph';
-export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal, ɵɵtoWritableSignal} from './src/signal';
+export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal} from './src/signal';
 export {untracked} from './src/untracked';
 export {Watch, WatchCleanupFn} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
