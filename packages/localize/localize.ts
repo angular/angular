@@ -13,3 +13,8 @@ export {MessageId, TargetMessage} from './src/utils';
 
 // Exports that are not part of the public API
 export * from './private';
+
+import {_global, $localize} from './src/localize';
+
+// Attach $localize to the global context, as a side-effect of this module.
+_global.$localize = $localize;

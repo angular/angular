@@ -26,10 +26,6 @@ Each item is linked to the section later in this guide that describes the deprec
 
 <!--
 deprecation -> removal cheat sheet
-v4 - v7
-v5 - v8
-v6 - v9
-v7 - v10
 v8 - v11
 v9 - v12
 v10 - v13
@@ -123,6 +119,7 @@ v16 - v19
 | `@angular/platform-server`          | [`platformDynamicServer`](api/platform-server/platformDynamicServer) | v16           | v18               |
 | `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)            | v16           | v18         |
 | `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser), symbols were moved to `@angular/core`                                        | v16           | v18         |
+| `@angular/localize/init`         | use `@angular/localize` directly to expose `$localize` globally   | v16           | v18         |
 
 ### Deprecated features with no planned removal version
 
