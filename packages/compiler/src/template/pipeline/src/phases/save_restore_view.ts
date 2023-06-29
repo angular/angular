@@ -27,11 +27,8 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
         continue;
       }
 
-      let needsRestoreView = false;
-      if (view !== cpl.root) {
-        // Embedded views always need the save/restore view operation.
-        needsRestoreView = true;
-      }
+      // Embedded views always need the save/restore view operation.
+      let needsRestoreView = view !== cpl.root;
 
       if (!needsRestoreView) {
         for (const handlerOp of op.handlerOps) {
@@ -44,11 +41,9 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
         }
       }
 
-      if (!needsRestoreView) {
-        return;
+      if (needsRestoreView) {
+        addSaveRestoreViewOperationToListener(view, op);
       }
-
-      addSaveRestoreViewOperationToListener(view, op);
     }
   }
 }
