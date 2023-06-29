@@ -476,7 +476,7 @@ In the logical tree, this is represented as follows:
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")
                &commat;Inject(FlowerService)=&gt;"&#x1F33B;"&gt; &lt;!-- search ends here --&gt;
       &lt;#VIEW&gt; &lt;!-- search starts here --&gt;
-        &lt;h2&gt;Parent Component&lt;/h2&gt;
+        &lt;h2&gt;Child Component&lt;/h2&gt;
         &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33B;)&lt;/p&gt;
       &lt;/#VIEW&gt;
     &lt;/app-child&gt;
