@@ -276,8 +276,13 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
 function collectOpInfo(op: ir.CreateOp|ir.UpdateOp): OpInfo {
   let fences = Fence.None;
   const variablesUsed = new Set<ir.XrefId>();
-  ir.visitExpressionsInOp(op, expr => {
+  ir.visitExpressionsInOp(op, (expr, flags) => {
     if (!ir.isIrExpression(expr)) {
+      return;
+    }
+    // Fences from child operations are not of interest because they allocate
+    // their own variables.
+    if (flags & ir.VisitorContextFlag.InChildOperation) {
       return;
     }
 
