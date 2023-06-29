@@ -852,7 +852,7 @@ export class ChildComponent {
 
 </code-example>
 
-When `@Host()` and `SkipSelf()` were applied to the `FlowerService`, which is in the `providers` array, the result was `null` because `@SkipSelf()` starts its search in the `<app-child>` injector, but `@Host()` stops searching at `<#VIEW>` &mdash;where there is no `FlowerService`
+When `@Host()` and `@SkipSelf()` were applied to the `FlowerService`, which is in the `providers` array, the result was `null` because `@SkipSelf()` starts its search in the `<app-child>` injector, but `@Host()` stops searching at `<#VIEW>` &mdash;where there is no `FlowerService`
 In the logical tree, you can see that the `FlowerService` is visible in `<app-child>`, not its `<#VIEW>`.
 
 However, the `AnimalService`, which is provided in the `AppComponent` `viewProviders` array, is visible.
