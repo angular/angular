@@ -41,6 +41,9 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
       case '||':
       case '??':
         return t.logicalExpression(operator, leftOperand, rightOperand);
+      case '=':
+        // TODO(signals): Should `WriteVarExpr` be used instead??
+        return this.createAssignment(leftOperand, rightOperand);
       default:
         return t.binaryExpression(operator, leftOperand, rightOperand);
     }
