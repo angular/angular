@@ -285,7 +285,7 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
       - notify_webhook_on_fail:
-          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+          webhook_url_env_var: SLACK_REACTIVITY_CHANNEL_WEBHOOK_URL
 
   # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
   saucelabs:
