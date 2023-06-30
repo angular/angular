@@ -16,8 +16,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create listener instruction on other components",
@@ -34,8 +33,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create multiple listener instructions that share a view snapshot",
@@ -201,8 +199,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should preserve accesses to $event if it is done through `this` in a listener",
@@ -216,8 +213,7 @@
               "expected": "event_explicit_access_template.js",
               "generated": "event_explicit_access.js"
             }
-          ],
-          "failureMessage": "Incorrect event listener"
+          ]
         }
       ]
     },
