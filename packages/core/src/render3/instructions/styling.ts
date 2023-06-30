@@ -227,7 +227,9 @@ export function checkStylingMap(
           assertEqual(
               staticPrefix.endsWith(';'), true, 'Expecting static portion to end with \';\'');
       if (staticPrefix !== null) {
-        // We want to make sure that falsy values of `value` become empty strings.
+        // We want to make sure that falsy values of `value` become empty strings.'
+
+        // THIS MAY NOT BE A STRING...
         value = concatStringsWithSpace(staticPrefix, value ? value : '');
       }
       // Given `<div [style] my-dir>` such that `my-dir` has `@Input('style')`.

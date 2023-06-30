@@ -26,8 +26,10 @@ export function computeStaticStyling(
     tNode: TNode, attrs: TAttributes|null, writeToHost: boolean): void {
   ngDevMode &&
       assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
-  let styles: string|null = writeToHost ? tNode.styles : null;
-  let classes: string|null = writeToHost ? tNode.classes : null;
+  // Was `toWriteHost` here useful? sounds like `tNode.styles/classes` would always be empty anyway.
+  // This is not called multiple times and actually initializes `tNode.classes/styles`.
+  let styles: string|null = null;
+  let classes: string|null = null;
   let mode: AttributeMarker|0 = 0;
   if (attrs !== null) {
     for (let i = 0; i < attrs.length; i++) {

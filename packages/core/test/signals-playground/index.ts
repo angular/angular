@@ -47,6 +47,9 @@ export class Greet<T> {
     Hello <greet [counter]="3" [bla4Public]="10" #ok
       [bla3]="someVar" [gen]="{yes: true}" label="Hello {{name()}}"
       (buttonClick)="onClickFromChild()"
+
+      [style.color]="'yellow'"
+      [style]="styleObj()"
     />
 
     <button (click)="ok.works().yes">Click</button>
@@ -58,14 +61,28 @@ export class Greet<T> {
 export class MyApp {
   name = signal('Angular');
   someVar = -10;
+  isRed = signal(true);
+
+  styleObj = signal({color: 'red'});
 
   protected updateName() {
+    this.styleObj.set({...this.styleObj, color: 'blue'});
     this.name.update(n => `${n}-`);
   }
 
   onClickFromChild() {
     console.info('Click from child');
   }
+}
+
+@Component({
+  standalone: true,
+  template: `
+    <span [title]="xd"></span>
+  `,
+})
+class Zone {
+  xd = true;
 }
 
 bootstrapApplication(MyApp).catch((e) => console.error(e));
