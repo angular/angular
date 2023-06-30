@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry} from '@angular/core';
 
 import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
@@ -211,10 +211,11 @@ export class DowngradeComponentAdapter {
     }
     const emitter = componentRef.instance[output.prop] as EventEmitter<any>;
     if (emitter) {
-      emitter.subscribe({
+      const subscription = emitter.subscribe({
         next: isAssignment ? (v: any) => setter!(this.scope, v) :
                              (v: any) => getter(this.scope, {'$event': v})
       });
+      componentRef.onDestroy(() => subscription.unsubscribe());
     } else {
       throw new Error(`Missing emitter '${output.prop}' on component '${
           getTypeName(this.componentFactory.componentType)}'!`);
