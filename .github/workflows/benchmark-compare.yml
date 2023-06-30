@@ -4,9 +4,7 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  # Needed in order to be able to comment on the pull request.
-  pull-requests: write
+permissions: read-all
 
 jobs:
   benchmark-compare:
@@ -24,7 +22,7 @@ jobs:
       - uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3
         with:
           comment-id: ${{github.event.comment.id}}
-          token: '${{secrets.GITHUB_TOKEN}}'
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
           reactions: 'rocket'
 
       - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
@@ -55,7 +53,7 @@ jobs:
       - uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3
         with:
           issue-number: ${{github.event.issue.number}}
-          token: '${{secrets.GITHUB_TOKEN}}'
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
           body: |
             ## Benchmark Test Results
             **Test**: `${{steps.info.outputs.benchmarkTarget}}`
