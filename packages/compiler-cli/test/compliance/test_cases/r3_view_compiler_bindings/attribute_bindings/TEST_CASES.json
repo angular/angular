@@ -13,8 +13,7 @@
             "chain_multiple_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple single-interpolation attribute bindings into one instruction",
@@ -28,8 +27,7 @@
             "chain_multiple_single_interpolation.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain attribute bindings in the presence of other bindings",
@@ -118,8 +116,7 @@
             "interpolated_attributes.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

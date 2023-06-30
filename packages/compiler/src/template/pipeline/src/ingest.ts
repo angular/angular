@@ -211,6 +211,9 @@ function ingestBindings(
   }
 
   for (const attr of element.attributes) {
+    // This is only attribute TextLiteral bindings, such as `attr.foo="bar'`. This can never be
+    // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
+    // `BindingType.Attribute`.
     view.update.push(ir.createAttributeOp(
         op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
   }
@@ -282,6 +285,15 @@ function ingestPropertyBinding(
             xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
             unit));
         break;
+      case e.BindingType.Attribute:
+        if (bindingKind !== ir.ElementAttributeKind.Binding) {
+          throw new Error('Attribute bindings on templates are not expected to be valid');
+        }
+        const attributeInterpolate = ir.createInterpolateAttributeOp(
+            xref, bindingKind, name, value.strings,
+            value.expressions.map(expr => convertAst(expr, view.tpl)));
+        view.update.push(attributeInterpolate);
+        break;
       default:
         // TODO: implement remaining binding types.
         throw Error(`Interpolated property binding type not handled: ${type}`);
@@ -305,6 +317,13 @@ function ingestPropertyBinding(
           throw Error('Unexpected style binding on ng-template');
         }
         view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
+        break;
+      case e.BindingType.Attribute:
+        if (bindingKind !== ir.ElementAttributeKind.Binding) {
+          throw new Error('Attribute bindings on templates are not expected to be valid');
+        }
+        const attrOp = ir.createAttributeOp(xref, bindingKind, name, convertAst(value, view.tpl));
+        view.update.push(attrOp);
         break;
       default:
         // TODO: implement remaining binding types.

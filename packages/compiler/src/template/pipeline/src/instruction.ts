@@ -140,6 +140,10 @@ export function property(name: string, expression: o.Expression): ir.UpdateOp {
   ]);
 }
 
+export function attribute(name: string, expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.attribute, [o.literal(name), expression]);
+}
+
 export function styleProp(name: string, expression: o.Expression, unit: string|null): ir.UpdateOp {
   const args = [o.literal(name), expression];
   if (unit !== null) {
@@ -207,6 +211,14 @@ export function propertyInterpolate(
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
   return callVariadicInstruction(PROPERTY_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs);
+}
+
+export function attributeInterpolate(
+    name: string, strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
+  return callVariadicInstruction(
+      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs);
 }
 
 export function stylePropInterpolate(
@@ -349,6 +361,30 @@ const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     }
     if (n < 3) {
       throw new Error(`Expected at least 3 arguments`);
+    }
+    return (n - 1) / 2;
+  },
+};
+
+/**
+ * `InterpolationConfig` for the `attributeInterpolate` instruction.
+ */
+const ATTRIBUTE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
+  constant: [
+    Identifiers.attribute,
+    Identifiers.attributeInterpolate1,
+    Identifiers.attributeInterpolate2,
+    Identifiers.attributeInterpolate3,
+    Identifiers.attributeInterpolate4,
+    Identifiers.attributeInterpolate5,
+    Identifiers.attributeInterpolate6,
+    Identifiers.attributeInterpolate7,
+    Identifiers.attributeInterpolate8,
+  ],
+  variable: Identifiers.attributeInterpolateV,
+  mapping: n => {
+    if (n % 2 === 0) {
+      throw new Error(`Expected odd number of arguments`);
     }
     return (n - 1) / 2;
   },
