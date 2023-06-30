@@ -83,7 +83,8 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(op, ng.pipe(op.slot!, op.name));
         break;
       case ir.OpKind.Listener:
-        const listenerFn = reifyListenerHandler(view, op.handlerFnName!, op.handlerOps);
+        const listenerFn =
+            reifyListenerHandler(view, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         ir.OpList.replace(
             op,
             ng.listener(
@@ -232,9 +233,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
  * parameter defined.
  */
 function reifyListenerHandler(
-    view: ViewCompilation, name: string, handlerOps: ir.OpList<ir.UpdateOp>): o.FunctionExpr {
-  const lookForEvent = new LookForEventVisitor();
-
+    view: ViewCompilation, name: string, handlerOps: ir.OpList<ir.UpdateOp>,
+    consumesDollarEvent: boolean): o.FunctionExpr {
   // First, reify all instruction calls within `handlerOps`.
   reifyUpdateOperations(view, handlerOps);
 
@@ -249,28 +249,12 @@ function reifyListenerHandler(
     handlerStmts.push(op.statement);
   }
 
-  // Scan the statement list for usages of `$event`. If referenced, we need to generate it as a
-  // parameter.
-  lookForEvent.visitAllStatements(handlerStmts, null);
-
+  // If `$event` is referenced, we need to generate it as a parameter.
   const params: o.FnParam[] = [];
-  if (lookForEvent.seenEventRead) {
+  if (consumesDollarEvent) {
     // We need the `$event` parameter.
     params.push(new o.FnParam('$event'));
   }
 
   return o.fn(params, handlerStmts, undefined, undefined, name);
-}
-
-/**
- * Visitor which scans for reads of the `$event` special variable.
- */
-class LookForEventVisitor extends o.RecursiveAstVisitor {
-  seenEventRead = false;
-
-  override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    if (ast.name === '$event') {
-      this.seenEventRead = true;
-    }
-  }
 }

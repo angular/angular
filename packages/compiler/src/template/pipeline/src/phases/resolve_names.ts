@@ -70,7 +70,11 @@ function processLexicalScope(
   // scope. Also, look for `ir.RestoreViewExpr`s and match them with the snapshotted view context
   // variable.
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, expr => {
+    if (op.kind == ir.OpKind.Listener) {
+      // Listeners were already processed above with their own scopes.
+      continue;
+    }
+    ir.transformExpressionsInOp(op, (expr, flags) => {
       if (expr instanceof ir.LexicalReadExpr) {
         // `expr` is a read of a name within the lexical scope of this view.
         // Either that name is defined within the current view, or it represents a property from the

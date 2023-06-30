@@ -275,6 +275,11 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
    * Name of the function
    */
   handlerFnName: string|null;
+
+  /**
+   * Whether this listener is known to consume `$event` in its body.
+   */
+  consumesDollarEvent: boolean;
 }
 
 /**
@@ -288,6 +293,7 @@ export function createListenerOp(target: XrefId, name: string, tag: string): Lis
     name,
     handlerOps: new OpList(),
     handlerFnName: null,
+    consumesDollarEvent: false,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
   };
