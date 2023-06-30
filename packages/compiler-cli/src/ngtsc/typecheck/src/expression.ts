@@ -143,7 +143,7 @@ class AstTranslator implements AstVisitor {
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
     return ast.expressions.reduce(
-        (lhs, ast) => ts.factory.createBinaryExpression(
+        (lhs: ts.Expression, ast: AST) => ts.factory.createBinaryExpression(
             lhs, ts.SyntaxKind.PlusToken, wrapForTypeChecker(this.translate(ast))),
         ts.factory.createStringLiteral(''));
   }
