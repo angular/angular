@@ -355,6 +355,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
       return o.literal(expr.targetSlot);
+    case ir.ExpressionKind.InterpolationTemplateExpr:
+      return ng.stringifyInterpolation(expr.staticParts, expr.expressionParts);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);

@@ -819,8 +819,11 @@ export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait, Con
 
   /**
    * Expression which is bound to the property.
+   *
+   * Note: Unlike `PropertyOp`, this does not accept `ir.Interpolation` as we
+   * expect interpolations to be transformed into interpolation template expressions.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression;
 
   /**
    * Whether this property is an animation trigger.
@@ -850,7 +853,7 @@ export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait, Con
  * Create a `PropertyCreateOp`.
  */
 export function createPropertyCreateOp(
-    bindingXref: XrefId, target: XrefId, name: string, expression: o.Expression|Interpolation,
+    bindingXref: XrefId, target: XrefId, name: string, expression: o.Expression,
     isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
     sourceSpan: ParseSourceSpan): PropertyCreateOp {
   return {

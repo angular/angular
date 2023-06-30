@@ -324,6 +324,7 @@ export enum ExpressionKind {
   /**
    * A reference to a temporary variable.
    */
+
   ReadTemporaryExpr,
 
   /**
@@ -340,6 +341,12 @@ export enum ExpressionKind {
    * A test expression for a conditional op.
    */
   ConditionalCase,
+
+  /**
+   * An interpolation template string expression. Such template string expression is
+   * commonly expected to be part of the `PropertyCreate` operation expression.
+   */
+  InterpolationTemplateExpr,
 }
 
 /**

@@ -446,6 +446,13 @@ export function pureFunction(
   );
 }
 
+export function stringifyInterpolation(
+    staticParts: string[], expressions: o.Expression[]): o.Expression {
+  return o.taggedTemplate(
+      o.importExpr(Identifiers.stringifyInterpolation),
+      new o.TemplateLiteral(staticParts.map(p => new o.TemplateLiteralElement(p)), expressions));
+}
+
 /**
  * Collates the string an expression arguments for an interpolation instruction.
  */

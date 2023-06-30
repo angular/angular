@@ -215,6 +215,9 @@ export class Identifiers {
   static propertyCreate: o.ExternalReference = {name: 'ɵɵpropertyCreate', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
+  static stringifyInterpolation:
+      o.ExternalReference = {name: 'ɵɵstringifyInterpolation', moduleName: CORE};
+
   static propertyInterpolate:
       o.ExternalReference = {name: 'ɵɵpropertyInterpolate', moduleName: CORE};
   static propertyInterpolate1:

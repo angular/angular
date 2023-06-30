@@ -42,8 +42,14 @@ function processUnit(unit: CompilationUnit) {
               'Expected binding placeholder operation to exist for property operation.');
         }
 
+        // Signal property bindings, do not maintain a separate instruction for property
+        // interpolations as the expression is wrapped is `computed` anyway. Instead, we
+        // generate an interpolation template literal expression.
+        const expression = op.expression instanceof ir.Interpolation ?
+            new ir.InterpolationTemplateExpr(op.expression.strings, op.expression.expressions) :
+            op.expression;
         const createOp = ir.createPropertyCreateOp(
-            op.bindingXref, op.target, op.name, op.expression, op.isAnimationTrigger,
+            op.bindingXref, op.target, op.name, expression, op.isAnimationTrigger,
             op.securityContext, op.isTemplate, op.sourceSpan);
 
         // Replace the placeholder with the new instruction.
