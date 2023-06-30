@@ -752,7 +752,12 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Attribute:
       if (op.value) {
-        transformExpressionsInExpression(op.value, transform, flags);
+        op.value = transformExpressionsInExpression(op.value, transform, flags);
+      }
+      break;
+    case OpKind.InterpolateAttribute:
+      for (let i = 0; i < op.expressions.length; i++) {
+        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
       }
       break;
     case OpKind.Variable:

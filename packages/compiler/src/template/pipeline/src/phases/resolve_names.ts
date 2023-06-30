@@ -96,6 +96,15 @@ function processLexicalScope(
       }
     }, ir.VisitorContextFlag.None);
   }
+
+  for (const op of ops) {
+    ir.visitExpressionsInOp(op, expr => {
+      if (expr instanceof ir.LexicalReadExpr) {
+        throw new Error(
+            `AssertionError: no lexical reads should remain, but found read of ${expr.name}`);
+      }
+    });
+  }
 }
 
 /**

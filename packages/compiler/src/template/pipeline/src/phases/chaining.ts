@@ -16,6 +16,7 @@ const CHAINABLE = new Set([
   R3.elementEnd,
   R3.property,
   R3.styleProp,
+  R3.attribute,
   R3.elementContainerStart,
   R3.elementContainerEnd,
   R3.elementContainer,
