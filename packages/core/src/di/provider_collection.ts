@@ -26,7 +26,7 @@ import {INJECTOR_DEF_TYPES} from './internal_tokens';
 
 /**
  * Wrap an array of `Provider`s into `EnvironmentProviders`, preventing them from being accidentally
- * referenced in `@Component in a component injector.
+ * referenced in `@Component` in a component injector.
  */
 export function makeEnvironmentProviders(providers: (Provider|EnvironmentProviders)[]):
     EnvironmentProviders {
