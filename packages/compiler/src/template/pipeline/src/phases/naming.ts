@@ -40,8 +40,10 @@ function addNamesToView(
           if (op.slot === null) {
             throw new Error(`Expected a slot to be assigned`);
           }
+          const safeTagName = op.tag.replace('-', '_');
+
           op.handlerFnName =
-              sanitizeIdentifier(`${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`);
+              sanitizeIdentifier(`${view.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
         }
         break;
       case ir.OpKind.Variable:
