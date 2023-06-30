@@ -140,6 +140,12 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
         break;
+      case ir.OpKind.Attribute:
+        ir.OpList.replace(op, ng.attribute(op.name, op.value));
+        break;
+      case ir.OpKind.InterpolateAttribute:
+        ir.OpList.replace(op, ng.attributeInterpolate(op.name, op.strings, op.expressions));
+        break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
