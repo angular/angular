@@ -41,9 +41,9 @@ describe('dom property bindings in signal based components', () => {
       standalone: true,
     })
     class App {
-      _idx = 0;
+      idx = 0;
       nonReactive() {
-        return this._idx++;
+        return this.idx++;
       }
       unrelated = signal('foo');
     }
@@ -100,7 +100,7 @@ describe('dom property interpolation in signal based components', () => {
                 if ((rf & 1)) {
                   ɵɵelement(0, 'div', 0);
                   ɵɵpropertyCreate(
-                      1, 'title', () => ɵɵstringifyInterpolation`Hello, ${ctx.name()}!`)
+                      1, 'title', () => ɵɵstringifyInterpolation`Hello, ${ctx.name()}!`);
                 }
               },
           styles: []
