@@ -236,7 +236,13 @@ export enum ExpressionKind {
   /**
    * A reference to a temporary variable.
    */
+
   ReadTemporaryExpr,
+  /**
+   * An interpolation template string expression. Such template string expression is
+   * commonly expected to be part of the `PropertyCreate` operation expression.
+   */
+  InterpolationTemplateExpr,
 }
 
 /**

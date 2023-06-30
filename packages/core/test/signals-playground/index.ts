@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, input, Input} from '@angular/core';
+import {Component, input, Input, signal} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'greet',
   standalone: true,
   signals: true,
-  template: `{{ counter() }}`,
+  template: `{{ counter() }} -- {{label()}}`,
 })
 export class Greet<T> {
   counter = input(0);
@@ -23,6 +23,8 @@ export class Greet<T> {
   bla4 = input(3, {alias: 'bla4Public'});
   gen = input<T>({required: true});
   gen2 = input<T>();
+
+  label = input<string>();
 
   works(): T {
     return this.gen();
@@ -37,16 +39,22 @@ export class Greet<T> {
   selector: 'my-app',
   template: `
     Hello <greet [counter]="3" [bla4Public]="10" #ok
-      [bla3]="10" [gen]="{yes: true}"
+      [bla3]="someVar" [gen]="{yes: true}" label="Hello {{name()}}"
     />
 
     <button (click)="ok.works().yes">Click</button>
+    <button (click)="updateName()">Change name</button>
   `,
   imports: [Greet],
   signals: true,
 })
 export class MyApp {
+  name = signal('Angular');
   someVar = -10;
+
+  protected updateName() {
+    this.name.update(n => `${n}-`);
+  }
 }
 
 bootstrapApplication(MyApp).catch((e) => console.error(e));

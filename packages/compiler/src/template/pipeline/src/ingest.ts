@@ -272,11 +272,26 @@ function ingestPropertyBinding(
           }
           view.update.push(ir.createInterpolateStyleMapOp(
               xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
-        } else {
-          view.update.push(ir.createInterpolatePropertyOp(
-              xref, bindingKind, name, value.strings,
-              value.expressions.map(expr => convertAst(expr, view.tpl))));
+          break;
         }
+
+        if (view.tpl.isSignal) {
+          // Allocating an XRef ID because a property create operation
+          // consumes a slot to store the expression.
+          const propertyXrefId = view.tpl.allocateXrefId();
+
+          view.create.push(ir.createPropertyCreateOp(
+              propertyXrefId, xref, name,
+              new ir.InterpolationTemplateExpr(
+                  value.strings, value.expressions.map(e => convertAst(e, view.tpl)))));
+
+          break;
+        }
+
+        view.update.push(ir.createInterpolatePropertyOp(
+            xref, bindingKind, name, value.strings,
+            value.expressions.map(expr => convertAst(expr, view.tpl))));
+
         break;
       case e.BindingType.Style:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {

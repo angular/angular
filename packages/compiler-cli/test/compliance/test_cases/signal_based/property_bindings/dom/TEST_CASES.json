@@ -1,0 +1,25 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support binding to DOM properties",
+      "inputFiles": ["simple_binding.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "simple_binding.js", "expected": "simple_binding.js"}]
+        }
+      ]
+    },
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support interpolation binding to DOM properties",
+      "inputFiles": ["with_interpolation.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "with_interpolation.js", "expected": "with_interpolation.js"}]
+        }
+      ]
+    }
+  ]
+}

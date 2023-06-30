@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch';
-import {Component, signal, ɵɵdefineComponent, ɵɵelement, ɵɵpropertyCreate, ɵɵStandaloneFeature, ɵɵstringifyInterpolation} from '@angular/core';
+import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 if (!USE_TEMPLATE_PIPELINE) {
@@ -16,47 +16,45 @@ if (!USE_TEMPLATE_PIPELINE) {
   process.exit(1);
 }
 
-describe('dom property bindings in signal based components', () => {
-  it('should bind to mapped property names', () => {
+describe('Signal component DOM property interpolations', () => {
+  it('should bind interpolated values', () => {
     @Component({
       signals: true,
-      template: `<div [tabindex]="tIdx()"></div>`,
+      template: `<div title="Hello, {{name()}}!"></div>`,
       standalone: true,
     })
     class App {
-      tIdx = signal(5);
+      name = signal('Angular');
     }
 
     const fixture = TestBed.createComponent(App);
     const div = fixture.nativeElement.firstChild;
 
     fixture.detectChanges();
-    expect(div.tabIndex).toBe(5);
+
+    expect(div.title).toBe('Hello, Angular!');
   });
 
-  it('should not update DOM binding if a binding is not reactive', () => {
+  it('should support updating values', () => {
     @Component({
       signals: true,
-      template: `<div [tabindex]="nonReactive()">{{unrelated()}}</div>`,
+      template: `<div title="Hello, {{name()}}!"></div>`,
       standalone: true,
     })
     class App {
-      idx = 0;
-      nonReactive() {
-        return this.idx++;
-      }
-      unrelated = signal('foo');
+      name = signal('Angular');
     }
 
     const fixture = TestBed.createComponent(App);
-    const cmpInstance = fixture.componentInstance;
     const div = fixture.nativeElement.firstChild;
 
     fixture.detectChanges();
-    expect(div.tabIndex).toBe(0);
 
-    cmpInstance.unrelated.set('bar');
+    expect(div.title).toBe('Hello, Angular!');
+
+    fixture.componentInstance.name.set('New Name');
     fixture.detectChanges();
-    expect(div.tabIndex).toBe(0);
+
+    expect(div.title).toBe('Hello, New Name!');
   });
 });

@@ -18,11 +18,11 @@ import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, Use
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ShallowReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ShallowReferenceExpr|ContextExpr|
+    NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|
+    PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|
+    SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|
+    ReadTemporaryExpr|InterpolationTemplateExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -658,6 +658,47 @@ export class SafeTernaryExpr extends ExpressionBase {
 
   override clone(): SafeTernaryExpr {
     return new SafeTernaryExpr(this.guard.clone(), this.expr.clone());
+  }
+}
+
+export class InterpolationTemplateExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.InterpolationTemplateExpr;
+
+  constructor(public staticParts: string[], public expressionParts: o.Expression[]) {
+    super();
+  }
+
+  override visitExpression() {
+    throw new Error('Not implemented.');
+  }
+
+  override isEquivalent(e: o.Expression): boolean {
+    if (!(e instanceof InterpolationTemplateExpr)) {
+      return false;
+    }
+    if (e.staticParts.length !== this.staticParts.length) {
+      return false;
+    }
+    if (e.expressionParts.length !== this.expressionParts.length) {
+      return false;
+    }
+    return e.staticParts.every((p, i) => p === this.staticParts[i]) &&
+        e.expressionParts.every((e, i) => e === this.expressionParts[i]);
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.expressionParts =
+        this.expressionParts.map(p => transformExpressionsInExpression(p, transform, flags));
+  }
+
+  override clone(): InterpolationTemplateExpr {
+    return new InterpolationTemplateExpr(
+        [...this.staticParts], this.expressionParts.map(p => p.clone()));
   }
 }
 
