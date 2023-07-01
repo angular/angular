@@ -237,6 +237,338 @@ describe('code fixes', () => {
     });
   });
 
+  describe('should fix missing required input', () => {
+    it('for different type', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true}) name: string = "";
+          @Input({required: true}) isShow = false;
+          @Input({required: true}) product: {name?: string} = {};
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('<foo¦');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [product]=""`,
+        fileName: 'app.ts',
+      });
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [isShow]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('for signal inputs', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          name = input.required<string>();
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('<foo¦');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('for the structural directives', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo *ngFor="" />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true}) name: string = "";
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('<foo¦');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        /**
+         * <foo [name]="" *ngFor="" />
+         * TODO: This should be <foo *ngFor="" [name]="" />
+         */
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('for the alias input name', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true, alias: "name"}) _name: string = "";
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('<foo¦');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('and insert the attribute after the text interpolations', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo class="selected" />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true}) name: string = "";
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('¦<foo');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      appFile.moveCursorToText('class="selected"¦');
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('and insert the attribute after the property binding', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo [isShow]="show" />',
+           standalone: false,
+         })
+         export class AppComponent {
+           show = true;
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true}) name: string = "";
+          @Input({required: true}) isShow = true;
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('¦<foo');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      appFile.moveCursorToText('[isShow]="show"¦');
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+    it('and insert the attribute after the output', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<foo (click)="" />',
+           standalone: false,
+         })
+         export class AppComponent {
+           title = '';
+           banner = '';
+         }
+       `,
+        'foo.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '',
+          standalone: false,
+        })
+        export class Foo {
+          @Input({required: true}) name: string = "";
+        }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      const diags = project.getDiagnosticsForFile('app.ts');
+      appFile.moveCursorToText('¦<foo');
+
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        diags[0].code,
+      ]);
+
+      appFile.moveCursorToText('(click)=""¦');
+      expectIncludeAddText({
+        codeActions,
+        position: appFile.cursor,
+        text: ` [name]=""`,
+        fileName: 'app.ts',
+      });
+    });
+  });
+
   describe('should fix missing selector imports', () => {
     it('for a new standalone component import', () => {
       const standaloneFiles = {
