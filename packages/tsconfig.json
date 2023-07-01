@@ -12,8 +12,6 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noImplicitOverride": true,
