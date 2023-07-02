@@ -29,7 +29,9 @@ This section shows you how to define a route to show individual product details.
 1.  In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="product-details-route"></code-example>
-
+1. Add `router-outlet` to the `app.component.html`.
+    <code-example header="src/app/app.component.html" path="getting-started/src/app/app.component.html" region="product-details-route"></code-example>
+    
 1.  Open `product-list.component.html`.
 
 1.  Modify the product name anchor to include a `routerLink` with the `product.id` as a parameter.
