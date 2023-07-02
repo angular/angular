@@ -21,7 +21,6 @@ export interface CreateComputedOptions<T> {
   equal?: ValueEqualityFn<T>;
 }
 
-
 /**
  * Create a computed `Signal` which derives a reactive value from an expression.
  *
@@ -64,6 +63,7 @@ class ComputedImpl<T> extends ReactiveNode {
   constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {
     super();
   }
+
   /**
    * Current value of the computation.
    *
@@ -109,8 +109,11 @@ class ComputedImpl<T> extends ReactiveNode {
 
     // The current value is stale. Check whether we need to produce a new one.
 
-    if (this.value !== UNSET && this.value !== COMPUTING &&
-        !this.consumerPollProducersForChange()) {
+    if (
+      this.value !== UNSET &&
+      this.value !== COMPUTING &&
+      !this.consumerPollProducersForChange()
+    ) {
       // Even though we were previously notified of a potential dependency update, all of
       // our dependencies report that they have not actually changed in value, so we can
       // resolve the stale state without needing to recompute the current value.
@@ -121,6 +124,15 @@ class ComputedImpl<T> extends ReactiveNode {
     // The current value is stale, and needs to be recomputed. It still may not change -
     // that depends on whether the newly computed value is equal to the old.
     this.recomputeValue();
+  }
+
+  private computeNewValue(): T {
+    try {
+      return this.computation();
+    } catch (err) {
+      this.error = err;
+      return ERRORED;
+    }
   }
 
   private recomputeValue(): void {
@@ -135,20 +147,18 @@ class ComputedImpl<T> extends ReactiveNode {
     // As we're re-running the computation, update our dependent tracking version number.
     this.trackingVersion++;
     const prevConsumer = setActiveConsumer(this);
-    let newValue: T;
-    try {
-      newValue = this.computation();
-    } catch (err) {
-      newValue = ERRORED;
-      this.error = err;
-    } finally {
-      setActiveConsumer(prevConsumer);
-    }
+    const newValue: T = this.computeNewValue();
+
+    setActiveConsumer(prevConsumer);
 
     this.stale = false;
 
-    if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
-        this.equal(oldValue, newValue)) {
+    if (
+      oldValue !== UNSET &&
+      oldValue !== ERRORED &&
+      newValue !== ERRORED &&
+      this.equal(oldValue, newValue)
+    ) {
       // No change to `valueVersion` - old and new values are
       // semantically equivalent.
       this.value = oldValue;

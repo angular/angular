@@ -12,6 +12,8 @@ import '../../util/ng_dev_mode';
 
 import {newWeakRef, WeakRef} from './weak_ref';
 
+type EdgeMap = Map<number, ReactiveEdge>;
+
 /**
  * Counter tracking the next `ProducerId` or `ConsumerId`.
  */
@@ -21,14 +23,14 @@ let _nextReactiveId: number = 0;
  * Tracks the currently active reactive consumer (or `null` if there is no active
  * consumer).
  */
-let activeConsumer: ReactiveNode|null = null;
+let activeConsumer: ReactiveNode | null = null;
 
 /**
  * Whether the graph is currently propagating change notifications.
  */
 let inNotificationPhase = false;
 
-export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
+export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
   const prev = activeConsumer;
   activeConsumer = consumer;
   return prev;
@@ -102,7 +104,7 @@ export abstract class ReactiveNode {
   /**
    * Edges to producers on which this node depends (in its consumer capacity).
    */
-  private readonly producers = new Map<number, ReactiveEdge>();
+  private readonly producers: EdgeMap = new Map<number, ReactiveEdge>();
 
   /**
    * Edges to consumers on which this node depends (in its producer capacity).
@@ -153,10 +155,7 @@ export abstract class ReactiveNode {
         // This dependency edge is stale, so remove it.
         this.producers.delete(producerId);
         producer?.consumers.delete(this.id);
-        continue;
-      }
-
-      if (producer.producerPollStatus(edge.seenValueVersion)) {
+      } else if (producer.producerPollStatus(edge.seenValueVersion)) {
         // One of the dependencies reports a real value change.
         return true;
       }
@@ -180,10 +179,9 @@ export abstract class ReactiveNode {
         if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
           this.consumers.delete(consumerId);
           consumer?.producers.delete(this.id);
-          continue;
+        } else {
+          consumer.onConsumerDependencyMayHaveChanged();
         }
-
-        consumer.onConsumerDependencyMayHaveChanged();
       }
     } finally {
       inNotificationPhase = prev;
@@ -196,9 +194,10 @@ export abstract class ReactiveNode {
   protected producerAccessed(): void {
     if (inNotificationPhase) {
       throw new Error(
-          typeof ngDevMode !== 'undefined' && ngDevMode ?
-              `Assertion error: signal read during notification phase` :
-              '');
+        typeof ngDevMode !== 'undefined' && ngDevMode
+          ? `Assertion error: signal read during notification phase`
+          : ''
+      );
     }
 
     if (activeConsumer === null) {
@@ -206,19 +205,14 @@ export abstract class ReactiveNode {
     }
 
     // Either create or update the dependency `Edge` in both directions.
-    let edge = activeConsumer.producers.get(this.id);
-    if (edge === undefined) {
-      edge = {
-        consumerNode: activeConsumer.ref,
-        producerNode: this.ref,
-        seenValueVersion: this.valueVersion,
-        atTrackingVersion: activeConsumer.trackingVersion,
-      };
-      activeConsumer.producers.set(this.id, edge);
-      this.consumers.set(activeConsumer.id, edge);
+    const existingEdge = activeConsumer.producers.get(this.id);
+    if (existingEdge === undefined) {
+      const newEdge = this.createReactiveEdge(activeConsumer);
+      activeConsumer.producers.set(this.id, newEdge);
+      this.consumers.set(activeConsumer.id, newEdge);
     } else {
-      edge.seenValueVersion = this.valueVersion;
-      edge.atTrackingVersion = activeConsumer.trackingVersion;
+      existingEdge.seenValueVersion = this.valueVersion;
+      existingEdge.atTrackingVersion = activeConsumer.trackingVersion;
     }
   }
 
@@ -254,5 +248,14 @@ export abstract class ReactiveNode {
 
     // At this point, we can trust `producer.valueVersion`.
     return this.valueVersion !== lastSeenValueVersion;
+  }
+
+  private createReactiveEdge({ref, trackingVersion}: ReactiveNode): ReactiveEdge {
+    return {
+      consumerNode: ref,
+      producerNode: this.ref,
+      seenValueVersion: this.valueVersion,
+      atTrackingVersion: trackingVersion,
+    };
   }
 }

@@ -19,7 +19,7 @@ import {global} from '../../util/global';
 class LeakyRef<T>/* implements WeakRef<T> */ {
   constructor(private readonly ref: T) {}
 
-  deref(): T|undefined {
+  deref(): T | undefined {
     return this.ref;
   }
 }
@@ -27,10 +27,10 @@ class LeakyRef<T>/* implements WeakRef<T> */ {
 // `WeakRef` is not always defined in every TS environment where Angular is compiled. Instead,
 // read it off of the global context if available.
 // tslint:disable-next-line: no-toplevel-property-access
-let WeakRefImpl: WeakRefCtor|undefined = global['WeakRef'] ?? LeakyRef;
+let WeakRefImpl: WeakRefCtor | undefined = global['WeakRef'] ?? LeakyRef;
 
 export interface WeakRef<T extends object> {
-  deref(): T|undefined;
+  deref(): T | undefined;
 }
 
 export function newWeakRef<T extends object>(value: T): WeakRef<T> {
