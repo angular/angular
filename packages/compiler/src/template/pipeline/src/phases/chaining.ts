@@ -14,6 +14,7 @@ import {CompilationJob} from '../compilation';
 const CHAINABLE = new Set([
   R3.elementStart,
   R3.elementEnd,
+  R3.element,
   R3.property,
   R3.hostProperty,
   R3.styleProp,
