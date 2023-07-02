@@ -12,8 +12,6 @@ import '../../util/ng_dev_mode';
 
 import {newWeakRef, WeakRef} from './weak_ref';
 
-type EdgeMap = Map<number, ReactiveEdge>;
-
 /**
  * Counter tracking the next `ProducerId` or `ConsumerId`.
  */
@@ -104,7 +102,7 @@ export abstract class ReactiveNode {
   /**
    * Edges to producers on which this node depends (in its consumer capacity).
    */
-  private readonly producers: EdgeMap = new Map<number, ReactiveEdge>();
+  private readonly producers = new Map<number, ReactiveEdge>();
 
   /**
    * Edges to consumers on which this node depends (in its producer capacity).
