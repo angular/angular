@@ -166,11 +166,9 @@ export function propertyUpdateInput(
 export function ɵɵstringifyInterpolation(
     staticStrings: TemplateStringsArray, ...expressionValues: any[]): string {
   // Build the updated content
-
   let content = staticStrings[0];
   for (let i = 1; i < staticStrings.length; i++) {
-    content += expressionValues[i - 1] + renderStringify(staticStrings[i]);
+    content += renderStringify(expressionValues[i - 1]) + staticStrings[i];
   }
-
   return content;
 }

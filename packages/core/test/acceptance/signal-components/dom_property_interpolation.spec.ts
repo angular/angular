@@ -57,4 +57,39 @@ describe('Signal component DOM property interpolations', () => {
 
     expect(div.title).toBe('Hello, New Name!');
   });
+
+  it('should render null and undefined as empty strings', () => {
+    @Component({
+      signals: true,
+      template: `<div title="a{{null}}b{{undefined}}c">a{{null}}b{{undefined}}c</div>`,
+      standalone: true,
+    })
+    class App {
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const div = fixture.nativeElement.firstChild;
+    fixture.detectChanges();
+    expect(div.title).toBe('abc');
+    // verify that text bindings and interpolated binding rendering is consistent
+    expect(div.title).toBe(div.textContent);
+  });
+
+  it('should render NaN as-is', () => {
+    @Component({
+      signals: true,
+      template: `<div title="a{{notANumber}}b">a{{notANumber}}b</div>`,
+      standalone: true,
+    })
+    class App {
+      notANumber = NaN;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const div = fixture.nativeElement.firstChild;
+    fixture.detectChanges();
+    expect(div.title).toBe('aNaNb');
+    // verify that text bindings and interpolated binding rendering is consistent
+    expect(div.title).toBe(div.textContent);
+  });
 });
