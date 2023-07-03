@@ -11,7 +11,7 @@ import {QueryList} from '../../linker';
 import {createSignalFromFunction, ReactiveNode, SIGNAL, Signal} from '../../signals';
 import {QueryFlags} from '../interfaces/query';
 import {LView} from '../interfaces/view';
-import {createViewQueryInternal, loadQueryInternal, queryRefreshInternal} from '../query';
+import {createContentQueryInternal, createViewQueryInternal, loadQueryInternal, queryRefreshInternal} from '../query';
 import {getLView} from '../state';
 
 export interface InternalQuerySignal {
@@ -101,6 +101,32 @@ export function viewChildren<T>(
     opts?: {read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
   // Q: by returning a signal we are effectively "dropping" QueryList from the public API. Is there
   // anything valuable there that we would be losing?
+  const node = new ChildrenQuerySignalImpl();
+  return createSignalFromFunction<T[]>(node, node.signal.bind(node) as Signal<T[]>);
+}
+
+export function ɵɵcontentQueryCreate<T>(
+    target: Signal<T|undefined>, dirIndex: number, predicate: ProviderToken<T>|string[],
+    flags: QueryFlags, read?: any) {
+  const lView = getLView();
+  const reactiveQueryNode = target[SIGNAL] as InternalQuerySignal;
+  // Q: why do we need the directive index?
+  reactiveQueryNode.bindToQuery(
+      createContentQueryInternal<T>(lView, dirIndex, predicate, flags, read));
+}
+
+export function contentChild<T>(
+    selector: ProviderToken<T>|string,
+    opts?: {descendants?: boolean, read?: any, static?: boolean}): Signal<T|undefined> {
+  const node = new ChildQuerySignalImpl();
+  return createSignalFromFunction<T|undefined>(node, node.signal.bind(node) as Signal<T|undefined>);
+}
+
+export function contentChildren<T>(
+    selector: ProviderToken<T>|string,
+    opts?: {descendants?: boolean, read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
+  // Q: by returning a signal we are effectively "dropping" QueryList from the public API. Is there
+  // anything valuable there that we would be loosing?
   const node = new ChildrenQuerySignalImpl();
   return createSignalFromFunction<T[]>(node, node.signal.bind(node) as Signal<T[]>);
 }

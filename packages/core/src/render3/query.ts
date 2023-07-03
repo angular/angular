@@ -491,6 +491,16 @@ export function createViewQueryInternal<T>(
 export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
     read?: any): void {
+  createContentQueryInternal<T>(getLView(), directiveIndex, predicate, flags, read);
+}
+
+export function createContentQueryInternal<T>(
+    lView: LView,
+    directiveIndex: number,
+    predicate: ProviderToken<unknown>|string[],
+    flags: QueryFlags,
+    read?: any,
+) {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {
@@ -502,7 +512,7 @@ export function ɵɵcontentQuery<T>(
     }
   }
 
-  createLQuery<T>(tView, getLView(), flags);
+  return createLQuery<T>(tView, lView, flags);
 }
 
 /**
