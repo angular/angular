@@ -120,11 +120,28 @@ export interface TrackByFunction<T> {
   <U extends T>(index: number, item: T&U): any;
 }
 
+
+/*
+ * SIGNALS / REACTIVITY
+ */
+
 export type Signal<T> = () => T&{__signal: true};
 export type WritableSignal<T> = Signal<T>&{
   set(v: T): void;
 };
 
 export function signal<T>(_initialValue: T): WritableSignal<T> {
+  return null!;
+}
+
+export function viewChild<T>(
+    _selector: object|InjectionToken<T>|Function|string,
+    _opts?: {read?: any, static?: boolean}): Signal<T|undefined> {
+  return null!;
+}
+
+export function viewChildren<T>(
+    _selector: object|InjectionToken<T>|Function|string,
+    _opts?: {read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
   return null!;
 }

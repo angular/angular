@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, ElementRef, ViewChild, viewChild, viewChildren, ɵɵdefineComponent, ɵɵelement, ɵɵStandaloneFeature, ɵɵviewQueryCreate} from '@angular/core';
+import {Component, computed, ElementRef, ViewChild, viewChild, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 
 describe('queries', () => {
   describe('view queries', () => {
-    xit('should support child query in a single view', () => {
+    it('should support child query in a single view', () => {
       @Component({
         signals: true,
         standalone: true,
@@ -32,7 +32,7 @@ describe('queries', () => {
       expect(fixture.componentInstance.foundEl()).toBeTrue();
     });
 
-    xit('should support children query in a single view', () => {
+    it('should support children query in a single view', () => {
       @Component({
         signals: true,
         standalone: true,
@@ -46,82 +46,6 @@ describe('queries', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBeTrue();
-    });
-
-    it('view child - HAND GENERATED CODE - delete after compiler is done', () => {
-      const _c0 = ['el'];
-      class AppComponent {
-        divEl = viewChild<ElementRef>('el');
-        foundEl = computed(() => this.divEl() != null);
-
-        static ɵfac = () => new AppComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: AppComponent,
-          selectors: [['test-cmp']],
-          viewQuery:
-              function App_Query(rf, ctx) {
-                // TODO: there should be no update mode for queries any more
-                if (rf & 1) {
-                  ɵɵviewQueryCreate(ctx.divEl, _c0, 1);
-                }
-              },
-          standalone: true,
-          signals: true,
-          features: [ɵɵStandaloneFeature],
-          decls: 3,
-          vars: 0,
-          consts: [['el', '']],
-          template:
-              function App_Template(rf) {
-                if ((rf & 1)) {
-                  ɵɵelement(0, 'div', null, 0);
-                }
-              },
-          encapsulation: 2
-        });
-      }
-
-      const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.foundEl()).toBeTrue();
-    });
-
-    it('view children - HAND GENERATED CODE - delete after compiler is done', () => {
-      const _c0 = ['el'];
-      class AppComponent {
-        divEls = viewChildren<ElementRef>('el');
-        foundElsCount = computed(() => this.divEls().length);
-
-        static ɵfac = () => new AppComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: AppComponent,
-          selectors: [['test-cmp']],
-          viewQuery:
-              function App_Query(rf, ctx) {
-                // TODO: there should be no update mode for queries any more
-                if (rf & 1) {
-                  ɵɵviewQueryCreate(ctx.divEls, _c0, 1);
-                }
-              },
-          standalone: true,
-          signals: true,
-          features: [ɵɵStandaloneFeature],
-          decls: 3,
-          vars: 0,
-          consts: [['el', '']],
-          template:
-              function App_Template(rf) {
-                if ((rf & 1)) {
-                  ɵɵelement(0, 'div', null, 0);
-                }
-              },
-          encapsulation: 2
-        });
-      }
-
-      const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.foundElsCount()).toBe(1);
     });
   });
 });

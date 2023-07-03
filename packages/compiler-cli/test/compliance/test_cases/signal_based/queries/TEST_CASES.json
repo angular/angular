@@ -1,0 +1,25 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support querying for a view child",
+      "inputFiles": ["view_child.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "view_child.js", "expected": "view_child.js"}]
+        }
+      ]
+    },
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support querying for multiple view children",
+      "inputFiles": ["view_children.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "view_children.js", "expected": "view_children.js"}]
+        }
+      ]
+    }
+  ]
+}

@@ -179,11 +179,7 @@ export class Identifiers {
 
   static hostProperty: o.ExternalReference = {name: 'ɵɵhostProperty', moduleName: CORE};
 
-  static propertyCreate: o.ExternalReference = {name: 'ɵɵpropertyCreate', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
-
-  static stringifyInterpolation:
-      o.ExternalReference = {name: 'ɵɵstringifyInterpolation', moduleName: CORE};
 
   static propertyInterpolate:
       o.ExternalReference = {name: 'ɵɵpropertyInterpolate', moduleName: CORE};
@@ -357,7 +353,14 @@ export class Identifiers {
   static validateIframeAttribute:
       o.ExternalReference = {name: 'ɵɵvalidateIframeAttribute', moduleName: CORE};
 
+  // ## signal APIs
 
-  // type-checking
+  // for type-checking
   static getInputSignalWriteType = {name: 'ɵɵGetInputSignalWriteType', moduleName: CORE};
+
+  static propertyCreate: o.ExternalReference = {name: 'ɵɵpropertyCreate', moduleName: CORE};
+  static stringifyInterpolation:
+      o.ExternalReference = {name: 'ɵɵstringifyInterpolation', moduleName: CORE};
+
+  static viewQueryCreate: o.ExternalReference = {name: 'ɵɵviewQueryCreate', moduleName: CORE};
 }
