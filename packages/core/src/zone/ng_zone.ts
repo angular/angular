@@ -172,11 +172,17 @@ export class NgZone {
     forkInnerZoneWithAngularBehavior(self);
   }
 
+  /**
+    This method checks whether the method call happens within an Angular Zone instance.
+  */
   static isInAngularZone(): boolean {
     // Zone needs to be checked, because this method might be called even when NoopNgZone is used.
     return typeof Zone !== 'undefined' && Zone.current.get('isAngularZone') === true;
   }
 
+  /**
+    Assures that the method is called within the Angular Zone, otherwise throws an error.
+  */
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
       throw new RuntimeError(
@@ -185,6 +191,9 @@ export class NgZone {
     }
   }
 
+  /**
+    Assures that the method is called outside of the Angular Zone, otherwise throws an error.
+  */
   static assertNotInAngularZone(): void {
     if (NgZone.isInAngularZone()) {
       throw new RuntimeError(
