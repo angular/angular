@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, ElementRef, ViewChild, viewChild, viewChildren, ɵɵdefineComponent, ɵɵelement, ɵɵqueryCreate, ɵɵStandaloneFeature} from '@angular/core';
+import {Component, computed, ElementRef, ViewChild, viewChild, viewChildren, ɵɵdefineComponent, ɵɵelement, ɵɵStandaloneFeature, ɵɵviewQueryCreate} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 
@@ -62,7 +62,7 @@ describe('queries', () => {
               function App_Query(rf, ctx) {
                 // TODO: there should be no update mode for queries any more
                 if (rf & 1) {
-                  ɵɵqueryCreate(ctx.divEl, _c0, 1);
+                  ɵɵviewQueryCreate(ctx.divEl, _c0, 1);
                 }
               },
           standalone: true,
@@ -100,7 +100,7 @@ describe('queries', () => {
               function App_Query(rf, ctx) {
                 // TODO: there should be no update mode for queries any more
                 if (rf & 1) {
-                  ɵɵqueryCreate(ctx.divEls, _c0, 1);
+                  ɵɵviewQueryCreate(ctx.divEls, _c0, 1);
                 }
               },
           standalone: true,
