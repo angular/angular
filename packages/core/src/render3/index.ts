@@ -210,7 +210,7 @@ export {
   ɵɵqueryRefresh,
   ɵɵviewQuery
 } from './query';
-export {ɵɵviewQueryCreate} from './reactivity/queries';
+export {ɵɵcontentQueryCreate, ɵɵviewQueryCreate} from './reactivity/queries';
 export {
   ɵɵdisableBindings,
 

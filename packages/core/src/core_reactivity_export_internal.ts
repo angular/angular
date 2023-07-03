@@ -39,5 +39,5 @@ export {
 export {input} from './render3/reactivity/input';
 export {InputSignal, ɵɵGetInputSignalWriteType} from './render3/reactivity/input_signal';
 export {ModelSignal} from './render3/reactivity/model_signal';
-export {viewChild, viewChildren} from './render3/reactivity/queries';
+export {contentChild, contentChildren, viewChild, viewChildren} from './render3/reactivity/queries';
 // clang-format on

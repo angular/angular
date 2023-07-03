@@ -321,6 +321,13 @@ export type ContentChild = Query;
 // @public
 export const ContentChild: ContentChildDecorator;
 
+// @public (undocumented)
+export function contentChild<T>(selector: ProviderToken<T> | string, opts?: {
+    descendants?: boolean;
+    read?: any;
+    static?: boolean;
+}): Signal<T | undefined>;
+
 // @public
 export interface ContentChildDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
@@ -341,6 +348,13 @@ export type ContentChildren = Query;
 
 // @public
 export const ContentChildren: ContentChildrenDecorator;
+
+// @public (undocumented)
+export function contentChildren<T>(selector: ProviderToken<T> | string, opts?: {
+    descendants?: boolean;
+    read?: any;
+    emitDistinctChangesOnly?: boolean;
+}): Signal<T[]>;
 
 // @public
 export interface ContentChildrenDecorator {
