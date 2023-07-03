@@ -1253,7 +1253,7 @@ export class QueryList<T> implements Iterable<T> {
     get changes(): Observable<any>;
     destroy(): void;
     // (undocumented)
-    readonly dirty = true;
+    readonly dirty: boolean;
     filter<S extends T>(predicate: (value: T, index: number, array: readonly T[]) => value is S): S[];
     // (undocumented)
     filter(predicate: (value: T, index: number, array: readonly T[]) => unknown): T[];
@@ -1268,6 +1268,7 @@ export class QueryList<T> implements Iterable<T> {
     readonly length: number;
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
+    onDirty(cb: () => void): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
     reset(resultsTree: Array<T | any[]>, identityAccessor?: (value: T) => unknown): void;
     setDirty(): void;
@@ -1570,6 +1571,12 @@ export type ViewChild = Query;
 // @public
 export const ViewChild: ViewChildDecorator;
 
+// @public (undocumented)
+export function viewChild<T>(selector: ProviderToken<unknown> | Function | string, opts?: {
+    read?: any;
+    static?: boolean;
+}): Signal<T | undefined>;
+
 // @public
 export interface ViewChildDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
@@ -1588,6 +1595,12 @@ export type ViewChildren = Query;
 
 // @public
 export const ViewChildren: ViewChildrenDecorator;
+
+// @public (undocumented)
+export function viewChildren<T>(selector: ProviderToken<unknown> | Function | string, opts?: {
+    read?: any;
+    emitDistinctChangesOnly?: boolean;
+}): Signal<T[]>;
 
 // @public
 export interface ViewChildrenDecorator {
