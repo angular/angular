@@ -418,12 +418,18 @@ function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, 
  */
 export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   const lView = getLView();
-  const tView = getTView();
   const queryIndex = getCurrentQueryIndex();
 
   setCurrentQueryIndex(queryIndex + 1);
+  return queryRefreshInternal(lView, queryIndex);
+}
 
+export function queryRefreshInternal(lView: LView, queryIndex: number): boolean {
+  const tView = lView[TVIEW];
   const tQuery = getTQuery(tView, queryIndex);
+  const lQuery = lView[QUERIES]!.queries![queryIndex];
+  const queryList = lQuery.queryList;
+
   if (queryList.dirty &&
       (isCreationMode(lView) ===
        ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic))) {
@@ -453,6 +459,12 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
  */
 export function ɵɵviewQuery<T>(
     predicate: ProviderToken<unknown>|string[], flags: QueryFlags, read?: any): void {
+  createViewQueryInternal(getLView(), predicate, flags, read);
+}
+
+export function createViewQueryInternal<T>(
+    lView: LView, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
+    read?: any): number {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {
@@ -461,7 +473,7 @@ export function ɵɵviewQuery<T>(
       tView.staticViewQueries = true;
     }
   }
-  createLQuery<T>(tView, getLView(), flags);
+  return createLQuery<T>(tView, lView, flags);
 }
 
 /**
@@ -502,20 +514,22 @@ export function ɵɵloadQuery<T>(): QueryList<T> {
   return loadQueryInternal<T>(getLView(), getCurrentQueryIndex());
 }
 
-function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
+export function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
   ngDevMode &&
       assertDefined(lView[QUERIES], 'LQueries should be defined when trying to load a query');
   ngDevMode && assertIndexInRange(lView[QUERIES]!.queries, queryIndex);
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
-function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags) {
+function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): number {
   const queryList = new QueryList<T>(
       (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
   storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
 
   if (lView[QUERIES] === null) lView[QUERIES] = new LQueries_();
   lView[QUERIES]!.queries.push(new LQuery_(queryList));
+
+  return lView[QUERIES]!.queries.length - 1;
 }
 
 function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number): void {
