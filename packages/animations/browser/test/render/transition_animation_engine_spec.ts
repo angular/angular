@@ -113,13 +113,20 @@ describe('TransitionAnimationEngine', () => {
       registerTrigger(element, engine, trig);
       setProperty(element, engine, 'myTrigger', 'value');
       engine.flush();
+      expect(engine.statesByElement.has(element))
+          .toBe(true, 'Expected element data to be defined.');
+      expect(engine.playersByElement.has(element))
+          .toBe(true, 'Expected element data to be defined.');
 
-      expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
-
+      engine.destroy(DEFAULT_NAMESPACE_ID, null);
       engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
       engine.flush();
+      engine.players[0].finish();
 
-      expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
+      expect(engine.statesByElement.has(element))
+          .toBe(false, 'Expected element data to be undefined.');
+      expect(engine.playersByElement.has(element))
+          .toBe(false, 'Expected element data to be undefined.');
     });
 
     it('should create and recreate a namespace for a host element with the same component source',
