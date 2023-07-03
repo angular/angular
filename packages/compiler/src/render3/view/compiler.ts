@@ -62,7 +62,8 @@ function baseDirectiveFields(
 
   if (meta.viewQueries.length) {
     definitionMap.set(
-        'viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool, meta.name));
+        'viewQuery',
+        createViewQueriesFunction(meta.isSignal, meta.viewQueries, constantPool, meta.name));
   }
 
   // e.g. `hostBindings: (rf, ctx) => { ... }
@@ -540,12 +541,23 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
 
 // Define and update any view queries
 function createViewQueriesFunction(
-    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+    isSignal: boolean, viewQueries: R3QueryMetadata[], constantPool: ConstantPool,
+    name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
+    if (isSignal) {
+      createStatements.push(o.importExpr(R3.viewQueryCreate)
+                                .callFn([
+                                  o.variable(CONTEXT_NAME).prop(query.propertyName),
+                                  ...prepareQueryParams(query, constantPool)
+                                ])
+                                .toStmt());
+      return;
+    }
+
     // creation, e.g. r3.viewQuery(somePredicate, true);
     const queryDefinition =
         o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
@@ -562,12 +574,17 @@ function createViewQueriesFunction(
   });
 
   const viewQueryFnName = name ? `${name}_Query` : null;
+  const body = [
+    renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+  ];
+
+  // Signal directives may not generate update statements.
+  if (updateStatements.length > 0) {
+    body.push(renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements));
+  }
+
   return o.fn(
-      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
+      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)], body,
       o.INFERRED_TYPE, null, viewQueryFnName);
 }
 

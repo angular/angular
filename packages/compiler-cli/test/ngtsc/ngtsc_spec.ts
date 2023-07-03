@@ -2045,7 +2045,7 @@ function allTests(os: string) {
             }
           `);
           verifyThrownError(
-              ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+              ErrorCode.QUERY_DEFINITION_ARG_NOT_LITERAL,
               `@${decorator} options must be an object literal`);
         });
 
@@ -2081,7 +2081,7 @@ function allTests(os: string) {
             }
           `);
           verifyThrownError(
-              ErrorCode.DECORATOR_ARITY_WRONG, `@${decorator} has too many arguments`);
+              ErrorCode.QUERY_DEFINITION_ARITY_WRONG, `@${decorator} has too many arguments`);
         });
 
         it(`should throw error if @${decorator} predicate argument has wrong type`, () => {

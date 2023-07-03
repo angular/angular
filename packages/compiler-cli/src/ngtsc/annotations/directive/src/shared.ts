@@ -94,6 +94,9 @@ export function extractDirectiveMetadata(
       filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator);
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
 
+  const signalQueryDefinitions =
+      findAndParseSignalQueries(reflector, evaluator, coreModule, members);
+
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -102,7 +105,8 @@ export function extractDirectiveMetadata(
       filterToMembersWithDecorator(decoratedElements, 'ContentChildren', coreModule), reflector,
       evaluator);
 
-  const queries = [...contentChildFromFields, ...contentChildrenFromFields];
+  const queries =
+      [...contentChildFromFields, ...contentChildrenFromFields, ...signalQueryDefinitions.content];
 
   // Construct the list of view queries.
   const viewChildFromFields = queriesFromFields(
@@ -111,7 +115,8 @@ export function extractDirectiveMetadata(
   const viewChildrenFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), reflector,
       evaluator);
-  const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+  const viewQueries =
+      [...viewChildFromFields, ...viewChildrenFromFields, ...signalQueryDefinitions.view];
 
   if (directive.has('queries')) {
     const queriesFromDecorator =
@@ -248,13 +253,13 @@ export function extractDirectiveMetadata(
 }
 
 export function extractQueryMetadata(
-    exprNode: ts.Node, name: string, args: ReadonlyArray<ts.Expression>, propertyName: string,
+    exprNode: ts.Node, name: QueryType, args: ReadonlyArray<ts.Expression>, propertyName: string,
     reflector: ReflectionHost, evaluator: PartialEvaluator): R3QueryMetadata {
   if (args.length === 0) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, exprNode, `@${name} must have arguments`);
+        ErrorCode.QUERY_DEFINITION_ARITY_WRONG, exprNode, `${name.forError} must have arguments`);
   }
-  const first = name === 'ViewChild' || name === 'ContentChild';
+  const first = name.first;
   const forwardReferenceTarget = tryUnwrapForwardRef(args[0], reflector);
   const node = forwardReferenceTarget ?? args[0];
 
@@ -272,23 +277,24 @@ export function extractQueryMetadata(
         forwardReferenceTarget !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None);
   } else if (typeof arg === 'string') {
     predicate = [arg];
-  } else if (isStringArrayOrDie(arg, `@${name} predicate`, node)) {
+  } else if (isStringArrayOrDie(arg, `${name.forError} predicate`, node)) {
     predicate = arg;
   } else {
-    throw createValueHasWrongTypeError(node, arg, `@${name} predicate cannot be interpreted`);
+    throw createValueHasWrongTypeError(
+        node, arg, `${name.forError} predicate cannot be interpreted`);
   }
 
   // Extract the read and descendants options.
   let read: Expression|null = null;
   // The default value for descendants is true for every decorator except @ContentChildren.
-  let descendants: boolean = name !== 'ContentChildren';
+  let descendants: boolean = !(name.type === 'content' && name.first === false);
   let emitDistinctChangesOnly: boolean = emitDistinctChangesOnlyDefaultValue;
   if (args.length === 2) {
     const optionsExpr = unwrapExpression(args[1]);
     if (!ts.isObjectLiteralExpression(optionsExpr)) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARG_NOT_LITERAL, optionsExpr,
-          `@${name} options must be an object literal`);
+          ErrorCode.QUERY_DEFINITION_ARG_NOT_LITERAL, optionsExpr,
+          `${name.forError} options must be an object literal`);
     }
     const options = reflectObjectLiteral(optionsExpr);
     if (options.has('read')) {
@@ -300,7 +306,8 @@ export function extractQueryMetadata(
       const descendantsValue = evaluator.evaluate(descendantsExpr);
       if (typeof descendantsValue !== 'boolean') {
         throw createValueHasWrongTypeError(
-            descendantsExpr, descendantsValue, `@${name} options.descendants must be a boolean`);
+            descendantsExpr, descendantsValue,
+            `${name.forError} options.descendants must be a boolean`);
       }
       descendants = descendantsValue;
     }
@@ -311,7 +318,7 @@ export function extractQueryMetadata(
       if (typeof emitDistinctChangesOnlyValue !== 'boolean') {
         throw createValueHasWrongTypeError(
             emitDistinctChangesOnlyExpr, emitDistinctChangesOnlyValue,
-            `@${name} options.emitDistinctChangesOnly must be a boolean`);
+            `${name.forError} options.emitDistinctChangesOnly must be a boolean`);
       }
       emitDistinctChangesOnly = emitDistinctChangesOnlyValue;
     }
@@ -320,7 +327,7 @@ export function extractQueryMetadata(
       const staticValue = evaluator.evaluate(options.get('static')!);
       if (typeof staticValue !== 'boolean') {
         throw createValueHasWrongTypeError(
-            node, staticValue, `@${name} options.static must be a boolean`);
+            node, staticValue, `${name.forError} options.static must be a boolean`);
       }
       isStatic = staticValue;
     }
@@ -328,7 +335,7 @@ export function extractQueryMetadata(
   } else if (args.length > 2) {
     // Too many arguments.
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, node, `@${name} has too many arguments`);
+        ErrorCode.QUERY_DEFINITION_ARITY_WRONG, node, `${name.forError} has too many arguments`);
   }
 
   return {
@@ -421,6 +428,29 @@ export function extractHostBindings(
   return bindings;
 }
 
+interface QueryType {
+  forError: string;
+  first: boolean;
+  type: 'view'|'content';
+}
+
+function categorizeQueryByDecoratorName(name: string): QueryType {
+  const forError = `@${name}`;
+
+  switch (name) {
+    case 'ViewChild':
+      return {first: true, type: 'view', forError};
+    case 'ViewChildren':
+      return {first: false, type: 'view', forError};
+    case 'ContentChild':
+      return {first: true, type: 'content', forError};
+    case 'ContentChildren':
+      return {first: false, type: 'content', forError};
+  }
+
+  throw new Error(`Unexpected query name: ${name}`);
+}
+
 function extractQueriesFromDecorator(
     queryData: ts.Expression, reflector: ReflectionHost, evaluator: PartialEvaluator,
     isCore: boolean): {
@@ -457,7 +487,8 @@ function extractQueriesFromDecorator(
     }
 
     const query = extractQueryMetadata(
-        queryExpr, type.name, queryExpr.arguments || [], propertyName, reflector, evaluator);
+        queryExpr, categorizeQueryByDecoratorName(type.name), queryExpr.arguments || [],
+        propertyName, reflector, evaluator);
     if (type.name.startsWith('Content')) {
       content.push(query);
     } else {
@@ -564,7 +595,8 @@ function queriesFromFields(
           'Query decorator must go on a property-type member');
     }
     return extractQueryMetadata(
-        node, decorator.name, decorator.args || [], member.name, reflector, evaluator);
+        node, categorizeQueryByDecoratorName(decorator.name), decorator.args || [], member.name,
+        reflector, evaluator);
   });
 }
 
@@ -777,8 +809,8 @@ function parseInputTransformFunction(
   }
 
   // Skip over `this` parameters since they're typing the context, not the actual parameter.
-  // `this` parameters are guaranteed to be first if they exist, and the only to distinguish them
-  // is using the name, TS doesn't have a special AST for them.
+  // `this` parameters are guaranteed to be first if they exist, and the only to distinguish
+  // them is using the name, TS doesn't have a special AST for them.
   const firstParam = definition.parameters[0]?.name === 'this' ? definition.parameters[1] :
                                                                  definition.parameters[0];
 
@@ -949,15 +981,9 @@ function findAndParseSignalInputs(
       continue;
     }
 
-    const valueImport = reflector.getImportOfIdentifier(callTarget);
-    const refersToInput = valueImport !== null ?
-        valueImport.from === coreModule && valueImport.name === 'input' :
-        callTarget.text === 'input' && coreModule === undefined;
-
-    if (!refersToInput) {
+    if (!isCoreSymbolReference(callTarget, 'input', reflector, coreModule)) {
       continue;
     }
-
 
     const optionsNode = getOptionsExpressionForInputCall(value);
     const options = optionsNode === null ? null : evaluator.evaluate(optionsNode);
@@ -988,6 +1014,78 @@ function findAndParseSignalInputs(
     };
   }
   return res;
+}
+
+function findAndParseSignalQueries(
+    reflector: ReflectionHost, evaluator: PartialEvaluator, coreModule: string|undefined,
+    members: ClassMember[]): {view: R3QueryMetadata[], content: R3QueryMetadata[]} {
+  const res: {view: R3QueryMetadata[], content: R3QueryMetadata[]} = {view: [], content: []};
+
+  for (const m of members) {
+    if (m.value === null) {
+      continue;
+    }
+    const value = unwrapExpression(m.value);
+    if (!ts.isCallExpression(value)) {
+      continue;
+    }
+    const callTarget = unwrapExpression(value.expression);
+    if (!ts.isIdentifier(callTarget)) {
+      continue;
+    }
+
+    const viewChild: QueryType|false =
+        isCoreSymbolReference(callTarget, 'viewChild', reflector, coreModule) && {
+          first: true,
+          forError: 'viewChild()',
+          type: 'view',
+        };
+
+    const viewChildren: QueryType|false =
+        isCoreSymbolReference(callTarget, 'viewChildren', reflector, coreModule) && {
+          first: false,
+          forError: 'viewChildren()',
+          type: 'view',
+        };
+
+    const contentChild: QueryType|false =
+        isCoreSymbolReference(callTarget, 'contentChild', reflector, coreModule) && {
+          first: true,
+          forError: 'contentChild()',
+          type: 'content',
+        };
+
+    const contentChildren: QueryType|false =
+        isCoreSymbolReference(callTarget, 'contentChildren', reflector, coreModule) && {
+          first: false,
+          forError: 'contentChildren()',
+          type: 'content',
+        };
+
+    const query = viewChild || viewChildren || contentChild || contentChildren;
+
+    if (query === false) {
+      continue;
+    }
+
+    const metadata =
+        extractQueryMetadata(callTarget, query, value.arguments, m.name, reflector, evaluator);
+
+    if (query.type === 'view') {
+      res.view.push(metadata);
+    } else {
+      res.content.push(metadata);
+    }
+  }
+  return res;
+}
+
+function isCoreSymbolReference(
+    callTarget: ts.Identifier, name: string, reflector: ReflectionHost,
+    coreModule: string|undefined): boolean {
+  const imp = reflector.getImportOfIdentifier(callTarget);
+  return imp !== null ? imp.from === coreModule && imp.name === name :
+                        callTarget.text === name && coreModule === undefined;
 }
 
 /**
