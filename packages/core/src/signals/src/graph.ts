@@ -21,14 +21,14 @@ let _nextReactiveId: number = 0;
  * Tracks the currently active reactive consumer (or `null` if there is no active
  * consumer).
  */
-let activeConsumer: ReactiveNode | null = null;
+let activeConsumer: ReactiveNode|null = null;
 
 /**
  * Whether the graph is currently propagating change notifications.
  */
 let inNotificationPhase = false;
 
-export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
+export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
   const prev = activeConsumer;
   activeConsumer = consumer;
   return prev;
@@ -192,10 +192,9 @@ export abstract class ReactiveNode {
   protected producerAccessed(): void {
     if (inNotificationPhase) {
       throw new Error(
-        typeof ngDevMode !== 'undefined' && ngDevMode
-          ? `Assertion error: signal read during notification phase`
-          : ''
-      );
+          typeof ngDevMode !== 'undefined' && ngDevMode ?
+              `Assertion error: signal read during notification phase` :
+              '');
     }
 
     if (activeConsumer === null) {

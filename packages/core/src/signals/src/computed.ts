@@ -109,11 +109,8 @@ class ComputedImpl<T> extends ReactiveNode {
 
     // The current value is stale. Check whether we need to produce a new one.
 
-    if (
-      this.value !== UNSET &&
-      this.value !== COMPUTING &&
-      !this.consumerPollProducersForChange()
-    ) {
+    if (this.value !== UNSET && this.value !== COMPUTING &&
+        !this.consumerPollProducersForChange()) {
       // Even though we were previously notified of a potential dependency update, all of
       // our dependencies report that they have not actually changed in value, so we can
       // resolve the stale state without needing to recompute the current value.
@@ -153,12 +150,8 @@ class ComputedImpl<T> extends ReactiveNode {
 
     this.stale = false;
 
-    if (
-      oldValue !== UNSET &&
-      oldValue !== ERRORED &&
-      newValue !== ERRORED &&
-      this.equal(oldValue, newValue)
-    ) {
+    if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
+        this.equal(oldValue, newValue)) {
       // No change to `valueVersion` - old and new values are
       // semantically equivalent.
       this.value = oldValue;
