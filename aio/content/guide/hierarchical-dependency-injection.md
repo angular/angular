@@ -47,7 +47,7 @@ Angular has two injector hierarchies:
 
 The `ModuleInjector` can be configured in one of two ways by using:
 
-*   The `@Injectable()` `providedIn` property to refer to `@NgModule()`, or `root`
+*   The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 *   The `@NgModule()` `providers` array
 
 <div class="callout is-helpful">
