@@ -80,7 +80,7 @@ export class ChildrenQuerySignalImpl<T> extends QuerySignal<T> {
 }
 
 // THINK: code duplication for predicate, flags etc.? Or would it be extracted by the compiler?
-export function ɵɵqueryCreate<T>(
+export function ɵɵviewQueryCreate<T>(
     target: Signal<T|undefined>, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
     read?: any) {
   const lView = getLView();
