@@ -3,7 +3,7 @@
 // to display the latest default configuration
 // Note: Update with every major release to the latest default
 // #docregion
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+/* To learn more about this file see: https://angular.io/guide/typescript-configuration. */
 {
   "compileOnSave": false,
   "compilerOptions": {
