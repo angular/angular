@@ -31,11 +31,11 @@ Perform these steps on the app code in your IDE.
 ### Step 1 - Update the home component properties
 In this step, you'll update the `HomeComponent` class to store data in a new array property that you will use for filtering.
 
-1.  In `src/app/home/home.component.ts`, add new property to the class called `filteredLocationList`.
+1.  In `src/app/home/home.component.ts`, add new property called `filteredLocationList` to the class.
 
     <code-example header="Add the filtered results property" path="first-app-lesson-13/src/app/home/home.component.ts" region="add-filtered-location-list"></code-example>
 
-    The `filteredLocationList` hold the values that match the search criteria entered by the user.
+    The `filteredLocationList` holds the values that match the search criteria entered by the user.
 
 1.  The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `HomeComponent` to set the value.
 
