@@ -8,14 +8,14 @@
 
 import {Type} from '../../core';
 import {NgModuleType} from '../../metadata/ng_module_def';
-import {ComponentType, DependencyTypeList, DirectiveTypeList, NgModuleScopeInfoFromDecorator, PipeTypeList} from '../interfaces/definition';
+import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
 
 /**
  * Represents the set of dependencies of a type in a certain context.
  */
 interface ScopeData {
-  pipes: PipeTypeList;
-  directives: DirectiveTypeList;
+  pipes: Set<PipeType<any>>;
+  directives: Set<DirectiveType<any>|ComponentType<any>|Type<any>>;
 
   /**
    * If true it indicates that calculating this scope somehow was not successful. The consumers
