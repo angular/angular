@@ -18,7 +18,7 @@ export interface InternalQuerySignal {
   bindToQuery(queryIndex: number): void;
 }
 
-abstract class QuerySignal<T> extends ReactiveNode implements InternalQuerySignal {
+abstract class QuerySignal<T> extends ReactiveNode {
   private _lView?: LView;
   private _queryIndex?: number;
   protected queryList?: QueryList<T>;
@@ -64,14 +64,14 @@ abstract class QuerySignal<T> extends ReactiveNode implements InternalQuerySigna
   }
 }
 
-export class ChildQuerySignalImpl<T> extends QuerySignal<T> {
+export class ChildQuerySignalImpl<T> extends QuerySignal<T> implements InternalQuerySignal {
   signal(): T|undefined {
     this.signalInternal();
     return this.queryList?.first;
   }
 }
 
-export class ChildrenQuerySignalImpl<T> extends QuerySignal<T> {
+export class ChildrenQuerySignalImpl<T> extends QuerySignal<T> implements InternalQuerySignal {
   signal(): T[] {
     this.signalInternal();
     // TODO: perf - I should not be obliged to create a new array every time we call signal()
@@ -81,7 +81,7 @@ export class ChildrenQuerySignalImpl<T> extends QuerySignal<T> {
 
 // THINK: code duplication for predicate, flags etc.? Or would it be extracted by the compiler?
 export function ɵɵviewQueryCreate<T>(
-    target: Signal<T|undefined>, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
+    target: Signal<T|undefined>, predicate: ProviderToken<T>|string[], flags: QueryFlags,
     read?: any) {
   const lView = getLView();
   const reactiveQueryNode = target[SIGNAL] as InternalQuerySignal;
@@ -91,17 +91,16 @@ export function ɵɵviewQueryCreate<T>(
 // Q: assuming that the return type must be similar to InputSignal, with the write ability? (this is
 // needed only from the generated code so maybe not?)
 export function viewChild<T>(
-    selector: ProviderToken<unknown>|Function|string,
-    opts?: {read?: any, static?: boolean}): Signal<T|undefined> {
+    selector: ProviderToken<T>|string, opts?: {read?: any, static?: boolean}): Signal<T|undefined> {
   const node = new ChildQuerySignalImpl();
   return createSignalFromFunction<T|undefined>(node, node.signal.bind(node) as Signal<T|undefined>);
 }
 
 export function viewChildren<T>(
-    selector: ProviderToken<unknown>|Function|string,
+    selector: ProviderToken<T>|string,
     opts?: {read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
   // Q: by returning a signal we are effectively "dropping" QueryList from the public API. Is there
-  // anything valuable there that we would be loosing?
+  // anything valuable there that we would be losing?
   const node = new ChildrenQuerySignalImpl();
   return createSignalFromFunction<T[]>(node, node.signal.bind(node) as Signal<T[]>);
 }
