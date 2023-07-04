@@ -401,4 +401,5 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵstringifyInterpolation', moduleName: CORE};
 
   static viewQueryCreate: o.ExternalReference = {name: 'ɵɵviewQueryCreate', moduleName: CORE};
+  static contentQueryCreate: o.ExternalReference = {name: 'ɵɵcontentQueryCreate', moduleName: CORE};
 }

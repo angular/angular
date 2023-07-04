@@ -145,3 +145,15 @@ export function viewChildren<T>(
     _opts?: {read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
   return null!;
 }
+
+export function contentChild<T>(
+    _selector: object|InjectionToken<T>|string,
+    _opts?: {descendants?: boolean, read?: any, static?: boolean}): Signal<T|undefined> {
+  return null!;
+}
+
+export function contentChildren<T>(
+    _selector: object|InjectionToken<T>|string,
+    _opts?: {descendants?: boolean, read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
+  return null!;
+}

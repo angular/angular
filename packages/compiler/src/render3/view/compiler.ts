@@ -57,7 +57,8 @@ function baseDirectiveFields(
   if (meta.queries.length > 0) {
     // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
     definitionMap.set(
-        'contentQueries', createContentQueriesFunction(meta.queries, constantPool, meta.name));
+        'contentQueries',
+        createContentQueriesFunction(meta.isSignal, meta.queries, constantPool, meta.name));
   }
 
   if (meta.viewQueries.length) {
@@ -433,12 +434,25 @@ function convertAttributesToExpressions(attributes: {[name: string]: o.Expressio
 
 // Define and update any content queries
 function createContentQueriesFunction(
-    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+    isSignal: boolean, queries: R3QueryMetadata[], constantPool: ConstantPool,
+    name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of queries) {
+    if (isSignal) {
+      createStatements.push(
+          o.importExpr(R3.contentQueryCreate)
+              .callFn([
+                o.variable(CONTEXT_NAME).prop(query.propertyName),
+                // TODO(signals): `dirIndex` is not actually used at all. Can remove?
+                o.variable('dirIndex'), ...prepareQueryParams(query, constantPool)
+              ])
+              .toStmt());
+      continue;
+    }
+
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
     createStatements.push(
         o.importExpr(R3.contentQuery)
@@ -456,16 +470,21 @@ function createContentQueriesFunction(
   }
 
   const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
+  const body = [
+    renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+  ];
+
+  // Signal directives may not generate update statements.
+  if (updateStatements.length > 0) {
+    body.push(renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements));
+  }
+
   return o.fn(
       [
         new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
         new o.FnParam('dirIndex', null)
       ],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
-      o.INFERRED_TYPE, null, contentQueriesFnName);
+      body, o.INFERRED_TYPE, null, contentQueriesFnName);
 }
 
 function stringAsType(str: string): o.Type {

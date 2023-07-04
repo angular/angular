@@ -103,6 +103,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵpropertyInterpolateV': r3.ɵɵpropertyInterpolateV,
        'ɵɵpipe': r3.ɵɵpipe,
        'ɵɵviewQueryCreate': r3.ɵɵviewQueryCreate,
+       'ɵɵcontentQueryCreate': r3.ɵɵcontentQueryCreate,
        'ɵɵqueryRefresh': r3.ɵɵqueryRefresh,
        'ɵɵviewQuery': r3.ɵɵviewQuery,
        'ɵɵloadQuery': r3.ɵɵloadQuery,
