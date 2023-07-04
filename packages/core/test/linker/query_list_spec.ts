@@ -36,6 +36,30 @@ import {fakeAsync, tick} from '@angular/core/testing';
         expect(queryList.dirty).toBeFalsy();
         expect(queryList.length).toBe(2);
       });
+
+      it('should notify once when the dirty flag is set', () => {
+        let notificationsCount = 0;
+        queryList.onDirty(() => notificationsCount++);
+
+        expect(queryList.dirty).toBeTruthy();
+        expect(notificationsCount).toBe(0);
+
+        queryList.setDirty();
+        expect(queryList.dirty).toBeTruthy();
+        expect(notificationsCount).toBe(0);
+
+        queryList.reset(['one', 'two']);
+        expect(queryList.dirty).toBeFalsy();
+        expect(notificationsCount).toBe(0);
+
+        queryList.setDirty();
+        expect(queryList.dirty).toBeTruthy();
+        expect(notificationsCount).toBe(1);
+
+        queryList.setDirty();
+        expect(queryList.dirty).toBeTruthy();
+        expect(notificationsCount).toBe(1);
+      });
     });
 
     it('should support resetting and iterating over the new objects', () => {
