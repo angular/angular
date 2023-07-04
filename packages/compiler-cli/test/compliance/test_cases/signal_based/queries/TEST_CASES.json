@@ -20,6 +20,26 @@
           "files": [{"generated": "view_children.js", "expected": "view_children.js"}]
         }
       ]
+    },
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support querying for a content child",
+      "inputFiles": ["content_child.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "content_child.js", "expected": "content_child.js"}]
+        }
+      ]
+    },
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should support querying for multiple content children",
+      "inputFiles": ["content_children.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "content_children.js", "expected": "content_children.js"}]
+        }
+      ]
     }
   ]
 }
