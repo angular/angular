@@ -1,7 +1,7 @@
 # First Angular app lesson 12 - Adding a form to your Angular app
 
 This tutorial lesson demonstrates how to add a form that collects user data to an Angular app.
-This lesson starts with a functional Angular app and shows how to add a form it.
+This lesson starts with a functional Angular app and shows how to add a form to it.
 
 The data that the form collects is sent only to the app's service, which writes it to the browser's console.
 Using a REST API to send and receive the form's data is not covered in this lesson.
