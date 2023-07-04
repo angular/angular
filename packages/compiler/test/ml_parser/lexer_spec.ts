@@ -1814,6 +1814,222 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
     });
+
+    describe('blocks', () => {
+      // TODO(crisbeto): temporary utility while blocks are disabled by default.
+      function tokenizeBlock(input: string, options: TokenizeOptions = {}): any[] {
+        return tokenizeAndHumanizeParts(input, {tokenizeBlocks: true, ...options});
+      }
+
+      it('should parse a block group', () => {
+        expect(tokenizeBlock('{#foo}hello{/foo}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with parameters', () => {
+        expect(tokenizeBlock('{#for item of items; track item.id}hello{/for}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'for'],
+          [TokenType.BLOCK_PARAMETER, 'item of items'],
+          [TokenType.BLOCK_PARAMETER, 'track item.id'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'for'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with a trailing semicolon after the parameters', () => {
+        expect(tokenizeBlock('{#for item of items;}hello{/for}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'for'],
+          [TokenType.BLOCK_PARAMETER, 'item of items'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'for'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with multiple trailing semicolons', () => {
+        expect(tokenizeBlock('{#for item of items;;;;;}hello{/for}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'for'],
+          [TokenType.BLOCK_PARAMETER, 'item of items'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'for'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with trailing whitespace', () => {
+        expect(tokenizeBlock('{#foo                        }hello{/foo}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with no trailing semicolon', () => {
+        expect(tokenizeBlock('{#for item of items}hello{/for}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'for'],
+          [TokenType.BLOCK_PARAMETER, 'item of items'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'for'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should handle semicolons and braces used in a block group parameter', () => {
+        expect(tokenizeBlock(`{#foo a === ";"; b === '}'}hello{/foo}`)).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
+          [TokenType.BLOCK_PARAMETER, `a === ";"`],
+          [TokenType.BLOCK_PARAMETER, `b === '}'`],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should throw for invalid quotes in a parameter', () => {
+        const options = {tokenizeBlocks: true};
+
+        expect(tokenizeAndHumanizeErrors(`{#foo a === "}hello{/foo}`, options)).toEqual([
+          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25']
+        ]);
+
+        expect(tokenizeAndHumanizeErrors(`{#foo a === "hi'}hello{/foo}`, options)).toEqual([
+          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:28']
+        ]);
+      });
+
+      it('should handle a semicolon used in a nested string inside a block group parameter', () => {
+        expect(tokenizeBlock(`{#if condition === "';'"}hello{/if}`)).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'if'],
+          [TokenType.BLOCK_PARAMETER, `condition === "';'"`],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'if'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should handle a semicolon next to an escaped quote used in a block group parameter',
+         () => {
+           expect(tokenizeBlock('{#if condition === "\\";"}hello{/if}')).toEqual([
+             [TokenType.BLOCK_GROUP_OPEN_START, 'if'],
+             [TokenType.BLOCK_PARAMETER, 'condition === "\\";"'],
+             [TokenType.BLOCK_GROUP_OPEN_END],
+             [TokenType.TEXT, 'hello'],
+             [TokenType.BLOCK_GROUP_CLOSE, 'if'],
+             [TokenType.EOF],
+           ]);
+         });
+
+      it('should parse mixed text and html content in a block group', () => {
+        expect(tokenizeBlock('{#if a === 1}foo <b>bar</b> baz{/if}')).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'if'],
+          [TokenType.BLOCK_PARAMETER, 'a === 1'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.TEXT, 'foo '],
+          [TokenType.TAG_OPEN_START, '', 'b'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'bar'],
+          [TokenType.TAG_CLOSE, '', 'b'],
+          [TokenType.TEXT, ' baz'],
+          [TokenType.BLOCK_GROUP_CLOSE, 'if'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a block group with blocks', () => {
+        expect(tokenizeBlock(
+                   '{#if expr}' +
+                   'foo' +
+                   '{:else if otherExpr === 1}' +
+                   '<some-comp/>' +
+                   '{:else}' +
+                   'bar' +
+                   '{/if}'))
+            .toEqual([
+              [TokenType.BLOCK_GROUP_OPEN_START, 'if'],
+              [TokenType.BLOCK_PARAMETER, 'expr'],
+              [TokenType.BLOCK_GROUP_OPEN_END],
+              [TokenType.TEXT, 'foo'],
+              [TokenType.BLOCK_OPEN_START, 'else'],
+              [TokenType.BLOCK_PARAMETER, 'if otherExpr === 1'],
+              [TokenType.BLOCK_OPEN_END],
+              [TokenType.TAG_OPEN_START, '', 'some-comp'],
+              [TokenType.TAG_OPEN_END_VOID],
+              [TokenType.BLOCK_OPEN_START, 'else'],
+              [TokenType.BLOCK_OPEN_END],
+              [TokenType.TEXT, 'bar'],
+              [TokenType.BLOCK_GROUP_CLOSE, 'if'],
+              [TokenType.EOF],
+            ]);
+      });
+
+      it('should parse nested block groups', () => {
+        expect(tokenizeBlock(
+                   '{#if a}' +
+                   'hello a' +
+                   '{:else}' +
+                   '{#if b}' +
+                   'hello b' +
+                   '{:else}' +
+                   '{#if c}hello c{/if}' +
+                   '{/if}' +
+                   '{/if}'))
+            .toEqual([
+              [TokenType.BLOCK_GROUP_OPEN_START, 'if'], [TokenType.BLOCK_PARAMETER, 'a'],
+              [TokenType.BLOCK_GROUP_OPEN_END],         [TokenType.TEXT, 'hello a'],
+              [TokenType.BLOCK_OPEN_START, 'else'],     [TokenType.BLOCK_OPEN_END],
+              [TokenType.BLOCK_GROUP_OPEN_START, 'if'], [TokenType.BLOCK_PARAMETER, 'b'],
+              [TokenType.BLOCK_GROUP_OPEN_END],         [TokenType.TEXT, 'hello b'],
+              [TokenType.BLOCK_OPEN_START, 'else'],     [TokenType.BLOCK_OPEN_END],
+              [TokenType.BLOCK_GROUP_OPEN_START, 'if'], [TokenType.BLOCK_PARAMETER, 'c'],
+              [TokenType.BLOCK_GROUP_OPEN_END],         [TokenType.TEXT, 'hello c'],
+              [TokenType.BLOCK_GROUP_CLOSE, 'if'],      [TokenType.BLOCK_GROUP_CLOSE, 'if'],
+              [TokenType.BLOCK_GROUP_CLOSE, 'if'],      [TokenType.EOF],
+            ]);
+      });
+
+      it('should parse a block group containing an expansion', () => {
+        const result = tokenizeBlock(
+            '{#foo}{one.two, three, =4 {four} =5 {five} foo {bar} }{/foo}',
+            {tokenizeExpansionForms: true});
+
+        expect(result).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
+          [TokenType.BLOCK_GROUP_OPEN_END],
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'four'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_CASE_VALUE, '=5'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'five'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_CASE_VALUE, 'foo'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'bar'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
+          [TokenType.EOF],
+        ]);
+      });
+    });
   });
 }
 
