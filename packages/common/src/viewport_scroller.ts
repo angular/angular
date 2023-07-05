@@ -139,11 +139,8 @@ export class BrowserViewportScroller implements ViewportScroller {
    * Disables automatic scroll restoration provided by the browser.
    */
   setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {
-    if (this.supportScrollRestoration()) {
-      const history = this.window.history;
-      if (history && history.scrollRestoration) {
-        history.scrollRestoration = scrollRestoration;
-      }
+    if (this.supportsScrolling()) {
+      this.window.history.scrollRestoration = scrollRestoration;
     }
   }
 
@@ -161,31 +158,6 @@ export class BrowserViewportScroller implements ViewportScroller {
     this.window.scrollTo(left - offset[0], top - offset[1]);
   }
 
-  /**
-   * We only support scroll restoration when we can get a hold of window.
-   * This means that we do not support this behavior when running in a web worker.
-   *
-   * Lifting this restriction right now would require more changes in the dom adapter.
-   * Since webworkers aren't widely used, we will lift it once RouterScroller is
-   * battle-tested.
-   */
-  private supportScrollRestoration(): boolean {
-    try {
-      if (!this.supportsScrolling()) {
-        return false;
-      }
-      // The `scrollRestoration` property could be on the `history` instance or its prototype.
-      const scrollRestorationDescriptor = getScrollRestorationProperty(this.window.history) ||
-          getScrollRestorationProperty(Object.getPrototypeOf(this.window.history));
-      // We can write to the `scrollRestoration` property if it is a writable data field or it has a
-      // setter function.
-      return !!scrollRestorationDescriptor &&
-          !!(scrollRestorationDescriptor.writable || scrollRestorationDescriptor.set);
-    } catch {
-      return false;
-    }
-  }
-
   private supportsScrolling(): boolean {
     try {
       return !!this.window && !!this.window.scrollTo && 'pageXOffset' in this.window;
@@ -193,10 +165,6 @@ export class BrowserViewportScroller implements ViewportScroller {
       return false;
     }
   }
-}
-
-function getScrollRestorationProperty(obj: any): PropertyDescriptor|undefined {
-  return Object.getOwnPropertyDescriptor(obj, 'scrollRestoration');
 }
 
 function findAnchorFromDocument(document: Document, target: string): HTMLElement|null {
