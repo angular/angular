@@ -8,8 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import {CompilationJob, CompilationUnit, ViewCompilation, ViewCompilationUnit} from '../compilation';
 import * as ng from '../instruction';
 
 /**
@@ -20,14 +19,14 @@ import * as ng from '../instruction';
  * structures. After reification, the create/update operation lists of all views should only contain
  * `ir.StatementOp`s (which wrap generated `o.Statement`s).
  */
-export function phaseReify(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    reifyCreateOperations(view, view.create);
-    reifyUpdateOperations(view, view.update);
+export function phaseReify(cpl: CompilationJob): void {
+  for (const unit of cpl.units) {
+    reifyCreateOperations(unit, unit.create);
+    reifyUpdateOperations(unit, unit.update);
   }
 }
 
-function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp>): void {
+function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
@@ -70,7 +69,10 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(op, ng.elementContainerEnd());
         break;
       case ir.OpKind.Template:
-        const childView = view.tpl.views.get(op.xref)!;
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        const childView = unit.tpl.views.get(op.xref)!;
         ir.OpList.replace(
             op,
             ng.template(
@@ -89,7 +91,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
         break;
       case ir.OpKind.Listener:
         const listenerFn =
-            reifyListenerHandler(view, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
+            reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         ir.OpList.replace(
             op,
             ng.listener(
@@ -116,7 +118,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
@@ -239,10 +241,10 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
  * parameter defined.
  */
 function reifyListenerHandler(
-    view: ViewCompilation, name: string, handlerOps: ir.OpList<ir.UpdateOp>,
+    unit: CompilationUnit, name: string, handlerOps: ir.OpList<ir.UpdateOp>,
     consumesDollarEvent: boolean): o.FunctionExpr {
   // First, reify all instruction calls within `handlerOps`.
-  reifyUpdateOperations(view, handlerOps);
+  reifyUpdateOperations(unit, handlerOps);
 
   // Next, extract all the `o.Statement`s from the reified operations. We can expect that at this
   // point, all operations have been converted to statements.
