@@ -12,8 +12,10 @@ import * as o from '../../../output/output_ast';
 import * as t from '../../../render3/r3_ast';
 import * as ir from '../ir';
 
-import {ComponentCompilation, ViewCompilation} from './compilation';
+import {ComponentCompilation, ComponentCompilationJob, ViewCompilation} from './compilation';
 import {BINARY_OPERATORS} from './conversion';
+
+const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
@@ -21,8 +23,7 @@ import {BINARY_OPERATORS} from './conversion';
  */
 export function ingest(
     componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
-  const cpl = new ComponentCompilation(
-      componentName, constantPool, ir.CompatibilityMode.TemplateDefinitionBuilder);
+  const cpl = new ComponentCompilationJob(componentName, constantPool, compatibilityMode);
   ingestNodes(cpl.root, template);
   return cpl;
 }
