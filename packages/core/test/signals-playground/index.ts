@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, input, Input, signal} from '@angular/core';
+import {Component, input, Input, output, signal} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'greet',
   standalone: true,
   signals: true,
-  template: `{{ counter() }} -- {{label()}}`,
+  template: `
+    {{ counter() }} -- {{label()}}
+
+    <button (click)="buttonClick.emit()">From sub component</button>
+  `,
 })
 export class Greet<T> {
   counter = input(0);
@@ -25,6 +29,8 @@ export class Greet<T> {
   gen2 = input<T>();
 
   label = input<string>();
+
+  buttonClick = output<void>();
 
   works(): T {
     return this.gen();
@@ -40,6 +46,7 @@ export class Greet<T> {
   template: `
     Hello <greet [counter]="3" [bla4Public]="10" #ok
       [bla3]="someVar" [gen]="{yes: true}" label="Hello {{name()}}"
+      (buttonClick)="onClickFromChild()"
     />
 
     <button (click)="ok.works().yes">Click</button>
@@ -54,6 +61,10 @@ export class MyApp {
 
   protected updateName() {
     this.name.update(n => `${n}-`);
+  }
+
+  onClickFromChild() {
+    console.info('Click from child');
   }
 }
 

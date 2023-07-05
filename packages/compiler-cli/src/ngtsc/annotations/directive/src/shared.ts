@@ -90,8 +90,15 @@ export function extractDirectiveMetadata(
 
   // And outputs.
   const outputsFromMeta = parseOutputsArray(directive, evaluator);
-  const outputsFromFields = parseOutputFields(
+  let outputsFromFields = parseOutputFields(
       filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator);
+
+  // TODO(signals)
+  outputsFromFields = {
+    ...outputsFromFields,
+    ...findAndParseSignalOutputs(reflector, coreModule, members)
+  };
+
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
 
   const signalQueryDefinitions =
@@ -1012,6 +1019,33 @@ function findAndParseSignalInputs(
       required: !!options?.get('required'),
       transform,
     };
+  }
+  return res;
+}
+
+// TODO(signals)
+function findAndParseSignalOutputs(
+    reflector: ReflectionHost, coreModule: string|undefined,
+    members: ClassMember[]): Record<string, string> {
+  const res: Record<string, string> = {};
+
+  for (const m of members) {
+    if (m.value === null) {
+      continue;
+    }
+    const value = unwrapExpression(m.value);
+    if (!ts.isCallExpression(value)) {
+      continue;
+    }
+    const callTarget = unwrapExpression(value.expression);
+    if (!ts.isIdentifier(callTarget)) {
+      continue;
+    }
+
+    if (isCoreSymbolReference(callTarget, 'output', reflector, coreModule)) {
+      // TODO(signals): Support output aliases?
+      res[m.name] = m.name;
+    }
   }
   return res;
 }
