@@ -26,5 +26,6 @@ export {
 } from './render3/reactivity/effect';
 export {InputSignal, ɵɵGetInputSignalWriteType, ModelSignal} from './render3/reactivity/input_signal';
 export {input} from './render3/reactivity/input';
+export {output} from './render3/reactivity/output';
 export {contentChild, contentChildren, viewChild, viewChildren} from './render3/reactivity/queries';
 // clang-format on
