@@ -46,7 +46,7 @@ import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
 export function transformTemplate(cpl: ComponentCompilation): void {
-  phaseAttributeExtraction(cpl, /* compatibility */ true);
+  phaseAttributeExtraction(cpl);
   phasePipeCreation(cpl);
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);
@@ -59,13 +59,13 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseLocalRefs(cpl);
   phaseConstCollection(cpl);
   phaseNullishCoalescing(cpl);
-  phaseExpandSafeReads(cpl, true);
+  phaseExpandSafeReads(cpl);
   phaseTemporaryVariables(cpl);
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);
-  phaseVariableOptimization(cpl, {conservative: true});
-  phaseNaming(cpl, true);
+  phaseVariableOptimization(cpl);
+  phaseNaming(cpl);
   phaseMergeNextContext(cpl);
   phaseNgContainer(cpl);
   phaseEmptyElements(cpl);
