@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, ContentChild, contentChild, ContentChildren, contentChildren, ElementRef, ViewChild, viewChild, viewChildren, ɵɵcontentQueryCreate, ɵɵdefineComponent, ɵɵStandaloneFeature, ɵɵtext, ɵɵtextInterpolate} from '@angular/core';
+import {Component, computed, ContentChild, contentChild, contentChildren, ElementRef, ViewChild, viewChild, ViewChildren, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('queries', () => {
@@ -35,10 +35,13 @@ describe('queries', () => {
       @Component({
         signals: true,
         standalone: true,
-        template: `<div #el1><div><div #el2><div>`,
+        template: `
+          <div #el1></div>
+          <div #el2></div>
+        `,
       })
       class App {
-        @ViewChild('el1,el2') divEls = viewChildren<ElementRef>('el');
+        @ViewChildren('el1,el2') divEls = viewChildren<ElementRef>('el1,el2');
         foundEl = computed(() => this.divEls().length === 2);
       }
 

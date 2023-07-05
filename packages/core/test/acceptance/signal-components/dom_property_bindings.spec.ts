@@ -7,7 +7,7 @@
  */
 
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch';
-import {Component, signal, ɵɵdefineComponent, ɵɵelement, ɵɵpropertyCreate, ɵɵStandaloneFeature, ɵɵstringifyInterpolation} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 if (!USE_TEMPLATE_PIPELINE) {
