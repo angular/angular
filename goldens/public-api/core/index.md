@@ -1195,7 +1195,10 @@ export interface Output {
 export const Output: OutputDecorator;
 
 // @public (undocumented)
-export function output<T>(isAsync?: boolean): EventEmitter<T>;
+export function output<T>(opts?: {
+    alias?: string;
+    isAsync?: boolean;
+}): EventEmitter<T>;
 
 // @public
 export interface OutputDecorator {

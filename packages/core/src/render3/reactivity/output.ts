@@ -8,6 +8,6 @@
 
 import {EventEmitter} from '../../event_emitter';
 
-export function output<T>(isAsync?: boolean): EventEmitter<T> {
-  return new EventEmitter(isAsync);
+export function output<T>(opts?: {alias?: string, isAsync?: boolean}): EventEmitter<T> {
+  return new EventEmitter(opts?.isAsync);
 }

@@ -7,4 +7,5 @@ import {Component, output} from '@angular/core';
 })
 export class SensorComp {
   pressed = output<void>();
+  _internalName = output<void>({alias: 'touched'});
 }
