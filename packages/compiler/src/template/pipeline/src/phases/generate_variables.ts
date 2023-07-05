@@ -8,7 +8,6 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-
 import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
 /**
@@ -180,20 +179,22 @@ function generateVariablesInScopeForView<OpT extends ir.Op<OpT>>(
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
+        view.tpl.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr(),
+        /* isConstant */ true));
   }
 
   // Add variables for all context variables available in this scope's view.
   for (const [name, value] of view.tpl.views.get(scope.view)!.contextVariables) {
     newOps.push(ir.createVariableOp(
         view.tpl.allocateXrefId(), scope.contextVariables.get(name)!,
-        new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
+        new o.ReadPropExpr(new ir.ContextExpr(scope.view), value), /* isConstant */ true));
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
+        view.tpl.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset),
+        /* isConstant */ true));
   }
 
   if (scope.parent !== null) {

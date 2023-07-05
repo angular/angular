@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
-
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
+import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
 /**
  * Moves variables defined in creation mode to only be initialized after their creation, splitting
@@ -80,6 +79,8 @@ function processView(view: ViewCompilation): void {
           // initializer to `undefined`, and set the variable to its value after its declaration.
           const initializer = declOp.initializer;
           declOp.initializer = o.literal(undefined);
+          declOp.isConstant = false;
+
           const readVar = new ir.ReadVariableExpr(declOp.xref);
           // TODO: variable naming should run after this and take care of this for us.
           readVar.name = declOp.variable.name;
