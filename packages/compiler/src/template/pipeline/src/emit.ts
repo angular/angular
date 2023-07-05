@@ -10,7 +10,7 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import type {ComponentCompilation, ViewCompilation} from './compilation';
+import type {ComponentCompilation, ViewCompilation, HostBindingCompilationJob, ComponentCompilationJob} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
@@ -43,37 +43,55 @@ import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
- * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
+ * processing, the compilation should be in a state where it can be emitted.
  */
-export function transformTemplate(cpl: ComponentCompilation): void {
-  phaseAttributeExtraction(cpl);
-  phasePipeCreation(cpl);
-  phasePipeVariadic(cpl);
-  phasePureLiteralStructures(cpl);
-  phaseGenerateVariables(cpl);
-  phaseSaveRestoreView(cpl);
-  phaseFindAnyCasts(cpl);
-  phaseResolveDollarEvent(cpl);
-  phaseResolveNames(cpl);
-  phaseResolveContexts(cpl);
-  phaseLocalRefs(cpl);
-  phaseConstCollection(cpl);
-  phaseNullishCoalescing(cpl);
-  phaseExpandSafeReads(cpl);
-  phaseTemporaryVariables(cpl);
-  phaseSlotAllocation(cpl);
-  phaseVarCounting(cpl);
-  phaseGenerateAdvance(cpl);
-  phaseVariableOptimization(cpl);
-  phaseNaming(cpl);
-  phaseMergeNextContext(cpl);
-  phaseNgContainer(cpl);
-  phaseEmptyElements(cpl);
-  phasePureFunctionExtraction(cpl);
-  phaseAlignPipeVariadicVarOffset(cpl);
-  phasePropertyOrdering(cpl);
-  phaseReify(cpl);
-  phaseChaining(cpl);
+export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseAttributeExtraction(job);
+  phasePipeCreation(job);
+  phasePipeVariadic(job);
+  phasePureLiteralStructures(job);
+  phaseGenerateVariables(job);
+  phaseSaveRestoreView(job);
+  phaseFindAnyCasts(job);
+  phaseResolveDollarEvent(job);
+  phaseResolveNames(job);
+  phaseResolveContexts(job);
+  phaseLocalRefs(job);
+  phaseConstCollection(job);
+  phaseNullishCoalescing(job);
+  phaseExpandSafeReads(job);
+  phaseTemporaryVariables(job);
+  phaseSlotAllocation(job);
+  phaseVarCounting(job);
+  phaseGenerateAdvance(job);
+  phaseVariableOptimization(job);
+  phaseNaming(job);
+  phaseMergeNextContext(job);
+  phaseNgContainer(job);
+  phaseEmptyElements(job);
+  phasePureFunctionExtraction(job);
+  phaseAlignPipeVariadicVarOffset(job);
+  phasePropertyOrdering(job);
+  phaseReify(job);
+  phaseChaining(job);
+}
+
+/**
+ * Run all transformation phases in the correct order against a `HostBindingCompilationJob`. After
+ * this processing, the compilation should be in a state where it can be emitted.
+ */
+export function transformHostBindingFunction(job: HostBindingCompilationJob): void {
+  // TODO: Finish updating these phases to support host bindings.
+  // phasePureLiteralStructures(job);
+  // phaseGenerateVariables(job);
+  // phaseSaveRestoreView(job); // TODO: Is this needed?
+  // phaseNullishCoalescing(job);
+  // phaseExpandSafeReads(job);
+  // phaseVariableOptimization(job);
+  // phaseNaming(job);
+  // phasePureFunctionExtraction(job);
+  phaseReify(job);
+  phaseChaining(job);
 }
 
 /**

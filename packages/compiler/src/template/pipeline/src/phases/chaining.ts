@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers as R3} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 const CHAINABLE = new Set([
   R3.elementStart,
@@ -49,10 +49,10 @@ const CHAINABLE = new Set([
  * elementStart(0, 'div')(1, 'span');
  * ```
  */
-export function phaseChaining(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    chainOperationsInList(view.create);
-    chainOperationsInList(view.update);
+export function phaseChaining(job: CompilationJob): void {
+  for (const unit of job.units) {
+    chainOperationsInList(unit.create);
+    chainOperationsInList(unit.update);
   }
 }
 

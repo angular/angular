@@ -546,6 +546,11 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
     definitionMap: DefinitionMap): o.Expression|null {
+  if (USE_TEMPLATE_PIPELINE) {
+    // TODO: host binding metadata is not yet parsed in the template pipeline, so we need to extract
+    // that code from below. Then, we will ingest a `HostBindingJob`, and run the template pipeline
+    // phases.
+  }
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
 
