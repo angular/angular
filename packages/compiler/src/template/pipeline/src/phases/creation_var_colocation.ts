@@ -79,6 +79,8 @@ function processUnit(unit: CompilationUnit): void {
           // initializer to `undefined`, and set the variable to its value after its declaration.
           const initializer = declOp.initializer;
           declOp.initializer = o.literal(undefined);
+          declOp.isConstant = false;
+
           const readVar = new ir.ReadVariableExpr(declOp.xref);
           // TODO: variable naming should run after this and take care of this for us.
           readVar.name = declOp.variable.name;

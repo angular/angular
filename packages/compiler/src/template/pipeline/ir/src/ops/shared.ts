@@ -68,18 +68,25 @@ export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
    * Expression representing the value of the variable.
    */
   initializer: o.Expression;
+
+  /**
+   * Whether the variable created is a constant.
+   */
+  isConstant: boolean;
 }
 
 /**
  * Create a `VariableOp`.
  */
 export function createVariableOp<OpT extends Op<OpT>>(
-    xref: XrefId, variable: SemanticVariable, initializer: o.Expression): VariableOp<OpT> {
+    xref: XrefId, variable: SemanticVariable, initializer: o.Expression,
+    isConstant: boolean): VariableOp<OpT> {
   return {
     kind: OpKind.Variable,
     xref,
     variable,
     initializer,
+    isConstant,
     ...NEW_OP,
   };
 }
