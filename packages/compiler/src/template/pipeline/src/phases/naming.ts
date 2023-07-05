@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {sanitizeIdentifier} from '../../../../parse_util';
 import * as ir from '../../ir';
-
 import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
 /**
@@ -22,7 +22,7 @@ export function phaseNaming(cpl: ComponentCompilation): void {
 
 function addNamesToView(view: ViewCompilation, baseName: string, state: {index: number}): void {
   if (view.fnName === null) {
-    view.fnName = `${baseName}_Template`;
+    view.fnName = sanitizeIdentifier(`${baseName}_Template`);
   }
 
   // Keep track of the names we assign to variables in the view. We'll need to propagate these
@@ -38,7 +38,8 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
           if (op.slot === null) {
             throw new Error(`Expected a slot to be assigned`);
           }
-          op.handlerFnName = `${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`;
+          op.handlerFnName =
+              sanitizeIdentifier(`${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`);
         }
         break;
       case ir.OpKind.Variable:
@@ -49,9 +50,7 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
         if (op.slot === null) {
           throw new Error(`Expected slot to be assigned`);
         }
-        // TODO: properly escape the tag name.
-        const safeTagName = op.tag.replace('-', '_');
-        addNamesToView(childView, `${baseName}_${safeTagName}_${op.slot}`, state);
+        addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state);
         break;
     }
   }
