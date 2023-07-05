@@ -158,6 +158,6 @@ export function contentChildren<T>(
   return null!;
 }
 
-export function output<T>(_isAsync?: boolean): EventEmitter<T> {
+export function output<T>(_opts?: {isAsync?: boolean, alias?: string}): EventEmitter<T> {
   return null!;
 }

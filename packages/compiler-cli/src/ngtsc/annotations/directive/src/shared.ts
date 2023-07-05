@@ -95,7 +95,7 @@ export function extractDirectiveMetadata(
   // TODO(signals)
   outputsFromFields = {
     ...outputsFromFields,
-    ...findAndParseSignalOutputs(reflector, coreModule, members)
+    ...findAndParseSignalOutputs(reflector, evaluator, coreModule, members)
   };
 
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
@@ -982,7 +982,7 @@ function findAndParseSignalInputs(
 
 // TODO(signals)
 function findAndParseSignalOutputs(
-    reflector: ReflectionHost, coreModule: string|undefined,
+    reflector: ReflectionHost, evaluator: PartialEvaluator, coreModule: string|undefined,
     members: ClassMember[]): Record<string, string> {
   const res: Record<string, string> = {};
 
@@ -998,11 +998,33 @@ function findAndParseSignalOutputs(
     if (!ts.isIdentifier(callTarget)) {
       continue;
     }
-
-    if (isCoreSymbolReference(callTarget, 'output', reflector, coreModule)) {
-      // TODO(signals): Support output aliases?
-      res[m.name] = m.name;
+    if (!isCoreSymbolReference(callTarget, 'output', reflector, coreModule)) {
+      continue;
     }
+
+    const propertyName = m.name;
+    const optionsNode = value.arguments[0];
+    let publicOutputName = propertyName;
+
+    // If there is an options object, we look for a potential `alias`.
+    if (optionsNode !== undefined) {
+      const options = evaluator.evaluate(optionsNode);
+      if (!(options instanceof Map)) {
+        throw createValueHasWrongTypeError(
+            optionsNode, options, `Output options must be an object.`);
+      }
+
+      const alias = options.get('alias');
+      if (alias !== undefined) {
+        if (typeof alias !== 'string') {
+          throw createValueHasWrongTypeError(
+              optionsNode, options, `Alias must resolve to a string`);
+        }
+        publicOutputName = alias;
+      }
+    }
+
+    res[propertyName] = publicOutputName;
   }
   return res;
 }
