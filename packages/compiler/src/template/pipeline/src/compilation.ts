@@ -10,6 +10,8 @@ import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
 import * as ir from '../ir';
 
+
+
 /**
  * Compilation-in-progress of a whole component's template, including the main template and any
  * embedded views or host bindings.
@@ -37,7 +39,9 @@ export class ComponentCompilation {
    */
   readonly root: ViewCompilation;
 
-  constructor(readonly componentName: string, readonly pool: ConstantPool) {
+  constructor(
+      readonly componentName: string, readonly pool: ConstantPool,
+      readonly compatibility: ir.CompatibilityMode) {
     // Allocate the root view.
     const root = new ViewCompilation(this, this.allocateXrefId(), null);
     this.views.set(root.xref, root);
@@ -137,5 +141,9 @@ export class ViewCompilation {
     for (const op of this.update) {
       yield op;
     }
+  }
+
+  get compatibility(): ir.CompatibilityMode {
+    return this.tpl.compatibility;
   }
 }

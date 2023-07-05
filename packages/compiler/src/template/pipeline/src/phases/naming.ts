@@ -17,8 +17,10 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * This includes propagating those names into any `ir.ReadVariableExpr`s of those variables, so that
  * the reads can be emitted correctly.
  */
-export function phaseNaming(cpl: ComponentCompilation, compatibility: boolean): void {
-  addNamesToView(cpl.root, cpl.componentName, {index: 0}, compatibility);
+export function phaseNaming(cpl: ComponentCompilation): void {
+  addNamesToView(
+      cpl.root, cpl.componentName, {index: 0},
+      cpl.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder);
 }
 
 function addNamesToView(
