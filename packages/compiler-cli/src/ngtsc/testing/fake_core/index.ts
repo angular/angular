@@ -157,3 +157,7 @@ export function contentChildren<T>(
     _opts?: {descendants?: boolean, read?: any, emitDistinctChangesOnly?: boolean}): Signal<T[]> {
   return null!;
 }
+
+export function output<T>(_isAsync?: boolean): EventEmitter<T> {
+  return null!;
+}

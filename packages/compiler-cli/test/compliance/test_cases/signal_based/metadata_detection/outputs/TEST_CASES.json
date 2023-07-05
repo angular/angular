@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "onlyForTemplatePipeline": true,
+      "description": "should detect output in a signal component",
+      "inputFiles": ["output_definition.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "output_definition.js", "expected": "output_definition.js"}]
+        }
+      ]
+    }
+  ]
+}
