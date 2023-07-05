@@ -179,7 +179,7 @@
     "madge": "^6.0.0",
     "multimatch": "^6.0.0",
     "patch-package": "^7.0.0",
-    "prettier": "^2.5.1",
+    "prettier": "^3.0.0",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz",
     "semver": "^7.3.5",
     "ts-node": "^10.9.1",
