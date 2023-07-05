@@ -7,10 +7,8 @@
  */
 
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
-import {Component, input, signal} from '@angular/core';
+import {Component, input, Input, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
-import {Input} from '../../../src/metadata';
 
 if (!USE_TEMPLATE_PIPELINE) {
   console.error(

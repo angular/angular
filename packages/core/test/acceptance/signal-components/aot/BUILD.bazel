@@ -1,0 +1,43 @@
+load("//packages/core/test/acceptance/signal-components:tests.bzl", "TEST_FILES")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module")
+
+# Copy files over to avoid conflicts. We cannot define a `ng_module` and `ts_library`
+# in the same directory. So we copy test files over to be able to compile them with AOT.
+genrule(
+    name = "test_sources",
+    srcs = ["//packages/core/test/acceptance/signal-components:%s" % f for f in TEST_FILES],
+    outs = [f for f in TEST_FILES],
+    cmd = """cp $(SRCS) $(RULEDIR)""",
+)
+
+ng_module(
+    name = "test_lib_aot",
+    testonly = True,
+    srcs = [":test_sources"],
+    strict_templates = True,
+    tags = [
+        "only-template-pipeline",
+    ],
+    deps = [
+        "//packages/compiler/src/template/pipeline/switch",
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    tags = ["only-template-pipeline"],
+    deps = [
+        ":test_lib_aot",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    tags = ["only-template-pipeline"],
+    deps = [
+        ":test_lib_aot",
+    ],
+)

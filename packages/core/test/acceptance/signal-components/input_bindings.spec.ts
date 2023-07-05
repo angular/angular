@@ -7,11 +7,8 @@
  */
 
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
-import {Component, Directive, input, signal} from '@angular/core';
+import {Component, Directive, input, Input, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
-import {Input} from '../../../src/metadata';
-
 
 if (!USE_TEMPLATE_PIPELINE) {
   console.error(
@@ -188,7 +185,7 @@ describe('Signal component inputs', () => {
            @Component({
              signals: true,
              template: `
-            <div dir1 dir2 
+            <div dir1 dir2
               [testInputArr]="['foo', 'bar']"
               [testInputObj]="{foo: 'foo', bar: 'bar'}"
             ></div>`,
@@ -356,7 +353,7 @@ describe('Signal component inputs', () => {
          @Component({
            signals: true,
            template: `
-          <div dirZone dirSignal 
+          <div dirZone dirSignal
             [testInputArr]="['foo', 'bar']"
             [testInputObj]="{foo: 'foo', bar: 'bar'}"
           ></div>`,

@@ -1,15 +1,19 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load(":tests.bzl", "TEST_FILES", "assertTestsInSync")
 
 package(default_visibility = ["//visibility:private"])
+
+exports_files(
+    TEST_FILES,
+    visibility = ["//packages/core/test/acceptance/signal-components/aot:__pkg__"],
+)
+
+assertTestsInSync(globbed_files = glob(["**/*.ts"]))
 
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(
-        ["**/*.ts"],
-    ),
-    # Visible to //:saucelabs_unit_tests
-    visibility = ["//:__pkg__"],
+    srcs = TEST_FILES,
     deps = [
         "//packages/compiler/src/template/pipeline/switch",
         "//packages/core",
