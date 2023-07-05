@@ -14,9 +14,9 @@ import {ComponentCompilation, ViewCompilation} from '../compilation';
  * Find all attribute and binding ops, and collect them into the ElementAttribute structures.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(cpl: ComponentCompilation, compatibility: boolean): void {
+export function phaseAttributeExtraction(cpl: ComponentCompilation): void {
   for (const [_, view] of cpl.views) {
-    populateElementAttributes(view, compatibility);
+    populateElementAttributes(view);
   }
 }
 
@@ -47,7 +47,7 @@ function removeIfExpressionIsEmpty(op: ir.UpdateOp|ir.CreateOp, expression: o.Ex
  * Populates the ElementAttributes map for the given view, and removes ops for any bindings that do
  * not need further processing.
  */
-function populateElementAttributes(view: ViewCompilation, compatibility: boolean) {
+function populateElementAttributes(view: ViewCompilation) {
   const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
   for (const op of view.create) {
     if (!ir.isElementOrContainerOp(op)) {
@@ -65,7 +65,7 @@ function populateElementAttributes(view: ViewCompilation, compatibility: boolean
 
         // The old compiler only extracted string constants, so we emulate that behavior in
         // compaitiblity mode, otherwise we optimize more aggressively.
-        let extractable = compatibility ?
+        let extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
             (op.value instanceof o.LiteralExpr && typeof op.value.value === 'string') :
             (op.value.isConstant());
 
@@ -96,7 +96,8 @@ function populateElementAttributes(view: ViewCompilation, compatibility: boolean
 
         // The old compiler treated empty style bindings as regular bindings for the purpose of
         // directive matching. That behavior is incorrect, but we emulate it in compatibility mode.
-        if (removeIfExpressionIsEmpty(op, op.expression) && compatibility) {
+        if (removeIfExpressionIsEmpty(op, op.expression) &&
+            view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
           ownerOp.attributes.add(ir.ElementAttributeKind.Binding, op.name, null);
         }
         break;

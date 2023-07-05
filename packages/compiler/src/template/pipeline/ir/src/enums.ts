@@ -263,3 +263,13 @@ export enum SemanticVariableKind {
    */
   SavedView,
 }
+
+/**
+ * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
+ * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost of
+ * producing quirky or larger code in some cases.
+ */
+export enum CompatibilityMode {
+  Normal,
+  TemplateDefinitionBuilder,
+}

@@ -21,7 +21,8 @@ import {BINARY_OPERATORS} from './conversion';
  */
 export function ingest(
     componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
-  const cpl = new ComponentCompilation(componentName, constantPool);
+  const cpl = new ComponentCompilation(
+      componentName, constantPool, ir.CompatibilityMode.TemplateDefinitionBuilder);
   ingestNodes(cpl.root, template);
   return cpl;
 }
