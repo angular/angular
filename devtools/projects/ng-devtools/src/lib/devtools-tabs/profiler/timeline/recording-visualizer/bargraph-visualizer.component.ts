@@ -57,7 +57,10 @@ export class BargraphVisualizerComponent implements OnInit, OnDestroy {
     this.nodeSelect.emit({
       entry: node,
       parentHierarchy: node.parents.map((element) => {
-        return {name: element.directives[0].name};
+        return {
+          name: element.directives[0].name,
+          id: element.directives[0].id
+        };
       }),
       selectedDirectives: this.formatEntryData(node),
     });

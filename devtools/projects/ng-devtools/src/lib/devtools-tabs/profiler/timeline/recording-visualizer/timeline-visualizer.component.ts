@@ -23,6 +23,7 @@ export interface SelectedDirective {
   directive: string;
   method: string;
   value: number;
+  id?: string;
 }
 
 @Component({

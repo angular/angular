@@ -19,6 +19,7 @@ import {Hooks} from './profiler';
 let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
+let directiveToId: Map<any, string>;
 let frameDuration = 0;
 let hooks: Partial<Hooks> = {};
 
@@ -27,6 +28,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
     throw new Error('Recording already in progress');
   }
   eventMap = new Map<any, DirectiveProfile>();
+  directiveToId = new Map<string, any>();
   inProgress = true;
   hooks = getHooks(onFrame);
   initializeOrGetDirectiveForestHooks().profiler.subscribe(hooks);
@@ -262,21 +264,37 @@ const prepareInitialFrame = (source: string, duration: number) => {
       return;
     }
     const directives = node.directives.map((d) => {
+      let id = '';
+      if (directiveToId.has(d.instance.constructor)) {
+        id = directiveToId.get(d.instance.constructor)!;
+      } else {
+        id = crypto.randomUUID();
+        directiveToId.set(d.instance.constructor, id);
+      }
       return {
         isComponent: false,
         isElement: false,
+        id,
         name: getDirectiveName(d.instance),
         outputs: {},
         lifecycle: {},
       };
     });
     if (node.component) {
+      let id = '';
+      if (directiveToId.has(node.component.instance.constructor)) {
+        id = directiveToId.get(node.component.instance.constructor)!;
+      } else {
+        id = crypto.randomUUID();
+        directiveToId.set(node.component.instance.constructor, id);
+      }
       directives.push({
         isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},
         outputs: {},
         name: getDirectiveName(node.component.instance),
+        id
       });
     }
     const result = {

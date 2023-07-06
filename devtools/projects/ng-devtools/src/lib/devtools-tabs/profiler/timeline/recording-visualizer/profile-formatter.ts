@@ -32,6 +32,7 @@ export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
     const {changeDetection} = node;
     if (changeDetection) {
       graphData.push({
+        id: node.id,
         directive: node.name,
         method: 'changes',
         value: parseFloat(changeDetection.toFixed(2)),
@@ -39,6 +40,7 @@ export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
     }
     Object.keys(node.lifecycle).forEach((key) => {
       graphData.push({
+        id: node.id,
         directive: node.name,
         method: key,
         value: +node.lifecycle[key].toFixed(2),
@@ -46,6 +48,7 @@ export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
     });
     Object.keys(node.outputs).forEach((key) => {
       graphData.push({
+        id: node.id,
         directive: node.name,
         method: formatOutput(key),
         value: +node.outputs[key].toFixed(2),
