@@ -1,3 +1,16 @@
+<a name="16.1.4"></a>
+# 16.1.4 (2023-07-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4ba5850ba6](https://github.com/angular/angular/commit/4ba5850ba6b1748cf02b94649ab1ec359b4540ad) | fix | use `setTimeout` when coalescing tasks in Node.js ([#50820](https://github.com/angular/angular/pull/50820)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4348355ce](https://github.com/angular/angular/commit/a4348355ce630273f762099fe6887a90ef799119) | fix | allow for downgraded components to work with component-router ([#50871](https://github.com/angular/angular/pull/50871)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0-next.1"></a>
 # 16.2.0-next.1 (2023-06-28)
 ### benchpress
