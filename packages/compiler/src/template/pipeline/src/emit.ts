@@ -27,7 +27,6 @@ import {phaseNgContainer} from './phases/ng_container';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phasePropertyNameNormalization} from './phases/property_name_normalization';
 import {phasePropertyOrdering} from './phases/property_ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
@@ -45,8 +44,7 @@ import {phaseVariableOptimization} from './phases/variable_optimization';
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
 export function transformTemplate(cpl: ComponentCompilation): void {
-  phasePropertyNameNormalization(cpl);
-  phaseAttributeExtraction(cpl, true);
+  phaseAttributeExtraction(cpl, /* compatibility */ true);
   phasePipeCreation(cpl);
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);
@@ -62,7 +60,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);
-  phaseNaming(cpl);
+  phaseNaming(cpl, /* compatibility */ true);
   phaseVariableOptimization(cpl, {conservative: true});
   phaseMergeNextContext(cpl);
   phaseNgContainer(cpl);

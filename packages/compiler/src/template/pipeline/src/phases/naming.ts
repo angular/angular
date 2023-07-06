@@ -7,6 +7,7 @@
  */
 
 import {sanitizeIdentifier} from '../../../../parse_util';
+import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
 import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
@@ -16,11 +17,12 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * This includes propagating those names into any `ir.ReadVariableExpr`s of those variables, so that
  * the reads can be emitted correctly.
  */
-export function phaseNaming(cpl: ComponentCompilation): void {
-  addNamesToView(cpl.root, cpl.componentName, {index: 0});
+export function phaseNaming(cpl: ComponentCompilation, compatibility: boolean): void {
+  addNamesToView(cpl.root, cpl.componentName, {index: 0}, compatibility);
 }
 
-function addNamesToView(view: ViewCompilation, baseName: string, state: {index: number}): void {
+function addNamesToView(
+    view: ViewCompilation, baseName: string, state: {index: number}, compatibility: boolean): void {
   if (view.fnName === null) {
     view.fnName = sanitizeIdentifier(`${baseName}_Template`);
   }
@@ -50,7 +52,19 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
         if (op.slot === null) {
           throw new Error(`Expected slot to be assigned`);
         }
-        addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state);
+        addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state, compatibility);
+        break;
+      case ir.OpKind.StyleProp:
+      case ir.OpKind.InterpolateStyleProp:
+        op.name = normalizeStylePropName(op.name);
+        if (compatibility) {
+          op.name = stripImportant(op.name);
+        }
+        break;
+      case ir.OpKind.ClassProp:
+        if (compatibility) {
+          op.name = stripImportant(op.name);
+        }
         break;
     }
   }
@@ -82,4 +96,22 @@ function getVariableName(variable: ir.SemanticVariable, state: {index: number}):
     }
   }
   return variable.name;
+}
+
+/**
+ * Normalizes a style prop name by hyphenating it (unless its a CSS variable).
+ */
+function normalizeStylePropName(name: string) {
+  return name.startsWith('--') ? name : hyphenate(name);
+}
+
+/**
+ * Strips `!important` out of the given style or class name.
+ */
+function stripImportant(name: string) {
+  const importantIndex = name.indexOf('!important');
+  if (importantIndex > -1) {
+    return name.substring(0, importantIndex);
+  }
+  return name;
 }
