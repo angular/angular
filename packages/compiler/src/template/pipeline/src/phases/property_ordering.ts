@@ -13,7 +13,6 @@ import {ComponentCompilation} from '../compilation';
  * Defines the groups based on `OpKind` that ops will be divided into. Ops will be collected into
  * groups, then optionally transformed, before recombining the groups in the order defined here.
  */
-// TODO: add attributes to the ordering.
 const ORDERING: {
   kinds: Set<ir.OpKind>,
   transform?: (ops: Array<ir.UpdateOp|ir.CreateOp>) => Array<ir.UpdateOp|ir.CreateOp>
@@ -22,9 +21,10 @@ const ORDERING: {
       {kinds: new Set([ir.OpKind.StyleMap, ir.OpKind.InterpolateStyleMap]), transform: keepLast},
       {kinds: new Set([ir.OpKind.ClassMap, ir.OpKind.InterpolateClassMap]), transform: keepLast},
       {kinds: new Set([ir.OpKind.StyleProp, ir.OpKind.InterpolateStyleProp])},
-      /* {kinds: new Set([ir.OpKind.InterpolateAttribute])}, */
-      {kinds: new Set([ir.OpKind.ClassProp])}, {kinds: new Set([ir.OpKind.InterpolateProperty])},
-      {kinds: new Set([ir.OpKind.Property])}, /* {kinds: new Set([ir.OpKind.Attribute])}, */
+      {kinds: new Set([ir.OpKind.ClassProp])},
+      {kinds: new Set([ir.OpKind.InterpolateProperty])},
+      {kinds: new Set([ir.OpKind.Property])},
+      {kinds: new Set([ir.OpKind.Attribute, ir.OpKind.InterpolateAttribute])},
     ];
 
 /**
@@ -38,10 +38,9 @@ const handledOpKinds = new Set(ORDERING.flatMap(group => [...group.kinds]));
  * 2. classMap & classMapInterpolate (drops all but the last op in the group)
  * 3. styleProp & stylePropInterpolate (ordering preserved within group)
  * 4. classProp (ordering preserved within group)
- * 5. *NOT YET IMPLEMENTED* attributeInterpolate (ordering preserved within group)
- * 6. propertyInterpolate (ordering preserved within group)
- * 7. property (ordering preserved within group)
- * 8. *NOT YET IMPLEMENTED* attribute (ordering preserve within group)
+ * 5. propertyInterpolate (ordering preserved within group)
+ * 6. property (ordering preserved within group)
+ * 7. attribute & attributeInterpolate (ordering preserve within group)
  */
 export function phasePropertyOrdering(cpl: ComponentCompilation) {
   for (const [_, view] of cpl.views) {
