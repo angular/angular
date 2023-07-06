@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
+import {CommonModule, NgComponentOutlet} from '@angular/common';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, inject, Injectable, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives, and pipes', () => {
@@ -215,6 +215,69 @@ describe('standalone components, directives, and pipes', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual('Outer<inner-cmp>Inner(Service)</inner-cmp>Service');
+  });
+
+  it('should correctly associate an injector with a standalone component def', () => {
+    @Injectable()
+    class MyServiceA {
+    }
+
+    @Injectable()
+    class MyServiceB {
+    }
+
+    @NgModule({
+      providers: [MyServiceA],
+    })
+    class MyModuleA {
+    }
+
+    @NgModule({
+      providers: [MyServiceB],
+    })
+    class MyModuleB {
+    }
+
+    @Component({
+      selector: 'duplicate-selector',
+      template: `ComponentA: {{ service ? 'service found' : 'service not found' }}`,
+      standalone: true,
+      imports: [MyModuleA],
+    })
+    class ComponentA {
+      service = inject(MyServiceA, {optional: true});
+    }
+
+    @Component({
+      selector: 'duplicate-selector',
+      template: `ComponentB: {{ service ? 'service found' : 'service not found' }}`,
+      standalone: true,
+      imports: [MyModuleB],
+    })
+    class ComponentB {
+      service = inject(MyServiceB, {optional: true});
+    }
+
+    @Component({
+      selector: 'app-cmp',
+      template: `
+        <ng-container [ngComponentOutlet]="ComponentA" />
+        <ng-container [ngComponentOutlet]="ComponentB" />
+      `,
+      standalone: true,
+      imports: [NgComponentOutlet],
+    })
+    class AppCmp {
+      ComponentA = ComponentA;
+      ComponentB = ComponentB;
+    }
+
+    const fixture = TestBed.createComponent(AppCmp);
+    fixture.detectChanges();
+
+    const textContent = fixture.nativeElement.textContent;
+    expect(textContent).toContain('ComponentA: service found');
+    expect(textContent).toContain('ComponentB: service found');
   });
 
   it('should dynamically insert a standalone component', () => {
