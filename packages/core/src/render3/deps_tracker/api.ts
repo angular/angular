@@ -90,11 +90,16 @@ export interface DepsTrackerApi {
   getNgModuleScope(type: NgModuleType<any>): NgModuleScope;
 
   /**
-   * Returns the scope of standalone component. Mainly to be used by JIT.
+   * Returns the scope of standalone component. Mainly to be used by JIT. This method should be
+   * called lazily after the initial parsing so that all the forward refs can be resolved.
+   *
+   * @param rawImports the imports statement as appears on the component decorate which consists of
+   *     Type as well as forward refs.
    *
    * The scope value here is memoized. To enforce a new calculation bust the cache by using
    * `clearScopeCacheFor` method.
    */
-  getStandaloneComponentScope(type: ComponentType<any>, imports: Type<any>[]):
-      StandaloneComponentScope;
+  getStandaloneComponentScope(
+      type: ComponentType<any>,
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
 }

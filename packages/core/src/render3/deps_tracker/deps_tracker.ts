@@ -7,10 +7,12 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {resolveForwardRef} from '../../di';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator} from '../interfaces/definition';
+import {verifyStandaloneImport} from '../jit/directive';
 import {isComponent, isDirective, isModuleWithProviders, isNgModule, isPipe} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
@@ -130,10 +132,65 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  getStandaloneComponentScope(type: ComponentType<any>, imports: Type<any>[]):
-      StandaloneComponentScope {
-    // TODO: implement this.
-    return {compilation: {directives: new Set(), pipes: new Set()}};
+  getStandaloneComponentScope(
+      type: ComponentType<any>,
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
+    if (this.standaloneComponentsScopeCache.has(type)) {
+      return this.standaloneComponentsScopeCache.get(type)!;
+    }
+
+    const ans = this.computeStandaloneComponentScope(type, rawImports);
+    this.standaloneComponentsScopeCache.set(type, ans);
+
+    return ans;
+  }
+
+  private computeStandaloneComponentScope(
+      type: ComponentType<any>,
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
+    const ans: StandaloneComponentScope = {
+      compilation: {
+        // Standalone components are always able to self-reference.
+        directives: new Set([type]),
+        pipes: new Set(),
+      },
+    };
+
+    for (const rawImport of rawImports) {
+      const imported = resolveForwardRef(rawImport) as Type<any>;
+
+      try {
+        verifyStandaloneImport(imported, type);
+      } catch (e) {
+        // Short-circuit if an import is not valid
+        ans.compilation.isPoisoned = true;
+        return ans;
+      }
+
+      if (isNgModule(imported)) {
+        const importedScope = this.getNgModuleScope(imported);
+
+        // Short-circuit if an imported NgModule has corrupted exported scope.
+        if (importedScope.exported.isPoisoned) {
+          ans.compilation.isPoisoned = true;
+          return ans;
+        }
+
+        addSet(importedScope.exported.directives, ans.compilation.directives);
+        addSet(importedScope.exported.pipes, ans.compilation.pipes);
+      } else if (isPipe(imported)) {
+        ans.compilation.pipes.add(imported);
+      } else if (isDirective(imported) || isComponent(imported)) {
+        ans.compilation.directives.add(imported);
+      } else {
+        // The imported thing is not module/pipe/directive/component, so we error and short-circuit
+        // here
+        ans.compilation.isPoisoned = true;
+        return ans;
+      }
+    }
+
+    return ans;
   }
 }
 
