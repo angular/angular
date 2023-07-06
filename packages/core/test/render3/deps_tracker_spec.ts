@@ -884,6 +884,285 @@ describe('runtime dependency tracker', () => {
       });
     });
   });
+
+  describe('getComponentDependencies method', () => {
+    describe('for non-standalone component', () => {
+      it('should include the compilation scope of the declaring module', () => {
+        @Component({})
+        class Component1 {
+        }
+
+        @Directive({})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1'})
+        class Pipe1 {
+        }
+
+        @Component({})
+        class MainComponent {
+        }
+
+        @NgModule({
+          declarations: [MainComponent, Component1, Directive1, Pipe1],
+        })
+        class MainModule {
+        }
+        depsTracker.registerNgModule(MainModule as NgModuleType, {});
+
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1, Directive1, Pipe1
+        ]));
+      });
+
+      it('should include the compilation scope of the declaring module when it is forward referenced',
+         () => {
+           @Component({})
+           class Component1 {
+           }
+
+           @Directive({})
+           class Directive1 {
+           }
+
+           @Pipe({name: 'pipe1'})
+           class Pipe1 {
+           }
+
+           @Component({})
+           class MainComponent {
+           }
+
+           class MainModule {}
+           (MainModule as NgModuleType).ɵmod = createNgModuleDef(
+               {declarations: () => ([MainComponent, Component1, Directive1, Pipe1])});
+           depsTracker.registerNgModule(MainModule as NgModuleType, {});
+
+           const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
+
+           expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+             MainComponent, Component1, Directive1, Pipe1
+           ]));
+         });
+
+      it('should return empty deps if component has no registered module', () => {
+        @Component({})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
+
+        expect(ans.dependencies).toEqual([]);
+      });
+
+      it('should return empty deps if the compilation scope of the declaring module is corrupted',
+         () => {
+           class RandomClass {}
+
+           @Component({})
+           class MainComponent {
+           }
+
+           class MainModule {}
+           (MainModule as NgModuleType).ɵmod = createNgModuleDef({
+             declarations: [MainComponent],
+             // Importing an invalid class makes the compilation scope corrupted.
+             imports: [RandomClass],
+           });
+           depsTracker.registerNgModule(MainModule as NgModuleType, {});
+
+           const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
+
+           expect(ans.dependencies).toEqual([]);
+         });
+    });
+
+    describe('for standalone component', () => {
+      it('should always return self (even if component has empty imports)', () => {
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, []);
+
+        expect(ans.dependencies).toEqual([MainComponent]);
+      });
+
+      it('should throw if no import is provided', () => {
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        expect(() => depsTracker.getComponentDependencies(MainComponent as ComponentType<any>))
+            .toThrow();
+      });
+
+      it('should include imported standalone component/directive/pipe', () => {
+        @Component({standalone: true})
+        class Component1 {
+        }
+
+        @Directive({standalone: true})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1', standalone: true})
+        class Pipe1 {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(
+            MainComponent as ComponentType<any>, [Component1, Directive1, Pipe1]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1, Directive1, Pipe1
+        ]));
+      });
+
+      it('should include imported forward ref standalone component/directive/pipe', () => {
+        @Component({standalone: true})
+        class Component1 {
+        }
+
+        @Directive({standalone: true})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1', standalone: true})
+        class Pipe1 {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [
+          forwardRef(() => Component1),
+          forwardRef(() => Directive1),
+          forwardRef(() => Pipe1),
+        ]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1, Directive1, Pipe1
+        ]));
+      });
+
+      it('should ignore imported non-standalone component/directive/pipe', () => {
+        @Component({})
+        class Component1 {
+        }
+
+        @Directive({})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1'})
+        class Pipe1 {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(
+            MainComponent as ComponentType<any>, [Component1, Directive1, Pipe1]);
+
+        expect(ans.dependencies).toEqual([]);
+      });
+
+      it('should include the exported scope of imported module', () => {
+        @Component({})
+        class Component1 {
+        }
+
+        @Directive({})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1'})
+        class Pipe1 {
+        }
+
+        @NgModule({
+          exports: [Component1, Directive1, Pipe1],
+        })
+        class SubModule {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans =
+            depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [SubModule]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1, Directive1, Pipe1
+        ]));
+      });
+
+      it('should include the exported scope of imported forward ref module', () => {
+        @Component({})
+        class Component1 {
+        }
+
+        @Directive({})
+        class Directive1 {
+        }
+
+        @Pipe({name: 'pipe1'})
+        class Pipe1 {
+        }
+
+        @NgModule({
+          exports: [Component1, Directive1, Pipe1],
+        })
+        class SubModule {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        const ans = depsTracker.getComponentDependencies(
+            MainComponent as ComponentType<any>, [forwardRef(() => SubModule)]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1, Directive1, Pipe1
+        ]));
+      });
+
+      it('should use cache for re-calculation', () => {
+        @Component({standalone: true})
+        class Component1 {
+        }
+
+        @Component({standalone: true})
+        class MainComponent {
+        }
+
+        let ans =
+            depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [Component1]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1
+        ]));
+
+        ans =
+            depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [Component1]);
+
+        expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
+          MainComponent, Component1
+        ]));
+      });
+    });
+  });
 });
 
 function createNgModuleDef(data: Partial<NgModuleDef<any>>): NgModuleDef<any> {
