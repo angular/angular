@@ -87,6 +87,22 @@ class _Expander implements html.Visitor {
   visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
     throw new Error('Should not be reached');
   }
+
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    return new html.BlockGroup(
+        html.visitAll(this, group.blocks), group.sourceSpan, group.startSourceSpan,
+        group.endSourceSpan);
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    return new html.Block(
+        block.name, block.parameters, html.visitAll(this, block.children), block.sourceSpan,
+        block.startSourceSpan);
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+    return parameter;
+  }
 }
 
 // Plural forms are expanded to `NgPlural` and `NgPluralCase`s
