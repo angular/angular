@@ -306,6 +306,18 @@ class HtmlAstToIvyAst implements html.Visitor {
     return null;
   }
 
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+    throw new Error('TODO');
+  }
+
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
       elementName: string, properties: ParsedProperty[],
@@ -541,6 +553,18 @@ class NonBindableVisitor implements html.Visitor {
 
   visitExpansionCase(expansionCase: html.ExpansionCase): any {
     return null;
+  }
+
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+    throw new Error('TODO');
   }
 }
 
