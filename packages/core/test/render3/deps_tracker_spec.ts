@@ -381,6 +381,36 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
       });
+
+      it('should bust the cache correctly', () => {
+        @Component({})
+        class Component1 {
+        }
+
+        @NgModule({
+          declarations: [Component1],
+        })
+        class MainModule {
+        }
+
+        let ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
+
+        expect(ans.compilation).toEqual({
+          pipes: new Set(),
+          directives: new Set([Component1]),
+        });
+
+        // Modify the the module
+        (MainModule as NgModuleType).ɵmod.declarations = [];
+        depsTracker.clearScopeCacheFor(MainModule as NgModuleType);
+
+        ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
+
+        expect(ans.compilation).toEqual({
+          pipes: new Set(),
+          directives: new Set([]),
+        });
+      });
     });
 
     describe('forward ref specs', () => {
@@ -817,6 +847,40 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+      });
+    });
+
+    it('should clear the cache correctly', () => {
+      @Component({standalone: true})
+      class Component1 {
+      }
+
+      @Directive({standalone: true})
+      class Directive1 {
+      }
+
+      @Pipe({name: 'pipe1', standalone: true})
+      class Pipe1 {
+      }
+
+      @Component({})
+      class MainComponent {
+      }
+
+      let ans = depsTracker.getStandaloneComponentScope(
+          MainComponent as ComponentType<any>, [Component1, Directive1, Pipe1]);
+
+      expect(ans.compilation).toEqual({
+        pipes: new Set([Pipe1]),
+        directives: new Set([MainComponent, Component1, Directive1]),
+      });
+
+      depsTracker.clearScopeCacheFor(MainComponent as ComponentType<any>);
+      ans = depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, []);
+
+      expect(ans.compilation).toEqual({
+        pipes: new Set([]),
+        directives: new Set([MainComponent]),
       });
     });
   });
