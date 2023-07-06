@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {resolveForwardRef} from '../../di';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
-import {getNgModuleDef, isStandalone} from '../definition';
+import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator} from '../interfaces/definition';
 import {verifyStandaloneImport} from '../jit/directive';
 import {isComponent, isDirective, isModuleWithProviders, isNgModule, isPipe} from '../jit/util';
@@ -23,18 +23,95 @@ import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponen
  */
 class DepsTracker implements DepsTrackerApi {
   private ownerNgModule = new Map<ComponentType<any>, NgModuleType<any>>();
+  private ngModulesWithSomeUnresolvedDecls = new Set<NgModuleType<any>>();
   private ngModulesScopeCache = new Map<NgModuleType<any>, NgModuleScope>();
   private standaloneComponentsScopeCache = new Map<ComponentType<any>, StandaloneComponentScope>();
 
-  /** @override */
-  getComponentDependencies(cmp: ComponentType<any>): ComponentDependencies {
-    // TODO: implement this.
-    return {dependencies: []};
+  /**
+   * Attempts to resolve ng module's forward ref declarations as much as possible and add them to
+   * the `ownerNgModule` map. This method normally should be called after the initial parsing when
+   * all the forward refs are resolved (e.g., when trying to render a component)
+   */
+  private resolveNgModulesDecls(): void {
+    if (this.ngModulesWithSomeUnresolvedDecls.size === 0) {
+      return;
+    }
+
+    for (const moduleType of this.ngModulesWithSomeUnresolvedDecls) {
+      const def = getNgModuleDef(moduleType);
+      if (def?.declarations) {
+        for (const decl of maybeUnwrapFn(def.declarations)) {
+          if (isComponent(decl)) {
+            this.ownerNgModule.set(decl, moduleType);
+          }
+        }
+      }
+    }
+
+    this.ngModulesWithSomeUnresolvedDecls.clear();
   }
 
   /** @override */
+  getComponentDependencies(type: ComponentType<any>, rawImports?: (Type<any>|(() => Type<any>))[]):
+      ComponentDependencies {
+    this.resolveNgModulesDecls();
+
+    const def = getComponentDef(type);
+    if (def === null) {
+      throw new Error(
+          `Attempting to get component dependencies for a type that is not a component: ${type}`);
+    }
+
+    if (def.standalone) {
+      if (!rawImports) {
+        throw new Error(
+            'Standalone component should pass its raw import in order to compute its dependencies');
+      }
+
+      const scope = this.getStandaloneComponentScope(type, rawImports);
+
+      if (scope.compilation.isPoisoned) {
+        return {dependencies: []};
+      }
+
+      return {
+        dependencies: [
+          ...scope.compilation.directives,
+          ...scope.compilation.pipes,
+        ]
+      };
+    } else {
+      if (!this.ownerNgModule.has(type)) {
+        return {dependencies: []};
+      }
+
+      const scope = this.getNgModuleScope(this.ownerNgModule.get(type)!);
+
+      if (scope.compilation.isPoisoned) {
+        return {dependencies: []};
+      }
+
+      return {
+        dependencies: [
+          ...scope.compilation.directives,
+          ...scope.compilation.pipes,
+        ],
+      };
+    }
+  }
+
+  /**
+   * @override
+   * This implementation does not make use of param scopeInfo since it assumes the scope info is
+   * already added to the type itself through methods like {@link ɵɵsetNgModuleScope}
+   */
   registerNgModule(type: Type<any>, scopeInfo: NgModuleScopeInfoFromDecorator): void {
-    // TODO: implement this.
+    if (!isNgModule(type)) {
+      throw new Error(`Attempting to register a Type which is not NgModule as NgModule: ${type}`);
+    }
+
+    // Lazily process the NgModules later when needed.
+    this.ngModulesWithSomeUnresolvedDecls.add(type);
   }
 
   /** @override */

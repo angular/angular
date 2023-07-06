@@ -58,10 +58,15 @@ export interface DepsTrackerApi {
    * present in the component's template (This set might contain directives/components/pipes not
    * necessarily used in the component's template depending on the implementation).
    *
+   * Standalone components should specify `rawImports` as this information is not available from
+   * their type. The consumer (e.g., {@link getStandaloneDefFunctions}) is expected to pass this
+   * parameter.
+   *
    * The implementation is expected to use some caching mechanism in order to optimize the resources
    * needed to do this computation.
    */
-  getComponentDependencies(cmp: ComponentType<any>): ComponentDependencies;
+  getComponentDependencies(cmp: ComponentType<any>, rawImports?: (Type<any>|(() => Type<any>))[]):
+      ComponentDependencies;
 
   /**
    * Registers an NgModule into the tracker with the given scope info.
