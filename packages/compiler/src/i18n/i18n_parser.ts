@@ -162,6 +162,20 @@ class _I18nVisitor implements html.Visitor {
     throw new Error('Unreachable code');
   }
 
+  visitBlockGroup(group: html.BlockGroup, context: I18nMessageVisitorContext) {
+    const children = html.visitAll(this, group.blocks, context);
+    const node = new i18n.Container(children, group.sourceSpan);
+    return context.visitNodeFn(group, node);
+  }
+
+  visitBlock(block: html.Block, context: I18nMessageVisitorContext) {
+    const children = html.visitAll(this, block.children, context);
+    const node = new i18n.Container(children, block.sourceSpan);
+    return context.visitNodeFn(block, node);
+  }
+
+  visitBlockParameter(_parameter: html.BlockParameter, _context: I18nMessageVisitorContext) {}
+
   /**
    * Convert, text and interpolated tokens up into text and placeholder pieces.
    *

@@ -12,10 +12,10 @@ import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
 class _SerializerVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
     if (getHtmlTagDefinition(element.name).isVoid) {
-      return `<${element.name}${this._visitAll(element.attrs, ' ')}/>`;
+      return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}/>`;
     }
 
-    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${
+    return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}>${
         this._visitAll(element.children)}</${element.name}>`;
   }
 
@@ -39,11 +39,30 @@ class _SerializerVisitor implements html.Visitor {
     return ` ${expansionCase.value} {${this._visitAll(expansionCase.expression)}}`;
   }
 
-  private _visitAll(nodes: html.Node[], join: string = ''): string {
-    if (nodes.length == 0) {
-      return '';
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    if (group.blocks.length === 0) {
+      throw new Error('Block group must have at least one block.');
     }
-    return join + nodes.map(a => a.visit(this, null)).join(join);
+
+    const [primaryBlock, ...remainingBlocks] = group.blocks;
+
+    // The primary block is created implicitly so we need to separate it out when serializing.
+    return `{#${primaryBlock.name}${this._visitAll(primaryBlock.parameters, ';', ' ')}}${
+        this._visitAll(
+            primaryBlock.children)}${this._visitAll(remainingBlocks)}{/${primaryBlock.name}}`;
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    return `{:${block.name}${this._visitAll(block.parameters, ';', ' ')}}${
+        this._visitAll(block.children)}`;
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+    return parameter.expression;
+  }
+
+  private _visitAll(nodes: html.Node[], separator = '', prefix = ''): string {
+    return nodes.length > 0 ? prefix + nodes.map(a => a.visit(this, null)).join(separator) : '';
   }
 }
 

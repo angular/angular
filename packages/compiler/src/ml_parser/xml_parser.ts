@@ -15,7 +15,8 @@ export class XmlParser extends Parser {
     super(getXmlTagDefinition);
   }
 
-  override parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
-    return super.parse(source, url, options);
+  override parse(source: string, url: string, options: TokenizeOptions = {}): ParseTreeResult {
+    // Blocks aren't supported in an XML context.
+    return super.parse(source, url, {...options, tokenizeBlocks: false});
   }
 }

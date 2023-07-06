@@ -84,6 +84,33 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    const res = this._appendContext(group, [html.BlockGroup, this.elDepth++]);
+    if (this.includeSourceSpan) {
+      res.push(group.startSourceSpan.toString() ?? null);
+      res.push(group.endSourceSpan?.toString() ?? null);
+    }
+    this.result.push(res);
+    html.visitAll(this, group.blocks);
+    this.elDepth--;
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    const res = this._appendContext(block, [html.Block, block.name, this.elDepth++]);
+    if (this.includeSourceSpan) {
+      res.push(block.startSourceSpan.toString() ?? null);
+      res.push(block.endSourceSpan?.toString() ?? null);
+    }
+    this.result.push(res);
+    html.visitAll(this, block.parameters);
+    html.visitAll(this, block.children);
+    this.elDepth--;
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+    this.result.push(this._appendContext(parameter, [html.BlockParameter, parameter.expression]));
+  }
+
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
