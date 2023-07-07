@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 /**
  * Optimize variables declared and used in the IR.
@@ -28,14 +28,14 @@ import {ComponentCompilation} from '../compilation';
  * To guarantee correctness, analysis of "fences" in the instruction lists is used to determine
  * which optimizations are safe to perform.
  */
-export function phaseVariableOptimization(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    optimizeVariablesInOpList(view.create, cpl.compatibility);
-    optimizeVariablesInOpList(view.update, cpl.compatibility);
+export function phaseVariableOptimization(job: CompilationJob): void {
+  for (const unit of job.units) {
+    optimizeVariablesInOpList(unit.create, job.compatibility);
+    optimizeVariablesInOpList(unit.update, job.compatibility);
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.Listener) {
-        optimizeVariablesInOpList(op.handlerOps, cpl.compatibility);
+        optimizeVariablesInOpList(op.handlerOps, job.compatibility);
       }
     }
   }

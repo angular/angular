@@ -8,19 +8,19 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 
-export function phaseNullishCoalescing(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.ops()) {
+export function phaseNullishCoalescing(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, expr => {
         if (!(expr instanceof o.BinaryOperatorExpr) ||
             expr.operator !== o.BinaryOperator.NullishCoalesce) {
           return expr;
         }
 
-        const assignment = new ir.AssignTemporaryExpr(expr.lhs.clone(), cpl.allocateXrefId());
+        const assignment = new ir.AssignTemporaryExpr(expr.lhs.clone(), job.allocateXrefId());
         const read = new ir.ReadTemporaryExpr(assignment.xref);
 
         // TODO: When not in compatibility mode for TemplateDefinitionBuilder, we can just emit
