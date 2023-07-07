@@ -20,6 +20,7 @@ import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {GENERATED_COMP_IDS, getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef, isStandalone} from '../definition';
+import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
@@ -488,8 +489,31 @@ export function patchComponentDefWithScope<C>(
  * (either a NgModule or a standalone component / directive / pipe).
  */
 export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes {
+  console.log('pjit >>>>> transitiveScopesFor called for ', type);
+
+  // ===== Break it!
+  /*return {
+    schemas: null,
+    compilation: {
+      directives: new Set<any>(),
+      pipes: new Set<any>(),
+    },
+    exported: {
+      directives: new Set<any>(),
+      pipes: new Set<any>(),
+    },
+  };*/
+
   if (isNgModule(type)) {
-    return transitiveScopesForNgModule(type);
+    const scope = depsTracker.getNgModuleScope(type);
+    const def = getNgModuleDef(type, true);
+    return {
+      schemas: def.schemas || null,
+      ...scope,
+    };
+
+    // return transitiveScopesForNgModule(type);
+
   } else if (isStandalone(type)) {
     const directiveDef = getComponentDef(type) || getDirectiveDef(type);
     if (directiveDef !== null) {
@@ -522,7 +546,6 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
     }
   }
 
-  // TODO: change the error message to be more user-facing and take standalone into account
   throw new Error(`${type.name} does not have a module def (ɵmod property)`);
 }
 

@@ -8,7 +8,7 @@
 
 import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
-import {isForwardRef, resolveForwardRef} from '../../di/forward_ref';
+import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
@@ -18,7 +18,8 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
+import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {stringifyForError} from '../util/stringify_utils';
@@ -26,7 +27,7 @@ import {stringifyForError} from '../util/stringify_utils';
 import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-import {isModuleWithProviders} from './util';
+import {isComponent, verifyStandaloneImport} from './util';
 
 /**
  * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This
@@ -186,48 +187,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   });
 }
 
-function getDependencyTypeForError(type: Type<any>) {
-  if (getComponentDef(type)) return 'component';
-  if (getDirectiveDef(type)) return 'directive';
-  if (getPipeDef(type)) return 'pipe';
-  return 'type';
-}
-
-export function verifyStandaloneImport(depType: Type<unknown>, importingType: Type<unknown>) {
-  if (isForwardRef(depType)) {
-    depType = resolveForwardRef(depType);
-    if (!depType) {
-      throw new Error(`Expected forwardRef function, imported from "${
-          stringifyForError(importingType)}", to return a standalone entity or NgModule but got "${
-          stringifyForError(depType) || depType}".`);
-    }
-  }
-
-  if (getNgModuleDef(depType) == null) {
-    const def = getComponentDef(depType) || getDirectiveDef(depType) || getPipeDef(depType);
-    if (def != null) {
-      // if a component, directive or pipe is imported make sure that it is standalone
-      if (!def.standalone) {
-        throw new Error(`The "${stringifyForError(depType)}" ${
-            getDependencyTypeForError(depType)}, imported from "${
-            stringifyForError(
-                importingType)}", is not standalone. Did you forget to add the standalone: true flag?`);
-      }
-    } else {
-      // it can be either a module with provider or an unknown (not annotated) type
-      if (isModuleWithProviders(depType)) {
-        throw new Error(`A module with providers was imported from "${
-            stringifyForError(
-                importingType)}". Modules with providers are not supported in standalone components imports.`);
-      } else {
-        throw new Error(`The "${stringifyForError(depType)}" type, imported from "${
-            stringifyForError(
-                importingType)}", must be a standalone component / directive / pipe or an NgModule. Did you forget to add the required @Component / @Directive / @Pipe or @NgModule annotation?`);
-      }
-    }
-  }
-}
-
 /**
  * Build memoized `directiveDefs` and `pipeDefs` functions for the component definition of a
  * standalone component, which process `imports` and filter out directives and pipes. The use of
@@ -238,10 +197,11 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
   directiveDefs: () => DirectiveDefList,
   pipeDefs: () => PipeDefList,
 } {
-  let cachedDirectiveDefs: DirectiveDefList|null = null;
-  let cachedPipeDefs: PipeDefList|null = null;
+  console.log('pjit >>>>> getStandaloneDefFunctions called for', type);
+  // let cachedDirectiveDefs: DirectiveDefList|null = null;
+  // let cachedPipeDefs: PipeDefList|null = null;
   const directiveDefs = () => {
-    if (cachedDirectiveDefs === null) {
+    /*if (cachedDirectiveDefs === null) {
       // Standalone components are always able to self-reference, so include the component's own
       // definition in its `directiveDefs`.
       cachedDirectiveDefs = [getComponentDef(type)!];
@@ -273,11 +233,24 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
         }
       }
     }
-    return cachedDirectiveDefs;
+    return cachedDirectiveDefs;*/
+
+    if (ngDevMode) {
+      for (const rawDep of imports) {
+        verifyStandaloneImport(rawDep, type);
+      }
+    }
+
+    if (!isComponent(type)) return [];
+    const scope = depsTracker.getStandaloneComponentScope(type, imports);
+
+    return [...scope.compilation.directives]
+        .map(p => (getComponentDef(p) || getDirectiveDef(p))!)
+        .filter(d => d !== null);
   };
 
   const pipeDefs = () => {
-    if (cachedPipeDefs === null) {
+    /*if (cachedPipeDefs === null) {
       cachedPipeDefs = [];
       const seen = new Set<Type<unknown>>();
 
@@ -305,7 +278,18 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
         }
       }
     }
-    return cachedPipeDefs;
+    return cachedPipeDefs;*/
+
+    if (ngDevMode) {
+      for (const rawDep of imports) {
+        verifyStandaloneImport(rawDep, type);
+      }
+    }
+
+    if (!isComponent(type)) return [];
+    const scope = depsTracker.getStandaloneComponentScope(type, imports);
+
+    return [...scope.compilation.pipes].map(p => getPipeDef(p)!).filter(d => d !== null);
   };
 
   return {

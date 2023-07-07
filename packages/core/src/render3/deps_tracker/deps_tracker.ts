@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {resolveForwardRef} from '../../di';
+import {resolveForwardRef} from '../../di/forward_ref';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator} from '../interfaces/definition';
-import {verifyStandaloneImport} from '../jit/directive';
-import {isComponent, isDirective, isNgModule, isPipe} from '../jit/util';
+import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
 import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponentScope} from './api';
@@ -115,11 +114,15 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  clearScopeCacheFor(type: ComponentType<any>|NgModuleType): void {
+  clearScopeCacheFor(type: Type<any>): void {
     if (isNgModule(type)) {
       this.ngModulesScopeCache.delete(type);
+      // TODO: fix this hack!
+      // this.ngModulesScopeCache.clear();
     } else if (isComponent(type)) {
       this.standaloneComponentsScopeCache.delete(type);
+      //  TODO: fix this hack!
+      // this.standaloneComponentsScopeCache.clear();
     }
   }
 

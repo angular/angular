@@ -84,7 +84,7 @@ export interface DepsTrackerApi {
    * The main application of this method is for test beds where we want to clear the cache to
    * enforce scope update after overriding.
    */
-  clearScopeCacheFor(type: ComponentType<any>|NgModuleType): void;
+  clearScopeCacheFor(type: Type<any>): void;
 
   /**
    * Returns the scope of NgModule. Mainly to be used by JIT and test bed.
