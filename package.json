@@ -164,7 +164,7 @@
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^6.0.0",
     "@bazel/ibazel": "^0.16.0",
-    "@octokit/graphql": "^5.0.0",
+    "@octokit/graphql": "^7.0.0",
     "@types/adm-zip": "^0.5.0",
     "@types/cldrjs": "^0.4.22",
     "@types/cli-progress": "^3.4.2",
