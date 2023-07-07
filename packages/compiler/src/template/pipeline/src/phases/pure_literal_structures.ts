@@ -8,10 +8,10 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
-export function phasePureLiteralStructures(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
+export function phasePureLiteralStructures(job: CompilationJob): void {
+  for (const view of job.units) {
     for (const op of view.update) {
       ir.transformExpressionsInOp(op, (expr, flags) => {
         if (flags & ir.VisitorContextFlag.InChildOperation) {

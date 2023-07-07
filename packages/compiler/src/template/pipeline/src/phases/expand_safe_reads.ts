@@ -8,20 +8,20 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 interface SafeTransformContext {
-  cpl: ComponentCompilation;
+  job: CompilationJob;
 }
 
 /**
  * Finds all unresolved safe read expressions, and converts them into the appropriate output AST
  * reads, guarded by null checks.
  */
-export function phaseExpandSafeReads(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.ops()) {
-      ir.transformExpressionsInOp(op, e => safeTransform(e, {cpl}), ir.VisitorContextFlag.None);
+export function phaseExpandSafeReads(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
+      ir.transformExpressionsInOp(op, e => safeTransform(e, {job}), ir.VisitorContextFlag.None);
       ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
     }
   }
@@ -84,7 +84,7 @@ function eliminateTemporaryAssignments(
       // temporary variables to themselves. This happens because some subexpression that the
       // temporary refers to, possibly through nested temporaries, has a function call. We copy that
       // behavior here.
-      return ctx.cpl.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
+      return ctx.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
           new ir.AssignTemporaryExpr(read, read.xref) :
           read;
     }
@@ -103,7 +103,7 @@ function safeTernaryWithTemporary(
     ctx: SafeTransformContext): ir.SafeTernaryExpr {
   let result: [o.Expression, o.Expression];
   if (needsTemporaryInSafeAccess(guard)) {
-    const xref = ctx.cpl.allocateXrefId();
+    const xref = ctx.job.allocateXrefId();
     result = [new ir.AssignTemporaryExpr(guard, xref), new ir.ReadTemporaryExpr(xref)];
   } else {
     result = [guard, guard.clone()];

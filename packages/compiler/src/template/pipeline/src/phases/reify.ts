@@ -72,7 +72,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }
-        const childView = unit.tpl.views.get(op.xref)!;
+        const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
             op,
             ng.template(

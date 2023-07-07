@@ -55,7 +55,7 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
   for (const attr of element.attributes) {
     staticAttributes[attr.name] = attr.value;
   }
-  const id = view.tpl.allocateXrefId();
+  const id = view.job.allocateXrefId();
 
   const startOp = ir.createElementStartOp(element.name, id, element.startSourceSpan);
   view.create.push(startOp);
@@ -71,7 +71,7 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
 function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
-  const childView = view.tpl.allocateView(view.xref);
+  const childView = view.job.allocateView(view.xref);
 
   // TODO: validate the fallback tag name here.
   const tplOp =
@@ -92,7 +92,7 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestText(view: ViewCompilation, text: t.Text): void {
-  view.create.push(ir.createTextOp(view.tpl.allocateXrefId(), text.value, text.sourceSpan));
+  view.create.push(ir.createTextOp(view.job.allocateXrefId(), text.value, text.sourceSpan));
 }
 
 /**
@@ -108,10 +108,10 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
         `AssertionError: expected Interpolation for BoundText node, got ${value.constructor.name}`);
   }
 
-  const textXref = view.tpl.allocateXrefId();
+  const textXref = view.job.allocateXrefId();
   view.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
   view.update.push(ir.createInterpolateTextOp(
-      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
+      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.job)),
       text.sourceSpan));
 }
 
@@ -246,7 +246,7 @@ function ingestBindings(
       throw new Error('Expected listener to have non-empty expression list.');
     }
 
-    const expressions = inputExprs.map(expr => convertAst(expr, view.tpl));
+    const expressions = inputExprs.map(expr => convertAst(expr, view.job));
     const returnExpr = expressions.pop()!;
 
     for (const expr of expressions) {
@@ -274,17 +274,17 @@ function ingestPropertyBinding(
             throw Error('Unexpected style binding on ng-template');
           }
           view.update.push(ir.createInterpolateStyleMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.job))));
         } else if (name === 'class') {
           if (bindingKind !== ir.ElementAttributeKind.Binding) {
             throw Error('Unexpected class binding on ng-template');
           }
           view.update.push(ir.createInterpolateClassMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.job))));
         } else {
           view.update.push(ir.createInterpolatePropertyOp(
               xref, bindingKind, name, value.strings,
-              value.expressions.map(expr => convertAst(expr, view.tpl)), sourceSpan));
+              value.expressions.map(expr => convertAst(expr, view.job)), sourceSpan));
         }
         break;
       case e.BindingType.Style:
@@ -292,7 +292,7 @@ function ingestPropertyBinding(
           throw Error('Unexpected style binding on ng-template');
         }
         view.update.push(ir.createInterpolateStylePropOp(
-            xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
+            xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.job)),
             unit));
         break;
       case e.BindingType.Attribute:
@@ -301,7 +301,7 @@ function ingestPropertyBinding(
         }
         const attributeInterpolate = ir.createInterpolateAttributeOp(
             xref, bindingKind, name, value.strings,
-            value.expressions.map(expr => convertAst(expr, view.tpl)), sourceSpan);
+            value.expressions.map(expr => convertAst(expr, view.job)), sourceSpan);
         view.update.push(attributeInterpolate);
         break;
       case e.BindingType.Class:
@@ -319,35 +319,35 @@ function ingestPropertyBinding(
           if (bindingKind !== ir.ElementAttributeKind.Binding) {
             throw Error('Unexpected style binding on ng-template');
           }
-          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
+          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.job)));
         } else if (name === 'class') {
           if (bindingKind !== ir.ElementAttributeKind.Binding) {
             throw Error('Unexpected class binding on ng-template');
           }
-          view.update.push(ir.createClassMapOp(xref, convertAst(value, view.tpl)));
+          view.update.push(ir.createClassMapOp(xref, convertAst(value, view.job)));
         } else {
           view.update.push(ir.createPropertyOp(
-              xref, bindingKind, name, convertAst(value, view.tpl), sourceSpan));
+              xref, bindingKind, name, convertAst(value, view.job), sourceSpan));
         }
         break;
       case e.BindingType.Style:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
           throw Error('Unexpected style binding on ng-template');
         }
-        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
+        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.job), unit));
         break;
       case e.BindingType.Attribute:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
           throw new Error('Attribute bindings on templates are not expected to be valid');
         }
-        const attrOp = ir.createAttributeOp(xref, bindingKind, name, convertAst(value, view.tpl));
+        const attrOp = ir.createAttributeOp(xref, bindingKind, name, convertAst(value, view.job));
         view.update.push(attrOp);
         break;
       case e.BindingType.Class:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
           throw Error('Unexpected class binding on ng-template');
         }
-        view.update.push(ir.createClassPropOp(xref, name, convertAst(value, view.tpl)));
+        view.update.push(ir.createClassPropOp(xref, name, convertAst(value, view.job)));
         break;
       // TODO: implement remaining binding types.
       case e.BindingType.Animation:

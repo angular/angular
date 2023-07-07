@@ -44,7 +44,7 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
     switch (op.kind) {
       case ir.OpKind.Template:
         // Descend into child embedded views.
-        recursivelyProcessView(view.tpl.views.get(op.xref)!, scope);
+        recursivelyProcessView(view.job.views.get(op.xref)!, scope);
         break;
       case ir.OpKind.Listener:
         // Prepend variables to listener handler functions.
@@ -178,20 +178,20 @@ function generateVariablesInScopeForView(
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
+        view.job.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
   }
 
   // Add variables for all context variables available in this scope's view.
-  for (const [name, value] of view.tpl.views.get(scope.view)!.contextVariables) {
+  for (const [name, value] of view.job.views.get(scope.view)!.contextVariables) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), scope.contextVariables.get(name)!,
+        view.job.allocateXrefId(), scope.contextVariables.get(name)!,
         new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
+        view.job.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
   }
 
   if (scope.parent !== null) {

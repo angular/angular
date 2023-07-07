@@ -82,14 +82,14 @@ export function transformTemplate(job: ComponentCompilationJob): void {
  */
 export function transformHostBindingFunction(job: HostBindingCompilationJob): void {
   // TODO: Finish updating these phases to support host bindings.
-  // phasePureLiteralStructures(job);
+  phasePureLiteralStructures(job);
   // phaseGenerateVariables(job);
   // phaseSaveRestoreView(job); // TODO: Is this needed?
-  // phaseNullishCoalescing(job);
-  // phaseExpandSafeReads(job);
-  // phaseVariableOptimization(job);
-  // phaseNaming(job);
-  // phasePureFunctionExtraction(job);
+  phaseNullishCoalescing(job);
+  phaseExpandSafeReads(job);
+  phaseVariableOptimization(job);
+  phaseNaming(job);
+  phasePureFunctionExtraction(job);
   phaseReify(job);
   phaseChaining(job);
 }
@@ -105,7 +105,7 @@ export function emitTemplateFn(tpl: ComponentCompilation, pool: ConstantPool): o
 }
 
 function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
-  for (const view of parent.tpl.views.values()) {
+  for (const view of parent.job.views.values()) {
     if (view.parent !== parent.xref) {
       continue;
     }
