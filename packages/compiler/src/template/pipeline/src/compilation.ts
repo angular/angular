@@ -27,6 +27,8 @@ export abstract class CompilationUnit {
    */
   readonly update = new ir.OpList<ir.UpdateOp>();
 
+  constructor(readonly xref: ir.XrefId) {}
+
   /**
    * Iterate over all `ir.Op`s within this view.
    *
@@ -63,12 +65,28 @@ export abstract class CompilationUnit {
 export interface CompilationJob {
   get units(): Iterable<CompilationUnit>;
 
+  /**
+   * Whether to compile in compatibility mode, to imitate the output of `TemplateDefinitionBuilder`.
+   */
   compatibility: ir.CompatibilityMode;
 
   componentName: string;
 
+  /**
+   * The root compilation unit, such as the component's template, or the host binding's compilation
+   * unit.
+   */
   root: CompilationUnit;
 
+  /**
+   * The constant pool for the job, which will be transformed into a constant array on the emitted
+   * function.
+   */
+  pool: ConstantPool;
+
+  /**
+   * Generate a new unique `ir.XrefId` in this job.
+   */
   allocateXrefId(): ir.XrefId;
 }
 
@@ -77,8 +95,10 @@ export class HostBindingCompilationJob extends CompilationUnit implements Compil
 
   // TODO: Perhaps we should accept a reference to the enclosing component, and get the name from
   // there?
-  constructor(readonly componentName: string, readonly compatibility: ir.CompatibilityMode) {
-    super();
+  constructor(
+      readonly componentName: string, readonly pool: ConstantPool, xref: ir.XrefId,
+      readonly compatibility: ir.CompatibilityMode) {
+    super(xref);
   }
 
   get root() {
@@ -90,9 +110,6 @@ export class HostBindingCompilationJob extends CompilationUnit implements Compil
    */
   private nextXrefId: ir.XrefId = 0 as ir.XrefId;
 
-  /**
-   * Generate a new unique `ir.XrefId` in this job.
-   */
   allocateXrefId(): ir.XrefId {
     return this.nextXrefId++ as ir.XrefId;
   }
@@ -180,9 +197,8 @@ export type ViewCompilation = ViewCompilationUnit;
  */
 export class ViewCompilationUnit extends CompilationUnit {
   constructor(
-      readonly tpl: ComponentCompilation, readonly xref: ir.XrefId,
-      readonly parent: ir.XrefId|null) {
-    super();
+      readonly job: ComponentCompilationJob, xref: ir.XrefId, readonly parent: ir.XrefId|null) {
+    super(xref);
   }
 
   /**
@@ -198,6 +214,6 @@ export class ViewCompilationUnit extends CompilationUnit {
   decls: number|null = null;
 
   get compatibility(): ir.CompatibilityMode {
-    return this.tpl.compatibility;
+    return this.job.compatibility;
   }
 }

@@ -14,7 +14,7 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
   for (const view of cpl.views.values()) {
     view.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
-          view.tpl.allocateXrefId(), {
+          view.job.allocateXrefId(), {
             kind: ir.SemanticVariableKind.SavedView,
             name: null,
             view: view.xref,
@@ -51,7 +51,7 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
 function addSaveRestoreViewOperationToListener(view: ViewCompilation, op: ir.ListenerOp) {
   op.handlerOps.prepend([
     ir.createVariableOp<ir.UpdateOp>(
-        view.tpl.allocateXrefId(), {
+        view.job.allocateXrefId(), {
           kind: ir.SemanticVariableKind.Context,
           name: null,
           view: view.xref,

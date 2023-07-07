@@ -84,7 +84,7 @@ function processLexicalScope(
           return new ir.ReadVariableExpr(scope.get(expr.name)!);
         } else {
           // Reading from the component context.
-          return new o.ReadPropExpr(new ir.ContextExpr(view.tpl.root.xref), expr.name);
+          return new o.ReadPropExpr(new ir.ContextExpr(view.job.root.xref), expr.name);
         }
       } else if (expr instanceof ir.RestoreViewExpr && typeof expr.view === 'number') {
         // `ir.RestoreViewExpr` happens in listener functions and restores a saved view from the
