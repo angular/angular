@@ -11,6 +11,7 @@ import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive,
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
+import {depsTracker} from '../../src/render3/deps_tracker/deps_tracker';
 import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
 
 import {MetadataOverride} from './metadata_override';
@@ -142,6 +143,7 @@ export class TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+    depsTracker.clearScopeCacheFor(ngModule);
     this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
@@ -384,12 +386,15 @@ export class TestBedCompiler {
       // Module overrides (via `TestBed.overrideModule`) might affect scopes that were previously
       // calculated and stored in `transitiveCompileScopes`. If module overrides are present,
       // collect all affected modules and reset scopes to force their re-calculation.
+      // depsTracker.clearScopeCacheFor(this.testModuleType);
       const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
         affectedModules.forEach(moduleType => {
           this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
           (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+          // console.log(">>>>> affected module: ", moduleType.name);
+          depsTracker.clearScopeCacheFor(moduleType);
         });
       }
     }
@@ -726,6 +731,10 @@ export class TestBedCompiler {
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
+          try {
+            depsTracker.clearScopeCacheFor(type);
+          } catch (e) {
+          }
           defs.forEach((descriptor, prop) => {
             if (!descriptor) {
               // Delete operations are generally undesirable since they have performance
