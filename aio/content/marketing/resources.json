@@ -574,6 +574,11 @@
             "desc": "NGX Cookie Service is an Angular Library that can be used to read, set and delete browser cookies",
             "title": "NGX Cookie Service",
             "url": "https://github.com/stevermeister/ngx-cookie-service"
+          },
+          "flowbite": {
+            "desc": "Open-source UI component library built with the utility-classes from Tailwind CSS and with official support for Angular.",
+            "title": "Flowbite",
+            "url": "https://flowbite.com/docs/getting-started/angular/"
           }
         }
       }
