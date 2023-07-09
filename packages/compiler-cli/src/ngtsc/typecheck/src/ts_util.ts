@@ -90,15 +90,23 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
     type,
   );
 
+  return tsCreateVariable(id, initializer);
+}
+
+/**
+ * Create a `ts.VariableDeclaration` with `let` semantics without an initializer, optionally with an
+ * explicit type.
+ */
+export function tsDeclareLetVariable(id: ts.Identifier, type?: ts.TypeNode): ts.VariableStatement {
   const decl = ts.factory.createVariableDeclaration(
     /* name */ id,
     /* exclamationToken */ undefined,
-    /* type */ undefined,
-    /* initializer */ initializer,
+    /* type */ type,
+    /* initializer */ undefined,
   );
   return ts.factory.createVariableStatement(
     /* modifiers */ undefined,
-    /* declarationList */ [decl],
+    /* declarationList */ ts.factory.createVariableDeclarationList([decl], ts.NodeFlags.Let),
   );
 }
 

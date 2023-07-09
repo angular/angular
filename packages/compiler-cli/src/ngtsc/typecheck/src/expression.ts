@@ -38,6 +38,7 @@ import ts from 'typescript';
 import {TypeCheckingConfig} from '../api';
 
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
+import {isPotentialSignalCall, PotentialSignalCall} from './signal_calls';
 import {tsCastToAny, tsNumericExpression} from './ts_util';
 
 export const NULL_AS_ANY = ts.factory.createAsExpression(
@@ -72,6 +73,35 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['??', ts.SyntaxKind.QuestionQuestionToken],
 ]);
 
+export interface SignalCallNarrowing {
+  /**
+   * Declares a variable in the TCB to assign the result of the provided call expression to and
+   * returns the `ts.Identifier` of the variable. If the call expression is not suitable for signal
+   * narrowing then `null` is returned.
+   */
+  allocateDeclaration(call: PotentialSignalCall): ts.Identifier | null;
+
+  /**
+   * Attempts to resolve a local TCB variable that has been initialized with the provided call
+   * expression. If the call expression hasn't been assigned into a variable then `null` is
+   * returned.
+   */
+  resolveDeclaration(call: PotentialSignalCall): ts.Identifier | null;
+}
+
+export enum EmitMode {
+  /**
+   * Regular emit mode.
+   */
+  Regular,
+
+  /**
+   * In this mode, call expression are being assigned into a local variable declaration for each
+   * uniquely identified call expression.
+   */
+  Narrowing,
+}
+
 /**
  * Convert an `AST` to TypeScript code directly, without going through an intermediate `Expression`
  * AST.
@@ -79,16 +109,20 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
 export function astToTypescript(
   ast: AST,
   maybeResolve: (ast: AST) => ts.Expression | null,
+  signalCallOutlining: SignalCallNarrowing,
   config: TypeCheckingConfig,
+  mode: EmitMode,
 ): ts.Expression {
-  const translator = new AstTranslator(maybeResolve, config);
+  const translator = new AstTranslator(maybeResolve, signalCallOutlining, config, mode);
   return translator.translate(ast);
 }
 
 class AstTranslator implements AstVisitor {
   constructor(
     private maybeResolve: (ast: AST) => ts.Expression | null,
+    private signalCallNarrowing: SignalCallNarrowing,
     private config: TypeCheckingConfig,
+    private mode: EmitMode,
   ) {}
 
   translate(ast: AST): ts.Expression {
@@ -373,6 +407,26 @@ class AstTranslator implements AstVisitor {
   visitCall(ast: Call): ts.Expression {
     const args = ast.args.map((expr) => this.translate(expr));
 
+    // If the call may be a signal call, attempt to reuse a reference to an assigned variable in the
+    // TCB that corresponds with the same signal call in a higher scope.
+    let signalAssignmentTarget: ts.Identifier | null = null;
+    if (isPotentialSignalCall(ast)) {
+      const declaration = this.signalCallNarrowing.resolveDeclaration(ast);
+      if (declaration !== null) {
+        // A local declaration that captures the call's type exists, use it to enable narrowing of
+        // signal calls. Note that doing so means that any diagnostic within this call expression
+        // will remain unreported, under the assumption that the same diagnostic are being reported
+        // in the initial assignment to the local variable.
+        return declaration;
+      }
+
+      // If the expression is being emitted in a narrowing position, allocate a local declaration
+      // for the call expression and assign its value into it.
+      if (this.mode === EmitMode.Narrowing) {
+        signalAssignmentTarget = this.signalCallNarrowing.allocateDeclaration(ast);
+      }
+    }
+
     let expr: ts.Expression;
     const receiver = ast.receiver;
 
@@ -402,14 +456,44 @@ class AstTranslator implements AstVisitor {
       node = ts.factory.createCallExpression(expr, undefined, args);
     }
 
+    if (signalAssignmentTarget !== null) {
+      node = ts.factory.createAssignment(signalAssignmentTarget, node);
+    }
+
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 
   visitSafeCall(ast: SafeCall): ts.Expression {
     const args = ast.args.map((expr) => this.translate(expr));
+
+    // If the call may be a signal call, attempt to reuse a reference to an assigned variable in the
+    // TCB that corresponds with the same signal call in a higher scope.
+    let signalAssignmentTarget: ts.Identifier | null = null;
+    if (isPotentialSignalCall(ast)) {
+      const declaration = this.signalCallNarrowing.resolveDeclaration(ast);
+      if (declaration !== null) {
+        // A local declaration that captures the call's type exists, use it to enable narrowing of
+        // signal calls. Note that doing so means that any diagnostic within this call expression
+        // will remain unreported, under the assumption that the same diagnostic are being reported
+        // in the initial assignment to the local variable.
+        return declaration;
+      }
+
+      // If the expression is being emitted in a narrowing position, allocate a local declaration
+      // for the call expression and assign its value into it.
+      if (this.mode === EmitMode.Narrowing) {
+        signalAssignmentTarget = this.signalCallNarrowing.allocateDeclaration(ast);
+      }
+    }
+
     const expr = wrapForDiagnostics(this.translate(ast.receiver));
-    const node = this.convertToSafeCall(ast, expr, args);
+    let node = this.convertToSafeCall(ast, expr, args);
+
+    if (signalAssignmentTarget !== null) {
+      node = ts.factory.createAssignment(signalAssignmentTarget, node);
+    }
+
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }

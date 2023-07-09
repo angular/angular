@@ -1834,7 +1834,7 @@ describe('type check blocks', () => {
       `;
 
       expect(tcb(TEMPLATE)).toContain(
-        'var _t1 = null! as any; { var _t2 = (_t1.exp); switch (_t2()) { ' +
+        'var _t1 = null! as any; { var _t2 = (_t1.exp); let _t3; switch (_t3 = _t2()) { ' +
           'case "one": "" + ((this).one()); break; ' +
           'case "two": "" + ((this).two()); break; ' +
           'default: "" + ((this).default()); break; } }',

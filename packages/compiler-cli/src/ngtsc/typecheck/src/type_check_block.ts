@@ -69,14 +69,16 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, NULL_AS_ANY} from './expression';
+import {astToTypescript, EmitMode, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
+import {computeSignalCallIdentity, PotentialSignalCall, SignalCallIdentity} from './signal_calls';
 import {
   tsCallMethod,
   tsCastToAny,
   tsCreateElement,
   tsCreateTypeQueryForCoercedInput,
   tsCreateVariable,
+  tsDeclareLetVariable,
   tsDeclareVariable,
 } from './ts_util';
 import {requiresInlineTypeCtor} from './type_constructor';
@@ -393,7 +395,7 @@ class TcbLetDeclarationOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.node.nameSpan);
-    const value = tcbExpression(this.node.value, this.tcb, this.scope);
+    const value = tcbExpression(this.node.value, this.tcb, this.scope, EmitMode.Regular);
     // Value needs to be wrapped, because spans for the expressions inside of it can
     // be picked up incorrectly as belonging to the full variable declaration.
     const varStatement = tsCreateVariable(id, wrapForTypeChecker(value), ts.NodeFlags.Const);
@@ -456,7 +458,7 @@ class TcbTemplateBodyOp extends TcbOp {
             );
           if (boundInput !== undefined) {
             // If there is such a binding, generate an expression for it.
-            const expr = tcbExpression(boundInput.value, this.tcb, this.scope);
+            const expr = tcbExpression(boundInput.value, this.tcb, this.scope, EmitMode.Narrowing);
 
             // The expression has already been checked in the type constructor invocation, so
             // it should be ignored when used within a template guard.
@@ -560,6 +562,7 @@ class TcbExpressionOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private expression: AST,
+    private mode: EmitMode,
   ) {
     super();
   }
@@ -569,7 +572,7 @@ class TcbExpressionOp extends TcbOp {
   }
 
   override execute(): null {
-    const expr = tcbExpression(this.expression, this.tcb, this.scope);
+    const expr = tcbExpression(this.expression, this.tcb, this.scope, this.mode);
     this.scope.addStatement(ts.factory.createExpressionStatement(expr));
     return null;
   }
@@ -1338,7 +1341,10 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      const expr = widenBinding(
+        tcbExpression(binding.value, this.tcb, this.scope, EmitMode.Regular),
+        this.tcb,
+      );
 
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
@@ -1652,10 +1658,13 @@ class TcbIfOp extends TcbOp {
     // for the case where the expression has an alias _and_ because we need the processed
     // expression when generating the guard for the body.
     const expressionScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
-    expressionScope.render().forEach((stmt) => this.scope.addStatement(stmt));
-    this.expressionScopes.set(branch, expressionScope);
 
-    let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+    let expression = tcbExpression(
+      branch.expression,
+      this.tcb,
+      expressionScope,
+      EmitMode.Narrowing,
+    );
     if (branch.expressionAlias !== null) {
       expression = ts.factory.createBinaryExpression(
         ts.factory.createParenthesizedExpression(expression),
@@ -1663,6 +1672,9 @@ class TcbIfOp extends TcbOp {
         expressionScope.resolve(branch.expressionAlias),
       );
     }
+
+    expressionScope.render().forEach((stmt) => this.scope.addStatement(stmt));
+    this.expressionScopes.set(branch, expressionScope);
     const bodyScope = this.getBranchScope(expressionScope, branch, index);
 
     return ts.factory.createIfStatement(
@@ -1711,7 +1723,7 @@ class TcbIfOp extends TcbOp {
       // We need to recreate the expression and mark it to be ignored for diagnostics,
       // because it was already checked as a part of the block's condition and we don't
       // want it to produce a duplicate diagnostic.
-      expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+      expression = tcbExpression(branch.expression, this.tcb, expressionScope, EmitMode.Regular);
       if (branch.expressionAlias !== null) {
         expression = ts.factory.createBinaryExpression(
           ts.factory.createParenthesizedExpression(expression),
@@ -1766,7 +1778,12 @@ class TcbSwitchOp extends TcbOp {
   }
 
   override execute(): null {
-    const switchExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    const switchExpression = tcbExpression(
+      this.block.expression,
+      this.tcb,
+      this.scope,
+      EmitMode.Narrowing,
+    );
     const clauses = this.block.cases.map((current) => {
       const checkBody = this.tcb.env.config.checkControlFlowBodies;
       const clauseScope = Scope.forNodes(
@@ -1781,7 +1798,7 @@ class TcbSwitchOp extends TcbOp {
       return current.expression === null
         ? ts.factory.createDefaultClause(statements)
         : ts.factory.createCaseClause(
-            tcbExpression(current.expression, this.tcb, clauseScope),
+            tcbExpression(current.expression, this.tcb, clauseScope, EmitMode.Narrowing),
             statements,
           );
     });
@@ -1801,7 +1818,7 @@ class TcbSwitchOp extends TcbOp {
     // `switchExpression === caseExpression`.
     if (node.expression !== null) {
       // The expression needs to be ignored for diagnostics since it has been checked already.
-      const expression = tcbExpression(node.expression, this.tcb, this.scope);
+      const expression = tcbExpression(node.expression, this.tcb, this.scope, EmitMode.Narrowing);
       markIgnoreDiagnostics(expression);
       return ts.factory.createBinaryExpression(
         switchValue,
@@ -1826,7 +1843,12 @@ class TcbSwitchOp extends TcbOp {
       }
 
       // The expression needs to be ignored for diagnostics since it has been checked already.
-      const expression = tcbExpression(current.expression, this.tcb, this.scope);
+      const expression = tcbExpression(
+        current.expression,
+        this.tcb,
+        this.scope,
+        EmitMode.Narrowing,
+      );
       markIgnoreDiagnostics(expression);
       const comparison = ts.factory.createBinaryExpression(
         switchValue,
@@ -1889,7 +1911,7 @@ class TcbForOfOp extends TcbOp {
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
-      tcbExpression(this.block.expression, this.tcb, loopScope),
+      tcbExpression(this.block.expression, this.tcb, loopScope, EmitMode.Regular),
     );
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
@@ -1930,6 +1952,8 @@ const INFER_TYPE_FOR_CIRCULAR_OP_EXPR = ts.factory.createNonNullExpression(ts.fa
 export class Context {
   private nextId = 1;
 
+  private targetIdentities = new Map<TemplateEntity, string>();
+
   constructor(
     readonly env: Environment,
     readonly domSchemaChecker: DomSchemaChecker,
@@ -1957,6 +1981,18 @@ export class Context {
       return null;
     }
     return this.pipes.get(name)!;
+  }
+
+  identifyExpression(expr: AST): string | null {
+    const target = this.boundTarget.getExpressionTarget(expr);
+    if (target === null) {
+      return null;
+    }
+
+    if (!this.targetIdentities.has(target)) {
+      this.targetIdentities.set(target, `_l${this.targetIdentities.size}`);
+    }
+    return this.targetIdentities.get(target)!;
   }
 }
 
@@ -2026,6 +2062,17 @@ class Scope {
    * Assumes that there won't be duplicated `@let` declarations within the same scope.
    */
   private letDeclOpMap = new Map<string, number>();
+
+  /**
+   * Cache of computed call expressions to their signal call identity.
+   */
+  private signalCallIdentities = new Map<PotentialSignalCall, SignalCallIdentity | null>();
+
+  /**
+   * Stores the local declaration's `ts.Identifier` for each call expression that occurs in a
+   * narrowing position within this scope.
+   */
+  private signalCallDeclarations = new Map<SignalCallIdentity, ts.Identifier>();
 
   /**
    * Statements for this template.
@@ -2102,7 +2149,7 @@ class Scope {
           new TcbBlockVariableOp(
             tcb,
             scope,
-            tcbExpression(expression, tcb, scope),
+            tcbExpression(expression, tcb, scope, EmitMode.Narrowing),
             expressionAlias,
           ),
         );
@@ -2203,6 +2250,66 @@ class Scope {
     } else {
       throw new Error(`Could not resolve ${node} / ${directive}`);
     }
+  }
+
+  /**
+   * Declare a local variable in this scope for the provided call expression.
+   */
+  allocateSignalCallDeclaration(call: PotentialSignalCall): ts.Identifier | null {
+    const identity = this.determineSignalCallIdentity(call);
+    if (identity === null) {
+      // The call expression is not eligible for narrowing.
+      return null;
+    }
+
+    const id = this.tcb.allocateId();
+    this.signalCallDeclarations.set(identity, id);
+    this.addStatement(tsDeclareLetVariable(id));
+    return id;
+  }
+
+  /**
+   * Attempt to resolve the `ts.Identifier` that has been initialized from an earlier occurrence of
+   * an identical call expression. The scope hierarchy up to the root is considered.
+   */
+  resolveSignalCall(call: PotentialSignalCall): ts.Identifier | null {
+    const identity = this.determineSignalCallIdentity(call);
+    if (identity === null) {
+      return null;
+    }
+
+    if (this.signalCallDeclarations.has(identity)) {
+      return this.signalCallDeclarations.get(identity)!;
+    }
+
+    let parent = this.parent;
+    while (parent !== null) {
+      if (parent.signalCallDeclarations.has(identity)) {
+        return parent.signalCallDeclarations.get(identity)!;
+      }
+      parent = parent.parent;
+    }
+
+    return null;
+  }
+
+  /**
+   * Computes the signal call identity of the provided call expression, or `null` if no stable
+   * identity can be computed (making the call ineligible for signal call narrowing).
+   */
+  private determineSignalCallIdentity(call: PotentialSignalCall): SignalCallIdentity | null {
+    if (this.signalCallIdentities.has(call)) {
+      return this.signalCallIdentities.get(call)!;
+    }
+
+    const identity = computeSignalCallIdentity(
+      call,
+      (receiverCall) => this.determineSignalCallIdentity(receiverCall),
+      (ast) => this.tcb.identifyExpression(ast),
+    );
+
+    this.signalCallIdentities.set(call, identity);
+    return identity;
   }
 
   /**
@@ -2378,7 +2485,7 @@ class Scope {
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.tcb.env.config.checkControlFlowBodies && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
-      this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value, EmitMode.Regular));
     } else if (node instanceof TmplAstIcu) {
       this.appendIcuExpressions(node);
     } else if (node instanceof TmplAstContent) {
@@ -2551,11 +2658,11 @@ class Scope {
 
   private appendIcuExpressions(node: TmplAstIcu): void {
     for (const variable of Object.values(node.vars)) {
-      this.opQueue.push(new TcbExpressionOp(this.tcb, this, variable.value));
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, variable.value, EmitMode.Regular));
     }
     for (const placeholder of Object.values(node.placeholders)) {
       if (placeholder instanceof TmplAstBoundText) {
-        this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value));
+        this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value, EmitMode.Regular));
       }
     }
   }
@@ -2600,7 +2707,7 @@ class Scope {
     triggers: TmplAstDeferredBlockTriggers,
   ): void {
     if (triggers.when !== undefined) {
-      this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value, EmitMode.Regular));
     }
 
     if (triggers.hover !== undefined) {
@@ -2662,8 +2769,8 @@ function tcbThisParam(
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the
  * correct identifiers in the current scope.
  */
-function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
-  const translator = new TcbExpressionTranslator(tcb, scope);
+function tcbExpression(ast: AST, tcb: Context, scope: Scope, mode: EmitMode): ts.Expression {
+  const translator = new TcbExpressionTranslator(tcb, scope, mode);
   return translator.translate(ast);
 }
 
@@ -2671,13 +2778,23 @@ class TcbExpressionTranslator {
   constructor(
     protected tcb: Context,
     protected scope: Scope,
+    private mode: EmitMode,
   ) {}
 
   translate(ast: AST): ts.Expression {
     // `astToTypescript` actually does the conversion. A special resolver `tcbResolve` is passed
     // which interprets specific expression nodes that interact with the `ImplicitReceiver`. These
     // nodes actually refer to identifiers within the current scope.
-    return astToTypescript(ast, (ast) => this.resolve(ast), this.tcb.env.config);
+    return astToTypescript(
+      ast,
+      (ast) => this.resolve(ast),
+      {
+        allocateDeclaration: (call) => this.scope.allocateSignalCallDeclaration(call),
+        resolveDeclaration: (call) => this.scope.resolveSignalCall(call),
+      },
+      this.tcb.env.config,
+      this.mode,
+    );
   }
 
   /**
@@ -2960,7 +3077,7 @@ function translateInput(
 ): ts.Expression {
   if (attr instanceof TmplAstBoundAttribute) {
     // Produce an expression representing the value of the binding.
-    return tcbExpression(attr.value, tcb, scope);
+    return tcbExpression(attr.value, tcb, scope, EmitMode.Regular);
   } else {
     // For regular attributes with a static string value, use the represented string literal.
     return ts.factory.createStringLiteral(attr.value);
@@ -3118,7 +3235,7 @@ function tcbCreateEventHandler(
  * bindings.
  */
 function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
-  const translator = new TcbEventHandlerTranslator(tcb, scope);
+  const translator = new TcbEventHandlerTranslator(tcb, scope, EmitMode.Regular);
   return translator.translate(ast);
 }
 
@@ -3198,7 +3315,7 @@ class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
     scope: Scope,
     private block: TmplAstForLoopBlock,
   ) {
-    super(tcb, scope);
+    super(tcb, scope, EmitMode.Regular);
 
     // Tracking expressions are only allowed to read the `$index`,
     // the item and properties off the component instance.
