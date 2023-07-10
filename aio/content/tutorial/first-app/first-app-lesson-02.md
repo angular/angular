@@ -19,7 +19,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## After you finish
 
-* Your app has a new component: `HomeComponent`.
+Your app has a new component: `HomeComponent`.
 
 ## Conceptual preview of Angular components
 
@@ -35,7 +35,7 @@ In Angular, components have metadata that define its properties.
 When you create your `HomeComponent`, you use these properties:
 
 *   `selector`: to describe how Angular refers to the component in templates.
-*   `standalone`: to describe whether the component requires a `ngModule`.
+*   `standalone`: to describe whether the component requires a `NgModule`.
 *   `imports`: to describe the component's dependencies.
 *   `template`: to describe the component's HTML markup and layout.
 *   `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
@@ -57,7 +57,7 @@ In the **Terminal** pane of your IDE:
 
     <code-example format="shell" language="shell">
 
-    ng generate component Home --standalone --inline-template --skip-tests
+    ng generate component home --standalone --inline-template --skip-tests
 
     </code-example>
 
@@ -72,7 +72,9 @@ In the **Terminal** pane of your IDE:
 1.  Open a browser and navigate to `http://localhost:4200` to find the application.
 1.  Confirm that the app builds without error.
 
-    *Note: It should render the same as it did in the previous lesson because even though you added a new component, you haven't included it in any of the app's templates, yet.*
+    <div class="callout is-helpful">
+      It should render the same as it did in the previous lesson because even though you added a new component, you haven't included it in any of the app's templates, yet.
+    </div>
 1.  Leave `ng serve` running as you complete the next steps.
 
 ### Step 2 - Add the new component to your app's layout
@@ -109,7 +111,7 @@ In this step you add features to `HomeComponent`.
 In the previous step, you added the default `HomeComponent` to your app's template so its default HTML appeared in the app.
 In this step, you add a search filter and button that is used in a later lesson.
 For now, that's all that `HomeComponent` has.
-Note that, this step just adds the search elements to the layout without any function, yet.
+Note that, this step just adds the search elements to the layout without any functionality, yet.
 
 In the **Edit** pane of your IDE:
 
@@ -147,3 +149,5 @@ For more information about the topics covered in this lesson, visit:
 *  [`ng generate component`](cli/generate#component-command)
 *  [`Component` reference](api/core/Component)
 *  [Angular components overview](guide/component-overview)
+
+@reviewed 2023-07-10
