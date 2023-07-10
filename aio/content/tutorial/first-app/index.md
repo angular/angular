@@ -25,7 +25,7 @@ These lessons can be completed by using a local installation of the Angular tool
 
 ## Conceptual preview of your first Angular app
 
-The lessons in this tutorial create an Angular app that lists houses for rent and show the details of individual houses.
+The lessons in this tutorial create an Angular app that lists houses for rent and shows the details of individual houses.
 This app uses features that are common to many Angular apps.
 <section class="lightbox">
   <img alt="Output of heroes dashboard" src="generated/images/guide/faa/homes-app-landing-page.png">
@@ -52,10 +52,7 @@ If you do not have a version of `node.js` installed, please follow the [directio
 
 With `node.js` and `npm` installed, the next step is to install the [Angular CLI](/cli) which provides tooling for effective Angular development.
 
-From a **Terminal** window:
-
-1. Run the following command: `npm install -g @angular/cli`
-1. Once the installation completes, the terminal window will display details of the Angular CLI version installed on your local computer.
+From a **Terminal** window run the following command: `npm install -g @angular/cli`.
 
 ## Step 4 - Install integrated development environment (IDE)
 
@@ -78,3 +75,5 @@ For more information about the topics covered in this lesson, visit:
 
 * [What is Angular](/guide/what-is-angular)
 * [Angular CLI Reference](/cli)
+
+@reviewed 2023-07-12
