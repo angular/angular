@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -48,6 +48,7 @@ export class FetchBackend implements HttpBackend {
   // We need to bind the native fetch to its context or it will throw an "illegal invocation"
   private readonly fetchImpl =
       inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
+  private readonly ngZone = inject(NgZone);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable(observer => {
@@ -108,29 +109,36 @@ export class FetchBackend implements HttpBackend {
       let decoder: TextDecoder;
       let partialText: string|undefined;
 
-      while (true) {
-        const {done, value} = await reader.read();
+      const reqZone = Zone.current;
 
-        if (done) {
-          break;
+      // Perform response processing outside of Angular zone to
+      // ensure no excessive change detection runs are executed
+      // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
+      await this.ngZone.runOutsideAngular(async () => {
+        while (true) {
+          const {done, value} = await reader.read();
+
+          if (done) {
+            break;
+          }
+
+          chunks.push(value);
+          receivedLength += value.length;
+
+          if (request.reportProgress) {
+            partialText = request.responseType === 'text' ?
+                (partialText ?? '') + (decoder ??= new TextDecoder).decode(value, {stream: true}) :
+                undefined;
+
+            reqZone.run(() => observer.next({
+              type: HttpEventType.DownloadProgress,
+              total: contentLength ? +contentLength : undefined,
+              loaded: receivedLength,
+              partialText,
+            } as HttpDownloadProgressEvent));
+          }
         }
-
-        chunks.push(value);
-        receivedLength += value.length;
-
-        if (request.reportProgress) {
-          partialText = request.responseType === 'text' ?
-              (partialText ?? '') + (decoder ??= new TextDecoder).decode(value, {stream: true}) :
-              undefined;
-
-          observer.next({
-            type: HttpEventType.DownloadProgress,
-            total: contentLength ? +contentLength : undefined,
-            loaded: receivedLength,
-            partialText,
-          } as HttpDownloadProgressEvent);
-        }
-      }
+      });
 
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
