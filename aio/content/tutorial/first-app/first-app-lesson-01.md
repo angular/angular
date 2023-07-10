@@ -6,11 +6,9 @@ This first lesson serves as the starting point from which each lesson in this tu
 
 ## Before you start
 
-This lesson starts from a pre-built app that will serve as a baseline for the application you'll be building in this tutorial. We've provided starter code so you can:
-
-*   Start with the code example for the beginning of this lesson. Choose from the <live-example name="first-app-lesson-00"></live-example> to:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and unzip it into a directory named: `first-app`. Open that directory in your IDE.
+This lesson starts from a pre-built app that will serve as a baseline for the application you'll be building in this tutorial. We've provided starter code so you can start this lesson. Choose from the <live-example name="first-app-lesson-00"></live-example> to:
+*   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
+*   Use the *download example* and unzip it into a directory named: `first-app`. Open that directory in your IDE.
 
 If you haven't reviewed the introduction, visit the [tutorial overview page](tutorial/first-app) to make sure you have everything you need to complete this lesson.
 
@@ -18,7 +16,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## After you finish
 
-* The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
+The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
 
 ## Lesson steps
 
@@ -52,7 +50,7 @@ In the **Terminal** pane of your IDE:
 
 1.  In a web browser on your development computer, open `http://localhost:4200`.
 1.  Confirm that the default web site appears in the browser.
-1.  You can leave `ng serve` running for as you complete the next steps.
+1.  You can leave `ng serve` running as you complete the next steps.
 
 ### Step 2 - Review the files in the project
 
@@ -66,7 +64,7 @@ In the **Explorer** pane of your IDE:
         1.  `index.html` is the app's top level HTML template.
         1.  `style.css` is the app's top level style sheet.
         1.  `main.ts` is where the app start running.
-        1.  `favicon.ico` is the app's icon, just as you would find in web site.
+        1.  `favicon.ico` is the app's icon, just as you would find in any web site.
     1.  In the file explorer, find the Angular app's component files (`/app`).
         1.  `app.component.ts` is the source file that describes the `app-root` component.
             This is the top-level Angular component in the app. A component is the basic building block of an Angular application.
@@ -75,8 +73,8 @@ In the **Explorer** pane of your IDE:
             In this app, the styles are in a separate file while the component's code and HTML template are in this file.
         1.  `app.component.css` is the style sheet for this component.
         1.  New components are added to this directory.
-    1.  In the file explorer, find the image directory (`/assets`) contains images used by the app.
-    1.  In the file explorer, find the support files are files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
+    1.  In the file explorer, find the image directory (`/assets`) that contains images used by the app.
+    1.  In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
         1.  `.angular` has files required to build the Angular app.
         1.  `.e2e` has files used to test the app.
         1.  `.node_modules` has the node.js packages that the app uses.
@@ -120,7 +118,7 @@ In your IDE:
 In this lesson, you updated a default Angular app to display *Hello world*.
 In the process, you learned about the `ng serve` command to serve your app locally for testing.
 
-If have any trouble with this lesson, review the completed code for it in the <live-example></live-example>.
+If you have any trouble with this lesson, review the completed code for it in the <live-example></live-example>.
 
 ## Next steps
 
@@ -132,3 +130,5 @@ For more information about the topics covered in this lesson, visit:
 
 * [Angular Components](/guide/component-overview)
 * [Creating applications with the Angular CLI](/cli)
+
+  @reviewed 2023-07-10
