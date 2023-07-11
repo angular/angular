@@ -22,8 +22,8 @@ If you have any trouble during this lesson, you can review the completed code fo
 *  Your app has data bindings in the `HomeComponent` template.
 *  Your app sends data from the `HomeComponent` to the `HousingLocationComponent`.
 
-## Conceptual preview of Inputs
-In lesson 5, you added `@Input` decorators to properties in the `HousingLocationComponent` allow the component to receive data. In this lesson, you'll continue the process of sharing data from the parent component to the child component by binding data to those properties in the template. There are several forms of data binding in Angular, in this lesson you'll use property binding.
+## Conceptual preview of property binding
+In lesson 5, you added `@Input` decorators to properties of the `HousingLocationComponent` to allow the component to receive data. In this lesson, you'll continue the process of sharing data from the parent component to the child component by binding data to those properties in the template. There are several forms of data binding in Angular, in this lesson you'll use property binding.
 
 Property binding enables you to connect a variable to an `Input` in an Angular template. The data is then dynamically bound to the `Input`.
 
@@ -61,3 +61,5 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 ## For more information about the topics covered in this lesson, visit:
 * [Property binding](guide/property-binding)
+
+@reviewed 2023-07-11
