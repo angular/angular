@@ -164,9 +164,13 @@ Avoiding the use of modules with non-local side effects (outside of polyfills) i
 
 </div>
 
-### Hashed filenames for non-injected global styles/scripts
+### Long build times when using Sass combined with pnpm or yarn PnP
 
-If your application currently uses the [`inject`](guide/workspace-config#styles-and-scripts-configuration) sub-option for any global styles and scripts via the `styles` or `scripts` build options, the output file names for those styles/scripts will incorrectly contain a hash. Depending on the usage of the output files, this may cause runtime failures for your application. See the related [issue](https://github.com/angular/angular-cli/issues/25098) for more information.
+Applications may have increased build times due to the need to workaround Sass resolution incompabilities when using either the pnpm or Yarn PnP package managers.
+Sass files with `@import` or `@use` directives referencing a package when using either of these package managers can trigger the performance problem.
+
+An alternative workaround that alleviates the build time increases is in development and will be available before the build system moves to stable status.
+Both the Yarn package manager in node modules mode and the `npm` package manager are not affected by this problem.
 
 ## Bug reports
 
