@@ -56,4 +56,17 @@ export class TimelineVisualizerComponent {
     this.selectedDirectives = selectedDirectives;
     this.parentHierarchy = parentHierarchy ?? [];
   }
+
+  myFetch(id: string) {
+    fetch('http://localhost:4200/bundle/main.js')
+    .then(response => response.text())
+    .then(data => {
+      //Reverse lookup ID -> Class Name
+      //Find index 
+      //Generate link 
+      const classStartIndex = data.indexOf('class _AppComponent');
+      console.log(classStartIndex);
+    });
+  }
+
 }

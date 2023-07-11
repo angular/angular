@@ -30,7 +30,7 @@
           <div class="txt-total-time"><label>Parent Hierarchy</label></div>
           <ul>
             <li *ngFor="let parent of parentHierarchy">
-              {{ parent.name }}
+              <a (click)="myFetch(parent.id)">{{ parent.name }}</a>
             </li>
           </ul>
         </div>
