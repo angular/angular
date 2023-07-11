@@ -1443,6 +1443,9 @@
     "name": "nativeParentNode"
   },
   {
+    "name": "newWeakRef"
+  },
+  {
     "name": "nextNgElementId"
   },
   {

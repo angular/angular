@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵnewWeakRef as newWeakRef, ɵRuntimeError as RuntimeError, ɵWeakRef as WeakRef} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -62,7 +62,7 @@ export function shimStylesContent(compId: string, styles: string[]): string[] {
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   private readonly rendererByCompId =
-      new Map<string, EmulatedEncapsulationDomRenderer2|NoneEncapsulationDomRenderer>();
+      new Map<string, WeakRef<EmulatedEncapsulationDomRenderer2|NoneEncapsulationDomRenderer>>();
   private readonly defaultRenderer: Renderer2;
   private readonly platformIsServer: boolean;
 
@@ -105,36 +105,37 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 
   private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
     const rendererByCompId = this.rendererByCompId;
-    let renderer = rendererByCompId.get(type.id);
+    let renderer = rendererByCompId.get(type.id)?.deref();
 
-    if (!renderer) {
-      const doc = this.doc;
-      const ngZone = this.ngZone;
-      const eventManager = this.eventManager;
-      const sharedStylesHost = this.sharedStylesHost;
-      const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
-      const platformIsServer = this.platformIsServer;
-
-      switch (type.encapsulation) {
-        case ViewEncapsulation.Emulated:
-          renderer = new EmulatedEncapsulationDomRenderer2(
-              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestroy, doc,
-              ngZone, platformIsServer);
-          break;
-        case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(
-              eventManager, sharedStylesHost, element, type, doc, ngZone, this.nonce,
-              platformIsServer);
-        default:
-          renderer = new NoneEncapsulationDomRenderer(
-              eventManager, sharedStylesHost, type, removeStylesOnCompDestroy, doc, ngZone,
-              platformIsServer);
-          break;
-      }
-
-      renderer.onDestroy = () => rendererByCompId.delete(type.id);
-      rendererByCompId.set(type.id, renderer);
+    if (renderer) {
+      return renderer;
     }
+
+    const doc = this.doc;
+    const ngZone = this.ngZone;
+    const eventManager = this.eventManager;
+    const sharedStylesHost = this.sharedStylesHost;
+    const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
+    const platformIsServer = this.platformIsServer;
+
+    switch (type.encapsulation) {
+      case ViewEncapsulation.Emulated:
+        renderer = new EmulatedEncapsulationDomRenderer2(
+            eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestroy, doc,
+            ngZone, platformIsServer);
+        break;
+      case ViewEncapsulation.ShadowDom:
+        return new ShadowDomRenderer(
+            eventManager, sharedStylesHost, element, type, doc, ngZone, this.nonce,
+            platformIsServer);
+      default:
+        renderer = new NoneEncapsulationDomRenderer(
+            eventManager, sharedStylesHost, type, removeStylesOnCompDestroy, doc, ngZone,
+            platformIsServer);
+        break;
+    }
+
+    rendererByCompId.set(type.id, newWeakRef(renderer));
 
     return renderer;
   }
@@ -397,8 +398,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
-  private rendererUsageCount = 0;
-  onDestroy: VoidFunction|undefined;
 
   constructor(
       eventManager: EventManager,
@@ -416,7 +415,6 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
 
   applyStyles(): void {
     this.sharedStylesHost.addStyles(this.styles);
-    this.rendererUsageCount++;
   }
 
   override destroy(): void {
@@ -425,10 +423,6 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     }
 
     this.sharedStylesHost.removeStyles(this.styles);
-    this.rendererUsageCount--;
-    if (this.rendererUsageCount === 0) {
-      this.onDestroy?.();
-    }
   }
 }
 

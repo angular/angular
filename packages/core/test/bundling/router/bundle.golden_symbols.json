@@ -1692,6 +1692,9 @@
     "name": "navigationCancelingError"
   },
   {
+    "name": "newWeakRef"
+  },
+  {
     "name": "nextBindingIndex"
   },
   {

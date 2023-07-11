@@ -1113,6 +1113,9 @@
     "name": "nativeRemoveNode"
   },
   {
+    "name": "newWeakRef"
+  },
+  {
     "name": "nextNgElementId"
   },
   {

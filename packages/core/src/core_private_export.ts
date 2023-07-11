@@ -28,7 +28,7 @@ export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/r
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
-export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from './signals';
+export {newWeakRef as ɵnewWeakRef, setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl, WeakRef as ɵWeakRef} from './signals';
 export {TESTABILITY as ɵTESTABILITY, TESTABILITY_GETTER as ɵTESTABILITY_GETTER} from './testability/testability';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';

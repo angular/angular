@@ -13,4 +13,4 @@ export {ReactiveNode, setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal} from './src/signal';
 export {untracked} from './src/untracked';
 export {Watch, WatchCleanupFn} from './src/watch';
-export {setAlternateWeakRefImpl} from './src/weak_ref';
+export {newWeakRef, setAlternateWeakRefImpl, WeakRef} from './src/weak_ref';

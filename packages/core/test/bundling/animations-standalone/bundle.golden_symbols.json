@@ -1236,6 +1236,9 @@
     "name": "nativeInsertBefore"
   },
   {
+    "name": "newWeakRef"
+  },
+  {
     "name": "nextNgElementId"
   },
   {

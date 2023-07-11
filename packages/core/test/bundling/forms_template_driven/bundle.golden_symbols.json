@@ -1404,6 +1404,9 @@
     "name": "nativeParentNode"
   },
   {
+    "name": "newWeakRef"
+  },
+  {
     "name": "nextBindingIndex"
   },
   {
