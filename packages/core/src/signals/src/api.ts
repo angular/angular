@@ -54,14 +54,14 @@ export function createSignalFromFunction<T>(node: ReactiveNode, fn: () => T): Si
  *     desired interface for the `Signal`.
  */
 export function createSignalFromFunction<T, U extends Record<string, unknown>>(
-    node: ReactiveNode, fn: () => T, extraApi: U): Signal<T>&U;
+  node: ReactiveNode, fn: () => T, extraApi: U): Signal<T>&U;
 
 /**
  * Converts `fn` into a marked signal function (where `isSignal(fn)` will be `true`), and
  * potentially add some set of extra properties (passed as an object record `extraApi`).
  */
 export function createSignalFromFunction<T, U extends Record<string, unknown> = {}>(
-    node: ReactiveNode, fn: () => T, extraApi: U = ({} as U)): Signal<T>&U {
+  node: ReactiveNode, fn: () => T, extraApi?: U): Signal<T>&U {
   (fn as any)[SIGNAL] = node;
   // Copy properties from `extraApi` to `fn` to complete the desired API of the `Signal`.
   return Object.assign(fn, extraApi) as (Signal<T>& U);
