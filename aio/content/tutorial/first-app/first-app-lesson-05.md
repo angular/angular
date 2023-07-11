@@ -1,6 +1,6 @@
 # Lesson 5 - Add an input parameter to the component
 
-This tutorial lesson demonstrates how to create a component `@Input()`, use it to pass data to a component for customization.
+This tutorial lesson demonstrates how to create a component `@Input()` and use it to pass data to a component for customization.
 
 **Time required:** expect to spend about 10 minutes to complete this lesson.
 
@@ -19,7 +19,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## After you finish
 
-* Your app's `HousingLocationComponent` template has a `HousingLocation` property to receive input.
+Your app's `HousingLocationComponent` template has a `HousingLocation` property to receive input.
 
 ## Conceptual preview of Inputs
 [Inputs](api/core/Input) allow components to share data. The direction of the data sharing is from parent component to child component.
@@ -66,3 +66,5 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 ## For more information about the topics covered in this lesson, visit:
 * [Sharing data between child and parent directives and components](guide/inputs-outputs)
+
+@reviewed 2023-07-11
