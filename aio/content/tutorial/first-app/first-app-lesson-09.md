@@ -9,9 +9,9 @@ This tutorial lesson demonstrates how to create an Angular service and use depen
 
 ## What you'll learn
 
-*  Your app has a service to serve the data to your app.
-   At the end of this lesson, the service reads data from local, static data.
-   In a later lesson, you update the service to get data from a web service.
+Your app has a service to serve the data to your app.
+At the end of this lesson, the service reads data from local, static data.
+In a later lesson, you'll update the service to get data from a web service.
 
 ## Conceptual preview of services
 
@@ -91,7 +91,7 @@ In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
 1.  From `HomeComponent`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
-1.  In `HomeComponent`, add this code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
+1.  In `HomeComponent`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
     <code-example header="Initialize data from service in src/app/home/home.component.ts" path="first-app-lesson-09/src/app/home/home.component.ts" region="use-new-service"></code-example>
 
@@ -121,3 +121,5 @@ For more information about the topics covered in this lesson, visit:
 *  [Dependency injection in Angular](guide/dependency-injection-overview)
 *  [ng generate service](cli/generate#service)
 *  [ng generate](cli/generate)
+
+@reviewed 2023-07-15
