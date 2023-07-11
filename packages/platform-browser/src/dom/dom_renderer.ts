@@ -132,7 +132,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
           break;
       }
 
-      renderer.onDestroy = () => rendererByCompId.delete(type.id);
       rendererByCompId.set(type.id, renderer);
     }
 
@@ -397,8 +396,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
-  private rendererUsageCount = 0;
-  onDestroy: VoidFunction|undefined;
 
   constructor(
       eventManager: EventManager,
@@ -416,7 +413,6 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
 
   applyStyles(): void {
     this.sharedStylesHost.addStyles(this.styles);
-    this.rendererUsageCount++;
   }
 
   override destroy(): void {
@@ -425,10 +421,6 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     }
 
     this.sharedStylesHost.removeStyles(this.styles);
-    this.rendererUsageCount--;
-    if (this.rendererUsageCount === 0) {
-      this.onDestroy?.();
-    }
   }
 }
 
