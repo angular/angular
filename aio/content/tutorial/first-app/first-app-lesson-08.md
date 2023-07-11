@@ -1,5 +1,5 @@
 # Lesson 8: Use *ngFor to list objects in component
-This tutorial lesson demonstrates how to use `ngFor` directive in Angular templates in order to display dynamically repeat data data in a template.
+This tutorial lesson demonstrates how to use `ngFor` directive in Angular templates in order to display dynamically repeated data in a template.
 
 **Estimated time**: ~10 minutes
 
@@ -23,10 +23,12 @@ For a more in depth explanation, please refer to the [Built-in directives](guide
 In the `HomeComponent` there is only a single housing location. In this step, you will add an array of `HousingLocation` entries.
 
 1.  In `src/app/home/home.component.ts`, remove the `housingLocation` property from the `HomeComponent` class.
-1.  update the `HomeComponent` class to have a property called `housingLocationList`. Update your code to match the following code:
+1.  Update the `HomeComponent` class to have a property called `housingLocationList`. Update your code to match the following code:
     <code-example header="Add housingLocationList property" path="first-app-lesson-08/src/app/home/home.component.ts" region="housing-list-entries"></code-example>
 
-    Note: Do not remove the `@Component` decorator, you will update that code in an upcoming step.
+    <div class="callout is-important">
+      Do not remove the `@Component` decorator, you will update that code in an upcoming step.
+    </div>
 
 ## Step 2 - Update the `HomeComponent` template to use `ngFor`
 Now the app has a dataset that you can use to display the entries in the browser using the `ngFor` directive. 
@@ -34,7 +36,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 1.  Update the `<app-housing-location>` tag in the template code to this:
     <code-example header="Add ngFor to HomeComponent template" path="first-app-lesson-08/src/app/home/home.component.ts" region="add-ngFor"></code-example>
 
-    Note, the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it refered to the property on the `HomeComponent` class.
+    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it refered to the property on the `HomeComponent` class.
 
 1.  Save all changes.
 
@@ -59,3 +61,5 @@ If you are having any trouble with this lesson, you can review the completed cod
 * [Structural Directives](/guide/structural-directives)
 * [ngFor guide](/guide/built-in-directives#ngFor)
 * [ngFor](/api/common/NgFor)
+
+@reviewed 2023-07-11
