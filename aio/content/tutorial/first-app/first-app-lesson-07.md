@@ -31,11 +31,11 @@ In the code editor:
 
     In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 
-    You use interpolation to include the values for name, city and state of the `housingLocation` property.
+    You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
 
 ## Step 2 - Confirm the changes render in the browser
 1.  Save all changes.
-1.  Open the browser can confirm that the app renders the photo, city and state sample data.
+1.  Open the browser and confirm that the app renders the photo, city and state sample data.
     <section class="lightbox">
     <img alt="browser frame of homes-app displaying logo, filter text input box, search button and the same housing location UI card" src="generated/images/guide/faa/homes-app-lesson-07-step-2.png">
     </section>
