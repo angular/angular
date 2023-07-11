@@ -86,7 +86,7 @@ This step tests the new form to see that when the form data is submitted to the 
 
 1.  In the **Terminal** pane of your IDE, run `ng serve`, if it isn't already running.
 1.  In your browser, open your app at `http://localhost:4200`.
-1.  In your app, right click in the app and from the context menu, choose **Inspect**.
+1.  Right click on the app in the browser and from the context menu, choose **Inspect**.
 1.  In the developer tools window, choose the **Console** tab.
     Make sure that the developer tools window is visible for the next steps
 1.  In your app:
@@ -100,7 +100,7 @@ This step tests the new form to see that when the form data is submitted to the 
 
 In this lesson, you updated your app to:
 *  add a form using Angular's forms feature
-*  connect the data captured in the form to a form using an event handler
+*  connect the data captured in the form to a component using an event handler
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
@@ -114,3 +114,5 @@ For more information about the topics covered in this lesson, visit:
 
 *  [Angular Forms](/guide/forms)
 *  [Event Handling](/guide/event-binding)
+
+@reviewed 2023-07-12

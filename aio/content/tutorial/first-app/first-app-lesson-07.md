@@ -56,3 +56,5 @@ If you are having any trouble with this lesson, you can review the completed cod
 ## For more information about the topics covered in this lesson, visit:
 * [Displaying values with interpolation](/guide/interpolation)
 * [Template syntax](guide/template-syntax)
+
+@reviewed 2023-07-11

@@ -12,7 +12,7 @@ Up until this point your app has read data from a static array in an Angular ser
 
 ## What you'll learn
 
-*  Your app will use data from a JSON server
+Your app will use data from a JSON server
 
 ## Step 1 - Configure the JSON server
 JSON Server is an open source tool used to create mock REST APIs. You'll use it to serve the housing location data that is currently stored in the housing service.
@@ -151,7 +151,7 @@ The data source has been configured, the next step is to update your web app to 
 
     1.  Update the code to remove `housingLocationList` property and the array containing the data.
 
-    1.  Add a string property called and set the value to `'http://localhost:3000/locations'`
+    1.  Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
         
         <code-example anguage="javascript" format="javascript">
         url = 'http://localhost:3000/locations';
@@ -163,24 +163,28 @@ The data source has been configured, the next step is to update your web app to 
 
         <code-example header="" path="first-app-lesson-14/src/app/housing.service.ts" region="update-getAllHousingLocations"></code-example>
 
-        The code now uses asynchronous code to make a `get` request over `HTTP`. Notice, for this example, the code uses fetch. For more advanced use cases consider using `HttpClient` provided by Angular.
+        The code now uses asynchronous code to make a **GET** request over HTTP.
+        
+        <div class="callout is-helpful">
+        For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
+        </div>
 
     1.  Update the `getHousingLocationsById` function to make a call to the web server you configured.
 
         <code-example header="" path="first-app-lesson-14/src/app/housing.service.ts" region="update-getHousingLocationById"></code-example>
 
-    1. Once all the updates are complete, your updated service will match the following code.
+    1. Once all the updates are complete, your updated service should match the following code.
 
         <code-example header="Final version of housing.service.ts" path="first-app-lesson-14/src/app/housing.service.ts"></code-example>
 
 ## Step 3 - Update the components to use asynchronous calls to the housing service
-The server is now reading data from the `HTTP` request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
+The server is now reading data from the HTTP request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
 
-1.  In `src/app/home/home.component.ts`, update the constructor to use the new asynchronous version of the `getAllHousingLocations` method.
+1.  In `src/app/home/home.component.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
     <code-example header="" path="first-app-lesson-14/src/app/home/home.component.ts" region="update-home-component-constructor"></code-example>
 
-1.  In `src/app/details/details.component.ts`, update the constructor to use the new asynchronous version of the `getHousingLocationById` method.
+1.  In `src/app/details/details.component.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 
     <code-example header="" path="first-app-lesson-14/src/app/details/details.component.ts" region="update-details-component-constructor"></code-example>
 
@@ -194,3 +198,5 @@ In this lesson, you updated your app to:
 * use asynchronous service methods to retrieve data.
 
 Congratulations! You've successfully completed this tutorial and are ready to continue your journey with building even more complex Angular Apps. If you would like to learn more, please consider completing some of Angular's other developer [tutorials](tutorial) and [guides](/guide/developer-guide-overview).
+
+@reviewed 2023-07-12
