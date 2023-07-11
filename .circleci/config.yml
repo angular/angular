@@ -633,6 +633,7 @@ jobs:
             - node_modules
             - ~/AppData/Local/bazelisk
 
+  # TODO(josephperrott): remove job once stablitily of GHA version is verified
   test_angular_devtools:
     executor: test-browser-executor
     steps:
