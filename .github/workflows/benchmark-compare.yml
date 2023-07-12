@@ -44,7 +44,10 @@ jobs:
 
       - name: Preparing benchmark for GitHub action
         id: info
-        run: yarn benchmarks prepare-for-github-action "${{github.event.comment.body}}"
+        env:
+          # Untrusted input used in an executable code, must be wrapped as an env var to prevent injections
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: yarn benchmarks prepare-for-github-action "$COMMENT_BODY"
 
       - run: yarn benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
         id: benchmark
