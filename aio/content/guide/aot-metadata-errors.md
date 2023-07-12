@@ -58,7 +58,7 @@ and be wary of new or unusual TypeScript features.
 
 </div>
 
-The compiler encountered a referenced to a locally defined symbol that either wasn't exported or wasn't initialized.
+The compiler encountered a reference to a locally defined symbol that either wasn't exported or wasn't initialized.
 
 Here's a `provider` example of the problem.
 
