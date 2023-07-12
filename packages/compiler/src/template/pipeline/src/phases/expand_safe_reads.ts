@@ -147,8 +147,7 @@ function deepestSafeTernary(e: o.Expression): ir.SafeTernaryExpr|null {
 // instead to save some code size.
 function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression {
   if (e instanceof ir.SafeInvokeFunctionExpr) {
-    // TODO: Implement safe function calls in a subsequent commit.
-    return new o.InvokeFunctionExpr(e.receiver, e.args);
+    return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.callFn(e.args), ctx);
   }
 
   if (!isAccessExpression(e)) {
