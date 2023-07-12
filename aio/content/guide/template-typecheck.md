@@ -262,11 +262,11 @@ Consider the following directive:
 class SubmitButton {
   private _disabled: boolean;
 
-  &commat;Input()
   get disabled(): boolean {
     return this._disabled;
   }
 
+  &commat;Input()
   set disabled(value: boolean) {
     this._disabled = value;
   }
@@ -316,11 +316,11 @@ Enable this by adding a static property with the `ngAcceptInputType_` prefix to 
 class SubmitButton {
   private _disabled: boolean;
 
-  &commat;Input()
   get disabled(): boolean {
     return this._disabled;
   }
 
+  &commat;Input()
   set disabled(value: boolean) {
     this._disabled = (value === '') &verbar;&verbar; value;
   }
