@@ -62,7 +62,7 @@ Important options include the *observe* and *responseType* properties.
 Use the `options` object to configure various other aspects of an outgoing request.
 In adding headers, for example, the service set the default headers using the `headers` option property.
 
-Use the `params` property to configure a request with [TTP URL parameters, and the `reportProgress` option to listen for progress events when transferring large amounts of data.
+Use the `params` property to configure a request with HTTP URL parameters, and the `reportProgress` option to listen for progress events when transferring large amounts of data.
 
 </div>
 
