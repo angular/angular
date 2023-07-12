@@ -97,7 +97,7 @@ Angular components, templates, and styles go here.
 | `app/app.component.html` | Defines the HTML template associated with the root `AppComponent`. |
 | `app/app.component.css` | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
-| `app/app.module.ts` | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_Only generated when using the `--standalone` option._ |
+| `app/app.module.ts` | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_Not generated when using the `--standalone` option._ |
 
 ### Application configuration files
 
