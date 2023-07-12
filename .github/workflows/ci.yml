@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+.x'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@852c3d1898775ec9fbc87213e519f16e78805b57
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./node_modules
+            ./aio/node_modules
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Install node modules in aio
+        run: yarn install --frozen-lockfile --cwd aio
+      - name: Check code lint
+        run: yarn -s tslint
+      - name: Check code lint in aio
+        run: yarn -s --cwd aio lint
+      - name: Check for circular dependencies
+        run: yarn -s ts-circular-deps:check
+      - name: Validate pull approve configuration
+        run: yarn -s ng-dev pullapprove verify
+      - name: Validate angular robot configuration
+        run: yarn -s ng-dev ngbot verify
+      - name: Confirm code builds with typescript as expected
+        run: yarn -s check-tooling-setup
+      - name: Check commit message
+        # Commit message validation is only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+      - name: Check code format
+        # Code formatting checks are only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
