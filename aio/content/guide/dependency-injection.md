@@ -68,7 +68,7 @@ class HeroListComponent {
 }
 </code-example>
 
-Another way to inject a dependency without defining the constructor is to use the [inject](api/core/inject) method.
+Another option is to use the [inject](api/core/inject) method:
 
 <code-example language="typescript">
 @Component({ … })
