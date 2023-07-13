@@ -88,7 +88,7 @@ In the **Edit** pane of your IDE:
 
     <code-example header="Import HomeComponent in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="import-home"></code-example>
 
-1.  In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
+1.  In `app.module.ts`, in `@NgModule`, update the `imports` array property and add `HomeComponent`.
 
     <code-example header="Replace in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="app-metadata-imports"></code-example>
 1.  In `app.component.ts`, in `@Component`, update the `template` property to include the following HTML code.
