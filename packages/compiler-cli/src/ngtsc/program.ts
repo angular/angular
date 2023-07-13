@@ -52,6 +52,12 @@ export class NgtscProgram implements api.Program {
       verifySupportedTypeScriptVersion();
     }
 
+    // In local compilation mode there are almost always (many) emit errors due to imports that
+    // cannot be resolved. So we should emit regardless.
+    if (options.compilationMode === 'experimental-local') {
+      options.noEmitOnError = false;
+    }
+
     const reuseProgram = oldProgram?.compiler.getCurrentProgram();
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
 
@@ -156,6 +162,12 @@ export class NgtscProgram implements api.Program {
   getTsSemanticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
+    // No TS semantic check should be done in local compilation mode, as it is always full of errors
+    // due to cross file imports.
+    if (this.options.compilationMode === 'experimental-local') {
+      return [];
+    }
+
     return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
       const ignoredFiles = this.compiler.ignoreForDiagnostics;
       let res: readonly ts.Diagnostic[];
