@@ -241,7 +241,8 @@ export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResu
   oldProgram?: api.Program,
   emitCallback?: api.TsEmitCallback<CbEmitRes>,
   mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback<CbEmitRes>,
-  gatherDiagnostics?: (program: api.Program) => ReadonlyArray<ts.Diagnostic>,
+  gatherDiagnostics?: (program: api.Program, options: api.CompilerOptions) =>
+                       ReadonlyArray<ts.Diagnostic>,
   customTransformers?: api.CustomTransformers,
   emitFlags?: api.EmitFlags,
   forceEmit?: boolean,
@@ -261,7 +262,7 @@ export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResu
     program = ng.createProgram({rootNames, host, options, oldProgram});
 
     const beforeDiags = Date.now();
-    allDiagnostics.push(...gatherDiagnostics(program!));
+    allDiagnostics.push(...gatherDiagnostics(program!, options));
     if (options.diagnostics) {
       const afterDiags = Date.now();
       allDiagnostics.push(
@@ -289,7 +290,8 @@ export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResu
     return {diagnostics: allDiagnostics, program};
   }
 }
-export function defaultGatherDiagnostics(program: api.Program): ReadonlyArray<ts.Diagnostic> {
+export function defaultGatherDiagnostics(
+    program: api.Program, options: api.CompilerOptions): ReadonlyArray<ts.Diagnostic> {
   const allDiagnostics: Array<ts.Diagnostic> = [];
 
   function checkDiagnostics(diags: ReadonlyArray<ts.Diagnostic>|undefined) {
@@ -309,11 +311,17 @@ export function defaultGatherDiagnostics(program: api.Program): ReadonlyArray<ts
   checkOtherDiagnostics =
       checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics());
 
-  // Check TypeScript semantic and Angular structure diagnostics
+  // Check TypeScript semantic
+  if (options.compilationMode !== 'experimental-local') {
+    // In local compilation mode semantic checks almost always fails as external imports cannot be
+    // resolved. So we skip them.
+    checkOtherDiagnostics =
+        checkOtherDiagnostics && checkDiagnostics(program.getTsSemanticDiagnostics());
+  }
+
+  // Check Angular structure diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics &&
-      checkDiagnostics(
-          [...program.getTsSemanticDiagnostics(), ...program.getNgStructuralDiagnostics()]);
+      checkOtherDiagnostics && checkDiagnostics(program.getNgStructuralDiagnostics());
 
   // Check Angular semantic diagnostics
   checkOtherDiagnostics =
