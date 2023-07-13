@@ -202,6 +202,22 @@ describe('FormGroup', () => {
          expect(g.valid).toBe(false);
          expect(logger).toEqual([]);
        });
+
+    it('should add control with inherited property name', () => {
+      const g: FormGroup = new FormGroup({});
+
+      g.addControl('valueOf', new FormControl('1'));
+
+      expect(g.value).toEqual({'valueOf': '1'});
+    });
+
+    it('should remove control with inherited property name', () => {
+      const g: FormGroup = new FormGroup({valueOf: new FormControl('1')});
+
+      g.removeControl('valueOf');
+
+      expect(g.value).toEqual({});
+    });
   });
 
   describe('dirty', () => {
@@ -1929,6 +1945,18 @@ describe('FormGroup', () => {
       g.statusChanges.subscribe(() => logger.push('status change'));
       g.setControl('one', c2, {emitEvent: false});
       expect(logger).toEqual([]);
+    });
+
+    it('should replace existing control with inherited property name with new control', () => {
+      const c1 = new FormControl('old', Validators.minLength(10));
+      const c2 = new FormControl('new!', Validators.minLength(10));
+      g = new FormGroup({valueOf: c1});
+
+      g.setControl('valueOf', c2);
+
+      expect(g.controls['valueOf']).toEqual(c2);
+      expect(g.value).toEqual({valueOf: 'new!'});
+      expect(g.valid).toBe(false);
     });
   });
 
