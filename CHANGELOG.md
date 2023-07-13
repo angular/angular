@@ -1,3 +1,35 @@
+<a name="16.2.0-next.2"></a>
+# 16.2.0-next.2 (2023-07-13)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a14bdfe859](https://github.com/angular/angular/commit/a14bdfe8591a33d359bf4940f4efa828499a6373) | fix | Ensure elements are removed from the cache after leave animation. ([#50929](https://github.com/angular/angular/pull/50929)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1837efb9da](https://github.com/angular/angular/commit/1837efb9daf5c8e86a99a06ecc77bb42bc60dbb0) | feat | Allow ngSrc to be changed post-init ([#50683](https://github.com/angular/angular/pull/50683)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c27a1e61d6](https://github.com/angular/angular/commit/c27a1e61d64a67aa169086f7db11bcfd5bb7d2fc) | feat | scope selectors in @scope queries ([#50747](https://github.com/angular/angular/pull/50747)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [031b599a55](https://github.com/angular/angular/commit/031b599a5528e1df5779695eb75b738a5a3076fe) | fix | ensure that standalone components get correct injector instances ([#50954](https://github.com/angular/angular/pull/50954)) |
+| [5d6ec0336b](https://github.com/angular/angular/commit/5d6ec0336bdea22735d0ca2bbd7cfad958efbdda) | fix | handle `deref` returning `null` on `RefactiveNode`. ([#50992](https://github.com/angular/angular/pull/50992)) |
+| [b66a16ec4c](https://github.com/angular/angular/commit/b66a16ec4cf42f47efeafa711ec301efeda272be) | fix | use `setTimeout` when coalescing tasks in Node.js ([#50820](https://github.com/angular/angular/pull/50820)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f1b629961f](https://github.com/angular/angular/commit/f1b629961f75d535982a6196e70b82f177587ebf) | perf | do not remove renderer from cache when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is enabled. ([#51005](https://github.com/angular/angular/pull/51005)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a19a87df6c](https://github.com/angular/angular/commit/a19a87df6c30a60ca997083b979a8e1e185e5b43) | fix | allow for downgraded components to work with component-router ([#50871](https://github.com/angular/angular/pull/50871)) |
+| [253d756464](https://github.com/angular/angular/commit/253d7564647607804d45404152d1253993177aea) | fix | Use `takeUntil` on leaky subscription. ([#50901](https://github.com/angular/angular/pull/50901)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.5"></a>
 # 16.1.5 (2023-07-13)
 ### animations
