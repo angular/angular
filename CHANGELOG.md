@@ -1,3 +1,25 @@
+<a name="16.1.5"></a>
+# 16.1.5 (2023-07-13)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f920fcbd94](https://github.com/angular/angular/commit/f920fcbd94d8a1b8cbd2b80f349ed85b4e730a0e) | fix | Ensure elements are removed from the cache after leave animation. ([#50929](https://github.com/angular/angular/pull/50929)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [499fb5c772](https://github.com/angular/angular/commit/499fb5c772332c03ebd8bbf7e1e6cba80dc0def0) | fix | ensure that standalone components get correct injector instances ([#50954](https://github.com/angular/angular/pull/50954)) |
+| [c65913ecb7](https://github.com/angular/angular/commit/c65913ecb7de96ee0178c64136c5ffbc62348f34) | fix | handle `deref` returning `null` on `RefactiveNode`. ([#50992](https://github.com/angular/angular/pull/50992)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31419f6a3b](https://github.com/angular/angular/commit/31419f6a3b7d57c5e789d6073d7b6505cf720c13) | perf | do not remove renderer from cache when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is enabled. ([#51005](https://github.com/angular/angular/pull/51005)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3efb577cf3](https://github.com/angular/angular/commit/3efb577cf3b38dda89cba05871224951d1f88146) | fix | Use `takeUntil` on leaky subscription. ([#50901](https://github.com/angular/angular/pull/50901)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.4"></a>
 # 16.1.4 (2023-07-06)
 ### core
