@@ -17,6 +17,8 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 *   Warning if `width` or `height` have been set incorrectly
 *   Warning if the image will be visually distorted when rendered
 
+**Note: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well. **
+
 ## Getting Started
 
 #### Step 1: Import NgOptimizedImage
@@ -75,7 +77,7 @@ In order to prevent [image-related layout shifts](https://web.dev/css-web-vitals
 
 </code-example>
 
-For **responsive images** (images which you've styled to grow and shrink relative to the viewport), the `width` and `height` attributes should be the instrinsic size of the image file.
+For **responsive images** (images which you've styled to grow and shrink relative to the viewport), the `width` and `height` attributes should be the instrinsic size of the image file. For responsive images it's also important to [set a value for `sizes`.](#responsive-images)
 
 For **fixed size images**, the `width` and `height` attributes should reflect the desired rendered size of the image. The aspect ratio of these attributes should always match the intrinsic aspect ratio of the image.
 
@@ -312,10 +314,33 @@ Note that in the above example, we've invented the 'roundedCorners' property nam
 
 </code-example>
 
+## Frequently Asked Questions
+
+### Does NgOptimizedImage support the `background-image` css property?
+The NgOptimizedImage does not directly support the `background-image` css property, but it is designed to easily accommodate the use case of having an image as the background of another element.
+
+Here's a simple step-by-step process for migrating from `background-image` to `NgOptimizedImage`. For these steps, we'll refer to the element that has an image background as the "containing element":
+
+1) Remove the `background-image` style from the containing element.
+2) Ensure that the containing element has `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+3) Create a new image element as a child of the containing element, using `ngSrc` to enable the `NgOptimizedImage` directive.
+4) Give that element the `fill` attribute. Do not include a `height` and `width`.
+5) If you believe this image might be your [LCP element](https://web.dev/lcp/), add the `priority` attribute to the image element.
+
+You can adjust how the background image fills the container as described in the [Using fill mode](#using-fill-mode) section.
+
+### Why can't I use `src` with `NgOptimizedImage`?
+The `ngSrc` attribute was chosen as the trigger for NgOptimizedImage due to technical considerations around how images are loaded by the browser. NgOptimizedImage makes programmatic changes to the `loading` attribute--if the browser sees the `src` attribute before those changes are made, it will begin eagerly downloading the image file, and the loading changes will be ignored. 
+
+### Can I use two different image domains in the same page?
+The [image loaders](#configuring-an-image-loader-for-ngoptimizedimage) provider pattern is designed to be as simple as possible for the common use case of having only a single image CDN used within a component. However, it's still very possible to manage multiple image CDNs using a single provider.
+
+To do this, we recommend writing a [custom image loader](#custom-loaders) which uses the [`loaderParams` property](#the-loaderparams-property) to pass a flag that specifies which image CDN should be used, and then invokes the appropriate loader based on that flag.
+
 <!-- links -->
 
 <!-- external links -->
 
 <!--end links -->
 
-@reviewed 2022-11-07
+@reviewed 2023-07-18
