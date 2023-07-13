@@ -52,6 +52,12 @@ export class NgtscProgram implements api.Program {
       verifySupportedTypeScriptVersion();
     }
 
+    // In local compilation mode there are almost always emit errors due to imports that cannot be
+    // resolved. So we should always emit regardless.
+    if (options.compilationMode === 'experimental-local') {
+      options.noEmitOnError = false;
+    }
+
     const reuseProgram = oldProgram?.compiler.getCurrentProgram();
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
 

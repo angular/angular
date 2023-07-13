@@ -266,7 +266,7 @@ export class NgtscTestEnvironment {
     await program.loadNgStructureAsync();
 
     // ngtsc only produces ts.Diagnostic messages.
-    return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
+    return defaultGatherDiagnostics(program as api.Program, options) as ts.Diagnostic[];
   }
 
   driveTemplateTypeChecker(): {program: ts.Program, checker: TemplateTypeChecker} {
