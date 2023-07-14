@@ -21,7 +21,7 @@ The lessons in this tutorial assume that you have done the following:
 1.  **Created an HTML web page by editing the HTML directly.**
         This tutorial makes references to HTML elements and the Document Object Model (DOM). If these terms are not familiar, review HTML programming before you start this tutorial.
 1.  **Programmed web site content in JavaScript.**
-        This tutorial has many examples of TypeScript programming, which is based on JavaScript. TypeScript-specific feature are explained, but familiarity with JavaScript programming is necessary to understand the lessons in this tutorial.
+        This tutorial has many examples of TypeScript programming, which is based on JavaScript. TypeScript-specific features are explained, but familiarity with JavaScript programming is necessary to understand the lessons in this tutorial.
 1.  **Read Cascading Style Sheet (CSS) content and understand how selectors are used.**
         This tutorial does not require any CSS coding, but if these terms are not familiar, review CSS and selectors before you start this tutorial.
 1.  **Used command-line instructions to perform tasks on your computer.**
@@ -35,7 +35,7 @@ Working on your own computer has the advantage of being able to save your work l
 
 ## Conceptual preview of your first Angular app
 
-The lessons in this tutorial create a simple Angular app that lists houses for rent and show the details of individual houses.
+The lessons in this tutorial create a simple Angular app that lists houses for rent and shows the details of individual houses.
 This app uses features that are common to many Angular apps.
 <section class="lightbox">
   <img alt="Output of heroes dashboard" src="generated/images/guide/faa/homes-app-landing-page.png">
