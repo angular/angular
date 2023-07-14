@@ -12,12 +12,16 @@ For the best experience with this tutorial, review these requirements to make su
 
 ### Your experience
 
-The lessons in this tutorial assume that you experience with the following:
+The lessons in this tutorial assume that you have experience with the following:
 
-1.  Created an HTML web page by editing the HTML directly.
-1.  Programmed web site content in JavaScript.
-1.  Read Cascading Style Sheet (CSS) content and understand how selectors are used.
-1.  Used command-line instructions to perform tasks on your computer.
+1.  **Created an HTML web page by editing the HTML directly.**
+        This tutorial makes references to HTML elements and the Document Object Model (DOM). If these terms are not familiar, review HTML programming before you start this tutorial.
+1.  **Programmed web site content in JavaScript.**
+        This tutorial has many examples of TypeScript programming, which is based on JavaScript. TypeScript-specific features are explained, but familiarity with JavaScript programming is necessary to understand the lessons in this tutorial.
+1.  **Read Cascading Style Sheet (CSS) content and understand how selectors are used.**
+        This tutorial does not require any CSS coding, but if these terms are not familiar, review CSS and selectors before you start this tutorial.
+1.  **Used command-line instructions to perform tasks on your computer.**
+        Angular uses the Angular CLI to perform many tasks. This tutorial provides the commands to use and assumes that you know how to open the command line tool or terminal interface in which to use them. If you aren't sure how to use a command line tool or terminal interface, review that before starting this tutorial.
 
 ### Your equipment
 
