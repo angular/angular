@@ -9,8 +9,8 @@
 export {defaultEquals, isSignal, Signal, SIGNAL, ValueEqualityFn} from './src/api';
 export {computed, CreateComputedOptions} from './src/computed';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
-export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, setActiveConsumer} from './src/graph';
+export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, isInNotificationPhase, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal} from './src/signal';
 export {untracked} from './src/untracked';
-export {Watch, watch, WatchCleanupFn} from './src/watch';
+export {Watch, watch, WatchCleanupFn, WatchCleanupRegisterFn} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';

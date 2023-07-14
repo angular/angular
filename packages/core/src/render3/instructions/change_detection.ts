@@ -48,7 +48,7 @@ export function detectChangesInternal<T>(
 
       // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
       // other post-order hooks.
-      environment.effectManager?.flush();
+      environment.inlineEffectRunner?.flush();
 
       // Invoke all callbacks registered via `after*Render`, if needed.
       afterRenderEventManager?.end();
@@ -117,7 +117,7 @@ export function refreshView<T>(
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
   const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
 
-  !isInCheckNoChangesPass && lView[ENVIRONMENT].effectManager?.flush();
+  !isInCheckNoChangesPass && lView[ENVIRONMENT].inlineEffectRunner?.flush();
 
   enterView(lView);
   try {

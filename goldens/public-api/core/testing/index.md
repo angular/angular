@@ -20,6 +20,7 @@ import { PlatformRef } from '@angular/core';
 import { ProviderToken } from '@angular/core';
 import { SchemaMetadata } from '@angular/core';
 import { Type } from '@angular/core';
+import { ɵFlushableEffectRunner } from '@angular/core';
 
 // @public
 export const __core_private_testing_placeholder__ = "";
@@ -29,7 +30,7 @@ export function async(fn: Function): (done: any) => any;
 
 // @public
 export class ComponentFixture<T> {
-    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, _autoDetect: boolean);
+    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, effectRunner: ɵFlushableEffectRunner | null, _autoDetect: boolean);
     autoDetectChanges(autoDetect?: boolean): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;
@@ -110,6 +111,7 @@ export interface TestBed {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
+    flushEffects(): void;
     // @deprecated (undocumented)
     get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     // @deprecated (undocumented)

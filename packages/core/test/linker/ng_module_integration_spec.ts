@@ -107,7 +107,7 @@ describe('NgModule', () => {
 
     const comp = cf.create(Injector.NULL);
 
-    return new ComponentFixture(comp, null, false);
+    return new ComponentFixture(comp, null, null, false);
   }
 
   describe('errors', () => {

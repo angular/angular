@@ -141,9 +141,6 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
-    "name": "EffectManager"
-  },
-  {
     "name": "ElementRef"
   },
   {
@@ -312,9 +309,6 @@
     "name": "NODES"
   },
   {
-    "name": "NOOP_CLEANUP_FN"
-  },
-  {
     "name": "NOT_FOUND"
   },
   {
@@ -382,9 +376,6 @@
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
-  },
-  {
-    "name": "REACTIVE_NODE"
   },
   {
     "name": "REFERENCE_NODE_BODY"
@@ -511,9 +502,6 @@
   },
   {
     "name": "ViewRef"
-  },
-  {
-    "name": "WATCH_NODE"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -673,12 +661,6 @@
   },
   {
     "name": "consumerIsLive"
-  },
-  {
-    "name": "consumerMarkDirty"
-  },
-  {
-    "name": "consumerPollProducersForChange"
   },
   {
     "name": "convertToBitFlags"
@@ -948,9 +930,6 @@
     "name": "importProvidersFrom"
   },
   {
-    "name": "inNotificationPhase"
-  },
-  {
     "name": "includeViewProviders"
   },
   {
@@ -1180,9 +1159,6 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
-  },
-  {
-    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"

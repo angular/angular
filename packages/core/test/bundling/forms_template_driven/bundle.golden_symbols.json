@@ -186,9 +186,6 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
-    "name": "EffectManager"
-  },
-  {
     "name": "ElementRef"
   },
   {
@@ -345,9 +342,6 @@
     "name": "NG_VALUE_ACCESSOR"
   },
   {
-    "name": "NOOP_CLEANUP_FN"
-  },
-  {
     "name": "NOT_FOUND"
   },
   {
@@ -454,9 +448,6 @@
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
-  },
-  {
-    "name": "REACTIVE_NODE"
   },
   {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
@@ -601,9 +592,6 @@
   },
   {
     "name": "ViewRef"
-  },
-  {
-    "name": "WATCH_NODE"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -805,12 +793,6 @@
   },
   {
     "name": "consumerIsLive"
-  },
-  {
-    "name": "consumerMarkDirty"
-  },
-  {
-    "name": "consumerPollProducersForChange"
   },
   {
     "name": "controlPath"
@@ -1158,9 +1140,6 @@
     "name": "importProvidersFrom"
   },
   {
-    "name": "inNotificationPhase"
-  },
-  {
     "name": "includeViewProviders"
   },
   {
@@ -1492,9 +1471,6 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
-  },
-  {
-    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"

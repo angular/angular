@@ -145,8 +145,8 @@ describe('di', () => {
           {}, LViewFlags.CheckAlways, null, null, {
             rendererFactory: {} as any,
             sanitizer: null,
-            effectManager: null,
-            afterRenderEventManager: null
+            inlineEffectRunner: null,
+            afterRenderEventManager: null,
           },
           {} as any, null, null, null);
       enterView(contentView);
