@@ -23,5 +23,8 @@ export {
   effect,
   EffectRef,
   EffectCleanupFn,
+  EffectScheduler as ɵEffectScheduler,
+  ZoneAwareQueueingScheduler as ɵZoneAwareQueueingScheduler,
+  FlushableEffectRunner as ɵFlushableEffectRunner,
 } from './render3/reactivity/effect';
-// clang-format on    
+// clang-format on
