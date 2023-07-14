@@ -36,7 +36,9 @@ import {
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
-  ɵstringify as stringify} from '@angular/core';
+  ɵstringify as stringify,
+  ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler,
+} from '@angular/core';
 
 /* clang-format on */
 
@@ -139,6 +141,14 @@ export interface TestBed {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
+
+
+  /**
+   * Execute any pending effects.
+   *
+   * @developerPreview
+   */
+  flushEffects(): void;
 }
 
 let _nextRootElementId = 0;
@@ -361,6 +371,10 @@ export class TestBedImpl implements TestBed {
 
   static get ngModule(): Type<any>|Type<any>[] {
     return TestBedImpl.INSTANCE.ngModule;
+  }
+
+  static flushEffects(): void {
+    return TestBedImpl.INSTANCE.flushEffects();
   }
 
   // Properties
@@ -613,7 +627,8 @@ export class TestBedImpl implements TestBed {
     const initComponent = () => {
       const componentRef =
           componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
-      return new ComponentFixture<any>(componentRef, ngZone, autoDetect);
+      return new ComponentFixture<any>(
+          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect);
     };
     const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
     this._activeFixtures.push(fixture);
@@ -748,6 +763,15 @@ export class TestBedImpl implements TestBed {
     } finally {
       testRenderer.removeAllRootElements?.();
     }
+  }
+
+  /**
+   * Execute any pending effects.
+   *
+   * @developerPreview
+   */
+  flushEffects(): void {
+    this.inject(ZoneAwareQueueingScheduler).flush();
   }
 }
 

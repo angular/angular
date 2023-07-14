@@ -7,7 +7,6 @@
  */
 
 import {Sanitizer, Type, ɵAfterRenderEventManager as AfterRenderEventManager} from '@angular/core';
-import {EffectManager} from '@angular/core/src/render3/reactivity/effect';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {extractDirectiveDef} from '../../src/render3/definition';
@@ -75,8 +74,8 @@ export class ViewFixture {
         null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, {
           rendererFactory,
           sanitizer: sanitizer || null,
-          effectManager: new EffectManager(),
           afterRenderEventManager: new AfterRenderEventManager(),
+          inlineEffectRunner: null,
         },
         hostRenderer, null, null, null);
 
