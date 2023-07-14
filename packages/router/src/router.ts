@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ErrorHandler, inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
@@ -159,6 +159,8 @@ export class Router {
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
   private console = inject(Console);
+
+  private errorHandlerInstance = inject(ErrorHandler);
   private isNgZoneEnabled: boolean = false;
 
   /**
@@ -389,7 +391,7 @@ export class Router {
    * the Router needs to respond to ensure its internal state matches.
    */
   private navigateToSyncWithBrowser(
-      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+      url: string, source: NavigationTrigger, state: RestoredState|undefined): void {
     const extras: NavigationExtras = {replaceUrl: true};
 
     // TODO: restoredState should always include the entire state, regardless
@@ -414,7 +416,9 @@ export class Router {
     }
 
     const urlTree = this.parseUrl(url);
-    this.scheduleNavigation(urlTree, source, restoredState, extras);
+    this.scheduleNavigation(urlTree, source, restoredState, extras).catch(e => {
+      this.errorHandlerInstance.handleError(e);
+    });
   }
 
   /** The current URL. */

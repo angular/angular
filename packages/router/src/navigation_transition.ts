@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
+import {EnvironmentInjector, ErrorHandler as ErrorHandlerClass, inject, Injectable, Type} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
@@ -293,6 +293,8 @@ export class NavigationTransitions {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
+
+  private readonly errorHandler = inject(ErrorHandlerClass);
   navigationId = 0;
   get hasRequestedNavigation() {
     return this.navigationId !== 0;
@@ -727,11 +729,15 @@ export class NavigationTransitions {
                                      isBrowserTriggeredNavigation(overallTransitionState.source)
                                };
 
-                               router.scheduleNavigation(
-                                   mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
-                                     resolve: overallTransitionState.resolve,
-                                     reject: overallTransitionState.reject,
-                                     promise: overallTransitionState.promise
+                               router
+                                   .scheduleNavigation(
+                                       mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
+                                         resolve: overallTransitionState.resolve,
+                                         reject: overallTransitionState.reject,
+                                         promise: overallTransitionState.promise
+                                       })
+                                   .catch(e => {
+                                     this.errorHandler.handleError(e);
                                    });
                              }
 
