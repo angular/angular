@@ -64,11 +64,11 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
         }
     </code-example>
 
-    This code give the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the constructor, the code converts the id parameter from the route to a number.
+    This code gives the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the constructor, the code converts the id parameter acquired from the route from a string to a number.
 
 1.  Save all changes.
 
-1.  In the browser, click on one of the housing location "learn more" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
+1.  In the browser, click on one of the housing location's "learn more" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
 
 ## Step 3 - Customize the `DetailComponent`
 Now that routing is working properly in the application this is a great time to update the template of the `DetailsComponent` to display the specific data represented by the housing location for the route parameter.
@@ -112,7 +112,7 @@ In a previous lesson you updated the `AppComponent` template to include a `route
 In this lesson you updated your app to:
 * use route parameters to pass data to a route
 * use the `routerLink` directive to use dynamic data to create a route
-* use route parameter to retrieve data from the `HousingService` to display housing location specific information.
+* use route parameter to retrieve data from the `HousingService` to display specific housing location information.
 
 Really great work so far. 
 
