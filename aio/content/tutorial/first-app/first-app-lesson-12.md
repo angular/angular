@@ -15,7 +15,7 @@ Using a REST API to send and receive the form's data is not covered in this less
 ## What you'll learn
 
 *  Your app has a form into which users can enter data that is sent to your app's service.
-*  The service writes the data from the form to the browser's console.=
+*  The service writes the data from the form to the browser's console log.
 
 ## Step 1 - Add a method to send form data
 
@@ -33,7 +33,7 @@ In the **Edit** pane of your IDE:
 
 ## Step 2 - Add the form functions to the details page
 
-This step adds the code to the details page that handles the form interactions.
+This step adds the code to the details page that handles the form's interactions.
 
 In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
@@ -70,7 +70,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
     <code-example header="template directive in src/app/details/details.component.ts" path="first-app-lesson-12/src/app/details/details.component.ts" region="component-template"></code-example>
 
-    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to create define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
+    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 
 1.  Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
