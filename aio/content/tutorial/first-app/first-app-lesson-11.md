@@ -25,6 +25,16 @@ In lesson 10, you added a second route to `src/app/routes.ts`, this route includ
 
 In this case, `:id` is dynamic and will change based on how the route is requested by the code.
 
+1.  In `src/app/housing-location/housing-location.component.ts`, update the component to use routing:
+    1.  Add a file level import for `RoutingModule`:
+
+        <code-example header="Import RouterModule in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-10/src/app/housing-location/housing-location.component.ts" region="import-router-module"></code-example>
+    
+    1.  Add `RouterModule` to the `@Component` metadata imports
+
+        <code-example header="Import RouterModule in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-10/src/app/housing-location/housing-location.component.ts" region="import-router-module-deco"></code-example>
+    
+
 1.  In `src/app/housing-location/housing-location.component.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
 
     <code-example header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-link"></code-example>
