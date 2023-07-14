@@ -773,10 +773,11 @@ function updateStyling(
  *
  * @param tData `TData` used for traversing the priority.
  * @param tNode `TNode` to use for resolving static styling. Also controls search direction.
- *   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
- *      If no value found consult `tNode.residualStyle`/`tNode.residualClass` for default value.
- *   - `null` search prev and go all the way to end. Return last value where
- *     `isStylingValuePresent(value)` is true.
+ *   - `TNode` search next and go all the way to the end. Return the last value where
+ *      `isStylingValuePresent(value)` is true. If no value was found, we consult
+ *      `tNode.residualStyle`/`tNode.residualClass` for default value.
+ *   - `null` search prev and exit as soon as we find a styling value. i.e. the last preceding
+ *      value for the property, where `isStylingValuePresent(value)` is true.
  * @param lView `LView` used for retrieving the actual values.
  * @param prop Property which we are interested in.
  * @param index Starting index in the linked list of styling bindings where the search should start.
@@ -786,10 +787,15 @@ function findStylingValue(
     tData: TData, tNode: TNode|null, lView: LView, prop: string, index: number,
     isClassBased: boolean): any {
   // `TNode` to use for resolving static styling. Also controls search direction.
-  //   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
-  //      If no value found consult `tNode.residualStyle`/`tNode.residualClass` for default value.
-  //   - `null` search prev and go all the way to end. Return last value where
-  //     `isStylingValuePresent(value)` is true.
+  //   - `TNode` search next and go all the way to the end. Return the last value where
+  //      `isStylingValuePresent(value)` is true. If no value was found, we consult
+  //      `tNode.residualStyle`/`tNode.residualClass` for default value.
+  //   - `null` search prev and exit as soon as we find a styling value. i.e. the last preceding
+  //      value for the property, where `isStylingValuePresent(value)` is true.
+  //  NB: Usually we first look if there is a higher priority value for the property. e.g. resolving
+  //      in order. If we then discover there is no better value, and our current instruction **does
+  //      not** have a value either- we attempt to resolve in reverse to find lower-priority
+  //      bindings with a value as a backup.
   const isPrevDirection = tNode === null;
   let value: any = undefined;
   while (index > 0) {
