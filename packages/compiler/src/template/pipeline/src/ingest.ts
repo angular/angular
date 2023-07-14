@@ -219,6 +219,9 @@ function ingestBindings(
         op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
   }
 
+  // Style bindings are ingested before non-style inputs.
+  ingestStylingBindings(view, op.xref, ir.ElementAttributeKind.Binding, element.inputs);
+
   for (const input of element.inputs) {
     ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, input);
   }
@@ -255,23 +258,85 @@ function ingestBindings(
   }
 }
 
+function ingestStylingBindings(
+    view: ViewCompilation, xref: ir.XrefId,
+    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
+    bindings: t.BoundAttribute[]): void {
+  const mapOpsInOrder: ir.UpdateOp[] = [];
+  const singleOpsInOrder: ir.UpdateOp[] = [];
+
+  for (let {value, type, name, unit} of bindings) {
+    if (value instanceof e.ASTWithSource) {
+      value = value.ast;
+    }
+
+    if (value instanceof e.Interpolation) {
+      switch (type) {
+        case e.BindingType.Property:
+          if (name === 'style') {
+            if (bindingKind !== ir.ElementAttributeKind.Binding) {
+              throw Error('Unexpected style binding on ng-template');
+            }
+            mapOpsInOrder.push(ir.createInterpolateStyleMapOp(
+                xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+          }
+          break;
+        case e.BindingType.Style:
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected style binding on ng-template');
+          }
+          singleOpsInOrder.push(ir.createInterpolateStylePropOp(
+              xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
+              unit));
+          break;
+      }
+    } else {
+      switch (type) {
+        case e.BindingType.Property:
+          if (name === 'style') {
+            if (bindingKind !== ir.ElementAttributeKind.Binding) {
+              throw Error('Unexpected style binding on ng-template');
+            }
+            mapOpsInOrder.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
+          }
+          break;
+        case e.BindingType.Style:
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected style binding on ng-template');
+          }
+          singleOpsInOrder.push(
+              ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
+          break;
+      }
+    }
+  }
+
+  // TODO: Order is more nuanced in TDB. Ensure we generate the same output here.
+  // Right now this is the initial foundation to preserve proper styling order.
+  // Can be replaced with: https://github.com/angular/angular/pull/50805.
+
+  // Single bindings (e.g. `[style.X]`) are of higher priority than
+  // map bindings (e.g. `[style]`).
+  mapOpsInOrder.forEach(op => view.update.push(op));
+  singleOpsInOrder.forEach(op => view.update.push(op));
+}
+
 function ingestPropertyBinding(
     view: ViewCompilation, xref: ir.XrefId,
     bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
-    {name, value, type, unit}: t.BoundAttribute): void {
+    {name, value, type}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
 
   if (value instanceof e.Interpolation) {
     switch (type) {
+      case e.BindingType.Style:
+        // `[style.x]` bindings are handled separately in `ingestStylingBindings`.
+        break;
       case e.BindingType.Property:
         if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createInterpolateStyleMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+          // `[style]` bindings are handled separately in `ingestStylingBindings`.
           break;
         }
 
@@ -293,14 +358,6 @@ function ingestPropertyBinding(
             value.expressions.map(expr => convertAst(expr, view.tpl))));
 
         break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createInterpolateStylePropOp(
-            xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
-            unit));
-        break;
       case e.BindingType.Attribute:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
           throw new Error('Attribute bindings on templates are not expected to be valid');
@@ -316,13 +373,12 @@ function ingestPropertyBinding(
     }
   } else {
     switch (type) {
+      case e.BindingType.Style:
+        // `[style.x]` bindings are handled separately in `ingestStylingBindings`.
+        break;
       case e.BindingType.Property:
-        // Bindings to [style] are mapped to their own special instruction.
         if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
+          // `[style]` bindings are handled separately in `ingestStylingBindings`.
           break;
         }
 
@@ -338,12 +394,6 @@ function ingestPropertyBinding(
         }
 
         view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
-        break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
         break;
       case e.BindingType.Attribute:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
