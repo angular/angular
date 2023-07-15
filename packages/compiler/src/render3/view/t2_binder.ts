@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -137,6 +137,25 @@ class Scope implements Visitor {
     this.maybeDeclare(reference);
   }
 
+  visitDeferredBlock(deferred: DeferredBlock) {
+    deferred.children.forEach(node => node.visit(this));
+    deferred.placeholder?.visit(this);
+    deferred.loading?.visit(this);
+    deferred.error?.visit(this);
+  }
+
+  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
+    block.children.forEach(node => node.visit(this));
+  }
+
+  visitDeferredBlockError(block: DeferredBlockError) {
+    block.children.forEach(node => node.visit(this));
+  }
+
+  visitDeferredBlockLoading(block: DeferredBlockLoading) {
+    block.children.forEach(node => node.visit(this));
+  }
+
   // Unused visitors.
   visitContent(content: Content) {}
   visitBoundAttribute(attr: BoundAttribute) {}
@@ -145,6 +164,7 @@ class Scope implements Visitor {
   visitText(text: Text) {}
   visitTextAttribute(attr: TextAttribute) {}
   visitIcu(icu: Icu) {}
+  visitDeferredTrigger(trigger: DeferredTrigger) {}
 
   private maybeDeclare(thing: Reference|Variable) {
     // Declare something with a name, as long as that name isn't taken.
@@ -306,6 +326,25 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     node.children.forEach(child => child.visit(this));
   }
 
+  visitDeferredBlock(deferred: DeferredBlock): void {
+    deferred.children.forEach(child => child.visit(this));
+    deferred.placeholder?.visit(this);
+    deferred.loading?.visit(this);
+    deferred.error?.visit(this);
+  }
+
+  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder): void {
+    block.children.forEach(child => child.visit(this));
+  }
+
+  visitDeferredBlockError(block: DeferredBlockError): void {
+    block.children.forEach(child => child.visit(this));
+  }
+
+  visitDeferredBlockLoading(block: DeferredBlockLoading): void {
+    block.children.forEach(child => child.visit(this));
+  }
+
   // Unused visitors.
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
@@ -317,6 +356,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   visitText(text: Text): void {}
   visitBoundText(text: BoundText): void {}
   visitIcu(icu: Icu): void {}
+  visitDeferredTrigger(trigger: DeferredTrigger): void {}
 }
 
 /**
@@ -356,7 +396,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   /**
    * Process a template and extract metadata about expressions and symbols within.
    *
-   * @param template the nodes of the template to process
+   * @param nodes the nodes of the template to process
    * @param scope the `Scope` of the template being processed.
    * @returns three maps which contain metadata about the template: `expressions` which interprets
    * special `AST` nodes in expressions as pointing to references or variables declared within the
@@ -365,7 +405,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
    * nesting level (how many levels deep within the template structure the `Template` is), starting
    * at 1.
    */
-  static applyWithScope(template: Node[], scope: Scope): {
+  static applyWithScope(nodes: Node[], scope: Scope): {
     expressions: Map<AST, Reference|Variable>,
     symbols: Map<Variable|Reference, Template>,
     nestingLevel: Map<Template, number>,
@@ -375,11 +415,11 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     const symbols = new Map<Variable|Reference, Template>();
     const nestingLevel = new Map<Template, number>();
     const usedPipes = new Set<string>();
+    const template = nodes instanceof Template ? nodes : null;
     // The top-level template has nesting level 0.
-    const binder = new TemplateBinder(
-        expressions, symbols, usedPipes, nestingLevel, scope,
-        template instanceof Template ? template : null, 0);
-    binder.ingest(template);
+    const binder =
+        new TemplateBinder(expressions, symbols, usedPipes, nestingLevel, scope, template, 0);
+    binder.ingest(nodes);
     return {expressions, symbols, nestingLevel, usedPipes};
   }
 
@@ -454,6 +494,33 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitBoundEvent(event: BoundEvent) {
     event.handler.visit(this);
+  }
+
+  visitDeferredBlock(deferred: DeferredBlock) {
+    deferred.triggers.forEach(this.visitNode);
+    deferred.prefetchTriggers.forEach(this.visitNode);
+    deferred.children.forEach(this.visitNode);
+    deferred.placeholder && this.visitNode(deferred.placeholder);
+    deferred.loading && this.visitNode(deferred.loading);
+    deferred.error && this.visitNode(deferred.error);
+  }
+
+  visitDeferredTrigger(trigger: DeferredTrigger): void {
+    if (trigger instanceof BoundDeferredTrigger) {
+      trigger.value.visit(this);
+    }
+  }
+
+  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
+    block.children.forEach(this.visitNode);
+  }
+
+  visitDeferredBlockError(block: DeferredBlockError) {
+    block.children.forEach(this.visitNode);
+  }
+
+  visitDeferredBlockLoading(block: DeferredBlockLoading) {
+    block.children.forEach(this.visitNode);
   }
 
   visitBoundText(text: BoundText) {
