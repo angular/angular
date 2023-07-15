@@ -135,7 +135,9 @@ To get information from a route:
 
     **NOTE:** <br>
     You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
-
+    <br>
+    If you want to use the parent components route info you will need to set the router {@link paramsInheritanceStrategy} option:
+    `withRouterConfig({paramsInheritanceStrategy: 'always'})`
     </div>
 
 <a id="wildcard-route-how-to"></a>
