@@ -117,6 +117,88 @@ export class Element implements Node {
   }
 }
 
+export abstract class DeferredTrigger implements Node {
+  constructor(public sourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredTrigger(this);
+  }
+}
+
+export class BoundDeferredTrigger extends DeferredTrigger {
+  constructor(public value: AST, sourceSpan: ParseSourceSpan) {
+    super(sourceSpan);
+  }
+}
+
+export class IdleDeferredTrigger extends DeferredTrigger {}
+
+export class ImmediateDeferredTrigger extends DeferredTrigger {}
+
+export class HoverDeferredTrigger extends DeferredTrigger {}
+
+export class TimerDeferredTrigger extends DeferredTrigger {
+  constructor(public delay: number, sourceSpan: ParseSourceSpan) {
+    super(sourceSpan);
+  }
+}
+
+export class InteractionDeferredTrigger extends DeferredTrigger {
+  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
+    super(sourceSpan);
+  }
+}
+
+export class ViewportDeferredTrigger extends DeferredTrigger {
+  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
+    super(sourceSpan);
+  }
+}
+
+export class DeferredBlockPlaceholder implements Node {
+  constructor(
+      public children: Node[], public minimumTime: number|null, public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredBlockPlaceholder(this);
+  }
+}
+
+export class DeferredBlockLoading implements Node {
+  constructor(
+      public children: Node[], public afterTime: number|null, public minimumTime: number|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredBlockLoading(this);
+  }
+}
+
+export class DeferredBlockError implements Node {
+  constructor(
+      public children: Node[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredBlockError(this);
+  }
+}
+
+export class DeferredBlock implements Node {
+  constructor(
+      public children: Node[], public triggers: DeferredTrigger[],
+      public prefetchTriggers: DeferredTrigger[], public placeholder: DeferredBlockPlaceholder|null,
+      public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredBlock(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
       // tagName is the name of the container element, if applicable.
@@ -196,6 +278,11 @@ export interface Visitor<Result = any> {
   visitText(text: Text): Result;
   visitBoundText(text: BoundText): Result;
   visitIcu(icu: Icu): Result;
+  visitDeferredBlock(deferred: DeferredBlock): Result;
+  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder): Result;
+  visitDeferredBlockError(block: DeferredBlockError): Result;
+  visitDeferredBlockLoading(block: DeferredBlockLoading): Result;
+  visitDeferredTrigger(trigger: DeferredTrigger): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -214,6 +301,23 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, template.references);
     visitAll(this, template.variables);
   }
+  visitDeferredBlock(deferred: DeferredBlock): void {
+    visitAll(this, deferred.triggers);
+    visitAll(this, deferred.prefetchTriggers);
+    visitAll(this, deferred.children);
+    deferred.placeholder?.visit(this);
+    deferred.loading?.visit(this);
+    deferred.error?.visit(this);
+  }
+  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder): void {
+    visitAll(this, block.children);
+  }
+  visitDeferredBlockError(block: DeferredBlockError): void {
+    visitAll(this, block.children);
+  }
+  visitDeferredBlockLoading(block: DeferredBlockLoading): void {
+    visitAll(this, block.children);
+  }
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
@@ -223,6 +327,7 @@ export class RecursiveVisitor implements Visitor<void> {
   visitText(text: Text): void {}
   visitBoundText(text: BoundText): void {}
   visitIcu(icu: Icu): void {}
+  visitDeferredTrigger(trigger: DeferredTrigger): void {}
 }
 
 

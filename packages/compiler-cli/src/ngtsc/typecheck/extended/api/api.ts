@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../core/api';
@@ -158,6 +158,34 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
     this.visitAst(text.value);
   }
   visitIcu(icu: TmplAstIcu): void {}
+
+
+  visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
+    this.visitAllNodes(deferred.children);
+    this.visitAllNodes(deferred.triggers);
+    this.visitAllNodes(deferred.prefetchTriggers);
+    deferred.placeholder && this.visit(deferred.placeholder);
+    deferred.loading && this.visit(deferred.loading);
+    deferred.error && this.visit(deferred.error);
+  }
+
+  visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {
+    if (trigger instanceof TmplAstBoundDeferredTrigger) {
+      this.visitAst(trigger.value);
+    }
+  }
+
+  visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitDeferredBlockError(block: TmplAstDeferredBlockError): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
+    this.visitAllNodes(block.children);
+  }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {
     this.diagnostics = [];

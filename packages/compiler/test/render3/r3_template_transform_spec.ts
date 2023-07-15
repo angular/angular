@@ -88,13 +88,67 @@ class R3AstHumanizer implements t.Visitor<void> {
     return null;
   }
 
+  visitDeferredBlock(deferred: t.DeferredBlock): void {
+    const blocks: t.Node[] = [];
+    deferred.placeholder && blocks.push(deferred.placeholder);
+    deferred.loading && blocks.push(deferred.loading);
+    deferred.error && blocks.push(deferred.error);
+    this.result.push(['DeferredBlock']);
+    this.visitAll([
+      deferred.triggers,
+      deferred.prefetchTriggers,
+      deferred.children,
+      blocks,
+    ]);
+  }
+
+  visitDeferredTrigger(trigger: t.DeferredTrigger): void {
+    if (trigger instanceof t.BoundDeferredTrigger) {
+      this.result.push(['BoundDeferredTrigger', unparse(trigger.value)]);
+    } else if (trigger instanceof t.ImmediateDeferredTrigger) {
+      this.result.push(['ImmediateDeferredTrigger']);
+    } else if (trigger instanceof t.HoverDeferredTrigger) {
+      this.result.push(['HoverDeferredTrigger']);
+    } else if (trigger instanceof t.IdleDeferredTrigger) {
+      this.result.push(['IdleDeferredTrigger']);
+    } else if (trigger instanceof t.TimerDeferredTrigger) {
+      this.result.push(['TimerDeferredTrigger', trigger.delay]);
+    } else if (trigger instanceof t.InteractionDeferredTrigger) {
+      this.result.push(['InteractionDeferredTrigger', trigger.reference]);
+    } else if (trigger instanceof t.ViewportDeferredTrigger) {
+      this.result.push(['ViewportDeferredTrigger', trigger.reference]);
+    } else {
+      throw new Error('Unknown trigger');
+    }
+  }
+
+  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {
+    const result = ['DeferredBlockPlaceholder'];
+    block.minimumTime !== null && result.push(`minimum ${block.minimumTime}ms`);
+    this.result.push(result);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {
+    const result = ['DeferredBlockLoading'];
+    block.afterTime !== null && result.push(`after ${block.afterTime}ms`);
+    block.minimumTime !== null && result.push(`minimum ${block.minimumTime}ms`);
+    this.result.push(result);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockError(block: t.DeferredBlockError): void {
+    this.result.push(['DeferredBlockError']);
+    this.visitAll([block.children]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
 }
 
-function expectFromHtml(html: string, ignoreError = false) {
-  const res = parse(html, {ignoreError});
+function expectFromHtml(html: string, ignoreError = false, tokenizeBlocks = false) {
+  const res = parse(html, {ignoreError, tokenizeBlocks});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -649,5 +703,131 @@ describe('R3 template transform', () => {
            ['Text', 'a'],
          ]);
        });
+  });
+
+  describe('deferred blocks', () => {
+    // TODO(crisbeto): temporary utility while blocks are disabled by default.
+    function expectDeferred(html: string) {
+      return expectFromR3Nodes(parse(html, {tokenizeBlocks: true}).nodes);
+    }
+
+    function expectDeferredError(html: string) {
+      return expect(() => parse(html, {tokenizeBlocks: true}));
+    }
+
+    it('should parse a simple deferred block', () => {
+      expectDeferred('{#defer}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with secondary blocks', () => {
+      expectDeferred(
+          '{#defer}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading}' +
+          'Loading...' +
+          '{:placeholder}' +
+          'Placeholder content!' +
+          '{:error}' +
+          'Loading failed :(' +
+          '{/defer}')
+          .toEqual([
+            ['DeferredBlock'],
+            ['Element', 'calendar-cmp'],
+            ['BoundAttribute', 0, 'date', 'current'],
+            ['DeferredBlockPlaceholder'],
+            ['Text', 'Placeholder content!'],
+            ['DeferredBlockLoading'],
+            ['Text', 'Loading...'],
+            ['DeferredBlockError'],
+            ['Text', 'Loading failed :('],
+          ]);
+    });
+
+    it('should parse a loading block with parameters', () => {
+      expectDeferred(
+          '{#defer}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading after 100ms; minimum 1s}' +
+          'Loading...' +
+          '{/defer}')
+          .toEqual([
+            ['DeferredBlock'],
+            ['Element', 'calendar-cmp'],
+            ['BoundAttribute', 0, 'date', 'current'],
+            ['DeferredBlockLoading', 'after 100ms', 'minimum 1000ms'],
+            ['Text', 'Loading...'],
+          ]);
+    });
+
+    it('should parse a placeholder block with parameters', () => {
+      expectDeferred(
+          '{#defer}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:placeholder minimum 1s}' +
+          'Placeholder...' +
+          '{/defer}')
+          .toEqual([
+            ['DeferredBlock'],
+            ['Element', 'calendar-cmp'],
+            ['BoundAttribute', 0, 'date', 'current'],
+            ['DeferredBlockPlaceholder', 'minimum 1000ms'],
+            ['Text', 'Placeholder...'],
+          ]);
+    });
+
+    describe('block validations', () => {
+      it('should report unrecognized block', () => {
+        expectDeferredError('{#defer}hello{:unknown}world{/defer}')
+            .toThrowError(/Unrecognized block "unknown"/);
+      });
+
+      it('should report multiple placeholder blocks', () => {
+        expectDeferredError('{#defer}hello{:placeholder}p1{:placeholder}p2{/defer}')
+            .toThrowError(/"defer" block can only have one "placeholder" block/);
+      });
+
+      it('should report multiple loading blocks', () => {
+        expectDeferredError('{#defer}hello{:loading}l1{:loading}l2{/defer}')
+            .toThrowError(/"defer" block can only have one "loading" block/);
+      });
+
+      it('should report multiple error blocks', () => {
+        expectDeferredError('{#defer}hello{:error}e1{:error}e2{/defer}')
+            .toThrowError(/"defer" block can only have one "error" block/);
+      });
+
+      it('should report unrecognized parameter in placeholder block', () => {
+        expectDeferredError('{#defer}hello{:placeholder unknown 100ms}hi{/defer}')
+            .toThrowError(/Unrecognized parameter in "placeholder" block: "unknown 100ms"/);
+      });
+
+      it('should report unrecognized parameter in loading block', () => {
+        expectDeferredError('{#defer}hello{:loading unknown 100ms}hi{/defer}')
+            .toThrowError(/Unrecognized parameter in "loading" block: "unknown 100ms"/);
+      });
+
+      it('should report any parameter usage in error block', () => {
+        expectDeferredError('{#defer}hello{:error foo}hi{/defer}')
+            .toThrowError(/"error" block cannot have parameters/);
+      });
+
+      it('should report if minimum placeholder time cannot be parsed', () => {
+        expectDeferredError('{#defer}hello{:placeholder minimum 123abc}hi{/defer}')
+            .toThrowError(/Could not parse time value of parameter "minimum"/);
+      });
+
+      it('should report if minimum loading time cannot be parsed', () => {
+        expectDeferredError('{#defer}hello{:loading minimum 123abc}hi{/defer}')
+            .toThrowError(/Could not parse time value of parameter "minimum"/);
+      });
+
+      it('should report if after loading time cannot be parsed', () => {
+        expectDeferredError('{#defer}hello{:loading after 123abc}hi{/defer}')
+            .toThrowError(/Could not parse time value of parameter "after"/);
+      });
+    });
   });
 });

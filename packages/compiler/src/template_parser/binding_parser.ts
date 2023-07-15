@@ -271,7 +271,7 @@ export class BindingParser {
           targetProps);
     } else {
       this._parsePropertyAst(
-          name, this._parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
+          name, this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
           sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
     }
   }
@@ -310,14 +310,14 @@ export class BindingParser {
     // This will occur when a @trigger is not paired with an expression.
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
-    const ast = this._parseBinding(
+    const ast = this.parseBinding(
         expression || 'undefined', false, valueSpan || sourceSpan, absoluteOffset);
     targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(new ParsedProperty(
         name, ast, ParsedPropertyType.ANIMATION, sourceSpan, keySpan, valueSpan));
   }
 
-  private _parseBinding(
+  parseBinding(
       value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan,
       absoluteOffset: number): ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown)').toString();

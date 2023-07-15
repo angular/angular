@@ -1071,6 +1071,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return null;
   }
 
+  // TODO: implement deferred block instructions.
+  visitDeferredBlock(deferred: t.DeferredBlock): void {}
+  visitDeferredTrigger(trigger: t.DeferredTrigger): void {}
+  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {}
+  visitDeferredBlockError(block: t.DeferredBlockError): void {}
+  visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {}
+
   private allocateDataSlot() {
     return this._dataIndex++;
   }

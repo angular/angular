@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import type {TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 
 /**
  * A base class that can be used to implement a Render3 Template AST visitor.
@@ -41,6 +41,11 @@ export class TemplateAstVisitor implements TmplAstRecursiveVisitor {
   visitText(text: TmplAstText): void {}
   visitBoundText(text: TmplAstBoundText): void {}
   visitIcu(icu: TmplAstIcu): void {}
+  visitDeferredBlock(deferred: TmplAstDeferredBlock): void {}
+  visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder): void {}
+  visitDeferredBlockError(block: TmplAstDeferredBlockError): void {}
+  visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {}
+  visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {}
 
   /**
    * Visits all the provided nodes in order using this Visitor's visit methods.
