@@ -18,6 +18,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createDeferredBlock} from './r3_deferred_blocks';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
 const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
@@ -184,8 +185,16 @@ class HtmlAstToIvyAst implements html.Visitor {
       }
     }
 
-    const children: t.Node[] =
-        html.visitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children);
+    let children: t.Node[];
+
+    if (preparsedElement.nonBindable) {
+      // The `NonBindableVisitor` may need to return an array of nodes for block groups so we need
+      // to flatten the array here. Avoid doing this for the `HtmlAstToIvyAst` since `flat` creates
+      // a new array.
+      children = html.visitAll(NON_BINDABLE_VISITOR, element.children).flat(Infinity);
+    } else {
+      children = html.visitAll(this, element.children);
+    }
 
     let parsedElement: t.Content|t.Template|t.Element|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
@@ -306,17 +315,29 @@ class HtmlAstToIvyAst implements html.Visitor {
     return null;
   }
 
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    throw new Error('TODO');
+  visitBlockGroup(group: html.BlockGroup, context: any): t.Node|null {
+    const primaryBlock = group.blocks[0];
+
+    // The HTML parser ensures that we don't hit this case, but we have an assertion just in case.
+    if (!primaryBlock) {
+      this.reportError('Block group must have at least one block.', group.sourceSpan);
+      return null;
+    }
+
+    switch (primaryBlock.name) {
+      case 'defer':
+        const {node, errors} = createDeferredBlock(group, this, this.bindingParser);
+        this.errors.push(...errors);
+        return node;
+      default:
+        this.reportError(`Unrecognized block "${primaryBlock.name}".`, primaryBlock.sourceSpan);
+        return null;
+    }
   }
 
-  visitBlock(block: html.Block, context: any) {
-    throw new Error('TODO');
-  }
+  visitBlock(block: html.Block, context: any) {}
 
-  visitBlockParameter(parameter: html.BlockParameter, context: any) {
-    throw new Error('TODO');
-  }
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {}
 
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
@@ -529,7 +550,7 @@ class NonBindableVisitor implements html.Visitor {
     const children: t.Node[] = html.visitAll(this, ast.children, null);
     return new t.Element(
         ast.name, html.visitAll(this, ast.attrs) as t.TextAttribute[],
-        /* inputs */[], /* outputs */[], children,  /* references */[], ast.sourceSpan,
+        /* inputs */[], /* outputs */[], children, /* references */[], ast.sourceSpan,
         ast.startSourceSpan, ast.endSourceSpan);
   }
 
@@ -556,15 +577,27 @@ class NonBindableVisitor implements html.Visitor {
   }
 
   visitBlockGroup(group: html.BlockGroup, context: any) {
-    throw new Error('TODO');
+    const nodes = html.visitAll(this, group.blocks);
+
+    // We only need to do the end tag since the start will be added as a part of the primary block.
+    if (group.endSourceSpan !== null) {
+      nodes.push(new t.Text(group.endSourceSpan.toString(), group.endSourceSpan));
+    }
+
+    return nodes;
   }
 
   visitBlock(block: html.Block, context: any) {
-    throw new Error('TODO');
+    return [
+      // In an ngNonBindable context we treat the opening/closing tags of block as plain text.
+      // This is the as if the `tokenizeBlocks` option was disabled.
+      new t.Text(block.startSourceSpan.toString(), block.startSourceSpan),
+      ...html.visitAll(this, block.children)
+    ];
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
-    throw new Error('TODO');
+    return null;
   }
 }
 

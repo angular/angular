@@ -8,6 +8,7 @@
 
 import {ParseSourceSpan} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
+
 import {parseR3 as parse} from './view/util';
 
 
@@ -104,6 +105,71 @@ class R3AstSourceSpans implements t.Visitor<void> {
     }
   }
 
+  visitDeferredBlock(deferred: t.DeferredBlock): void {
+    const blocks: t.Node[] = [];
+    deferred.placeholder && blocks.push(deferred.placeholder);
+    deferred.loading && blocks.push(deferred.loading);
+    deferred.error && blocks.push(deferred.error);
+    this.result.push([
+      'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
+      humanizeSpan(deferred.endSourceSpan)
+    ]);
+    this.visitAll([
+      deferred.triggers,
+      deferred.prefetchTriggers,
+      deferred.children,
+      blocks,
+    ]);
+  }
+
+  visitDeferredTrigger(trigger: t.DeferredTrigger): void {
+    let name: string;
+
+    if (trigger instanceof t.BoundDeferredTrigger) {
+      name = 'BoundDeferredTrigger';
+    } else if (trigger instanceof t.ImmediateDeferredTrigger) {
+      name = 'ImmediateDeferredTrigger';
+    } else if (trigger instanceof t.HoverDeferredTrigger) {
+      name = 'HoverDeferredTrigger';
+    } else if (trigger instanceof t.IdleDeferredTrigger) {
+      name = 'IdleDeferredTrigger';
+    } else if (trigger instanceof t.TimerDeferredTrigger) {
+      name = 'TimerDeferredTrigger';
+    } else if (trigger instanceof t.InteractionDeferredTrigger) {
+      name = 'InteractionDeferredTrigger';
+    } else if (trigger instanceof t.ViewportDeferredTrigger) {
+      name = 'ViewportDeferredTrigger';
+    } else {
+      throw new Error('Unknown trigger');
+    }
+
+    this.result.push([name, humanizeSpan(trigger.sourceSpan)]);
+  }
+
+  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {
+    this.result.push([
+      'DeferredBlockPlaceholder', humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan), humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockError(block: t.DeferredBlockError): void {
+    this.result.push([
+      'DeferredBlockError', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {
+    this.result.push([
+      'DeferredBlockLoading', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
@@ -116,8 +182,8 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string) {
-  const res = parse(html);
+function expectFromHtml(html: string, tokenizeBlocks = false) {
+  const res = parse(html, {tokenizeBlocks});
   return expectFromR3Nodes(res.nodes);
 }
 

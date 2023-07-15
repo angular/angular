@@ -141,16 +141,18 @@ export function toStringExpression(expr: e.AST): string {
 }
 
 // Parse an html string to IVY specific info
-export function parseR3(
-    input: string,
-    options: {preserveWhitespaces?: boolean,
-              leadingTriviaChars?: string[],
-              ignoreError?: boolean} = {}): Render3ParseResult {
+export function parseR3(input: string, options: {
+  preserveWhitespaces?: boolean,
+  leadingTriviaChars?: string[],
+  ignoreError?: boolean,
+  tokenizeBlocks?: boolean
+} = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
   const parseResult = htmlParser.parse(input, 'path:://to/template', {
     tokenizeExpansionForms: true,
     leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+    tokenizeBlocks: options.tokenizeBlocks ?? false,
   });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {
