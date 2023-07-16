@@ -675,7 +675,7 @@ export class AssignTemporaryExpr extends ExpressionBase {
   }
 
   override clone(): AssignTemporaryExpr {
-    const a = new AssignTemporaryExpr(this.expr, this.xref);
+    const a = new AssignTemporaryExpr(this.expr.clone(), this.xref);
     a.name = this.name;
     return a;
   }

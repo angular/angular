@@ -24,37 +24,56 @@ export function phaseTemporaryVariables(cpl: CompilationJob): void {
     let opCount = 0;
     let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
     for (const op of unit.ops()) {
+      // Identify the final time each temp var is read.
+      const finalReads = new Map<ir.XrefId, ir.ReadTemporaryExpr>();
+      ir.visitExpressionsInOp(op, expr => {
+        if (expr instanceof ir.ReadTemporaryExpr) {
+          finalReads.set(expr.xref, expr);
+        }
+      });
+
+      // Name the temp vars, accounting for the fact that a name can be reused after it has been
+      // read for the final time.
       let count = 0;
-      let xrefs = new Set<ir.XrefId>();
-      let defs = new Map<ir.XrefId, string>();
-
+      const assigned = new Set<ir.XrefId>();
+      const released = new Set<ir.XrefId>();
+      const defs = new Map<ir.XrefId, string>();
       ir.visitExpressionsInOp(op, expr => {
-        if (expr instanceof ir.ReadTemporaryExpr || expr instanceof ir.AssignTemporaryExpr) {
-          xrefs.add(expr.xref);
-        }
-      });
-
-      for (const xref of xrefs) {
-        // TODO: Exactly replicate the naming scheme used by `TemplateDefinitionBuilder`. It seems
-        // to rely on an expression index instead of an op index.
-        defs.set(xref, `tmp_${opCount}_${count++}`);
-      }
-
-      ir.visitExpressionsInOp(op, expr => {
-        if (expr instanceof ir.ReadTemporaryExpr || expr instanceof ir.AssignTemporaryExpr) {
-          const name = defs.get(expr.xref);
-          if (name === undefined) {
-            throw new Error('Found xref with unassigned name');
+        if (expr instanceof ir.AssignTemporaryExpr) {
+          if (!assigned.has(expr.xref)) {
+            assigned.add(expr.xref);
+            // TODO: Exactly replicate the naming scheme used by `TemplateDefinitionBuilder`.
+            // It seems to rely on an expression index instead of an op index.
+            defs.set(expr.xref, `tmp_${opCount}_${count++}`);
           }
-          expr.name = name;
+          assignName(defs, expr);
+        } else if (expr instanceof ir.ReadTemporaryExpr) {
+          if (finalReads.get(expr.xref) === expr) {
+            released.add(expr.xref);
+            count--;
+          }
+          assignName(defs, expr);
         }
       });
 
+      // Add declarations for the temp vars.
       generatedStatements.push(
-          ...Array.from(defs.values())
+          ...Array.from(new Set(defs.values()))
               .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
       opCount++;
     }
     unit.update.prepend(generatedStatements);
   }
+}
+
+/**
+ * Assigns a name to the temporary variable in the given temporary variable expression.
+ */
+function assignName(
+    names: Map<ir.XrefId, string>, expr: ir.AssignTemporaryExpr|ir.ReadTemporaryExpr) {
+  const name = names.get(expr.xref);
+  if (name === undefined) {
+    throw new Error(`Found xref with unassigned name: ${expr.xref}`);
+  }
+  expr.name = name;
 }
