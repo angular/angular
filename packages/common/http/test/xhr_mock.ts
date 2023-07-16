@@ -149,3 +149,16 @@ export class MockXMLHttpRequest {
     this.mockAborted = true;
   }
 }
+
+export class MockXhrFactoryWithSerializer extends XhrFactory {
+  build(): XMLHttpRequest {
+    return new XMLHttpRequest();
+  }
+
+  override serialize<T>(body: T | null): string | ArrayBuffer | Blob | FormData | URLSearchParams | null {
+    const obj: any = Object.assign({}, body);
+    // Add some attributes
+    obj.nonce = 'rAnd0m';
+    return JSON.stringify(obj);
+  }
+}

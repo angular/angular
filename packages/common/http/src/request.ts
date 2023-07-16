@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import { XhrFactory } from '@angular/common/public_api';
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
@@ -275,8 +276,17 @@ export class HttpRequest<T> {
   /**
    * Transform the free-form body into a serialized format suitable for
    * transmission to the server.
+   * 
+   * @param xhrFactory The XHR factory includes a function for serializing the body.
    */
-  serializeBody(): ArrayBuffer|Blob|FormData|URLSearchParams|string|null {
+  serializeBody(xhrFactory?: XhrFactory): ArrayBuffer|Blob|FormData|URLSearchParams|string|null {
+    // Check whether has a custom serializer or not.
+    if (xhrFactory && xhrFactory.serialize) {
+      const result = xhrFactory.serialize(this.body);
+      if (result) {
+        return result;
+      }
+    }
     // If no body is present, no need to serialize it.
     if (this.body === null) {
       return null;

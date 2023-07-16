@@ -10,6 +10,8 @@ import {HttpContext} from '@angular/common/http/src/context';
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpParams} from '@angular/common/http/src/params';
 import {HttpRequest} from '@angular/common/http/src/request';
+import { XhrFactory } from '@angular/common/public_api';
+import { MockXhrFactoryWithSerializer } from './xhr_mock';
 
 const TEST_URL = 'https://angular.io/';
 const TEST_STRING = `I'm a body!`;
@@ -166,6 +168,11 @@ const TEST_STRING = `I'm a body!`;
         expect(withParams.serializeBody()).toEqual('first=value&second=other');
         expect(withParams.detectContentTypeHeader())
             .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
+      });
+      it('serializes body using custom serializer', () => {
+        const req = baseReq.clone({body: {data: 'Joe Doe'}});
+        const customXhrFactory: XhrFactory = new MockXhrFactoryWithSerializer();
+        expect(req.serializeBody(customXhrFactory)).toBe('{"data":"Joe Doe","nonce":"rAnd0m"}');
       });
     });
     describe('parameter handling', () => {
