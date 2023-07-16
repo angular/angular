@@ -281,7 +281,7 @@ export class HttpRequest<T> {
    */
   serializeBody(xhrFactory?: XhrFactory): ArrayBuffer|Blob|FormData|URLSearchParams|string|null {
     // Check whether has a custom serializer or not.
-    if (xhrFactory && xhrFactory.serialize) {
+    if (xhrFactory?.serialize) {
       const result = xhrFactory.serialize(this.body);
       if (result) {
         return result;
