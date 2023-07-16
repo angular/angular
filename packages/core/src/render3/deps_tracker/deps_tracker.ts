@@ -13,7 +13,7 @@ import {NgModuleType} from '../../metadata/ng_module_def';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator} from '../interfaces/definition';
 import {verifyStandaloneImport} from '../jit/directive';
-import {isComponent, isDirective, isModuleWithProviders, isNgModule, isPipe} from '../jit/util';
+import {isComponent, isDirective, isNgModule, isPipe} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
 import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponentScope} from './api';
@@ -149,8 +149,6 @@ class DepsTracker implements DepsTrackerApi {
 
       if (isNgModule(imported)) {
         moduleToProcess = imported;
-      } else if (isModuleWithProviders(imported)) {
-        moduleToProcess = (imported as any).ngModule;
       } else if (isStandalone(imported)) {
         if (isDirective(imported) || isComponent(imported)) {
           scope.compilation.directives.add(imported);
@@ -163,7 +161,7 @@ class DepsTracker implements DepsTrackerApi {
               'The standalone imported type is neither a component nor a directive nor a pipe');
         }
       } else {
-        // The import is neither a module nor a module-with-providers nor a standalone thing. This
+        // The import is neither a module nor a standalone thing. This
         // is going to be an error. So we short circuit.
         scope.compilation.isPoisoned = true;
         break;
@@ -204,11 +202,6 @@ class DepsTracker implements DepsTrackerApi {
         // When this module exports another, the exported module's exported directives and pipes
         // are added to both the compilation and exported scopes of this module.
         const exportedScope = this.getNgModuleScope(exported);
-
-        if (!scope.compilation.isPoisoned) {
-          addSet(exportedScope.exported.directives, scope.compilation.directives);
-          addSet(exportedScope.exported.pipes, scope.compilation.pipes);
-        }
 
         // Based on the current logic there is no way to have poisoned exported scope. So no need to
         // check for it.
