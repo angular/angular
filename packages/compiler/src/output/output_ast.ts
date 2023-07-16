@@ -996,7 +996,7 @@ export class ReadKeyExpr extends Expression {
   }
 
   override clone(): ReadKeyExpr {
-    return new ReadKeyExpr(this.receiver, this.index.clone(), this.type, this.sourceSpan);
+    return new ReadKeyExpr(this.receiver.clone(), this.index.clone(), this.type, this.sourceSpan);
   }
 }
 
