@@ -163,6 +163,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵsetComponentScope': r3.ɵɵsetComponentScope,
        'ɵɵsetNgModuleScope': r3.ɵɵsetNgModuleScope,
        'ɵɵregisterNgModuleType': registerNgModuleType,
+       'ɵɵgetComponentDepsFactory': r3.ɵɵgetComponentDepsFactory,
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
