@@ -313,48 +313,6 @@ jobs:
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
-  test_aio:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-
-        # Run all aio tests
-      - run:
-          command: yarn --cwd aio test:ci
-          no_output_timeout: 20m
-
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size
-
-  deploy_aio:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Deploy angular.io to production (if necessary)
-      - run: setPublicVar_CI_STABLE_BRANCH
-      - run: yarn --cwd aio deploy-production
-
-  test_aio_local:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Run all aio tests (with local Angular packages)
-      - run:
-          command: yarn --cwd aio test-local:ci
-          no_output_timeout: 20m
-
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local
-
   # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
   # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
   # Having multiple jobs that independently build in this manner duplicates some work; we build
@@ -594,15 +552,6 @@ workflows:
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
-      - test_aio:
-          requires:
-            - setup
-      - deploy_aio:
-          requires:
-            - test_aio
-      - test_aio_local:
-          requires:
-            - setup
       - publish_packages_as_artifacts:
           requires:
             - build-npm-packages
@@ -611,8 +560,6 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
