@@ -14,6 +14,7 @@ import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter}
 import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
@@ -34,7 +35,7 @@ export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
     referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
-    defaultSelector: string|null = null): {
+    compilationMode: CompilationMode, defaultSelector: string|null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -155,7 +156,7 @@ export function extractDirectiveMetadata(
     exportAs = resolved.split(',').map(part => part.trim());
   }
 
-  const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
+  const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore, compilationMode);
 
   // Non-abstract directives (those with a selector) require valid constructor dependencies, whereas
   // abstract directives are allowed to have invalid dependencies, given that a subclass may call

@@ -17,7 +17,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, InjectableClassRegistry, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference,} from '../common';
 
 export interface PipeHandlerData {
@@ -54,7 +54,8 @@ export class PipeDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
-      private perf: PerfRecorder, private includeClassMetadata: boolean) {}
+      private perf: PerfRecorder, private includeClassMetadata: boolean,
+      private readonly compilationMode: CompilationMode) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'PipeDecoratorHandler';
@@ -134,7 +135,8 @@ export class PipeDecoratorHandler implements
           type,
           typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
           pipeName,
-          deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore),
+          deps: getValidConstructorDependencies(
+              clazz, this.reflector, this.isCore, this.compilationMode),
           pure,
           isStandalone,
         },
