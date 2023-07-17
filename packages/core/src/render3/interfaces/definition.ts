@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
@@ -532,3 +532,6 @@ export interface NgModuleScopeInfoFromDecorator {
    */
   exports?: Type<any>[]|(() => Type<any>[]);
 }
+
+export type RawScopeInfoFromDecorator =
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);
