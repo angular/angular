@@ -220,7 +220,7 @@ export class ComponentDecoratorHandler implements
     // on it.
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, this.annotateForClosureCompiler,
+        this.isCore, this.annotateForClosureCompiler, this.compilationMode,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this

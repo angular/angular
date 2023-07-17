@@ -16,7 +16,7 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
@@ -49,14 +49,22 @@ export interface DirectiveHandlerData {
 export class DirectiveDecoratorHandler implements
     DecoratorHandler<Decorator|null, DirectiveHandlerData, DirectiveSymbol, unknown> {
   constructor(
-      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private metaReader: MetadataReader, private injectableRegistry: InjectableClassRegistry,
-      private refEmitter: ReferenceEmitter, private referencesRegistry: ReferencesRegistry,
-      private isCore: boolean, private strictCtorDeps: boolean,
+      private reflector: ReflectionHost,
+      private evaluator: PartialEvaluator,
+      private metaRegistry: MetadataRegistry,
+      private scopeRegistry: LocalModuleScopeRegistry,
+      private metaReader: MetadataReader,
+      private injectableRegistry: InjectableClassRegistry,
+      private refEmitter: ReferenceEmitter,
+      private referencesRegistry: ReferencesRegistry,
+      private isCore: boolean,
+      private strictCtorDeps: boolean,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
-      private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private includeClassMetadata: boolean) {}
+      private annotateForClosureCompiler: boolean,
+      private perf: PerfRecorder,
+      private includeClassMetadata: boolean,
+      private readonly compilationMode: CompilationMode,
+  ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'DirectiveDecoratorHandler';
@@ -95,7 +103,7 @@ export class DirectiveDecoratorHandler implements
 
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, this.annotateForClosureCompiler);
+        this.isCore, this.annotateForClosureCompiler, this.compilationMode);
     if (directiveResult === undefined) {
       return {};
     }
