@@ -985,12 +985,15 @@ export class ComponentDecoratorHandler implements
     if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
       return [];
     }
+
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
-      // No resolution is done in local compilation mode, therefore we pass an empty array here.
-      declarationListEmitMode: DeclarationListEmitMode.Direct,
-      declarations: [],
+      declarationListEmitMode: (!analysis.meta.isStandalone || analysis.rawImports !== null) ?
+          DeclarationListEmitMode.RuntimeResolved :
+          DeclarationListEmitMode.Direct,
+      declarations: EMPTY_ARRAY,
     };
+
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
