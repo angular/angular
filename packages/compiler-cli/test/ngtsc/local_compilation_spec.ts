@@ -127,5 +127,76 @@ runInEachFileSystem(() => {
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), SubModule3, forwardRef(() => SubModule4)] })');
          });
     });
+
+    describe('component dependencies', () => {
+      it('should generate ɵɵgetComponentDepsFactory for component def dependencies - for non-standalone component ',
+         () => {
+           env.write('test.ts', `
+          import {NgModule, Component} from '@angular/core';
+          
+          @Component({
+            selector: 'test-main',
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          
+          @NgModule({
+            declarations: [MainComponent],
+          })
+          export class MainModule {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent)');
+         });
+
+      it('should generate ɵɵgetComponentDepsFactory for component def dependencies - for standalone component with non-empty imports',
+         () => {
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {SomeThing} from 'some-where';
+          
+          @Component({
+            standalone: true,
+            imports: [SomeThing],
+            selector: 'test-main',
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent)');
+         });
+
+      it('should not generate ɵɵgetComponentDepsFactory for standalone component with empty imports',
+         () => {
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+          
+          @Component({
+            standalone: true,
+            selector: 'test-main',
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).not.toContain('i0.ɵɵgetComponentDepsFactory');
+         });
+    });
   });
 });
