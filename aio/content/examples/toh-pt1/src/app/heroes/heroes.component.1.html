@@ -1,0 +1,16 @@
+<!-- #docregion show-hero-1 -->
+<h2>{{hero}}</h2>
+<!-- #enddocregion show-hero-1 -->
+
+<!-- #docregion show-hero-2 -->
+<h2>{{hero.name}} Details</h2>
+<div><span>id: </span>{{hero.id}}</div>
+<div><span>name: </span>{{hero.name}}</div>
+<!-- #enddocregion show-hero-2 -->
+
+<!-- #docregion name-input -->
+<div>
+  <label for="name">Hero name: </label>
+  <input id="name" [(ngModel)]="hero.name" placeholder="name">
+</div>
+<!-- #enddocregion name-input -->

@@ -1,0 +1,10 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+package(default_visibility = ["//aio:__subpackages__"])
+
+js_library(
+    name = "windows-chromium-path",
+    srcs = [
+        "windows-chromium-path.js",
+    ],
+)

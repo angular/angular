@@ -1,0 +1,12 @@
+# adapted from Google style library
+# test for parentheticals that don't contain all caps or
+#   a code referece to allow abbreviation definitions.
+#
+extends: existence
+message: 'Use parentheses judiciously. Try to rewrite this sentence without them.'
+link: 'https://developers.google.com/style/parentheses'
+nonword: true
+level: suggestion
+scope: raw
+raw:
+  - '\\\([^`\)]+(?<![A-Z])\\\)'

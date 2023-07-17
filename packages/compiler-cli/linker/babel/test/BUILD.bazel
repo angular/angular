@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "@npm//@babel/generator",
+        "@npm//@babel/parser",
+        "@npm//@babel/template",
+        "@npm//@babel/traverse",
+        "@npm//@types/babel__core",
+        "@npm//@types/babel__generator",
+        "@npm//@types/babel__template",
+        "@npm//@types/babel__traverse",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    deps = [
+        ":test_lib",
+    ],
+)

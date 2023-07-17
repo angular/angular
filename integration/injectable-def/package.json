@@ -1,0 +1,29 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@types/node": "file:../../node_modules/@types/node",
+    "rxjs": "^7.3.0",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  },
+  "devDependencies": {
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "file:../../node_modules/rollup"
+  },
+  "scripts": {
+    "test": "./run_test.sh"
+  }
+}

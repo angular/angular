@@ -1,0 +1,45 @@
+load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//:packages.bzl", "DOCS_ENTRYPOINTS")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig.json",
+])
+
+ts_library(
+    name = "types",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//@types/hammerjs",
+    ],
+)
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = [":tsconfig-build.json"],
+)
+
+ts_config(
+    name = "tsec_config",
+    src = "tsconfig-tsec-base.json",
+    deps = [
+        ":tsconfig-build.json",
+        ":tsec-exemption.json",
+    ],
+)
+
+exports_files([
+    "license-banner.txt",
+    "README.md",
+    "examples",
+])
+
+# All docgen targets for AIO. Add package entrypoints to DOCS_ENTRYPOINTS in `packages.bzl`.
+filegroup(
+    name = "files_for_docgen",
+    srcs = ["//packages/%s:files_for_docgen" % entrypoint for entrypoint in DOCS_ENTRYPOINTS],
+)

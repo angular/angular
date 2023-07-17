@@ -1,0 +1,44 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "flamegraph-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = ["flamegraph-formatter.spec.ts"],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+        "@npm//memo-decorator",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "flamegraph-formatter.spec.ts",
+    ],
+    deps = [
+        ":flamegraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
+        "//devtools/projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

@@ -1,0 +1,46 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "profiler.component.scss",
+    "profiler-import-dialog.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+ng_module(
+    name = "profiler",
+    srcs = [
+        "file-api-service.ts",
+        "profiler.component.ts",
+        "profiler.module.ts",
+        "profiler-import-dialog.component.ts",
+    ],
+    angular_assets = [
+        "profiler.component.html",
+        "profiler-import-dialog.component.html",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline",
+        "//devtools/projects/ng-devtools/src/lib/vendor/chromium",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "@npm//@angular/material",
+        "@npm//rxjs",
+    ],
+)

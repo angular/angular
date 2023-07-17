@@ -1,0 +1,56 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "core",
+    srcs = ["index.ts"] + glob([
+        "src/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/core",
+    deps = [
+        ":api",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/annotations/common",
+        "//packages/compiler-cli/src/ngtsc/cycles",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/entry_point",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/incremental:api",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/resource",
+        "//packages/compiler-cli/src/ngtsc/scope",
+        "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/shims:api",
+        "//packages/compiler-cli/src/ngtsc/transform",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/src/ngtsc/xi18n",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "api",
+    srcs = glob(["api/**/*.ts"]),
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/shims:api",
+        "@npm//typescript",
+    ],
+)

@@ -1,0 +1,16 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "tab-update",
+    srcs = glob(
+        include = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

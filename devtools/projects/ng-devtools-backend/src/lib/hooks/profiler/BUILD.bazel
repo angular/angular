@@ -1,0 +1,19 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "profiler",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:identity_tracker",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)

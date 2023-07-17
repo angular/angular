@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../dist/all/",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "selenium-webdriver": ["../../node_modules/@types/selenium-webdriver/index.d.ts"],
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/*": ["../../packages/*"],
+      "zone.js/*": ["../../packages/zone.js/*"]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es5", "DOM", "ScriptHost"],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "target": "es5",
+    "types": ["angular", "jasmine"]
+  },
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  },
+  "rules": {
+    "no-floating-promises": true,
+    "no-unused-expression": true,
+    "no-unused-variable": true
+  },
+  "include": ["../../node_modules/@angular/build-tooling/bazel/benchmark/driver-utilities/"]
+}

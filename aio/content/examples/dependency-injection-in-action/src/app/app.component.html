@@ -1,0 +1,42 @@
+<h1>DI Cookbook</h1>
+<div class="di-component">
+  <h3>Logged in user</h3>
+  <div>Name: {{userContext.name}}</div>
+  <div>Role: {{userContext.role}}</div>
+</div>
+
+<div class="di-component">
+  <h3>Hero Bios</h3>
+  <app-hero-bios></app-hero-bios>
+</div>
+
+<!-- #docregion highlight -->
+<div id="highlight"  class="di-component"  appHighlight>
+  <h3>Hero Bios and Contacts</h3>
+  <div appHighlight="yellow">
+    <app-hero-bios-and-contacts></app-hero-bios-and-contacts>
+  </div>
+</div>
+<!-- #enddocregion highlight -->
+
+<div class="di-component">
+  <app-hero-of-the-month></app-hero-of-the-month>
+</div>
+
+<div class="di-component">
+  <h3>Unsorted Heroes</h3>
+  <app-unsorted-heroes></app-unsorted-heroes>
+</div>
+
+<div class="di-component">
+  <h3>Sorted Heroes</h3>
+  <app-sorted-heroes></app-sorted-heroes>
+</div>
+
+<div class="di-component">
+  <app-parent-finder></app-parent-finder>
+</div>
+
+<div class="di-component">
+  <app-storage></app-storage>
+</div>

@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/localize/src/localize",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    deps = [
+        ":test_lib",
+    ],
+)

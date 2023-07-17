@@ -1,0 +1,88 @@
+ <!-- #docregion -->
+<div>
+
+  <h2>Template-Driven Form</h2>
+  <!-- #docregion cross-validation-register-validator -->
+  <form #heroForm="ngForm" appIdentityRevealed>
+  <!-- #enddocregion cross-validation-register-validator -->
+    <div [hidden]="heroForm.submitted">
+      <div class="cross-validation" [class.cross-validation-error]="heroForm.errors?.['identityRevealed'] && (heroForm.touched || heroForm.dirty)">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <!-- #docregion name-with-error-msg -->
+          <!-- #docregion name-input -->
+          <input type="text" id="name" name="name" class="form-control"
+                required minlength="4" appForbiddenName="bob"
+                [(ngModel)]="hero.name" #name="ngModel">
+          <!-- #enddocregion name-input -->
+
+          <div *ngIf="name.invalid && (name.dirty || name.touched)"
+              class="alert">
+
+            <div *ngIf="name.errors?.['required']">
+              Name is required.
+            </div>
+            <div *ngIf="name.errors?.['minlength']">
+              Name must be at least 4 characters long.
+            </div>
+            <div *ngIf="name.errors?.['forbiddenName']">
+              Name cannot be Bob.
+            </div>
+
+          </div>
+          <!-- #enddocregion name-with-error-msg -->
+        </div>
+
+        <div class="form-group">
+          <label for="alterEgo">Alter Ego</label>
+        <!-- #docregion alterEgo-input -->
+        <input type="text"
+                 id="alterEgo"
+                 name="alterEgo"
+                 #alterEgo="ngModel"
+                 [(ngModel)]="hero.alterEgo"
+                 [ngModelOptions]="{ updateOn: 'blur' }"
+                 appUniqueAlterEgo>
+          <!-- #enddocregion alterEgo-input -->
+          <div *ngIf="alterEgo.pending">Validating...</div>
+          <div *ngIf="alterEgo.invalid" class="alert alter-ego-errors">
+            <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
+              Alter ego is already taken.
+            </div>
+          </div>
+        </div>
+
+        <!-- #docregion cross-validation-error-message -->
+        <div *ngIf="heroForm.errors?.['identityRevealed'] && (heroForm.touched || heroForm.dirty)" class="cross-validation-error-message alert">
+            Name cannot match alter ego.
+        </div>
+        <!-- #enddocregion cross-validation-error-message -->
+      </div>
+
+      <div class="form-group">
+        <label for="power">Hero Power</label>
+        <select id="power"
+                name="power"
+                required [(ngModel)]="hero.power"
+                #power="ngModel">
+          <option *ngFor="let p of powers" [value]="p">{{p}}</option>
+        </select>
+
+        <div *ngIf="power.errors && power.touched" class="alert">
+          <div *ngIf="power.errors['required']">Power is required.</div>
+        </div>
+      </div>
+
+      <p>Complete the form to enable the Submit button.</p>
+      <button type="submit"
+              [disabled]="heroForm.invalid">Submit</button>
+      <button type="button"
+              (click)="heroForm.resetForm({})">Reset</button>
+    </div>
+
+    <div class="submitted-message" *ngIf="heroForm.submitted">
+      <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
+      <button type="button" (click)="heroForm.resetForm({})">Add new hero</button>
+    </div>
+  </form>
+</div>

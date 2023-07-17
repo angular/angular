@@ -1,0 +1,13 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate a correct call to `ɵɵtextInterpolateV()` with more than 8 interpolations",
+      "expectations": [
+        {
+          "failureMessage": "Incorrect `ɵɵtextInterpolateV()` call"
+        }
+      ]
+    }
+  ]
+}

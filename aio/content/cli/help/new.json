@@ -1,0 +1,183 @@
+{
+  "name": "new",
+  "command": "ng new [name]",
+  "shortDescription": "Creates a new Angular workspace.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/new/long-description.md",
+  "longDescription": "Creates and initializes a new Angular application that is the default project for a new workspace.\n\nProvides interactive prompts for optional configuration, such as adding routing support.\nAll prompts can safely be allowed to default.\n\n- The new workspace folder is given the specified project name, and contains configuration files at the top level.\n\n- By default, the files for a new initial application (with the same name as the workspace) are placed in the `src/` subfolder.\n- The new application's configuration appears in the `projects` section of the `angular.json` workspace configuration file, under its project name.\n\n- Subsequent applications that you generate in the workspace reside in the `projects/` subfolder.\n\nIf you plan to have multiple applications in the workspace, you can create an empty workspace by using the `--no-create-application` option.\nYou can then use `ng generate application` to create an initial application.\nThis allows a workspace name different from the initial app name, and ensures that all applications reside in the `/projects` subfolder, matching the structure of the configuration file.\n",
+  "aliases": [
+    "n"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "collection",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "A collection of schematics to use in generating the initial application."
+    },
+    {
+      "name": "commit",
+      "type": "boolean",
+      "default": true,
+      "description": "Initial git repository commit information."
+    },
+    {
+      "name": "create-application",
+      "type": "boolean",
+      "default": true,
+      "description": "Create a new initial application project in the 'src' folder of the new workspace. When false, creates an empty workspace with no initial application. You can then use the generate application command so that all applications are created in the projects folder."
+    },
+    {
+      "name": "defaults",
+      "type": "boolean",
+      "default": false,
+      "description": "Disable interactive input prompts for options with a default."
+    },
+    {
+      "name": "directory",
+      "type": "string",
+      "description": "The directory name to create the workspace in."
+    },
+    {
+      "name": "dry-run",
+      "type": "boolean",
+      "default": false,
+      "description": "Run through and reports activity without writing out results."
+    },
+    {
+      "name": "force",
+      "type": "boolean",
+      "default": false,
+      "description": "Force overwriting of existing files."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "inline-style",
+      "type": "boolean",
+      "aliases": [
+        "s"
+      ],
+      "description": "Include styles inline in the component TS file. By default, an external styles file is created and referenced in the component TypeScript file."
+    },
+    {
+      "name": "inline-template",
+      "type": "boolean",
+      "aliases": [
+        "t"
+      ],
+      "description": "Include template inline in the component TS file. By default, an external template file is created and referenced in the component TypeScript file."
+    },
+    {
+      "name": "interactive",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable interactive input prompts."
+    },
+    {
+      "name": "minimal",
+      "type": "boolean",
+      "default": false,
+      "description": "Create a workspace without any testing frameworks. (Use for learning purposes only.)"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name of the new workspace and initial project.",
+      "positional": 0
+    },
+    {
+      "name": "new-project-root",
+      "type": "string",
+      "default": "projects",
+      "description": "The path where new projects will be created, relative to the new workspace root."
+    },
+    {
+      "name": "package-manager",
+      "type": "string",
+      "enum": [
+        "npm",
+        "yarn",
+        "pnpm",
+        "cnpm"
+      ],
+      "description": "The package manager used to install dependencies."
+    },
+    {
+      "name": "prefix",
+      "type": "string",
+      "aliases": [
+        "p"
+      ],
+      "default": "app",
+      "description": "The prefix to apply to generated selectors for the initial project."
+    },
+    {
+      "name": "routing",
+      "type": "boolean",
+      "description": "Generate a routing module for the initial project."
+    },
+    {
+      "name": "skip-git",
+      "type": "boolean",
+      "aliases": [
+        "g"
+      ],
+      "default": false,
+      "description": "Do not initialize a git repository."
+    },
+    {
+      "name": "skip-install",
+      "type": "boolean",
+      "default": false,
+      "description": "Do not install dependency packages."
+    },
+    {
+      "name": "skip-tests",
+      "type": "boolean",
+      "aliases": [
+        "S"
+      ],
+      "default": false,
+      "description": "Do not generate \"spec.ts\" test files for the new project."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "default": false,
+      "description": "Creates an application based upon the standalone API, without NgModules."
+    },
+    {
+      "name": "strict",
+      "type": "boolean",
+      "default": true,
+      "description": "Creates a workspace with stricter type checking and stricter bundle budgets settings. This setting helps improve maintainability and catch bugs ahead of time. For more information, see https://angular.io/guide/strict-mode"
+    },
+    {
+      "name": "style",
+      "type": "string",
+      "enum": [
+        "css",
+        "scss",
+        "sass",
+        "less"
+      ],
+      "description": "The file extension or preprocessor to use for style files."
+    },
+    {
+      "name": "view-encapsulation",
+      "type": "string",
+      "enum": [
+        "Emulated",
+        "None",
+        "ShadowDom"
+      ],
+      "description": "The view encapsulation strategy to use in the initial project."
+    }
+  ]
+}

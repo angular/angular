@@ -1,0 +1,61 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//tools:defaults.bzl", "esbuild", "http_server")
+
+package(default_visibility = ["//:__subpackages__"])
+
+ng_module(
+    name = "src",
+    srcs = ["main.ts"],
+    deps = [
+        "//devtools/projects/demo-no-zone/src/app",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    entry_points = [":main.ts"],
+    platform = "browser",
+    splitting = False,
+    target = "es2016",
+    deps = [":src"],
+)
+
+exports_files([
+    "index.html",
+    "styles.css",
+])
+
+filegroup(
+    name = "dev_app_static_files",
+    srcs = [
+        ":index.html",
+        ":styles.css",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+pkg_web(
+    name = "devapp",
+    srcs = [
+        ":bundle",
+        ":dev_app_static_files",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [":dev_app_static_files"],
+    additional_root_paths = ["angular/devtools/projects/demo-no-zone/src/devapp"],
+    tags = ["manual"],
+    deps = [
+        ":devapp",
+    ],
+)

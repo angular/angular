@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/common/http/index.mjs",
+    deps = ["//packages/common/http"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
+        "@npm//rxjs",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    # TODO remove once the Node 18 is the default toolchain.
+    toolchain = select({
+        "@bazel_tools//src/conditions:linux_x86_64": "@node18_linux_amd64//:node_toolchain",
+        "@bazel_tools//src/conditions:darwin": "@node18_darwin_amd64//:node_toolchain",
+        "@bazel_tools//src/conditions:windows": "@node18_windows_amd64//:node_toolchain",
+    }),
+    deps = [
+        ":test_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

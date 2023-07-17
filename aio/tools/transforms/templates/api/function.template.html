@@ -1,0 +1,33 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
+{% import "lib/paramList.html" as params -%}
+{% extends 'export-base.template.html' -%}
+
+{% block overview %}
+{% if doc.overloads.length > 0 and doc.overloads.length < 3 -%}
+  {% for overload in doc.overloads -%}
+    {$ memberHelpers.renderOverloadInfo(overload, 'function-overload', doc) $}
+    {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
+  {% endfor -%}
+{% else %}
+  {$ memberHelpers.renderOverloadInfo(doc, 'function-overload', doc) $}
+{% endif %}
+{% endblock %}
+
+
+{% block details %}
+{% include "includes/description.html" %}
+{% if doc.overloads.length >= 3 %}
+<section class="overloads">
+  <h2>Overloads</h2>
+  <table>
+  {% for overload in doc.overloads %}
+  <tr>
+    <td>
+      {$ memberHelpers.renderOverloadInfo(overload, 'function-overload', doc) $}
+    </td>
+  </tr>
+  {% endfor %}
+  </table>
+</section>
+{% endif %}
+{% endblock %}

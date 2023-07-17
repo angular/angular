@@ -1,0 +1,39 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+
+js_library(
+    name = "angular-errors-package",
+    srcs = glob(
+        [
+            "**/*.js",
+        ],
+        exclude = ["**/*.spec.js"],
+    ),
+    visibility = ["//aio/tools/transforms:__subpackages__"],
+    deps = [
+        "//aio/tools/transforms",
+        "//aio/tools/transforms/angular-base-package",
+        "//aio/tools/transforms/content-package",
+        "//aio/tools/transforms/templates",
+        "@aio_npm//canonical-path",
+        "@aio_npm//dgeni",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    env = {
+        "GIT_BIN": "$(GIT_BIN_PATH)",
+    },
+    shard_count = 8,
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
+    deps = [
+        ":angular-errors-package",
+        "//aio/tools/transforms/helpers",
+        "@aio_npm//canonical-path",
+        "@aio_npm//dgeni",
+    ],
+)

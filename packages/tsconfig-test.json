@@ -1,0 +1,16 @@
+/**
+ * Root tsconfig file for use in all tests.
+ */
+{
+  "extends": "./tsconfig-build.json",
+  "compilerOptions": {
+    "types": ["node", "jasmine"],
+    "plugins": [{
+        "name": "@bazel/tsetse",
+        "disabledRules": ["must-use-promises"]
+    }]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

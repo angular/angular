@@ -1,0 +1,15 @@
+@use 'footer/footer-theme';
+@use 'layout-global/layout-global-theme';
+@use 'marketing-layout/marketing-layout-theme';
+@use 'not-found/not-found-theme';
+@use 'sidenav/sidenav-theme';
+@use 'top-menu/top-menu-theme';
+
+@mixin theme($theme) {
+  @include footer-theme.theme($theme);
+  @include layout-global-theme.theme($theme);
+  @include marketing-layout-theme.theme($theme);
+  @include not-found-theme.theme($theme);
+  @include sidenav-theme.theme($theme);
+  @include top-menu-theme.theme($theme);
+}

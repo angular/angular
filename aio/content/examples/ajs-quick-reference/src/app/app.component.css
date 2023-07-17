@@ -1,0 +1,9 @@
+.active {font-style: italic;}
+.shazam {font-weight: bold;}
+
+img {height: 100px;}
+
+table td {
+  padding: 4px;
+  border: 1px solid #e0e0e0;
+}

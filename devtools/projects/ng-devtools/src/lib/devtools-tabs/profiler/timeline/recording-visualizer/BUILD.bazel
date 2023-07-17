@@ -1,0 +1,65 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "bar-chart.component.scss",
+    "bargraph-visualizer.component.scss",
+    "execution-details.component.scss",
+    "flamegraph-visualizer.component.scss",
+    "timeline-visualizer.component.scss",
+    "tree-map-visualizer.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+ng_module(
+    name = "recording-visualizer",
+    srcs = [
+        "bar-chart.component.ts",
+        "bargraph-visualizer.component.ts",
+        "execution-details.component.ts",
+        "flamegraph-visualizer.component.ts",
+        "profile-formatter.ts",
+        "recording-visualizer.module.ts",
+        "timeline-visualizer.component.ts",
+        "tree-map-visualizer.component.ts",
+    ],
+    angular_assets = [
+        "timeline-visualizer.component.html",
+        "tree-map-visualizer.component.html",
+        "flamegraph-visualizer.component.html",
+        "bargraph-visualizer.component.html",
+        "bar-chart.component.html",
+        "execution-details.component.html",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
+        "//devtools/projects/ng-devtools/src/lib/vendor/webtreemap",
+        "//devtools/projects/protocol",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
+    ],
+)

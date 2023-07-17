@@ -1,0 +1,8 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "util_lib",
+    srcs = ["util.ts"],
+)

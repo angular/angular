@@ -1,0 +1,37 @@
+/**
+ * Root tsconfig file for use building all Angular packages. Note there is no rootDir
+ * and therefore any tsconfig in the package directory will need to define its own
+ * rootDir.
+ */
+{
+  "compilerOptions": {
+    "declaration": true,
+    "stripInternal": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "es2022",
+    // Keep the below in sync with ng_module.bzl
+    "useDefineForClassFields": false,
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": [],
+    "experimentalDecorators": true,
+    // This is needed due to https://github.com/Microsoft/TypeScript/issues/17516.
+    // As tsickle will lower decorators before TS, this is not a problem for our build.
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "importHelpers": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "private",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
+        "@npm//typescript",
+    ],
+)

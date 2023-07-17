@@ -1,0 +1,44 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should add legacy message ids if `enableI18nLegacyMessageIdFormat` is true",
+      "inputFiles": [
+        "legacy_enabled.ts"
+      ],
+      "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": true
+      },
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should not add legacy message ids if `enableI18nLegacyMessageIdFormat` is false",
+      "inputFiles": [
+        "legacy_disabled.ts"
+      ],
+      "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false
+      },
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ],
+      "skipForTemplatePipeline": true
+    }
+  ]
+}

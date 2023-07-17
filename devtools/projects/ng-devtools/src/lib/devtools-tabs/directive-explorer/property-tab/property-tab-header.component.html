@@ -1,0 +1,29 @@
+<ng-container *ngIf="currentSelectedElement; else emptyState">
+  <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
+    <mat-accordion class="property-tab-header">
+      <div>
+        <mat-expansion-panel [hideToggle]="true">
+          <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
+            <mat-panel-title>
+              <div class="element-header">
+                <div class="component-name">{{ currentSelectedElement.component.name }}</div>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-component-metadata [currentSelectedComponent]="currentSelectedElement.component"></ng-component-metadata>
+        </mat-expansion-panel>
+      </div>
+    </mat-accordion>
+  </ng-container>
+  <ng-template #currentElementIsDOMElement>
+    <div class="element-header">
+      <div class="element-name">{{ currentSelectedElement.element }}</div>
+    </div>
+  </ng-template>
+</ng-container>
+
+<ng-template #emptyState>
+  <div class="element-header">
+    <div class="element-name">No selected Element</div>
+  </div>
+</ng-template>

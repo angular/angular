@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "cli",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+        ],
+    ),
+)

@@ -1,0 +1,174 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "cli-hello-world-ivy-i18n": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "localize": false, // To prevent the CLI from doing inlining itself
+            "aot": true,
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
+            "scripts": [],
+            "progress": false
+          },
+          "configurations": {
+            "view-engine": {
+              "tsConfig": "tsconfig.view-engine.json"
+            },
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "runtime-translations": {
+              "fileReplacements": [
+                {
+                  "replace": "src/polyfills.ts",
+                  "with": "src/polyfills-runtime.ts"
+                }
+              ]
+            },
+            "translated-legacy": {
+              "tsConfig": "tsconfig.legacy.json",
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
+            "translated-legacy-xmb": {
+              "tsConfig": "tsconfig.legacy-xmb.json",
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "cli-hello-world-ivy-i18n:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production"
+            },
+            "ci": {},
+            "ci-production": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production"
+            },
+            "runtime-translations": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:runtime-translations"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "cli-hello-world-ivy-i18n:build:view-engine",
+            "outputPath": "../tmp/legacy-locales/",
+            "outFile": "messages.legacy.xlf"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
+            "scripts": [],
+            "progress": false,
+            "watch": false
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/en/protractor.conf.js",
+            "devServerTarget": "cli-hello-world-ivy-i18n:serve",
+            "webdriverUpdate": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci"
+            },
+            "ci-production": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production"
+            },
+            "runtime-translations": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:runtime-translations",
+              "protractorConfig": "e2e/runtime/protractor.conf.js"
+            },
+            "translated-legacy": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/legacy/protractor.conf.js"
+            },
+            "translated-en": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/en/protractor.conf.js"
+            },
+            "translated-fr": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/fr/protractor.conf.js"
+            },
+            "translated-de": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/de/protractor.conf.js"
+            }
+          }
+        }
+      }
+    }
+  }
+}

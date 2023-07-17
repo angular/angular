@@ -1,0 +1,165 @@
+@use './constants';
+@use './mixins';
+
+@media print {
+  // General Adjustments
+  * {
+    box-shadow: none !important;
+  }
+
+  body,
+  mat-sidenav-container {
+    background: none !important;
+  }
+
+  h1 {
+    height: 40px !important;
+    color: constants.$darkgray !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+  }
+
+  ul,
+  ol,
+  img,
+  code-example,
+  table,
+  tr,
+  .alert,
+  .feature,
+  .lightbox {
+    page-break-inside: avoid;
+  }
+
+  table tbody tr:last-child td {
+    border-bottom: 1px solid constants.$lightgray !important;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  p {
+    widows: 4;
+  }
+
+  p > code,
+  li > code,
+  table code {
+    color: constants.$blue !important;
+  }
+
+  // No Print Class
+  .no-print {
+    display: none !important;
+  }
+
+  // Custom No Print for Sidenav Menu
+  mat-sidenav.sidenav.mat-sidenav {
+    display: none !important;
+  }
+
+  // Custom No Print Element Adjustments
+  .mat-sidenav-content {
+    margin: 0 !important;
+  }
+
+  mat-sidenav-container.sidenav-container {
+    min-width: 100vw;
+  }
+
+  .sidenav-content {
+    overflow: visible;
+  }
+
+  section#intro {
+    .hero-logo {
+      align-items: center;
+      background: none;
+      justify-content: center;
+
+      &::after {
+        @include mixins.font-size(64);
+        @include mixins.line-height(100);
+
+        color: constants.$brightred;
+        content: 'Angular';
+        font-weight: bold;
+      }
+    }
+  }
+
+  .filetree {
+    max-width: 100%;
+  }
+
+  aio-code code {
+    border: none !important;
+  }
+
+  code-example {
+    &[language=shell],
+    &[language=sh],
+    &[language=bash] {
+      background: none;
+
+      .pnk,
+      .blk,
+      .pln,
+      .otl,
+      .kwd,
+      .typ,
+      .tag,
+      .str,
+      .atv,
+      .atn,
+      .com,
+      .lit,
+      .pun,
+      .dec {
+        color: constants.$darkgray;
+      }
+    }
+
+    header {
+      background: none;
+      border: 0.5px solid constants.$lightgray;
+      color: constants.$darkgray;
+    }
+  }
+
+  .content code {
+    border: 0.5px solid constants.$lightgray;
+  }
+
+  .mat-tab-labels {
+    div.mat-tab-label {
+      &:not(.mat-tab-label-active) span {
+        font-style: italic;
+      }
+
+      &.mat-tab-label-active span {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .api-header label {
+    color: constants.$darkgray !important;
+    font-weight: bold !important;
+    margin: 2px !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .feature-section img {
+    max-width: 70px !important;
+  }
+}

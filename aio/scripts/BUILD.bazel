@@ -1,0 +1,97 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_first_output")
+load("//tools:defaults.bzl", "nodejs_binary", "nodejs_test")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "run-with-local-server.mjs",
+])
+
+nodejs_binary(
+    name = "build-ngsw-config",
+    data = [
+        "//aio:firebase.json",
+        "//aio:ngsw-config.template.json",
+        "@aio_npm//canonical-path",
+        "@aio_npm//json5",
+    ],
+    entry_point = "build-ngsw-config.js",
+)
+
+js_library(
+    name = "fast-serve-and-watch",
+    srcs = [
+        "fast-serve-and-watch.mjs",
+    ],
+    deps = [
+        "//aio/tools/transforms/authors-package:watchdocs",
+        "@aio_npm//@angular-devkit/architect-cli",
+    ],
+)
+
+nodejs_binary(
+    name = "build-404-page",
+    entry_point = "build-404-page.js",
+)
+
+nodejs_binary(
+    name = "audit-web-app",
+    testonly = True,
+    data = [
+        "//aio/tools:windows-chromium-path",
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
+        "@aio_npm//lighthouse",
+        "@aio_npm//lighthouse-logger",
+        "@aio_npm//puppeteer-core",
+    ],
+    entry_point = "audit-web-app.mjs",
+    env = {
+        "CHROME_BIN": "$(CHROMIUM)",
+    },
+    toolchains = [
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    ],
+)
+
+# Extract the executable audit script from DefaultInfo so that we can use
+# $(rootpath) on it.
+filter_first_output(
+    name = "audit-web-app-script",
+    testonly = True,
+    filters = [
+        # On Windows select the batch script
+        "audit-web-app.bat",
+        "audit-web-app.sh",
+    ],
+    target = ":audit-web-app",
+)
+
+# This should be a nodejs_binary, however calling "bazel run" on this target
+# on OSX causes the runfiles build to fail due to bazel-provided chromium having
+# files with spaces in the name. However, it works when run in the sandbox when
+# called using "bazel test".
+#
+# On Windows/Linux, call with:
+#
+#    bazel run //aio/scripts:test-aio-a11y [targetUrl]
+#
+# On OXS call with:
+#
+#    bazel test //aio/scripts:test-aio-a11y --test_arg=[targetUrl]
+nodejs_test(
+    name = "test-aio-a11y",
+    testonly = True,
+    data = [
+        ":audit-web-app",
+        ":audit-web-app-script",
+        "@aio_npm//shelljs",
+    ],
+    entry_point = "test-aio-a11y.mjs",
+    env = {
+        "AUDIT_SCRIPT_PATH": "$(rootpath :audit-web-app-script)",
+    },
+    tags = [
+        "manual",
+    ],
+)

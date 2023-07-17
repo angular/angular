@@ -1,0 +1,43 @@
+@use '../../constants';
+@use '../../mixins';
+
+aio-resource-list {
+  .showcase {
+    transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 4px 0 rgba(constants.$black, 0.37);
+    border-radius: 4px;
+    margin-bottom: 8px * 6;
+  }
+
+  .resource-item {
+    .resource-name {
+      margin: 0;
+      @include mixins.line-height(24);
+      @include mixins.font-size(20);
+    }
+
+    .resource-description {
+      margin: 0;
+    }
+  }
+
+  .subcategory-title {
+    padding: 16px 23px;
+    margin: 0;
+    @include mixins.font-size(24);
+  }
+
+  .resource-row-link {
+    display: flex;
+    flex-direction: column;
+    border: transparent solid 1px;
+    padding: 16px 23px 16px 23px;
+    transition: all .3s;
+
+    &:hover {
+      text-decoration: none;
+      border-radius: 4px;
+      transform: translateY(-2px);
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["main"],
+  "enabledManagers": ["npm", "bazel", "github-actions"],
+  "stopUpdatingLabel": "action: merge",
+  "rangeStrategy": "replace",
+  "pinDigests": true,
+  "semanticCommits": "enabled",
+  "semanticCommitScope": "",
+  "semanticCommitType": "build",
+  "dependencyDashboard": true,
+  "commitBody": "See associated pull request for more information.",
+  "separateMajorMinor": false,
+  "prHourlyLimit": 3,
+  "timezone": "America/Tijuana",
+  "lockFileMaintenance": {"enabled": true},
+  "labels": ["target: patch", "area: build & ci", "action: review"],
+  "ignorePaths": ["aio/content/demos/first-app/package.json"],
+  "ignoreDeps": [
+    "@types/node",
+    "@types/selenium-webdriver",
+    "angular-1.5",
+    "angular-1.6",
+    "angular-1.7",
+    "angular-1.8",
+    "angular-mocks-1.5",
+    "angular-mocks-1.6",
+    "angular-mocks-1.7",
+    "angular-mocks-1.8",
+    "remark",
+    "remark-html",
+    "selenium-webdriver",
+    "watchr",
+    "rxjs",
+    "glob",
+    "chalk",
+    "convert-source-map",
+    "@rollup/plugin-node-resolve",
+    "hast-util-is-element",
+    "hast-util-has-property",
+    "hast-util-to-string",
+    "rehype-slug",
+    "rollup",
+    "systemjs",
+    "unist-util-filter",
+    "unist-util-source",
+    "unist-util-visit",
+    "unist-util-visit-parents",
+    "rules_pkg",
+    "aspect_bazel_lib"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
+    },
+
+    {
+      "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
+      "groupName": "bazel setup",
+      "schedule": ["at any time"]
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
+      "followTag": "next",
+      "groupName": "cross-repo Angular dependencies",
+      "schedule": ["at any time"]
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
+      "matchPaths": ["packages/**", "aio/tools/examples/shared/**"],
+      "followTag": null
+    },
+
+    {
+      "matchPackagePrefixes": ["@babel/", "@types/babel__"],
+      "groupName": "babel dependencies"
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular-eslint/", "@typescript-eslint/"],
+      "groupName": "eslint dependencies"
+    },
+
+    {
+      "matchPackageNames": ["typescript", "tslib"],
+      "groupName": "typescript dependencies"
+    },
+
+    {
+      "matchPaths": [".github/workflows/scorecard.yml"],
+      "groupName": "scorecard action dependencies",
+      "groupSlug": "scorecard-action"
+    },
+    
+    {
+      "matchPaths": ["aio/tools/examples/shared/*"],
+      "postUpgradeTasks": {
+        "commands": ["yarn --cwd=aio/tools/examples/shared run sync-deps"],
+        "fileFilters": ["aio/tools/examples/shared/boilerplate/**"]
+      }
+    },
+
+    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
+
+    {"matchPaths": ["integration/**"], "enabled": false}
+  ]
+}

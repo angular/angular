@@ -1,0 +1,42 @@
+{% macro projectRelativePath(fileInfo) -%}
+{$ fileInfo.projectRelativePath $}
+{%- endmacro %}
+
+{% macro githubBaseUrl(versionInfo) -%}
+https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}
+{%- endmacro %}
+
+{% macro githubVersionedUrl(versionInfo) -%}
+{% set version = versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw or versionInfo.currentVersion.branchName -%}
+{$ githubBaseUrl(versionInfo) $}/tree/{$ version $}
+{%- endmacro %}
+
+{% macro githubViewHref(doc, versionInfo) -%}
+{% set lineInfo = doc.startingLine and ('#L' + (doc.startingLine + 1) + '-L' + (doc.endingLine + 1)) or '' -%}
+{$ githubVersionedUrl(versionInfo) $}/{$ projectRelativePath(doc.fileInfo) $}{$ lineInfo $}
+{%- endmacro %}
+
+{% macro githubEditHref(doc, versionInfo, pathPrefix) -%}
+{% set lineInfo = doc.startingLine and ('#L' + (doc.startingLine + 1) + '-L' + (doc.endingLine + 1)) or '' -%}
+{$ githubBaseUrl(versionInfo) $}/edit/main/{$ projectRelativePath(doc.fileInfo) $}?message=docs
+  {%- if doc.moduleDoc %}({$ doc.moduleDoc.id.split('/')[0] $})
+  {%- elseif doc.docType === 'module' %}({$ doc.id.split('/')[0] $})
+  {%- elseif doc.docType === 'content' %}
+  {%- else %}(...){%- endif -%}
+%3A%20describe%20your%20change...{$ lineInfo $}
+{%- endmacro %}
+
+{% macro githubEditLink(doc, versionInfo) -%}
+<a href="{$ githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+{%- endmacro %}
+
+{% macro githubViewLink(doc, versionInfo) -%}
+<a href="{$ githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
+{%- endmacro %}
+
+{% macro githubLinks(doc, versionInfo) -%}
+<div class="github-links">
+  {$ githubEditLink(doc, versionInfo) $}
+  {$ githubViewLink(doc, versionInfo) $}
+</div>
+{%- endmacro -%}

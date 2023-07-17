@@ -1,0 +1,27 @@
+mat-toolbar {
+  padding-left: 10px;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 25px;
+  font-size: 11px;
+  font-weight: 500;
+  height: auto;
+}
+
+.mat-icon-button {
+  font-size:16px;
+  line-height: 10px;
+}
+
+.button {
+  height: 20px;
+  width: 20px;
+  float: right;
+}
+
+:host-context(.dark-theme) {
+  .mat-icon-button {
+    fill: #fff;
+  }
+}

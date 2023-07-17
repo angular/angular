@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "closure",
+    testonly = True,
+    srcs = ["zone.closure.ts"],
+    deps = ["//packages/zone.js/lib:zone_d_ts"],
+)
+
+filegroup(
+    name = "closure_js",
+    testonly = True,
+    srcs = [":closure"],
+    output_group = "es6_sources",
+)

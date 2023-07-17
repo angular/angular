@@ -1,0 +1,189 @@
+extends: existence
+message: "See if you can rewrite the sentence with '%s' to use more common words."
+link: 'https://angular.io/guide/docs-lint-errors#a-word-is-too-wordy-or-should-be-replaced-by-another'
+ignorecase: true
+level: suggestion
+tokens:
+  - abundance
+  - accede to
+  - accelerate
+  - accentuate
+  - accompany
+  - accomplish
+  - accorded
+  - accrue
+  - acquiesce
+  - acquire
+  - additional
+  - adjustment
+  - admissible
+  - advantageous
+  - adversely impact
+  - advise
+  - aforementioned
+  - aircraft
+  - all things considered
+  - alleviate
+  - allocate
+  - along the lines of
+  - already existing
+  - alternatively
+  - amazing
+  - ameliorate
+  - anticipate
+  - apparent
+  - appreciable
+  - as a matter of fact
+  - as a means of
+  - as far as I'm concerned
+  - as of yet
+  - as yet
+  - ascertain
+  - at the present time
+  - at this time
+  - attain
+  - attributable to
+  - authorize
+  - because of the fact that
+  - belated
+  - benefit from
+  - bestow
+  - by means of
+  - by virtue of the fact that
+  - by virtue of
+  - cease
+  - close proximity
+  - commence
+  - comply with
+  - concerning
+  - consequently
+  - constitutes
+  - depart
+  - designate
+  - discontinue
+  - due to the fact that
+  - each and every
+  - economical
+  - elucidate
+  - employ
+  - endeavor
+  - enumerate
+  - equitable
+  - equivalent
+  - evidenced
+  - exclusively
+  - expedite
+  - expend
+  - expiration
+  - factual evidence
+  - feasible
+  - first and foremost
+  - for all intents and purposes
+  - for the most part
+  - forfeit
+  - formulate
+  - have a tendency to
+  - honest truth
+  - however
+  - in a manner of speaking
+  - in a timely manner
+  - in a very real sense
+  - in accordance with
+  - in addition
+  - in all likelihood
+  - in an effort to
+  - in excess of
+  - in lieu of
+  - in light of the fact that
+  - in my opinion
+  - in regard to
+  - in some instances
+  - in terms of
+  - in the final analysis
+  - in the nature of
+  - in the near future
+  - inception
+  - incumbent upon
+  - indicate
+  - indication
+  - irregardless
+  - is applicable to
+  - is authorized to
+  - is responsible for
+  - it is essential
+  - it seems that
+  - magnitude
+  - maximum
+  - methodology
+  - minimize
+  - minimum
+  - modify
+  - monitor
+  - necessitate
+  - nevertheless
+  - not certain
+  - not many
+  - not often
+  - not unless
+  - not unlike
+  - notwithstanding
+  - null and void
+  - numerous
+  - objective
+  - obligate
+  - on the contrary
+  - on the other hand
+  - one particular
+  - optimum
+  - overall
+  - owing to the fact that
+  - participate
+  - particulars
+  - pass away
+  - pertaining to
+  - point in time
+  - portion
+  - possess
+  - preclude
+  - previously
+  - prioritize
+  - procure
+  - proficiency
+  - purchase
+  - put simply
+  - readily apparent
+  - refer back
+  - regarding
+  - relocate
+  - remainder
+  - remuneration
+  - requirement
+  - reside
+  - residence
+  - satisfy
+  - seamlessly
+  - shall
+  - should you wish
+  - similar to
+  - solicit
+  - span across
+  - strategize
+  - substantial
+  - successfully complete
+  - terminate
+  - the month of
+  - the point I am trying to make
+  - therefore
+  - time period
+  - took advantage of
+  - transmit
+  - transpire
+  - until such time as
+  - utilization
+  - utilize
+  - validate
+  - various different
+  - what I mean to say is
+  - whether or not
+  - with respect to
+  - witnessed

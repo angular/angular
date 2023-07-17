@@ -1,0 +1,90 @@
+@use 'sass:selector';
+@use '../../constants';
+@use '../../mixins';
+
+/*
+ * General styling to make detail/summary tags look a bit more material
+ * To get the best out of it you should structure your usage like this:
+ *
+ * ```html
+ * <details>
+ *   <summary>Some title</summary>
+ *   <div class="details-content">
+ *     Some content
+ *   </div>
+ * </details>
+ * ```
+ *
+ * Optionally, you can use an `.actions` container inside `<summary>` to show expand/collapse
+ * actions and/or a rotating icon:
+ * ```html
+ * <summary>
+ *   <span>Some title</span>
+ *   <span class="actions">
+ *     <span class="action-expand">Show more</span>
+ *     <span class="action-collapse">Show less</span>
+ *     <i class="material-icons expand">expand_more</i>
+ *   </span>
+ * </summary>
+ * ```
+ */
+
+details {
+  > summary {
+    cursor: pointer;
+    @include mixins.font-size(16);
+    position: relative;
+    padding: 16px;
+    height: inherit;
+    display: flex; // Remove the built in details marker in FF
+    align-items: center;
+    overflow: hidden;
+
+    &::-webkit-details-marker {
+      display: none; // Remove the built in details marker in webkit
+    }
+
+    > h2 {
+      margin: 0;
+      padding: 0;
+      border: none;
+      display: inline;
+    }
+
+    .actions {
+      align-items: center;
+      display: flex;
+      @include mixins.font-size(14);
+
+      // Show/hide expand and collapse actions.
+      .action-expand {
+        display: initial;
+
+        @at-root #{selector.replace(&, 'details', 'details[open]')} {
+          display: none;
+        }
+      }
+
+      .action-collapse {
+        display: none;
+
+        @at-root #{selector.replace(&, 'details', 'details[open]')} {
+          display: initial;
+        }
+      }
+
+      // Rotate the expand/collapse icon.
+      .material-icons.expand {
+        @include mixins.rotate(0deg);
+
+        @at-root #{selector.replace(&, 'details', 'details[open]')} {
+          @include mixins.rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .details-content {
+    padding: 16px 24px;
+  }
+}

@@ -1,0 +1,7 @@
+extends: existence
+message: "Don't start a sentence with '%s'. Try to rewrite the sentence without it."
+link: 'https://angular.io/guide/docs-lint-errors#starting-a-sentence-messages'
+ignorecase: true
+level: error
+raw:
+  - '(?:^[^\w]*|[;-]\s)There\b\s(is|are)\b'

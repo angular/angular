@@ -1,0 +1,58 @@
+# copied from Google style library
+# tests for strings that should be considered for replacement before publishing
+extends: substitution
+message: "Consider using '%s' instead of '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#wordlist-messages'
+level: suggestion
+ignorecase: false
+action:
+  name: replace
+swap:
+  '(?:check[\s]+(?!out))': select
+  a number of: some
+  adjacent to: next to
+  admin: administrator
+  aggregate: together|join
+  all of: all
+  application: app
+  as to: to
+  assistance: help
+  boolean: Boolean
+  config: configuration
+  consolidate: join
+  data are: data is
+  demonstrate: show
+  disabled?: turn off|off
+  eliminate: remove
+  evaluate: consider
+  facilitate: make
+  finalize: complete
+  for the purpose of: to
+  generate: create
+  generated: created
+  if and when: when
+  iIn many cases: often
+  impacted: affected, affects
+  in between: between
+  in order to: to
+  in the case of: when
+  in the event that: when
+  in the process of: when
+  initiate: start
+  instantiable: that can be instantiated
+  monorepository: monorepo
+  obtain: get
+  overview screen: recents screen
+  params: parameters
+  precaching: pre-caching
+  prior to: before
+  provided that: if
+  resubscription: re-subscribe|subscription
+  retain: keep
+  subsequent: later
+  sufficient: enough
+  terminal: command line tool
+  touch: tap
+  url: URL
+  user friendly: friendly
+  with the exception of: except for

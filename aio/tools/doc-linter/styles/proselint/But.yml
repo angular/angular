@@ -1,0 +1,7 @@
+extends: existence
+message: "Do not start a paragraph with a 'but'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+level: error
+scope: paragraph
+tokens:
+  - ^But

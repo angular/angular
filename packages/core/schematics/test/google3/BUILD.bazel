@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "@npm//@bazel/runfiles",
+        "@npm//@types/shelljs",
+        "@npm//tslint",
+    ],
+)
+
+jasmine_node_test(
+    name = "google3",
+    data = [
+        "//packages/core/schematics/migrations/google3:google3_cjs",
+    ],
+    templated_args = ["--nobazel_run_linker"],
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
+)

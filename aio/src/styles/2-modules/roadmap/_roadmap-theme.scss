@@ -1,0 +1,12 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  .page-guide-roadmap {
+    .completed-details {
+      border-top: 1px solid if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+    }
+  }
+}

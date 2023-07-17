@@ -1,0 +1,52 @@
+{
+  "name": "Angular Documentation",
+  "short_name": "angular.io",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "assets/images/favicons/favicon-194x194.png",
+      "sizes": "194x194 512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicons/favicon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicons/favicon-144x144-maskable.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/?utm_source=homescreen",
+  "shortcuts": [
+    {
+      "name": "Go to API Reference",
+      "short_name": "API",
+      "description": "Go to the Angular API reference page.",
+      "url": "/api?utm_source=homescreen"
+    },
+    {
+      "name": "Go to Glossary",
+      "short_name": "Glossary",
+      "description": "Go to the glossary page: A list of common Angular terms and their explanation.",
+      "url": "/guide/glossary?utm_source=homescreen"
+    },
+    {
+      "name": "Go to Resources",
+      "short_name": "Resources",
+      "description": "Go to the resources page: A list of Angular resouces, such as development tooling, UI libraries, books, courses, community publications, podcasts, etc.",
+      "url": "/resources?utm_source=homescreen"
+    },
+    {
+      "name": "Go to Tutorial: Tour of Heroes",
+      "short_name": "Tutorial",
+      "description": "Go to the \"Tour of Heroes\" tutorial page: Learn how to create your first Angular application.",
+      "url": "/tutorial?utm_source=homescreen"
+    }
+  ]
+}

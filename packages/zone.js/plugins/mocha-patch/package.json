@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/mocha-patch",
+  "main": "../../bundles/mocha-patch.umd.js",
+  "fesm2015": "../../fesm2015/mocha-patch.js",
+  "es2015": "../../fesm2015/mocha-patch.js",
+  "module": "../../fesm2015/mocha-patch.js"
+}

@@ -1,0 +1,34 @@
+.editor {
+  cursor: text;
+  border: none;
+  outline: none;
+  min-width: 100px;
+  white-space: pre;
+  width: fit-content;
+}
+
+.editor-input {
+  background-color: #bbddfb;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+input {
+  width: fit-content;
+  font-family: Menlo, monospace;
+  font-weight: 500;
+  font-size: 1em;
+  border: none;
+  outline: none;
+}
+
+:host-context(.dark-theme) {
+  input {
+    color: #bcc5ce;
+    background-color: #202124;
+  }
+
+  .editor-input {
+    background-color: #454546;
+    box-shadow: 0 0 0 1px rgba(165, 165, 165, 0.05);
+  }
+}

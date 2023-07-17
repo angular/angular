@@ -1,0 +1,10 @@
+@use '../app-theme';
+@use '@angular/material' as mat;
+
+$ng-io-primary: mat.define-palette(mat.$blue-palette, 700, 600, 800);
+$ng-io-accent: mat.define-palette(mat.$red-palette, 700, 600, 800);
+$ng-io-warn: mat.define-palette(mat.$red-palette);
+$ng-io-theme: mat.define-light-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
+
+@include mat.all-legacy-component-themes($ng-io-theme);
+@include app-theme.theme($ng-io-theme);

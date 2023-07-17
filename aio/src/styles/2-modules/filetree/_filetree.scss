@@ -1,0 +1,35 @@
+@use '../../mixins';
+
+.filetree {
+  border-radius: 4px;
+  margin: 0 0 24px 0;
+  padding: 16px 32px;
+
+  .file {
+    display: block;
+    @include mixins.letter-spacing(0.3);
+    @include mixins.line-height(32);
+  }
+
+  .children {
+    padding-left: 24px;
+    position: relative;
+    overflow: hidden;
+
+    .file {
+      position: relative;
+
+      &:before {
+        content: '';
+        left: -18px;
+        bottom: 16px;
+        width: 16px;
+        height: 9999px;
+        position: absolute;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-radius: 0 0 0 3px;
+      }
+    }
+  }
+}

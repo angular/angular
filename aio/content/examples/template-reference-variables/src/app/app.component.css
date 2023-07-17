@@ -1,0 +1,14 @@
+h3 {
+  font-weight: 700;
+}
+
+pre, .wrapper {
+  background-color: rgb(240, 250, 250);
+  padding: 1rem;
+  border: 1px solid #444;
+}
+
+input {
+  margin: .5rem;
+  padding: .5rem;
+}

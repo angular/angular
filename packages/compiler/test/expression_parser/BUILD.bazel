@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+
+ts_library(
+    name = "expression_parser_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "expression_parser",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":expression_parser_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "expression_parser_web",
+    deps = [
+        ":expression_parser_lib",
+    ],
+)

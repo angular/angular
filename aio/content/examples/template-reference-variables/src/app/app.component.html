@@ -1,0 +1,101 @@
+<h1>Template reference variables</h1>
+
+<div>
+  <h2>Pass value to an event handler</h2>
+  <p>See console for output.</p>
+  <!-- #docregion ref-phone -->
+  <!-- #docregion ref-var -->
+  <input #phone placeholder="phone number" />
+  <!-- #enddocregion ref-var -->
+
+  <!-- lots of other elements -->
+
+  <!-- phone refers to the input element; pass its `value` to an event handler -->
+  <button type="button" (click)="callPhone(phone.value)">Call</button>
+  <!-- #enddocregion ref-phone -->
+</div>
+
+<hr />
+
+<div>
+  <h2>Template reference variable with disabled button</h2>
+  <p>btn refers to the button element.</p>
+  <button
+    type="button"
+    #btn
+    disabled
+    [innerHTML]="'disabled by attribute: ' + btn.disabled"
+  ></button>
+</div>
+
+<hr />
+
+<h2>Reference variables, forms, and NgForm</h2>
+<!-- #docregion ngForm -->
+<form #itemForm="ngForm" (ngSubmit)="onSubmit(itemForm)">
+  <label for="name">Name</label>
+  <input type="text" id="name" class="form-control" name="name" ngModel required />
+  <button type="submit">Submit</button>
+</form>
+
+<div [hidden]="!itemForm.form.valid">
+  <p>{{ submitMessage }}</p>
+</div>
+
+<!-- #enddocregion ngForm -->
+
+
+<p>JSON: {{ itemForm.form.value | json }}</p>
+
+<hr />
+
+<h2>Template Reference Variable Scope</h2>
+
+<p>This section demonstrates in which situations you can access local template reference variables (<code>#ref</code>).</p>
+
+<h3>Accessing in a child template</h3>
+<!-- Accessing a template reference variable from an inner template
+  works as the context is inherited. Try changing the text in the
+  input to see how it is immediately reflected through the template
+  reference variable. -->
+
+<div class="example">
+  <!-- #docregion template-ref-vars-scope1 -->
+  <input #ref1 type="text" [(ngModel)]="firstExample" />
+  <span *ngIf="true">Value: {{ ref1.value }}</span>
+  <!-- #enddocregion template-ref-vars-scope1 -->
+</div>
+
+<!-- In this case there's a "hidden" ng-template around the
+  span and the definition of the variable is outside of it. Thus, you access a template variable from a parent template (which is logical as the context is inherited). -->
+
+<p>Here's the desugared syntax:</p>
+<pre><code [innerText]="desugared1"></code></pre>
+
+<h3>Accessing from outside parent template. (Doesn't work.)</h3>
+<!-- Accessing the template reference variable from outside the parent template does
+not work. The value to the right is empty and changing the
+value of the input will have no effect. -->
+
+<div class="example">
+  <input *ngIf="true" #ref2 type="text" [(ngModel)]="secondExample" />
+  <!-- <span>Value: {{ ref2?.value }}</span> -->
+  <!-- uncomment the above and the app breaks -->
+</div>
+
+<p>Here's the desugared syntax:</p>
+<pre><code [innerText]="desugared2"></code></pre>
+
+<h3>*ngFor and template reference variable scope</h3>
+
+<!-- The template is instantiated twice because *ngFor iterates
+  over the two items in the array, so it's impossible to define what ref2 is referencing. -->
+
+<pre><code [innerText]="ngForExample"></code></pre>
+
+<h3>Accessing a on an <code>ng-template</code></h3>
+
+See the console output to see that when you declare the variable on an <code>ng-template</code>, the variable refers to a <code>TemplateRef</code> instance, which represents the template.
+
+<ng-template #ref3></ng-template>
+<button type="button" (click)="log(ref3)">Log type of #ref</button>

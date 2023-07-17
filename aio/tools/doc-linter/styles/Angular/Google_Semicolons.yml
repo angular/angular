@@ -1,0 +1,10 @@
+# adapted from Google style library
+# note the complex regex for this is used to ignore HTML entities to find semicolons in normal text
+extends: existence
+message: 'Semicolons can indicate a complex sentence. Try rewriting this sentence as multiple sentences.'
+link: 'https://developers.google.com/style/semicolons'
+code: false
+nonword: true
+level: warning
+raw:
+  - '[^A-Za-z&]((?!\&\w)([\S]+\;))'

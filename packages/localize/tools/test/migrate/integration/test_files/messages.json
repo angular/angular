@@ -1,0 +1,8 @@
+{
+  "locale": "en-GB",
+  "translations": {
+    "12345678901234567890": "Hello",
+    "custom-id": "Custom id message",
+    "1234567890123456789012345678901234567890": "Goodbye"
+  }
+}

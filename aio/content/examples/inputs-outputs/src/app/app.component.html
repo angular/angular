@@ -1,0 +1,56 @@
+<h1>Inputs and Outputs</h1>
+
+<!-- #docregion input-parent -->
+<app-item-detail [item]="currentItem"></app-item-detail>
+<!-- #enddocregion input-parent -->
+<hr>
+
+<!-- #docregion output-parent -->
+<app-item-output (newItemEvent)="addItem($event)"></app-item-output>
+<!-- #enddocregion output-parent -->
+<h3>Parent component receiving value via @Output()</h3>
+
+<ul>
+  <li *ngFor="let item of items">{{item}}</li>
+</ul>
+
+<hr>
+
+<h2>Input and Output together</h2>
+<p>Open the console to see the EventEmitter at work when you click Delete.</p>
+
+<!-- #docregion together -->
+<app-input-output
+  [item]="currentItem"
+  (deleteRequest)="crossOffItem($event)">
+</app-input-output>
+<!-- #enddocregion together -->
+
+<hr>
+
+<h2>Input and Output in the component class metadata</h2>
+<p>Open the console to see the EventEmitter at work when you click Buy.</p>
+
+<app-in-the-metadata
+  [clearanceItem]="lastChanceItem"
+  (buyEvent)="buyClearanceItem($event)">
+</app-in-the-metadata>
+
+
+<hr>
+
+<h2>Aliasing Inputs and Outputs</h2>
+<p>See aliasing.component.ts for aliases and the console for the EventEmitter console logs.</p>
+
+<app-aliasing
+  [saveForLaterItem]="currentItem"
+  [wishListItem]="currentItem"
+  (saveForLaterEvent)="saveForLater($event)"
+  (wishEvent)="addToWishList($event)">
+</app-aliasing>
+
+<h2>Wishlist:</h2>
+<ul>
+  <li *ngFor="let wish of wishlist">{{wish}}</li>
+</ul>
+

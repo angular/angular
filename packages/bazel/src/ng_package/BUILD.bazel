@@ -1,0 +1,39 @@
+# BEGIN-DEV-ONLY
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "ng_package.bzl",
+    "rollup.config.js",
+])
+
+ts_library(
+    name = "lib",
+    srcs = glob(["*.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+    ],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*.bzl"]) + [
+        "//packages/bazel/src/ng_package/rollup:package_assets",
+        "BUILD.bazel",
+        "rollup.config.js",
+    ],
+)
+
+nodejs_binary(
+    name = "packager",
+    data = [
+        "lib",
+    ],
+    entry_point = ":packager.ts",
+    # Disable the linker and rely on patched resolution which works better on Windows
+    # and is less prone to race conditions when targets build concurrently.
+    templated_args = ["--nobazel_run_linker"],
+)
+# END-DEV-ONLY

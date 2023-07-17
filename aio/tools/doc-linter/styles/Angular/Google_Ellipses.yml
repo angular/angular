@@ -1,0 +1,10 @@
+# adapted from Google style library
+extends: existence
+message: 'In general, try not to use an ellipsis.'
+link: 'https://developers.google.com/style/ellipses'
+nonword: true
+level: warning
+action:
+  name: remove
+tokens:
+  - '\.\.\.'

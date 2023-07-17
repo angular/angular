@@ -1,0 +1,61 @@
+<div class="search-results" [ngSwitch]="searchState">
+
+  <ng-container *ngSwitchCase="'in-progress'">
+    <p class="no-results">Searching ...</p>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'results-found'">
+    <h2 class="visually-hidden">Search Results</h2>
+    <div class="search-area" *ngFor="let area of searchAreas">
+      <h3 class="search-section-header">{{area.name}} ({{area.pages.length + area.priorityPages.length}})</h3>
+      <ul class="priority-pages" >
+        <li class="search-page" *ngFor="let page of area.priorityPages">
+          <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
+            <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>
+            <span [class.deprecated-api-item]="page.deprecated">{{ page.title }}</span>
+          </a>
+        </li>
+      </ul>
+      <ul>
+        <li class="search-page" *ngFor="let page of area.pages">
+          <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
+            <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>
+            <span [class.deprecated-api-item]="page.deprecated">{{ page.title }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+  
+  <ng-container *ngSwitchCase="'no-results-found'">
+    <div class="search-area">
+      <p class="no-results">
+        No results found.<br>
+        Here are a few links that might be helpful in finding what you are looking for:
+      </p>
+      <ul class="priority-pages">
+        <li class="search-page">
+          <a class="search-result-item" href="api">API reference</a>
+        </li>
+        <li class="search-page">
+          <a class="search-result-item" href="resources">Resources</a>
+        </li>
+        <li class="search-page">
+          <a class="search-result-item" href="guide/glossary">Glossary</a>
+        </li>
+        <li class="search-page">
+          <a class="search-result-item" href="guide/cheatsheet">Cheat-sheet</a>
+        </li>
+        <li class="search-page">
+          <a class="search-result-item" href="https://blog.angular.io/">Angular blog</a>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+
+  <button mat-icon-button class="close-button" aria-label="Close search results panel" (click)="onCloseClicked()">
+    <mat-icon svgIcon="close"></mat-icon>
+  </button>
+</div>
+
+

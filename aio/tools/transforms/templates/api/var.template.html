@@ -1,0 +1,11 @@
+{% extends 'export-base.template.html' %}
+
+{% block overview %}
+  <code-example language="ts" hideCopy="true" class="no-box api-heading{% if doc.deprecated %} deprecated-api-item{% endif %}">
+  const {$ doc.name $}: {$ (doc.type | escape) or 'any' $};
+  </code-example>
+{% endblock %}
+
+{% block details %}
+  {% include "includes/description.html" %}
+{% endblock %}

@@ -1,0 +1,39 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  .callout {
+    header {
+      color: constants.$white;
+    }
+
+    &.is-critical {
+      border-color: constants.$brightred;
+      background: rgba(constants.$brightred, if($is-dark-theme, 0.1, 0.05));
+
+      header {
+        background: constants.$brightred;
+      }
+    }
+
+    &.is-important {
+      border-color: constants.$orange;
+      background: rgba(constants.$orange,if($is-dark-theme, 0.1, 0.05));
+
+      header {
+        background: constants.$amber-700;
+      }
+    }
+
+    &.is-helpful {
+      border-color: constants.$blue;
+      background: rgba(constants.$blue, if($is-dark-theme, 0.1, 0.05));
+
+      header {
+        background: constants.$blue;
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+
+js_library(
+    name = "angular-api-package",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = ["**/*.spec.js"],
+    ),
+    visibility = ["//aio/tools/transforms:__subpackages__"],
+    deps = [
+        "//aio/tools/transforms",
+        "//aio/tools/transforms/angular-base-package",
+        "//packages:files_for_docgen",
+        "@aio_npm//css-selector-parser",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    env = {
+        "GIT_BIN": "$(GIT_BIN_PATH)",
+    },
+    shard_count = 8,
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
+    deps = [
+        ":angular-api-package",
+        "//aio/tools/transforms/helpers",
+        "@aio_npm//dgeni",
+    ] + glob(["mocks/*.ts"]),
+)

@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "testing",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/core",
+        "//packages/service-worker/worker",
+        "@npm//rxjs",
+    ],
+)

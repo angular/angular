@@ -1,0 +1,41 @@
+{%- import "lib/descendants.html" as descendants -%}
+
+{%- macro renderOptionsTable(doc) -%}
+<table class="is-full-width list-table option-overview">
+  <thead>
+    <tr><th>Option</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    {%- for option in doc.members %}
+    <tr class="option">
+      <td>
+        <a class="code-anchor" href="{$ doc.path $}#{$ option.anchor | urlencode $}">
+          <code>{$ option.name $}{%- if option.isOptional  %}?{% endif -%}</code>
+        </a>
+      </td>
+      <td>
+        {%- if option.developerPreview %}
+        <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+          <a href="guide/releases#developer-preview">developer preview</a>
+        </label>
+        {% endif %}
+
+        {$ option.shortDescription | marked $}
+      </td>
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>
+
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+<h3 class="no-toc">Inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.name $}</a> decorator</h3>
+{$ renderOptionsTable(ancestor.doc) $}
+{%- endif %}{% endfor %}
+{%- endmacro -%}
+
+{%- if doc.members.length %}
+<section class="decorator-overview">
+  {$ renderOptionsTable(doc) $}
+  {$ descendants.renderDescendants(doc, 'decorator', 'Subclasses') $}
+</section>
+{%- endif -%}

@@ -1,0 +1,33 @@
+# BEGIN-DEV-ONLY
+
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+
+package(default_visibility = ["//packages:__subpackages__"])
+
+ts_library(
+    name = "lib",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "@npm//@bazel/worker",
+        "@npm//@microsoft/api-extractor",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "types_bundler",
+    data = [":lib"],
+    entry_point = ":index.ts",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "BUILD.bazel",
+        "index.bzl",
+    ],
+)
+# END-DEV-ONLY

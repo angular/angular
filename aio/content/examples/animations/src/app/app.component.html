@@ -1,0 +1,27 @@
+<h1>Animations</h1>
+
+<input type="checkbox"
+       id="animation-toggle"
+       [checked]="!animationsDisabled"
+       (click)="toggleAnimations()">
+<label for="animation-toggle">Toggle All Animations</label>
+
+<nav>
+  <a id="home" routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
+  <a id="about" routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About</a>
+  <a id="open-close" routerLink="/open-close" routerLinkActive="active" ariaCurrentWhenActive="page">Open/Close</a>
+  <a id="status" routerLink="/status" routerLinkActive="active" ariaCurrentWhenActive="page">Status Slider</a>
+  <a id="toggle" routerLink="/toggle" routerLinkActive="active" ariaCurrentWhenActive="page">Toggle Animations</a>
+  <a id="enter-leave" routerLink="/enter-leave" routerLinkActive="active" ariaCurrentWhenActive="page">Enter/Leave</a>
+  <a id="auto" routerLink="/auto" routerLinkActive="active" ariaCurrentWhenActive="page">Auto Calculation</a>
+  <a id="heroes" routerLink="/heroes" routerLinkActive="active" ariaCurrentWhenActive="page">Filter/Stagger</a>
+  <a id="hero-groups" routerLink="/hero-groups" routerLinkActive="active" ariaCurrentWhenActive="page">Hero Groups</a>
+  <a id="insert-remove" routerLink="/insert-remove" routerLinkActive="active" ariaCurrentWhenActive="page">Insert/Remove</a>
+  <a id="querying" routerLink="/querying" routerLinkActive="active" ariaCurrentWhenActive="page">Querying</a>
+</nav>
+
+<!-- #docregion route-animations-outlet -->
+<div [@routeAnimations]="getRouteAnimationData()">
+  <router-outlet></router-outlet>
+</div>
+<!-- #enddocregion route-animations-outlet -->

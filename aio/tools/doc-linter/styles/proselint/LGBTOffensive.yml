@@ -1,0 +1,14 @@
+extends: existence
+message: "'%s' is offensive. Remove it or consider the context."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+tokens:
+  - fag
+  - faggot
+  - dyke
+  - sodomite
+  - homosexual agenda
+  - gay agenda
+  - transvestite
+  - homosexual lifestyle
+  - gay lifestyle

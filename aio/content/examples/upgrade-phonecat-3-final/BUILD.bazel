@@ -1,0 +1,9 @@
+load("//aio/content/examples:examples.bzl", "docs_example")
+
+package(default_visibility = ["//visibility:public"])
+
+docs_example(
+    name = "upgrade-phonecat-3-final",
+    flaky = True,  # TODO: figure out why this is flaky or times out
+    test_tags = ["broken"],  # This is currently broken due to usage of ESM2022 which does not work out-of-the-box with system.js.
+)

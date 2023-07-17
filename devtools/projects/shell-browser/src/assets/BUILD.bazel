@@ -1,0 +1,13 @@
+package(default_visibility = ["//:__subpackages__"])
+
+filegroup(
+    name = "assets",
+    srcs = glob([
+        "*.svg",
+        "**/*.png",
+        "*.css",
+    ]) + [
+        "//third_party/github.com/google/material-design-icons:material-design-icons",
+        "//third_party/github.com/google/material-design-icons:LICENSE",
+    ],
+)

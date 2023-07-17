@@ -1,0 +1,9 @@
+message: "'%s' left in text"
+extends: existence
+ignorecase: false
+level: suggestion
+tokens:
+  - XXX
+  - FIXME
+  - TODO
+  - NOTE

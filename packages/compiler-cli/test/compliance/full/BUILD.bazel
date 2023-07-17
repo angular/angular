@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["full_compile_spec.ts"],
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/test/compliance/test_helpers",
+    ],
+)
+
+jasmine_node_test(
+    name = "full",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    data = [
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        "//packages/compiler-cli/test/compliance/test_cases",
+    ],
+    shard_count = 2,
+    deps = [
+        ":test_lib",
+    ],
+)

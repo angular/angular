@@ -1,0 +1,71 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+# Test that should only be run in node
+NODE_ONLY = [
+    "**/*_node_only_spec.ts",
+    "aot/**/*.ts",
+]
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/compiler/index.mjs",
+    deps = ["//packages/compiler"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = NODE_ONLY,
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
+        "//packages/core",
+        "//packages/core/src/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "@npm//base64-js",
+        "@npm//source-map",
+    ],
+)
+
+ts_library(
+    name = "test_node_only_lib",
+    testonly = True,
+    srcs = glob(
+        NODE_ONLY,
+    ),
+    deps = [
+        ":test_lib",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/core",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":test_lib",
+        ":test_node_only_lib",
+        "@npm//base64-js",
+        "@npm//source-map",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

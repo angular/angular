@@ -1,0 +1,75 @@
+.bar-graph-container {
+  padding: 2px;
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .txt-frames {
+    font-weight: 500;
+    line-height: 50px;
+    padding: 0px;
+    margin: 0px 10px;
+    width: 150px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bar-container {
+    max-width: calc(100vw - 150px);
+    align-items: baseline;
+    overflow-x: auto;
+    width: 100%;
+    height: 100%;
+
+    ::ng-deep .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .frame-bar {
+      margin-left: 2.5px;
+      margin-right: 2.5px;
+      margin-top: 2px;
+
+      &:hover {
+        background-color: #ebf1fb;
+      }
+
+      &.selected {
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 0;
+        padding-left: 0.5px;
+        padding-right: 0.5px;
+
+        background-color: #cfe8fc;
+        border: 2px solid #cfe8fc;
+      }
+    }
+  }
+
+  button {
+    margin-bottom: 5px;
+  }
+}
+
+:host-context(.dark-theme) {
+  .bar-graph-container .bar-container .frame-bar {
+    &:hover {
+      background-color: #262d36;
+    }
+
+    &.selected {
+      background-color: #073d69;
+      border: 2px solid #073d69;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<!-- #docplaster -->
+<!-- #docregion child-component -->
+<!-- #docregion flower-binding -->
+<p>Emoji from FlowerService: {{flower.emoji}}</p>
+<!-- #enddocregion flower-binding -->
+<!-- #docregion animal-binding -->
+<p>Emoji from AnimalService: {{animal.emoji}}</p>
+<!-- #enddocregion animal-binding -->
+
+<div class="container">
+  <h3>Content projection</h3>
+  <!-- #enddocregion child-component -->
+  <p>The following is coming from content. It doesn't get to see the puppy because the puppy is declared inside the view only.</p>
+  <!-- #docregion child-component -->
+	<ng-content></ng-content>
+</div>
+
+<h3>Inside the view</h3>
+<!-- #enddocregion child-component -->
+<p>The following is inside the view so it does see the puppy.</p>
+<!-- #docregion child-component -->
+<app-inspector></app-inspector>
+<!-- #enddocregion child-component -->
+

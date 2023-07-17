@@ -1,0 +1,23 @@
+<mat-card class="breadcrumb-card">
+  <button class="scroll-button" [class.hidden]="!showScrollLeftButton" (click)="scroll(-100)">
+    <mat-icon> more_horiz </mat-icon>
+  </button>
+
+  <div class="breadcrumbs" #breadcrumbs (scroll)="updateScrollButtonVisibility$.next()">
+    <button
+      *ngFor="let node of parents; let last = last"
+      (mouseover)="mouseOverNode.emit(node)"
+      (mouseleave)="mouseLeaveNode.emit(node)"
+      mat-button
+      color="primary"
+      (click)="handleSelect.emit(node)"
+      [class.selected]="last"
+    >
+      {{ node.original.component?.name || node.original.element }}
+    </button>
+  </div>
+
+  <button class="scroll-button" [class.hidden]="!showScrollRightButton" (click)="scroll(100)">
+    <mat-icon> more_horiz </mat-icon>
+  </button>
+</mat-card>

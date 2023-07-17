@@ -1,0 +1,19 @@
+<h1 id="two-way">Two-way Binding</h1>
+<div id="two-way-1">
+  <!-- #docregion two-way-1 -->
+  <!-- #docregion two-way-syntax -->
+  <app-sizer [(size)]="fontSizePx"></app-sizer>
+  <!-- #enddocregion two-way-syntax-->
+  <div [style.font-size.px]="fontSizePx">Resizable Text</div>
+  <!-- #enddocregion two-way-1 -->
+  <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
+</div>
+<br>
+<div id="two-way-2">
+  <h2>De-sugared two-way binding</h2>
+  <!-- #docregion two-way-2 -->
+  <app-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></app-sizer>
+  <!-- #enddocregion two-way-2 -->
+</div>
+
+

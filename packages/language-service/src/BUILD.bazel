@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//packages/language-service:__subpackages__"])
+
+ts_library(
+    name = "src",
+    srcs = glob([
+        "*.ts",
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/language-service:api",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)

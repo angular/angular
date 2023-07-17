@@ -1,0 +1,245 @@
+@use '../../mixins';
+
+.api-body {
+  max-width: 1200px;
+
+  h1 {
+    margin-top: -4px;
+  }
+
+  details.overloads {
+    box-shadow: none;
+
+    > summary {
+      justify-content: space-between;
+      padding: 0;
+
+      h4 {
+        margin: 0;
+        clear: left;
+      }
+    }
+
+    > .details-content {
+      padding: 0;
+      border-radius: 2px;
+      box-shadow: none;
+
+      > *:not(hr) {
+        margin: 16px 24px;
+      }
+    }
+  }
+
+  details.overload {
+    box-shadow: none;
+    margin: 0;
+  }
+
+  table {
+    margin: 12px 0 24px;
+
+    &.item-table {
+      td {
+        padding: 32px;
+      }
+    }
+
+    &.list-table {
+      td {
+        padding: 16px 24px;
+      }
+    }
+
+    &.parameters-table {
+      margin-top: 0;
+      @include mixins.font-size(14);
+      box-shadow: none;
+
+      tr {
+        @media screen and (max-width: 480px) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        td:first-child {
+          font-weight: 600;
+          padding-left: 16px;
+          width: 20%;
+        }
+      }
+
+      td {
+        padding: 8px 8px 8px 0;
+        border: 0;
+        vertical-align: top;
+      }
+    }
+
+    &.property-table {
+      td {
+        vertical-align: top;
+      }
+    }
+
+    &.method-table,
+    &.option-table,
+    &.list-table {
+      td > code {
+        background-color: inherit;
+        white-space: pre-wrap;
+      }
+
+      .with-github-links {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+
+        .github-links {
+          a {
+            .material-icons:hover {
+              background: none;
+            }
+          }
+        }
+      }
+
+      h3 {
+        margin: 6px 0;
+        font-weight: 500;
+        clear: left;
+      }
+
+      h4 {
+        @include mixins.font-size(14);
+        font-weight: bold;
+        margin-top: 12px;
+      }
+    }
+
+    th {
+      text-transform: none;
+      @include mixins.font-size(16);
+      font-weight: bold;
+    }
+
+    tr {
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    // This is overriding a style here:
+    // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
+    tbody > tr > td tr td:first-child {
+      @media screen and (max-width: 480px) {
+        background-color: inherit;
+      }
+    }
+
+    hr {
+      margin: 16px 0;
+    }
+
+    .short-description {
+      margin-left: 0;
+    }
+  }
+
+  .class-overview {
+    position: relative;
+
+    code-example {
+      clear: left;
+    }
+  }
+
+  .member-name .pln {
+    font-weight: 700;
+  }
+
+  .short-description {
+    margin-top: 8px;
+  }
+
+  .final-message {
+    font-style: italic;
+  }
+
+  .api-heading {
+    @include mixins.font-size(14);
+    margin: 16px;
+  }
+
+  .from-constructor,
+  .read-only-property,
+  .write-only-property {
+    @include mixins.font-size(12);
+    font-weight: 600;
+    @include mixins.letter-spacing(0.5);
+    font-style: italic;
+    border-radius: 4px;
+    padding: 4px 6px;
+  }
+
+  .selector-list,
+  .inherited-members-list {
+    ul {
+      padding: 0;
+      li {
+        list-style: none;
+        margin-bottom: 12px;
+      }
+    }
+  }
+
+  .selector-list {
+    li,
+    a {
+      font-weight: bold;
+      i {
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+.github-links {
+  float: right;
+
+  .material-icons {
+    border-radius: 4px;
+    padding: 4px;
+    @include mixins.font-size(20);
+  }
+}
+
+.breadcrumb-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.api-header {
+  display: flex;
+  align-items: center;
+  margin-top: -4px;
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  h1 {
+    @include mixins.font-size(24);
+    margin: 0;
+  }
+}
+
+.deprecated-api-item {
+  text-decoration: line-through;
+}

@@ -1,0 +1,24 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+js_library(
+    name = "angular-content-package",
+    srcs = glob(
+        [
+            "**/*.js",
+        ],
+        exclude = ["**/*.spec.js"],
+    ),
+    visibility = ["//aio/tools/transforms:__subpackages__"],
+    deps = [
+        "//aio/content",
+        "//aio/content/cli",
+        "//aio/content/examples",
+        "//aio/src/assets",
+        "//aio/tools/transforms",
+        "//aio/tools/transforms/angular-base-package",
+        "//aio/tools/transforms/content-package",
+        "@aio_npm//canonical-path",
+        "@aio_npm//dgeni",
+        "@aio_npm//ignore",
+    ],
+)

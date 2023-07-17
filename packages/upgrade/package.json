@@ -1,0 +1,28 @@
+{
+  "name": "@angular/upgrade",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the library for easing update from v1 to v2",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^16.14.0 || >=18.10.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/upgrade"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
+}

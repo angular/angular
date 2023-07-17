@@ -1,0 +1,45 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "shared_utils_ts",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+js_library(
+    name = "shared-utils",
+    package_name = "shared-utils",
+    deps = [":shared_utils_ts"],
+)
+
+ts_test_library(
+    name = "shared_utils_test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":shared-utils",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        "//devtools/projects/shared-utils:shared_utils_test",
+    ],
+)

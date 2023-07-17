@@ -1,0 +1,47 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
+load("//packages/common/locales:index.bzl", "LOCALES", "generate_all_locale_files", "generate_closure_locale_file")
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# This generates the `closure-locale.ts` file through the `generate-locales` tool. Since
+# the `closure-locale.ts` file is checked-in for Google3, we add a `generated_file_test` to
+# ensure the checked-in file is up-to-date. To disambiguate from the test, we use a more
+# precise target name here.
+generate_closure_locale_file(
+    name = "closure_locale_file_generated",
+    output_file = "closure_locale_generated.ts",
+)
+
+generated_file_test(
+    name = "closure_locale_file",
+    src = "closure-locale.ts",
+    generated = ":closure_locale_file_generated",
+)
+
+generate_all_locale_files(
+    name = "locale_files",
+)
+
+ts_library(
+    name = "locales",
+    # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
+    # removed in the past (when CLDR has been updated). These can be removed in a major.
+    srcs = [file for l in LOCALES for file in [
+        "%s.ts" % l,
+        "extra/%s.ts" % l,
+    ]] + glob(
+        [
+            "*.ts",
+            "extra/*.ts",
+        ],
+        exclude = ["closure-locale.ts"],
+    ),
+)
+
+pkg_npm(
+    name = "package",
+    # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
+    # removed in the past (when CLDR has been updated). These can be removed in a major.
+    deps = ["global/%s.js" % l for l in LOCALES] + [":locales"] + glob(["global/*.js"]),
+)

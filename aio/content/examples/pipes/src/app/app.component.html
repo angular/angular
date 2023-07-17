@@ -1,0 +1,73 @@
+<h1 id="toc">Pipes</h1>
+<a href="#happy-birthday1">Happy Birthday v1</a>
+<a href="#birthday-date-pipe">Birthday DatePipe</a>
+<a href="#happy-birthday2">Happy Birthday v2</a>
+<a href="#birthday-pipe-chaining">Birthday Pipe Chaining</a>
+<a href="#power-booster">Power Booster custom pipe</a>
+<a href="#power-boost-calc">Power Boost Calculator custom pipe with params</a>
+<a href="#flying-heroes">Flying Heroes filter pipe (pure)</a>
+<a href="#flying-heroes-impure">Flying Heroes filter pipe (impure)</a>
+<a href="#hero-message">Async Hero Message and AsyncPipe</a>
+<a href="#hero-list">Hero List with caching FetchJsonPipe</a>
+<a href="#pipe-precedence">Pipes and Precedence</a>
+
+
+<hr>
+<h2 id="happy-birthday1">Hero Birthday v1</h2>
+<app-hero-birthday></app-hero-birthday>
+
+<hr>
+<h2 id="birthday-date-pipe">Birthday DatePipe</h2>
+<!-- #docregion hero-birthday-template -->
+<p>The hero's birthday is {{ birthday | date }}</p>
+<!-- #enddocregion hero-birthday-template-->
+
+<!-- #docregion format-birthday -->
+<p>The hero's birthday is {{ birthday | date:"MM/dd/yy" }} </p>
+<!-- #enddocregion format-birthday-->
+
+<hr>
+<h2 id="happy-birthday2">Hero Birthday v2</h2>
+<app-hero-birthday2></app-hero-birthday2>
+
+<hr>
+<h2 id="birthday-pipe-chaining">Birthday Pipe Chaining</h2>
+<p>
+<!-- #docregion chained-birthday -->
+  The chained hero's birthday is
+  {{ birthday | date | uppercase}}
+<!-- #enddocregion chained-birthday -->
+</p>
+
+<p>
+<!-- #docregion chained-parameter-birthday -->
+  The chained hero's birthday is
+  {{  birthday | date:'fullDate' | uppercase}}
+<!-- #enddocregion chained-parameter-birthday -->
+</p>
+<p>
+  The chained hero's birthday is
+  {{ ( birthday | date:'fullDate' ) | uppercase}}
+</p>
+<hr>
+<app-power-booster id="power-booster"></app-power-booster>
+
+<hr>
+<app-power-boost-calculator id="power-boost-calc">loading</app-power-boost-calculator>
+
+<hr>
+<app-flying-heroes id="flying-heroes"></app-flying-heroes>
+
+<hr>
+<app-flying-heroes-impure id="flying-heroes-impure"></app-flying-heroes-impure>
+
+<hr>
+<!-- async examples at the top so can see them in action -->
+<app-hero-async-message id="hero-message"></app-hero-async-message>
+
+<hr>
+<app-hero-list id="hero-list"></app-hero-list>
+
+<hr>
+<app-precedence id="pipe-precedence"></app-precedence>
+<hr>

@@ -1,0 +1,6 @@
+extends: existence
+message: "Don't start a sentence with '%s'. Try to rewrite the sentence without it."
+link: 'https://angular.io/guide/docs-lint-errors#starting-a-sentence-messages'
+level: error
+raw:
+  - '(?:[;-]\s)so[\s,]|So[\s,]'

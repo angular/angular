@@ -1,0 +1,26 @@
+.di-component{
+  padding: 10px;
+  width:300px;
+  margin-bottom: 10px;
+}
+div[myHighlight] {
+  padding: 2px 8px;
+}
+
+/* Parent Finder */
+.a, .b, .c {
+  margin: 6px 2px 6px;
+  padding: 4px 6px;
+}
+.a {
+  border: solid 2px black;
+}
+.b {
+  background: lightblue;
+  border: solid 1px darkblue;
+  display: flex;
+}
+.c {
+  background: pink;
+  border: solid 1px red;
+}

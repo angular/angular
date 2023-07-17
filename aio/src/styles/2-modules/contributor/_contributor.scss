@@ -1,0 +1,127 @@
+@use '../../mixins';
+
+aio-contributor-list {
+  .contributor-group {
+    --columns: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    justify-items: stretch;
+
+    @media (max-width: 75rem) {
+      --columns: 1;
+    }
+  }
+}
+
+aio-contributor {
+  display: grid;
+
+  .contributor-card {
+    margin: 3.5rem;
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    grid-template-rows: min-content 1fr min-content;
+    padding: 3rem 3rem 0 3rem;
+    border-radius: 5px;
+
+    &.no-image {
+      grid-template-columns: 0 1fr;
+    }
+
+    $angular-shape-polygon: polygon(50% 0, 99% 18%, 89% 78%, 50% 100%, 11% 78%, 3% 17%);
+
+    .contributor-image-wrapper {
+      grid-column: 1 / 2;
+      grid-row: 1 / 5;
+      width: 14rem;
+      height: 14rem;
+      position: relative;
+      top: -5rem;
+      left: -5rem;
+      clip-path: $angular-shape-polygon;
+    }
+
+    .contributor-image {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      clip-path: $angular-shape-polygon;
+      object-fit: cover;
+    }
+
+    .contributor-social-links {
+      display: flex;
+      grid-column: 1;
+      grid-row: 2;
+      align-self: end;
+
+      a {
+        display: inline-block;
+        margin-right: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        overflow: hidden;
+
+        mat-icon {
+          $icon-size: 3rem;
+          font-size: $icon-size;
+          height: $icon-size;
+          width: $icon-size;
+
+          svg {
+            height: $icon-size;
+            width: $icon-size;
+          }
+
+          &.link-icon {
+            transform: rotate(45deg);
+          }
+        }
+      }
+      margin-bottom: 0.5rem;
+    }
+
+    .contributor-title {
+      margin-top: 0;
+      grid-column: 2;
+    }
+
+    .contributor-bio {
+      grid-column: 2;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 45rem) {
+      grid-template-columns: 1fr;
+      &.no-image {
+        grid-template-columns: 1fr;
+      }
+      grid-template-rows: min-content 1fr;
+
+      .contributor-image-wrapper {
+        grid-column: 1;
+        grid-row: 1;
+        left: 0;
+        justify-self: center;
+        margin-bottom: -3rem;
+      }
+
+      .contributor-title {
+        text-align: center;
+      }
+
+      .contributor-social-links {
+        grid-row: 4;
+        justify-content: space-evenly;
+      }
+
+      .contributor-social-links,
+      .contributor-title,
+      .contributor-bio {
+        grid-column: 1;
+      }
+    }
+  }
+}

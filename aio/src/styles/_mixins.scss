@@ -1,0 +1,211 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:selector';
+@use './constants';
+
+// REM Font Adjustments
+@mixin font-size($sizeValue) {
+  font-size: ($sizeValue) + px;
+  font-size: math.div($sizeValue, 10) + rem;
+}
+
+@mixin letter-spacing($spacingValue) {
+  letter-spacing: ($spacingValue) + px;
+  letter-spacing: math.div($spacingValue, 10) + rem;
+}
+
+@mixin line-height($heightValue) {
+  line-height: ($heightValue) + px;
+  line-height: math.div($heightValue, 10) + rem;
+}
+
+// PLACEHOLDER
+// NOTE: Vendor-prefixed selectors must be on separate blocks, because one invalid/unknown
+//       selector will invalidate the whole block.
+@mixin placeholder {
+  &:-ms-input-placeholder      { @content; }  // IE
+  &::-ms-input-placeholder     { @content; }  // Edge
+  &::-webkit-input-placeholder { @content; }  // QQ Browser
+  &::placeholder               { @content; }  // Chrome/Firefox/Safari
+}
+
+@mixin rotate($degrees) {
+  -moz-transform: rotate($degrees);
+  -webkit-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  transform: rotate($degrees);
+  transition: transform 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+@mixin codeblock($bgcolor) {
+    background-color: $bgcolor;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 auto; // was 24
+    border: 0.5px solid constants.$lightgray;
+}
+
+// INFO CARD SKELETON
+@mixin card($width) {
+  width: $width;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+  box-sizing: border-box;
+  transition: box-shadow .5s;
+
+  &:hover {
+    box-shadow: 0 8px 8px rgba(constants.$black, 0.24), 0 0 8px rgba(constants.$black, 0.12);
+    text-decoration: none;
+  }
+}
+
+@mixin deploy-theme($mainColor, $gradientTargetColor, $textColor) {
+  .mat-toolbar.mat-primary, footer {
+    background: linear-gradient(145deg, $mainColor, $gradientTargetColor);
+  }
+
+  .vertical-menu-item {
+    &.selected, &:hover {
+      color: $textColor;
+    }
+  }
+
+  .toc-inner ul.toc-list li {
+    &.active a {
+      color: $textColor;
+
+      &:before {
+        background-color: $mainColor;
+      }
+    }
+
+    &:hover a {
+      color: $textColor;
+    }
+  }
+}
+
+/// Define some styles for docs (i.e. non-marketing) pages.
+///
+/// @example scss - Example SCSS:
+///   .foo {
+///     @include docs-pages {
+///       .bar {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+///   .baz {
+///     @include docs-pages($nestParentSelector: true) {
+///       .qux {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+/// @example css - Output CSS:
+///   .foo .folder-api .bar, .foo .folder-cli .bar, ... {
+///     color: orange;
+///   }
+///
+///   .folder-api .baz .qux, .folder-cli .baz .qux, ... {
+///     color: orange;
+///   }
+///
+/// @param {boolean} $nestParentSelector
+///   If true, the parent selector (`&`) is nested inside the docs pages selectors.
+@mixin docs-pages($nestParentSelector: false) {
+  $selectors: (
+    '.folder-api',
+    '.folder-cli',
+    '.folder-docs',
+    '.folder-errors',
+    '.folder-extended-diagnostics',
+    '.folder-guide',
+    '.folder-start',
+    '.folder-tutorial',
+  );
+
+  @if $nestParentSelector and & {
+    @at-root #{selector.nest(#{$selectors}, &)} {
+      @content;
+    }
+  } @else {
+    #{$selectors} {
+      @content;
+    }
+  }
+}
+
+/// Define some styles for marketing (i.e. non-docs) pages.
+///
+/// @example scss - Example SCSS:
+///   .foo {
+///     @include marketing-pages {
+///       .bar {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+///   .baz {
+///     @include marketing-pages($extraSelectors: ('.other-page'), $nestParentSelector: true) {
+///       .qux {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+/// @example css - Output CSS:
+///   .foo .page-about .bar, .foo .page-contribute .bar, ... {
+///     color: orange;
+///   }
+///
+///   .page-about .baz .qux, .page-contribute .baz .qux, ..., .other-page .baz .qux {
+///     color: orange;
+///   }
+///
+/// @param {string[]} $extraSelectors
+///   A list of additional page selectors to apply the styles to.
+/// @param {boolean} $nestParentSelector
+///   If true, the parent selector (`&`) is nested inside the marketing pages selectors.
+@mixin marketing-pages($extraSelectors: (), $nestParentSelector: false) {
+  $marketingPagesSelectors: (
+    '.page-about',
+    '.page-contribute',
+    '.page-events',
+    '.page-features',
+    '.page-home',
+    '.page-presskit',
+    '.page-resources',
+  );
+  $selectors: list.join($marketingPagesSelectors, $extraSelectors, $separator: comma);
+
+  @if $nestParentSelector and & {
+    @at-root #{selector.nest(#{$selectors}, &)} {
+      @content;
+    }
+  } @else {
+    #{$selectors} {
+      @content;
+    }
+  }
+}
+
+@mixin external-link-with-icon() {
+  display: inline-flex;
+  align-items: center;
+
+  &::after {
+    content: "\e89e"; // codepoint for "open_in_new"
+    font-family: "Material Icons";
+    margin-left: 0.3rem;
+    // Note: float: right is used so that the icon doesn't inherit text underlines
+    float: right;
+    display: flex;
+    align-items: center;
+  }
+}

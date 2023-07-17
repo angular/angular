@@ -1,0 +1,66 @@
+<h1>{{title}}</h1>
+
+<hr />
+
+<h2 id="pipes">Pipes</h2>
+<p>Title through uppercase pipe: {{title | uppercase}}</p>
+<!-- convert title to uppercase, then to lowercase -->
+<p>Title through a pipe chain: {{title | uppercase | lowercase}}</p>
+
+<!-- pipe with configuration argument => "February 25, 1980" -->
+<p>Manufacture date with date format pipe: {{item.manufactureDate | date:'longDate'}}</p>
+<p>Manufacture date with uppercase pipe: {{(item.manufactureDate | date:'longDate') | uppercase}}</p>
+<p>Item json pipe: {{item | json}}</p>
+
+<p>Price with currency pipe: {{item.price | currency:'USD'}}</p>
+<hr />
+
+<h2>Safe navigation operator: <code>?</code> and <code>null</code></h2>
+<p>The item name is: {{item?.name}}</p>
+
+<p>The nullItem name is: {{nullItem?.name}}</p>
+
+<hr />
+
+<h2>Error because nullItem is null:</h2>
+<!-- uncomment to see error in console -->
+<!-- <p>The null item's name is {{nullItem.name}}</p> -->
+
+<div>
+  <p>Uncomment above paragraph and see console log for error about nullItem.name:</p>
+  <p class="error">TypeError: Cannot read property 'name' of null</p>
+</div>
+
+<hr />
+
+<h2>The div will not display and there's no error: </h2>
+<div class="no-show-div">
+  <p>There's a child paragraph element in here that doesn't show. </p>
+  <p *ngIf="nullItem">The null item's name {{nullItem.name}}</p>
+</div>
+<hr />
+
+<h2>Div shows but interpolation doesn't:</h2>
+<div>
+  <h3>Using and (<code>&&</code>)</h3>
+  <p>The null item's name is: {{nullItem && nullItem.name}}</p>
+</div>
+
+<div>
+  <h3>Using safe navigation operator (<code>?</code>)</h3>
+  <!-- No item, no problem! -->
+  <p>The null item's name is: {{nullItem?.name}}</p>
+</div>
+
+
+<!-- non-null assertion operator -->
+<hr />
+<h2>Non-null assertion operator (<code>!</code>)</h2>
+<div>
+  <!-- #docregion non-null -->
+  <!-- Assert color is defined, even if according to the `Item` type it could be undefined. -->
+  <p>The item's color is: {{item.color!.toUpperCase()}}</p>
+  <!-- #enddocregion non-null -->
+
+
+

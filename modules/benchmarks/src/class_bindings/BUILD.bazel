@@ -1,0 +1,26 @@
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+component_benchmark(
+    name = "benchmark",
+    driver = ":class_bindings.perf-spec.ts",
+    driver_deps = [
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
+        "@npm//@types/jasmine",
+        "@npm//protractor",
+    ],
+    ng_deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+    ng_srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.perf-spec.ts"],
+    ),
+    prefix = "",
+    styles = ["styles.css"],
+)

@@ -1,0 +1,59 @@
+{
+  "cli-hello-world": {
+    "uncompressed": {
+      "runtime": 908,
+      "main": 134468,
+      "polyfills": 33792
+    }
+  },
+  "cli-hello-world-ivy-i18n": {
+    "uncompressed": {
+      "runtime": 926,
+      "main": 131777,
+      "polyfills": 34676
+    }
+  },
+  "cli-hello-world-lazy": {
+    "uncompressed": {
+      "runtime": 2734,
+      "main": 232018,
+      "polyfills": 33810,
+      "src_app_lazy_lazy_routes_ts": 487
+    }
+  },
+  "forms": {
+    "uncompressed": {
+      "runtime": 888,
+      "main": 166256,
+      "polyfills": 33772
+    }
+  },
+  "animations": {
+    "uncompressed": {
+      "runtime": 898,
+      "main": 164757,
+      "polyfills": 33782
+    }
+  },
+  "platform-server/standalone/browser": {
+    "uncompressed": {
+      "runtime": 2694,
+      "main": 232544,
+      "polyfills": 33782
+    }
+  },
+  "platform-server/ngmodule/browser": {
+    "uncompressed": {
+      "runtime": 2688,
+      "main": 244602,
+      "polyfills": 33778
+    }
+  },
+  "standalone-bootstrap": {
+    "uncompressed": {
+      "runtime": 918,
+      "main": 91485,
+      "polyfills": 33802
+    }
+  }
+}

@@ -1,0 +1,28 @@
+@use '../../mixins';
+@use '../alert/alert';
+
+.callout {
+  @extend .alert;
+  padding: 0px;
+  border-left: none !important;
+  border-radius: 4px;
+
+  header {
+    @include mixins.line-height(24);
+    font-weight: 500;
+    padding: 8px 16px;
+    margin: 0;
+    text-transform: uppercase;
+    border-radius: 4px 4px 0 0;
+  }
+
+  p {
+    padding: 16px;
+    margin: 0px;
+    @include mixins.font-size(14);
+  }
+
+  > *:not(:first-child) {
+    padding: 16px 24px;
+  }
+}

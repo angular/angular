@@ -1,0 +1,64 @@
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_library")
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+load("@npm//http-server:index.bzl", "http_server")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "hello_world",
+    srcs = ["index.ts"],
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":hello_world",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/private/testing",
+        "@npm//@bazel/runfiles",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle",
+        ":bundle.debug.min.js",
+        ":bundle.js",
+        ":bundle.min.js.br",
+    ],
+    deps = [":test_lib"],
+)
+
+js_expected_symbol_test(
+    name = "symbol_test",
+    src = ":bundle.debug.min.js",
+    golden = ":bundle.golden_symbols.json",
+)
+
+http_server(
+    name = "prodserver",
+    data = [
+        "index.html",
+        ":bundle.debug.min.js",
+        ":bundle.min.js",
+    ],
+)

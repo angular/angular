@@ -1,0 +1,52 @@
+  <!--
+    This content replaces the `<body>` content of `index.html` to generate our custom `404.html` page.
+    The content must visually and structurally resemble the resulting HTML of the main app for not
+    found pages (e.g. https://angular.io/not/exist.ing).
+  -->
+
+  <style>
+    .mat-toolbar-row{display:flex;box-sizing:border-box;padding:0 16px;width:100%;flex-direction:row;align-items:center;white-space:nowrap}
+    .mat-toolbar-row{height:64px}
+    @media (max-width:600px){.mat-toolbar-row{height:56px}}
+    .nav-link.home{margin-left:24px}
+  </style>
+
+  <aio-shell class="mode-stable page-file-not-found folder-file-not-found view- aio-notification-hide">
+
+    <mat-toolbar class="app-toolbar no-print mat-toolbar mat-primary">
+      <mat-toolbar-row class="mat-toolbar-row">
+        <a class="nav-link home" href="/">
+          <img alt="Home" height="40" src="assets/images/logos/angular/logo-nav@2x.png" title="Home" width="150">
+        </a>
+      </mat-toolbar-row>
+    </mat-toolbar>
+
+    <mat-sidenav-container class="sidenav-container mat-drawer-container mat-sidenav-container" role="main">
+      <mat-sidenav-content class="mat-drawer-content mat-sidenav-content">
+        <section class="sidenav-content" role="article">
+          <aio-doc-viewer>
+            <div class="content">
+              <div class="nf-container l-flex-wrap flex-center">
+                <img src="assets/images/support/angular-404.svg" width="300" height="300" alt="not found"/>
+                <div class="nf-response l-flex-wrap center">
+                  <h1 class="no-toc" id="page-not-found">Resource Not Found</h1>
+                  <p>We're sorry. The resource you are looking for cannot be found.</p>
+                </div>
+              </div>
+            </div>
+          </aio-doc-viewer>
+        </section>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+
+    <footer class="no-print">
+      <aio-footer>
+        <p>
+          Powered by Google ©2010-2022.
+          Code licensed under an <a href="license" title="License text">MIT-style License</a>.
+          Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </p>
+      </aio-footer>
+    </footer>
+
+  </aio-shell>

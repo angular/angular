@@ -1,0 +1,7 @@
+<h2>Child component with @Output()</h2>
+
+<!-- #docregion child-output -->
+<label for="item-input">Add an item:</label>
+<input type="text" id="item-input" #newItem>
+<button type="button" (click)="addNewItem(newItem.value)">Add to parent's list</button>
+<!-- #enddocregion child-output -->

@@ -1,0 +1,8 @@
+{
+  "name": "lib2_built",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": "./src/lib2.js",
+  "typings": "./src/lib2.d.ts"
+}

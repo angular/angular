@@ -1,0 +1,79 @@
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "service-worker",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+genrule(
+    name = "ngsw_config_binary",
+    srcs = ["//packages/service-worker/cli:ngsw_config.js"],
+    outs = ["ngsw-config.js"],
+    cmd = "echo '#!/usr/bin/env node' > $@ && cat $< >> $@",
+)
+
+genrule(
+    name = "ngsw_worker_renamed",
+    srcs = ["//packages/service-worker/worker:ngsw_worker.js"],
+    outs = ["ngsw-worker.js"],
+    # Remove sourcemap since this file will be served in production site
+    # See https://github.com/angular/angular/issues/23596
+    cmd = "grep -v '//# sourceMappingURL' < $< > $@",
+)
+
+ng_package(
+    name = "npm_package",
+    package_name = "@angular/service-worker",
+    srcs = [
+        "package.json",
+        "safety-worker.js",
+        ":ngsw_config_binary",
+        ":ngsw_worker_renamed",
+        "//packages/service-worker/config:schema.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+    ],
+    deps = [
+        ":service-worker",
+        "//packages/service-worker/config",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "service-worker_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "angular/goldens/public-api/service-worker",
+    npm_package = "angular/packages/service-worker/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

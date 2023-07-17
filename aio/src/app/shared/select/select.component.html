@@ -1,0 +1,33 @@
+<div class="form-select-menu">
+  <div class="form-select-button"
+    role="combobox"
+    [attr.aria-controls]="listBoxId"
+    aria-haspopup="listbox"
+    (click)="toggleOptions()"
+    (keydown)="handleKeydown($event)"
+    [attr.aria-expanded]="showOptions"
+    [attr.aria-activedescendant]="currentOptionIdx > -1 && showOptions ? listBoxId + '-option-' + currentOptionIdx : null"
+    [attr.aria-label]="label + (selected?.title ?? '')"
+    [class.disabled]="disabled"
+    tabindex="0"
+  >
+    <div aria-hidden="true">
+      <ng-container *ngTemplateOutlet="optionTemplate; context: { showLabel: true, value: selected?.value, title: selected?.title }"></ng-container>
+    </div>
+  </div>
+  <ul class="form-select-dropdown" *ngIf="showOptions" [id]="listBoxId" role="listbox" tabIndex="-1" #listBox>
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -- the key events are handled in the ts class -->
+    <li *ngFor="let option of options; index as i"
+        role="option"
+        [class.selected]="option === selected"
+        [attr.aria-selected]="option === selected"
+        [class.current]="currentOptionIdx === i"
+        [id]="listBoxId + '-option-' + i"
+        (click)="select(i)">
+        <ng-container *ngTemplateOutlet="optionTemplate; context: { showLabel: false, value: option.value, title: option.title }"></ng-container>
+    </li>
+  </ul>
+</div>
+<ng-template #optionTemplate let-showLabel="showLabel" let-value="value" let-title="title">
+  <span *ngIf="showLabel"><strong>{{label}}</strong></span><span *ngIf="showSymbol" class="symbol {{value}}"></span><span>{{title}}</span>
+</ng-template>

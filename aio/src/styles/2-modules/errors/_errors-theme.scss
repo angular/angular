@@ -1,0 +1,29 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  .error-list {
+    li {
+      .symbol {
+        &.runtime {
+          background: constants.$green-500;
+        }
+
+        &.compiler {
+          background: constants.$blue-500;
+        }
+      }
+
+      a {
+        color: constants.$blue-grey-600;
+
+        &:hover {
+          background: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-50);
+          color: constants.$blue-500;
+        }
+      }
+    }
+  }
+}

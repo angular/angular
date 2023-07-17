@@ -1,0 +1,11 @@
+{
+  "description": "Tour of Heroes: Part 1",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*",
+    "!**/dummy.module.ts"
+  ],
+  "file": "src/app/heroes/heroes.component.html",
+  "tags": ["tutorial", "tour", "heroes"]
+}

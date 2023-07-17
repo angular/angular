@@ -1,0 +1,21 @@
+<div class="editor" (click)="onClick()">
+  <span [ngSwitch]="currentPropertyState" class="state-container">
+    <span *ngSwitchCase="readState">
+      <span class="editable">
+        {{ valueToSubmit }}
+      </span>
+    </span>
+    <span *ngSwitchCase="writeState">
+      <input
+        matInput
+        type="text"
+        class="editor-input editable"
+        (mousedown)="$event.stopPropagation()"
+        [(ngModel)]="valueToSubmit"
+        (keydown.enter)="accept()"
+        (keydown.escape)="reject()"
+        (blur)="onBlur()"
+      />
+    </span>
+  </span>
+</div>

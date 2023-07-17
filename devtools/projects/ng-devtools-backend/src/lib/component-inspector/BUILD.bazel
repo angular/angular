@@ -1,0 +1,39 @@
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "component-inspector",
+    srcs = ["component-inspector.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "component-inspector.spec.ts",
+    ],
+    deps = [
+        ":component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+    ],
+)

@@ -1,0 +1,14 @@
+# adapted from Google style library
+extends: existence
+message: "Use an em dash ('—') instead of '–'."
+link: 'https://developers.google.com/style/dashes'
+nonword: true
+level: error
+action:
+  name: edit
+  params:
+    - replace
+    - '-'
+    - '—'
+tokens:
+  - '–'

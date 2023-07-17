@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = [
+    "//packages:__pkg__",
+    "//packages/upgrade:__subpackages__",
+    "//tools/public_api_guard:__subpackages__",
+])
+
+ts_library(
+    name = "common",
+    srcs = glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//packages/core",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "src/**/*.ts",
+    ]),
+)

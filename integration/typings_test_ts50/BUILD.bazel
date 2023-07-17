@@ -1,0 +1,9 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    # Special case for `typings_test_ts50` test as we want to pin
+    # `typescript` at version 5.0.x for that test and not link to the
+    # root @npm//typescript package.
+    pinned_npm_packages = ["typescript"],
+)

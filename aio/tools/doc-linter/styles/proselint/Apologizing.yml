@@ -1,0 +1,7 @@
+extends: existence
+message: "Excessive apologizing: '%s'"
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+level: error
+tokens:
+  - More research is needed

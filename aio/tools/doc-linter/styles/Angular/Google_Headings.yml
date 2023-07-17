@@ -1,0 +1,58 @@
+# adapted from Google style library
+# Tests for sentence capitalization in heading strings
+extends: capitalization
+message: "'%s' should use sentence-style capitalization and mark program references as code."
+link: 'https://developers.google.com/style/capitalization#capitalization-in-titles-and-headings'
+level: warning
+scope: heading
+match: $sentence
+indicators:
+  - ':'
+exceptions:
+  - Angular
+  - AngularJS
+  - API
+  - APIs
+  - Architect
+  - Azure
+  - CLI
+  - Code
+  - Cosmos
+  - d.ts
+  - Docker
+  - ECMAScript
+  - Emmet
+  - ES
+  - French
+  - GitHub
+  - GitHub Pages
+  - gRPC
+  - I
+  - Ivy
+  - i18n
+  - JavaScript
+  - Kubernetes
+  - Linux
+  - l10n
+  - macOS
+  - Marketplace
+  - MongoDB
+  - NgModule
+  - NgModules
+  - Observable
+  - README
+  - REPL
+  - RxJS
+  - Schematics
+  - sideEffects
+  - Studio
+  - Tour of Heroes
+  - TypeScript
+  - TypeScript
+  - Universal
+  - URLs
+  - Vale
+  - View Engine
+  - Visual
+  - VS
+  - Windows

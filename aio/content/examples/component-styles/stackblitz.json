@@ -1,0 +1,11 @@
+{
+  "description": "Component Styles",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.native.*",
+    "!**/*.[1].*"
+  ],
+  "file": "src/app/hero-app.component.ts",
+  "tags": ["CSS"]
+}

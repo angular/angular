@@ -1,0 +1,16 @@
+@use '../../constants';
+
+@mixin theme($theme) {
+  .sidenav-content {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      .header-link {
+        color: constants.$mediumgray;
+      }
+    }
+  }
+}

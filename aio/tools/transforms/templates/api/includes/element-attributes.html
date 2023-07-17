@@ -1,0 +1,21 @@
+{%- if doc.attributes %}
+<section class="element-attributes">
+  <h2>Attributes</h2>
+  <table class="is-full-width list-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for attribute in doc.attributes %}
+      <tr class="element-attribute">
+        <td><code>{$ attribute.name $}</code></td>
+        <td>{$ attribute.description | marked $}</td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</section>
+{%- endif -%}

@@ -1,0 +1,19 @@
+@use '../../constants';
+
+@mixin theme($theme) {
+  aio-notification {
+    background: constants.$darkgray;
+
+    .close-button {
+      background: constants.$darkgray;
+    }
+
+    .content {
+      background: constants.$darkgray;
+
+      .action-button {
+        background: constants.$brightred;
+      }
+    }
+  }
+}

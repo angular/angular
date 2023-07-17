@@ -1,0 +1,32 @@
+.contribute-container {
+  h2 {
+    margin: 0;
+  }
+
+  .card-section {
+    justify-content: space-between;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+
+    > :first-child {
+      margin-right: 2rem;
+      width: 67%;
+
+      @media (max-width: 600px) {
+        width: 100%;
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .button {
+      @media (max-width: 600px) {
+        margin-top: 14px;
+      }
+    }
+  }
+}

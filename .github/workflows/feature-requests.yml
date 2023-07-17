@@ -1,0 +1,19 @@
+name: Feature request triage bot
+
+on:
+  schedule:
+    # Run at 14:00 every day
+    - cron: '0 14 * * *'
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  feature_triage:
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: angular/dev-infra/github-actions/feature-request@97cb376945b07e37671e3b38ee727ff00dc1394b
+        with:
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

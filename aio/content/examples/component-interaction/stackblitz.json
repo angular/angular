@@ -1,0 +1,8 @@
+{
+  "description": "Component Communication Cookbook samples",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["cookbook", "component"]
+}
