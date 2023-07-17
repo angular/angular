@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { XhrFactory } from '@angular/common/public_api';
+import {XhrFactory} from '@angular/common';
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
