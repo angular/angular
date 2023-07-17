@@ -156,6 +156,10 @@ function compileUsedDependenciesMetadata(meta: R3ComponentMetadata<R3TemplateDep
       generateForwardRef :
       (expr: o.Expression) => expr;
 
+  if (meta.declarationListEmitMode === DeclarationListEmitMode.RuntimeResolved) {
+    throw new Error(`Unsupported emit mode`);
+  }
+
   return toOptionalLiteralArray(meta.declarations, decl => {
     switch (decl.kind) {
       case R3TemplateDependencyKind.Directive:

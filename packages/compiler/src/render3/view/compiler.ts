@@ -249,11 +249,18 @@ export function compileComponentFromMetadata(
     definitionMap.set('template', templateFn);
   }
 
-  if (meta.declarations.length > 0) {
+  if (meta.declarationListEmitMode !== DeclarationListEmitMode.RuntimeResolved &&
+      meta.declarations.length > 0) {
     definitionMap.set(
         'dependencies',
         compileDeclarationList(
             o.literalArr(meta.declarations.map(decl => decl.type)), meta.declarationListEmitMode));
+  } else if (meta.declarationListEmitMode === DeclarationListEmitMode.RuntimeResolved) {
+    const args = [meta.type.value];
+    if (meta.rawImports) {
+      args.push(meta.rawImports);
+    }
+    definitionMap.set('dependencies', o.importExpr(R3.getComponentDepsFactory).callFn(args));
   }
 
   if (meta.encapsulation === null) {
@@ -338,6 +345,8 @@ function compileDeclarationList(
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
       const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
       return o.fn([], [new o.ReturnStatement(resolvedList)]);
+    case DeclarationListEmitMode.RuntimeResolved:
+      throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }
 }
 

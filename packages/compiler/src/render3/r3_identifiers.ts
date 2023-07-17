@@ -242,6 +242,9 @@ export class Identifiers {
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
+  static getComponentDepsFactory:
+      o.ExternalReference = {name: 'ɵɵgetComponentDepsFactory', moduleName: CORE};
+
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
   static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
 
