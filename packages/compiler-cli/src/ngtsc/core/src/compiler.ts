@@ -1082,17 +1082,17 @@ export class NgCompiler {
             injectableRegistry, refEmitter, referencesRegistry, isCore, strictCtorDeps, semanticDepGraphUpdater,
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
-          supportTestBed,
+          supportTestBed, compilationMode,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
-          this.delegatingPerfRecorder, supportTestBed),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode),
       new InjectableDecoratorHandler(
           reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
-          this.delegatingPerfRecorder, supportTestBed),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,

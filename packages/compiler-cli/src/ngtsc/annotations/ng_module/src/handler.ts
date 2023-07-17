@@ -458,7 +458,8 @@ export class NgModuleDecoratorHandler implements
       name,
       type,
       typeArgumentCount: 0,
-      deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
+      deps:
+          getValidConstructorDependencies(node, this.reflector, this.isCore, this.compilationMode),
       target: FactoryTarget.NgModule,
     };
 

@@ -233,5 +233,273 @@ runInEachFileSystem(() => {
            expect(jsContents).not.toContain('i0.ɵɵgetComponentDepsFactory');
          });
     });
+
+    describe('constructor injection', () => {
+      it('should include injector types with all possible import/injection styles into component factory',
+         () => {
+           env.write('test.ts', `
+          import {Component, NgModule, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Component({
+            selector: 'test-main',
+            template: '<span>Hello world</span>',
+          })
+          export class MainComponent {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          
+          @NgModule({
+            declarations: [MainComponent],  
+          })
+          export class MainModule {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into standalone component factory',
+         () => {
+           env.write('test.ts', `
+          import {Component, NgModule, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Component({
+            standalone: true,
+            selector: 'test-main',
+            template: '<span>Hello world</span>',
+          })
+          export class MainComponent {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into directive factory',
+         () => {
+           env.write('test.ts', `
+          import {Directive, NgModule, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Directive({
+          })
+          export class MainDirective {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          
+          @NgModule({
+            declarations: [MainDirective],  
+          })
+          export class MainModule {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into standalone directive factory',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Directive({
+            standalone: true,
+          })
+          export class MainDirective {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into pipe factory',
+         () => {
+           env.write('test.ts', `
+          import {Pipe, NgModule, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Pipe({name: 'pipe'})
+          export class MainPipe {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          
+          @NgModule({
+            declarations: [MainPipe],  
+          })
+          export class MainModule {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into standalone pipe factory',
+         () => {
+           env.write('test.ts', `
+          import {Pipe, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Pipe({
+            name: 'pipe',
+            standalone: true,
+          })
+          export class MainPipe {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into injectable factory',
+         () => {
+           env.write('test.ts', `
+          import {Injectable, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @Injectable({
+            providedIn: 'root',
+          })
+          export class MainService {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should include injector types with all possible import/injection styles into ng module factory',
+         () => {
+           env.write('test.ts', `
+          import {Component, NgModule, Attribute, Inject} from '@angular/core';
+          import {SomeClass} from './some-where'
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+          import * as SomeWhere3 from './some-where3'
+
+          @NgModule({
+          })
+          export class MainModule {         
+            constructor(
+              private someService1: SomeService1,
+              private someService2: SomeService2,
+              private someService3: SomeWhere3.SomeService3,
+              @Attribute('title') title: string,
+              @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+         });
+    });
   });
 });
