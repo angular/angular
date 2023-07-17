@@ -572,4 +572,62 @@ describe('R3 AST source spans', () => {
           ]);
     });
   });
+
+  describe('deferred blocks', () => {
+    it('is correct for deferred blocks', () => {
+      const html = '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          'interaction(button), viewport(container); prefetch on immediate; ' +
+          'prefetch when isDataLoaded()}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading minimum 1s; after 100ms}' +
+          'Loading...' +
+          '{:placeholder minimum 500}' +
+          'Placeholder content!' +
+          '{:error}' +
+          'Loading failed :(' +
+          '{/defer}';
+
+      expectFromHtml(html, true).toEqual([
+        [
+          'DeferredBlock',
+          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+              'interaction(button), viewport(container); prefetch on immediate; ' +
+              'prefetch when isDataLoaded()}<calendar-cmp [date]="current"/>' +
+              '{:loading minimum 1s; after 100ms}Loading...' +
+              '{:placeholder minimum 500}Placeholder content!' +
+              '{:error}Loading failed :({/defer}',
+          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+              'interaction(button), viewport(container); prefetch on immediate; ' +
+              'prefetch when isDataLoaded()}',
+          '{/defer}'
+        ],
+        ['BoundDeferredTrigger', 'when isVisible() && foo'],
+        ['HoverDeferredTrigger', 'hover'],
+        ['TimerDeferredTrigger', 'timer(10s)'],
+        ['IdleDeferredTrigger', 'idle'],
+        ['ImmediateDeferredTrigger', 'immediate'],
+        ['InteractionDeferredTrigger', 'interaction(button)'],
+        ['ViewportDeferredTrigger', 'viewport(container)'],
+        ['ImmediateDeferredTrigger', 'immediate'],
+        ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
+        [
+          'Element', '<calendar-cmp [date]="current"/>', '<calendar-cmp [date]="current"/>',
+          '<calendar-cmp [date]="current"/>'
+        ],
+        ['BoundAttribute', '[date]="current"', 'date', 'current'],
+        [
+          'DeferredBlockPlaceholder', '{:placeholder minimum 500}Placeholder content!',
+          '{:placeholder minimum 500}', '<empty>'
+        ],
+        ['Text', 'Placeholder content!'],
+        [
+          'DeferredBlockLoading', '{:loading minimum 1s; after 100ms}Loading...',
+          '{:loading minimum 1s; after 100ms}', '<empty>'
+        ],
+        ['Text', 'Loading...'],
+        ['DeferredBlockError', '{:error}Loading failed :(', '{:error}', '<empty>'],
+        ['Text', 'Loading failed :('],
+      ]);
+    });
+  });
 });

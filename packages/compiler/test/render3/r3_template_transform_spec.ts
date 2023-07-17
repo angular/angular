@@ -722,6 +722,101 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a deferred block with a `when` trigger', () => {
+      expectDeferred('{#defer when isVisible() && loaded}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['BoundDeferredTrigger', 'isVisible() && loaded'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a single `on` trigger', () => {
+      expectDeferred('{#defer on idle}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with multiple `on` triggers', () => {
+      expectDeferred('{#defer on idle, viewport(button)}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a non-parenthesized trigger at the end', () => {
+      expectDeferred('{#defer on idle, viewport(button), immediate}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['ImmediateDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with `when` and `on` triggers', () => {
+      const markup =
+          '{#defer when isVisible(); on timer(100ms), idle, viewport(button)}hello{/defer}';
+
+      expectDeferred(markup).toEqual([
+        ['DeferredBlock'],
+        ['BoundDeferredTrigger', 'isVisible()'],
+        ['TimerDeferredTrigger', 100],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should allow new line after trigger name', () => {
+      const markup =
+          `{#defer\nwhen\nisVisible(); on\ntimer(100ms),\nidle, viewport(button)}hello{/defer}`;
+
+      expectDeferred(markup).toEqual([
+        ['DeferredBlock'],
+        ['BoundDeferredTrigger', 'isVisible()'],
+        ['TimerDeferredTrigger', 100],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a timeout set in seconds', () => {
+      expectDeferred('{#defer on timer(10s)}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['TimerDeferredTrigger', 10000],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a timeout that has no units', () => {
+      expectDeferred('{#defer on timer(100)}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['TimerDeferredTrigger', 100],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a hover trigger', () => {
+      expectDeferred('{#defer on hover}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['HoverDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with an interaction trigger', () => {
+      expectDeferred('{#defer on interaction(button)}hello{/defer}').toEqual([
+        ['DeferredBlock'],
+        ['InteractionDeferredTrigger', 'button'],
+        ['Text', 'hello'],
+      ]);
+    });
+
     it('should parse a deferred block with secondary blocks', () => {
       expectDeferred(
           '{#defer}' +
@@ -778,7 +873,113 @@ describe('R3 template transform', () => {
           ]);
     });
 
+    it('should parse a deferred block with prefetch triggers', () => {
+      const html =
+          '{#defer on idle; prefetch on viewport(button), hover; prefetch when shouldPrefetch()}hello{/defer}';
+
+      expectDeferred(html).toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['HoverDeferredTrigger'],
+        ['BoundDeferredTrigger', 'shouldPrefetch()'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should allow arbitrary number of spaces after the `prefetch` keyword', () => {
+      const html =
+          '{#defer on idle; prefetch         on viewport(button), hover; prefetch    when shouldPrefetch()}hello{/defer}';
+
+      expectDeferred(html).toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['ViewportDeferredTrigger', 'button'],
+        ['HoverDeferredTrigger'],
+        ['BoundDeferredTrigger', 'shouldPrefetch()'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a complete example', () => {
+      expectDeferred(
+          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          'interaction(button), viewport(container); prefetch on immediate; ' +
+          'prefetch when isDataLoaded()}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading minimum 1s; after 100ms}' +
+          'Loading...' +
+          '{:placeholder minimum 500}' +
+          'Placeholder content!' +
+          '{:error}' +
+          'Loading failed :(' +
+          '{/defer}')
+          .toEqual([
+            ['DeferredBlock'],
+            ['BoundDeferredTrigger', 'isVisible() && foo'],
+            ['HoverDeferredTrigger'],
+            ['TimerDeferredTrigger', 10000],
+            ['IdleDeferredTrigger'],
+            ['ImmediateDeferredTrigger'],
+            ['InteractionDeferredTrigger', 'button'],
+            ['ViewportDeferredTrigger', 'container'],
+            ['ImmediateDeferredTrigger'],
+            ['BoundDeferredTrigger', 'isDataLoaded()'],
+            ['Element', 'calendar-cmp'],
+            ['BoundAttribute', 0, 'date', 'current'],
+            ['DeferredBlockPlaceholder', 'minimum 500ms'],
+            ['Text', 'Placeholder content!'],
+            ['DeferredBlockLoading', 'after 100ms', 'minimum 1000ms'],
+            ['Text', 'Loading...'],
+            ['DeferredBlockError'],
+            ['Text', 'Loading failed :('],
+          ]);
+    });
+
+    it('should treat blocks as plain text inside ngNonBindable', () => {
+      expectDeferred(
+          '<div ngNonBindable>' +
+          '{#defer when isVisible() && foo; on hover, timer(10s); ' +
+          'prefetch on immediate; prefetch when isDataLoaded()}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading}' +
+          'Loading...' +
+          '{:placeholder}' +
+          'Placeholder content!' +
+          '{:error}' +
+          'Loading failed :(' +
+          '{/defer}' +
+          '</div>')
+          .toEqual([
+            ['Element', 'div'],
+            ['TextAttribute', 'ngNonBindable', ''],
+            [
+              'Text',
+              '{#defer when isVisible() && foo; on hover, timer(10s); prefetch on immediate; prefetch when isDataLoaded()}'
+            ],
+            ['Element', 'calendar-cmp'],
+            ['TextAttribute', '[date]', 'current'],
+            ['Text', '{:loading}'],
+            ['Text', 'Loading...'],
+            ['Text', '{:placeholder}'],
+            ['Text', 'Placeholder content!'],
+            ['Text', '{:error}'],
+            ['Text', 'Loading failed :('],
+            ['Text', '{/defer}'],
+          ]);
+    });
+
     describe('block validations', () => {
+      it('should report syntax error in `when` trigger', () => {
+        expectDeferredError('{#defer when isVisible(}hello{/defer}')
+            .toThrowError(/Unexpected end of expression/);
+      });
+
+      it('should report unrecognized trigger', () => {
+        expectDeferredError('{#defer unknown visible()}hello{/defer}')
+            .toThrowError(/Unrecognized trigger/);
+      });
+
       it('should report unrecognized block', () => {
         expectDeferredError('{#defer}hello{:unknown}world{/defer}')
             .toThrowError(/Unrecognized block "unknown"/);
@@ -827,6 +1028,82 @@ describe('R3 template transform', () => {
       it('should report if after loading time cannot be parsed', () => {
         expectDeferredError('{#defer}hello{:loading after 123abc}hi{/defer}')
             .toThrowError(/Could not parse time value of parameter "after"/);
+      });
+
+      it('should report unrecognized `on` trigger', () => {
+        expectDeferredError('{#defer on foo}hello{/defer}')
+            .toThrowError(/Unrecognized trigger type "foo"/);
+      });
+
+      it('should report missing comma after unparametarized `on` trigger', () => {
+        expectDeferredError('{#defer on hover idle}hello{/defer}').toThrowError(/Unexpected token/);
+      });
+
+      it('should report missing comma after parametarized `on` trigger', () => {
+        expectDeferredError('{#defer on viewport(button) idle}hello{/defer}')
+            .toThrowError(/Unexpected token/);
+      });
+
+      it('should report mutliple commas after between `on` triggers', () => {
+        expectDeferredError('{#defer on viewport(button), , idle}hello{/defer}')
+            .toThrowError(/Unexpected token/);
+      });
+
+      it('should report unclosed parenthesis in `on` trigger', () => {
+        expectDeferredError('{#defer on viewport(button}hello{/defer}')
+            .toThrowError(/Unexpected end of expression/);
+      });
+
+      it('should report incorrect closing parenthesis in `on` trigger', () => {
+        expectDeferredError('{#defer on viewport(but)ton}hello{/defer}')
+            .toThrowError(/Unexpected token/);
+      });
+
+      it('should report stray closing parenthesis in `on` trigger', () => {
+        expectDeferredError('{#defer on idle)}hello{/defer}').toThrowError(/Unexpected token/);
+      });
+
+      it('should report non-identifier token usage in `on` trigger', () => {
+        expectDeferredError('{#defer on 123)}hello{/defer}').toThrowError(/Unexpected token/);
+      });
+
+      it('should report if identifier is not followed by an opening parenthesis', () => {
+        expectDeferredError('{#defer on viewport[]}hello{/defer}').toThrowError(/Unexpected token/);
+      });
+
+      it('should report if parameters are passed to `idle` trigger', () => {
+        expectDeferredError('{#defer on idle(1)}hello{/defer}')
+            .toThrowError(/"idle" trigger cannot have parameters/);
+      });
+
+      it('should report if no parameters are passed into `timer` trigger', () => {
+        expectDeferredError('{#defer on timer}hello{/defer}')
+            .toThrowError(/"timer" trigger must have exactly one parameter/);
+      });
+
+      it('should report if `timer` trigger value cannot be parsed', () => {
+        expectDeferredError('{#defer on timer(123abc)}hello{/defer}')
+            .toThrowError(/Could not parse time value of trigger "timer"/);
+      });
+
+      it('should report if `interaction` trigger has more than one parameter', () => {
+        expectDeferredError('{#defer on interaction(a, b)}hello{/defer}')
+            .toThrowError(/"interaction" trigger can only have zero or one parameters/);
+      });
+
+      it('should report if parameters are passed to `immediate` trigger', () => {
+        expectDeferredError('{#defer on immediate(1)}hello{/defer}')
+            .toThrowError(/"immediate" trigger cannot have parameters/);
+      });
+
+      it('should report if parameters are passed to `hover` trigger', () => {
+        expectDeferredError('{#defer on hover(1)}hello{/defer}')
+            .toThrowError(/"hover" trigger cannot have parameters/);
+      });
+
+      it('should report if `viewport` trigger has more than one parameter', () => {
+        expectDeferredError('{#defer on viewport(a, b)}hello{/defer}')
+            .toThrowError(/"viewport" trigger can only have zero or one parameters/);
       });
     });
   });
