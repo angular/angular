@@ -111,6 +111,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
     // (undocumented)
+    RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
+    // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
