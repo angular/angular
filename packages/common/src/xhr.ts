@@ -25,5 +25,5 @@ export abstract class XhrFactory {
    */
   serialize?<T>(body: T|null): ArrayBuffer | Blob | FormData | URLSearchParams | string | null {
     return null;
-  };
+  }
 }
