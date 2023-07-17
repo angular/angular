@@ -973,6 +973,7 @@ export enum WeekDay {
 export abstract class XhrFactory {
     // (undocumented)
     abstract build(): XMLHttpRequest;
+    serialize?<T>(body: T | null): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
 }
 
 // (No @packageDocumentation comment for this package)
