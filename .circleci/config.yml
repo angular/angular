@@ -576,6 +576,7 @@ jobs:
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - run: yarn --cwd packages/zone.js/test/typings test
 
+  # TODO(josephperrott): remove job once stablitily of GHA version is verified
   # Windows jobs
   # Docs: https://circleci.com/docs/2.0/hello-world-windows/
   test_win:

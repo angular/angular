@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@222de0bc054a6d2231243f5ea5ea97991a6a722a
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
         with:
           cache-node-modules: true
           node-module-directories: |
@@ -60,16 +60,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@222de0bc054a6d2231243f5ea5ea97991a6a722a
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
         with:
           cache-node-modules: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@222de0bc054a6d2231243f5ea5ea97991a6a722a
+        uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/setup-bazel-remote-exec@222de0bc054a6d2231243f5ea5ea97991a6a722a
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Run unit tests
         run: yarn devtools:test
       - name: Test build
         run: yarn devtools:build:chrome
+
+  framework-win:
+    runs-on: windows-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Install node modules
+        run: yarn install --frozen-lockfile --network-timeout 100000
+      - name: Test all windows CI targets
+        run: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
