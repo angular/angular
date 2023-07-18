@@ -249,6 +249,7 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
+  # TODO: Remove test job after confirmation that the GHA version is stable.
   test:
     executor:
       name: test-browser-executor
