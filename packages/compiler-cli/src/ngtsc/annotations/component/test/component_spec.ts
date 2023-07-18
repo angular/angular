@@ -88,6 +88,7 @@ function setup(
       /* enableI18nLegacyMessageIdFormat */ false,
       !!usePoisonedData,
       /* i18nNormalizeLineEndingsInICUs */ false,
+      /* enabledBlockTypes */ new Set(),
       moduleResolver,
       cycleAnalyzer,
       CycleHandlingStrategy.UseRemoteScoping,
@@ -556,7 +557,7 @@ runInEachFileSystem(() => {
                 contents: `
             import {Component} from '@angular/core';
             import {SomeModule} from './some_where';
-            
+
             @Component({
               standalone: true,
               selector: 'main',
@@ -593,7 +594,7 @@ runInEachFileSystem(() => {
                 contents: `
             import {Component} from '@angular/core';
             import {SomeModule} from './some_where';
-            
+
             @Component({
               selector: 'main',
               template: '<span>Hi!</span>',
@@ -632,7 +633,7 @@ runInEachFileSystem(() => {
                 contents: `
             import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
             import {SomeModule} from './some_where';
-            
+
             @Component({
               standalone: true,
               selector: 'main',
@@ -670,7 +671,7 @@ runInEachFileSystem(() => {
                 contents: `
             import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
             import {SomeModule} from './some_where';
-            
+
             @Component({
               selector: 'main',
               template: '<span>Hi!</span>',
