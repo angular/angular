@@ -274,6 +274,8 @@ export interface Expectation {
 export interface ExpectedFile {
   expected: string;
   generated: string;
+  /** Alternate expected file when compiling with the template pipeline. */
+  templatePipelineExpected?: string;
 }
 
 /**
