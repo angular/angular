@@ -64,7 +64,7 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
         }
     </code-example>
 
-    This code gives the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the constructor, the code converts the id parameter acquired from the route from a string to a number.
+    This code gives the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the constructor, the code converts the id parameter from the route from a string to a number.
 
 1.  Save all changes.
 
