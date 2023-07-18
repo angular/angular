@@ -123,6 +123,13 @@ export enum OpKind {
    * An operation to associate an attribute with an element.
    */
   Attribute,
+
+  /**
+   * A host binding property.
+   */
+  HostProperty,
+
+  // TODO: Add Host Listeners, and possibly other host ops also.
 }
 
 /**

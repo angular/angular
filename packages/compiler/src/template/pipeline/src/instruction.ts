@@ -281,6 +281,10 @@ export function classMapInterpolate(strings: string[], expressions: o.Expression
   return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], null);
 }
 
+export function hostProperty(name: string, expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.hostProperty, [o.literal(name), expression], null);
+}
+
 export function pureFunction(
     varOffset: number, fn: o.Expression, args: o.Expression[]): o.Expression {
   return callVariadicInstructionExpr(

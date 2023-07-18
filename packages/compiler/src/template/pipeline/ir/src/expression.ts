@@ -749,6 +749,7 @@ export function transformExpressionsInOp(
     case OpKind.ClassMap:
     case OpKind.Attribute:
     case OpKind.Binding:
+    case OpKind.HostProperty:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
