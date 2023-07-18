@@ -182,8 +182,8 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string, tokenizeBlocks = false) {
-  const res = parse(html, {tokenizeBlocks});
+function expectFromHtml(html: string, enabledBlockTypes?: string[]) {
+  const res = parse(html, {enabledBlockTypes});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -587,7 +587,7 @@ describe('R3 AST source spans', () => {
           'Loading failed :(' +
           '{/defer}';
 
-      expectFromHtml(html, true).toEqual([
+      expectFromHtml(html, ['defer']).toEqual([
         [
           'DeferredBlock',
           '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +

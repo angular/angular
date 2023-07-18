@@ -31,6 +31,14 @@ export interface TestOnlyOptions {
   _enableTemplateTypeChecker?: boolean;
 
   /**
+   * Names of the blocks that should be enabled. E.g. `_enabledBlockTypes: ['defer']`
+   * would allow usages of `{#defer}{/defer}` in templates.
+   *
+   * @internal
+   */
+  _enabledBlockTypes?: string[];
+
+  /**
    * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. This is sensitive

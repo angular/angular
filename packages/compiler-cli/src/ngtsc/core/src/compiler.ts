@@ -254,6 +254,7 @@ export class NgCompiler {
   private moduleResolver: ModuleResolver;
   private resourceManager: AdapterResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
+  private enabledBlockTypes: Set<string>;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
@@ -321,6 +322,7 @@ export class NgCompiler {
   ) {
     this.enableTemplateTypeChecker =
         enableTemplateTypeChecker || (options._enableTemplateTypeChecker ?? false);
+    this.enabledBlockTypes = new Set(options._enabledBlockTypes ?? []);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -1064,11 +1066,11 @@ export class NgCompiler {
           this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
-          this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
-          this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
-          this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
-          supportTestBed, compilationMode),
+          this.options.i18nNormalizeLineEndingsInICUs === true, this.enabledBlockTypes,
+          this.moduleResolver, this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
+          referencesRegistry, this.incrementalCompilation.depGraph, injectableRegistry,
+          semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder,
+          hostDirectivesResolver, supportTestBed, compilationMode),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).

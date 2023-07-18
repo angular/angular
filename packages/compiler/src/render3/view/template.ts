@@ -2072,6 +2072,12 @@ export interface ParseTemplateOptions {
    * rules on a case by case basis, instead of for their whole project within a configuration file.
    */
   collectCommentNodes?: boolean;
+
+  /**
+   * Names of the blocks that should be enabled. E.g. `enabledBlockTypes: new Set(['defer'])`
+   * would allow usages of `{#defer}{/defer}` in templates.
+   */
+  enabledBlockTypes?: Set<string>;
 }
 
 /**
@@ -2086,9 +2092,12 @@ export function parseTemplate(
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(
-      template, templateUrl,
-      {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(template, templateUrl, {
+    leadingTriviaChars: LEADING_TRIVIA_CHARS,
+    ...options,
+    tokenizeExpansionForms: true,
+    tokenizeBlocks: options.enabledBlockTypes != null && options.enabledBlockTypes.size > 0,
+  });
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
       parseResult.errors.length > 0) {
@@ -2150,8 +2159,11 @@ export function parseTemplate(
     }
   }
 
-  const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} = htmlAstToRender3Ast(
-      rootNodes, bindingParser, {collectCommentNodes: !!options.collectCommentNodes});
+  const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} =
+      htmlAstToRender3Ast(rootNodes, bindingParser, {
+        collectCommentNodes: !!options.collectCommentNodes,
+        enabledBlockTypes: options.enabledBlockTypes || new Set(),
+      });
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
   const parsedTemplate: ParsedTemplate = {

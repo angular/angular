@@ -59,6 +59,7 @@ export interface Render3ParseResult {
 
 interface Render3ParseOptions {
   collectCommentNodes: boolean;
+  enabledBlockTypes: Set<string>;
 }
 
 export function htmlAstToRender3Ast(
@@ -324,15 +325,14 @@ class HtmlAstToIvyAst implements html.Visitor {
       return null;
     }
 
-    switch (primaryBlock.name) {
-      case 'defer':
-        const {node, errors} = createDeferredBlock(group, this, this.bindingParser);
-        this.errors.push(...errors);
-        return node;
-      default:
-        this.reportError(`Unrecognized block "${primaryBlock.name}".`, primaryBlock.sourceSpan);
-        return null;
+    if (primaryBlock.name === 'defer' && this.options.enabledBlockTypes.has(primaryBlock.name)) {
+      const {node, errors} = createDeferredBlock(group, this, this.bindingParser);
+      this.errors.push(...errors);
+      return node;
     }
+
+    this.reportError(`Unrecognized block "${primaryBlock.name}".`, primaryBlock.sourceSpan);
+    return null;
   }
 
   visitBlock(block: html.Block, context: any) {}
