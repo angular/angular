@@ -174,4 +174,15 @@ describe('computed', () => {
 
     expect(illegal).toThrow();
   });
+
+  it('should disallow creation of reactive nodes in computed', () => {
+    const source = signal(0);
+    const outer = computed(() => {
+      const illegal = computed(() => source());
+      return illegal();
+    });
+
+    expect(outer).toThrowError(
+        'A new computed signal creation is disallowed in the current reactive context.');
+  });
 });

@@ -127,6 +127,12 @@ export abstract class ReactiveNode {
   protected abstract readonly consumerAllowSignalWrites: boolean;
 
   /**
+   * Whether new reactive node creation should be allowed when this `ReactiveNode` is the current
+   * consumer.
+   */
+  protected abstract readonly consumerAllowReactiveNodeCreation: boolean;
+
+  /**
    * Called for consumers whenever one of their dependencies notifies that it might have a new
    * value.
    */
@@ -240,6 +246,14 @@ export abstract class ReactiveNode {
    */
   protected get producerUpdatesAllowed(): boolean {
     return activeConsumer?.consumerAllowSignalWrites !== false;
+  }
+
+  /**
+   * Whether this `ReactiveNode` in its producer capacity is currently allowed to create new nodes
+   * in a reactive graph.
+   */
+  protected get producerReactiveNodesCreationAllowed(): boolean {
+    return activeConsumer?.consumerAllowReactiveNodeCreation !== false;
   }
 
   /**

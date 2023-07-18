@@ -54,6 +54,8 @@ class WritableSignalImpl<T> extends ReactiveNode {
 
   protected override readonly consumerAllowSignalWrites = false;
 
+  protected override readonly consumerAllowReactiveNodeCreation = false;
+
   constructor(private value: T, private equal: ValueEqualityFn<T>) {
     super();
   }

@@ -14,7 +14,8 @@ import {ComponentTemplate, HostBindingsFunction, RenderFlags} from './interfaces
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
 
 export class ReactiveLViewConsumer extends ReactiveNode {
-  protected override consumerAllowSignalWrites = false;
+  protected override readonly consumerAllowReactiveNodeCreation = false;
+  protected override readonly consumerAllowSignalWrites = false;
   private _lView: LView|null = null;
 
   set lView(lView: LView) {

@@ -29,6 +29,7 @@ const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
  * provided scheduling operation to coordinate calling `Watch.run()`.
  */
 export class Watch extends ReactiveNode {
+  protected override readonly consumerAllowReactiveNodeCreation = false;
   protected override readonly consumerAllowSignalWrites: boolean;
   private dirty = false;
   private cleanupFn = NOOP_CLEANUP_FN;
