@@ -14,6 +14,13 @@ import {CompileResult, initMockTestFileSystem} from './compile_test';
 import {CompilationMode, ComplianceTest, Expectation, getAllComplianceTests} from './get_compliance_tests';
 
 function transformExpectation(expectation: Expectation, isLocalCompilation: boolean): void {
+  if (USE_TEMPLATE_PIPELINE) {
+    expectation.files =
+        expectation.files.map(pair => ({
+                                expected: pair.templatePipelineExpected || pair.expected,
+                                generated: pair.generated,
+                              }));
+  }
   if (isLocalCompilation) {
     expectation.files =
         expectation.files.map(pair => ({
