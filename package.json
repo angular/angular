@@ -93,7 +93,7 @@
     "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.1.15",
     "@types/semver": "^7.3.4",
     "@types/shelljs": "^0.8.6",
-    "@types/systemjs": "0.19.32",
+    "@types/systemjs": "6.13.1",
     "@types/uuid": "^9.0.0",
     "@types/yargs": "^17.0.3",
     "angular-1.5": "npm:angular@1.5",
