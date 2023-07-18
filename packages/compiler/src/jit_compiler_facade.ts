@@ -524,7 +524,11 @@ function parseJitTemplate(
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
-  const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces, interpolationConfig});
+  const parsed = parseTemplate(template, sourceMapUrl, {
+    preserveWhitespaces,
+    interpolationConfig,
+    enabledBlockTypes: new Set(),  // TODO: enable deferred blocks when testing in JIT mode.
+  });
   if (parsed.errors !== null) {
     const errors = parsed.errors.map(err => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);

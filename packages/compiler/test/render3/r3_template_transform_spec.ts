@@ -147,8 +147,8 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 }
 
-function expectFromHtml(html: string, ignoreError = false, tokenizeBlocks = false) {
-  const res = parse(html, {ignoreError, tokenizeBlocks});
+function expectFromHtml(html: string, ignoreError = false, enabledBlockTypes?: string[]) {
+  const res = parse(html, {ignoreError, enabledBlockTypes});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -708,11 +708,11 @@ describe('R3 template transform', () => {
   describe('deferred blocks', () => {
     // TODO(crisbeto): temporary utility while blocks are disabled by default.
     function expectDeferred(html: string) {
-      return expectFromR3Nodes(parse(html, {tokenizeBlocks: true}).nodes);
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['defer']}).nodes);
     }
 
     function expectDeferredError(html: string) {
-      return expect(() => parse(html, {tokenizeBlocks: true}));
+      return expect(() => parse(html, {enabledBlockTypes: ['defer']}));
     }
 
     it('should parse a simple deferred block', () => {
