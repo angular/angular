@@ -1,5 +1,5 @@
 # Lesson 8: Use *ngFor to list objects in component
-This tutorial lesson demonstrates how to use `ngFor` directive in Angular templates in order to display dynamically repeat data data in a template.
+This tutorial lesson demonstrates how to use `ngFor` directive in Angular templates in order to display dynamically repeated data in a template.
 
 **Estimated time**: ~10 minutes
 
@@ -34,7 +34,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 1.  Update the `<app-housing-location>` tag in the template code to this:
     <code-example header="Add ngFor to HomeComponent template" path="first-app-lesson-08/src/app/home/home.component.ts" region="add-ngFor"></code-example>
 
-    Note, the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it refered to the property on the `HomeComponent` class.
+    Note, in the code `[housingLocation] = "housingLocation"`, the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it refered to the property on the `HomeComponent` class.
 
 1.  Save all changes.
 

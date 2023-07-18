@@ -11,7 +11,7 @@ This tutorial lesson demonstrates how to create an Angular service and use depen
 
 *  Your app has a service to serve the data to your app.
    At the end of this lesson, the service reads data from local, static data.
-   In a later lesson, you update the service to get data from a web service.
+   In a later lesson, you'll update the service to get data from a web service.
 
 ## Conceptual preview of services
 
