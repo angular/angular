@@ -140,18 +140,18 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
         json-server --watch db.json
     </code-example>
 
-1.  In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
+1.  In your web browser, navigate to the url `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
 
 If you have any trouble with your configuration, you can find more details in the [official documentation](https://www.npmjs.com/package/json-server).
 
-## Step 2 - Update service to use web server instead of local array
-The data source has been configured, the next step is to update your web app to connect to it use the data.
+## Step 2 - Update the service to use the web server instead of a local array
+The data source has been configured, the next step is to update your web app to connect to it to use the data.
 
 1.  In `src/app/housing.service.ts`, make the following changes:
 
     1.  Update the code to remove `housingLocationList` property and the array containing the data.
 
-    1.  Add a string property called and set the value to `'http://localhost:3000/locations'`
+    1.  Add a string property called url and set the value to `'http://localhost:3000/locations'`
         
         <code-example anguage="javascript" format="javascript">
         url = 'http://localhost:3000/locations';
