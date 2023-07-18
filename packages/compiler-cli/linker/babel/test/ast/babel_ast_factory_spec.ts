@@ -183,6 +183,14 @@ describe('BabelAstFactory', () => {
     });
   });
 
+  describe('createDynamicImport()', () => {
+    it('should create a dynamic import', () => {
+      const url = './some/path';
+      const dynamicImport = factory.createDynamicImport(url);
+      expect(generate(dynamicImport).code).toEqual(`import("${url}")`);
+    });
+  });
+
   describe('createIfStatement()', () => {
     it('should create an if-else statement', () => {
       const test = expression.ast`!test`;
