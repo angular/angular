@@ -355,6 +355,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, `)`);
     return null;
   }
+
+
+  visitDynamicImportExpr(ast: o.DynamicImportExpr, ctx: EmitterVisitorContext) {
+    ctx.print(ast, `import(${ast.url})`);
+  }
+
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, '!');
     ast.condition.visitExpression(this, ctx);

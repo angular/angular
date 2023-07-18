@@ -111,6 +111,14 @@ export interface AstFactory<TStatement, TExpression> {
       TExpression;
 
   /**
+   * Creates an expression that represents a dynamic import
+   * (e.g. `import('./some/path')`)
+   *
+   * @param url the URL that should by used in the dynamic import
+   */
+  createDynamicImport(url: string): TExpression;
+
+  /**
    * Create an identifier.
    *
    * @param name the name of the identifier.

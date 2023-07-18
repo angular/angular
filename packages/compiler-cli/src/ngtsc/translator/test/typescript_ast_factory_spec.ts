@@ -52,6 +52,15 @@ describe('TypeScriptAstFactory', () => {
     });
   });
 
+  describe('createDynamicImport()', () => {
+    it('should create a dynamic import expression', () => {
+      const {generate} = setupExpressions(``);
+      const url = './some/path';
+      const assignment = factory.createDynamicImport(url);
+      expect(generate(assignment)).toEqual(`import("${url}")`);
+    });
+  });
+
   describe('createBlock()', () => {
     it('should create a block statement containing the given statements', () => {
       const {items: stmts, generate} = setupStatements('x = 10; y = 20;');
