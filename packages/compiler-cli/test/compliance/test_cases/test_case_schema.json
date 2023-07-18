@@ -11,9 +11,7 @@
       "items": {
         "title": "A test case definition",
         "type": "object",
-        "required": [
-          "description"
-        ],
+        "required": ["description"],
         "properties": {
           "description": {
             "title": "A description of the test case",
@@ -25,16 +23,9 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "full compile",
-                "linked compile",
-                "local compile"
-              ]
+              "enum": ["full compile", "linked compile", "local compile"]
             },
-            "default": [
-              "full compile",
-              "linked compile"
-            ]
+            "default": ["full compile", "linked compile"]
           },
           "inputFiles": {
             "title": "A collection of source files to compile",
@@ -64,13 +55,14 @@
                       {
                         "title": "A pair of expected-generated file paths to be compared",
                         "type": "object",
-                        "required": [
-                          "expected",
-                          "generated"
-                        ],
+                        "required": ["expected", "generated"],
                         "properties": {
                           "expected": {
                             "title": "A path (relative to the test case) where a file containing expected output can be found",
+                            "type": "string"
+                          },
+                          "templatePipelineExpected": {
+                            "title": "A path (relative to the test case) where a file containing alternate expected output for the template pipeline can be found",
                             "type": "string"
                           },
                           "generated": {
@@ -102,9 +94,7 @@
                         "type": "string"
                       }
                     },
-                    "required": [
-                      "message"
-                    ]
+                    "required": ["message"]
                   }
                 },
                 "extraChecks": {
