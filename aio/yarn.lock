@@ -9443,6 +9443,14 @@ lighthouse-logger@^1.0.0, lighthouse-logger@^1.3.0:
     debug "^2.6.9"
     marky "^1.2.2"
 
+lighthouse-logger@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lighthouse-logger/-/lighthouse-logger-2.0.0.tgz#37202bea0721a23a922c9e2b59f3ba1fb9c67648"
+  integrity sha512-DiUtWQ1vo4lSCSlvpWvbK1pDFmyD+xau/yFzfVT7k9J1/mtv7nQ7AeS74ryDjYbAXaPWphOGBQqoeDsN8U076g==
+  dependencies:
+    debug "^2.6.9"
+    marky "^1.2.2"
+
 lighthouse-stack-packs@1.8.2:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/lighthouse-stack-packs/-/lighthouse-stack-packs-1.8.2.tgz#55111bebe50ed516de3fad0a474795a2556ac36e"
