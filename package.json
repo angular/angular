@@ -82,7 +82,7 @@
     "@types/babel__traverse": "7.20.1",
     "@types/bluebird": "^3.5.27",
     "@types/chrome": "^0.0.241",
-    "@types/convert-source-map": "^1.5.1",
+    "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
     "@types/hammerjs": "2.0.41",
     "@types/jasmine": "^4.0.0",
