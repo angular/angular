@@ -26,6 +26,7 @@ export abstract class CompilationUnit {
    * List of update operations for this view.
    */
   readonly update = new ir.OpList<ir.UpdateOp>();
+  abstract readonly job: CompilationJob;
 
   constructor(readonly xref: ir.XrefId) {}
 
@@ -93,22 +94,27 @@ export interface CompilationJob {
 export class HostBindingCompilationJob extends CompilationUnit implements CompilationJob {
   readonly units = [this];
 
+  /**
+   * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
+   */
+  private nextXrefId: ir.XrefId;
+
   // TODO: Perhaps we should accept a reference to the enclosing component, and get the name from
   // there?
   constructor(
-      readonly componentName: string, readonly pool: ConstantPool, xref: ir.XrefId,
+      readonly componentName: string, readonly pool: ConstantPool,
       readonly compatibility: ir.CompatibilityMode) {
-    super(xref);
+    super(0 as ir.XrefId);
+    this.nextXrefId = 1 as ir.XrefId;
+  }
+
+  override get job() {
+    return this;
   }
 
   get root() {
     return this;
   }
-
-  /**
-   * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
-   */
-  private nextXrefId: ir.XrefId = 0 as ir.XrefId;
 
   allocateXrefId(): ir.XrefId {
     return this.nextXrefId++ as ir.XrefId;

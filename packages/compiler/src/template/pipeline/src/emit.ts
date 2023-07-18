@@ -88,14 +88,14 @@ export function transformTemplate(job: ComponentCompilationJob): void {
  * Run all transformation phases in the correct order against a `HostBindingCompilationJob`. After
  * this processing, the compilation should be in a state where it can be emitted.
  */
-export function transformHostBindingFunction(job: HostBindingCompilationJob): void {
-  // TODO: Finish updating these phases to support host bindings.
+export function transformHostBinding(job: HostBindingCompilationJob): void {
   phasePureLiteralStructures(job);
-  // phaseGenerateVariables(job);
-  // phaseSaveRestoreView(job); // TODO: Is this needed?
   phaseNullishCoalescing(job);
   phaseExpandSafeReads(job);
+  phaseVarCounting(job);
   phaseVariableOptimization(job);
+  phaseResolveNames(job);
+  phaseResolveContexts(job);
   phaseNaming(job);
   phasePureFunctionExtraction(job);
   phaseReify(job);
@@ -176,4 +176,40 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
         new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
         statements),
   ];
+}
+
+export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr {
+  if (job.fnName === null) {
+    throw new Error(`AssertionError: host binding function is unnamed`);
+  }
+
+  const createStatements: o.Statement[] = [];
+  for (const op of job.create) {
+    if (op.kind !== ir.OpKind.Statement) {
+      throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
+          ir.OpKind[op.kind]}`);
+    }
+    createStatements.push(op.statement);
+  }
+  const updateStatements: o.Statement[] = [];
+  for (const op of job.update) {
+    if (op.kind !== ir.OpKind.Statement) {
+      throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
+          ir.OpKind[op.kind]}`);
+    }
+    updateStatements.push(op.statement);
+  }
+
+  const createCond = maybeGenerateRfBlock(1, createStatements);
+  const updateCond = maybeGenerateRfBlock(2, updateStatements);
+  return o.fn(
+      [
+        new o.FnParam('rf'),
+        new o.FnParam('ctx'),
+      ],
+      [
+        ...createCond,
+        ...updateCond,
+      ],
+      /* type */ undefined, /* sourceSpan */ undefined, job.fnName);
 }
