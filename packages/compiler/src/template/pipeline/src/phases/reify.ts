@@ -180,6 +180,13 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.attribute(op.name, op.expression));
         }
         break;
+      case ir.OpKind.HostProperty:
+        if (op.expression instanceof ir.Interpolation) {
+          throw new Error('not yet handled');
+        } else {
+          ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+        }
+        break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);

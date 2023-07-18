@@ -11,9 +11,10 @@ import * as e from '../../../expression_parser/ast';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {ComponentCompilation, ComponentCompilationJob, ViewCompilation} from './compilation';
+import {CompilationJob, ComponentCompilation, ComponentCompilationJob, HostBindingCompilationJob, ViewCompilation} from './compilation';
 import {BINARY_OPERATORS} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
@@ -22,12 +23,43 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
  * representation.
  */
-export function ingest(
+export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
   const cpl = new ComponentCompilationJob(componentName, constantPool, compatibilityMode);
   ingestNodes(cpl.root, template);
   return cpl;
 }
+
+export interface HostBindingInput {
+  componentName: string;
+  properties: e.ParsedProperty[]|null;
+  events: e.ParsedEvent[]|null;
+}
+
+/**
+ * Process a host binding AST and convert it into a `HostBindingCompilationJob` in the intermediate
+ * representation.
+ */
+export function ingestHostBinding(
+    input: HostBindingInput, bindingParser: BindingParser,
+    constantPool: ConstantPool): HostBindingCompilationJob {
+  const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
+  for (const property of input.properties ?? []) {
+    ingestHostProperty(job, property);
+  }
+  for (const event of input.events ?? []) {
+    ingestHostEvent(job, event);
+  }
+  return job;
+}
+
+export function ingestHostProperty(
+    job: HostBindingCompilationJob, property: e.ParsedProperty): void {
+  job.update.push(ir.createHostPropertyOp(
+      property.name, convertAst(property.expression, job), null /* TODO: source span */));
+}
+
+export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
 
 /**
  * Ingest the nodes of a template AST into the given `ViewCompilation`.
@@ -121,7 +153,7 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
 /**
  * Convert a template AST expression into an output AST expression.
  */
-function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
+function convertAst(ast: e.AST, cpl: CompilationJob): o.Expression {
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, cpl);
   } else if (ast instanceof e.PropertyRead) {

@@ -15,8 +15,8 @@ import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util'
 import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
-import {emitTemplateFn, transformTemplate} from '../../template/pipeline/src/emit';
-import {ingest} from '../../template/pipeline/src/ingest';
+import {emitHostBindingFunction, emitTemplateFn, transformHostBinding, transformTemplate} from '../../template/pipeline/src/emit';
+import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {USE_TEMPLATE_PIPELINE} from '../../template/pipeline/switch';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error} from '../../util';
@@ -234,7 +234,7 @@ export function compileComponentFromMetadata(
   } else {
     // This path compiles the template using the prototype template pipeline. First the template is
     // ingested into IR:
-    const tpl = ingest(meta.name, meta.template.nodes, constantPool);
+    const tpl = ingestComponent(meta.name, meta.template.nodes, constantPool);
 
     // Then the IR is transformed to prepare it for cod egeneration.
     transformTemplate(tpl);
@@ -546,10 +546,35 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
     definitionMap: DefinitionMap): o.Expression|null {
-  if (USE_TEMPLATE_PIPELINE) {
+  const bindings =
+      bindingParser.createBoundHostProperties(hostBindingsMetadata.properties, typeSourceSpan);
+
+
+  // Calculate host event bindings
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
+
+  if (/* TODO: temporarily switched off */ false && USE_TEMPLATE_PIPELINE) {
     // TODO: host binding metadata is not yet parsed in the template pipeline, so we need to extract
     // that code from below. Then, we will ingest a `HostBindingJob`, and run the template pipeline
     // phases.
+    const hostJob = ingestHostBinding(
+        {
+          componentName: name,
+          properties: bindings,
+          events: eventBindings,
+        },
+        bindingParser, constantPool);
+    transformHostBinding(hostJob);
+
+    const varCount = hostJob.root.vars;
+    if (varCount !== null && varCount! > 0) {
+      definitionMap.set('hostVars', o.literal(varCount));
+    }
+
+    const fn = emitHostBindingFunction(hostJob);
+    // TODO: what if there's no create/update ops?
+    return fn;
   }
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
@@ -567,17 +592,11 @@ function createHostBindingsFunction(
   const updateVariables: o.Statement[] = [];
 
   const hostBindingSourceSpan = typeSourceSpan;
-
-  // Calculate host event bindings
-  const eventBindings = bindingParser.createDirectiveHostEventAsts(
-      hostBindingsMetadata.listeners, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
     createInstructions.push(...createHostListeners(eventBindings, name));
   }
 
   // Calculate the host property bindings
-  const bindings = bindingParser.createBoundHostProperties(
-      hostBindingsMetadata.properties, hostBindingSourceSpan);
   const allOtherBindings: ParsedProperty[] = [];
 
   // We need to calculate the total amount of binding slots required by
