@@ -8871,6 +8871,26 @@ function allTests(os: string) {
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
     });
+
+    // TODO: replace with tests for `defer`.
+    // TODO: maybe put deferred tests in a separate file?
+    describe('deferred blocks', () => {
+      it('should not error for deferred blocks', () => {
+        env.tsconfig({_enabledBlockTypes: ['defer']});
+        env.write('/test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '{#defer}hello{/defer}',
+          })
+          export class TestCmp {}
+      `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
