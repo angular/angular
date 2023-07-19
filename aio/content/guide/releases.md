@@ -113,7 +113,7 @@ Approximate dates are offered as general guidance and are subject to change.
 | Version | Date               |
 |:--------|:-------------------|
 | v16.1   | Week of 2023-06-12 |
-| v16.2   | Week of 2023-07-24 |
+| v16.2   | Week of 2023-08-07 |
 | v17.0   | Week of 2023-11-06 |
 
 ### Support window
