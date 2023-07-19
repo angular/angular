@@ -1531,6 +1531,11 @@
           "url": "https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md",
           "title": "Code of Conduct",
           "tooltip": "Treating each other with respect."
+        },
+        {
+          "url": "https://policies.google.com/privacy",
+          "title": "Privacy Policy",
+          "tooltip": "Learn about Google's privacy policy."
         }
       ]
     },

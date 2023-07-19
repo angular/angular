@@ -152,8 +152,16 @@ export function styleProp(name: string, expression: o.Expression, unit: string|n
   return call(Identifiers.styleProp, args);
 }
 
+export function classProp(name: string, expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.classProp, [o.literal(name), expression]);
+}
+
 export function styleMap(expression: o.Expression): ir.UpdateOp {
   return call(Identifiers.styleMap, [expression]);
+}
+
+export function classMap(expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.classMap, [expression]);
 }
 
 const PIPE_BINDINGS: o.ExternalReference[] = [
@@ -237,6 +245,12 @@ export function styleMapInterpolate(strings: string[], expressions: o.Expression
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
   return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
+}
+
+export function classMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
+  return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
 }
 
 export function pureFunction(
@@ -344,7 +358,7 @@ const PROPERTY_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Single argument stylePropInterpolate is converted to styleProp instruction.
+    Identifiers.styleProp,
     Identifiers.stylePropInterpolate1,
     Identifiers.stylePropInterpolate2,
     Identifiers.stylePropInterpolate3,
@@ -358,9 +372,6 @@ const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   mapping: n => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
-    }
-    if (n < 3) {
-      throw new Error(`Expected at least 3 arguments`);
     }
     return (n - 1) / 2;
   },
@@ -395,7 +406,7 @@ const ATTRIBUTE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Single argument styleMapInterpolate is converted to styleMap instruction.
+    Identifiers.styleMap,
     Identifiers.styleMapInterpolate1,
     Identifiers.styleMapInterpolate2,
     Identifiers.styleMapInterpolate3,
@@ -410,8 +421,29 @@ const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
     }
-    if (n < 3) {
-      throw new Error(`Expected at least 3 arguments`);
+    return (n - 1) / 2;
+  },
+};
+
+/**
+ * `InterpolationConfig` for the `classMapInterpolate` instruction.
+ */
+const CLASS_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
+  constant: [
+    Identifiers.classMap,
+    Identifiers.classMapInterpolate1,
+    Identifiers.classMapInterpolate2,
+    Identifiers.classMapInterpolate3,
+    Identifiers.classMapInterpolate4,
+    Identifiers.classMapInterpolate5,
+    Identifiers.classMapInterpolate6,
+    Identifiers.classMapInterpolate7,
+    Identifiers.classMapInterpolate8,
+  ],
+  variable: Identifiers.classMapInterpolateV,
+  mapping: n => {
+    if (n % 2 === 0) {
+      throw new Error(`Expected odd number of arguments`);
     }
     return (n - 1) / 2;
   },

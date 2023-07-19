@@ -193,7 +193,7 @@ function getDependencyTypeForError(type: Type<any>) {
   return 'type';
 }
 
-function verifyStandaloneImport(depType: Type<unknown>, importingType: Type<unknown>) {
+export function verifyStandaloneImport(depType: Type<unknown>, importingType: Type<unknown>) {
   if (isForwardRef(depType)) {
     depType = resolveForwardRef(depType);
     if (!depType) {

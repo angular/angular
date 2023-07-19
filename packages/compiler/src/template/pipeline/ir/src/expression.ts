@@ -737,11 +737,14 @@ export function transformExpressionsInOp(
     case OpKind.Property:
     case OpKind.StyleProp:
     case OpKind.StyleMap:
+    case OpKind.ClassProp:
+    case OpKind.ClassMap:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.InterpolateProperty:
     case OpKind.InterpolateStyleProp:
     case OpKind.InterpolateStyleMap:
+    case OpKind.InterpolateClassMap:
     case OpKind.InterpolateText:
       for (let i = 0; i < op.expressions.length; i++) {
         op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);

@@ -124,8 +124,14 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.StyleProp:
         ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
         break;
+      case ir.OpKind.ClassProp:
+        ir.OpList.replace(op, ng.classProp(op.name, op.expression));
+        break;
       case ir.OpKind.StyleMap:
         ir.OpList.replace(op, ng.styleMap(op.expression));
+        break;
+      case ir.OpKind.ClassMap:
+        ir.OpList.replace(op, ng.classMap(op.expression));
         break;
       case ir.OpKind.InterpolateProperty:
         ir.OpList.replace(op, ng.propertyInterpolate(op.name, op.strings, op.expressions));
@@ -136,6 +142,9 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
         break;
       case ir.OpKind.InterpolateStyleMap:
         ir.OpList.replace(op, ng.styleMapInterpolate(op.strings, op.expressions));
+        break;
+      case ir.OpKind.InterpolateClassMap:
+        ir.OpList.replace(op, ng.classMapInterpolate(op.strings, op.expressions));
         break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));

@@ -62,25 +62,30 @@ export function phaseVarCounting(cpl: ComponentCompilation): void {
 function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): number {
   switch (op.kind) {
     case ir.OpKind.Property:
-    case ir.OpKind.StyleProp:
-    case ir.OpKind.StyleMap:
-      // Property bindings use 1 variable slot.
-      return 1;
     case ir.OpKind.Attribute:
-      // Attribute bindings use 1 variable slot.
+      // Property & attribute bindings use 1 variable slot.
       return 1;
+    case ir.OpKind.StyleProp:
+    case ir.OpKind.ClassProp:
+    case ir.OpKind.StyleMap:
+    case ir.OpKind.ClassMap:
+      // Style & class bindings use 2 variable slots.
+      return 2;
     case ir.OpKind.InterpolateText:
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.expressions.length;
     case ir.OpKind.InterpolateProperty:
-    case ir.OpKind.InterpolateStyleProp:
-    case ir.OpKind.InterpolateStyleMap:
       // `ir.InterpolatePropertyOp`s use a variable slot for each dynamic expression, plus one for
       // the result.
       return 1 + op.expressions.length;
     case ir.OpKind.InterpolateAttribute:
       // One variable slot for each dynamic expression, plus one for the result.
       return 1 + op.expressions.length;
+    case ir.OpKind.InterpolateStyleProp:
+    case ir.OpKind.InterpolateStyleMap:
+    case ir.OpKind.InterpolateClassMap:
+      // One variable slot for each dynamic expression, plus two for binding the result.
+      return 2 + op.expressions.length;
     default:
       throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
   }

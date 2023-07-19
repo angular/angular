@@ -8,14 +8,14 @@
 
 import {Type} from '../../core';
 import {NgModuleType} from '../../metadata/ng_module_def';
-import {ComponentType, DependencyTypeList, DirectiveTypeList, NgModuleScopeInfoFromDecorator, PipeTypeList} from '../interfaces/definition';
+import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
 
 /**
  * Represents the set of dependencies of a type in a certain context.
  */
 interface ScopeData {
-  pipes: PipeTypeList;
-  directives: DirectiveTypeList;
+  pipes: Set<PipeType<any>>;
+  directives: Set<DirectiveType<any>|ComponentType<any>|Type<any>>;
 
   /**
    * If true it indicates that calculating this scope somehow was not successful. The consumers
@@ -58,10 +58,15 @@ export interface DepsTrackerApi {
    * present in the component's template (This set might contain directives/components/pipes not
    * necessarily used in the component's template depending on the implementation).
    *
+   * Standalone components should specify `rawImports` as this information is not available from
+   * their type. The consumer (e.g., {@link getStandaloneDefFunctions}) is expected to pass this
+   * parameter.
+   *
    * The implementation is expected to use some caching mechanism in order to optimize the resources
    * needed to do this computation.
    */
-  getComponentDependencies(cmp: ComponentType<any>): ComponentDependencies;
+  getComponentDependencies(cmp: ComponentType<any>, rawImports?: (Type<any>|(() => Type<any>))[]):
+      ComponentDependencies;
 
   /**
    * Registers an NgModule into the tracker with the given scope info.
@@ -90,11 +95,16 @@ export interface DepsTrackerApi {
   getNgModuleScope(type: NgModuleType<any>): NgModuleScope;
 
   /**
-   * Returns the scope of standalone component. Mainly to be used by JIT.
+   * Returns the scope of standalone component. Mainly to be used by JIT. This method should be
+   * called lazily after the initial parsing so that all the forward refs can be resolved.
+   *
+   * @param rawImports the imports statement as appears on the component decorate which consists of
+   *     Type as well as forward refs.
    *
    * The scope value here is memoized. To enforce a new calculation bust the cache by using
    * `clearScopeCacheFor` method.
    */
-  getStandaloneComponentScope(type: ComponentType<any>, imports: Type<any>[]):
-      StandaloneComponentScope;
+  getStandaloneComponentScope(
+      type: ComponentType<any>,
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
 }

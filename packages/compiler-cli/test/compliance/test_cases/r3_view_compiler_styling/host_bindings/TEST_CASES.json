@@ -43,8 +43,7 @@
             }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support class interpolation",
@@ -54,8 +53,7 @@
           "failureMessage": "Incorrect template",
           "files": ["class_interpolation.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support style interpolation",

@@ -178,7 +178,8 @@ export class NgModuleDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
       private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
-      private includeClassMetadata: boolean, private readonly compilationMode: CompilationMode) {}
+      private includeClassMetadata: boolean, private includeSelectorScope: boolean,
+      private readonly compilationMode: CompilationMode) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'NgModuleDecoratorHandler';
@@ -381,7 +382,8 @@ export class NgModuleDecoratorHandler implements
         id,
         // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
         // tree-shakeable way.
-        selectorScopeMode: R3SelectorScopeMode.SideEffect,
+        selectorScopeMode: this.includeSelectorScope ? R3SelectorScopeMode.SideEffect :
+                                                       R3SelectorScopeMode.Omit,
         // TODO: to be implemented as a part of FW-1004.
         schemas: [],
       };
@@ -694,6 +696,25 @@ export class NgModuleDecoratorHandler implements
     this.insertMetadataStatement(ngModuleDef.statements, metadata);
     // NOTE: no remote scoping required as this is banned in partial compilation.
     return this.compileNgModule(factoryFn, injectorDef, ngModuleDef);
+  }
+
+  compileLocal(
+      node: ClassDeclaration,
+      {inj, mod, fac, classMetadata, declarations, remoteScopesMayRequireCycleProtection}:
+          Readonly<NgModuleAnalysis>): CompileResult[] {
+    const factoryFn = compileNgFactoryDefField(fac);
+    const ngInjectorDef = compileInjector({
+      ...inj,
+      imports: [],
+    });
+    const ngModuleDef = compileNgModule(mod);
+    const statements = ngModuleDef.statements;
+    const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
+    this.insertMetadataStatement(statements, metadata);
+    this.appendRemoteScopingStatements(
+        statements, node, declarations, remoteScopesMayRequireCycleProtection);
+
+    return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
   }
 
   /**

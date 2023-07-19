@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@852c3d1898775ec9fbc87213e519f16e78805b57
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
         with:
           cache-node-modules: true
           node-module-directories: |
@@ -55,3 +55,37 @@ jobs:
         # it has been merged.
         if: github.event_name == 'pull_request'
         run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+
+  devtools:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Run unit tests
+        run: yarn devtools:test
+      - name: Test build
+        run: yarn devtools:build:chrome
+
+  framework-win:
+    runs-on: windows-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
+      - name: Install node modules
+        run: yarn install --frozen-lockfile --network-timeout 100000
+      - name: Test all windows CI targets
+        run: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...

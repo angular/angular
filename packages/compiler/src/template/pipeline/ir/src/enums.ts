@@ -89,9 +89,19 @@ export enum OpKind {
   StyleProp,
 
   /**
+   * An operation to bind an expression to a class property of an element.
+   */
+  ClassProp,
+
+  /**
    * An operation to bind an expression to the styles of an element.
    */
   StyleMap,
+
+  /**
+   * An operation to bind an expression to the classes of an element.
+   */
+  ClassMap,
 
   /**
    * An operation to interpolate text into a property binding.
@@ -107,6 +117,11 @@ export enum OpKind {
    * An operation to interpolate text into a style mapping.
    */
   InterpolateStyleMap,
+
+  /**
+   * An operation to interpolate text into a class mapping.
+   */
+  InterpolateClassMap,
 
   /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.

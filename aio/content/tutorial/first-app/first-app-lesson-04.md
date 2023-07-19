@@ -2,22 +2,13 @@
 
 This tutorial lesson demonstrates how to create an interface and include it in a component of your app.
 
-**Time required:** expect to spend about 10 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-03"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-04"></live-example>
 
-*   Use the code that you created in Lesson 3 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-03"></live-example> from Lesson 3 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
-
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
+## What you'll learn
 
 *  Your app has a new interface that it can use as a data type.
 *  Your app has an instance of the new interface with sample data.
@@ -32,11 +23,7 @@ Such type-mismatch errors are caught by the TypeScript compiler and many such er
 
 In this lesson, you'll create an interface to define properties that represent data about a single housing location.
 
-## Lesson steps
-
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Create a new Angular interface
+## Step 1 - Create a new Angular interface
 
 This step creates a new interface in your app.
 
@@ -56,7 +43,7 @@ In the **Terminal** pane of your IDE:
 1.  Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
 
-### Step 2 - Add properties to the new interface
+## Step 2 - Add properties to the new interface
 
 This step adds the properties to the interface that your app needs to represent a housing location.
 
@@ -70,7 +57,7 @@ This step adds the properties to the interface that your app needs to represent 
 
 At this point, you've defined an interface that represents data about a housing location including an id, name, and location information.
 
-### Step 3 - Create a test house for your app
+## Step 3 - Create a test house for your app
 
 You have an interface, but you aren't using it yet.
 
@@ -92,7 +79,7 @@ There are a few more lessons to complete before that happens.
 
     <code-example header="src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts"></code-example>
 
-    By adding the `housingLocation` property of type `HousingLocation` to the `HomeComponent` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the if the IDE has enough information to give us helpful errors.
+    By adding the `housingLocation` property of type `HousingLocation` to the `HomeComponent` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
 
 1.  Save your changes and confirm the app does not have any errors. Open the browser and confirm that your application still displays the message "housing-location works!"
 

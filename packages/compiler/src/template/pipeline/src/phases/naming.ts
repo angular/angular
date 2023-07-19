@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {sanitizeIdentifier} from '../../../../parse_util';
+import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
-
 import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
 /**
@@ -16,13 +17,14 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * This includes propagating those names into any `ir.ReadVariableExpr`s of those variables, so that
  * the reads can be emitted correctly.
  */
-export function phaseNaming(cpl: ComponentCompilation): void {
-  addNamesToView(cpl.root, cpl.componentName, {index: 0});
+export function phaseNaming(cpl: ComponentCompilation, compatibility: boolean): void {
+  addNamesToView(cpl.root, cpl.componentName, {index: 0}, compatibility);
 }
 
-function addNamesToView(view: ViewCompilation, baseName: string, state: {index: number}): void {
+function addNamesToView(
+    view: ViewCompilation, baseName: string, state: {index: number}, compatibility: boolean): void {
   if (view.fnName === null) {
-    view.fnName = `${baseName}_Template`;
+    view.fnName = sanitizeIdentifier(`${baseName}_Template`);
   }
 
   // Keep track of the names we assign to variables in the view. We'll need to propagate these
@@ -38,7 +40,8 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
           if (op.slot === null) {
             throw new Error(`Expected a slot to be assigned`);
           }
-          op.handlerFnName = `${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`;
+          op.handlerFnName =
+              sanitizeIdentifier(`${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`);
         }
         break;
       case ir.OpKind.Variable:
@@ -49,9 +52,19 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
         if (op.slot === null) {
           throw new Error(`Expected slot to be assigned`);
         }
-        // TODO: properly escape the tag name.
-        const safeTagName = op.tag.replace('-', '_');
-        addNamesToView(childView, `${baseName}_${safeTagName}_${op.slot}`, state);
+        addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state, compatibility);
+        break;
+      case ir.OpKind.StyleProp:
+      case ir.OpKind.InterpolateStyleProp:
+        op.name = normalizeStylePropName(op.name);
+        if (compatibility) {
+          op.name = stripImportant(op.name);
+        }
+        break;
+      case ir.OpKind.ClassProp:
+        if (compatibility) {
+          op.name = stripImportant(op.name);
+        }
         break;
     }
   }
@@ -83,4 +96,22 @@ function getVariableName(variable: ir.SemanticVariable, state: {index: number}):
     }
   }
   return variable.name;
+}
+
+/**
+ * Normalizes a style prop name by hyphenating it (unless its a CSS variable).
+ */
+function normalizeStylePropName(name: string) {
+  return name.startsWith('--') ? name : hyphenate(name);
+}
+
+/**
+ * Strips `!important` out of the given style or class name.
+ */
+function stripImportant(name: string) {
+  const importantIndex = name.indexOf('!important');
+  if (importantIndex > -1) {
+    return name.substring(0, importantIndex);
+  }
+  return name;
 }

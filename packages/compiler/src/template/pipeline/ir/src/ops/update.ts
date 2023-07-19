@@ -17,9 +17,10 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
-    StyleMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
-    InterpolateStyleMapOp|AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+export type UpdateOp =
+    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|ClassPropOp|
+    StyleMapOp|ClassMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
+    InterpolateStyleMapOp|InterpolateClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -155,6 +156,44 @@ export function createStylePropOp(
 }
 
 /**
+ * A logical operation representing binding to a class property in the update IR.
+ */
+export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.ClassProp;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/**
+ * Create a `ClassPropOp`.
+ */
+export function createClassPropOp(
+    xref: XrefId, name: string, expression: o.Expression): ClassPropOp {
+  return {
+    kind: OpKind.ClassProp,
+    target: xref,
+    name,
+    expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
  * A logical operation representing binding to a style map in the update IR.
  */
 export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
@@ -175,6 +214,37 @@ export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
 export function createStyleMapOp(xref: XrefId, expression: o.Expression): StyleMapOp {
   return {
     kind: OpKind.StyleMap,
+    target: xref,
+    expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A logical operation representing binding to a style map in the update IR.
+ */
+export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.ClassMap;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/**
+ * Create a `ClassMapOp`.
+ */
+export function createClassMapOp(xref: XrefId, expression: o.Expression): ClassMapOp {
+  return {
+    kind: OpKind.ClassMap,
     target: xref,
     expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
@@ -432,6 +502,48 @@ export function createInterpolateStyleMapOp(
   };
 }
 
+/**
+ * A logical operation representing binding an interpolation to a class mapping in the update IR.
+ */
+export interface InterpolateClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                               DependsOnSlotContextOpTrait {
+  kind: OpKind.InterpolateClassMap;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * All of the literal strings in the property interpolation, in order.
+   *
+   * Conceptually interwoven around the `expressions`.
+   */
+  strings: string[];
+
+  /**
+   * All of the dynamic expressions in the property interpolation, in order.
+   *
+   * Conceptually interwoven in between the `strings`.
+   */
+  expressions: o.Expression[];
+}
+
+/**
+ * Create a `InterpolateStyleMap`.
+ */
+export function createInterpolateClassMapOp(
+    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateClassMapOp {
+  return {
+    kind: OpKind.InterpolateClassMap,
+    target: xref,
+    strings,
+    expressions,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
 
 /**
  * Logical operation to advance the runtime's internal slot pointer in the update IR.

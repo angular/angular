@@ -17,15 +17,17 @@ import {phaseAttributeExtraction} from './phases/attribute_extraction';
 import {phaseChaining} from './phases/chaining';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
+import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseLocalRefs} from './phases/local_refs';
 import {phaseNaming} from './phases/naming';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
+import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
+import {phasePropertyOrdering} from './phases/property_ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -33,17 +35,16 @@ import {phaseResolveContexts} from './phases/resolve_contexts';
 import {phaseResolveNames} from './phases/resolve_names';
 import {phaseSaveRestoreView} from './phases/save_restore_view';
 import {phaseSlotAllocation} from './phases/slot_allocation';
+import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseExpandSafeReads} from './phases/expand_safe_reads';
-import {phaseTemporaryVariables} from './phases/temporary_variables';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
 export function transformTemplate(cpl: ComponentCompilation): void {
-  phaseAttributeExtraction(cpl, true);
+  phaseAttributeExtraction(cpl, /* compatibility */ true);
   phasePipeCreation(cpl);
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);
@@ -59,13 +60,14 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);
-  phaseNaming(cpl);
+  phaseNaming(cpl, /* compatibility */ true);
   phaseVariableOptimization(cpl, {conservative: true});
   phaseMergeNextContext(cpl);
   phaseNgContainer(cpl);
   phaseEmptyElements(cpl);
   phasePureFunctionExtraction(cpl);
   phaseAlignPipeVariadicVarOffset(cpl);
+  phasePropertyOrdering(cpl);
   phaseReify(cpl);
   phaseChaining(cpl);
 }

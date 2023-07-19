@@ -254,6 +254,7 @@ export class NgCompiler {
   private moduleResolver: ModuleResolver;
   private resourceManager: AdapterResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
+  private enabledBlockTypes: Set<string>;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
@@ -321,6 +322,7 @@ export class NgCompiler {
   ) {
     this.enableTemplateTypeChecker =
         enableTemplateTypeChecker || (options._enableTemplateTypeChecker ?? false);
+    this.enabledBlockTypes = new Set(options._enabledBlockTypes ?? []);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -1041,6 +1043,7 @@ export class NgCompiler {
         CycleHandlingStrategy.Error;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
+    const supportJitMode = this.options.supportJitMode ?? true;
     const supportTestBed = this.options.supportTestBed ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
@@ -1049,6 +1052,10 @@ export class NgCompiler {
     if (supportTestBed === false && compilationMode === CompilationMode.PARTIAL) {
       throw new Error(
           'TestBed support ("supportTestBed" option) cannot be disabled in partial compilation mode.');
+    }
+    if (supportJitMode === false && compilationMode === CompilationMode.PARTIAL) {
+      throw new Error(
+          'JIT mode support ("supportJitMode" option) cannot be disabled in partial compilation mode.');
     }
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
@@ -1059,11 +1066,11 @@ export class NgCompiler {
           this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
-          this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
-          this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
-          this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
-          supportTestBed),
+          this.options.i18nNormalizeLineEndingsInICUs === true, this.enabledBlockTypes,
+          this.moduleResolver, this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
+          referencesRegistry, this.incrementalCompilation.depGraph, injectableRegistry,
+          semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder,
+          hostDirectivesResolver, supportTestBed, compilationMode),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1088,7 +1095,8 @@ export class NgCompiler {
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
-          injectableRegistry, this.delegatingPerfRecorder, supportTestBed, compilationMode),
+          injectableRegistry, this.delegatingPerfRecorder, supportTestBed, supportJitMode,
+          compilationMode),
     ];
 
     const traitCompiler = new TraitCompiler(

@@ -218,7 +218,7 @@ In addition to that, one extra provider needs to be passed to benchpress in test
 
 # Requests Metrics
 
-Benchpress can also record the number of requests sent and count the received "encoded" bytes since [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart):
+Benchpress can also record the number of requests sent and count the received "encoded" bytes since [window.performance.timing.navigationStart](https://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart):
 
 - `receivedData`: number of bytes received since the last navigation start
 - `requestCount`: number of requests sent since the last navigation start

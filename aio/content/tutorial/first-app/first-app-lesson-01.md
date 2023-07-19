@@ -1,28 +1,17 @@
-# First Angular app lesson 1 - Hello world
-
+# Lesson 1: Hello world
 This first lesson serves as the starting point from which each lesson in this tutorial adds new features to build a complete Angular app. In this lesson, we'll update the application to display the famous text, "Hello World".
 
-**Time required:** expect to spend about 15 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-00"></live-example>
 
-This lesson starts from a pre-built app that will serve as a baseline for the application you'll be building in this tutorial. We've provided starter code so you can start this lesson. Choose from the <live-example name="first-app-lesson-00"></live-example> to:
-*   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-*   Use the *download example* and unzip it into a directory named: `first-app`. Open that directory in your IDE.
+**Completed code:** <live-example name="first-app-lesson-01"></live-example>
 
-If you haven't reviewed the introduction, visit the [tutorial overview page](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
+## What you'll learn
 
 The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
 
-## Lesson steps
-
-Perform these steps on the app code in your chosen IDE (locally or using the StackBlitz).
-
-### Step 1 - Test the default app
+## Step 1 - Test the default app
 
 In this step, after you download the default starting app, you build the default Angular app.
 This confirms that your development environment has what you need to continue the tutorial.
@@ -52,7 +41,7 @@ In the **Terminal** pane of your IDE:
 1.  Confirm that the default web site appears in the browser.
 1.  You can leave `ng serve` running as you complete the next steps.
 
-### Step 2 - Review the files in the project
+## Step 2 - Review the files in the project
 
 In this step, you get to know the files that make up a default Angular app.
 
@@ -84,7 +73,7 @@ In the **Explorer** pane of your IDE:
 
 After you have reviewed the files that make up an Angular app project, continue to the next step.
 
-### Step 3 - Create `Hello World`
+## Step 3 - Create `Hello World`
 
 In this step, you update the Angular project files to change the displayed content.
 

@@ -2,35 +2,22 @@
 
 This tutorial lesson demonstrates how to connect the details page to your app.
 
-**Time required:** expect to spend about 20 minutes to complete this lesson.
+**Estimated time**: ~15 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-10"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-11"></live-example>
 
-*   Use the code that you created in Lesson 10 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-10"></live-example> from Lesson 10 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
-
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
+## What you'll learn
 At the end of this lesson your application will have support for routing to the details page.
 
 ## Conceptual preview of routing with route parameters
-In the previous lesson, you added routing to your app and in this lesson you will expand the types of routing your app supports. Each housing location has specific details that should be displayed when a user navigates to the details page for that item. To accomplish this goal, you will need to use route parameters.
+Each housing location has specific details that should be displayed when a user navigates to the details page for that item. To accomplish this goal, you will need to use route parameters.
 
 Route parameters enable you to include dynamic information as a part of your route URL. To identify which housing location a user has clicked on you will use the `id` property of the `HousingLocation` type.
 
-## Lesson steps
-
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Create a new service for your app
-In lesson 10, you added a second route to `src/app/routes.ts`, this route includes a special segment that identifies the route parameter, `id`:
+## Step 1 - Create a new service for your app
+In lesson 10, you added a second route to `src/app/routes.ts` which includes a special segment that identifies the route parameter, `id`:
 
     <code-example format="javascript" language="javascript">
     'details/:id'
@@ -43,17 +30,16 @@ In this case, `:id` is dynamic and will change based on how the route is request
     <code-example header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-link"></code-example>
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
-    
-    For the routerLink to work in the template, add a file level import of RouterLink and RouterOutlet from '@angular/router', then update the component imports array to include both RouterLink and RouterOutlet
 
-1. At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "learn more" button for a housing location.
+    For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
+1. At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
 
     <section class="lightbox">
     <img alt="details page displaying the text 'details works!'" src="generated/images/guide/faa/homes-app-lesson-11-step-1.png">
     </section>
 
-### Step 2 - Get route parameters
-In this step, you will get the route parameter in the `DetailsComponent`. Currently, the app displays `details works!`, next you'll update the code to display the `id` value passed using the route parameters.
+## Step 2 - Get route parameters
+In this step, you will get the route parameter in the `DetailsComponent`. Currently, the app displays `details works!`. Next you'll update the code to display the `id` value passed using the route parameters.
 
 1.  In `src/app/details/details.component.ts` update the template to import the functions, classes and services that you'll need to use in the `DetailsComponent`:
 
@@ -77,13 +63,13 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
         }
     </code-example>
 
-    This code give the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the constructor, the code converts the id parameter from the route to a number.
+    This code gives the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
 
 1.  Save all changes.
 
-1.  In the browser, click on one of the housing location "learn more" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
+1.  In the browser, click on one of the housing location's "Learn More" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
 
-### Step 3 - Customize the `DetailComponent`
+## Step 3 - Customize the `DetailComponent`
 Now that routing is working properly in the application this is a great time to update the template of the `DetailsComponent` to display the specific data represented by the housing location for the route parameter.
 
 To access the data you will add a call to the `HousingService`.
@@ -98,7 +84,7 @@ To access the data you will add a call to the `HousingService`.
 
     <code-example header="Update the DetailsComponent class in src/app/details/details.component.ts" path="first-app-lesson-11/src/app/details/details.component.ts" region="get-housing-details"></code-example>
 
-    Now the component has the code to display the correct information based on the selected housing location. The constructor now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
+    Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
 
 1.  Copy the following styles into the `src/app/details/details.component.css` file:
 
@@ -106,13 +92,13 @@ To access the data you will add a call to the `HousingService`.
 
 1.  Save your changes.
 
-1.  In the browser refresh the page and confirm that when you click on the "learn more" link for a given housing location the details page displays the correct information based on the data for that selected item.
+1.  In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
     <section class="lightbox">
     <img alt="Details page listing home info" src="generated/images/guide/faa/homes-app-lesson-11-step-3.png">
     </section>
 
-### Step 4 - Add navigation to the `HomeComponent`
+## Step 4 - Add navigation to the `HomeComponent`
 In a previous lesson you updated the `AppComponent` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenever the logo is clicked.
 
 1.  Confirm that your code matches the following:
@@ -125,7 +111,7 @@ In a previous lesson you updated the `AppComponent` template to include a `route
 In this lesson you updated your app to:
 * use route parameters to pass data to a route
 * use the `routerLink` directive to use dynamic data to create a route
-* use route parameter to retrieve data from the `HousingService` to display housing location specific information.
+* use route parameter to retrieve data from the `HousingService` to display specific housing location information.
 
 Really great work so far. 
 
@@ -143,3 +129,5 @@ For more information about the topics covered in this lesson, visit:
 *  [Routing in Angular Overview](guide/routing-overview)
 *  [Common Routing Tasks](guide/router)
 *  [Optional Chaining Operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+
+@reviewed 2023-07-15
