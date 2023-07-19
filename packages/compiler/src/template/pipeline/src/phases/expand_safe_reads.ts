@@ -117,8 +117,9 @@ function safeTernaryWithTemporary(
 }
 
 function isSafeAccessExpression(e: o.Expression): e is ir.SafePropertyReadExpr|
-    ir.SafeKeyedReadExpr {
-  return e instanceof ir.SafePropertyReadExpr || e instanceof ir.SafeKeyedReadExpr;
+    ir.SafeKeyedReadExpr|ir.SafeInvokeFunctionExpr {
+  return e instanceof ir.SafePropertyReadExpr || e instanceof ir.SafeKeyedReadExpr ||
+      e instanceof ir.SafeInvokeFunctionExpr;
 }
 
 function isUnsafeAccessExpression(e: o.Expression): e is o.ReadPropExpr|o.ReadKeyExpr|
@@ -128,7 +129,7 @@ function isUnsafeAccessExpression(e: o.Expression): e is o.ReadPropExpr|o.ReadKe
 }
 
 function isAccessExpression(e: o.Expression): e is o.ReadPropExpr|ir.SafePropertyReadExpr|
-    o.ReadKeyExpr|ir.SafeKeyedReadExpr|o.InvokeFunctionExpr {
+    o.ReadKeyExpr|ir.SafeKeyedReadExpr|o.InvokeFunctionExpr|ir.SafeInvokeFunctionExpr {
   return isSafeAccessExpression(e) || isUnsafeAccessExpression(e);
 }
 
@@ -146,11 +147,6 @@ function deepestSafeTernary(e: o.Expression): ir.SafeTernaryExpr|null {
 // TODO: When strict compatibility with TemplateDefinitionBuilder is not required, we can use `&&`
 // instead to save some code size.
 function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression {
-  if (e instanceof ir.SafeInvokeFunctionExpr) {
-    // TODO: Implement safe function calls in a subsequent commit.
-    return new o.InvokeFunctionExpr(e.receiver, e.args);
-  }
-
   if (!isAccessExpression(e)) {
     return e;
   }
@@ -170,6 +166,10 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       dst.expr = dst.expr.key(e.index);
       return e.receiver;
     }
+    if (e instanceof ir.SafeInvokeFunctionExpr) {
+      dst.expr = safeTernaryWithTemporary(dst.expr, (r: o.Expression) => r.callFn(e.args), ctx);
+      return e.receiver;
+    }
     if (e instanceof ir.SafePropertyReadExpr) {
       dst.expr = safeTernaryWithTemporary(dst.expr, (r: o.Expression) => r.prop(e.name), ctx);
       return e.receiver;
@@ -179,6 +179,9 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       return e.receiver;
     }
   } else {
+    if (e instanceof ir.SafeInvokeFunctionExpr) {
+      return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.callFn(e.args), ctx);
+    }
     if (e instanceof ir.SafePropertyReadExpr) {
       return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.prop(e.name), ctx);
     }
