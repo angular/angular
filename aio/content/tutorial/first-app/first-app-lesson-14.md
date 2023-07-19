@@ -6,9 +6,9 @@ Up until this point your app has read data from a static array in an Angular ser
 
 **Estimated time**: ~15 minutes
 
-**Starting code:** <live-example name="first-app-lesson-06"></live-example>
+**Starting code:** <live-example name="first-app-lesson-13"></live-example>
 
-**Completed code:** <live-example name="first-app-lesson-07"></live-example>
+**Completed code:** <live-example name="first-app-lesson-14"></live-example>
 
 ## What you'll learn
 
