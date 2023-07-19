@@ -358,58 +358,6 @@ jobs:
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
-  legacy-unit-tests-saucelabs:
-    executor:
-      name: default-executor
-      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-      # container for this job. This is necessary because we launch a lot of browsers concurrently
-      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - init_saucelabs_environment
-      - run:
-          name: Starting Saucelabs tunnel service
-          command: ./tools/saucelabs/sauce-service.sh run
-          background: true
-      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
-      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
-      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
-      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
-      # test in all supported browsers on Saucelabs anyway until this job can be removed.
-      - run:
-          name: Preparing Bazel-generated fixtures required in legacy tests
-          command: |
-            yarn bazel build \
-                //packages/core/test:downleveled_es5_fixture \
-                //packages/common/locales
-
-            # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
-            mkdir -p dist/legacy-test-out/core/test/reflection/
-            cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
-              dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
-            # Locale files are needed for i18n tests running within Saucelabs. These are added
-            # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
-            # can succeed. Note that the base locale and currencies files are checked-in, so
-            # we do not need to re-generate those through Bazel.
-            mkdir -p packages/common/locales/extra
-            cp dist/bin/packages/common/locales/*.ts packages/common/locales
-            cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
-      # Build the bundle for all tests to run within Saucelabs
-      - run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
-      - run:
-          # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
-          name: Waiting for Saucelabs tunnel to connect
-          command: ./tools/saucelabs/sauce-service.sh ready-wait
-      - run:
-          name: Running tests on Saucelabs.
-          command: |
-            KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
-      - run:
-          name: Stop Saucelabs tunnel service
-          command: ./tools/saucelabs/sauce-service.sh stop
-
 workflows:
   version: 2
   default_workflow:
@@ -421,16 +369,12 @@ workflows:
       - build-npm-packages:
           requires:
             - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-            - setup
       - publish_snapshot:
           <<: *only_release_branches
           requires:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
-            - legacy-unit-tests-saucelabs
 
   monitoring:
     jobs:
