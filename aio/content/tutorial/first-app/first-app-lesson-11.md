@@ -25,13 +25,22 @@ In lesson 10, you added a second route to `src/app/routes.ts` which includes a s
 
 In this case, `:id` is dynamic and will change based on how the route is requested by the code.
 
-1.  In `src/app/housing-location/housing-location.component.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
+1.  In `src/app/housing-location/housing-location.component.ts`, update the component to use routing:
+    1.  Add a file level import for `RoutingModule`:
 
-    <code-example header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-link"></code-example>
+        <code-example header="Import RouterModule in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="import-router-module"></code-example>
+    
+    1.  Add `RouterModule` to the `@Component` metadata imports
 
-    The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
-
-    For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
+        <code-example header="Import RouterModule in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="import-router-module-deco"></code-example>
+    
+    1. In the `template` property, add an anchor tag to the `section` element and include the `routerLink` directive:
+    
+        <code-example header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-link"></code-example>
+    
+        The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
+    
+        For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
 1. At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
 
     <section class="lightbox">
