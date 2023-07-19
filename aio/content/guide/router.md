@@ -7,7 +7,7 @@ This topic describes how to implement many of the common tasks associated with a
 ## Generate an application with routing enabled
 
 The following command uses the Angular CLI to generate a basic Angular application with an application routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
-The application name in the following example is `routing-app`.
+The application name in the following example is `routing-/app`.
 
 <code-example format="shell" language="shell">
 
@@ -93,7 +93,8 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
 
     Now that you have defined your routes, add them to your application.
     First, add links to the two components.
-    Assign the anchor tag that you want to add the route to the `routerLink` attribute.
+    Assign `routerLink` attribute of the anchor tag the path (`path` key in the `app-routing-module.ts`) the value to which you want
+    your link to render upon click.
     Set the value of the attribute to the component to show when a user clicks on each link.
     Next, update your component template to include `<router-outlet>`.
     This element informs Angular to update the application view with the component for the selected route.
