@@ -1,15 +1,19 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HousingLocation } from '../housinglocation';
+// #docregion import-router-module
 import { RouterModule } from '@angular/router';
+// #enddocregion
 
 @Component({
   selector: 'app-housing-location',
   standalone: true,
+  // #docregion import-router-module-deco
   imports: [
     CommonModule,
     RouterModule
   ],
+  // #enddocregion
   // #docregion add-router-link
   template: `
     <section class="listing">
