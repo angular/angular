@@ -12,7 +12,7 @@ For the best experience with this tutorial, review these requirements to make su
 
 ### Your experience
 
-The lessons in this tutorial assume that you experience with the following:
+The lessons in this tutorial assume that you have experience with the following:
 
 1.  Created an HTML web page by editing the HTML directly.
 1.  Programmed web site content in JavaScript.
