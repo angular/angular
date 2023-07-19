@@ -12,7 +12,7 @@ import {Component, NgModule} from '@angular/core';
     <embed src="https://angular.io/" />
 
     <!-- Another element with a src attribute that is not security sensitive -->
-    <img src="https://angular.io/"  alt="not-security-sensitive"/>
+    <img src="https://angular.io/" />
   `
 })
 export class MyComponent {
