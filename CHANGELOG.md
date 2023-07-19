@@ -1,3 +1,12 @@
+<a name="16.2.0-next.3"></a>
+# 16.2.0-next.3 (2023-07-19)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c5608e5ca9](https://github.com/angular/angular/commit/c5608e5ca99805af1a3a7caf4ce28a35f3a13ebf) | fix | Run fetch request out the angular zone ([#50981](https://github.com/angular/angular/pull/50981)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.6"></a>
 # 16.1.6 (2023-07-19)
 ### http
