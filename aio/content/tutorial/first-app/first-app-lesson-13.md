@@ -6,9 +6,9 @@ The app will enable users to search through the data provided by your app and di
 
 **Estimated time**: ~15 minutes
 
-**Starting code:** <live-example name="first-app-lesson-13"></live-example>
+**Starting code:** <live-example name="first-app-lesson-12"></live-example>
 
-**Completed code:** <live-example name="first-app-lesson-14"></live-example>
+**Completed code:** <live-example name="first-app-lesson-13"></live-example>
 
 ## What you'll learn
 
