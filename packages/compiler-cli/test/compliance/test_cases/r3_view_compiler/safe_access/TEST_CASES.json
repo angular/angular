@@ -69,13 +69,13 @@
           "files": [
             {
               "expected": "safe_call_template.js",
+              "templatePipelineExpected": "safe_call_template.pipeline.js",
               "generated": "safe_call.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle non-null assertions after a safe access",
