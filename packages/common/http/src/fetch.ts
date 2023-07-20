@@ -109,7 +109,9 @@ export class FetchBackend implements HttpBackend {
       let decoder: TextDecoder;
       let partialText: string|undefined;
 
-      const reqZone = Zone.current;
+      // We have to check whether the Zone is defined in the global scope because this may be called
+      // when the zone is nooped.
+      const reqZone = typeof Zone !== 'undefined' && Zone.current;
 
       // Perform response processing outside of Angular zone to
       // ensure no excessive change detection runs are executed
@@ -130,12 +132,13 @@ export class FetchBackend implements HttpBackend {
                 (partialText ?? '') + (decoder ??= new TextDecoder).decode(value, {stream: true}) :
                 undefined;
 
-            reqZone.run(() => observer.next({
+            const reportProgress = () => observer.next({
               type: HttpEventType.DownloadProgress,
               total: contentLength ? +contentLength : undefined,
               loaded: receivedLength,
               partialText,
-            } as HttpDownloadProgressEvent));
+            } as HttpDownloadProgressEvent);
+            reqZone ? reqZone.run(reportProgress) : reportProgress();
           }
         }
       });
