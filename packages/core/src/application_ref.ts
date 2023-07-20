@@ -76,7 +76,7 @@ const PLATFORM_DESTROY_LISTENERS =
  * @publicApi
  */
 export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
+    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
@@ -1100,8 +1100,7 @@ export class ApplicationRef {
               'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
               '`multi: true` provider.');
     }
-    listeners.push(...this._bootstrapListeners);
-    listeners.forEach((listener) => listener(componentRef));
+    [...this._bootstrapListeners, ...listeners].forEach((listener) => listener(componentRef));
   }
 
   /** @internal */

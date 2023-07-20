@@ -18,7 +18,7 @@ import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export const BEFORE_APP_SERIALIZED: InjectionToken<(() => void | Promise<void>)[]>;
+export const BEFORE_APP_SERIALIZED: InjectionToken<readonly (() => void | Promise<void>)[]>;
 
 // @public
 export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
