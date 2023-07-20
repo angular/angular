@@ -64,4 +64,4 @@ export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL
  * @publicApi
  */
 export const BEFORE_APP_SERIALIZED =
-    new InjectionToken<Array<() => void | Promise<void>>>('Server.RENDER_MODULE_HOOK');
+    new InjectionToken<ReadonlyArray<() => void | Promise<void>>>('Server.RENDER_MODULE_HOOK');

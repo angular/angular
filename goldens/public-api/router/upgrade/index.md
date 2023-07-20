@@ -10,7 +10,7 @@ import { UpgradeModule } from '@angular/upgrade/static';
 
 // @public
 export const RouterUpgradeInitializer: {
-    provide: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
+    provide: InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
     multi: boolean;
     useFactory: (ngUpgrade: UpgradeModule) => () => void;
     deps: (typeof UpgradeModule)[];

@@ -54,7 +54,7 @@ export interface AfterViewInit {
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
 // @public
-export const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
+export const APP_BOOTSTRAP_LISTENER: InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
 
 // @public
 export const APP_ID: InjectionToken<string>;
@@ -1155,7 +1155,7 @@ export interface PipeTransform {
 export const PLATFORM_ID: InjectionToken<Object>;
 
 // @public
-export const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
+export const PLATFORM_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 
 // @public
 export const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
