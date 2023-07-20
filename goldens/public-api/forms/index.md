@@ -611,10 +611,10 @@ export class MinValidator extends AbstractValidatorDirective {
 }
 
 // @public
-export const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
+export const NG_ASYNC_VALIDATORS: InjectionToken<readonly (Function | Validator)[]>;
 
 // @public
-export const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
+export const NG_VALIDATORS: InjectionToken<readonly (Function | Validator)[]>;
 
 // @public
 export const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
