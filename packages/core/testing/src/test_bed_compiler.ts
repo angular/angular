@@ -11,6 +11,7 @@ import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive,
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
+import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../../src/render3/deps_tracker/deps_tracker';
 import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
 
 import {MetadataOverride} from './metadata_override';
@@ -142,6 +143,9 @@ export class TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+    if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+      depsTracker.clearScopeCacheFor(ngModule);
+    }
     this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
@@ -388,8 +392,12 @@ export class TestBedCompiler {
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
         affectedModules.forEach(moduleType => {
-          this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
-          (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+          if (!USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+            this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+            (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+          } else {
+            depsTracker.clearScopeCacheFor(moduleType);
+          }
         });
       }
     }
@@ -726,6 +734,9 @@ export class TestBedCompiler {
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
+          if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+            depsTracker.clearScopeCacheFor(type);
+          }
           defs.forEach((descriptor, prop) => {
             if (!descriptor) {
               // Delete operations are generally undesirable since they have performance
