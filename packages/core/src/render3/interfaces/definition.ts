@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
@@ -521,14 +521,17 @@ export const unusedValueExportToPlacateAjd = 1;
  */
 export interface NgModuleScopeInfoFromDecorator {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[]|(() => Type<any>[]);
+  declarations?: RawScopeInfoFromDecorator[];
 
   /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[]|(() => Type<any>[]);
+  imports?: RawScopeInfoFromDecorator[];
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports?: Type<any>[]|(() => Type<any>[]);
+  exports?: RawScopeInfoFromDecorator[];
 }
+
+export type RawScopeInfoFromDecorator =
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);

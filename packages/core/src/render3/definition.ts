@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
@@ -17,10 +18,12 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
+import {depsTracker} from './deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, NgModuleScopeInfoFromDecorator, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, NgModuleScopeInfoFromDecorator, PipeDef, PipeDefListOrFactory, RawScopeInfoFromDecorator, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
+import {isModuleWithProviders} from './jit/util';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
 
 interface DirectiveDefinition<T> {
@@ -423,10 +426,24 @@ export function ɵɵdefineNgModule<T>(def: {
 export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDecorator): unknown {
   return noSideEffects(() => {
     const ngModuleDef = getNgModuleDef(type, true);
-    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+    ngModuleDef.declarations = convertToTypeArray(scope.declarations || EMPTY_ARRAY);
+    ngModuleDef.imports = convertToTypeArray(scope.imports || EMPTY_ARRAY);
+    ngModuleDef.exports = convertToTypeArray(scope.exports || EMPTY_ARRAY);
+
+    depsTracker.registerNgModule(type, scope);
   });
+}
+
+function convertToTypeArray(values: RawScopeInfoFromDecorator[]): Type<any>[]|(() => Type<any>[]) {
+  if (values.some(isForwardRef)) {
+    return () => values.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
+  } else {
+    return values.map(maybeUnwrapModuleWithProviders);
+  }
+}
+
+function maybeUnwrapModuleWithProviders(value: any): Type<any> {
+  return isModuleWithProviders(value) ? value.ngModule : value as Type<any>;
 }
 
 /**
