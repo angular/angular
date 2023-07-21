@@ -3,9 +3,18 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    <label><input type="checkbox" [checked]="showHeroes"   (change)="showHeroes=!showHeroes">Heroes</label>
-    <label><input type="checkbox" [checked]="showVillains" (change)="showVillains=!showVillains">Villains</label>
-    <label><input type="checkbox" [checked]="showCars"     (change)="showCars=!showCars">Cars</label>
+    <label for="showHeroes">
+      <input id="showHeroes" type="checkbox" [checked]="showHeroes"   (change)="showHeroes=!showHeroes">
+      Heroes
+    </label>
+    <label for="showVillains">
+      <input id="showVillains" type="checkbox" [checked]="showVillains" (change)="showVillains=!showVillains">
+      Villains
+    </label>
+    <label for="showCars">
+      <input id="showCars" type="checkbox" [checked]="showCars"     (change)="showCars=!showCars">
+      Cars
+    </label>
 
     <h1>Hierarchical Dependency Injection</h1>
 

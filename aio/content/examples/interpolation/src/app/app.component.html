@@ -47,8 +47,8 @@
 <div (keyup)="0">
   <h4>Template context: template reference variables (#customerInput):</h4>
   <!-- #docregion template-reference-variable -->
-  <label>Type something:
-    <input #customerInput>{{customerInput.value}}
+  <label for="customer-input">Type something:
+    <input id="customer-input" #customerInput>{{customerInput.value}}
   </label>
   <!-- #enddocregion template-reference-variable -->
 </div>

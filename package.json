@@ -161,6 +161,7 @@
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4463309193594fc8b23090c89c7f34178320681c",
     "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#19ec5cc0ac37ccee5e527a61f8e7e46ee7472e66",
     "@babel/helper-remap-async-to-generator": "^7.18.9",
+    "@babel/plugin-proposal-async-generator-functions": "^7.20.7",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^6.0.0",
     "@bazel/ibazel": "^0.16.0",
