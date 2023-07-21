@@ -9,8 +9,8 @@ import { Customer,
     <h3 highlight>Customer Detail</h3>
     <div *ngIf="customer">
       <div>Id: {{customer.id}}</div><br>
-      <label>Name:
-        <input [(ngModel)]="customer.name">
+      <label for="name">Name:
+        <input id="name" [(ngModel)]="customer.name">
       </label>
     </div>
     <br>
