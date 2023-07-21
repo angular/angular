@@ -79,14 +79,14 @@
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
-    "@angular-devkit/architect-cli": "0.1602.0-next.2",
-    "@angular-devkit/build-angular": "16.2.0-next.2",
+    "@angular-devkit/architect-cli": "0.1602.0-next.3",
+    "@angular-devkit/build-angular": "16.2.0-next.3",
     "@angular-eslint/builder": "16.0.3",
     "@angular-eslint/eslint-plugin": "16.0.3",
     "@angular-eslint/eslint-plugin-template": "16.0.3",
     "@angular-eslint/template-parser": "^16.0.3",
-    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#e39683e5db3b587c99ef1442079936f3f084b61e",
-    "@angular/cli": "16.2.0-next.2",
+    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4463309193594fc8b23090c89c7f34178320681c",
+    "@angular/cli": "16.2.0-next.3",
     "@angular/compiler-cli": "16.2.0-next.3",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildozer": "^6.0.0",
