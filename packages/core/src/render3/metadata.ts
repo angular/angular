@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {noSideEffects} from '../util/closure';
 
-interface TypeWithMetadata extends Type<any> {
+export interface TypeWithMetadata extends Type<any> {
   decorators?: any[];
   ctorParameters?: () => any[];
   propDecorators?: {[field: string]: any};

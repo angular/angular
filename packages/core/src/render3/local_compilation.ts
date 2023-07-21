@@ -6,11 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {getComponentDef} from './definition';
+import {depsTracker} from './deps_tracker/deps_tracker';
+import {ComponentType, DependencyTypeList} from './interfaces/definition';
+import {TypeWithMetadata} from './metadata';
 
-import {DependencyTypeList} from './interfaces/definition';
+export function ɵɵgetComponentDepsFactory(type: TypeWithMetadata): () => DependencyTypeList {
+  return () => {
+    console.log('>>>>> ɵɵgetComponentDepsFactory factory called', type);
 
-export function ɵɵgetComponentDepsFactory(type: Type<any>): () => DependencyTypeList {
-  // TODO(pmvald): Implement this runtime using deps tracker.
-  return () => [];
+    const def = getComponentDef(type);
+    if (!def) return [];
+
+    if (def.standalone) {
+      return depsTracker
+          .getComponentDependencies(
+              type as ComponentType<any>, type.decorators?.[0]?.args?.[0]?.imports)
+          .dependencies;
+    } else {
+      return depsTracker.getComponentDependencies(type as ComponentType<any>).dependencies;
+    }
+  };
 }
