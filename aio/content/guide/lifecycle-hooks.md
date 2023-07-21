@@ -136,7 +136,7 @@ When using RxJS Observables in components or directives, you may want to complet
 data$ = http.get('...').pipe(takeUntilDestroyed());
 ```
 
-By default, `takeUntilDestroyed` must be called in an injection context so that it can access `DestroyRef`. If an injection context isn't available, you can explicitly provide a `DestroyRef`.
+By default, `takeUntilDestroyed` must be called in an [injection context](/guide/dependency-injection-context) so that it can access `DestroyRef`. If an injection context isn't available, you can explicitly provide a `DestroyRef`.
 
 ## General examples
 
