@@ -83,7 +83,7 @@ As the `query` signal changes, the `query$` Observable emits the latest query an
 
 ### Injection context
 
-`toObservable` by default needs to run in an injection context, such as during construction of a component or service. If an injection context is not available, an `Injector` can instead be explicitly specified.
+`toObservable` by default needs to run in an [injection context](/guide/dependency-injection-context), such as during construction of a component or service. If an injection context is not available, an `Injector` can instead be explicitly specified.
 
 ### Timing of `toObservable`
 

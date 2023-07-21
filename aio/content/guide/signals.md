@@ -140,7 +140,7 @@ Because of these risks, setting signals is disallowed by default in effects, but
 
 ### Injection context
 
-By default, registering a new effect with the `effect()` function requires an "injection context" (access to the `inject` function). The easiest way to provide this is to call `effect` within a component, directive, or service `constructor`:
+By default, registering a new effect with the `effect()` function requires an [injection context](/guide/dependency-injection-context) (access to the `inject` function). The easiest way to provide this is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
 @Component({...})
