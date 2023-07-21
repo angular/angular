@@ -1,8 +1,8 @@
 <h1>Accessibility Example</h1>
 <!-- #docregion template -->
-<label>
+<label for="progress-value">
   Enter an example progress value
-  <input type="number" min="0" max="100"
+  <input id="progress-value" type="number" min="0" max="100"
       [value]="progress" (input)="setProgress($event)">
 </label>
 
