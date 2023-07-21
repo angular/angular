@@ -273,7 +273,7 @@ export class NeedsContentComponent {
   template: `
     <h4>MyIfChildComp</h4>
     <div>
-      <label>Child value: <input [(ngModel)]="childValue"> </label>
+      <label for="child-value">Child value: <input id="child-value" [(ngModel)]="childValue"> </label>
     </div>
     <p><i>Change log:</i></p>
     <div *ngFor="let log of changeLog; let i=index">{{i + 1}} - {{log}}</div>`
@@ -322,8 +322,8 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
   selector: 'my-if-parent-comp',
   template: `
     <h3>MyIfParentComp</h3>
-    <label>Parent value:
-      <input [(ngModel)]="parentValue">
+    <label for="parent">Parent value:
+      <input id="parent" [(ngModel)]="parentValue">
     </label>
     <button type="button" (click)="clicked()">{{toggleLabel}} Child</button><br>
     <div *ngIf="showChild"
