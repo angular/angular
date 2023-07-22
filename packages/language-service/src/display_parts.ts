@@ -40,6 +40,7 @@ export interface DisplayInfo {
   kind: DisplayInfoKind;
   displayParts: ts.SymbolDisplayPart[];
   documentation: ts.SymbolDisplayPart[]|undefined;
+  tags: ts.JSDocTagInfo[]|undefined;
 }
 
 export function getSymbolDisplayInfo(
@@ -58,13 +59,14 @@ export function getSymbolDisplayInfo(
   const displayParts = createDisplayParts(
       symbol.declaration.name, kind, /* containerName */ undefined,
       typeChecker.typeToString(symbol.tsType));
-  const documentation = symbol.kind === SymbolKind.Reference ?
-      getDocumentationFromTypeDefAtLocation(tsLS, symbol.targetLocation) :
-      getDocumentationFromTypeDefAtLocation(tsLS, symbol.initializerLocation);
+  const quickInfo = symbol.kind === SymbolKind.Reference ?
+      getQuickInfoFromTypeDefAtLocation(tsLS, symbol.targetLocation) :
+      getQuickInfoFromTypeDefAtLocation(tsLS, symbol.initializerLocation);
   return {
     kind,
     displayParts,
-    documentation,
+    documentation: quickInfo?.documentation,
+    tags: quickInfo?.tags,
   };
 }
 
@@ -118,15 +120,14 @@ export function unsafeCastDisplayInfoKindToScriptElementKind(kind: DisplayInfoKi
   return kind as string as ts.ScriptElementKind;
 }
 
-function getDocumentationFromTypeDefAtLocation(
-    tsLS: ts.LanguageService, tcbLocation: TcbLocation): ts.SymbolDisplayPart[]|undefined {
+function getQuickInfoFromTypeDefAtLocation(
+    tsLS: ts.LanguageService, tcbLocation: TcbLocation): ts.QuickInfo|undefined {
   const typeDefs =
       tsLS.getTypeDefinitionAtPosition(tcbLocation.tcbPath, tcbLocation.positionInFile);
   if (typeDefs === undefined || typeDefs.length === 0) {
     return undefined;
   }
-  return tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start)
-      ?.documentation;
+  return tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start);
 }
 
 export function getDirectiveDisplayInfo(
@@ -134,12 +135,22 @@ export function getDirectiveDisplayInfo(
   const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
   const decl = dir.tsSymbol.declarations.find(ts.isClassDeclaration);
   if (decl === undefined || decl.name === undefined) {
-    return {kind, displayParts: [], documentation: []};
+    return {
+      kind,
+      displayParts: [],
+      documentation: [],
+      tags: undefined,
+    };
   }
 
   const res = tsLS.getQuickInfoAtPosition(decl.getSourceFile().fileName, decl.name.getStart());
   if (res === undefined) {
-    return {kind, displayParts: [], documentation: []};
+    return {
+      kind,
+      displayParts: [],
+      documentation: [],
+      tags: undefined,
+    };
   }
 
   const displayParts =
@@ -149,6 +160,7 @@ export function getDirectiveDisplayInfo(
     kind,
     displayParts,
     documentation: res.documentation,
+    tags: res.tags,
   };
 }
 
@@ -164,7 +176,12 @@ export function getTsSymbolDisplayInfo(
   }
   const res = tsLS.getQuickInfoAtPosition(decl.getSourceFile().fileName, decl.name.getStart());
   if (res === undefined) {
-    return {kind, displayParts: [], documentation: []};
+    return {
+      kind,
+      displayParts: [],
+      documentation: [],
+      tags: undefined,
+    };
   }
 
   const type = checker.getDeclaredTypeOfSymbol(symbol);
@@ -176,5 +193,6 @@ export function getTsSymbolDisplayInfo(
     kind,
     displayParts,
     documentation: res.documentation,
+    tags: res.tags,
   };
 }
