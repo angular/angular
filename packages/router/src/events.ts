@@ -432,7 +432,7 @@ export class ResolveStart extends RouterEvent {
 
 /**
  * An event triggered at the end of the Resolve phase of routing.
- * @see {@link ResolveStart}.
+ * @see {@link ResolveStart}
  *
  * @publicApi
  */
