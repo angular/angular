@@ -124,7 +124,7 @@ export type Data = {
  *
  * Represents the resolved data associated with a particular route.
  *
- * @see {@link Route#resolve}.
+ * @see {@link Route#resolve}
  *
  * @publicApi
  */

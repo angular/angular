@@ -13,7 +13,7 @@ import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 
 /**
  * Format styles that can be used to represent numbers.
- * @see {@link getLocaleNumberFormat}.
+ * @see {@link getLocaleNumberFormat}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
