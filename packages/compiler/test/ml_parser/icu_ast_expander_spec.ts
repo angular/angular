@@ -9,15 +9,16 @@
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {expandNodes, ExpansionResult} from '../../src/ml_parser/icu_ast_expander';
+import {TokenizeOptions} from '../../src/ml_parser/lexer';
 import {ParseError} from '../../src/parse_util';
 
 import {humanizeNodes} from './ast_spec_utils';
 
 {
   describe('Expander', () => {
-    function expand(template: string): ExpansionResult {
+    function expand(template: string, options: TokenizeOptions = {}): ExpansionResult {
       const htmlParser = new HtmlParser();
-      const res = htmlParser.parse(template, 'url', {tokenizeExpansionForms: true});
+      const res = htmlParser.parse(template, 'url', {tokenizeExpansionForms: true, ...options});
       return expandNodes(res.rootNodes);
     }
 
@@ -106,6 +107,28 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Element, 'ng-template', 3],
         [html.Attribute, 'ngSwitchCase', '=4'],
         [html.Text, 'c', 4, ['c']],
+      ]);
+    });
+
+    it('should parse an expansion forms inside of blocks', () => {
+      const res =
+          expand('{#if cond}{a, b, =4 {c}}{:else}{d, e, =4 {f}}{/if}', {tokenizeBlocks: true});
+
+      expect(humanizeNodes(res.nodes)).toEqual([
+        [html.BlockGroup, 0],
+        [html.Block, 'if', 1],
+        [html.BlockParameter, 'cond'],
+        [html.Element, 'ng-container', 2],
+        [html.Attribute, '[ngSwitch]', 'a'],
+        [html.Element, 'ng-template', 3],
+        [html.Attribute, 'ngSwitchCase', '=4'],
+        [html.Text, 'c', 4, ['c']],
+        [html.Block, 'else', 1],
+        [html.Element, 'ng-container', 2],
+        [html.Attribute, '[ngSwitch]', 'd'],
+        [html.Element, 'ng-template', 3],
+        [html.Attribute, 'ngSwitchCase', '=4'],
+        [html.Text, 'f', 4, ['f']],
       ]);
     });
 

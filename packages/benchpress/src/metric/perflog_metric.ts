@@ -344,9 +344,12 @@ export class PerflogMetric extends Metric {
           intervalStarts[name] = null!;
           if (name === 'gc') {
             result['gcTime'] += duration;
-            const amount =
-                (startEvent['args']!['usedHeapSize']! - event['args']!['usedHeapSize']!) / 1000;
-            result['gcAmount'] += amount;
+            const gcAmount = event['args']?.['gcAmount'] ?? 0;
+            const amount = gcAmount > 0 ?
+                gcAmount :
+                (startEvent['args']!['usedHeapSize']! - event['args']!['usedHeapSize']!);
+
+            result['gcAmount'] += amount / 1000;
             const majorGc = event['args']!['majorGc'];
             if (majorGc && majorGc) {
               result['majorGcTime'] += duration;

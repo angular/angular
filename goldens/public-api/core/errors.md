@@ -89,6 +89,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
+    MULTIPLE_MATCHING_PIPES = 313,
+    // (undocumented)
     MULTIPLE_PLATFORMS = 400,
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
@@ -108,6 +110,8 @@ export const enum RuntimeErrorCode {
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
     REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
+    // (undocumented)
+    RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
     // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)

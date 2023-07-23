@@ -9,7 +9,7 @@ License: MIT
 
 # Why?
 
-There are so called "micro benchmarks" that essentially use a stop watch in the browser to measure time
+There are so-called "micro benchmarks" that essentially use a stop watch in the browser to measure time
 (e.g. via `performance.now()`). This approach is limited to time, and in some cases memory
 (Chrome with special flags), as metric. It does not allow to measure:
 
@@ -31,7 +31,7 @@ Benchpress tries to fill this gap, i.e. allow to access all kinds of performance
 
 # How it works
 
-Benchpress uses webdriver to read out the so called "performance log" of browsers. This contains all kinds of interesting
+Benchpress uses webdriver to read out the so-called "performance log" of browsers. This contains all kinds of interesting
 data, e.g. when a script started/ended executing, gc started/ended, the browser painted something to the screen, ...
 
 As browsers are different, benchpress has plugins to normalizes these events.
@@ -39,7 +39,7 @@ As browsers are different, benchpress has plugins to normalizes these events.
 
 # Features
 
-* Provides a loop (so called "Sampler") that executes the benchmark multiple times
+* Provides a loop (so-called "Sampler") that executes the benchmark multiple times
 * Automatically waits/detects until the browser is "warm"
 * Reporters provide a normalized way to store results:
   - console reporter
@@ -210,7 +210,7 @@ Benchpress can also measure the "smoothness" of scrolling and animations. In ord
 - `frameTime.best`: best frame time in ms
 - `frameTime.smooth`: percentage of frames that hit 60fps
 
-To collect these metrics, you need to execute `console.time('frameCapture')` and `console.timeEnd('frameCapture')` either in your benchmark application or in you benchmark driver via webdriver. The metrics mentioned above will only be collected between those two calls and it is recommended to wrap the time/timeEnd calls as closely as possible around the action you want to evaluate to get accurate measurements.
+To collect these metrics, you need to execute `console.time('frameCapture')` and `console.timeEnd('frameCapture')` either in your benchmark application or in you benchmark driver via webdriver. The metrics mentioned above will only be collected between those two calls, and it is recommended to wrap the time/timeEnd calls as closely as possible around the action you want to evaluate to get accurate measurements.
 
 In addition to that, one extra provider needs to be passed to benchpress in tests that want to collect these metrics:
 
@@ -218,7 +218,7 @@ In addition to that, one extra provider needs to be passed to benchpress in test
 
 # Requests Metrics
 
-Benchpress can also record the number of requests sent and count the received "encoded" bytes since [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart):
+Benchpress can also record the number of requests sent and count the received "encoded" bytes since [window.performance.timing.navigationStart](https://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart):
 
 - `receivedData`: number of bytes received since the last navigation start
 - `requestCount`: number of requests sent since the last navigation start

@@ -47,7 +47,7 @@ Angular has two injector hierarchies:
 
 The `ModuleInjector` can be configured in one of two ways by using:
 
-*   The `@Injectable()` `providedIn` property to refer to `@NgModule()`, or `root`
+*   The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 *   The `@NgModule()` `providers` array
 
 <div class="callout is-helpful">
@@ -273,7 +273,7 @@ class Person {
 ### `@Host()`
 
 `@Host()` lets you designate a component as the last stop in the injector tree when searching for providers.
-Even if there is a service instance further up the tree, Angular won't continue looking
+Even if there is a service instance further up the tree, Angular won't continue looking.
 Use `@Host()` as follows:
 
 <code-example header="src/app/host/host.component.ts" path="resolution-modifiers/src/app/host/host.component.ts" region="host-component"></code-example>
@@ -476,7 +476,7 @@ In the logical tree, this is represented as follows:
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")
                &commat;Inject(FlowerService)=&gt;"&#x1F33B;"&gt; &lt;!-- search ends here --&gt;
       &lt;#VIEW&gt; &lt;!-- search starts here --&gt;
-        &lt;h2&gt;Parent Component&lt;/h2&gt;
+        &lt;h2&gt;Child Component&lt;/h2&gt;
         &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33B;)&lt;/p&gt;
       &lt;/#VIEW&gt;
     &lt;/app-child&gt;
@@ -643,13 +643,13 @@ The `AnimalService` in the logical tree would look like this:
             &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
           &lt;/app-inspector&gt;
         &lt;/div&gt;
-  
+
+        &lt;app-inspector&gt;
+          &lt;#VIEW &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
+            &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
+          &lt;/#VIEW&gt;
+        &lt;/app-inspector&gt;
       &lt;/#VIEW&gt;
-      &lt;app-inspector&gt;
-        &lt;#VIEW&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;/#VIEW&gt;
-      &lt;/app-inspector&gt;
     &lt;/app-child&gt;
   &lt;/#VIEW&gt;
 &lt;/app-root&gt;
@@ -852,7 +852,7 @@ export class ChildComponent {
 
 </code-example>
 
-When `@Host()` and `SkipSelf()` were applied to the `FlowerService`, which is in the `providers` array, the result was `null` because `@SkipSelf()` starts its search in the `<app-child>` injector, but `@Host()` stops searching at `<#VIEW>` &mdash;where there is no `FlowerService`
+When `@Host()` and `@SkipSelf()` were applied to the `FlowerService`, which is in the `providers` array, the result was `null` because `@SkipSelf()` starts its search in the `<app-child>` injector, but `@Host()` stops searching at `<#VIEW>` &mdash;where there is no `FlowerService`
 In the logical tree, you can see that the `FlowerService` is visible in `<app-child>`, not its `<#VIEW>`.
 
 However, the `AnimalService`, which is provided in the `AppComponent` `viewProviders` array, is visible.

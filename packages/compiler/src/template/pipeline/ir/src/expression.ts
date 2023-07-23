@@ -19,10 +19,10 @@ import type {UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
+    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
+    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -503,7 +503,14 @@ export class SafePropertyReadExpr extends ExpressionBase {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+  // An alias for name, which allows other logic to handle property reads and keyed reads together.
+  get index() {
+    return this.name;
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    this.receiver.visitExpression(visitor, context);
+  }
 
   override isEquivalent(): boolean {
     return false;
@@ -530,7 +537,10 @@ export class SafeKeyedReadExpr extends ExpressionBase {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    this.receiver.visitExpression(visitor, context);
+    this.index.visitExpression(visitor, context);
+  }
 
   override isEquivalent(): boolean {
     return false;
@@ -558,7 +568,12 @@ export class SafeInvokeFunctionExpr extends ExpressionBase {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    this.receiver.visitExpression(visitor, context);
+    for (const a of this.args) {
+      a.visitExpression(visitor, context);
+    }
+  }
 
   override isEquivalent(): boolean {
     return false;
@@ -588,7 +603,10 @@ export class SafeTernaryExpr extends ExpressionBase {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    this.guard.visitExpression(visitor, context);
+    this.expr.visitExpression(visitor, context);
+  }
 
   override isEquivalent(): boolean {
     return false;
@@ -606,6 +624,88 @@ export class SafeTernaryExpr extends ExpressionBase {
 
   override clone(): SafeTernaryExpr {
     return new SafeTernaryExpr(this.guard.clone(), this.expr.clone());
+  }
+}
+
+export class EmptyExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.EmptyExpr;
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof EmptyExpr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): EmptyExpr {
+    return new EmptyExpr();
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
+export class AssignTemporaryExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.AssignTemporaryExpr;
+
+  public name: string|null = null;
+
+  constructor(public expr: o.Expression, public xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    this.expr.visitExpression(visitor, context);
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.expr = transformExpressionsInExpression(this.expr, transform, flags);
+  }
+
+  override clone(): AssignTemporaryExpr {
+    const a = new AssignTemporaryExpr(this.expr, this.xref);
+    a.name = this.name;
+    return a;
+  }
+}
+
+export class ReadTemporaryExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ReadTemporaryExpr;
+
+  public name: string|null = null;
+
+  constructor(public xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return this.xref === this.xref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {}
+
+  override clone(): ReadTemporaryExpr {
+    const r = new ReadTemporaryExpr(this.xref);
+    r.name = this.name;
+    return r;
   }
 }
 
@@ -635,9 +735,17 @@ export function transformExpressionsInOp(
     op: CreateOp|UpdateOp, transform: ExpressionTransform, flags: VisitorContextFlag): void {
   switch (op.kind) {
     case OpKind.Property:
+    case OpKind.StyleProp:
+    case OpKind.StyleMap:
+    case OpKind.ClassProp:
+    case OpKind.ClassMap:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.InterpolateProperty:
+    case OpKind.InterpolateStyleProp:
+    case OpKind.InterpolateStyleMap:
+    case OpKind.InterpolateClassMap:
+    case OpKind.InterpolateText:
       for (let i = 0; i < op.expressions.length; i++) {
         op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
       }
@@ -647,16 +755,16 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Attribute:
       if (op.value) {
-        transformExpressionsInExpression(op.value, transform, flags);
+        op.value = transformExpressionsInExpression(op.value, transform, flags);
+      }
+      break;
+    case OpKind.InterpolateAttribute:
+      for (let i = 0; i < op.expressions.length; i++) {
+        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
       }
       break;
     case OpKind.Variable:
       op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);
-      break;
-    case OpKind.InterpolateText:
-      for (let i = 0; i < op.expressions.length; i++) {
-        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
-      }
       break;
     case OpKind.Listener:
       for (const innerOp of op.handlerOps) {
@@ -747,6 +855,10 @@ export function transformExpressionsInStatement(
     stmt.expr = transformExpressionsInExpression(stmt.expr, transform, flags);
   } else if (stmt instanceof o.ReturnStatement) {
     stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
+  } else if (stmt instanceof o.DeclareVarStmt) {
+    if (stmt.value !== undefined) {
+      stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
+    }
   } else {
     throw new Error(`Unhandled statement kind: ${stmt.constructor.name}`);
   }

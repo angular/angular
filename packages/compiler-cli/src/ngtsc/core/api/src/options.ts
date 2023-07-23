@@ -31,6 +31,14 @@ export interface TestOnlyOptions {
   _enableTemplateTypeChecker?: boolean;
 
   /**
+   * Names of the blocks that should be enabled. E.g. `_enabledBlockTypes: ['defer']`
+   * would allow usages of `{#defer}{/defer}` in templates.
+   *
+   * @internal
+   */
+  _enabledBlockTypes?: string[];
+
+  /**
    * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. This is sensitive
@@ -55,6 +63,17 @@ export interface InternalOptions {
    * @internal
    */
   supportTestBed?: boolean;
+
+  /**
+   * Enables the usage of the JIT compiler in combination with AOT compiled code by emitting
+   * selector scope information for NgModules.
+   *
+   * This is only intended to be used by the Angular CLI.
+   * Defaults to true if not specified.
+   *
+   * @internal
+   */
+  supportJitMode?: boolean;
 }
 
 /**

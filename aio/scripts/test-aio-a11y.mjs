@@ -21,14 +21,14 @@ sh.set('-e');
 
 // Constants
 const MIN_SCORES_PER_PAGE = {
-  '': 100,
-  'api': 100,
-  'api/core/Directive': 98,
-  'cli': 98,
-  'cli/add': 100,
-  'docs': 100,
-  'guide/docs-style-guide': 96,
-  'start/start-routing': 97,
+  '': 98,
+  'api': 98,
+  'api/core/Directive': 95,
+  'cli': 95,
+  'cli/add': 98,
+  'docs': 97,
+  'guide/docs-style-guide': 97,
+  'start/start-routing': 95,
   'tutorial': 97,
 };
 

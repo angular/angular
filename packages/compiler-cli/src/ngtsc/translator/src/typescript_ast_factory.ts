@@ -103,6 +103,14 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createExpressionStatement = ts.factory.createExpressionStatement;
 
+  createDynamicImport(url: string) {
+    return ts.factory.createCallExpression(
+        ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.Expression,
+        /* type */ undefined,
+        [ts.factory.createStringLiteral(url)],
+    );
+  }
+
   createFunctionDeclaration(functionName: string, parameters: string[], body: ts.Statement):
       ts.Statement {
     if (!ts.isBlock(body)) {

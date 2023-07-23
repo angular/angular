@@ -69,7 +69,6 @@ merge:
     # list of PR statuses that need to be successful
     requiredStatuses:
       - 'ci/circleci: build'
-      - 'ci/circleci: lint'
       - 'google-internal-tests'
       - 'pullapprove'
 

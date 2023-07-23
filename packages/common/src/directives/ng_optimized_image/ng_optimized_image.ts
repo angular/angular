@@ -94,7 +94,6 @@ export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinary
  * Learn more about the responsive image configuration in [the NgOptimizedImage
  * guide](guide/image-directive).
  * @publicApi
- * @developerPreview
  */
 export type ImageConfig = {
   breakpoints?: number[]
@@ -109,7 +108,6 @@ const defaultConfig: ImageConfig = {
  *
  * @see {@link NgOptimizedImage}
  * @publicApi
- * @developerPreview
  */
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
     'ImageConfig', {providedIn: 'root', factory: () => defaultConfig});
@@ -282,10 +280,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input({transform: numberAttribute}) height: number|undefined;
 
   /**
-   * The desired loading behavior (lazy, eager, or auto).
+   * The desired loading behavior (lazy, eager, or auto). Defaults to `lazy`,
+   * which is recommended for most images.
    *
-   * Setting images as loading='eager' or loading='auto' marks them
-   * as non-priority images. Avoid changing this input for priority images.
+   * Warning: Setting images as loading="eager" or loading="auto" marks them
+   * as non-priority images and can hurt loading performance. For images which
+   * may be the LCP element, use the `priority` attribute instead of `loading`.
    */
   @Input() loading?: 'lazy'|'eager'|'auto';
 
@@ -307,8 +307,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Sets the image to "fill mode", which eliminates the height/width requirement and adds
    * styles such that the image fills its containing element.
-   *
-   * @developerPreview
    */
   @Input({transform: booleanAttribute}) fill = false;
 
@@ -366,18 +364,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
+
+      if (this.lcpObserver !== null) {
+        const ngZone = this.injector.get(NgZone);
+        ngZone.runOutsideAngular(() => {
+          this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
+        });
+      }
+
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
-      } else {
-        // Monitor whether an image is an LCP element only in case
-        // the `priority` attribute is missing. Otherwise, an image
-        // has the necessary settings and no extra checks are required.
-        if (this.lcpObserver !== null) {
-          ngZone.runOutsideAngular(() => {
-            this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc);
-          });
-        }
       }
     }
     this.setHostAttributes();
@@ -404,28 +401,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
-    const rewrittenSrc = this.getRewrittenSrc();
-    this.setHostAttribute('src', rewrittenSrc);
-
-    let rewrittenSrcset: string|undefined = undefined;
+    const rewrittenSrcset = this.updateSrcAndSrcset();
 
     if (this.sizes) {
       this.setHostAttribute('sizes', this.sizes);
     }
-
-    if (this.ngSrcset) {
-      rewrittenSrcset = this.getRewrittenSrcset();
-    } else if (this.shouldGenerateAutomaticSrcset()) {
-      rewrittenSrcset = this.getAutomaticSrcset();
-    }
-
-    if (rewrittenSrcset) {
-      this.setHostAttribute('srcset', rewrittenSrcset);
-    }
-
     if (this.isServer && this.priority) {
       this.preloadLinkCreator.createPreloadLinkTag(
-          this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
+          this.renderer, this.getRewrittenSrc(), rewrittenSrcset, this.sizes);
     }
   }
 
@@ -433,7 +416,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
       assertNoPostInitInputChange(this, changes, [
-        'ngSrc',
         'ngSrcset',
         'width',
         'height',
@@ -444,6 +426,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         'loaderParams',
         'disableOptimizedSrcset',
       ]);
+    }
+    if (changes['ngSrc'] && !changes['ngSrc'].isFirstChange()) {
+      const oldSrc = this._renderedSrc;
+      this.updateSrcAndSrcset(true);
+      const newSrc = this._renderedSrc;
+      if (this.lcpObserver !== null && oldSrc && newSrc && oldSrc !== newSrc) {
+        const ngZone = this.injector.get(NgZone);
+        ngZone.runOutsideAngular(() => {
+          this.lcpObserver?.updateImage(oldSrc, newSrc);
+        });
+      }
     }
   }
 
@@ -510,6 +503,29 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const finalSrcs = filteredBreakpoints.map(
         bp => `${this.callImageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
     return finalSrcs.join(', ');
+  }
+
+  private updateSrcAndSrcset(forceSrcRecalc = false): string|undefined {
+    if (forceSrcRecalc) {
+      // Reset cached value, so that the followup `getRewrittenSrc()` call
+      // will recalculate it and update the cache.
+      this._renderedSrc = null;
+    }
+
+    const rewrittenSrc = this.getRewrittenSrc();
+    this.setHostAttribute('src', rewrittenSrc);
+
+    let rewrittenSrcset: string|undefined = undefined;
+    if (this.ngSrcset) {
+      rewrittenSrcset = this.getRewrittenSrcset();
+    } else if (this.shouldGenerateAutomaticSrcset()) {
+      rewrittenSrcset = this.getAutomaticSrcset();
+    }
+
+    if (rewrittenSrcset) {
+      this.setHostAttribute('srcset', rewrittenSrcset);
+    }
+    return rewrittenSrcset;
   }
 
   private getFixedSrcset(): string {

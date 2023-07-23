@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference, R3SelectorScopeMode} from '@angular/compiler';
+import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3NgModuleMetadataKind, R3PartialDeclaration, R3Reference, R3SelectorScopeMode} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 
@@ -40,6 +40,7 @@ export function toR3NgModuleMeta<TExpression>(
   const wrappedType = metaObj.getOpaque('type');
 
   const meta: R3NgModuleMetadata = {
+    kind: R3NgModuleMetadataKind.Global,
     type: wrapReference(wrappedType),
     bootstrap: [],
     declarations: [],

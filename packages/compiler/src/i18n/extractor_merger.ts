@@ -292,6 +292,16 @@ class _Visitor implements html.Visitor {
     throw new Error('unreachable code');
   }
 
+  visitBlockGroup(group: html.BlockGroup, context: any) {
+    html.visitAll(this, group.blocks, context);
+  }
+
+  visitBlock(block: html.Block, context: any) {
+    html.visitAll(this, block.children, context);
+  }
+
+  visitBlockParameter(parameter: html.BlockParameter, context: any) {}
+
   private _init(mode: _VisitorMode, interpolationConfig: InterpolationConfig): void {
     this._mode = mode;
     this._inI18nBlock = false;

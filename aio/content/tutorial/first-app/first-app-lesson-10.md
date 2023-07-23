@@ -1,38 +1,25 @@
-# Lesson 10 - Add routes to the application
+# Lesson 10: Add routes to the application
 This tutorial lesson demonstrates how to add routes to your app.
 
-**Time required:** expect to spend about 25 minutes to complete this lesson.
+**Estimated time**: ~15 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-09"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-10"></live-example>
 
-*   Use the code that you created in Lesson 9 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-09"></live-example> from Lesson 9 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
-
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
+## What you'll learn
 At the end of this lesson your application will have support for routing.
 
 ## Conceptual preview of routing
 
 <!-- markdownLint-disable MD001 -->
-This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [single page applications (SPA)](/guide/router-tutorial#using-angular-routes-in-a-single-page-application), only parts of the page is updated to represent the requested view for the user.
+This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [Single Page Applications (SPA)](/guide/router-tutorial#using-angular-routes-in-a-single-page-application), only parts of the page are updated to represent the requested view for the user.
 
 The [Angular Router](/guide/router-tutorial) enables users to declare routes and specify which component should be displayed on the screen if that route is requested by the application.
 
 In this lesson, you will enable routing in your application to navigate to the details page.
 
-## Lesson steps
-
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Create a default details component 
+## Step 1 - Create a default details component 
 
 1. From the terminal, enter the following command to create the `DetailsComponent`: 
 
@@ -44,7 +31,7 @@ Perform these steps on the app code in your IDE.
 
     This component will represent the details page that provides more information on a given housing location.
 
-### Step 2 - Add routing to the application
+## Step 2 - Add routing to the application
 1.  In the `src/app` directory, create a file called `routes.ts`. This file is where we will define the routes in the application.
 
 1.  In `main.ts`, make the following updates to enable routing in the application:
@@ -69,7 +56,7 @@ Perform these steps on the app code in your IDE.
 
         <code-example header="Add router-outlet in src/app/app.component.ts" path="first-app-lesson-10/src/app/app.component.ts" region="add-router-outlet"></code-example>
     
-### Step 3 - Add route to new component
+## Step 3 - Add route to new component
 In the previous step you removed the reference to the `<app-home>` component in the template. In this step, you will add a new route to that component.
 
 1.  In `routes.ts`, perform the following updates to create a route.
@@ -105,3 +92,5 @@ For more information about the topics covered in this lesson, visit:
 
 *  [Routing in Angular Overview](guide/routing-overview)
 *  [Common Routing Tasks](guide/router)
+
+@reviewed 2023-07-11

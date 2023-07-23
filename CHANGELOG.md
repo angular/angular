@@ -1,3 +1,128 @@
+<a name="16.2.0-next.3"></a>
+# 16.2.0-next.3 (2023-07-19)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c5608e5ca9](https://github.com/angular/angular/commit/c5608e5ca99805af1a3a7caf4ce28a35f3a13ebf) | fix | Run fetch request out the angular zone ([#50981](https://github.com/angular/angular/pull/50981)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.1.6"></a>
+# 16.1.6 (2023-07-19)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dea8dc0378](https://github.com/angular/angular/commit/dea8dc0378c5b777b1879f22189fe32cbe61b36b) | fix | Run fetch request out the angular zone ([#50981](https://github.com/angular/angular/pull/50981)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.0-next.2"></a>
+# 16.2.0-next.2 (2023-07-13)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a14bdfe859](https://github.com/angular/angular/commit/a14bdfe8591a33d359bf4940f4efa828499a6373) | fix | Ensure elements are removed from the cache after leave animation. ([#50929](https://github.com/angular/angular/pull/50929)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1837efb9da](https://github.com/angular/angular/commit/1837efb9daf5c8e86a99a06ecc77bb42bc60dbb0) | feat | Allow ngSrc to be changed post-init ([#50683](https://github.com/angular/angular/pull/50683)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c27a1e61d6](https://github.com/angular/angular/commit/c27a1e61d64a67aa169086f7db11bcfd5bb7d2fc) | feat | scope selectors in @scope queries ([#50747](https://github.com/angular/angular/pull/50747)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [031b599a55](https://github.com/angular/angular/commit/031b599a5528e1df5779695eb75b738a5a3076fe) | fix | ensure that standalone components get correct injector instances ([#50954](https://github.com/angular/angular/pull/50954)) |
+| [5d6ec0336b](https://github.com/angular/angular/commit/5d6ec0336bdea22735d0ca2bbd7cfad958efbdda) | fix | handle `deref` returning `null` on `RefactiveNode`. ([#50992](https://github.com/angular/angular/pull/50992)) |
+| [b66a16ec4c](https://github.com/angular/angular/commit/b66a16ec4cf42f47efeafa711ec301efeda272be) | fix | use `setTimeout` when coalescing tasks in Node.js ([#50820](https://github.com/angular/angular/pull/50820)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f1b629961f](https://github.com/angular/angular/commit/f1b629961f75d535982a6196e70b82f177587ebf) | perf | do not remove renderer from cache when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is enabled. ([#51005](https://github.com/angular/angular/pull/51005)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a19a87df6c](https://github.com/angular/angular/commit/a19a87df6c30a60ca997083b979a8e1e185e5b43) | fix | allow for downgraded components to work with component-router ([#50871](https://github.com/angular/angular/pull/50871)) |
+| [253d756464](https://github.com/angular/angular/commit/253d7564647607804d45404152d1253993177aea) | fix | Use `takeUntil` on leaky subscription. ([#50901](https://github.com/angular/angular/pull/50901)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.1.5"></a>
+# 16.1.5 (2023-07-13)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f920fcbd94](https://github.com/angular/angular/commit/f920fcbd94d8a1b8cbd2b80f349ed85b4e730a0e) | fix | Ensure elements are removed from the cache after leave animation. ([#50929](https://github.com/angular/angular/pull/50929)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [499fb5c772](https://github.com/angular/angular/commit/499fb5c772332c03ebd8bbf7e1e6cba80dc0def0) | fix | ensure that standalone components get correct injector instances ([#50954](https://github.com/angular/angular/pull/50954)) |
+| [c65913ecb7](https://github.com/angular/angular/commit/c65913ecb7de96ee0178c64136c5ffbc62348f34) | fix | handle `deref` returning `null` on `RefactiveNode`. ([#50992](https://github.com/angular/angular/pull/50992)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31419f6a3b](https://github.com/angular/angular/commit/31419f6a3b7d57c5e789d6073d7b6505cf720c13) | perf | do not remove renderer from cache when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is enabled. ([#51005](https://github.com/angular/angular/pull/51005)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3efb577cf3](https://github.com/angular/angular/commit/3efb577cf3b38dda89cba05871224951d1f88146) | fix | Use `takeUntil` on leaky subscription. ([#50901](https://github.com/angular/angular/pull/50901)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.1.4"></a>
+# 16.1.4 (2023-07-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4ba5850ba6](https://github.com/angular/angular/commit/4ba5850ba6b1748cf02b94649ab1ec359b4540ad) | fix | use `setTimeout` when coalescing tasks in Node.js ([#50820](https://github.com/angular/angular/pull/50820)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4348355ce](https://github.com/angular/angular/commit/a4348355ce630273f762099fe6887a90ef799119) | fix | allow for downgraded components to work with component-router ([#50871](https://github.com/angular/angular/pull/50871)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.0-next.1"></a>
+# 16.2.0-next.1 (2023-06-28)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd850b2ab7](https://github.com/angular/angular/commit/dd850b2ab781f24065550f8a948ced498e0f1e99) | fix | correctly report GC memory amounts ([#50760](https://github.com/angular/angular/pull/50760)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29340a0678](https://github.com/angular/angular/commit/29340a06789652e359e61b32f1814dcd20d9bd26) | fix | expose input transform function on ComponentFactory and ComponentMirror ([#50713](https://github.com/angular/angular/pull/50713)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d64864e95e](https://github.com/angular/angular/commit/d64864e95e193e46180aeaf0d634152327650871) | fix | support input transform functions ([#50713](https://github.com/angular/angular/pull/50713)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b55103e94](https://github.com/angular/angular/commit/2b55103e94578ab1cb765147077e82e1228b0dbb) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
+| [0380564f85](https://github.com/angular/angular/commit/0380564f8562f5971cff671319439ad0f2b40a7e) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.1.3"></a>
+# 16.1.3 (2023-06-28)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd6fc5785f](https://github.com/angular/angular/commit/dd6fc5785fcf10b88db8b87d726af604668bc143) | fix | expose input transform function on ComponentFactory and ComponentMirror ([#50713](https://github.com/angular/angular/pull/50713)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1bbe47c23](https://github.com/angular/angular/commit/e1bbe47c234a495766cc07a9741a194954a6b9b4) | fix | support input transform functions ([#50713](https://github.com/angular/angular/pull/50713)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79dd6a847a](https://github.com/angular/angular/commit/79dd6a847a742ccf69597b122026758ad2b0b629) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
+| [a797f41d1b](https://github.com/angular/angular/commit/a797f41d1bcf11945673ef6d0474f33ad4614602) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0-next.0"></a>
 # 16.2.0-next.0 (2023-06-21)
 ### compiler-cli
