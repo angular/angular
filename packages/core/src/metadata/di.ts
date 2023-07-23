@@ -75,10 +75,10 @@ export const emitDistinctChangesOnlyDefaultValue = true;
 /**
  * Base class for query metadata.
  *
- * @see {@link ContentChildren}.
- * @see {@link ContentChild}.
- * @see {@link ViewChildren}.
- * @see {@link ViewChild}.
+ * @see {@link ContentChildren}
+ * @see {@link ContentChild}
+ * @see {@link ViewChildren}
+ * @see {@link ViewChild}
  *
  * @publicApi
  */
@@ -87,7 +87,7 @@ export abstract class Query {}
 /**
  * Type of the ContentChildren decorator / constructor function.
  *
- * @see {@link ContentChildren}.
+ * @see {@link ContentChildren}
  * @publicApi
  */
 export interface ContentChildrenDecorator {
@@ -274,7 +274,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
 /**
  * Type of the ViewChildren decorator / constructor function.
  *
- * @see {@link ViewChildren}.
+ * @see {@link ViewChildren}
  *
  * @publicApi
  */
@@ -363,7 +363,7 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
 /**
  * Type of the ViewChild decorator / constructor function.
  *
- * @see {@link ViewChild}.
+ * @see {@link ViewChild}
  * @publicApi
  */
 export interface ViewChildDecorator {
