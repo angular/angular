@@ -1817,8 +1817,10 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
     describe('blocks', () => {
       // TODO(crisbeto): temporary utility while blocks are disabled by default.
-      function tokenizeBlock(input: string, options: TokenizeOptions = {}): any[] {
-        return tokenizeAndHumanizeParts(input, {tokenizeBlocks: true, ...options});
+      const options: Readonly<TokenizeOptions> = {tokenizeBlocks: true};
+
+      function tokenizeBlock(input: string, additionalOptions: TokenizeOptions = {}): any[] {
+        return tokenizeAndHumanizeParts(input, {...options, ...additionalOptions});
       }
 
       it('should parse a block group', () => {
@@ -1887,10 +1889,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should handle semicolons and braces used in a block group parameter', () => {
-        expect(tokenizeBlock(`{#foo a === ";"; b === '}'}hello{/foo}`)).toEqual([
+        expect(tokenizeBlock(`{#foo a === ";"; b === '}'; c === "{"}hello{/foo}`)).toEqual([
           [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
           [TokenType.BLOCK_PARAMETER, `a === ";"`],
           [TokenType.BLOCK_PARAMETER, `b === '}'`],
+          [TokenType.BLOCK_PARAMETER, `c === "{"`],
           [TokenType.BLOCK_GROUP_OPEN_END],
           [TokenType.TEXT, 'hello'],
           [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
@@ -1898,15 +1901,38 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
-      it('should throw for invalid quotes in a parameter', () => {
-        const options = {tokenizeBlocks: true};
+      it('should handle object literals in block group parameters', () => {
+        expect(tokenizeBlock(`{#foo on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})}hello{/foo}`))
+            .toEqual([
+              [TokenType.BLOCK_GROUP_OPEN_START, 'foo'],
+              [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
+              [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
+              [TokenType.BLOCK_GROUP_OPEN_END],
+              [TokenType.TEXT, 'hello'],
+              [TokenType.BLOCK_GROUP_CLOSE, 'foo'],
+              [TokenType.EOF],
+            ]);
+      });
 
+      it('should report invalid quotes in a parameter', () => {
         expect(tokenizeAndHumanizeErrors(`{#foo a === "}hello{/foo}`, options)).toEqual([
           [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25']
         ]);
 
         expect(tokenizeAndHumanizeErrors(`{#foo a === "hi'}hello{/foo}`, options)).toEqual([
           [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:28']
+        ]);
+      });
+
+      it('should report unclosed block open tag containing an objet literal', () => {
+        expect(tokenizeAndHumanizeErrors(`{#foo {invalid: true}hello{/foo}`, options)).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_END, 'Unexpected character "EOF"', '0:32'],
+        ]);
+      });
+
+      it('should report unclosed object literal in block open tag', () => {
+        expect(tokenizeAndHumanizeErrors(`{#foo {hello{/foo}`, options)).toEqual([
+          [TokenType.BLOCK_GROUP_OPEN_END, 'Unexpected character "EOF"', '0:18'],
         ]);
       });
 

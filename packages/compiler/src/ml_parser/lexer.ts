@@ -263,11 +263,11 @@ class _Tokenizer {
       this._beginToken(TokenType.BLOCK_PARAMETER);
       const start = this._cursor.clone();
       let inQuote: number|null = null;
+      let openBraces = 0;
 
       // Consume the parameter until the next semicolon or brace.
       // Note that we skip over semicolons/braces inside of strings.
-      while ((this._cursor.peek() !== chars.$SEMICOLON && this._cursor.peek() !== chars.$RBRACE &&
-              this._cursor.peek() !== chars.$EOF) ||
+      while ((this._cursor.peek() !== chars.$SEMICOLON && this._cursor.peek() !== chars.$EOF) ||
              inQuote !== null) {
         const char = this._cursor.peek();
 
@@ -278,6 +278,14 @@ class _Tokenizer {
           inQuote = null;
         } else if (inQuote === null && chars.isQuote(char)) {
           inQuote = char;
+        } else if (char === chars.$LBRACE && inQuote === null) {
+          openBraces++;
+        } else if (char === chars.$RBRACE && inQuote === null) {
+          if (openBraces === 0) {
+            break;
+          } else if (openBraces > 0) {
+            openBraces--;
+          }
         }
 
         this._cursor.advance();
