@@ -61,8 +61,7 @@ export type ShapeOf<T> = {
  */
 export function isShapeOf<T>(obj: any, shapeOf: ShapeOf<T>): obj is T {
   if (typeof obj === 'object' && obj) {
-    return Object.keys(shapeOf).reduce(
-        (prev, key) => prev && obj.hasOwnProperty(key), true as boolean);
+    return Object.keys(shapeOf).every((key) => obj.hasOwnProperty(key));
   }
   return false;
 }
