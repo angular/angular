@@ -9,6 +9,7 @@
 export {AliasingHost, AliasStrategy, PrivateExportAliasingHost, UnifiedModulesAliasingHost} from './src/alias';
 export {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, validateAndRewriteCoreSymbol} from './src/core';
 export {DefaultImportTracker} from './src/default';
+export {DeferredSymbolTracker} from './src/deferred_symbol_tracker';
 export {AbsoluteModuleStrategy, assertSuccessfulReferenceEmit, EmittedReference, FailedEmitResult, ImportedFile, ImportFlags, LocalIdentifierStrategy, LogicalProjectStrategy, ReferenceEmitKind, ReferenceEmitResult, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesStrategy} from './src/emitter';
 export {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './src/patch_alias_reference_resolution';
 export {Reexport} from './src/reexport';

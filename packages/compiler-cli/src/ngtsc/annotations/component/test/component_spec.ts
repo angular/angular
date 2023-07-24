@@ -13,7 +13,7 @@ import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../cycles
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
-import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {DeferredSymbolTracker, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, HostDirectivesResolver, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
@@ -102,6 +102,7 @@ function setup(
       hostDirectivesResolver,
       true,
       compilationMode,
+      new DeferredSymbolTracker(checker),
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
