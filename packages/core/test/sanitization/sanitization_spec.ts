@@ -91,8 +91,7 @@ describe('sanitization', () => {
     const sanitizerNameByContext: Map<number, Function> = new Map([
       [SecurityContext.URL, ɵɵsanitizeUrl], [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl]
     ]);
-    Object.keys(schema).forEach(key => {
-      const context = schema[key];
+    Object.entries(schema).forEach(([key, context]) => {
       if (context === SecurityContext.URL || SecurityContext.RESOURCE_URL) {
         const [tag, prop] = key.split('|');
         const contexts = contextsByProp.get(prop) || new Set<number>();
