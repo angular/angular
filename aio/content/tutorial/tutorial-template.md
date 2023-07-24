@@ -14,7 +14,7 @@ This topic is a final draft. It is complete and ready for review.
 
 </div>
 
-*  \[TODO: Delete after reading. This is a guide to adapt to a specific tutorial lesson. Add/Remove/Change the contents as required, but keep the general outline in tact as much as possible to provide a consistent experience across lessons.  \]
+*  \[TODO: Delete after reading. This is a guide to adapt to a specific tutorial lesson. Add/Remove/Change the contents as required, but keep the general outline intact as much as possible to provide a consistent experience across lessons.  \]
 
 This tutorial lesson demonstrates how to \[TODO: do something interesting in Angular\].
 
