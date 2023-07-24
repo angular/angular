@@ -9,17 +9,6 @@
 import {ComponentRef, createNgModule, Directive, DoCheck, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
 
 /**
- * Represents internal object used to track state of each component input.
- */
-interface ComponentInputState {
-  /**
-   * Track whether the input exists in the current object bound to the component input;
-   * inputs that are not present any more can be removed from the internal data structures.
-   */
-  touched: boolean;
-}
-
-/**
  * Instantiates a {@link Component} type and inserts its Host View into the current View.
  * `NgComponentOutlet` provides a declarative approach for dynamic component creation.
  *
@@ -108,53 +97,61 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
   private _componentRef: ComponentRef<any>|undefined;
   private _moduleRef: NgModuleRef<any>|undefined;
 
-  private inputStateMap = new Map<string, ComponentInputState>();
+  /**
+   * A helper data structure that allows us to track inputs that were part of the
+   * ngComponentOutletInputs expression. Tracking inputs is necessary for proper removal of ones
+   * that are no longer referenced.
+   */
+  private _inputsUsed = new Map<string, boolean>();
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
+  private _needToReCreateNgModuleInstance(changes: SimpleChanges): boolean {
+    // Note: square brackets property accessor is safe for Closure compiler optimizations (the
+    // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
+    // were changed).
+    return changes['ngComponentOutletNgModule'] !== undefined ||
+        changes['ngComponentOutletNgModuleFactory'] !== undefined;
+  }
+
+  private _needToReCreateComponentInstance(changes: SimpleChanges): boolean {
+    // Note: square brackets property accessor is safe for Closure compiler optimizations (the
+    // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
+    // were changed).
+    return changes['ngComponentOutlet'] !== undefined ||
+        changes['ngComponentOutletContent'] !== undefined ||
+        changes['ngComponentOutletInjector'] !== undefined ||
+        this._needToReCreateNgModuleInstance(changes);
+  }
+
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
-    const {
-      ngComponentOutlet: componentTypeChange,
-      ngComponentOutletContent: contentChange,
-      ngComponentOutletInjector: injectorChange,
-      ngComponentOutletNgModule: ngModuleChange,
-      ngComponentOutletNgModuleFactory: ngModuleFactoryChange,
-    } = changes;
-
-    const {
-      _viewContainerRef: viewContainerRef,
-      ngComponentOutlet: componentType,
-      ngComponentOutletContent: content,
-      ngComponentOutletNgModule: ngModule,
-      ngComponentOutletNgModuleFactory: ngModuleFactory,
-    } = this;
-
-    if (componentTypeChange || contentChange || injectorChange || ngModuleChange ||
-        ngModuleFactoryChange) {
-      viewContainerRef.clear();
+    if (this._needToReCreateComponentInstance(changes)) {
+      this._viewContainerRef.clear();
+      this._inputsUsed.clear();
       this._componentRef = undefined;
 
-      if (componentType) {
-        const injector = this.ngComponentOutletInjector || viewContainerRef.parentInjector;
+      if (this.ngComponentOutlet) {
+        const injector = this.ngComponentOutletInjector || this._viewContainerRef.parentInjector;
 
-        if (ngModuleChange || ngModuleFactoryChange) {
+        if (this._needToReCreateNgModuleInstance(changes)) {
           this._moduleRef?.destroy();
 
-          if (ngModule) {
-            this._moduleRef = createNgModule(ngModule, getParentInjector(injector));
-          } else if (ngModuleFactory) {
-            this._moduleRef = ngModuleFactory.create(getParentInjector(injector));
+          if (this.ngComponentOutletNgModule) {
+            this._moduleRef =
+                createNgModule(this.ngComponentOutletNgModule, getParentInjector(injector));
+          } else if (this.ngComponentOutletNgModuleFactory) {
+            this._moduleRef =
+                this.ngComponentOutletNgModuleFactory.create(getParentInjector(injector));
           } else {
             this._moduleRef = undefined;
           }
         }
 
-        this._componentRef = viewContainerRef.createComponent(componentType, {
-          index: viewContainerRef.length,
+        this._componentRef = this._viewContainerRef.createComponent(this.ngComponentOutlet, {
           injector,
           ngModuleRef: this._moduleRef,
-          projectableNodes: content,
+          projectableNodes: this.ngComponentOutletContent,
         });
       }
     }
@@ -162,19 +159,14 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
 
   /** @nodoc */
   ngDoCheck() {
-    const {
-      _componentRef: componentRef,
-      ngComponentOutletInputs: inputs,
-    } = this;
-
-    if (componentRef) {
-      if (inputs) {
-        for (const inputName of Object.keys(inputs)) {
-          this._updateInputState(inputName);
+    if (this._componentRef) {
+      if (this.ngComponentOutletInputs) {
+        for (const inputName of Object.keys(this.ngComponentOutletInputs)) {
+          this._inputsUsed.set(inputName, true);
         }
       }
 
-      this._applyInputStateDiff(componentRef);
+      this._applyInputStateDiff(this._componentRef);
     }
   }
 
@@ -183,27 +175,17 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
     this._moduleRef?.destroy();
   }
 
-  private _updateInputState(inputName: string) {
-    const state = this.inputStateMap.get(inputName);
-    if (state) {
-      state.touched = true;
-    } else {
-      this.inputStateMap.set(inputName, {touched: true});
-    }
-  }
-
   private _applyInputStateDiff(componentRef: ComponentRef<unknown>) {
-    for (const [inputName, state] of this.inputStateMap) {
-      if (!state.touched) {
+    for (const [inputName, touched] of this._inputsUsed) {
+      if (!touched) {
         // The input that was previously active no longer exists and needs to be set to undefined.
         componentRef.setInput(inputName, undefined);
-        this.inputStateMap.delete(inputName);
+        this._inputsUsed.delete(inputName);
       } else {
         // Since touched is true, it can be asserted that the inputs object is not empty.
         componentRef.setInput(inputName, this.ngComponentOutletInputs![inputName]);
+        this._inputsUsed.set(inputName, false);
       }
-
-      state.touched = false;
     }
   }
 }
