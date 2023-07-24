@@ -21,6 +21,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     MISSING_STRUCTURAL_DIRECTIVE = "missingStructuralDirective",
     // (undocumented)
+    NEGATED_ASYNC_PIPE = "negatedAsyncPipe",
+    // (undocumented)
     NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
     // (undocumented)
     OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
