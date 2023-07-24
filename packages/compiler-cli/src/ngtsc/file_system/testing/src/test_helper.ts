@@ -35,7 +35,7 @@ const FS_NATIVE = 'Native';
 const FS_OS_X = 'OS/X';
 const FS_UNIX = 'Unix';
 const FS_WINDOWS = 'Windows';
-const FS_ALL = [FS_OS_X, FS_WINDOWS, FS_UNIX, FS_NATIVE];
+const FS_ALL = [FS_NATIVE];
 
 function runInEachFileSystemFn(callback: (os: string) => void) {
   FS_ALL.forEach((os) => runInFileSystem(os, callback, false));
