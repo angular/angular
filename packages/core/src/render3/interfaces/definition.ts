@@ -56,14 +56,6 @@ export const enum RenderFlags {
 }
 
 /**
- * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
- * consumable for rendering.
- */
-export interface ComponentType<T> extends Type<T> {
-  ɵcmp: unknown;
-}
-
-/**
  * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
  * consumable for rendering.
  */
@@ -73,11 +65,20 @@ export interface DirectiveType<T> extends Type<T> {
 }
 
 /**
+ * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
+ * consumable for rendering.
+ */
+export interface ComponentType<T> extends DirectiveType<T> {
+  ɵcmp: unknown;
+}
+
+/**
  * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.
  */
 export interface PipeType<T> extends Type<T> {
   ɵpipe: unknown;
+  ɵfac: unknown;
 }
 
 

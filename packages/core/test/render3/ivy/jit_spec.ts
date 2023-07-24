@@ -9,9 +9,10 @@
 import {Component, ContentChild, ContentChildren, Directive, ElementRef, forwardRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
-import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
+import {InjectorType, ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
+import {NgModuleType} from '@angular/core/src/render3';
 import {FactoryFn} from '@angular/core/src/render3/definition_factory';
-import {ComponentDef, PipeDef,} from '@angular/core/src/render3/interfaces/definition';
+import {ComponentDef, ComponentType, DirectiveDef, DirectiveType, PipeDef, PipeType,} from '@angular/core/src/render3/interfaces/definition';
 
 
 
@@ -32,10 +33,11 @@ describe('render3 jit', () => {
     })
     class SomeCmp {
     }
-    const SomeCmpAny = SomeCmp as any;
+    const SomeCmpType = SomeCmp as ComponentType<SomeCmp>;
+    const SomeCmpFac = (SomeCmp as DirectiveType<SomeCmp>).ɵfac as FactoryFn<SomeCmp>;
 
-    expect(SomeCmpAny.ɵcmp).toBeDefined();
-    expect(SomeCmpAny.ɵfac() instanceof SomeCmp).toBe(true);
+    expect(SomeCmpType.ɵcmp).toBeDefined();
+    expect(SomeCmpFac() instanceof SomeCmp).toBe(true);
   });
 
   it('compiles a partially compiled component with split dependencies', () => {
@@ -58,9 +60,9 @@ describe('render3 jit', () => {
     }
 
     const rawDirectiveDefs = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).directiveDefs;
-    expect(rawDirectiveDefs).not.toBeNull();
-    const directiveDefs =
-        rawDirectiveDefs! instanceof Function ? rawDirectiveDefs!() : rawDirectiveDefs!;
+    expect(rawDirectiveDefs).toBeDefined();
+    expect(typeof rawDirectiveDefs).toBe('function');
+    const directiveDefs = (rawDirectiveDefs as Function)();
     expect(directiveDefs.length).toBe(1);
     expect(directiveDefs[0].type).toBe(InnerCmp);
   });
@@ -87,9 +89,9 @@ describe('render3 jit', () => {
     }
 
     const rawDirectiveDefs = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).directiveDefs;
-    expect(rawDirectiveDefs).not.toBeNull();
-    const directiveDefs =
-        rawDirectiveDefs! instanceof Function ? rawDirectiveDefs!() : rawDirectiveDefs!;
+    expect(rawDirectiveDefs).toBeDefined();
+    expect(typeof rawDirectiveDefs).toBe('function');
+    const directiveDefs = (rawDirectiveDefs as Function)();
     expect(directiveDefs.length).toBe(1);
     expect(directiveDefs[0].type).toBe(InnerCmp);
   });
@@ -160,7 +162,6 @@ describe('render3 jit', () => {
         return null;
       }
     }
-    const ServiceAny = Service as any;
 
     expect(ɵɵinject(Service).value).toBe('test');
   });
@@ -216,7 +217,7 @@ describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ɵmod;
+    const moduleDef: NgModuleDef<Module> = (Module as NgModuleType).ɵmod;
     expect(moduleDef).toBeDefined();
     if (!Array.isArray(moduleDef.declarations)) {
       return fail('Expected an array');
@@ -239,7 +240,7 @@ describe('render3 jit', () => {
     class Cmp {
     }
 
-    const componentDef: ComponentDef<Module> = (Cmp as any).ɵcmp;
+    const componentDef = (Cmp as ComponentType<Cmp>).ɵcmp as ComponentDef<Module>;
     expect(componentDef).toBeDefined();
     expect(componentDef.schemas).toBeInstanceOf(Array);
   });
@@ -251,7 +252,7 @@ describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ɵmod;
+    const moduleDef: NgModuleDef<Module> = (Module as NgModuleType).ɵmod;
     expect(moduleDef).toBeDefined();
     if (!Array.isArray(moduleDef.declarations)) {
       return fail('Expected an array');
@@ -276,14 +277,14 @@ describe('render3 jit', () => {
       constructor(public token: Token) {}
     }
 
-    const factory: FactoryFn<Module> = (Module as any).ɵfac;
+    const factory = (Module as InjectorType<Module>).ɵfac as FactoryFn<Module>;
     const instance = factory();
 
     // Since the instance was created outside of an injector using the module, the
     // injection will use the default provider, not the provider from the module.
     expect(instance.token).toBe('default');
 
-    const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ɵinj;
+    const injectorDef = (Module as InjectorType<Module>).ɵinj as ɵɵInjectorDef<Module>;
     expect(injectorDef.providers).toEqual([{provide: Token, useValue: 'test'}]);
   });
 
@@ -294,7 +295,8 @@ describe('render3 jit', () => {
     })
     class Cmp {
     }
-    const cmpDef: ComponentDef<Cmp> = (Cmp as any).ɵcmp;
+
+    const cmpDef = (Cmp as ComponentType<Cmp>).ɵcmp as ComponentDef<Cmp>;
 
     expect(cmpDef.directiveDefs).toBeNull();
 
@@ -304,7 +306,7 @@ describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ɵmod;
+    const moduleDef: NgModuleDef<Module> = (Module as NgModuleType).ɵmod;
     // directive defs are still null, since no directives were in that component
     expect(cmpDef.directiveDefs).toBeNull();
   });
@@ -326,7 +328,7 @@ describe('render3 jit', () => {
       }
     }
 
-    const cmpDef = (Cmp as any).ɵcmp as ComponentDef<Cmp>;
+    const cmpDef = (Cmp as ComponentType<Cmp>).ɵcmp as ComponentDef<Cmp>;
 
     expect(cmpDef.hostBindings).toBeDefined();
     expect(cmpDef.hostBindings!.length).toBe(2);
@@ -337,12 +339,15 @@ describe('render3 jit', () => {
     class P {
     }
 
-    const pipeDef = (P as any).ɵpipe as PipeDef<P>;
-    const pipeFactory = (P as any).ɵfac as FactoryFn<P>;
+    const pipeDef = (P as PipeType<P>).ɵpipe as PipeDef<P>;
+    const pipeFactory = (P as PipeType<P>).ɵfac as FactoryFn<P>;
     expect(pipeDef.name).toBe('test-pipe');
-    expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
+    expect(pipeDef.pure).withContext('pipe should not be pure').toBe(false);
     expect(pipeFactory() instanceof P)
-        .toBe(true, 'factory() should create an instance of the pipe');
+        .withContext('factory() should create an instance of the pipe')
+        .toBe(
+            true,
+        );
   });
 
   it('should default @Pipe to pure: true', () => {
@@ -350,8 +355,8 @@ describe('render3 jit', () => {
     class P {
     }
 
-    const pipeDef = (P as any).ɵpipe as PipeDef<P>;
-    expect(pipeDef.pure).toBe(true, 'pipe should be pure');
+    const pipeDef = (P as PipeType<P>).ɵpipe as PipeDef<P>;
+    expect(pipeDef.pure).withContext('pipe should be pure').toBe(true);
   });
 
   it('should add @Input properties to a component', () => {
@@ -364,6 +369,7 @@ describe('render3 jit', () => {
     }
 
     const InputCompAny = InputComp as any;
+    // No need to bother to type correctly, as it uses an alias
     expect(InputCompAny.ɵcmp.inputs).toEqual({publicName: 'privateName'});
     expect(InputCompAny.ɵcmp.declaredInputs).toEqual({publicName: 'privateName'});
   });
@@ -377,66 +383,79 @@ describe('render3 jit', () => {
     }
 
     const InputDirAny = InputDir as any;
+    // No need to bother to type correctly, as it uses an alias
     expect(InputDirAny.ɵdir.inputs).toEqual({publicName: 'privateName'});
     expect(InputDirAny.ɵdir.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should compile ContentChildren query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
-    class TestDirective {
+    class TestDir {
       @ContentChildren('foo') foos: QueryList<ElementRef>|undefined;
     }
 
-    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
+    const dirDef = (TestDir as DirectiveType<TestDir>).ɵdir as DirectiveDef<TestDir>;
+    expect(dirDef.contentQueries).toBeDefined();
+    expect(typeof dirDef.contentQueries).toBe('function');
   });
 
   it('should compile ContentChild query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
-    class TestDirective {
+    class TestDir {
       @ContentChild('foo') foo: ElementRef|undefined;
     }
 
-    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
+    const dirDef = (TestDir as DirectiveType<TestDir>).ɵdir as DirectiveDef<TestDir>;
+    expect(dirDef.contentQueries).toBeDefined();
+    expect(typeof dirDef.contentQueries).toBe('function');
   });
 
   it('should compile ContentChildren query with type predicate on a directive', () => {
     class SomeDir {}
 
     @Directive({selector: '[test]'})
-    class TestDirective {
+    class TestDir {
       @ContentChildren(SomeDir) dirs: QueryList<SomeDir>|undefined;
     }
 
-    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
+    const dirDef = (TestDir as DirectiveType<TestDir>).ɵdir as DirectiveDef<TestDir>;
+    expect(dirDef.contentQueries).toBeDefined();
+    expect(typeof dirDef.contentQueries).toBe('function');
   });
 
   it('should compile ContentChild query with type predicate on a directive', () => {
     class SomeDir {}
 
     @Directive({selector: '[test]'})
-    class TestDirective {
+    class TestDir {
       @ContentChild(SomeDir) dir: SomeDir|undefined;
     }
 
-    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
+    const dirDef = (TestDir as DirectiveType<TestDir>).ɵdir as DirectiveDef<TestDir>;
+    expect(typeof dirDef.contentQueries).toBe('function');
   });
 
   it('should compile ViewChild query on a component', () => {
     @Component({selector: 'test', template: ''})
-    class TestComponent {
-      @ViewChild('foo') foo: ElementRef|undefined;
+    class TestCmp {
+      @ViewChild('foo') public foo: ElementRef|undefined;
     }
 
-    expect((TestComponent as any).ɵcmp.foo).not.toBeNull();
+    const cmpDef = (TestCmp as ComponentType<TestCmp>).ɵcmp as ComponentDef<TestCmp>;
+    expect(cmpDef.viewQuery).toBeDefined();
+    expect(typeof cmpDef.viewQuery).toBe('function');
+    expect((cmpDef as any).foo).toBeUndefined();
   });
 
   it('should compile ViewChildren query on a component', () => {
     @Component({selector: 'test', template: ''})
-    class TestComponent {
+    class TestCmp {
       @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
     }
 
-    expect((TestComponent as any).ɵcmp.viewQuery).not.toBeNull();
+    const cmpDef = (TestCmp as ComponentType<TestCmp>).ɵcmp as ComponentDef<TestCmp>;
+    expect(cmpDef.viewQuery).toBeDefined();
+    expect(typeof cmpDef.viewQuery).toBe('function');
   });
 
   describe('invalid parameters', () => {
@@ -478,10 +497,10 @@ describe('render3 jit', () => {
          class TestDir extends BaseDir {
          }
 
-         const TestDirAny = TestDir as any;
+         const TestDirFac = (TestDir as DirectiveType<TestDir>).ɵfac as FactoryFn<TestDir>;
 
-         expect(TestDirAny.ɵfac).toBeDefined();
-         expect(() => TestDirAny.ɵfac())
+         expect(TestDirFac).toBeDefined();
+         expect(() => TestDirFac())
              .toThrowError(
                  /constructor is not compatible with Angular Dependency Injection because its dependency at index 0 of the parameter list is invalid/);
        });
