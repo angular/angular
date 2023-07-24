@@ -659,7 +659,7 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
  * Return the ImportDeclaration for the given `node` if it is either an `ImportSpecifier` or a
  * `NamespaceImport`. If not return `null`.
  */
-function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
+export function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
   return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
       ts.isNamespaceImport(node)    ? node.parent.parent :
                                       null;

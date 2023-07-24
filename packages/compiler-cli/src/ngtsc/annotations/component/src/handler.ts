@@ -13,6 +13,7 @@ import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
 import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {DeferredSymbolTracker} from '../../../imports/src/deferred_symbol_tracker';
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
@@ -62,7 +63,8 @@ export class ComponentDecoratorHandler implements
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
       private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
-      private readonly compilationMode: CompilationMode) {
+      private readonly compilationMode: CompilationMode,
+      private readonly deferredSymbolsTracker: DeferredSymbolTracker) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
