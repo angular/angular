@@ -15,7 +15,6 @@ import {RuntimeErrorCode} from '../errors';
 import {FormArray, FormGroup} from '../forms';
 import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from '../validators';
 
-
 /**
  * Reports that a control is valid, meaning that no errors exist in the input value.
  *
@@ -989,6 +988,37 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
     this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
+  }
+
+  /**
+   * Enables or disables the control depending on the first argument.
+   * This means the control is included in validation checks and
+   * the aggregate value of its parent. Its status recalculates based on its value and
+   * its validators.
+   *
+   * By default, if the control has children, all children are enabled.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @param opts Configure options that control how the control propagates changes and
+   * emits events when marked as untouched
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is enabled.
+   * When false, no events are emitted.
+   */
+  setState(state: {enabled: boolean}, opts?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+  setState(state: {disabled: boolean}, opts?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+  setState(state: {disabled: boolean}|{enabled: boolean}, opts: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
+    (((state as {enabled: boolean}).enabled) ||
+     ((state as {disabled: boolean}).disabled === false)) ?
+        this.enable(opts) :
+        this.disable(opts);
   }
 
   private _updateAncestors(

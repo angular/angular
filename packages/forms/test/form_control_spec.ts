@@ -1220,6 +1220,28 @@ describe('FormControl', () => {
       expect(c.valid).toBe(true);
     });
 
+    it('should mark the control as disabled with setState', () => {
+      const c = new FormControl(null);
+      expect(c.disabled).toBe(false);
+      expect(c.valid).toBe(true);
+
+      c.setState({enabled: false});
+      expect(c.disabled).toBe(true);
+      expect(c.valid).toBe(false);
+
+      c.setState({enabled: true});
+      expect(c.disabled).toBe(false);
+      expect(c.valid).toBe(true);
+
+      c.setState({disabled: true});
+      expect(c.disabled).toBe(true);
+      expect(c.valid).toBe(false);
+
+      c.setState({disabled: false});
+      expect(c.disabled).toBe(false);
+      expect(c.valid).toBe(true);
+    });
+
     it('should set the control status as disabled', () => {
       const c = new FormControl(null);
       expect(c.status).toEqual('VALID');
