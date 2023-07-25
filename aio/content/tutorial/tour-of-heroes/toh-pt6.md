@@ -443,7 +443,7 @@ Each operator works as follows:
 <div class="alert is-helpful">
 
 With the [`switchMap` operator](https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap), every qualifying key event can trigger an `HttpClient.get()` method call.
-Even with a 300&nbsp;ms pause between requests, you could have many HTTP requests in flight and they may not return in the order sent.
+Even with a 300&nbsp;ms pause between requests, you could have many HTTP requests in flight, and they may not return in the order sent.
 
 `switchMap()` preserves the original request order while returning only the observable from the most recent HTTP method call.
 Results from prior calls are canceled and discarded.

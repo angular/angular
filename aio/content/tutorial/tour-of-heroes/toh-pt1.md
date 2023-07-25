@@ -107,7 +107,7 @@ The browser refreshes and now the hero's name is displayed in capital letters.
 The word `uppercase` in the interpolation binding after the pipe <code>&verbar;</code> character, activates the built-in `UppercasePipe`.
 
 [Pipes](guide/pipes) are a good way to format strings, currency amounts, dates, and other display data.
-Angular ships with several built-in pipes and you can create your own.
+Angular ships with several built-in pipes, and you can create your own.
 
 ## Edit the hero
 
