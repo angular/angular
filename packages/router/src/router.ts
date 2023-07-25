@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of, SubscriptionLike} from 'rxjs';
+import {Observable, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
@@ -310,6 +310,7 @@ export class Router {
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
+  private readonly ngZone = inject(NgZone);
 
   /**
    * Indicates whether the the application has opted in to binding Router data to component inputs.
@@ -320,7 +321,7 @@ export class Router {
   readonly componentInputBindingEnabled = !!inject(INPUT_BINDER, {optional: true});
 
   constructor() {
-    this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
+    this.isNgZoneEnabled = this.ngZone instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(this.config);
     this.currentUrlTree = new UrlTree();
@@ -731,9 +732,13 @@ export class Router {
     // Indicate that the navigation is happening.
     const taskId = this.pendingTasks.add();
     afterNextNavigation(this, () => {
-      // Remove pending task in a microtask to allow for cancelled
-      // initial navigations and redirects within the same task.
-      queueMicrotask(() => this.pendingTasks.remove(taskId));
+      // Queue microtasks outside of Angular to prevent redundant change detection when removing
+      // pending tasks.
+      this.ngZone.runOutsideAngular(() => {
+        // Remove pending task in a microtask to allow for cancelled
+        // initial navigations and redirects within the same task.
+        queueMicrotask(() => this.pendingTasks.remove(taskId));
+      });
     });
 
     this.navigationTransitions.handleNavigationRequest({
