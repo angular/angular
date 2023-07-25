@@ -197,6 +197,7 @@ export {
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
+  ɵɵdefer,
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,

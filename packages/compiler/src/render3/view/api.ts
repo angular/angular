@@ -218,11 +218,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   declarations: DeclarationT[];
 
   /**
-   * Map of all types that can be defer loaded -> corresponding module specifier
-   * strings (that can later be used as a value in dynamic imports).
+   * Map of all types that can be defer loaded (ts.ClassDeclaration) ->
+   * corresponding import declaration (ts.ImportDeclaration) within
+   * the current source file.
    */
-  // TODO: fix types! (ClassDeclaration -> ImportDeclaration)
-  deferrableDeclToImportDecl: Map<any, any>;
+  deferrableDeclToImportDecl: Map<o.Expression, o.Expression>;
 
   /**
    * Map of {#defer} blocks -> their corresponding dependencies.
