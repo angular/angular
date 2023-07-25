@@ -169,6 +169,11 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       declarationListEmitMode,
       styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) :
                                       [],
+
+      // Defer blocks are not yet supported in partial compilation.
+      deferBlocks: new Map(),
+      deferrableDeclToImportDecl: new Map(),
+
       encapsulation: metaObj.has('encapsulation') ?
           parseEncapsulation(metaObj.getValue('encapsulation')) :
           ViewEncapsulation.Emulated,

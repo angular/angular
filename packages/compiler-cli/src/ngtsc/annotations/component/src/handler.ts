@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockTemplateDependency, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -20,7 +20,7 @@ import {IndexingContext} from '../../../indexer';
 import {DirectiveMeta, extractDirectiveTypeCheckMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetadataRegistry, MetaKind, PipeMeta, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic, TypeCheckScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
@@ -84,7 +84,7 @@ export class ComponentDecoratorHandler implements
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
       private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
-      private readonly deferredSymbolsTracker: DeferredSymbolTracker) {
+      private readonly deferredSymbolTracker: DeferredSymbolTracker) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -628,6 +628,8 @@ export class ComponentDecoratorHandler implements
     const data: ComponentResolutionData = {
       declarations: EMPTY_ARRAY,
       declarationListEmitMode: DeclarationListEmitMode.Direct,
+      deferBlocks: new Map(),
+      deferrableDeclToImportDecl: new Map(),
     };
     const diagnostics: ts.Diagnostic[] = [];
 
@@ -677,38 +679,60 @@ export class ComponentDecoratorHandler implements
       const binder = new R3TargetBinder(matcher);
       const bound = binder.bind({template: metadata.template.nodes});
 
-      const used = new Set<ClassDeclaration>();
-      for (const dir of bound.getUsedDirectives()) {
-        used.add(dir.ref.node);
+      // Find all defer blocks used in the template and for each block
+      // bind its own scope.
+      const deferBlocks = new Map<TmplAstDeferredBlock, BoundTarget<DirectiveMeta>>();
+      for (const deferBlock of bound.getDeferBlocks()) {
+        deferBlocks.set(deferBlock, binder.bind({template: deferBlock.children}));
       }
-      for (const name of bound.getUsedPipes()) {
+
+      // Register all Directives and Pipes used at the top level (outside
+      // of any `{#defer}` blocks), which would be eagerly referenced.
+      const eagerlyUsed = new Set<ClassDeclaration>();
+      for (const dir of bound.getEagerlyUsedDirectives()) {
+        eagerlyUsed.add(dir.ref.node);
+      }
+      for (const name of bound.getEagerlyUsedPipes()) {
         if (!pipes.has(name)) {
           continue;
         }
-        used.add(pipes.get(name)!.ref.node);
+        eagerlyUsed.add(pipes.get(name)!.ref.node);
       }
 
-      const declarations: (UsedPipe|UsedDirective|UsedNgModule)[] = [];
-      const seen = new Set<ClassDeclaration>();
+      // Set of Directives and Pipes used across the entire template,
+      // including all `{#defer}` blocks.
+      const wholeTemplateUsed = new Set<ClassDeclaration>(eagerlyUsed);
+      for (const bound of deferBlocks.values()) {
+        for (const dir of bound.getEagerlyUsedDirectives()) {
+          wholeTemplateUsed.add(dir.ref.node);
+        }
+        for (const name of bound.getEagerlyUsedPipes()) {
+          if (!pipes.has(name)) {
+            continue;
+          }
+          wholeTemplateUsed.add(pipes.get(name)!.ref.node);
+        }
+      }
+
+      const declarations = new Map<ClassDeclaration, UsedPipe|UsedDirective|UsedNgModule>();
 
       // Transform the dependencies list, filtering out unused dependencies.
       for (const dep of dependencies) {
         // Only emit references to each dependency once.
-        if (seen.has(dep.ref.node)) {
+        if (declarations.has(dep.ref.node)) {
           continue;
         }
-        seen.add(dep.ref.node);
 
         switch (dep.kind) {
           case MetaKind.Directive:
-            if (!used.has(dep.ref.node) || dep.matchSource !== MatchSource.Selector) {
+            if (!wholeTemplateUsed.has(dep.ref.node) || dep.matchSource !== MatchSource.Selector) {
               continue;
             }
             const dirType = this.refEmitter.emit(dep.ref, context);
             assertSuccessfulReferenceEmit(
                 dirType, node.name, dep.isComponent ? 'component' : 'directive');
 
-            declarations.push({
+            declarations.set(dep.ref.node, {
               kind: R3TemplateDependencyKind.Directive,
               ref: dep.ref,
               type: dirType.expression,
@@ -721,14 +745,14 @@ export class ComponentDecoratorHandler implements
             });
             break;
           case MetaKind.Pipe:
-            if (!used.has(dep.ref.node)) {
+            if (!wholeTemplateUsed.has(dep.ref.node)) {
               continue;
             }
 
             const pipeType = this.refEmitter.emit(dep.ref, context);
             assertSuccessfulReferenceEmit(pipeType, node.name, 'pipe');
 
-            declarations.push({
+            declarations.set(dep.ref.node, {
               kind: R3TemplateDependencyKind.Pipe,
               type: pipeType.expression,
               name: dep.name,
@@ -740,7 +764,7 @@ export class ComponentDecoratorHandler implements
             const ngModuleType = this.refEmitter.emit(dep.ref, context);
             assertSuccessfulReferenceEmit(ngModuleType, node.name, 'NgModule');
 
-            declarations.push({
+            declarations.set(dep.ref.node, {
               kind: R3TemplateDependencyKind.NgModule,
               type: ngModuleType.expression,
               importedFile: ngModuleType.importedFile,
@@ -753,9 +777,19 @@ export class ComponentDecoratorHandler implements
           this.semanticDepGraphUpdater!.getSemanticReference(decl.ref.node, decl.type);
 
       if (this.semanticDepGraphUpdater !== null) {
-        symbol.usedDirectives = declarations.filter(isUsedDirective).map(getSemanticReference);
-        symbol.usedPipes = declarations.filter(isUsedPipe).map(getSemanticReference);
+        symbol.usedDirectives =
+            Array.from(declarations.values()).filter(isUsedDirective).map(getSemanticReference);
+        symbol.usedPipes =
+            Array.from(declarations.values()).filter(isUsedPipe).map(getSemanticReference);
       }
+
+      const eagerDeclarations = Array.from(declarations.values())
+                                    .filter(
+                                        decl => decl.kind === R3TemplateDependencyKind.NgModule ||
+                                            eagerlyUsed.has(decl.ref.node));
+
+      // Process information related to `{#defer}` blocks
+      this.resolveDeferBlocks(deferBlocks, declarations, data, analysis, eagerlyUsed);
 
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
@@ -766,7 +800,7 @@ export class ComponentDecoratorHandler implements
       // imported directly by the user, so Angular won't introduce any imports that aren't already
       // in the user's program.
       if (!metadata.isStandalone) {
-        for (const usedDep of declarations) {
+        for (const usedDep of eagerDeclarations) {
           const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
           if (cycle !== null) {
             switch (usedDep.kind) {
@@ -792,20 +826,20 @@ export class ComponentDecoratorHandler implements
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
-        for (const {type, importedFile} of declarations) {
+        for (const {type, importedFile} of eagerDeclarations) {
           this.maybeRecordSyntheticImport(importedFile, type, context);
         }
 
         // Check whether the dependencies arrays in ɵcmp need to be wrapped in a closure.
         // This is required if any dependency reference is to a declaration in the same file
         // but declared after this component.
-        const declarationIsForwardDeclared =
-            declarations.some(decl => isExpressionForwardReference(decl.type, node.name, context));
+        const declarationIsForwardDeclared = eagerDeclarations.some(
+            decl => isExpressionForwardReference(decl.type, node.name, context));
 
         const wrapDirectivesAndPipesInClosure =
             declarationIsForwardDeclared || standaloneImportMayBeForwardDeclared;
 
-        data.declarations = declarations;
+        data.declarations = eagerDeclarations;
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
             DeclarationListEmitMode.Closure :
             DeclarationListEmitMode.Direct;
@@ -815,8 +849,8 @@ export class ComponentDecoratorHandler implements
           // create a cycle. Instead, mark this component as requiring remote scoping, so that the
           // NgModule file will take care of setting the directives for the component.
           this.scopeRegistry.setComponentRemoteScope(
-              node, declarations.filter(isUsedDirective).map(dir => dir.ref),
-              declarations.filter(isUsedPipe).map(pipe => pipe.ref));
+              node, eagerDeclarations.filter(isUsedDirective).map(dir => dir.ref),
+              eagerDeclarations.filter(isUsedPipe).map(pipe => pipe.ref));
           symbol.isRemotelyScoped = true;
 
           // If a semantic graph is being tracked, record the fact that this component is remotely
@@ -948,6 +982,22 @@ export class ComponentDecoratorHandler implements
     if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
       return [];
     }
+
+    // Go over all dependencies of all defer blocks and update the value of
+    // the `isDeferrable` flag and the `importPath` to reflect the current
+    // state after visiting all components during the `resolve` phase.
+    for (const [_, deferBlockDeps] of resolution.deferBlocks) {
+      for (const dep of deferBlockDeps) {
+        const classDecl =
+            (dep as unknown as {classDeclaration: ts.ClassDeclaration}).classDeclaration;
+        const importDecl = resolution.deferrableDeclToImportDecl.get(classDecl) ?? null;
+        if (importDecl && this.deferredSymbolTracker.canDefer(importDecl)) {
+          dep.isDeferrable = true;
+          dep.importPath = importDecl.moduleSpecifier.text;
+        }
+      }
+    }
+
     const meta: R3ComponentMetadata<R3TemplateDependency> = {...analysis.meta, ...resolution};
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
@@ -994,6 +1044,8 @@ export class ComponentDecoratorHandler implements
       // No resolution is done in local compilation mode, therefore we pass an empty array here.
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       declarations: [],
+      deferBlocks: new Map(),
+      deferrableDeclToImportDecl: new Map(),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
@@ -1028,6 +1080,118 @@ export class ComponentDecoratorHandler implements
     }
 
     this.cycleAnalyzer.recordSyntheticImport(origin, imported);
+  }
+
+  /**
+   * Resolves information about defer blocks dependencies to make it
+   * available for the final `compile` step.
+   */
+  private resolveDeferBlocks(
+      deferBlocks: Map<TmplAstDeferredBlock, BoundTarget<DirectiveMeta>>,
+      deferrableDecls: Map<ClassDeclaration, AnyUsedType>,  //
+      resolutionData: ComponentResolutionData,              //
+      analysisData: Readonly<ComponentAnalysisData>,        //
+      eagerlyUsedDecls: Set<ClassDeclaration>) {
+    // Collect all deferred decls from all defer blocks from the entire template
+    // to intersect with the information from the `imports` field of a particular
+    // Component.
+    const allDeferredDecls = new Set<ClassDeclaration>();
+
+    for (const [deferBlock, bound] of deferBlocks) {
+      const usedDirectives = new Set(bound.getEagerlyUsedDirectives().map(d => d.ref.node));
+      const usedPipes = new Set(bound.getEagerlyUsedPipes());
+      const deps: Array<DeferBlockTemplateDependency&{classDeclaration: ts.ClassDeclaration}> = [];
+      for (const decl of Array.from(deferrableDecls.values())) {
+        if (decl.kind === R3TemplateDependencyKind.NgModule) {
+          continue;
+        }
+        if (decl.kind === R3TemplateDependencyKind.Directive &&
+            !usedDirectives.has(decl.ref.node)) {
+          continue;
+        }
+        if (decl.kind === R3TemplateDependencyKind.Pipe && !usedPipes.has(decl.name)) {
+          continue;
+        }
+        // Collect initial information about this dependency.
+        // The `isDeferrable` flag and the `importPath` info would be
+        // added later during the `compile` step.
+        deps.push({
+          type: decl.type as WrappedNodeExpr<ts.Identifier>,
+          symbolName: decl.ref.node.name.escapedText as string,
+          isDeferrable: false,
+          importPath: null,
+          // Extra info to match corresponding import during the `compile` phase.
+          classDeclaration: decl.ref.node as ts.ClassDeclaration,
+        });
+        allDeferredDecls.add(decl.ref.node);
+      }
+      resolutionData.deferBlocks.set(deferBlock, deps);
+    }
+
+    // For standalone components with the `imports` field - inspect teh list of
+    // referenced symbols and mark the ones used in defer blocks as potential candidates
+    // for defer loading.
+    if (analysisData.meta.isStandalone && analysisData.rawImports !== null &&
+        ts.isArrayLiteralExpression(analysisData.rawImports)) {
+      for (const node of analysisData.rawImports.elements) {
+        if (!ts.isIdentifier(node)) {
+          // Can't defer-load non-literal references.
+          continue;
+        }
+
+        const imp = this.reflector.getImportOfIdentifier(node);
+        if (imp === null) {
+          // Can't defer-load symbols which aren't imported.
+          continue;
+        }
+
+        const decl = this.reflector.getDeclarationOfIdentifier(node);
+        if (decl === null) {
+          // Can't defer-load symbols which don't exist.
+          continue;
+        }
+
+        if (!isNamedClassDeclaration(decl.node)) {
+          // Can't defer-load symbols which aren't classes.
+          continue;
+        }
+
+        // Are we even trying to defer-load this symbol?
+        if (!allDeferredDecls.has(decl.node)) {
+          continue;
+        }
+
+        if (eagerlyUsedDecls.has(decl.node)) {
+          // Can't defer-load symbols that are eagerly referenced as a dependency
+          // in a template outside of a `{#defer}` block.
+          continue;
+        }
+
+        // Is it a standalone directive/component?
+        const dirMeta = this.metaReader.getDirectiveMetadata(new Reference(decl.node));
+        if (dirMeta !== null && !dirMeta.isStandalone) {
+          continue;
+        }
+
+        // Is it a standalone pipe?
+        const pipeMeta = this.metaReader.getPipeMetadata(new Reference(decl.node));
+        if (pipeMeta !== null && !pipeMeta.isStandalone) {
+          continue;
+        }
+
+        if (dirMeta === null && pipeMeta === null) {
+          // This is not a directive or a pipe.
+          continue;
+        }
+
+        // Keep track of how this class made it into the current source file
+        // (which ts.ImportDeclaration was used for this symbol).
+        resolutionData.deferrableDeclToImportDecl.set(decl.node, imp.node);
+
+        // We're okay deferring this reference to the imported symbol.
+        this.deferredSymbolTracker.markAsDeferrableCandidate(node, imp.node);
+      }
+    }
   }
 }
 
