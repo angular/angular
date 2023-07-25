@@ -39,6 +39,26 @@ import {animationTriggerResolver, collectAnimationNames, validateAndFlattenCompo
 
 const EMPTY_ARRAY: any[] = [];
 
+type UsedDirective =
+    R3DirectiveDependencyMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
+
+type UsedPipe = R3PipeDependencyMetadata&{
+  ref: Reference<ClassDeclaration>,
+  importedFile: ImportedFile,
+};
+
+type UsedNgModule = R3NgModuleDependencyMetadata&{
+  importedFile: ImportedFile,
+};
+
+type AnyUsedType = UsedPipe|UsedDirective|UsedNgModule;
+
+const isUsedDirective = (decl: AnyUsedType): decl is UsedDirective =>
+    decl.kind === R3TemplateDependencyKind.Directive;
+
+const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
+    decl.kind === R3TemplateDependencyKind.Pipe;
+
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
@@ -657,10 +677,6 @@ export class ComponentDecoratorHandler implements
       const binder = new R3TargetBinder(matcher);
       const bound = binder.bind({template: metadata.template.nodes});
 
-      // The BoundTarget knows which directives and pipes matched the template.
-      type UsedDirective = R3DirectiveDependencyMetadata&
-          {ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
-
       const used = new Set<ClassDeclaration>();
       for (const dir of bound.getUsedDirectives()) {
         used.add(dir.ref.node);
@@ -671,15 +687,6 @@ export class ComponentDecoratorHandler implements
         }
         used.add(pipes.get(name)!.ref.node);
       }
-
-      type UsedPipe = R3PipeDependencyMetadata&{
-        ref: Reference<ClassDeclaration>,
-        importedFile: ImportedFile,
-      };
-
-      type UsedNgModule = R3NgModuleDependencyMetadata&{
-        importedFile: ImportedFile,
-      };
 
       const declarations: (UsedPipe|UsedDirective|UsedNgModule)[] = [];
       const seen = new Set<ClassDeclaration>();
@@ -741,11 +748,6 @@ export class ComponentDecoratorHandler implements
             break;
         }
       }
-
-      const isUsedDirective = (decl: UsedDirective|UsedPipe|UsedNgModule): decl is UsedDirective =>
-          decl.kind === R3TemplateDependencyKind.Directive;
-      const isUsedPipe = (decl: UsedDirective|UsedPipe|UsedNgModule): decl is UsedPipe =>
-          decl.kind === R3TemplateDependencyKind.Pipe;
 
       const getSemanticReference = (decl: UsedDirective|UsedPipe) =>
           this.semanticDepGraphUpdater!.getSemanticReference(decl.ref.node, decl.type);
