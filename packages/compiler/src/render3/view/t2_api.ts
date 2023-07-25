@@ -7,7 +7,7 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
+import {BoundAttribute, BoundEvent, DeferredBlock, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
 
 
 /*
@@ -173,12 +173,31 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
 
   /**
-   * Get a list of all the directives used by the target.
+   * Get a list of all the directives used by the target,
+   * including directives from `{#defer}` blocks.
    */
   getUsedDirectives(): DirectiveT[];
 
   /**
-   * Get a list of all the pipes used by the target.
+   * Get a list of eagerly used directives from the target.
+   * Note: this list *excludes* directives from `{#defer}` blocks.
+   */
+  getEagerlyUsedDirectives(): DirectiveT[];
+
+  /**
+   * Get a list of all the pipes used by the target,
+   * including pipes from `{#defer}` blocks.
    */
   getUsedPipes(): string[];
+
+  /**
+   * Get a list of eagerly used pipes from the target.
+   * Note: this list *excludes* pipes from `{#defer}` blocks.
+   */
+  getEagerlyUsedPipes(): string[];
+
+  /**
+   * Get a list of all {#defer} blocks used by the target.
+   */
+  getDeferBlocks(): DeferredBlock[];
 }
