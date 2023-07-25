@@ -13,7 +13,7 @@ For the sample application that this page describes, see the <live-example></liv
 
 ## Why services
 
-Components shouldn't fetch or save data directly and they certainly shouldn't knowingly present fake data.
+Components shouldn't fetch or save data directly, and they certainly shouldn't knowingly present fake data.
 They should focus on presenting data and delegate data access to a service.
 
 This tutorial creates a `HeroService` that all application classes can use to get heroes.
