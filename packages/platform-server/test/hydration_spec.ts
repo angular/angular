@@ -12,6 +12,7 @@ import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf
 import {MockPlatformLocation} from '@angular/common/testing';
 import {afterRender, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
+import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
@@ -89,6 +90,10 @@ function convertHtmlToDom(html: string, doc: Document): HTMLElement {
   return container;
 }
 
+function stripSsrIntegrityMarker(input: string): string {
+  return input.replace(`<!--${SSR_CONTENT_INTEGRITY_MARKER}-->`, '');
+}
+
 function stripTransferDataScript(input: string): string {
   return input.replace(/<script (.*?)<\/script>/s, '');
 }
@@ -105,7 +110,8 @@ function whenStable(appRef: ApplicationRef): Promise<void> {
 function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
   const clientContents =
       stripTransferDataScript(stripUtilAttributes(clientAppRootElement.outerHTML, false));
-  ssrContents = stripTransferDataScript(stripUtilAttributes(ssrContents, false));
+  ssrContents =
+      stripSsrIntegrityMarker(stripTransferDataScript(stripUtilAttributes(ssrContents, false)));
   expect(clientContents).toBe(ssrContents, 'Client and server contents mismatch');
 }
 
@@ -280,7 +286,7 @@ describe('platform-server hydration integration', () => {
         hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<ApplicationRef> {
       // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
       const container = convertHtmlToDom(html, doc);
-      Array.from(container.children).forEach(node => doc.body.appendChild(node));
+      Array.from(container.childNodes).forEach(node => doc.body.appendChild(node));
 
       function _document(): any {
         ɵsetDocument(doc);
@@ -4122,14 +4128,15 @@ describe('platform-server hydration integration', () => {
         appRef.tick();
 
         const clientRootNode = compRef.location.nativeElement;
-        const portalRootNode = clientRootNode.ownerDocument.body.firstChild;
+        const portalRootNode = clientRootNode.ownerDocument.querySelector('portal-app');
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyAllNodesClaimedForHydration(portalRootNode.firstChild);
         const clientContents = stripUtilAttributes(portalRootNode.outerHTML, false) +
             stripUtilAttributes(clientRootNode.outerHTML, false);
         expect(clientContents)
             .toBe(
-                stripUtilAttributes(stripTransferDataScript(ssrContents), false),
+                stripSsrIntegrityMarker(
+                    stripUtilAttributes(stripTransferDataScript(ssrContents), false)),
                 'Client and server contents mismatch');
       });
 

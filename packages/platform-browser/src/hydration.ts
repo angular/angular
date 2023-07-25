@@ -169,7 +169,6 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
       providers.push(ɵproviders);
     }
   }
-
   return makeEnvironmentProviders([
     (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
     (featuresKind.has(HydrationFeatureKind.NoDomReuseFeature) ? [] : withDomHydration()),

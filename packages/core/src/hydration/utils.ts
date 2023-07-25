@@ -36,6 +36,11 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
  */
 export const NGH_ATTR_NAME = 'ngh';
 
+/**
+ * Marker used in a comment node to ensure hydration content integrity
+ */
+export const SSR_CONTENT_INTEGRITY_MARKER = 'nghm';
+
 export const enum TextNodeMarker {
 
   /**

@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {HttpClient, provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Component, Injectable} from '@angular/core';
+import {ApplicationRef, Component, Injectable, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -37,23 +37,24 @@ describe('provideClientHydration', () => {
   }
 
   describe('default', () => {
-    beforeEach(withBody('<test-hydrate-app></test-hydrate-app>', () => {
-      TestBed.resetTestingModule();
+    beforeEach(withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+          TestBed.resetTestingModule();
 
-      TestBed.configureTestingModule({
-        declarations: [SomeComponent],
-        providers: [
-          {provide: DOCUMENT, useFactory: () => document},
-          {provide: ApplicationRef, useClass: ApplicationRefPatched},
-          provideClientHydration(),
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      });
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              provideClientHydration(),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
 
-      const appRef = TestBed.inject(ApplicationRef);
-      appRef.bootstrap(SomeComponent);
-    }));
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+        }));
 
     it(`should use cached HTTP calls`, () => {
       makeRequestAndExpectOne('/test-1', 'foo');
@@ -63,23 +64,24 @@ describe('provideClientHydration', () => {
   });
 
   describe('withNoHttpTransferCache', () => {
-    beforeEach(withBody('<test-hydrate-app></test-hydrate-app>', () => {
-      TestBed.resetTestingModule();
+    beforeEach(withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+          TestBed.resetTestingModule();
 
-      TestBed.configureTestingModule({
-        declarations: [SomeComponent],
-        providers: [
-          {provide: DOCUMENT, useFactory: () => document},
-          {provide: ApplicationRef, useClass: ApplicationRefPatched},
-          provideClientHydration(withNoHttpTransferCache()),
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      });
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              provideClientHydration(withNoHttpTransferCache()),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
 
-      const appRef = TestBed.inject(ApplicationRef);
-      appRef.bootstrap(SomeComponent);
-    }));
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+        }));
 
     it(`should not cached HTTP calls`, () => {
       makeRequestAndExpectOne('/test-1', 'foo');
