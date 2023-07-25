@@ -82,6 +82,23 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            selector: '[sameSelectorAsInput]',
                            animationTriggerNames: null,
                          }]);
+
+  const simpleDirectives = ['a', 'b', 'c', 'd', 'e', 'f'];
+  const deferBlockDirectives = ['loading', 'error', 'placeholder'];
+  for (const dir of [...simpleDirectives, ...deferBlockDirectives]) {
+    const name = dir[0].toUpperCase() + dir.slice(1).toLowerCase();
+    matcher.addSelectables(CssSelector.parse(`[${dir}]`), [{
+                             name: `Dir${name}`,
+                             exportAs: null,
+                             inputs: new IdentityInputMapping([]),
+                             outputs: new IdentityInputMapping([]),
+                             isComponent: false,
+                             isStructural: true,
+                             selector: `[${dir}]`,
+                             animationTriggerNames: null,
+                           }]);
+  }
+
   return matcher;
 }
 
@@ -228,6 +245,98 @@ describe('t2 binding', () => {
       const attr = el.outputs[0];
       const consumer = res.getConsumerOfBinding(attr);
       expect(consumer).toEqual(el);
+    });
+  });
+
+  describe('extracting defer blocks info', () => {
+    it('should extract top-level defer blocks', () => {
+      const template = parseTemplate(
+          `
+            {#defer}<cmp-a />{/defer}
+            {#defer}<cmp-b />{/defer}
+            <cmp-c />
+          `,
+          '', {enabledBlockTypes: new Set(['defer'])});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const deferBlocks = bound.getDeferBlocks();
+      expect(deferBlocks.length).toBe(2);
+    });
+
+    it('should extract nested defer blocks and associated pipes', () => {
+      const template = parseTemplate(
+          `
+            {#defer}
+              {{ name | pipeA }}
+              {#defer}{{ name | pipeB }}{/defer}
+            {:loading}
+              {#defer}{{ name | pipeC }}{/defer}
+              {{ name | loading }}
+            {:placeholder}
+              {#defer}{{ name | pipeD }}{/defer}
+              {{ name | placeholder }}
+            {:error}
+              {#defer}{{ name | pipeE }}{/defer}
+              {{ name | error }}
+            {/defer}
+            {{ name | pipeF }}
+          `,
+          '', {enabledBlockTypes: new Set(['defer'])});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const deferBlocks = bound.getDeferBlocks();
+
+      expect(deferBlocks.length).toBe(5);
+
+      // Record all pipes used within :placeholder, :loading and :error sub-blocks,
+      // also record pipes used outside of any {#defer} blocks.
+      expect(bound.getEagerlyUsedPipes()).toEqual(['placeholder', 'loading', 'error', 'pipeF']);
+
+      // Record *all* pipes from the template, including the ones from {#defer} blocks.
+      expect(bound.getUsedPipes()).toEqual([
+        'pipeA', 'pipeB', 'pipeD', 'placeholder', 'pipeC', 'loading', 'pipeE', 'error', 'pipeF'
+      ]);
+    });
+
+    it('should extract nested defer blocks and associated directives', () => {
+      const template = parseTemplate(
+          `
+            {#defer}
+              <img *a />
+              {#defer}<img *b />{/defer}
+            {:loading}
+              {#defer}<img *c />{/defer}
+              <img *loading />
+            {:placeholder}
+              {#defer}<img *d />{/defer}
+              <img *placeholder />
+            {:error}
+              {#defer}<img *e />{/defer}
+              <img *error />
+            {/defer}
+            <img *f />
+          `,
+          '', {enabledBlockTypes: new Set(['defer'])});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const deferBlocks = bound.getDeferBlocks();
+
+      expect(deferBlocks.length).toBe(5);
+
+      // Record all directives used within :placeholder, :loading and :error sub-blocks,
+      // also record directives used outside of any {#defer} blocks.
+      const eagerDirs = bound.getEagerlyUsedDirectives();
+      expect(eagerDirs.length).toBe(4);
+      expect(eagerDirs.map(dir => dir.name)).toEqual([
+        'DirPlaceholder', 'DirLoading', 'DirError', 'DirF'
+      ]);
+
+      // Record *all* directives from the template, including the ones from {#defer} blocks.
+      const allDirs = bound.getUsedDirectives();
+      expect(allDirs.length).toBe(9);
+      expect(allDirs.map(dir => dir.name)).toEqual([
+        'DirA', 'DirB', 'DirD', 'DirPlaceholder', 'DirC', 'DirLoading', 'DirE', 'DirError', 'DirF'
+      ]);
     });
   });
 
