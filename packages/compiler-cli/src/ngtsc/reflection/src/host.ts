@@ -466,6 +466,11 @@ export interface Import {
    * This could either be an absolute module name (@angular/core for example) or a relative path.
    */
   from: string;
+
+  /**
+   * TypeScript node that represents this import.
+   */
+  node: ts.ImportDeclaration;
 }
 
 /**

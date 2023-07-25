@@ -14,6 +14,20 @@ import {ClassMember, ClassMemberKind, CtorParameter, TypeValueReferenceKind} fro
 import {TypeScriptReflectionHost} from '../src/typescript';
 import {isNamedClassDeclaration} from '../src/util';
 
+function findFirstImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
+  let found: ts.ImportDeclaration|null = null;
+  const visit = (node: ts.Node): void => {
+    if (found) return;
+    if (ts.isImportDeclaration(node)) {
+      found = node;
+      return;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(node);
+  return found;
+}
+
 runInEachFileSystem(() => {
   describe('reflector', () => {
     let _: typeof absoluteFrom;
@@ -283,9 +297,12 @@ runInEachFileSystem(() => {
         }
         const Target = foo.type.typeName;
         const directImport = host.getImportOfIdentifier(Target);
+        const sf = foo.getSourceFile();
+        const importDecl = findFirstImportDeclaration(sf);
         expect(directImport).toEqual({
           name: 'Target',
           from: 'absolute',
+          node: importDecl as ts.ImportDeclaration,
         });
       });
 
@@ -310,9 +327,12 @@ runInEachFileSystem(() => {
         }
         const Target = foo.type.typeName.right;
         const namespacedImport = host.getImportOfIdentifier(Target);
+        const sf = foo.getSourceFile();
+        const importDecl = findFirstImportDeclaration(sf);
         expect(namespacedImport).toEqual({
           name: 'Target',
           from: 'absolute',
+          node: importDecl as ts.ImportDeclaration,
         });
       });
     });
