@@ -118,6 +118,8 @@ export {
 
   ɵɵtemplate,
 
+  ɵɵdefer,
+
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
