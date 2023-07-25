@@ -12,8 +12,7 @@ import ts from 'typescript';
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
-import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
-import {DeferredSymbolTracker} from '../../../imports/src/deferred_symbol_tracker';
+import {assertSuccessfulReferenceEmit, DeferredSymbolTracker, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
@@ -987,13 +986,15 @@ export class ComponentDecoratorHandler implements
     // the `isDeferrable` flag and the `importPath` to reflect the current
     // state after visiting all components during the `resolve` phase.
     for (const [_, deferBlockDeps] of resolution.deferBlocks) {
-      for (const dep of deferBlockDeps) {
-        const classDecl =
-            (dep as unknown as {classDeclaration: ts.ClassDeclaration}).classDeclaration;
-        const importDecl = resolution.deferrableDeclToImportDecl.get(classDecl) ?? null;
+      for (const deferBlockDep of deferBlockDeps) {
+        const dep = deferBlockDep as unknown as {classDeclaration: ts.ClassDeclaration};
+        const classDecl = dep.classDeclaration as unknown as Expression;
+        const importDecl = resolution.deferrableDeclToImportDecl.get(classDecl) as unknown as
+                ts.ImportDeclaration ??
+            null;
         if (importDecl && this.deferredSymbolTracker.canDefer(importDecl)) {
-          dep.isDeferrable = true;
-          dep.importPath = importDecl.moduleSpecifier.text;
+          deferBlockDep.isDeferrable = true;
+          deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
         }
       }
     }
@@ -1128,7 +1129,7 @@ export class ComponentDecoratorHandler implements
       resolutionData.deferBlocks.set(deferBlock, deps);
     }
 
-    // For standalone components with the `imports` field - inspect teh list of
+    // For standalone components with the `imports` field - inspect the list of
     // referenced symbols and mark the ones used in defer blocks as potential candidates
     // for defer loading.
     if (analysisData.meta.isStandalone && analysisData.rawImports !== null &&
@@ -1186,7 +1187,8 @@ export class ComponentDecoratorHandler implements
 
         // Keep track of how this class made it into the current source file
         // (which ts.ImportDeclaration was used for this symbol).
-        resolutionData.deferrableDeclToImportDecl.set(decl.node, imp.node);
+        resolutionData.deferrableDeclToImportDecl.set(
+            decl.node as unknown as Expression, imp.node as unknown as Expression);
 
         // We're okay deferring this reference to the imported symbol.
         this.deferredSymbolTracker.markAsDeferrableCandidate(node, imp.node);

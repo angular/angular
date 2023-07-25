@@ -8872,23 +8872,52 @@ function allTests(os: string) {
       });
     });
 
-    // TODO: replace with tests for `defer`.
-    // TODO: maybe put deferred tests in a separate file?
     describe('deferred blocks', () => {
       it('should not error for deferred blocks', () => {
         env.tsconfig({_enabledBlockTypes: ['defer']});
-        env.write('/test.ts', `
+        env.write('cmp-a.ts', `
           import {Component} from '@angular/core';
 
           @Component({
+            standalone: true,
+            selector: 'cmp-a',
+            template: 'CmpA!'
+          })
+          export class CmpA {}
+        `);
+
+        env.write('/test.ts', `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'local-dep',
+            standalone: true,
+            template: 'Local dependency',
+          })
+          export class LocalDep {}
+
+          @Component({
             selector: 'test-cmp',
-            template: '{#defer}hello{/defer}',
+            standalone: true,
+            imports: [CmpA, LocalDep],
+            template: \`
+              {#defer}
+                <cmp-a />
+                <local-dep />
+              {/defer}
+            \`,
           })
           export class TestCmp {}
-      `);
+        `);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('ɵɵdefer(0, TestCmp_Defer_0_DepsFn)');
+        expect(jsContents)
+            .toContain(
+                'function TestCmp_Defer_0_DepsFn() { return [import("./cmp-a").then(function (m) { return m.CmpA; }), LocalDep]; }');
       });
     });
   });

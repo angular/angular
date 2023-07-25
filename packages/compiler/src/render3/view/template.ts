@@ -33,6 +33,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
+import {DeferBlockTemplateDependency} from './api';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -221,6 +222,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private templateIndex: number|null, private templateName: string|null,
       private _namespace: o.ExternalReference, relativeContextFilePath: string,
       private i18nUseExternalIds: boolean,
+      private deferBlocks: Map<t.DeferredBlock, DeferBlockTemplateDependency[]>,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
@@ -923,7 +925,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
         templateIndex, templateName, this._namespace, this.fileBasedI18nSuffix,
-        this.i18nUseExternalIds, this._constants);
+        this.i18nUseExternalIds, this.deferBlocks, this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1071,8 +1073,53 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return null;
   }
 
-  // TODO: implement deferred block instructions.
-  visitDeferredBlock(deferred: t.DeferredBlock): void {}
+  visitDeferredBlock(deferred: t.DeferredBlock): void {
+    const templateIndex = this.allocateDataSlot();
+    const deferredDeps = this.deferBlocks.get(deferred);
+
+    const contextName = `${this.contextName}_Defer_${templateIndex}`;
+    const depsFnName = `${contextName}_DepsFn`;
+
+    const parameters: o.Expression[] = [
+      o.literal(templateIndex),
+      deferredDeps ? o.variable(depsFnName) : o.TYPED_NULL_EXPR,
+    ];
+
+    if (deferredDeps) {
+      // This defer block has deps for which we need to generate dynamic imports.
+      const dependencyExp: o.Expression[] = [];
+      for (const deferredDep of deferredDeps) {
+        if (deferredDep.isDeferrable) {
+          // Callback function, e.g. `function(m) { return m.MyCmp; }`.
+          const innerFn = o.fn(
+              [new o.FnParam('m', o.DYNAMIC_TYPE)],
+              [new o.ReturnStatement(o.variable('m').prop(deferredDep.symbolName))]);
+
+          const fileName = deferredDep.importPath!;
+          // Dynamic import, e.g. `import('./a').then(...)`.
+          const importExpr = (new o.DynamicImportExpr(fileName)).prop('then').callFn([innerFn]);
+          dependencyExp.push(importExpr);
+        } else {
+          // Non-deferrable symbol, just use a reference to the type.
+          dependencyExp.push(deferredDep.type);
+        }
+      }
+
+      const depsFnBody: o.Statement[] = [];
+      depsFnBody.push(new o.ReturnStatement(o.literalArr(dependencyExp)));
+
+      const depsFnExpr = o.fn([] /* args */, depsFnBody, o.INFERRED_TYPE, null, depsFnName);
+
+      this.constantPool.statements.push(depsFnExpr.toDeclStmt(depsFnName));
+    }
+
+    // e.g. `defer(1, MyComp_Defer_1_DepsFn, ...)`
+    this.creationInstruction(deferred.sourceSpan, R3.defer, () => {
+      return trimTrailingNulls(parameters);
+    });
+  }
+
+  // TODO: implement nested deferred block instructions.
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {}
   visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {}
   visitDeferredBlockError(block: t.DeferredBlockError): void {}
