@@ -22,7 +22,8 @@ export function compileInputTransformFields(inputs: ClassPropertyMapping<InputMa
         name: `ngAcceptInputType_${input.classPropertyName}`,
         type: outputAst.transplantedType(input.transform.type),
         statements: [],
-        initializer: null
+        initializer: null,
+        deferrableImports: null
       });
     }
   }

@@ -214,7 +214,8 @@ export class DirectiveDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
+    return compileResults(
+        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
   }
 
   compilePartial(
@@ -227,7 +228,8 @@ export class DirectiveDecoratorHandler implements
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
 
-    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
+    return compileResults(
+        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
   }
 
   compileLocal(
@@ -239,7 +241,8 @@ export class DirectiveDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
+    return compileResults(
+        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
   }
 
   /**

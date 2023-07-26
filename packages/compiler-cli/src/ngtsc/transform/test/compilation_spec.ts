@@ -102,7 +102,8 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -111,7 +112,8 @@ runInEachFileSystem(() => {
             name: 'compileLocal',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
@@ -140,7 +142,8 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -149,7 +152,8 @@ runInEachFileSystem(() => {
             name: 'compilePartial',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -158,7 +162,8 @@ runInEachFileSystem(() => {
             name: 'compileLocal',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
@@ -187,7 +192,8 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -196,7 +202,8 @@ runInEachFileSystem(() => {
             name: 'compileLocal',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
@@ -317,7 +324,8 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -326,7 +334,8 @@ runInEachFileSystem(() => {
             name: 'compileLocal',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
