@@ -1,3 +1,12 @@
+<a name="16.1.7"></a>
+# 16.1.7 (2023-07-26)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [916916d835](https://github.com/angular/angular/commit/916916d8357a3b045cbe6ec1b850c980be1bdb12) | fix | check whether `Zone` is defined ([#51119](https://github.com/angular/angular/pull/51119)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0-next.3"></a>
 # 16.2.0-next.3 (2023-07-19)
 ### http
