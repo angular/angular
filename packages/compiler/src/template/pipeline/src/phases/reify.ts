@@ -127,42 +127,58 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sourceSpan));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.propertyInterpolate(
+                  op.name, op.expression.strings, op.expression.expressions, op.sourceSpan));
+        } else {
+          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sourceSpan));
+        }
         break;
       case ir.OpKind.StyleProp:
-        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.stylePropInterpolate(
+                  op.name, op.expression.strings, op.expression.expressions, op.unit));
+        } else {
+          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+        }
         break;
       case ir.OpKind.ClassProp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression));
         break;
       case ir.OpKind.StyleMap:
-        ir.OpList.replace(op, ng.styleMap(op.expression));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op, ng.styleMapInterpolate(op.expression.strings, op.expression.expressions));
+        } else {
+          ir.OpList.replace(op, ng.styleMap(op.expression));
+        }
         break;
       case ir.OpKind.ClassMap:
-        ir.OpList.replace(op, ng.classMap(op.expression));
-        break;
-      case ir.OpKind.InterpolateProperty:
-        ir.OpList.replace(
-            op, ng.propertyInterpolate(op.name, op.strings, op.expressions, op.sourceSpan));
-        break;
-      case ir.OpKind.InterpolateStyleProp:
-        ir.OpList.replace(
-            op, ng.stylePropInterpolate(op.name, op.strings, op.expressions, op.unit));
-        break;
-      case ir.OpKind.InterpolateStyleMap:
-        ir.OpList.replace(op, ng.styleMapInterpolate(op.strings, op.expressions));
-        break;
-      case ir.OpKind.InterpolateClassMap:
-        ir.OpList.replace(op, ng.classMapInterpolate(op.strings, op.expressions));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op, ng.classMapInterpolate(op.expression.strings, op.expression.expressions));
+        } else {
+          ir.OpList.replace(op, ng.classMap(op.expression));
+        }
         break;
       case ir.OpKind.InterpolateText:
-        ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions, op.sourceSpan));
+        ir.OpList.replace(
+            op,
+            ng.textInterpolate(
+                op.interpolation.strings, op.interpolation.expressions, op.sourceSpan));
         break;
       case ir.OpKind.Attribute:
-        ir.OpList.replace(op, ng.attribute(op.name, op.value));
-        break;
-      case ir.OpKind.InterpolateAttribute:
-        ir.OpList.replace(op, ng.attributeInterpolate(op.name, op.strings, op.expressions));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.attributeInterpolate(op.name, op.expression.strings, op.expression.expressions));
+        } else {
+          ir.OpList.replace(op, ng.attribute(op.name, op.expression));
+        }
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {

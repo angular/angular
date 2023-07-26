@@ -62,7 +62,6 @@ function addNamesToView(
         addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state, compatibility);
         break;
       case ir.OpKind.StyleProp:
-      case ir.OpKind.InterpolateStyleProp:
         op.name = normalizeStylePropName(op.name);
         if (compatibility) {
           op.name = stripImportant(op.name);
