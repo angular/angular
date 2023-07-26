@@ -1,3 +1,16 @@
+<a name="16.2.0-next.4"></a>
+# 16.2.0-next.4 (2023-07-26)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29d358170b](https://github.com/angular/angular/commit/29d358170b046f4a6773dfdfbbd1050f54deb301) | feat | add component input binding support for NgComponentOutlet ([#51148](https://github.com/angular/angular/pull/51148)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [57e8412e53](https://github.com/angular/angular/commit/57e8412e53229b0671df02c55be52e88b66a6865) | fix | check whether `Zone` is defined ([#51119](https://github.com/angular/angular/pull/51119)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.7"></a>
 # 16.1.7 (2023-07-26)
 ### http
