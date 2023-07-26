@@ -1006,7 +1006,8 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
+    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports);
   }
 
   compilePartial(
