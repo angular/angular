@@ -248,6 +248,7 @@ export interface CompileResult {
   initializer: Expression|null;
   statements: Statement[];
   type: Type;
+  deferrableImports: Set<ts.ImportDeclaration>|null;
 }
 
 export interface ResolveResult<R> {
