@@ -57,6 +57,7 @@ export const enum RuntimeErrorCode {
   HOST_DIRECTIVE_COMPONENT = 310,
   HOST_DIRECTIVE_UNDEFINED_BINDING = 311,
   HOST_DIRECTIVE_CONFLICTING_ALIAS = 312,
+  MULTIPLE_MATCHING_PIPES = 313,
 
   // Bootstrap Errors
   MULTIPLE_PLATFORMS = 400,
@@ -107,6 +108,9 @@ export const enum RuntimeErrorCode {
   UNSAFE_IFRAME_ATTRS = -910,
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
+
+  // Runtime dependency tracker errors
+  RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
 }
 
 

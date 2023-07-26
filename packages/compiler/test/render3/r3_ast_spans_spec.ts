@@ -8,6 +8,7 @@
 
 import {ParseSourceSpan} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
+
 import {parseR3 as parse} from './view/util';
 
 
@@ -104,6 +105,71 @@ class R3AstSourceSpans implements t.Visitor<void> {
     }
   }
 
+  visitDeferredBlock(deferred: t.DeferredBlock): void {
+    const blocks: t.Node[] = [];
+    deferred.placeholder && blocks.push(deferred.placeholder);
+    deferred.loading && blocks.push(deferred.loading);
+    deferred.error && blocks.push(deferred.error);
+    this.result.push([
+      'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
+      humanizeSpan(deferred.endSourceSpan)
+    ]);
+    this.visitAll([
+      deferred.triggers,
+      deferred.prefetchTriggers,
+      deferred.children,
+      blocks,
+    ]);
+  }
+
+  visitDeferredTrigger(trigger: t.DeferredTrigger): void {
+    let name: string;
+
+    if (trigger instanceof t.BoundDeferredTrigger) {
+      name = 'BoundDeferredTrigger';
+    } else if (trigger instanceof t.ImmediateDeferredTrigger) {
+      name = 'ImmediateDeferredTrigger';
+    } else if (trigger instanceof t.HoverDeferredTrigger) {
+      name = 'HoverDeferredTrigger';
+    } else if (trigger instanceof t.IdleDeferredTrigger) {
+      name = 'IdleDeferredTrigger';
+    } else if (trigger instanceof t.TimerDeferredTrigger) {
+      name = 'TimerDeferredTrigger';
+    } else if (trigger instanceof t.InteractionDeferredTrigger) {
+      name = 'InteractionDeferredTrigger';
+    } else if (trigger instanceof t.ViewportDeferredTrigger) {
+      name = 'ViewportDeferredTrigger';
+    } else {
+      throw new Error('Unknown trigger');
+    }
+
+    this.result.push([name, humanizeSpan(trigger.sourceSpan)]);
+  }
+
+  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {
+    this.result.push([
+      'DeferredBlockPlaceholder', humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan), humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockError(block: t.DeferredBlockError): void {
+    this.result.push([
+      'DeferredBlockError', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
+  visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {
+    this.result.push([
+      'DeferredBlockLoading', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
@@ -116,8 +182,8 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string) {
-  const res = parse(html);
+function expectFromHtml(html: string, enabledBlockTypes?: string[]) {
+  const res = parse(html, {enabledBlockTypes});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -504,6 +570,64 @@ describe('R3 AST source spans', () => {
             ['Icu:Placeholder', '{{item.placeholder}}'],
             ['Icu:Placeholder', '{{nestedPlaceholder}}'],
           ]);
+    });
+  });
+
+  describe('deferred blocks', () => {
+    it('is correct for deferred blocks', () => {
+      const html = '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          'interaction(button), viewport(container); prefetch on immediate; ' +
+          'prefetch when isDataLoaded()}' +
+          '<calendar-cmp [date]="current"/>' +
+          '{:loading minimum 1s; after 100ms}' +
+          'Loading...' +
+          '{:placeholder minimum 500}' +
+          'Placeholder content!' +
+          '{:error}' +
+          'Loading failed :(' +
+          '{/defer}';
+
+      expectFromHtml(html, ['defer']).toEqual([
+        [
+          'DeferredBlock',
+          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+              'interaction(button), viewport(container); prefetch on immediate; ' +
+              'prefetch when isDataLoaded()}<calendar-cmp [date]="current"/>' +
+              '{:loading minimum 1s; after 100ms}Loading...' +
+              '{:placeholder minimum 500}Placeholder content!' +
+              '{:error}Loading failed :({/defer}',
+          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+              'interaction(button), viewport(container); prefetch on immediate; ' +
+              'prefetch when isDataLoaded()}',
+          '{/defer}'
+        ],
+        ['BoundDeferredTrigger', 'when isVisible() && foo'],
+        ['HoverDeferredTrigger', 'hover'],
+        ['TimerDeferredTrigger', 'timer(10s)'],
+        ['IdleDeferredTrigger', 'idle'],
+        ['ImmediateDeferredTrigger', 'immediate'],
+        ['InteractionDeferredTrigger', 'interaction(button)'],
+        ['ViewportDeferredTrigger', 'viewport(container)'],
+        ['ImmediateDeferredTrigger', 'immediate'],
+        ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
+        [
+          'Element', '<calendar-cmp [date]="current"/>', '<calendar-cmp [date]="current"/>',
+          '<calendar-cmp [date]="current"/>'
+        ],
+        ['BoundAttribute', '[date]="current"', 'date', 'current'],
+        [
+          'DeferredBlockPlaceholder', '{:placeholder minimum 500}Placeholder content!',
+          '{:placeholder minimum 500}', '<empty>'
+        ],
+        ['Text', 'Placeholder content!'],
+        [
+          'DeferredBlockLoading', '{:loading minimum 1s; after 100ms}Loading...',
+          '{:loading minimum 1s; after 100ms}', '<empty>'
+        ],
+        ['Text', 'Loading...'],
+        ['DeferredBlockError', '{:error}Loading failed :(', '{:error}', '<empty>'],
+        ['Text', 'Loading failed :('],
+      ]);
     });
   });
 });

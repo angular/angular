@@ -59,6 +59,7 @@ version: 3
 availability:
   users_unavailable:
     - atscott
+    - devversion
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -168,6 +169,7 @@ groups:
         - atscott
         - crisbeto
         - JoostK
+        - dylhunn
 
   # =========================================================
   #  Framework: Migrations
@@ -242,6 +244,7 @@ groups:
           'aio/content/images/guide/dependency-injection-in-action/**/{*,.*}',
           'aio/content/guide/dependency-injection-navtree.md',
           'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/dependency-injection-context.md',
           'aio/content/guide/lightweight-injection-tokens.md',
           'aio/content/guide/displaying-data.md',
           'aio/content/examples/displaying-data/**/{*,.*}',
@@ -918,13 +921,7 @@ groups:
           'aio/content/guide/releases.md',
           'aio/content/guide/updating.md',
           'aio/content/guide/deprecations.md',
-          'aio/content/guide/migration-legacy-message-id.md',
           'aio/content/examples/deprecation-guide/**/{*,.*}',
-          'aio/content/guide/migration-renderer.md',
-          'aio/content/guide/migration-undecorated-classes.md',
-          'aio/content/guide/migration-dynamic-flag.md',
-          'aio/content/guide/migration-injectable.md',
-          'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',

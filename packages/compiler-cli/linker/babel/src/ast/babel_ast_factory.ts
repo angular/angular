@@ -82,6 +82,10 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createIfStatement = t.ifStatement;
 
+  createDynamicImport(url: string): t.Expression {
+    return this.createCallExpression(t.import(), [t.stringLiteral(url)], false /* pure */);
+  }
+
   createLiteral(value: string|number|boolean|null|undefined): t.Expression {
     if (typeof value === 'string') {
       return t.stringLiteral(value);

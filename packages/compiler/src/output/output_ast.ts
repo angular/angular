@@ -440,6 +440,11 @@ export class InvokeFunctionExpr extends Expression {
     super(type, sourceSpan);
   }
 
+  // An alias for fn, which allows other logic to handle calls and property reads together.
+  get receiver(): Expression {
+    return this.fn;
+  }
+
   override isEquivalent(e: Expression): boolean {
     return e instanceof InvokeFunctionExpr && this.fn.isEquivalent(e.fn) &&
         areAllEquivalent(this.args, e.args) && this.pure === e.pure;
@@ -785,6 +790,27 @@ export class ConditionalExpr extends Expression {
   }
 }
 
+export class DynamicImportExpr extends Expression {
+  constructor(public url: string, sourceSpan?: ParseSourceSpan|null) {
+    super(null, sourceSpan);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof DynamicImportExpr && this.url === e.url;
+  }
+
+  override isConstant() {
+    return false;
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitDynamicImportExpr(this, context);
+  }
+
+  override clone(): DynamicImportExpr {
+    return new DynamicImportExpr(this.url, this.sourceSpan);
+  }
+}
 
 export class NotExpr extends Expression {
   constructor(public condition: Expression, sourceSpan?: ParseSourceSpan|null) {
@@ -915,6 +941,11 @@ export class ReadPropExpr extends Expression {
       public receiver: Expression, public name: string, type?: Type|null,
       sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
+  }
+
+  // An alias for name, which allows other logic to handle property reads and keyed reads together.
+  get index() {
+    return this.name;
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1066,6 +1097,7 @@ export interface ExpressionVisitor {
   visitLocalizedString(ast: LocalizedString, context: any): any;
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
+  visitDynamicImportExpr(ast: DynamicImportExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
   visitFunctionExpr(ast: FunctionExpr, context: any): any;
   visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any;
@@ -1269,6 +1301,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitWritePropExpr(ast: WritePropExpr, context: any): any {
     ast.receiver.visitExpression(this, context);
     ast.value.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitDynamicImportExpr(ast: DynamicImportExpr, context: any) {
     return this.visitExpression(ast, context);
   }
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any {

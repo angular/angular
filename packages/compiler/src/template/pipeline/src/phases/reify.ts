@@ -121,11 +121,39 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.Property:
         ir.OpList.replace(op, ng.property(op.name, op.expression));
         break;
+      case ir.OpKind.StyleProp:
+        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+        break;
+      case ir.OpKind.ClassProp:
+        ir.OpList.replace(op, ng.classProp(op.name, op.expression));
+        break;
+      case ir.OpKind.StyleMap:
+        ir.OpList.replace(op, ng.styleMap(op.expression));
+        break;
+      case ir.OpKind.ClassMap:
+        ir.OpList.replace(op, ng.classMap(op.expression));
+        break;
       case ir.OpKind.InterpolateProperty:
         ir.OpList.replace(op, ng.propertyInterpolate(op.name, op.strings, op.expressions));
         break;
+      case ir.OpKind.InterpolateStyleProp:
+        ir.OpList.replace(
+            op, ng.stylePropInterpolate(op.name, op.strings, op.expressions, op.unit));
+        break;
+      case ir.OpKind.InterpolateStyleMap:
+        ir.OpList.replace(op, ng.styleMapInterpolate(op.strings, op.expressions));
+        break;
+      case ir.OpKind.InterpolateClassMap:
+        ir.OpList.replace(op, ng.classMapInterpolate(op.strings, op.expressions));
+        break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
+        break;
+      case ir.OpKind.Attribute:
+        ir.OpList.replace(op, ng.attribute(op.name, op.value));
+        break;
+      case ir.OpKind.InterpolateAttribute:
+        ir.OpList.replace(op, ng.attributeInterpolate(op.name, op.strings, op.expressions));
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
@@ -172,6 +200,16 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
         throw new Error(`Read of unnamed variable ${expr.xref}`);
       }
       return o.variable(expr.name);
+    case ir.ExpressionKind.ReadTemporaryExpr:
+      if (expr.name === null) {
+        throw new Error(`Read of unnamed temporary ${expr.xref}`);
+      }
+      return o.variable(expr.name);
+    case ir.ExpressionKind.AssignTemporaryExpr:
+      if (expr.name === null) {
+        throw new Error(`Assign of unnamed temporary ${expr.xref}`);
+      }
+      return o.variable(expr.name).set(expr.expr);
     case ir.ExpressionKind.PureFunctionExpr:
       if (expr.fn === null) {
         throw new Error(`AssertionError: expected PureFunctions to have been extracted`);

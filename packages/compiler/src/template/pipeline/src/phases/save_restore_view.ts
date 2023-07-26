@@ -8,15 +8,10 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilation, ViewCompilation} from '../compilation';
 
 export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
   for (const view of cpl.views.values()) {
-    if (view === cpl.root) {
-      // Save/restore operations are not necessary for the root view.
-      continue;
-    }
-
     view.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
           view.tpl.allocateXrefId(), {
@@ -32,25 +27,45 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
         continue;
       }
 
-      op.handlerOps.prepend([
-        ir.createVariableOp<ir.UpdateOp>(
-            view.tpl.allocateXrefId(), {
-              kind: ir.SemanticVariableKind.Context,
-              name: null,
-              view: view.xref,
-            },
-            new ir.RestoreViewExpr(view.xref)),
-      ]);
+      // Embedded views always need the save/restore view operation.
+      let needsRestoreView = view !== cpl.root;
 
-      // The "restore view" operation in listeners requires a call to `resetView` to reset the
-      // context prior to returning from the listener operation. Find any `return` statements in
-      // the listener body and wrap them in a call to reset the view.
-      for (const handlerOp of op.handlerOps) {
-        if (handlerOp.kind === ir.OpKind.Statement &&
-            handlerOp.statement instanceof o.ReturnStatement) {
-          handlerOp.statement.value = new ir.ResetViewExpr(handlerOp.statement.value);
+      if (!needsRestoreView) {
+        for (const handlerOp of op.handlerOps) {
+          ir.visitExpressionsInOp(handlerOp, expr => {
+            if (expr instanceof ir.ReferenceExpr) {
+              // Listeners that reference() a local ref need the save/restore view operation.
+              needsRestoreView = true;
+            }
+          });
         }
       }
+
+      if (needsRestoreView) {
+        addSaveRestoreViewOperationToListener(view, op);
+      }
+    }
+  }
+}
+
+function addSaveRestoreViewOperationToListener(view: ViewCompilation, op: ir.ListenerOp) {
+  op.handlerOps.prepend([
+    ir.createVariableOp<ir.UpdateOp>(
+        view.tpl.allocateXrefId(), {
+          kind: ir.SemanticVariableKind.Context,
+          name: null,
+          view: view.xref,
+        },
+        new ir.RestoreViewExpr(view.xref)),
+  ]);
+
+  // The "restore view" operation in listeners requires a call to `resetView` to reset the
+  // context prior to returning from the listener operation. Find any `return` statements in
+  // the listener body and wrap them in a call to reset the view.
+  for (const handlerOp of op.handlerOps) {
+    if (handlerOp.kind === ir.OpKind.Statement &&
+        handlerOp.statement instanceof o.ReturnStatement) {
+      handlerOp.statement.value = new ir.ResetViewExpr(handlerOp.statement.value);
     }
   }
 }

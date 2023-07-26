@@ -607,7 +607,8 @@ export type NavigationErrorHandlerFeature =
  * Subscribes to the Router's navigation events and calls the given function when a
  * `NavigationError` happens.
  *
- * This function is run inside application's injection context so you can use the `inject` function.
+ * This function is run inside application's [injection context](guide/dependency-injection-context)
+ * so you can use the [`inject`](api/core/inject) function.
  *
  * @usageNotes
  *
@@ -626,7 +627,7 @@ export type NavigationErrorHandlerFeature =
  *
  * @see {@link NavigationError}
  * @see {@link core/inject}
- * @see {@link EnvironmentInjector#runInContext}
+ * @see {@link runInInjectionContext}
  *
  * @returns A set of providers for use with `provideRouter`.
  *

@@ -112,9 +112,9 @@ export abstract class EnvironmentInjector implements Injector {
   /**
    * Runs the given function in the context of this `EnvironmentInjector`.
    *
-   * Within the function's stack frame, `inject` can be used to inject dependencies from this
-   * injector. Note that `inject` is only usable synchronously, and cannot be used in any
-   * asynchronous callbacks or after any `await` points.
+   * Within the function's stack frame, [`inject`](api/core/inject) can be used to inject
+   * dependencies from this injector. Note that `inject` is only usable synchronously, and cannot be
+   * used in any asynchronous callbacks or after any `await` points.
    *
    * @param fn the closure to be run in the context of this injector
    * @returns the return value of the function, if any

@@ -84,9 +84,44 @@ export enum OpKind {
   Property,
 
   /**
+   * An operation to bind an expression to a style property of an element.
+   */
+  StyleProp,
+
+  /**
+   * An operation to bind an expression to a class property of an element.
+   */
+  ClassProp,
+
+  /**
+   * An operation to bind an expression to the styles of an element.
+   */
+  StyleMap,
+
+  /**
+   * An operation to bind an expression to the classes of an element.
+   */
+  ClassMap,
+
+  /**
    * An operation to interpolate text into a property binding.
    */
   InterpolateProperty,
+
+  /**
+   * An operation to interpolate text into a style property binding.
+   */
+  InterpolateStyleProp,
+
+  /**
+   * An operation to interpolate text into a style mapping.
+   */
+  InterpolateStyleMap,
+
+  /**
+   * An operation to interpolate text into a class mapping.
+   */
+  InterpolateClassMap,
 
   /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
@@ -102,6 +137,11 @@ export enum OpKind {
    * An operation to associate an attribute with an element.
    */
   Attribute,
+
+  /**
+   * An operation to interpolate text into an attribute binding.
+   */
+  InterpolateAttribute,
 }
 
 /**
@@ -187,6 +227,21 @@ export enum ExpressionKind {
    * An intermediate expression that will be expanded from a safe read into an explicit ternary.
    */
   SafeTernaryExpr,
+
+  /**
+   * An empty expression that will be stipped before generating the final output.
+   */
+  EmptyExpr,
+
+  /*
+   * An assignment to a temporary variable.
+   */
+  AssignTemporaryExpr,
+
+  /**
+   * A reference to a temporary variable.
+   */
+  ReadTemporaryExpr,
 }
 
 /**

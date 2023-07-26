@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+.x'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./node_modules
+            ./aio/node_modules
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Install node modules in aio
+        run: yarn install --frozen-lockfile --cwd aio
+      - name: Check code lint
+        run: yarn -s tslint
+      - name: Check code lint in aio
+        run: yarn -s --cwd aio lint
+      - name: Check for circular dependencies
+        run: yarn -s ts-circular-deps:check
+      - name: Validate pull approve configuration
+        run: yarn -s ng-dev pullapprove verify
+      - name: Validate angular robot configuration
+        run: yarn -s ng-dev ngbot verify
+      - name: Confirm code builds with typescript as expected
+        run: yarn -s check-tooling-setup
+      - name: Check commit message
+        # Commit message validation is only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+      - name: Check code format
+        # Code formatting checks are only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+
+  devtools:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Run unit tests
+        run: yarn devtools:test
+      - name: Test build
+        run: yarn devtools:build:chrome
+
+  framework-win:
+    runs-on: windows-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - name: Install node modules
+        run: yarn install --frozen-lockfile --network-timeout 100000
+      - name: Test all windows CI targets
+        run: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...

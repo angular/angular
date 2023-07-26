@@ -1,40 +1,25 @@
-# Lesson 5 - Add an input parameter to the component
+# Lesson 5: Add an input parameter to the component
 
-This tutorial lesson demonstrates how to create a component `@Input()`, use it to pass data to a component for customization.
+This tutorial lesson demonstrates how to create a component `@Input()` and use it to pass data to a component for customization.
 
-**Time required:** expect to spend about 10 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-04"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-05"></live-example>
 
-*   Use the code that you created in Lesson 4 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-04"></live-example> from Lesson 4 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
+## What you'll learn
 
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
-
-* Your app's `HousingLocationComponent` template has a `HousingLocation` property to receive input.
+Your app's `HousingLocationComponent` template has a `HousingLocation` property to receive input.
 
 ## Conceptual preview of Inputs
 [Inputs](api/core/Input) allow components to share data. The direction of the data sharing is from parent component to child component.
 
-To receive data from a parent component, a child component must mark a class property with the `@Input()` decorator. This decorator can be used in components and directives.
-
-For a more in depth explanation, please refer to the [Sharing data between child and parent directives and components](guide/inputs-outputs) guide.
-
 In this lesson, you'll define `@Input()` properties in the `HousingLocationComponent` component which will enable you to customize the data displayed in the component.
 
-## Lesson steps
+Learn more in the [Sharing data between child and parent directives and components](guide/inputs-outputs) guide.
 
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Import the Input decorator
+## Step 1 - Import the Input decorator
 This step imports the `Input` decorator into the class.
 
 In the code editor:
@@ -43,7 +28,7 @@ In the code editor:
 
     <code-example header="Import HousingLocationComponent and Input in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-05/src/app/housing-location/housing-location.component.ts" region="add-imports"></code-example>
 
-### Step 2 - Add the Input property
+## Step 2 - Add the Input property
 1.  In the same file, add a property called `housingLocation` of type `HousingLocation` to the `HousingLocationComponent` class. Add an `!` after the property name and prefix it with the `@Input()` decorator:
 
     <code-example header="Import HousingLocationComponent and Input in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-05/src/app/housing-location/housing-location.component.ts" region="add-housing-location-property"></code-example>
@@ -66,3 +51,5 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 ## For more information about the topics covered in this lesson, visit:
 * [Sharing data between child and parent directives and components](guide/inputs-outputs)
+
+@reviewed 2023-07-11

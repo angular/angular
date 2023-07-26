@@ -21,7 +21,7 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic, TypeCheckScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -54,18 +54,20 @@ export class ComponentDecoratorHandler implements
       private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
       private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
       private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
-      private referencesRegistry: ReferencesRegistry, private depTracker: DependencyTracker|null,
+      private enabledBlockTypes: Set<string>, private moduleResolver: ModuleResolver,
+      private cycleAnalyzer: CycleAnalyzer, private cycleHandlingStrategy: CycleHandlingStrategy,
+      private refEmitter: ReferenceEmitter, private referencesRegistry: ReferencesRegistry,
+      private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver,
-      private includeClassMetadata: boolean) {
+      private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
+      private readonly compilationMode: CompilationMode) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       usePoisonedData: this.usePoisonedData,
+      enabledBlockTypes: this.enabledBlockTypes,
     };
   }
 
@@ -81,8 +83,10 @@ export class ComponentDecoratorHandler implements
   private preanalyzeStylesCache = new Map<DeclarationNode, string[]|null>();
 
   private extractTemplateOptions: {
-    enableI18nLegacyMessageIdFormat: boolean; i18nNormalizeLineEndingsInICUs: boolean;
-    usePoisonedData: boolean;
+    enableI18nLegacyMessageIdFormat: boolean,
+    i18nNormalizeLineEndingsInICUs: boolean,
+    usePoisonedData: boolean,
+    enabledBlockTypes: Set<string>,
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -258,9 +262,9 @@ export class ComponentDecoratorHandler implements
     }
 
     let resolvedImports: Reference<ClassDeclaration>[]|null = null;
-    let rawImports: ts.Expression|null = null;
+    let rawImports: ts.Expression|null = component.get('imports') ?? null;
 
-    if (component.has('imports') && !metadata.isStandalone) {
+    if (rawImports && !metadata.isStandalone) {
       if (diagnostics === undefined) {
         diagnostics = [];
       }
@@ -272,8 +276,8 @@ export class ComponentDecoratorHandler implements
       // Poison the component so that we don't spam further template type-checking errors that
       // result from misconfigured imports.
       isPoisoned = true;
-    } else if (component.has('imports')) {
-      const expr = component.get('imports')!;
+    } else if (this.compilationMode !== CompilationMode.LOCAL && rawImports) {
+      const expr = rawImports;
       const importResolvers = combineResolvers([
         createModuleWithProvidersResolver(this.reflector, this.isCore),
         forwardRefResolver,
@@ -302,7 +306,7 @@ export class ComponentDecoratorHandler implements
       diagnostics.push(makeDiagnostic(
           ErrorCode.COMPONENT_NOT_STANDALONE, component.get('schemas')!,
           `'schemas' is only valid on a component that is standalone.`));
-    } else if (component.has('schemas')) {
+    } else if (this.compilationMode !== CompilationMode.LOCAL && component.has('schemas')) {
       schemas = extractSchemas(component.get('schemas')!, this.evaluator, 'Component');
     } else if (metadata.isStandalone) {
       schemas = [];
@@ -329,6 +333,7 @@ export class ComponentDecoratorHandler implements
             enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
             i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
             usePoisonedData: this.usePoisonedData,
+            enabledBlockTypes: this.enabledBlockTypes,
           });
     }
     const templateResource =
@@ -970,6 +975,27 @@ export class ComponentDecoratorHandler implements
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
+        null;
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
+  }
+
+  compileLocal(
+      node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
+      pool: ConstantPool): CompileResult[] {
+    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
+      return [];
+    }
+    const meta: R3ComponentMetadata<R3TemplateDependency> = {
+      ...analysis.meta,
+      // No resolution is done in local compilation mode, therefore we pass an empty array here.
+      declarationListEmitMode: DeclarationListEmitMode.Direct,
+      declarations: [],
+    };
+    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
+    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
+    const classMetadata = analysis.classMetadata !== null ?
+        compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
     return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
