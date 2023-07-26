@@ -14,7 +14,7 @@ import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, Use
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
-import type {UpdateOp} from './ops/update';
+import {Interpolation, type UpdateOp} from './ops/update';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -725,6 +725,14 @@ export enum VisitorContextFlag {
   InChildOperation = 0b0001,
 }
 
+function transformExpressionsInInterpolation(
+    interpolation: Interpolation, transform: ExpressionTransform, flags: VisitorContextFlag) {
+  for (let i = 0; i < interpolation.expressions.length; i++) {
+    interpolation.expressions[i] =
+        transformExpressionsInExpression(interpolation.expressions[i], transform, flags);
+  }
+}
+
 /**
  * Transform all `Expression`s in the AST of `op` with the `transform` function.
  *
@@ -739,29 +747,19 @@ export function transformExpressionsInOp(
     case OpKind.StyleMap:
     case OpKind.ClassProp:
     case OpKind.ClassMap:
-      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
-      break;
-    case OpKind.InterpolateProperty:
-    case OpKind.InterpolateStyleProp:
-    case OpKind.InterpolateStyleMap:
-    case OpKind.InterpolateClassMap:
-    case OpKind.InterpolateText:
-      for (let i = 0; i < op.expressions.length; i++) {
-        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
+    case OpKind.Attribute:
+    case OpKind.Binding:
+      if (op.expression instanceof Interpolation) {
+        transformExpressionsInInterpolation(op.expression, transform, flags);
+      } else {
+        op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       }
+      break;
+    case OpKind.InterpolateText:
+      transformExpressionsInInterpolation(op.interpolation, transform, flags);
       break;
     case OpKind.Statement:
       transformExpressionsInStatement(op.statement, transform, flags);
-      break;
-    case OpKind.Attribute:
-      if (op.value) {
-        op.value = transformExpressionsInExpression(op.value, transform, flags);
-      }
-      break;
-    case OpKind.InterpolateAttribute:
-      for (let i = 0; i < op.expressions.length; i++) {
-        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
-      }
       break;
     case OpKind.Variable:
       op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);

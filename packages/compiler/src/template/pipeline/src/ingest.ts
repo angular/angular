@@ -9,6 +9,7 @@
 import {ConstantPool} from '../../../constant_pool';
 import * as e from '../../../expression_parser/ast';
 import * as o from '../../../output/output_ast';
+import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
 import * as ir from '../ir';
 
@@ -111,7 +112,9 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
   const textXref = view.job.allocateXrefId();
   view.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
   view.update.push(ir.createInterpolateTextOp(
-      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.job)),
+      textXref,
+      new ir.Interpolation(
+          value.strings, value.expressions.map(expr => convertAst(expr, view.job))),
       text.sourceSpan));
 }
 
@@ -206,24 +209,28 @@ function ingestBindings(
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       if (attr instanceof t.TextAttribute) {
-        view.update.push(ir.createAttributeOp(
-            op.xref, ir.ElementAttributeKind.Template, attr.name, o.literal(attr.value)));
+        ingestBinding(
+            view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+            attr.sourceSpan, true);
       } else {
-        ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Template, attr);
+        ingestBinding(
+            view, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.sourceSpan, true);
       }
     }
   }
 
   for (const attr of element.attributes) {
-    // This is only attribute TextLiteral bindings, such as `attr.foo="bar'`. This can never be
+    // This is only attribute TextLiteral bindings, such as `attr.foo="bar"`. This can never be
     // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
     // `BindingType.Attribute`.
-    view.update.push(ir.createAttributeOp(
-        op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
+    ingestBinding(
+        view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+        attr.sourceSpan, false);
   }
 
   for (const input of element.inputs) {
-    ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, input);
+    ingestBinding(
+        view, op.xref, input.name, input.value, input.type, input.unit, input.sourceSpan, false);
   }
 
   for (const output of element.outputs) {
@@ -258,103 +265,35 @@ function ingestBindings(
   }
 }
 
-function ingestPropertyBinding(
-    view: ViewCompilation, xref: ir.XrefId,
-    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
-    {name, value, type, unit, sourceSpan}: t.BoundAttribute): void {
+const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
+  [e.BindingType.Property, ir.BindingKind.Property],
+  [e.BindingType.Attribute, ir.BindingKind.Attribute],
+  [e.BindingType.Class, ir.BindingKind.ClassName],
+  [e.BindingType.Style, ir.BindingKind.StyleProperty],
+  [e.BindingType.Animation, ir.BindingKind.Animation],
+]);
+
+function ingestBinding(
+    view: ViewCompilation, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
+    type: e.BindingType, unit: string|null, sourceSpan: ParseSourceSpan,
+    isTemplateBinding: boolean): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
 
+  let expression: o.Expression|ir.Interpolation;
   if (value instanceof e.Interpolation) {
-    switch (type) {
-      case e.BindingType.Property:
-        if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createInterpolateStyleMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.job))));
-        } else if (name === 'class') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected class binding on ng-template');
-          }
-          view.update.push(ir.createInterpolateClassMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.job))));
-        } else {
-          view.update.push(ir.createInterpolatePropertyOp(
-              xref, bindingKind, name, value.strings,
-              value.expressions.map(expr => convertAst(expr, view.job)), sourceSpan));
-        }
-        break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createInterpolateStylePropOp(
-            xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.job)),
-            unit));
-        break;
-      case e.BindingType.Attribute:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw new Error('Attribute bindings on templates are not expected to be valid');
-        }
-        const attributeInterpolate = ir.createInterpolateAttributeOp(
-            xref, bindingKind, name, value.strings,
-            value.expressions.map(expr => convertAst(expr, view.job)), sourceSpan);
-        view.update.push(attributeInterpolate);
-        break;
-      case e.BindingType.Class:
-        throw Error('Unexpected interpolation in class property binding');
-      // TODO: implement remaining binding types.
-      case e.BindingType.Animation:
-      default:
-        throw Error(`Interpolated property binding type not handled: ${type}`);
-    }
+    expression = new ir.Interpolation(
+        value.strings, value.expressions.map(expr => convertAst(expr, view.job)));
+  } else if (value instanceof e.AST) {
+    expression = convertAst(value, view.job);
   } else {
-    switch (type) {
-      case e.BindingType.Property:
-        // Bindings to [style] are mapped to their own special instruction.
-        if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.job)));
-        } else if (name === 'class') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected class binding on ng-template');
-          }
-          view.update.push(ir.createClassMapOp(xref, convertAst(value, view.job)));
-        } else {
-          view.update.push(ir.createPropertyOp(
-              xref, bindingKind, name, convertAst(value, view.job), sourceSpan));
-        }
-        break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.job), unit));
-        break;
-      case e.BindingType.Attribute:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw new Error('Attribute bindings on templates are not expected to be valid');
-        }
-        const attrOp = ir.createAttributeOp(xref, bindingKind, name, convertAst(value, view.job));
-        view.update.push(attrOp);
-        break;
-      case e.BindingType.Class:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected class binding on ng-template');
-        }
-        view.update.push(ir.createClassPropOp(xref, name, convertAst(value, view.job)));
-        break;
-      // TODO: implement remaining binding types.
-      case e.BindingType.Animation:
-      default:
-        throw Error(`Property binding type not handled: ${type}`);
-    }
+    expression = value;
   }
+
+  const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
+  view.update.push(
+      ir.createBindingOp(xref, kind, name, expression, unit, isTemplateBinding, sourceSpan));
 }
 
 /**

@@ -40,13 +40,21 @@ import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseFindAnyCasts} from './phases/any_cast';
 import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
+import {phaseBindingSpecialization} from './phases/binding_specialization';
+import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
+import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
+import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted.
  */
 export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseStyleBindingSpecialization(job);
+  phaseBindingSpecialization(job);
   phaseAttributeExtraction(job);
+  phaseRemoveEmptyBindings(job);
+  phaseNoListenersOnTemplates(job);
   phasePipeCreation(job);
   phasePipeVariadic(job);
   phasePureLiteralStructures(job);

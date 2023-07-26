@@ -33,17 +33,6 @@ function lookupElement(
 }
 
 /**
- * Removes the op if its expression is empty.
- */
-function removeIfExpressionIsEmpty(op: ir.UpdateOp|ir.CreateOp, expression: o.Expression) {
-  if (expression instanceof ir.EmptyExpr) {
-    ir.OpList.remove(op as ir.UpdateOp);
-    return true;
-  }
-  return false;
-}
-
-/**
  * Populates the ElementAttributes map for the given view, and removes ops for any bindings that do
  * not need further processing.
  */
@@ -57,61 +46,57 @@ function populateElementAttributes(view: ViewCompilation) {
   }
 
   for (const op of view.ops()) {
-    let ownerOp: ir.ElementOrContainerOps|undefined;
+    let ownerOp: ReturnType<typeof lookupElement>;
     switch (op.kind) {
       case ir.OpKind.Attribute:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 
+        if (op.expression instanceof ir.Interpolation) {
+          continue;
+        }
+
         // The old compiler only extracted string constants, so we emulate that behavior in
         // compaitiblity mode, otherwise we optimize more aggressively.
         let extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-            (op.value instanceof o.LiteralExpr && typeof op.value.value === 'string') :
-            (op.value.isConstant());
+            (op.expression instanceof o.LiteralExpr && typeof op.expression.value === 'string') :
+            op.expression.isConstant();
 
         // We don't need to generate instructions for attributes that can be extracted as consts.
         if (extractable) {
-          ownerOp.attributes.add(op.attributeKind, op.name, op.value);
+          ownerOp.attributes.add(
+              op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
+              op.expression);
           ir.OpList.remove(op as ir.UpdateOp);
         }
         break;
-
       case ir.OpKind.Property:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
-        removeIfExpressionIsEmpty(op, op.expression);
-        ownerOp.attributes.add(op.bindingKind, op.name, null);
-        break;
 
-      case ir.OpKind.InterpolateProperty:
-        ownerOp = lookupElement(elements, op.target);
-        ir.assertIsElementAttributes(ownerOp.attributes);
-        ownerOp.attributes.add(op.bindingKind, op.name, null);
+        ownerOp.attributes.add(
+            op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property, op.name, null);
         break;
-
       case ir.OpKind.StyleProp:
       case ir.OpKind.ClassProp:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 
-        // The old compiler treated empty style bindings as regular bindings for the purpose of
-        // directive matching. That behavior is incorrect, but we emulate it in compatibility mode.
-        if (removeIfExpressionIsEmpty(op, op.expression) &&
-            view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-          ownerOp.attributes.add(ir.ElementAttributeKind.Binding, op.name, null);
+        // Empty StyleProperty and ClassName expressions are treated differently depending on
+        // compatibility mode.
+        if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            op.expression instanceof ir.EmptyExpr) {
+          // The old compiler treated empty style bindings as regular bindings for the purpose of
+          // directive matching. That behavior is incorrect, but we emulate it in compatibility
+          // mode.
+          ownerOp.attributes.add(ir.BindingKind.Property, op.name, null);
         }
         break;
-
       case ir.OpKind.Listener:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 
-        ownerOp.attributes.add(ir.ElementAttributeKind.Binding, op.name, null);
-
-        // We don't need to generate instructions for listeners on templates.
-        if (ownerOp.kind === ir.OpKind.Template) {
-          ir.OpList.remove(op as ir.CreateOp);
-        }
+        ownerOp.attributes.add(ir.BindingKind.Property, op.name, null);
         break;
     }
   }
