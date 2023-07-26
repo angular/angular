@@ -13,7 +13,7 @@ import * as o from '../../../../output/output_ast';
 /**
  * Enumeration of the types of attributes which can be applied to an element.
  */
-export enum ElementAttributeKind {
+export enum BindingKind {
   /**
    * Static attributes.
    */
@@ -22,20 +22,20 @@ export enum ElementAttributeKind {
   /**
    * Class bindings.
    */
-  Class,
+  ClassName,
 
   /**
    * Style bindings.
    */
-  Style,
+  StyleProperty,
 
   /**
-   * Dynamic property or attribute bindings.
+   * Dynamic property bindings.
    */
-  Binding,
+  Property,
 
   /**
-   * Attributes on a template node.
+   * Property or attribute bindings on a template.
    */
   Template,
 
@@ -43,6 +43,11 @@ export enum ElementAttributeKind {
    * Internationalized attributes.
    */
   I18n,
+
+  /**
+   * TODO: Consider how Animations are handled, and if they should be a distinct BindingKind.
+   */
+  Animation,
 }
 
 const FLYWEIGHT_ARRAY: ReadonlyArray<o.Expression> = Object.freeze<o.Expression[]>([]);
@@ -52,42 +57,42 @@ const FLYWEIGHT_ARRAY: ReadonlyArray<o.Expression> = Object.freeze<o.Expression[
  */
 export class ElementAttributes {
   private known = new Set<string>();
-  private byKind = new Map<ElementAttributeKind, o.Expression[]>;
+  private byKind = new Map<BindingKind, o.Expression[]>;
 
   projectAs: string|null = null;
 
   get attributes(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.Attribute) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.Attribute) ?? FLYWEIGHT_ARRAY;
   }
 
   get classes(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.Class) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.ClassName) ?? FLYWEIGHT_ARRAY;
   }
 
   get styles(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.Style) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.StyleProperty) ?? FLYWEIGHT_ARRAY;
   }
 
   get bindings(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.Binding) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.Property) ?? FLYWEIGHT_ARRAY;
   }
 
   get template(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.Template) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.Template) ?? FLYWEIGHT_ARRAY;
   }
 
   get i18n(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ElementAttributeKind.I18n) ?? FLYWEIGHT_ARRAY;
+    return this.byKind.get(BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
   }
 
-  add(kind: ElementAttributeKind, name: string, value: o.Expression|null): void {
+  add(kind: BindingKind, name: string, value: o.Expression|null): void {
     if (this.known.has(name)) {
       return;
     }
     this.known.add(name);
     const array = this.arrayFor(kind);
     array.push(...getAttributeNameLiterals(name));
-    if (kind === ElementAttributeKind.Attribute || kind === ElementAttributeKind.Style) {
+    if (kind === BindingKind.Attribute || kind === BindingKind.StyleProperty) {
       if (value === null) {
         throw Error('Attribute & style element attributes must have a value');
       }
@@ -95,7 +100,7 @@ export class ElementAttributes {
     }
   }
 
-  private arrayFor(kind: ElementAttributeKind): o.Expression[] {
+  private arrayFor(kind: BindingKind): o.Expression[] {
     if (!this.byKind.has(kind)) {
       this.byKind.set(kind, []);
     }
