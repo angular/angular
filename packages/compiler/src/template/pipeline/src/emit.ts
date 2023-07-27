@@ -44,6 +44,7 @@ import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
 import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
 import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
+import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -89,6 +90,9 @@ export function transformTemplate(job: ComponentCompilationJob): void {
  * this processing, the compilation should be in a state where it can be emitted.
  */
 export function transformHostBinding(job: HostBindingCompilationJob): void {
+  phaseHostStylePropertyParsing(job);
+  phaseStyleBindingSpecialization(job);
+  phaseBindingSpecialization(job);
   phasePureLiteralStructures(job);
   phaseNullishCoalescing(job);
   phaseExpandSafeReads(job);
@@ -98,6 +102,7 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
   phaseResolveContexts(job);
   phaseNaming(job);
   phasePureFunctionExtraction(job);
+  phasePropertyOrdering(job);
   phaseReify(job);
   phaseChaining(job);
 }
@@ -178,7 +183,7 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
   ];
 }
 
-export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr {
+export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr|null {
   if (job.fnName === null) {
     throw new Error(`AssertionError: host binding function is unnamed`);
   }
@@ -198,6 +203,10 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
           ir.OpKind[op.kind]}`);
     }
     updateStatements.push(op.statement);
+  }
+
+  if (createStatements.length === 0 && updateStatements.length === 0) {
+    return null;
   }
 
   const createCond = maybeGenerateRfBlock(1, createStatements);

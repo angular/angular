@@ -26,7 +26,7 @@ export function phaseNaming(cpl: CompilationJob): void {
 function addNamesToView(
     unit: CompilationUnit, baseName: string, state: {index: number}, compatibility: boolean): void {
   if (unit.fnName === null) {
-    unit.fnName = sanitizeIdentifier(`${baseName}_Template`);
+    unit.fnName = sanitizeIdentifier(`${baseName}_${unit.job.fnSuffix}`);
   }
 
   // Keep track of the names we assign to variables in the view. We'll need to propagate these
