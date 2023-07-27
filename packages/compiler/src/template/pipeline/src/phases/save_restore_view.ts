@@ -8,9 +8,9 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
-export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
+export function phaseSaveRestoreView(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     view.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
@@ -48,7 +48,7 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
   }
 }
 
-function addSaveRestoreViewOperationToListener(view: ViewCompilation, op: ir.ListenerOp) {
+function addSaveRestoreViewOperationToListener(view: ViewCompilationUnit, op: ir.ListenerOp) {
   op.handlerOps.prepend([
     ir.createVariableOp<ir.UpdateOp>(
         view.job.allocateXrefId(), {

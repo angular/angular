@@ -10,13 +10,13 @@ import * as core from '../../../../core';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {ElementAttributes} from '../../ir/src/element';
-import {ComponentCompilation} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
 
 /**
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
  * array expressions, and lifts them into the overall component `consts`.
  */
-export function phaseConstCollection(cpl: ComponentCompilation): void {
+export function phaseConstCollection(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     for (const op of view.create) {
       if (op.kind !== ir.OpKind.ElementStart && op.kind !== ir.OpKind.Element &&

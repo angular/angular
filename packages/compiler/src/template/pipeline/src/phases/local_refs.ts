@@ -9,13 +9,13 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 
 /**
  * Lifts local reference declarations on element-like structures within each view into an entry in
  * the `consts` array for the whole component.
  */
-export function phaseLocalRefs(cpl: ComponentCompilation): void {
+export function phaseLocalRefs(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     for (const op of view.create) {
       switch (op.kind) {
