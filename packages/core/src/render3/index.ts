@@ -158,6 +158,7 @@ export {
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
   setClassMetadata,
+  setClassMetadataAsync,
 } from './metadata';
 export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref';
 export {

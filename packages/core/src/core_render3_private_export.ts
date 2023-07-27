@@ -65,6 +65,7 @@ export {
   PipeDef as ɵPipeDef,
   RenderFlags as ɵRenderFlags,
   setClassMetadata as ɵsetClassMetadata,
+  setClassMetadataAsync as ɵsetClassMetadataAsync,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
   ɵɵadvance,
