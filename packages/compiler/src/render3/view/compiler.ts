@@ -554,7 +554,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
 
-  if (/* TODO: temporarily switched off */ false && USE_TEMPLATE_PIPELINE) {
+  if (USE_TEMPLATE_PIPELINE) {
     // TODO: host binding metadata is not yet parsed in the template pipeline, so we need to extract
     // that code from below. Then, we will ingest a `HostBindingJob`, and run the template pipeline
     // phases.
@@ -568,13 +568,11 @@ function createHostBindingsFunction(
     transformHostBinding(hostJob);
 
     const varCount = hostJob.root.vars;
-    if (varCount !== null && varCount! > 0) {
+    if (varCount !== null && varCount > 0) {
       definitionMap.set('hostVars', o.literal(varCount));
     }
 
-    const fn = emitHostBindingFunction(hostJob);
-    // TODO: what if there's no create/update ops?
-    return fn;
+    return emitHostBindingFunction(hostJob);
   }
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);

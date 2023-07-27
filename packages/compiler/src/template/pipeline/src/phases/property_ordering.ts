@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
   return (op: ir.UpdateOp) => op.kind === kind;
@@ -28,11 +28,13 @@ const ORDERING: {
       {test: kindTest(ir.OpKind.ClassProp)},
       {
         test: (op: ir.UpdateOp) =>
-            op.kind === ir.OpKind.Property && op.expression instanceof ir.Interpolation
+            (op.kind === ir.OpKind.Property || op.kind === ir.OpKind.HostProperty) &&
+            op.expression instanceof ir.Interpolation
       },
       {
         test: (op: ir.UpdateOp) =>
-            op.kind === ir.OpKind.Property && !(op.expression instanceof ir.Interpolation)
+            (op.kind === ir.OpKind.Property || op.kind === ir.OpKind.HostProperty) &&
+            !(op.expression instanceof ir.Interpolation)
       },
       {test: kindTest(ir.OpKind.Attribute)},
     ];
@@ -46,6 +48,7 @@ const handledOpKinds = new Set([
   ir.OpKind.StyleProp,
   ir.OpKind.ClassProp,
   ir.OpKind.Property,
+  ir.OpKind.HostProperty,
   ir.OpKind.Attribute,
 ]);
 
@@ -59,10 +62,10 @@ const handledOpKinds = new Set([
  * 6. property (ordering preserved within group)
  * 7. attribute & attributeInterpolate (ordering preserve within group)
  */
-export function phasePropertyOrdering(cpl: ComponentCompilation) {
-  for (const [_, view] of cpl.views) {
+export function phasePropertyOrdering(cpl: CompilationJob) {
+  for (const unit of cpl.units) {
     let opsToOrder = [];
-    for (const op of view.update) {
+    for (const op of unit.update) {
       if (handledOpKinds.has(op.kind)) {
         // Pull out ops that need o be ordered.
         opsToOrder.push(op);
@@ -78,7 +81,7 @@ export function phasePropertyOrdering(cpl: ComponentCompilation) {
     }
     // If we still have ops pulled at the end, put them back in the correct order.
     for (const orderedOp of reorder(opsToOrder)) {
-      view.update.push(orderedOp);
+      unit.update.push(orderedOp);
     }
   }
 }

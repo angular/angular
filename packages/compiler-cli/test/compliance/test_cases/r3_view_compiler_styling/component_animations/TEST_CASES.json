@@ -71,7 +71,8 @@
             "animation_host_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

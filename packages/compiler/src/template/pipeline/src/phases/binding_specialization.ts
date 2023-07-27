@@ -8,10 +8,10 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {CompilationJob} from '../compilation';
+import {CompilationJob, HostBindingCompilationJob} from '../compilation';
 
-export function phaseBindingSpecialization(cpl: CompilationJob): void {
-  for (const unit of cpl.units) {
+export function phaseBindingSpecialization(job: CompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.update) {
       if (op.kind !== ir.OpKind.Binding) {
         continue;
@@ -25,10 +25,16 @@ export function phaseBindingSpecialization(cpl: CompilationJob): void {
                   op.target, op.name, op.expression, op.isTemplate, op.sourceSpan));
           break;
         case ir.BindingKind.Property:
-          // TODO: host bindings
-          ir.OpList.replace<ir.UpdateOp>(
-              op,
-              ir.createPropertyOp(op.target, op.name, op.expression, op.isTemplate, op.sourceSpan));
+          if (job instanceof HostBindingCompilationJob) {
+            ir.OpList.replace<ir.UpdateOp>(
+                op, ir.createHostPropertyOp(op.name, op.expression, op.sourceSpan));
+          } else {
+            ir.OpList.replace<ir.UpdateOp>(
+                op,
+                ir.createPropertyOp(
+                    op.target, op.name, op.expression, op.isTemplate, op.sourceSpan));
+          }
+
           break;
         case ir.BindingKind.I18n:
         case ir.BindingKind.ClassName:

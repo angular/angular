@@ -66,6 +66,8 @@ export abstract class CompilationUnit {
 export interface CompilationJob {
   get units(): Iterable<CompilationUnit>;
 
+  get fnSuffix(): string;
+
   /**
    * Whether to compile in compatibility mode, to imitate the output of `TemplateDefinitionBuilder`.
    */
@@ -92,6 +94,8 @@ export interface CompilationJob {
 }
 
 export class HostBindingCompilationJob extends CompilationUnit implements CompilationJob {
+  readonly fnSuffix = 'HostBindings';
+
   readonly units = [this];
 
   /**
@@ -129,6 +133,8 @@ export type ComponentCompilation = ComponentCompilationJob;
  * embedded views or host bindings.
  */
 export class ComponentCompilationJob implements CompilationJob {
+  readonly fnSuffix = 'Template';
+
   /**
    * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
    */
