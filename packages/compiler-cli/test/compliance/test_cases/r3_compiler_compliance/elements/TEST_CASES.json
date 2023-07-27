@@ -238,8 +238,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should de-duplicate attribute arrays",
