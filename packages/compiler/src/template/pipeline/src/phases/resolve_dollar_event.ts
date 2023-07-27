@@ -8,13 +8,13 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Any variable inside a listener with the name `$event` will be transformed into a output lexical
  * read immediately, and does not participate in any of the normal logic for handling variables.
  */
-export function phaseResolveDollarEvent(cpl: ComponentCompilation): void {
+export function phaseResolveDollarEvent(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     resolveDollarEvent(view, view.create);
     resolveDollarEvent(view, view.update);
@@ -22,7 +22,7 @@ export function phaseResolveDollarEvent(cpl: ComponentCompilation): void {
 }
 
 function resolveDollarEvent(
-    view: ViewCompilation, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
+    view: ViewCompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     if (op.kind === ir.OpKind.Listener) {
       ir.transformExpressionsInOp(op, (expr) => {
