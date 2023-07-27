@@ -331,6 +331,8 @@ export class Identifiers {
   static declareClassMetadata:
       o.ExternalReference = {name: 'ɵɵngDeclareClassMetadata', moduleName: CORE};
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
+  static setClassMetadataAsync:
+      o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};
 
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};

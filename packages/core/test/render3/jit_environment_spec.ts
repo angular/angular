@@ -29,6 +29,7 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
  */
 const AOT_ONLY = new Set<string>([
   'ɵsetClassMetadata',
+  'ɵsetClassMetadataAsync',
 ]);
 
 /**

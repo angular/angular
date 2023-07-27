@@ -9086,6 +9086,115 @@ function allTests(os: string) {
           expect(jsContents).not.toContain('import { CmpA, CmpB }');
         });
       });
+
+      describe('setClassMetadataAsync', () => {
+        it('should generate setClassMetadataAsync for components with `{#defer}` blocks', () => {
+          env.tsconfig({_enabledBlockTypes: ['defer']});
+          env.write('cmp-a.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import {Component} from '@angular/core';
+            import {CmpA} from './cmp-a';
+
+            @Component({
+              selector: 'local-dep',
+              standalone: true,
+              template: 'Local dependency',
+            })
+            export class LocalDep {}
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, LocalDep],
+              template: \`
+                {#defer}
+                  <cmp-a />
+                  <local-dep />
+                {/defer}
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(0, TestCmp_Defer_0_DepsFn)');
+          expect(jsContents)
+              .toContain(
+                  // ngDevMode check is present
+                  '(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+                  // Main `setClassMetadataAsync` call
+                  'i0.ɵsetClassMetadataAsync(TestCmp, ' +
+                  // Dependency loading function (note: no local `LocalDep` here)
+                  'function () { return [import("./cmp-a").then(function (m) { return m.CmpA; })]; }, ' +
+                  // Callback that invokes `setClassMetadata` at the end
+                  'function (CmpA) { i0.ɵsetClassMetadata(TestCmp');
+        });
+
+        it('should *not* generate setClassMetadataAsync for components with `{#defer}` blocks ' +
+               'when dependencies are eagerly referenced as well',
+           () => {
+             env.tsconfig({_enabledBlockTypes: ['defer']});
+             env.write('cmp-a.ts', `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+              import {Component} from '@angular/core';
+              import {CmpA} from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  {#defer}
+                    <cmp-a />
+                  {/defer}
+                \`,
+              })
+              export class TestCmp {
+                constructor() {
+                  // This eager reference retains 'CmpA' symbol as eager.
+                  console.log(CmpA);
+                }
+              }
+            `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             // Dependency function eagerly references `CmpA`.
+             expect(jsContents).toContain('function TestCmp_Defer_0_DepsFn() { return [CmpA]; }');
+
+             // The `setClassMetadataAsync` wasn't generated, since there are no deferrable
+             // symbols.
+             expect(jsContents).not.toContain('setClassMetadataAsync');
+
+             // But the regular `setClassMetadata` is present.
+             expect(jsContents).toContain('setClassMetadata');
+           });
+      });
     });
   });
 
