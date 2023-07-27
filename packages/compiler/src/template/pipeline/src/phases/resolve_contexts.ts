@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ComponentCompilation, ViewCompilation} from '../compilation';
+import {CompilationJob, CompilationUnit, ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Resolves `ir.ContextExpr` expressions (which represent embedded view or component contexts) to

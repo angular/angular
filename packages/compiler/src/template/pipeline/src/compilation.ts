@@ -125,9 +125,6 @@ export class HostBindingCompilationJob extends CompilationUnit implements Compil
   }
 }
 
-// TODO: delete this type export and bulk-rename in all the phases.
-export type ComponentCompilation = ComponentCompilationJob;
-
 /**
  * Compilation-in-progress of a whole component's template, including the main template and any
  * embedded views or host bindings.
@@ -143,9 +140,9 @@ export class ComponentCompilationJob implements CompilationJob {
   /**
    * Map of view IDs to `ViewCompilation`s.
    */
-  readonly views = new Map<ir.XrefId, ViewCompilation>();
+  readonly views = new Map<ir.XrefId, ViewCompilationUnit>();
 
-  get units(): Iterable<ViewCompilation> {
+  get units(): Iterable<ViewCompilationUnit> {
     return this.views.values();
   }
 
@@ -159,7 +156,7 @@ export class ComponentCompilationJob implements CompilationJob {
   /**
    * The root view, representing the component's template.
    */
-  readonly root: ViewCompilation;
+  readonly root: ViewCompilationUnit;
 
   constructor(
       readonly componentName: string, readonly pool: ConstantPool,
@@ -173,7 +170,7 @@ export class ComponentCompilationJob implements CompilationJob {
   /**
    * Add a `ViewCompilation` for a new embedded view to this compilation.
    */
-  allocateView(parent: ir.XrefId): ViewCompilation {
+  allocateView(parent: ir.XrefId): ViewCompilationUnit {
     const view = new ViewCompilationUnit(this, this.allocateXrefId(), parent);
     this.views.set(view.xref, view);
     return view;
@@ -200,9 +197,6 @@ export class ComponentCompilationJob implements CompilationJob {
     return idx as ir.ConstIndex;
   }
 }
-
-// TODO: delete this type export and bulk-rename in all the phases.
-export type ViewCompilation = ViewCompilationUnit;
 
 /**
  * Compilation-in-progress of an individual view within a template.

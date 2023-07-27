@@ -8,12 +8,12 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
 
 /**
  * Find any function calls to `$any`, excluding `this.$any`, and delete them.
  */
-export function phaseFindAnyCasts(cpl: ComponentCompilation): void {
+export function phaseFindAnyCasts(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     for (const op of view.ops()) {
       ir.transformExpressionsInOp(op, removeAnys, ir.VisitorContextFlag.None);

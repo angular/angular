@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ViewCompilation, ViewCompilationUnit} from '../compilation';
+import {type CompilationJob, type CompilationUnit, ViewCompilationUnit} from '../compilation';
 import * as ng from '../instruction';
 
 /**

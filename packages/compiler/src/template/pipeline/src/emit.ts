@@ -10,7 +10,7 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import type {ComponentCompilation, ViewCompilation, HostBindingCompilationJob, ComponentCompilationJob} from './compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit, HostBindingCompilationJob} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
@@ -111,13 +111,13 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
  * Compile all views in the given `ComponentCompilation` into the final template function, which may
  * reference constants defined in a `ConstantPool`.
  */
-export function emitTemplateFn(tpl: ComponentCompilation, pool: ConstantPool): o.FunctionExpr {
+export function emitTemplateFn(tpl: ComponentCompilationJob, pool: ConstantPool): o.FunctionExpr {
   const rootFn = emitView(tpl.root);
   emitChildViews(tpl.root, pool);
   return rootFn;
 }
 
-function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
+function emitChildViews(parent: ViewCompilationUnit, pool: ConstantPool): void {
   for (const view of parent.job.views.values()) {
     if (view.parent !== parent.xref) {
       continue;
@@ -135,7 +135,7 @@ function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
  * Emit a template function for an individual `ViewCompilation` (which may be either the root view
  * or an embedded view).
  */
-function emitView(view: ViewCompilation): o.FunctionExpr {
+function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   if (view.fnName === null) {
     throw new Error(`AssertionError: view ${view.xref} is unnamed`);
   }

@@ -7,14 +7,14 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
 
 const CONTAINER_TAG = 'ng-container';
 
 /**
  * Replace an `Element` or `ElementStart` whose tag is `ng-container` with a specific op.
  */
-export function phaseNgContainer(cpl: ComponentCompilation): void {
+export function phaseNgContainer(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     const updatedElementXrefs = new Set<ir.XrefId>();
     for (const op of view.create) {

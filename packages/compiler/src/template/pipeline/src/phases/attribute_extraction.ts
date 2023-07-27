@@ -8,13 +8,13 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation, ViewCompilation} from '../compilation';
+import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Find all attribute and binding ops, and collect them into the ElementAttribute structures.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(cpl: ComponentCompilation): void {
+export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
     populateElementAttributes(view);
   }
@@ -36,7 +36,7 @@ function lookupElement(
  * Populates the ElementAttributes map for the given view, and removes ops for any bindings that do
  * not need further processing.
  */
-function populateElementAttributes(view: ViewCompilation) {
+function populateElementAttributes(view: ViewCompilationUnit) {
   const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
   for (const op of view.create) {
     if (!ir.isElementOrContainerOp(op)) {

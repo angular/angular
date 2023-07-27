@@ -14,7 +14,7 @@ import * as t from '../../../render3/r3_ast';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {CompilationJob, ComponentCompilation, ComponentCompilationJob, HostBindingCompilationJob, ViewCompilation} from './compilation';
+import {type CompilationJob, ComponentCompilationJob, HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 import {BINARY_OPERATORS} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
@@ -24,7 +24,8 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
  * representation.
  */
 export function ingestComponent(
-    componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
+    componentName: string, template: t.Node[],
+    constantPool: ConstantPool): ComponentCompilationJob {
   const cpl = new ComponentCompilationJob(componentName, constantPool, compatibilityMode);
   ingestNodes(cpl.root, template);
   return cpl;
@@ -73,7 +74,7 @@ export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedE
 /**
  * Ingest the nodes of a template AST into the given `ViewCompilation`.
  */
-function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
+function ingestNodes(view: ViewCompilationUnit, template: t.Node[]): void {
   for (const node of template) {
     if (node instanceof t.Element) {
       ingestElement(view, node);
@@ -92,7 +93,7 @@ function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
 /**
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
-function ingestElement(view: ViewCompilation, element: t.Element): void {
+function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
   const staticAttributes: Record<string, string> = {};
   for (const attr of element.attributes) {
     staticAttributes[attr.name] = attr.value;
@@ -112,7 +113,7 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
 /**
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
-function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
+function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
   const childView = view.job.allocateView(view.xref);
 
   // TODO: validate the fallback tag name here.
@@ -133,14 +134,14 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
 /**
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
-function ingestText(view: ViewCompilation, text: t.Text): void {
+function ingestText(view: ViewCompilationUnit, text: t.Text): void {
   view.create.push(ir.createTextOp(view.job.allocateXrefId(), text.value, text.sourceSpan));
 }
 
 /**
  * Ingest an interpolated text node from the AST into the given `ViewCompilation`.
  */
-function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
+function ingestBoundText(view: ViewCompilationUnit, text: t.BoundText): void {
   let value = text.value;
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
@@ -246,7 +247,7 @@ function convertAst(ast: e.AST, cpl: CompilationJob): o.Expression {
  * to their IR representation.
  */
 function ingestBindings(
-    view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
+    view: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       if (attr instanceof t.TextAttribute) {
@@ -315,7 +316,7 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
 ]);
 
 function ingestBinding(
-    view: ViewCompilation, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
+    view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, sourceSpan: ParseSourceSpan,
     isTemplateBinding: boolean): void {
   if (value instanceof e.ASTWithSource) {
