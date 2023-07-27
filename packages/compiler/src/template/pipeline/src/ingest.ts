@@ -55,8 +55,17 @@ export function ingestHostBinding(
 
 export function ingestHostProperty(
     job: HostBindingCompilationJob, property: e.ParsedProperty): void {
-  job.update.push(ir.createHostPropertyOp(
-      property.name, convertAst(property.expression, job), null /* TODO: source span */));
+  let expression: o.Expression|ir.Interpolation;
+  const ast = property.expression.ast;
+  if (ast instanceof e.Interpolation) {
+    expression =
+        new ir.Interpolation(ast.strings, ast.expressions.map(expr => convertAst(expr, job)));
+  } else {
+    expression = convertAst(ast, job);
+  }
+  job.update.push(ir.createBindingOp(
+      job.root.xref, ir.BindingKind.Property, property.name, expression, null, false,
+      property.sourceSpan));
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
