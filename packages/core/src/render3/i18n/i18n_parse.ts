@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
-
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from './interfaces/node';

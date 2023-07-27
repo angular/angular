@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
-
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
