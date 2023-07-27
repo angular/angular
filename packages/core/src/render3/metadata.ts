@@ -16,6 +16,33 @@ interface TypeWithMetadata extends Type<any> {
 }
 
 /**
+ * The name of a field that Angular monkey-patches onto a class
+ * to keep track of the Promise that represents dependency loading
+ * state.
+ */
+const ASYNC_COMPONENT_METADATA = '__ngAsyncComponentMetadata__';
+
+/**
+ * Handles the process of applying metadata info to a component class in case
+ * component template had `{#defer}` blocks (thus some dependencies became deferrable).
+ *
+ * @param type Component class where metadata should be added
+ * @param dependencyLoaderFn Function that loads dependencies
+ * @param metadataSetterFn Function that forms a scope in which the `setClassMetadata` is invoked
+ */
+export function setClassMetadataAsync(
+    type: Type<any>, dependencyLoaderFn: () => Array<Promise<Type<unknown>>>,
+    metadataSetterFn: (...types: Type<unknown>[]) => void): void {
+  const componentClass = type as any;  // cast to `any`, so that we can monkey-patch it
+  componentClass[ASYNC_COMPONENT_METADATA] = Promise.all(dependencyLoaderFn()).then(deps => {
+    metadataSetterFn(...deps);
+    // Metadata is now set, reset field value to indicate that this component
+    // can by used/compiled synchronously.
+    componentClass[ASYNC_COMPONENT_METADATA] = null;
+  });
+}
+
+/**
  * Adds decorator, constructor, and property metadata to a given type via static metadata fields
  * on the type.
  *
