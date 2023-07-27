@@ -910,8 +910,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create (simple string) inline template source-mapping (partial compile)",
