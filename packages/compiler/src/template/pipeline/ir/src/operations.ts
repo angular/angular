@@ -265,11 +265,11 @@ export class OpList<OpT extends Op<OpT>> {
   }
 
   /**
-   * Insert `op` before `before`.
+   * Insert `op` before `target`.
    */
-  static insertBefore<OpT extends Op<OpT>>(op: OpT, before: OpT): void {
-    OpList.assertIsOwned(before);
-    if (before.prev === null) {
+  static insertBefore<OpT extends Op<OpT>>(op: OpT, target: OpT): void {
+    OpList.assertIsOwned(target);
+    if (target.prev === null) {
       throw new Error(`AssertionError: illegal operation on list start`);
     }
 
@@ -277,16 +277,38 @@ export class OpList<OpT extends Op<OpT>> {
 
     OpList.assertIsUnowned(op);
 
-    op.debugListId = before.debugListId;
+    op.debugListId = target.debugListId;
 
     // Just in case.
     op.prev = null;
 
-    before.prev!.next = op;
-    op.prev = before.prev;
+    target.prev!.next = op;
+    op.prev = target.prev;
 
-    op.next = before;
-    before.prev = op;
+    op.next = target;
+    target.prev = op;
+  }
+
+  /**
+   * Insert `op` after `target`.
+   */
+  static insertAfter<OpT extends Op<OpT>>(op: OpT, target: OpT): void {
+    OpList.assertIsOwned(target);
+    if (target.next === null) {
+      throw new Error(`AssertionError: illegal operation on list end`);
+    }
+
+    OpList.assertIsNotEnd(op);
+
+    OpList.assertIsUnowned(op);
+
+    op.debugListId = target.debugListId;
+
+    target.next.prev = op;
+    op.next = target.next;
+
+    op.prev = target;
+    target.next = op;
   }
 
   /**

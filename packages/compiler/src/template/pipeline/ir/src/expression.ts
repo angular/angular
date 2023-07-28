@@ -777,6 +777,8 @@ export function transformExpressionsInOp(
     case OpKind.ContainerStart:
     case OpKind.ContainerEnd:
     case OpKind.Template:
+    case OpKind.DisableBindings:
+    case OpKind.EnableBindings:
     case OpKind.Text:
     case OpKind.Pipe:
     case OpKind.Advance:

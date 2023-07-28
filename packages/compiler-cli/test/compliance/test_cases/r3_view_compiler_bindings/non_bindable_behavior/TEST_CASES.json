@@ -28,8 +28,7 @@
             "local_ref_on_nested.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not process property bindings and listeners",
@@ -43,8 +42,7 @@
             "property_bindings_and_listeners.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate extra instructions for elements with no children",
@@ -58,8 +56,7 @@
             "no_child_elements.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
