@@ -56,8 +56,7 @@
             "host_attribute_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support host attributes",
