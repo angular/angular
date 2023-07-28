@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import {CompilationJob, ComponentCompilationJob} from '../compilation';
 
 /**
  * Find all assignments and usages of temporary variables, which are linked to each other with cross
@@ -19,11 +19,11 @@ import {ComponentCompilationJob} from '../compilation';
  * in the double keyed read `a?.[f()]?.[f()]`, the two function calls have non-overlapping scopes.
  * Implement an algorithm for reuse.
  */
-export function phaseTemporaryVariables(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
+export function phaseTemporaryVariables(cpl: CompilationJob): void {
+  for (const unit of cpl.units) {
     let opCount = 0;
     let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
-    for (const op of view.ops()) {
+    for (const op of unit.ops()) {
       let count = 0;
       let xrefs = new Set<ir.XrefId>();
       let defs = new Map<ir.XrefId, string>();
@@ -55,6 +55,6 @@ export function phaseTemporaryVariables(cpl: ComponentCompilationJob): void {
               .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
       opCount++;
     }
-    view.update.prepend(generatedStatements);
+    unit.update.prepend(generatedStatements);
   }
 }

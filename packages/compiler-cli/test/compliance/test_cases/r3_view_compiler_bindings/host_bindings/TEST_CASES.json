@@ -27,8 +27,7 @@
             "host_bindings_with_temporaries.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support host bindings with pure functions",
