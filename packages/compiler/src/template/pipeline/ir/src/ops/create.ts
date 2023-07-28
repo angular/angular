@@ -352,6 +352,16 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
    * Whether this listener is known to consume `$event` in its body.
    */
   consumesDollarEvent: boolean;
+
+  /**
+   * Whether the listener is listening for an animation event.
+   */
+  isAnimationListener: boolean;
+
+  /**
+   * The animation phase of the listener.
+   */
+  animationPhase: string|null;
 }
 
 /**
@@ -366,6 +376,28 @@ export function createListenerOp(target: XrefId, name: string, tag: string): Lis
     handlerOps: new OpList(),
     handlerFnName: null,
     consumesDollarEvent: false,
+    isAnimationListener: false,
+    animationPhase: null,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
+/**
+ * Create a `ListenerOp` for an animation.
+ */
+export function createListenerOpForAnimation(
+    target: XrefId, name: string, animationPhase: string, tag: string): ListenerOp {
+  return {
+    kind: OpKind.Listener,
+    target,
+    tag,
+    name,
+    handlerOps: new OpList(),
+    handlerFnName: null,
+    consumesDollarEvent: false,
+    isAnimationListener: true,
+    animationPhase,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
   };

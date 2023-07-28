@@ -97,6 +97,9 @@ function populateElementAttributes(view: ViewCompilationUnit) {
         }
         break;
       case ir.OpKind.Listener:
+        if (op.isAnimationListener) {
+          continue;  // Don't extract animation listeners.
+        }
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 

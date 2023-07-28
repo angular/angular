@@ -43,15 +43,18 @@ function addNamesToView(
         break;
       case ir.OpKind.Listener:
         if (op.handlerFnName === null) {
-          // TODO(alxhub): convert this temporary name to match how the
-          // `TemplateDefinitionBuilder` names listener functions.
           if (op.slot === null) {
             throw new Error(`Expected a slot to be assigned`);
           }
           const safeTagName = op.tag.replace('-', '_');
-
-          op.handlerFnName =
-              sanitizeIdentifier(`${unit.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
+          if (op.isAnimationListener) {
+            op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${safeTagName}_animation_${
+                op.name}_${op.animationPhase}_${op.slot}_listener`);
+            op.name = `@${op.name}.${op.animationPhase}`;
+          } else {
+            op.handlerFnName =
+                sanitizeIdentifier(`${unit.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
+          }
         }
         break;
       case ir.OpKind.Variable:
