@@ -9130,7 +9130,7 @@ function allTests(os: string) {
 
           const jsContents = env.getContents('test.js');
 
-          expect(jsContents).toContain('ɵɵdefer(0, TestCmp_Defer_0_DepsFn)');
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
           expect(jsContents)
               .toContain(
                   // ngDevMode check is present
@@ -9185,7 +9185,7 @@ function allTests(os: string) {
              const jsContents = env.getContents('test.js');
 
              // Dependency function eagerly references `CmpA`.
-             expect(jsContents).toContain('function TestCmp_Defer_0_DepsFn() { return [CmpA]; }');
+             expect(jsContents).toContain('function TestCmp_Defer_1_DepsFn() { return [CmpA]; }');
 
              // The `setClassMetadataAsync` wasn't generated, since there are no deferrable
              // symbols.
