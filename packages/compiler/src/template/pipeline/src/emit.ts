@@ -100,6 +100,7 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
   phasePureLiteralStructures(job);
   phaseNullishCoalescing(job);
   phaseExpandSafeReads(job);
+  phaseTemporaryVariables(job);
   phaseVarCounting(job);
   phaseVariableOptimization(job);
   phaseResolveNames(job);
