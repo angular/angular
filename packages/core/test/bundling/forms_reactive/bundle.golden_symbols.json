@@ -696,6 +696,9 @@
     "name": "activeConsumer"
   },
   {
+    "name": "addLViewToLContainer"
+  },
+  {
     "name": "addPropertyAlias"
   },
   {

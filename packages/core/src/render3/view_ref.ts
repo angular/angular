@@ -18,7 +18,7 @@ import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
-import {destroyLView, detachView, renderDetachView} from './node_manipulation';
+import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
 import {storeLViewOnDestroy} from './util/view_utils';
 
 
@@ -297,7 +297,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
 
   detachFromAppRef() {
     this._appRef = null;
-    renderDetachView(this._lView[TVIEW], this._lView);
+    detachViewFromDOM(this._lView[TVIEW], this._lView);
   }
 
   attachToAppRef(appRef: ViewRefTracker) {
