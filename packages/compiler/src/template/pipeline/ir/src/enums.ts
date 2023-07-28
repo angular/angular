@@ -64,6 +64,17 @@ export enum OpKind {
   ContainerEnd,
 
   /**
+   * An operation disable binding for subsequent elements, which are descendants of a non-bindable
+   * node.
+   */
+  DisableBindings,
+
+  /**
+   * An operation to re-enable binding, after it was previously disabled.
+   */
+  EnableBindings,
+
+  /**
    * An operation to render a text node.
    */
   Text,
