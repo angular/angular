@@ -140,6 +140,11 @@ export enum OpKind {
    */
   HostProperty,
 
+  /**
+   * A namespace change, which causes the subsequent elements to be processed as either HTML or SVG.
+   */
+  Namespace,
+
   // TODO: Add Host Listeners, and possibly other host ops also.
 }
 

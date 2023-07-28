@@ -8,6 +8,7 @@
 
 import {ConstantPool} from '../../../constant_pool';
 import * as e from '../../../expression_parser/ast';
+import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
@@ -15,7 +16,7 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {type CompilationJob, ComponentCompilationJob, HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
-import {BINARY_OPERATORS} from './conversion';
+import {BINARY_OPERATORS, namespaceForKey} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
@@ -90,6 +91,8 @@ function ingestNodes(view: ViewCompilationUnit, template: t.Node[]): void {
   }
 }
 
+
+
 /**
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
@@ -100,7 +103,10 @@ function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
   }
   const id = view.job.allocateXrefId();
 
-  const startOp = ir.createElementStartOp(element.name, id, element.startSourceSpan);
+  const [namespaceKey, elementName] = splitNsName(element.name);
+
+  const startOp = ir.createElementStartOp(
+      elementName, id, namespaceForKey(namespaceKey), element.startSourceSpan);
   view.create.push(startOp);
 
   ingestBindings(view, startOp, element);
@@ -116,9 +122,16 @@ function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
 function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
   const childView = view.job.allocateView(view.xref);
 
+  let tagNameWithoutNamespace = tmpl.tagName;
+  let namespacePrefix: string|null = '';
+  if (tmpl.tagName) {
+    [namespacePrefix, tagNameWithoutNamespace] = splitNsName(tmpl.tagName);
+  }
+
   // TODO: validate the fallback tag name here.
-  const tplOp =
-      ir.createTemplateOp(childView.xref, tmpl.tagName ?? 'ng-template', tmpl.startSourceSpan);
+  const tplOp = ir.createTemplateOp(
+      childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
+      tmpl.startSourceSpan);
   view.create.push(tplOp);
 
   ingestBindings(view, tplOp, tmpl);

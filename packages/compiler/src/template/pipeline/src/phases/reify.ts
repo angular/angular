@@ -114,6 +114,19 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             ir.createStatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
+      case ir.OpKind.Namespace:
+        switch (op.active) {
+          case ir.Namespace.HTML:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceHTML());
+            break;
+          case ir.Namespace.SVG:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceSVG());
+            break;
+          case ir.Namespace.Math:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceMath());
+            break;
+        }
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;

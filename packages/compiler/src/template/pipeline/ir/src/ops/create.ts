@@ -21,7 +21,7 @@ import type {UpdateOp} from './update';
  */
 export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
     ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>;
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -109,6 +109,11 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
    * The HTML tag name for this element.
    */
   tag: string;
+
+  /**
+   * The namespace of this element, which controls the preceding namespace instruction.
+   */
+  namespace: Namespace;
 }
 
 /**
@@ -122,7 +127,7 @@ export interface ElementStartOp extends ElementOpBase {
  * Create an `ElementStartOp`.
  */
 export function createElementStartOp(
-    tag: string, xref: XrefId, sourceSpan: ParseSourceSpan): ElementStartOp {
+    tag: string, xref: XrefId, namespace: Namespace, sourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
     xref,
@@ -130,6 +135,7 @@ export function createElementStartOp(
     attributes: new ElementAttributes(),
     localRefs: [],
     nonBindable: false,
+    namespace,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -166,7 +172,7 @@ export interface TemplateOp extends ElementOpBase {
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, sourceSpan: ParseSourceSpan): TemplateOp {
+    xref: XrefId, tag: string, namespace: Namespace, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
@@ -176,6 +182,7 @@ export function createTemplateOp(
     vars: null,
     localRefs: [],
     nonBindable: false,
+    namespace,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -377,6 +384,31 @@ export function createPipeOp(xref: XrefId, name: string): PipeOp {
     name,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
+  };
+}
+
+/**
+ * Whether the active namespace is HTML, MathML, or SVG mode.
+ */
+export enum Namespace {
+  HTML,
+  SVG,
+  Math,
+}
+
+/**
+ * An op corresponding to a namespace instruction, for switching between HTML, SVG, and MathML.
+ */
+export interface NamespaceOp extends Op<CreateOp> {
+  kind: OpKind.Namespace;
+  active: Namespace;
+}
+
+export function createNamespaceOp(namespace: Namespace): NamespaceOp {
+  return {
+    kind: OpKind.Namespace,
+    active: namespace,
+    ...NEW_OP,
   };
 }
 
