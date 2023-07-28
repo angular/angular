@@ -13,6 +13,7 @@ import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolutio
 import {ComponentDef, ComponentType} from '../../src/render3';
 import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../../src/render3/deps_tracker/deps_tracker';
 import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
+import {getAsyncClassMetadata} from '../../src/render3/metadata';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -31,9 +32,11 @@ function isTestingModuleOverride(value: unknown): value is TestingModuleOverride
 function assertNoStandaloneComponents(
     types: Type<any>[], resolver: Resolver<any>, location: string) {
   types.forEach(type => {
-    const component = resolver.resolve(type);
-    if (component && component.standalone) {
-      throw new Error(generateStandaloneInDeclarationsError(type, location));
+    if (!getAsyncClassMetadata(type)) {
+      const component = resolver.resolve(type);
+      if (component && component.standalone) {
+        throw new Error(generateStandaloneInDeclarationsError(type, location));
+      }
     }
   });
 }
@@ -253,8 +256,36 @@ export class TestBedCompiler {
     this.componentToModuleScope.set(type, TestingModuleOverride.OVERRIDE_TEMPLATE);
   }
 
+  private async resolvePendingComponentsWithAsyncMetadata() {
+    if (this.pendingComponents.size === 0) return;
+
+    const promises = [];
+    for (const component of this.pendingComponents) {
+      const asyncMetadataPromise = getAsyncClassMetadata(component);
+      if (asyncMetadataPromise) {
+        promises.push(asyncMetadataPromise);
+      }
+    }
+
+    const resolvedDeps = await Promise.all(promises);
+    this.queueTypesFromModulesArray(resolvedDeps.flat(2));
+  }
+
   async compileComponents(): Promise<void> {
     this.clearComponentResolutionQueue();
+
+    // Wait for all async metadata for components that were
+    // overridden, we need resolved metadata to perform an override
+    // and re-compile a component.
+    await this.resolvePendingComponentsWithAsyncMetadata();
+
+    // Verify that there were no standalone components present in the `declarations` field
+    // during the `TestBed.configureTestingModule` call. We perform this check here in addition
+    // to the logic in the `configureTestingModule` function, since at this point we have
+    // all async metadata resolved.
+    assertNoStandaloneComponents(
+        this.declarations, this.resolvers.component, '"TestBed.configureTestingModule" call');
+
     // Run compilers for all queued types.
     let needsAsyncResources = this.compileTypesSync();
 
@@ -350,11 +381,19 @@ export class TestBedCompiler {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
     this.pendingComponents.forEach(declaration => {
+      if (getAsyncClassMetadata(declaration)) {
+        throw new Error(
+            `Component '${declaration.name}' has unresolved metadata. ` +
+            `Please call \`await TestBed.compileComponents()\` before running this test.`);
+      }
+
       needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
+
       const metadata = this.resolvers.component.resolve(declaration);
       if (metadata === null) {
         throw invalidTypeError(declaration.name, 'Component');
       }
+
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });

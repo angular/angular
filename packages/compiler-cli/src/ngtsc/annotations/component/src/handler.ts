@@ -1013,7 +1013,7 @@ export class ComponentDecoratorHandler implements
 
     if (analysis.classMetadata) {
       // Drop references to existing imports for deferrable symbols that should be present
-      // in the `setClassMetadataAsync` call. Otherwise, the import declaration gets retained.
+      // in the `setClassMetadataAsync` call. Otherwise, an import declaration gets retained.
       const deferrableSymbols = new Set(deferrableTypes.keys());
       const rewrittenDecoratorsNode = removeIdentifierReferences(
           (analysis.classMetadata.decorators as WrappedNodeExpr<ts.Node>).node, deferrableSymbols);

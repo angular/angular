@@ -38,6 +38,8 @@ import {
   ɵstringify as stringify
 } from '@angular/core';
 
+import { getAsyncClassMetadata } from '../../src/render3/metadata';
+
 /* clang-format on */
 
 import {ComponentFixture} from './component_fixture';
@@ -591,6 +593,12 @@ export class TestBedImpl implements TestBed {
     const testComponentRenderer = this.inject(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
+
+    if (getAsyncClassMetadata(type)) {
+      throw new Error(
+          `Component '${type.name}' has unresolved metadata. ` +
+          `Please call \`await TestBed.compileComponents()\` before running this test.`);
+    }
 
     const componentDef = (type as any).ɵcmp;
 

@@ -70,13 +70,13 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  * });
  * ```
  *
- * Similarly to the `setClassMetadata` call, it's wrapped into the `ngDevMode`
+ * Similar to the `setClassMetadata` call, it's wrapped into the `ngDevMode`
  * check to tree-shake away this code in production mode.
  */
 export function compileComponentClassMetadata(
     metadata: R3ClassMetadata, deferrableTypes: Map<string, string>): o.Expression {
-  if (!deferrableTypes || deferrableTypes.size === 0) {
-    // If there are no deferrable symbols - just generate the `setClassMetadata` call.
+  if (deferrableTypes.size === 0) {
+    // If there are no deferrable symbols - just generate a regular `setClassMetadata` call.
     return compileClassMetadata(metadata);
   }
 
