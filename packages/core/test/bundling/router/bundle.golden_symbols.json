@@ -852,6 +852,9 @@
     "name": "addEmptyPathsToChildrenIfNeeded"
   },
   {
+    "name": "addLViewToLContainer"
+  },
+  {
     "name": "addPropertyAlias"
   },
   {

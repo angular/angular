@@ -10,7 +10,7 @@ import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedView} from '../../hydration/interfaces';
-import {hasInSkipHydrationBlockFlag, hasSkipHydrationAttrOnRElement, SKIP_HYDRATION_ATTR_NAME} from '../../hydration/skip_hydration';
+import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
@@ -42,7 +42,7 @@ import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
 import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
-import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, leaveView, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
+import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
@@ -94,7 +94,7 @@ export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
     tHostNode: TNode|null, environment: LViewEnvironment|null, renderer: Renderer|null,
     injector: Injector|null, embeddedViewInjector: Injector|null,
-    hydrationInfo: DehydratedView|null): LView {
+    hydrationInfo: DehydratedView|null): LView<T> {
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
@@ -122,7 +122,7 @@ export function createLView<T>(
           'Embedded views must have parentLView');
   lView[DECLARATION_COMPONENT_VIEW] =
       tView.type == TViewType.Embedded ? parentLView![DECLARATION_COMPONENT_VIEW] : lView;
-  return lView;
+  return lView as LView<T>;
 }
 
 /**
