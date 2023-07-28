@@ -39,8 +39,7 @@
           "failureMessage": "Incorrect template",
           "files": ["animation_listeners.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ] 
     },
     {
       "description": "should generate animation host binding and listener code for directives",
