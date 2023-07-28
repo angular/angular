@@ -46,12 +46,14 @@ import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
 import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseNonbindable} from './phases/nonbindable';
+import {phaseNamespace} from './phases/namespace';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted.
  */
 export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseNamespace(job);
   phaseStyleBindingSpecialization(job);
   phaseBindingSpecialization(job);
   phaseAttributeExtraction(job);

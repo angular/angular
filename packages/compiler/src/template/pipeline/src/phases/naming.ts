@@ -10,6 +10,7 @@ import {sanitizeIdentifier} from '../../../../parse_util';
 import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
 import {type CompilationJob, type CompilationUnit, ViewCompilationUnit} from '../compilation';
+import {keyForNamespace, prefixWithNamespace} from '../conversion';
 
 /**
  * Generate names for functions and variables across all views.
@@ -59,7 +60,9 @@ function addNamesToView(
         if (op.slot === null) {
           throw new Error(`Expected slot to be assigned`);
         }
-        addNamesToView(childView, `${baseName}_${op.tag}_${op.slot}`, state, compatibility);
+        addNamesToView(
+            childView, `${baseName}_${prefixWithNamespace(op.tag, op.namespace)}_${op.slot}`, state,
+            compatibility);
         break;
       case ir.OpKind.StyleProp:
         op.name = normalizeStylePropName(op.name);

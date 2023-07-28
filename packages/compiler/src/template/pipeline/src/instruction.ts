@@ -115,6 +115,18 @@ export function pipe(slot: number, name: string): ir.CreateOp {
       null);
 }
 
+export function namespaceHTML(): ir.CreateOp {
+  return call(Identifiers.namespaceHTML, [], null);
+}
+
+export function namespaceSVG(): ir.CreateOp {
+  return call(Identifiers.namespaceSVG, [], null);
+}
+
+export function namespaceMath(): ir.CreateOp {
+  return call(Identifiers.namespaceMathML, [], null);
+}
+
 export function advance(delta: number, sourceSpan: ParseSourceSpan): ir.UpdateOp {
   return call(
       Identifiers.advance,
