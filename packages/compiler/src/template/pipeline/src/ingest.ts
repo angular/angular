@@ -55,6 +55,8 @@ export function ingestHostBinding(
   return job;
 }
 
+// TODO: We should refactor the parser to use the same types and structures for host bindings as
+// with ordinary components. This would allow us to share a lot more ingestion code.
 export function ingestHostProperty(
     job: HostBindingCompilationJob, property: e.ParsedProperty): void {
   let expression: o.Expression|ir.Interpolation;
@@ -65,9 +67,14 @@ export function ingestHostProperty(
   } else {
     expression = convertAst(ast, job);
   }
+  let bindingKind = ir.BindingKind.Property;
+  // TODO: this should really be handled in the parser.
+  if (property.name.startsWith('attr.')) {
+    property.name = property.name.substring('attr.'.length);
+    bindingKind = ir.BindingKind.Attribute;
+  }
   job.update.push(ir.createBindingOp(
-      job.root.xref, ir.BindingKind.Property, property.name, expression, null, false,
-      property.sourceSpan));
+      job.root.xref, bindingKind, property.name, expression, null, false, property.sourceSpan));
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
