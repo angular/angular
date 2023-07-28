@@ -94,8 +94,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners across elements",
@@ -112,8 +111,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners on the same template",
