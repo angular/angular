@@ -87,6 +87,14 @@ export function template(
       sourceSpan);
 }
 
+export function disableBindings(): ir.CreateOp {
+  return call(Identifiers.disableBindings, [], null);
+}
+
+export function enableBindings(): ir.CreateOp {
+  return call(Identifiers.enableBindings, [], null);
+}
+
 export function listener(name: string, handlerFn: o.Expression): ir.CreateOp {
   return call(
       Identifiers.listener,

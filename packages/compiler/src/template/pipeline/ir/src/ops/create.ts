@@ -19,9 +19,9 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp =
-    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>;
+export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
+    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>;
 
 /**
  * An operation representing the creation of an element or container.
@@ -93,6 +93,12 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   localRefs: LocalRef[]|ConstIndex|null;
 
+  /**
+   * Whether this container is marked `ngNonBindable`, which disabled Angular binding for itself and
+   * all descendants.
+   */
+  nonBindable: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -123,6 +129,7 @@ export function createElementStartOp(
     tag,
     attributes: new ElementAttributes(),
     localRefs: [],
+    nonBindable: false,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -168,6 +175,7 @@ export function createTemplateOp(
     decls: null,
     vars: null,
     localRefs: [],
+    nonBindable: false,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -230,6 +238,47 @@ export interface ContainerEndOp extends Op<CreateOp> {
   xref: XrefId;
 
   sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Logical operation causing binding to be disabled in descendents of a non-bindable container.
+ */
+export interface DisableBindingsOp extends Op<CreateOp> {
+  kind: OpKind.DisableBindings;
+
+  /**
+   * `XrefId` of the element that was marked non-bindable.
+   */
+  xref: XrefId;
+}
+
+export function createDisableBindingsOp(xref: XrefId): DisableBindingsOp {
+  return {
+    kind: OpKind.DisableBindings,
+    xref,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation causing binding to be re-enabled after visiting descendants of a non-bindable
+ * container.
+ */
+export interface EnableBindingsOp extends Op<CreateOp> {
+  kind: OpKind.EnableBindings;
+
+  /**
+   * `XrefId` of the element that was marked non-bindable.
+   */
+  xref: XrefId;
+}
+
+export function createEnableBindingsOp(xref: XrefId): EnableBindingsOp {
+  return {
+    kind: OpKind.EnableBindings,
+    xref,
+    ...NEW_OP,
+  };
 }
 
 /**

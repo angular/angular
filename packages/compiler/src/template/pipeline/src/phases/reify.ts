@@ -86,6 +86,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 ),
         );
         break;
+      case ir.OpKind.DisableBindings:
+        ir.OpList.replace(op, ng.disableBindings());
+        break;
+      case ir.OpKind.EnableBindings:
+        ir.OpList.replace(op, ng.enableBindings());
+        break;
       case ir.OpKind.Pipe:
         ir.OpList.replace(op, ng.pipe(op.slot!, op.name));
         break;

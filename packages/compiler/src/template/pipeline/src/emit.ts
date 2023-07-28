@@ -45,6 +45,7 @@ import {phaseStyleBindingSpecialization} from './phases/style_binding_specializa
 import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
 import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
+import {phaseNonbindable} from './phases/nonbindable';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -78,6 +79,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseMergeNextContext(job);
   phaseNgContainer(job);
   phaseEmptyElements(job);
+  phaseNonbindable(job);
   phasePureFunctionExtraction(job);
   phaseAlignPipeVariadicVarOffset(job);
   phasePropertyOrdering(job);
