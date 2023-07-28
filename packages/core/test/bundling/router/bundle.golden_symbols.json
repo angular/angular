@@ -1266,7 +1266,7 @@
     "name": "getFirstNativeNode"
   },
   {
-    "name": "getIdxOfMatchingSelector"
+    "name": "getIdxOfMatchingLocator"
   },
   {
     "name": "getInjectableDef"

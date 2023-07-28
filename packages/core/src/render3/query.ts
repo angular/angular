@@ -226,7 +226,7 @@ class TQuery_ implements TQuery {
     if (Array.isArray(predicate)) {
       for (let i = 0; i < predicate.length; i++) {
         const name = predicate[i];
-        this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, name));
+        this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingLocator(tNode, name));
         // Also try matching the name to a provider since strings can be used as DI tokens too.
         this.matchTNodeWithReadOption(
             tView, tNode, locateDirectiveOrProvider(tNode, tView, name, false, false));
@@ -277,14 +277,14 @@ class TQuery_ implements TQuery {
  * (or -1 if a local name points to an element).
  *
  * @param tNode static data of a node to check
- * @param selector selector to match
- * @returns directive index, -1 or null if a selector didn't match any of the local names
+ * @param locator locator to match
+ * @returns directive index, -1 or null if a locator didn't match any of the local names
  */
-function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
+function getIdxOfMatchingLocator(tNode: TNode, locator: string): number|null {
   const localNames = tNode.localNames;
   if (localNames !== null) {
     for (let i = 0; i < localNames.length; i += 2) {
-      if (localNames[i] === selector) {
+      if (localNames[i] === locator) {
         return localNames[i + 1] as number;
       }
     }

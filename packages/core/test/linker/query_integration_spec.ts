@@ -221,13 +221,13 @@ describe('Query API', () => {
       expect(asNativeElements(view.debugElement.children)).toHaveText('3d|2d|');
     });
 
-    it('should throw with descriptive error when query selectors are not present', () => {
+    it('should throw with descriptive error when query locators are not present', () => {
       TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
       const template = '<has-null-query-condition></has-null-query-condition>';
       TestBed.overrideComponent(MyCompBroken0, {set: {template}});
       expect(() => TestBed.createComponent(MyCompBroken0))
           .toThrowError(`Can't construct a query for the property "errorTrigger" of "${
-              stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
+              stringify(HasNullQueryCondition)}" since the query locator wasn't defined.`);
     });
   });
 

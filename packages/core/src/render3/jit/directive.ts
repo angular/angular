@@ -441,14 +441,14 @@ function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   }
 }
 
-function convertToR3QueryPredicate(selector: any): any|string[] {
-  return typeof selector === 'string' ? splitByComma(selector) : resolveForwardRef(selector);
+function convertToR3QueryPredicate(locator: any): any|string[] {
+  return typeof locator === 'string' ? splitByComma(locator) : resolveForwardRef(locator);
 }
 
 export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadataFacade {
   return {
     propertyName: propertyName,
-    predicate: convertToR3QueryPredicate(ann.selector),
+    predicate: convertToR3QueryPredicate(ann.locator),
     descendants: ann.descendants,
     first: ann.first,
     read: ann.read ? ann.read : null,
@@ -465,10 +465,10 @@ function extractQueriesMetadata(
       const annotations = propMetadata[field];
       annotations.forEach(ann => {
         if (isQueryAnn(ann)) {
-          if (!ann.selector) {
+          if (!ann.locator) {
             throw new Error(
                 `Can't construct a query for the property "${field}" of ` +
-                `"${stringifyForError(type)}" since the query selector wasn't defined.`);
+                `"${stringifyForError(type)}" since the query locator wasn't defined.`);
           }
           if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);

@@ -294,13 +294,13 @@ export const ContentChild: ContentChildDecorator;
 
 // @public
 export interface ContentChildDecorator {
-    (selector: ProviderToken<unknown> | Function | string, opts?: {
+    (locator: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
         static?: boolean;
     }): any;
     // (undocumented)
-    new (selector: ProviderToken<unknown> | Function | string, opts?: {
+    new (locator: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
         static?: boolean;
@@ -315,13 +315,13 @@ export const ContentChildren: ContentChildrenDecorator;
 
 // @public
 export interface ContentChildrenDecorator {
-    (selector: ProviderToken<unknown> | Function | string, opts?: {
+    (locator: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         emitDistinctChangesOnly?: boolean;
         read?: any;
     }): any;
     // (undocumented)
-    new (selector: ProviderToken<unknown> | Function | string, opts?: {
+    new (locator: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         emitDistinctChangesOnly?: boolean;
         read?: any;
@@ -1185,9 +1185,9 @@ export interface Query {
     // (undocumented)
     isViewQuery: boolean;
     // (undocumented)
-    read: any;
+    locator: any;
     // (undocumented)
-    selector: any;
+    read: any;
     // (undocumented)
     static?: boolean;
 }
@@ -1523,12 +1523,12 @@ export const ViewChild: ViewChildDecorator;
 
 // @public
 export interface ViewChildDecorator {
-    (selector: ProviderToken<unknown> | Function | string, opts?: {
+    (locator: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): any;
     // (undocumented)
-    new (selector: ProviderToken<unknown> | Function | string, opts?: {
+    new (locator: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         static?: boolean;
     }): ViewChild;
@@ -1542,12 +1542,12 @@ export const ViewChildren: ViewChildrenDecorator;
 
 // @public
 export interface ViewChildrenDecorator {
-    (selector: ProviderToken<unknown> | Function | string, opts?: {
+    (locator: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
     }): any;
     // (undocumented)
-    new (selector: ProviderToken<unknown> | Function | string, opts?: {
+    new (locator: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
     }): ViewChildren;

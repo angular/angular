@@ -45,7 +45,7 @@ describe('jit directive helper functions', () => {
   describe('convertToR3QueryMetadata', () => {
     it('should convert decorator with a single string selector', () => {
       expect(convertToR3QueryMetadata('propName', {
-        selector: 'localRef',
+        locator: 'localRef',
         descendants: false,
         first: false,
         isViewQuery: false,
@@ -65,7 +65,7 @@ describe('jit directive helper functions', () => {
 
     it('should convert decorator with multiple string selectors', () => {
       expect(convertToR3QueryMetadata('propName', {
-        selector: 'foo, bar,baz',
+        locator: 'foo, bar,baz',
         descendants: true,
         first: true,
         isViewQuery: true,
@@ -87,7 +87,7 @@ describe('jit directive helper functions', () => {
       class Directive {}
 
       const converted = convertToR3QueryMetadata('propName', {
-        selector: Directive,
+        locator: Directive,
         descendants: true,
         first: true,
         isViewQuery: true,

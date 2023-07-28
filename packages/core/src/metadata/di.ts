@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
 import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
@@ -63,7 +62,7 @@ export interface Query {
   first: boolean;
   read: any;
   isViewQuery: boolean;
-  selector: any;
+  locator: any;
   static?: boolean;
 }
 
@@ -106,7 +105,7 @@ export interface ContentChildrenDecorator {
    *
    * **Metadata Properties**:
    *
-   * * **selector** - The directive type or the name used for querying.
+   * * **locator** - The directive type or the name used for querying.
    * * **descendants** - If `true` include all descendants of the element. If `false` then only
    * query direct children of the element.
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
@@ -116,7 +115,7 @@ export interface ContentChildrenDecorator {
    *   removed in future versions of Angular.
    * * **read** - Used to read a different token from the queried elements.
    *
-   * The following selectors are supported.
+   * The following locators are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
    *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ContentChildren('cmp')`)
@@ -127,12 +126,12 @@ export interface ContentChildrenDecorator {
    *   * A `TemplateRef` (e.g. query `<ng-template></ng-template>` with
    * `@ContentChildren(TemplateRef) template;`)
    *
-   * In addition, multiple string selectors can be separated with a comma (e.g.
+   * In addition, multiple string locators can be separated with a comma (e.g.
    * `@ContentChildren('cmp1,cmp2')`)
    *
    * The following values are supported by `read`:
    *   * Any class with the `@Component` or `@Directive` decorator
-   *   * Any provider defined on the injector of the component that is matched by the `selector` of
+   *   * Any provider defined on the injector of the component that is matched by the `locator` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
    *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
@@ -152,12 +151,12 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {
+  (locator: ProviderToken<unknown>|Function|string, opts?: {
     descendants?: boolean,
     emitDistinctChangesOnly?: boolean,
     read?: any,
   }): any;
-  new(selector: ProviderToken<unknown>|Function|string,
+  new(locator: ProviderToken<unknown>|Function|string,
       opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
 }
 
@@ -178,8 +177,8 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren', (selector?: any, data: any = {}) => ({
-                         selector,
+    'ContentChildren', (locator?: any, data: any = {}) => ({
+                         locator,
                          first: false,
                          isViewQuery: false,
                          descendants: false,
@@ -198,8 +197,8 @@ export interface ContentChildDecorator {
    * @description
    * Property decorator that configures a content query.
    *
-   * Use to get the first element or the directive matching the selector from the content DOM.
-   * If the content DOM changes, and a new child matches the selector,
+   * Use to get the first element or the directive matching the locator from the content DOM.
+   * If the content DOM changes, and a new child matches the locator,
    * the property will be updated.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
@@ -209,14 +208,14 @@ export interface ContentChildDecorator {
    *
    * **Metadata Properties**:
    *
-   * * **selector** - The directive type or the name used for querying.
+   * * **locator** - The directive type or the name used for querying.
    * * **descendants** - If `true` (default) include all descendants of the element. If `false` then
    * only query direct children of the element.
    * * **read** - Used to read a different token from the queried element.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
-   * The following selectors are supported.
+   * The following locators are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
    *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ContentChild('cmp')`)
@@ -229,7 +228,7 @@ export interface ContentChildDecorator {
    *
    * The following values are supported by `read`:
    *   * Any class with the `@Component` or `@Directive` decorator
-   *   * Any provider defined on the injector of the component that is matched by the `selector` of
+   *   * Any provider defined on the injector of the component that is matched by the `locator` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
    *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
@@ -244,9 +243,9 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
+  (locator: ProviderToken<unknown>|Function|string,
    opts?: {descendants?: boolean, read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
+  new(locator: ProviderToken<unknown>|Function|string,
       opts?: {descendants?: boolean, read?: any, static?: boolean}): ContentChild;
 }
 
@@ -267,8 +266,8 @@ export type ContentChild = Query;
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
     'ContentChild',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
+    (locator?: any, data: any = {}) =>
+        ({locator, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
@@ -291,7 +290,7 @@ export interface ViewChildrenDecorator {
    *
    * **Metadata Properties**:
    *
-   * * **selector** - The directive type or the name used for querying.
+   * * **locator** - The directive type or the name used for querying.
    * * **read** - Used to read a different token from the queried elements.
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
    *   if the QueryList result has changed. When `false` the `changes` observable might emit even
@@ -299,7 +298,7 @@ export interface ViewChildrenDecorator {
    *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
    * removed in future versions of Angular.
    *
-   * The following selectors are supported.
+   * The following locators are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
    *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChildren('cmp')`)
@@ -310,12 +309,12 @@ export interface ViewChildrenDecorator {
    *   * A `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChildren(TemplateRef)
    * template;`)
    *
-   * In addition, multiple string selectors can be separated with a comma (e.g.
+   * In addition, multiple string locators can be separated with a comma (e.g.
    * `@ViewChildren('cmp1,cmp2')`)
    *
    * The following values are supported by `read`:
    *   * Any class with the `@Component` or `@Directive` decorator
-   *   * Any provider defined on the injector of the component that is matched by the `selector` of
+   *   * Any provider defined on the injector of the component that is matched by the `locator` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
    *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
@@ -330,9 +329,9 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
+  (locator: ProviderToken<unknown>|Function|string,
    opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
+  new(locator: ProviderToken<unknown>|Function|string,
       opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
 }
 
@@ -350,8 +349,8 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) => ({
-                      selector,
+    'ViewChildren', (locator?: any, data: any = {}) => ({
+                      locator,
                       first: false,
                       isViewQuery: true,
                       descendants: true,
@@ -370,21 +369,21 @@ export interface ViewChildDecorator {
   /**
    * @description
    * Property decorator that configures a view query.
-   * The change detector looks for the first element or the directive matching the selector
-   * in the view DOM. If the view DOM changes, and a new child matches the selector,
+   * The change detector looks for the first element or the directive matching the locator
+   * in the view DOM. If the view DOM changes, and a new child matches the locator,
    * the property is updated.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
    * **Metadata Properties**:
    *
-   * * **selector** - The directive type or the name used for querying.
+   * * **locator** - The directive type or the name used for querying.
    * * **read** - Used to read a different token from the queried elements.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
    *
-   * The following selectors are supported.
+   * The following locators are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
    *   * A template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
@@ -397,7 +396,7 @@ export interface ViewChildDecorator {
    *
    * The following values are supported by `read`:
    *   * Any class with the `@Component` or `@Directive` decorator
-   *   * Any provider defined on the injector of the component that is matched by the `selector` of
+   *   * Any provider defined on the injector of the component that is matched by the `locator` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
    *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
@@ -412,8 +411,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
+  (locator: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(locator: ProviderToken<unknown>|Function|string,
       opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
@@ -432,6 +431,6 @@ export type ViewChild = Query;
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
     'ViewChild',
-    (selector: any, data: any) =>
-        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
+    (locator: any, data: any) =>
+        ({locator, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);
