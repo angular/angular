@@ -31,6 +31,7 @@ const CHAINABLE = new Set([
   R3.elementContainerStart,
   R3.elementContainerEnd,
   R3.elementContainer,
+  R3.listener,
 ]);
 
 /**
