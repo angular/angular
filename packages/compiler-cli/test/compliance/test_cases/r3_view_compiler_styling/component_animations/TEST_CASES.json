@@ -3,73 +3,52 @@
   "cases": [
     {
       "description": "should pass in the component metadata animations into the component definition",
-      "inputFiles": [
-        "metadata.ts"
-      ],
+      "inputFiles": ["metadata.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "metadata.js"
-          ]
+          "files": ["metadata.js"]
         }
       ]
     },
     {
       "description": "should include animations even if the provided array is empty",
-      "inputFiles": [
-        "metadata_empty.ts"
-      ],
+      "inputFiles": ["metadata_empty.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "metadata_empty.js"
-          ]
+          "files": ["metadata_empty.js"]
         }
       ]
     },
     {
       "description": "should generate any animation triggers into the component template",
-      "inputFiles": [
-        "animation_property_bindings.ts"
-      ],
+      "inputFiles": ["animation_property_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "animation_property_bindings.js"
-          ]
+          "files": ["animation_property_bindings.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate animation listeners",
-      "inputFiles": [
-        "animation_listeners.ts"
-      ],
+      "inputFiles": ["animation_listeners.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "animation_listeners.js"
-          ]
+          "files": ["animation_listeners.js"]
         }
       ],
       "skipForTemplatePipeline": true
     },
     {
       "description": "should generate animation host binding and listener code for directives",
-      "inputFiles": [
-        "animation_host_bindings.ts"
-      ],
+      "inputFiles": ["animation_host_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "animation_host_bindings.js"
-          ]
+          "files": ["animation_host_bindings.js"]
         }
       ],
       "skipForTemplatePipeline": true

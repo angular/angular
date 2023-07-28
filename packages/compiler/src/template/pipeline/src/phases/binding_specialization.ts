@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {CompilationJob, HostBindingCompilationJob} from '../compilation';
 
@@ -53,14 +52,17 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
           }
           break;
         case ir.BindingKind.Property:
+        case ir.BindingKind.Animation:
           if (job instanceof HostBindingCompilationJob) {
+            // TODO: host property animations
             ir.OpList.replace<ir.UpdateOp>(
                 op, ir.createHostPropertyOp(op.name, op.expression, op.sourceSpan));
           } else {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createPropertyOp(
-                    op.target, op.name, op.expression, op.isTemplate, op.sourceSpan));
+                    op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
+                    op.isTemplate, op.sourceSpan));
           }
 
           break;
