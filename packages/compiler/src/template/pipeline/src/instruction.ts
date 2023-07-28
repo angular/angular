@@ -175,18 +175,22 @@ export function text(
 }
 
 export function property(
-    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  return call(
-      Identifiers.property,
-      [
-        o.literal(name),
-        expression,
-      ],
-      sourceSpan);
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.property, args, sourceSpan);
 }
 
-export function attribute(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.attribute, [o.literal(name), expression], null);
+export function attribute(
+    name: string, expression: o.Expression, sanitizer: o.Expression|null): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.attribute, args, null);
 }
 
 export function styleProp(name: string, expression: o.Expression, unit: string|null): ir.UpdateOp {
@@ -261,20 +265,29 @@ export function textInterpolate(
 
 
 export function propertyInterpolate(
-    name: string, strings: string[], expressions: o.Expression[],
+    name: string, strings: string[], expressions: o.Expression[], sanitizer: o.Expression|null,
     sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const extraArgs = [];
+  if (sanitizer !== null) {
+    extraArgs.push(sanitizer);
+  }
 
   return callVariadicInstruction(
-      PROPERTY_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, [], sourceSpan);
+      PROPERTY_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, sourceSpan);
 }
 
 export function attributeInterpolate(
-    name: string, strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+    name: string, strings: string[], expressions: o.Expression[],
+    sanitizer: o.Expression|null): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const extraArgs = [];
+  if (sanitizer !== null) {
+    extraArgs.push(sanitizer);
+  }
 
   return callVariadicInstruction(
-      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, [], null);
+      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, null);
 }
 
 export function stylePropInterpolate(
@@ -350,8 +363,8 @@ function call<OpT extends ir.CreateOp|ir.UpdateOp>(
 }
 
 /**
- * Describes a specific flavor of instruction used to represent variadic instructions, which have
- * some number of variants for specific argument counts.
+ * Describes a specific flavor of instruction used to represent variadic instructions, which
+ * have some number of variants for specific argument counts.
  */
 interface VariadicInstructionConfig {
   constant: o.ExternalReference[];
