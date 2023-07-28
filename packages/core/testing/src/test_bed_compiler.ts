@@ -13,6 +13,7 @@ import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolutio
 import {ComponentDef, ComponentType} from '../../src/render3';
 import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../../src/render3/deps_tracker/deps_tracker';
 import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
+import {getAsyncClassMetadata} from '../../src/render3/metadata';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -31,9 +32,11 @@ function isTestingModuleOverride(value: unknown): value is TestingModuleOverride
 function assertNoStandaloneComponents(
     types: Type<any>[], resolver: Resolver<any>, location: string) {
   types.forEach(type => {
-    const component = resolver.resolve(type);
-    if (component && component.standalone) {
-      throw new Error(generateStandaloneInDeclarationsError(type, location));
+    if (!getAsyncClassMetadata(type)) {
+      const component = resolver.resolve(type);
+      if (component && component.standalone) {
+        throw new Error(generateStandaloneInDeclarationsError(type, location));
+      }
     }
   });
 }
@@ -105,6 +108,11 @@ export class TestBedCompiler {
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
+
+  // List of Promises that represent async process to set Component metadata,
+  // in case those components use `{#defer}` blocks inside.
+  // private componentsWithAsyncMetadata: Array<Promise<Array<Type<unknown>>>> = [];
+  private componentsWithAsyncMetadata = new Set<Type<unknown>>();
 
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
@@ -253,8 +261,36 @@ export class TestBedCompiler {
     this.componentToModuleScope.set(type, TestingModuleOverride.OVERRIDE_TEMPLATE);
   }
 
+  private async resolveComponentsWithAsyncMetadata() {
+    if (this.componentsWithAsyncMetadata.size === 0) return;
+
+    const promises = [];
+    for (const component of this.componentsWithAsyncMetadata) {
+      const asyncMetadataPromise = getAsyncClassMetadata(component);
+      if (asyncMetadataPromise) {
+        promises.push(asyncMetadataPromise);
+      }
+    }
+    this.componentsWithAsyncMetadata.clear();
+
+    const resolvedDeps = await Promise.all(promises);
+    this.queueTypesFromModulesArray(resolvedDeps.flat(2));
+
+    // If we've got more types with async metadata queued,
+    // recursively process such components again.
+    if (this.componentsWithAsyncMetadata.size > 0) {
+      await this.resolveComponentsWithAsyncMetadata();
+    }
+  }
+
   async compileComponents(): Promise<void> {
     this.clearComponentResolutionQueue();
+
+    // Wait for all async metadata for all components.
+    if (this.componentsWithAsyncMetadata.size > 0) {
+      await this.resolveComponentsWithAsyncMetadata();
+    }
+
     // Run compilers for all queued types.
     let needsAsyncResources = this.compileTypesSync();
 
@@ -597,6 +633,8 @@ export class TestBedCompiler {
       for (const value of arr) {
         if (Array.isArray(value)) {
           queueTypesFromModulesArrayRecur(value);
+        } else if (getAsyncClassMetadata(value)) {
+          this.componentsWithAsyncMetadata.add(value);
         } else if (hasNgModuleDef(value)) {
           const def = value.ɵmod;
           if (processedDefs.has(def)) {
