@@ -13,8 +13,8 @@ import {OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
 
-import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 import type {HostPropertyOp} from './host';
+import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
 
 /**
@@ -124,6 +124,11 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
    */
   expression: o.Expression|Interpolation;
 
+  /**
+   * Whether this property is an animation trigger.
+   */
+  isAnimationTrigger: boolean;
+
   isTemplate: boolean;
 
   sourceSpan: ParseSourceSpan;
@@ -133,13 +138,16 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  * Create a `PropertyOp`.
  */
 export function createPropertyOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation, isTemplate: boolean,
+    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    isAnimationTrigger: boolean, isTemplate: boolean,
+
     sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
     target,
     name,
     expression,
+    isAnimationTrigger,
     isTemplate,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
