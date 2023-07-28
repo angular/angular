@@ -246,6 +246,11 @@ export enum ExpressionKind {
    * A reference to a temporary variable.
    */
   ReadTemporaryExpr,
+
+  /**
+   * An expression representing a sanitizer function.
+   */
+  SanitizerExpr,
 }
 
 /**
@@ -276,4 +281,16 @@ export enum SemanticVariableKind {
 export enum CompatibilityMode {
   Normal,
   TemplateDefinitionBuilder,
+}
+
+/**
+ * Represents functions used to sanitize different pieces of a template.
+ */
+export enum SanitizerFn {
+  Html,
+  Script,
+  Style,
+  Url,
+  ResourceUrl,
+  IframeAttribute,
 }

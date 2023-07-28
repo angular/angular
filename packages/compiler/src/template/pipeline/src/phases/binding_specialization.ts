@@ -48,7 +48,8 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createAttributeOp(
-                    op.target, op.name, op.expression, op.isTemplate, op.sourceSpan));
+                    op.target, op.name, op.expression, op.securityContext, op.isTemplate,
+                    op.sourceSpan));
           }
           break;
         case ir.BindingKind.Property:
@@ -62,7 +63,7 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
                 op,
                 ir.createPropertyOp(
                     op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.isTemplate, op.sourceSpan));
+                    op.securityContext, op.isTemplate, op.sourceSpan));
           }
 
           break;

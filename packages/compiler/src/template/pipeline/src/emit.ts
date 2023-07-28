@@ -10,20 +10,26 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import type {ComponentCompilationJob, ViewCompilationUnit, HostBindingCompilationJob} from './compilation';
+import type {ComponentCompilationJob, HostBindingCompilationJob, ViewCompilationUnit} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
+import {phaseFindAnyCasts} from './phases/any_cast';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
+import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseChaining} from './phases/chaining';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateVariables} from './phases/generate_variables';
+import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseLocalRefs} from './phases/local_refs';
+import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
+import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
+import {phaseNonbindable} from './phases/nonbindable';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
@@ -31,22 +37,17 @@ import {phasePropertyOrdering} from './phases/property_ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
+import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
 import {phaseResolveContexts} from './phases/resolve_contexts';
+import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
 import {phaseResolveNames} from './phases/resolve_names';
+import {phaseResolveSanitizers} from './phases/resolve_sanitizers';
 import {phaseSaveRestoreView} from './phases/save_restore_view';
 import {phaseSlotAllocation} from './phases/slot_allocation';
+import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
 import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseFindAnyCasts} from './phases/any_cast';
-import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
-import {phaseBindingSpecialization} from './phases/binding_specialization';
-import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
-import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
-import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
-import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
-import {phaseNonbindable} from './phases/nonbindable';
-import {phaseNamespace} from './phases/namespace';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -68,6 +69,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseResolveDollarEvent(job);
   phaseResolveNames(job);
   phaseResolveContexts(job);
+  phaseResolveSanitizers(job);
   phaseLocalRefs(job);
   phaseConstCollection(job);
   phaseNullishCoalescing(job);
@@ -105,6 +107,8 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
   phaseVariableOptimization(job);
   phaseResolveNames(job);
   phaseResolveContexts(job);
+  // TODO: Figure out how to make this work for host bindings.
+  // phaseResolveSanitizers(job);
   phaseNaming(job);
   phasePureFunctionExtraction(job);
   phasePropertyOrdering(job);
