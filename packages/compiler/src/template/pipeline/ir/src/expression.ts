@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
-import {ExpressionKind, OpKind} from './enums';
+import {ExpressionKind, OpKind, SanitizerFn} from './enums';
 import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
@@ -19,10 +19,11 @@ import {Interpolation, type UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
+    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -709,6 +710,30 @@ export class ReadTemporaryExpr extends ExpressionBase {
   }
 }
 
+export class SanitizerExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SanitizerExpr;
+
+  constructor(public fn: SanitizerFn) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof SanitizerExpr && e.fn === this.fn;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): SanitizerExpr {
+    return new SanitizerExpr(this.fn);
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -742,12 +767,10 @@ function transformExpressionsInInterpolation(
 export function transformExpressionsInOp(
     op: CreateOp|UpdateOp, transform: ExpressionTransform, flags: VisitorContextFlag): void {
   switch (op.kind) {
-    case OpKind.Property:
     case OpKind.StyleProp:
     case OpKind.StyleMap:
     case OpKind.ClassProp:
     case OpKind.ClassMap:
-    case OpKind.Attribute:
     case OpKind.Binding:
     case OpKind.HostProperty:
       if (op.expression instanceof Interpolation) {
@@ -755,6 +778,16 @@ export function transformExpressionsInOp(
       } else {
         op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       }
+      break;
+    case OpKind.Property:
+    case OpKind.Attribute:
+      if (op.expression instanceof Interpolation) {
+        transformExpressionsInInterpolation(op.expression, transform, flags);
+      } else {
+        op.expression = transformExpressionsInExpression(op.expression, transform, flags);
+      }
+      op.sanitizer =
+          op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
     case OpKind.InterpolateText:
       transformExpressionsInInterpolation(op.interpolation, transform, flags);
