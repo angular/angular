@@ -15,7 +15,7 @@ import * as t from '../../../render3/r3_ast';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {type CompilationJob, ComponentCompilationJob, HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
 import {BINARY_OPERATORS, namespaceForKey} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
@@ -296,7 +296,15 @@ function ingestBindings(
   }
 
   for (const output of element.outputs) {
-    const listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
+    let listenerOp: ir.ListenerOp;
+    if (output.type === e.ParsedEventType.Animation) {
+      if (output.phase === null) {
+        throw Error('Animation listener should have a phase');
+      }
+      listenerOp = ir.createListenerOpForAnimation(op.xref, output.name, output.phase!, op.tag);
+    } else {
+      listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
+    }
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?
     let inputExprs: e.AST[];
