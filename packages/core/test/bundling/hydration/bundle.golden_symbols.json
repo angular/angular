@@ -789,9 +789,6 @@
     "name": "getComponentLViewByIndex"
   },
   {
-    "name": "getComponentLViewForHydration"
-  },
-  {
     "name": "getCurrentTNode"
   },
   {
@@ -826,6 +823,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getLNodeForHydration"
   },
   {
     "name": "getLView"
@@ -1234,6 +1234,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setSegmentHead"
   },
   {
     "name": "setSelectedIndex"

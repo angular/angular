@@ -215,12 +215,17 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
                                                       LViewFlags.CheckAlways | LViewFlags.IsRoot;
     const rootFlags = this.componentDef.signals ? signalFlags : nonSignalFlags;
 
+    let hydrationInfo: DehydratedView|null = null;
+    if (hostRNode !== null) {
+      hydrationInfo = retrieveHydrationInfo(hostRNode, rootViewInjector, true /* isRootView */);
+    }
+
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootTView =
         createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, null, rootFlags, null, null, environment, hostRenderer, rootViewInjector,
-        null, null);
+        null, hydrationInfo);
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -382,7 +387,7 @@ function createRootComponentView(
   const tView = rootView[TVIEW];
   applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
 
-  // Hydration info is on the host element and needs to be retreived
+  // Hydration info is on the host element and needs to be retrieved
   // and passed to the component LView.
   let hydrationInfo: DehydratedView|null = null;
   if (hostRNode !== null) {
