@@ -8,21 +8,22 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ViewEncapsulation} from '../metadata';
+import {Renderer2} from '../render';
 import {collectNativeNodes} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {hasI18n, isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
 import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode} from './node_lookup_utils';
-import {hasInSkipHydrationBlockFlag, isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
+import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
+import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -92,6 +93,54 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
 }
 
 /**
+ * Annotates root level component's LView for hydration,
+ * see `annotateHostElementForHydration` for additional information.
+ */
+function annotateComponentLViewForHydration(lView: LView, context: HydrationContext): number|null {
+  const hostElement = lView[HOST];
+  // Root elements might also be annotated with the `ngSkipHydration` attribute,
+  // check if it's present before starting the serialization process.
+  if (hostElement && !(hostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+    return annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
+  }
+  return null;
+}
+
+/**
+ * Annotates root level LContainer for hydration. This happens when a root component
+ * injects ViewContainerRef, thus making the component an anchor for a view container.
+ * This function serializes the component itself as well as all views from the view
+ * container.
+ */
+function annotateLContainerForHydration(lContainer: LContainer, context: HydrationContext) {
+  const componentLView = lContainer[HOST] as LView<unknown>;
+
+  // Serialize the root component itself.
+  const componentLViewNghIndex = annotateComponentLViewForHydration(componentLView, context);
+
+  const hostElement = unwrapRNode(componentLView[HOST]!) as HTMLElement;
+
+  // Serialize all views within this view container.
+  const rootLView = lContainer[PARENT];
+  const rootLViewNghIndex = annotateHostElementForHydration(hostElement, rootLView, context);
+
+  const renderer = componentLView[RENDERER] as Renderer2;
+
+  // For cases when a root component also acts as an anchor node for a ViewContainerRef
+  // (for example, when ViewContainerRef is injected in a root component), there is a need
+  // to serialize information about the component itself, as well as an LContainer that
+  // represents this ViewContainerRef. Effectively, we need to serialize 2 pieces of info:
+  // (1) hydration info for the root component itself and (2) hydration info for the
+  // ViewContainerRef instance (an LContainer). Each piece of information is included into
+  // the hydration data (in the TransferState object) separately, thus we end up with 2 ids.
+  // Since we only have 1 root element, we encode both bits of info into a single string:
+  // ids are separated by the `|` char (e.g. `10|25`, where `10` is the ngh for a component view
+  // and 25 is the `ngh` for a root view which holds LContainer).
+  const finalIndex = `${componentLViewNghIndex}|${rootLViewNghIndex}`;
+  renderer.setAttribute(hostElement, NGH_ATTR_NAME, finalIndex);
+}
+
+/**
  * Annotates all components bootstrapped in a given ApplicationRef
  * with info needed for hydration.
  *
@@ -103,21 +152,21 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
   for (const viewRef of viewRefs) {
-    const lView = getComponentLViewForHydration(viewRef);
+    const lNode = getLNodeForHydration(viewRef);
+
     // An `lView` might be `null` if a `ViewRef` represents
     // an embedded view (not a component view).
-    if (lView !== null) {
-      const hostElement = lView[HOST];
-      // Root elements might also be annotated with the `ngSkipHydration` attribute,
-      // check if it's present before starting the serialization process.
-      if (hostElement && !(hostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
-        const context: HydrationContext = {
-          serializedViewCollection,
-          corruptedTextNodes,
-        };
-        annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
-        insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
+    if (lNode !== null) {
+      const context: HydrationContext = {
+        serializedViewCollection,
+        corruptedTextNodes,
+      };
+      if (isLContainer(lNode)) {
+        annotateLContainerForHydration(lNode, context);
+      } else {
+        annotateComponentLViewForHydration(lNode, context);
       }
+      insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
     }
   }
 
@@ -408,9 +457,11 @@ function componentUsesShadowDomEncapsulation(lView: LView): boolean {
  * @param element The Host element to be annotated
  * @param lView The associated LView
  * @param context The hydration context
+ * @returns An index of serialized view from the transfer state object
+ *          or `null` when a given component can not be serialized.
  */
 function annotateHostElementForHydration(
-    element: RElement, lView: LView, context: HydrationContext): void {
+    element: RElement, lView: LView, context: HydrationContext): number|null {
   const renderer = lView[RENDERER];
   if (hasI18n(lView) || componentUsesShadowDomEncapsulation(lView)) {
     // Attach the skip hydration attribute if this component:
@@ -419,10 +470,12 @@ function annotateHostElementForHydration(
     //   shadow DOM, so we can not guarantee that client and server representations
     //   would exactly match
     renderer.setAttribute(element, SKIP_HYDRATION_ATTR_NAME, '');
+    return null;
   } else {
     const ngh = serializeLView(lView, context);
     const index = context.serializedViewCollection.add(ngh);
     renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
+    return index;
   }
 }
 
