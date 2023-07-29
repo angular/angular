@@ -312,7 +312,7 @@ export class Router {
   private readonly location = inject(Location);
 
   /**
-   * Indicates whether the the application has opted in to binding Router data to component inputs.
+   * Indicates whether the application has opted in to binding Router data to component inputs.
    *
    * This option is enabled by the `withComponentInputBinding` feature of `provideRouter` or
    * `bindToComponentInputs` in the `ExtraOptions` of `RouterModule.forRoot`.
