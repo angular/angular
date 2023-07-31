@@ -11,7 +11,6 @@ import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, inject} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration';
