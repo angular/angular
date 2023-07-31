@@ -7,7 +7,6 @@
  */
 
 import {forwardRef, Inject, InjectFlags, Injector, Self, SkipSelf} from '@angular/core';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {stringify} from '../../src/util/stringify';
 
