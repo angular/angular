@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {defaultEquals, SIGNAL, Signal, ValueEqualityFn} from './api';
 import {throwInvalidWriteToSignalError} from './errors';
-import {ReactiveNode} from './graph';
+import {producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode,} from './graph';
 
 /**
  * If set, called after `WritableSignal`s are updated.
@@ -49,84 +49,6 @@ export interface WritableSignal<T> extends Signal<T> {
   asReadonly(): Signal<T>;
 }
 
-class WritableSignalImpl<T> extends ReactiveNode {
-  private readonlySignal: Signal<T>|undefined;
-
-  protected override readonly consumerAllowSignalWrites = false;
-
-  constructor(private value: T, private equal: ValueEqualityFn<T>) {
-    super();
-  }
-
-  protected override onConsumerDependencyMayHaveChanged(): void {
-    // This never happens for writable signals as they're not consumers.
-  }
-
-  protected override onProducerUpdateValueVersion(): void {
-    // Writable signal value versions are always up to date.
-  }
-
-  /**
-   * Directly update the value of the signal to a new value, which may or may not be
-   * equal to the previous.
-   *
-   * In the event that `newValue` is semantically equal to the current value, `set` is
-   * a no-op.
-   */
-  set(newValue: T): void {
-    if (!this.producerUpdatesAllowed) {
-      throwInvalidWriteToSignalError();
-    }
-    if (!this.equal(this.value, newValue)) {
-      this.value = newValue;
-      this.valueVersion++;
-      this.producerMayHaveChanged();
-
-      postSignalSetFn?.();
-    }
-  }
-
-  /**
-   * Derive a new value for the signal from its current value using the `updater` function.
-   *
-   * This is equivalent to calling `set` on the result of running `updater` on the current
-   * value.
-   */
-  update(updater: (value: T) => T): void {
-    if (!this.producerUpdatesAllowed) {
-      throwInvalidWriteToSignalError();
-    }
-    this.set(updater(this.value));
-  }
-
-  /**
-   * Calls `mutator` on the current value and assumes that it has been mutated.
-   */
-  mutate(mutator: (value: T) => void): void {
-    if (!this.producerUpdatesAllowed) {
-      throwInvalidWriteToSignalError();
-    }
-    // Mutate bypasses equality checks as it's by definition changing the value.
-    mutator(this.value);
-    this.valueVersion++;
-    this.producerMayHaveChanged();
-
-    postSignalSetFn?.();
-  }
-
-  asReadonly(): Signal<T> {
-    if (this.readonlySignal === undefined) {
-      this.readonlySignal = createSignalFromFunction(this, () => this.signal());
-    }
-    return this.readonlySignal;
-  }
-
-  signal(): T {
-    this.producerAccessed();
-    return this.value;
-  }
-}
-
 /**
  * Options passed to the `signal` creation function.
  *
@@ -139,27 +61,96 @@ export interface CreateSignalOptions<T> {
   equal?: ValueEqualityFn<T>;
 }
 
+
 /**
  * Create a `Signal` that can be set or updated directly.
  *
  * @developerPreview
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
-  const signalNode = new WritableSignalImpl(initialValue, options?.equal ?? defaultEquals);
+  const node: SignalNode<T> = Object.create(SIGNAL_NODE);
+  node.value = initialValue;
+  options?.equal && (node.equal = options.equal);
 
-  // Casting here is required for g3, as TS inference behavior is slightly different between our
-  // version/options and g3's.
-  const signalFn = createSignalFromFunction(signalNode, signalNode.signal.bind(signalNode), {
-                     set: signalNode.set.bind(signalNode),
-                     update: signalNode.update.bind(signalNode),
-                     mutate: signalNode.mutate.bind(signalNode),
-                     asReadonly: signalNode.asReadonly.bind(signalNode)
-                   }) as unknown as WritableSignal<T>;
-  return signalFn;
+  function signalFn() {
+    producerAccessed(node);
+    return node.value;
+  }
+
+  signalFn.set = signalSetFn;
+  signalFn.update = signalUpdateFn;
+  signalFn.mutate = signalMutateFn;
+  signalFn.asReadonly = signalAsReadonlyFn;
+  (signalFn as any)[SIGNAL] = node;
+
+  return signalFn as WritableSignal<T>;
 }
 
 export function setPostSignalSetFn(fn: (() => void)|null): (() => void)|null {
   const prev = postSignalSetFn;
   postSignalSetFn = fn;
   return prev;
+}
+
+interface SignalNode<T> extends ReactiveNode {
+  value: T;
+  equal: ValueEqualityFn<T>;
+  readonlyFn: Signal<T>|null;
+}
+
+interface SignalFn<T> extends Signal<T> {
+  [SIGNAL]: SignalNode<T>;
+}
+
+const SIGNAL_NODE = {
+  ...REACTIVE_NODE,
+  equal: defaultEquals,
+  readonlyFn: undefined,
+};
+
+function signalValueChanged<T>(node: SignalNode<T>): void {
+  node.version++;
+  producerNotifyConsumers(node);
+
+  postSignalSetFn?.();
+}
+
+function signalSetFn<T>(this: SignalFn<T>, newValue: T) {
+  const node = this[SIGNAL];
+  if (!producerUpdatesAllowed()) {
+    throwInvalidWriteToSignalError();
+  }
+
+  if (!node.equal(node.value, newValue)) {
+    node.value = newValue;
+    signalValueChanged(node);
+  }
+}
+
+function signalUpdateFn<T>(this: SignalFn<T>, updater: (value: T) => T): void {
+  if (!producerUpdatesAllowed()) {
+    throwInvalidWriteToSignalError();
+  }
+
+  signalSetFn.call(this as any, updater(this[SIGNAL].value) as any);
+}
+
+function signalMutateFn<T>(this: SignalFn<T>, mutator: (value: T) => void): void {
+  const node = this[SIGNAL];
+  if (!producerUpdatesAllowed()) {
+    throwInvalidWriteToSignalError();
+  }
+  // Mutate bypasses equality checks as it's by definition changing the value.
+  mutator(node.value);
+  signalValueChanged(node);
+}
+
+function signalAsReadonlyFn<T>(this: SignalFn<T>) {
+  const node = this[SIGNAL];
+  if (node.readonlyFn === undefined) {
+    const readonlyFn = () => this();
+    (readonlyFn as any)[SIGNAL] = node;
+    node.readonlyFn = readonlyFn as Signal<T>;
+  }
+  return node.readonlyFn;
 }

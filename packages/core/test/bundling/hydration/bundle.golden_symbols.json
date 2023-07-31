@@ -381,6 +381,12 @@
     "name": "R3Injector"
   },
   {
+    "name": "REACTIVE_LVIEW_CONSUMER_NODE"
+  },
+  {
+    "name": "REACTIVE_NODE"
+  },
+  {
     "name": "REFERENCE_NODE_BODY"
   },
   {
@@ -391,12 +397,6 @@
   },
   {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
-  },
-  {
-    "name": "ReactiveLViewConsumer"
-  },
-  {
-    "name": "ReactiveNode"
   },
   {
     "name": "RefCountOperator"
@@ -513,10 +513,7 @@
     "name": "ViewRef"
   },
   {
-    "name": "Watch"
-  },
-  {
-    "name": "WeakRefImpl"
+    "name": "WATCH_NODE"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -556,9 +553,6 @@
   },
   {
     "name": "_locateOrCreateTextNode"
-  },
-  {
-    "name": "_nextReactiveId"
   },
   {
     "name": "_platformInjector"
@@ -604,6 +598,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "assertConsumerNode"
   },
   {
     "name": "attachPatchData"
@@ -666,6 +663,24 @@
     "name": "connectableObservableDescriptor"
   },
   {
+    "name": "consumerAfterComputation"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
+    "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerMarkDirty"
+  },
+  {
+    "name": "consumerPollProducersForChange"
+  },
+  {
     "name": "convertToBitFlags"
   },
   {
@@ -682,6 +697,9 @@
   },
   {
     "name": "createLView"
+  },
+  {
+    "name": "createLViewConsumer"
   },
   {
     "name": "createNodeInjector"
@@ -1153,6 +1171,12 @@
   },
   {
     "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "producerRemoveLiveConsumerAtIndex"
+  },
+  {
+    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"
