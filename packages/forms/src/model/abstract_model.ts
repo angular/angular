@@ -31,7 +31,7 @@ export const VALID = 'VALID';
 export const INVALID = 'INVALID';
 
 /**
- * Reports that a control is pending, meaning that that async validation is occurring and
+ * Reports that a control is pending, meaning that async validation is occurring and
  * errors are not yet available for the input value.
  *
  * @see {@link markAsPending}
@@ -56,7 +56,7 @@ export const DISABLED = 'DISABLED';
  * value.
  * * **INVALID**: Reports that a control is invalid, meaning that an error exists in the input
  * value.
- * * **PENDING**: Reports that a control is pending, meaning that that async validation is
+ * * **PENDING**: Reports that a control is pending, meaning that async validation is
  * occurring and errors are not yet available for the input value.
  * * **DISABLED**: Reports that a control is
  * disabled, meaning that the control is exempt from ancestor calculations of validity or value.
@@ -321,7 +321,7 @@ export type ɵWriteable<T> = {
 export type ɵGetProperty<T, K> =
     // K is a string
     K extends string ? ɵGetProperty<T, ɵCoerceStrArrToNumArr<ɵTokenize<K, '.'>>> :
-    // Is is an array
+    // Is it an array
     ɵWriteable<K> extends Array<string|number> ? ɵNavigate<T, ɵWriteable<K>> :
     // Fall through permissively if we can't calculate the type of K.
     any;

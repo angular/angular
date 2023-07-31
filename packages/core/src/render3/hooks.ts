@@ -124,14 +124,14 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
  * This is done by storing and maintaining flags in the view: the {@link InitPhaseState},
  * and the index within that phase. They can be seen as a cursor in the following structure:
  * [[onInit1, onInit2], [afterContentInit1], [afterViewInit1, afterViewInit2, afterViewInit3]]
- * They are are stored as flags in LView[FLAGS].
+ * They are stored as flags in LView[FLAGS].
  *
  * 2. Pre-order hooks can be executed in batches, because of the select instruction.
  * To be able to pause and resume their execution, we also need some state about the hook's array
  * that is being processed:
  * - the index of the next hook to be executed
  * - the number of init hooks already found in the processed part of the  array
- * They are are stored as flags in LView[PREORDER_HOOK_FLAGS].
+ * They are stored as flags in LView[PREORDER_HOOK_FLAGS].
  */
 
 
