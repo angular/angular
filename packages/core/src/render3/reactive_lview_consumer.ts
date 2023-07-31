@@ -6,63 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReactiveNode, setActiveConsumer} from '../signals';
+import {REACTIVE_NODE, ReactiveNode} from '../signals';
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {markViewDirty} from './instructions/mark_view_dirty';
-import {ComponentTemplate, HostBindingsFunction, RenderFlags} from './interfaces/definition';
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
 
-export class ReactiveLViewConsumer extends ReactiveNode {
-  protected override consumerAllowSignalWrites = false;
-  private _lView: LView|null = null;
-
-  set lView(lView: LView) {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        assertEqual(this._lView, null, 'Consumer already associated with a view.');
-    this._lView = lView;
-  }
-
-  protected override onConsumerDependencyMayHaveChanged() {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        assertDefined(
-            this._lView,
-            'Updating a signal during template or host binding execution is not allowed.');
-    markViewDirty(this._lView!);
-  }
-
-  protected override onProducerUpdateValueVersion(): void {
-    // This type doesn't implement the producer side of a `ReactiveNode`.
-  }
-
-  get hasReadASignal(): boolean {
-    return this.hasProducers;
-  }
-
-  runInContext(
-      fn: HostBindingsFunction<unknown>|ComponentTemplate<unknown>, rf: RenderFlags,
-      ctx: unknown): void {
-    const prevConsumer = setActiveConsumer(this);
-    this.trackingVersion++;
-    try {
-      fn(rf, ctx);
-    } finally {
-      setActiveConsumer(prevConsumer);
-    }
-  }
-
-  destroy(): void {
-    // Incrementing the version means that every producer which tries to update this consumer will
-    // consider its record stale, and not notify.
-    this.trackingVersion++;
-  }
+let currentConsumer: ReactiveLViewConsumer|null = null;
+export interface ReactiveLViewConsumer extends ReactiveNode {
+  lView: LView|null;
 }
 
-let currentConsumer: ReactiveLViewConsumer|null = null;
-
-function getOrCreateCurrentLViewConsumer() {
-  currentConsumer ??= new ReactiveLViewConsumer();
-  return currentConsumer;
+export function setLViewForConsumer(node: ReactiveLViewConsumer, lView: LView): void {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      assertEqual(node.lView, null, 'Consumer already associated with a view.');
+  node.lView = lView;
 }
 
 /**
@@ -90,11 +48,33 @@ export function commitLViewConsumerIfHasProducers(
     lView: LView,
     slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER): void {
   const consumer = getOrCreateCurrentLViewConsumer();
-  if (!consumer.hasReadASignal) {
+  if (!consumer.producerNode?.length) {
     return;
   }
 
   lView[slot] = currentConsumer;
   consumer.lView = lView;
-  currentConsumer = new ReactiveLViewConsumer();
+  currentConsumer = createLViewConsumer();
+}
+
+const REACTIVE_LVIEW_CONSUMER_NODE = {
+  ...REACTIVE_NODE,
+  consumerIsAlwaysLive: true,
+  consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        assertDefined(
+            node.lView,
+            'Updating a signal during template or host binding execution is not allowed.');
+    markViewDirty(node.lView!);
+  },
+  lView: null,
+};
+
+function createLViewConsumer(): ReactiveLViewConsumer {
+  return Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
+}
+
+function getOrCreateCurrentLViewConsumer() {
+  currentConsumer ??= createLViewConsumer();
+  return currentConsumer;
 }
