@@ -7,7 +7,6 @@
  */
 
 import {Sanitizer, Type} from '@angular/core';
-import {EffectManager} from '@angular/core/src/render3/reactivity/effect';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {extractDirectiveDef} from '../../src/render3/definition';
@@ -17,6 +16,7 @@ import {createLView, createTNode, createTView} from '../../src/render3/instructi
 import {DirectiveDef, DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory, RenderFlags} from '../../src/render3/interfaces/definition';
 import {TConstants, TElementNode, TNodeType} from '../../src/render3/interfaces/node';
 import {HEADER_OFFSET, LView, LViewFlags, TView, TViewType} from '../../src/render3/interfaces/view';
+import {EffectManager} from '../../src/render3/reactivity/effect';
 import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
 import {noop} from '../../src/util/noop';
 

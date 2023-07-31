@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProfilerEvent, setProfiler} from '@angular/core/src/render3/profiler';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild, ɵProfilerEvent as ProfilerEvent} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild} from '../../src/core';
+import {setProfiler} from '../../src/render3/profiler';
 
 
 describe('profiler', () => {

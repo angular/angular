@@ -8,10 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
-import {leaveView, specOnlyIsInstructionStateEmpty} from '@angular/core/src/render3/state';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
 
 describe('providers', () => {
   describe('inheritance', () => {

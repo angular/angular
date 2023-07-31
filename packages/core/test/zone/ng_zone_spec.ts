@@ -8,11 +8,11 @@
 
 import {EventEmitter, NgZone} from '@angular/core';
 import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
-import {Log} from '@angular/core/testing/src/testing_internal';
 
 import {global} from '../../src/util/global';
 import {getNativeRequestAnimationFrame} from '../../src/util/raf';
 import {NoopNgZone} from '../../src/zone/ng_zone';
+import {Log} from '../../testing/src/testing_internal';
 
 const resultTimer = 1000;
 // Schedules a macrotask (using a timer)

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createLContainer, createTNode} from '@angular/core/src/render3/instructions/shared';
-import {isLContainer, isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {createLContainer, createTNode} from '../../src/render3/instructions/shared';
+import {isLContainer, isLView} from '../../src/render3/interfaces/type_checks';
+
 import {ViewFixture} from './view_fixture';
 
 describe('view_utils', () => {

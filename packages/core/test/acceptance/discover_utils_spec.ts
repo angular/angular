@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Directive, HostBinding, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {EventEmitter} from '@angular/core/src/event_emitter';
-import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
-import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
+import {ChangeDetectionStrategy, Component, Directive, EventEmitter, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
+import {isLView} from '../../src/render3/interfaces/type_checks';
+import {CONTEXT} from '../../src/render3/interfaces/view';
 import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {

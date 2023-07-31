@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {addTNodeAndUpdateInsertBeforeIndex} from '@angular/core/src/render3/i18n/i18n_insert_before_index';
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
-import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
+import {addTNodeAndUpdateInsertBeforeIndex} from '../../../src/render3/i18n/i18n_insert_before_index';
+import {createTNode} from '../../../src/render3/instructions/shared';
+import {TNode, TNodeType} from '../../../src/render3/interfaces/node';
+import {HEADER_OFFSET} from '../../../src/render3/interfaces/view';
 import {matchTNode} from '../matchers';
 
 

@@ -7,13 +7,14 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, ComponentRef, Directive, ElementRef, HostBinding, Input, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
-import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
-import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
+
+import {bypassSanitizationTrustStyle} from '../../src/sanitization/bypass';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '../../testing/src/styling';
 
 describe('styling', () => {
   beforeEach(ngDevModeResetPerfCounters);

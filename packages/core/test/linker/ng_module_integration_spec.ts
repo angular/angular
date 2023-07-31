@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, getNgModuleById, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type} from '@angular/core';
-import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
-import {NgModuleType} from '@angular/core/src/render3';
-import {getNgModuleDef} from '@angular/core/src/render3/definition';
+import {Compiler, Component, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, getNgModuleById, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, ɵNgModuleType as NgModuleType, ɵɵdefineInjectable} from '@angular/core';
 import {ComponentFixture, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration';
+import {getNgModuleDef} from '../../src/render3/definition';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}

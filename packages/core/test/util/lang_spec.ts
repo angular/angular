@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {isSubscribable} from '@angular/core/src/util/lang';
 import {of} from 'rxjs';
+
+import {isSubscribable} from '../../src/util/lang';
 
 describe('isSubscribable', () => {
   it('should be true for an Observable', () => expect(isSubscribable(of(true))).toEqual(true));

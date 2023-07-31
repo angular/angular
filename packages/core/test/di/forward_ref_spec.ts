@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
-import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
+import {forwardRef, resolveForwardRef, Type} from '@angular/core';
 
 {
   describe('forwardRef', function() {

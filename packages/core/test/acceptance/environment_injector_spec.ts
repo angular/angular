@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createComponent, createEnvironmentInjector, DestroyRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
+import {Component, createComponent, createEnvironmentInjector, DestroyRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+
+import {R3Injector} from '../../src/di/r3_injector';
+import {RuntimeErrorCode} from '../../src/errors';
 
 describe('environment injector', () => {
   it('should create and destroy an environment injector', () => {

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {TViewType} from '@angular/core/src/render3/interfaces/view';
+import {createTNode, createTView} from '../../src/render3/instructions/shared';
+import {TNodeType} from '../../src/render3/interfaces/node';
+import {TViewType} from '../../src/render3/interfaces/view';
 
 import {isShapeOf, ShapeOf} from './is_shape_of';
 import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers';

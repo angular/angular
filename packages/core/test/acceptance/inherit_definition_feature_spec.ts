@@ -8,10 +8,11 @@
 
 import {state, style, trigger} from '@angular/animations';
 import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
-import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
+import {getDirectiveDef} from '../../src/render3/definition';
 
 describe('inheritance', () => {
   it('should throw when trying to inherit a component from a directive', () => {

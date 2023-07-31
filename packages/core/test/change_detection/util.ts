@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IterableChangeRecord, IterableChanges} from '@angular/core/src/change_detection/differs/iterable_differs';
-import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
+import {IterableChangeRecord, IterableChanges, KeyValueChangeRecord, KeyValueChanges} from '@angular/core';
 
 import {stringify} from '../../src/util/stringify';
 

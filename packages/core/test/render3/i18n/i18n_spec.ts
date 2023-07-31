@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '@angular/core';
-import {ɵɵi18n} from '@angular/core/src/core';
-import {getTranslationForTemplate, i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
-import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {ɵɵi18n, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '@angular/core';
 
+import {getTranslationForTemplate, i18nStartFirstCreatePass} from '../../../src/render3/i18n/i18n_parse';
+import {getTIcu} from '../../../src/render3/i18n/i18n_util';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
 import {I18nCreateOpCode, I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
+import {TNodeType} from '../../../src/render3/interfaces/node';
 import {HEADER_OFFSET, TView} from '../../../src/render3/interfaces/view';
 import {matchTNode} from '../matchers';
 import {matchDebug} from '../utils';

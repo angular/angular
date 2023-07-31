@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
-import {Injectable} from '@angular/core/src/di';
-import {GetTestability, PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {EventEmitter, GetTestability, Injectable, NgZone, Testability, TestabilityRegistry} from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 
-import {setTestabilityGetter} from '../../src/testability/testability';
+import {PendingMacrotask, setTestabilityGetter} from '../../src/testability/testability';
 
 // Schedules a microtasks (using queueMicrotask)
 function microTask(fn: Function): void {

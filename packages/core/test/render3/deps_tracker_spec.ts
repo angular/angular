@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, forwardRef, NgModule, Pipe, Type} from '@angular/core';
-import {NgModuleDef} from '@angular/core/src/r3_symbols';
-import {ComponentType, NgModuleType} from '@angular/core/src/render3';
+import {Component, Directive, forwardRef, NgModule, Pipe, ɵComponentType as ComponentType, ɵNgModuleDef as NgModuleDef, ɵNgModuleType as NgModuleType} from '@angular/core';
 
 import {TEST_ONLY} from '../../src/render3/deps_tracker/deps_tracker';
 
@@ -371,7 +369,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
 
         ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -400,7 +398,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
         depsTracker.clearScopeCacheFor(MainModule as NgModuleType);
 

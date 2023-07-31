@@ -7,12 +7,12 @@
  */
 
 import {ɵɵi18nApply, ɵɵi18nExp} from '@angular/core';
-import {applyCreateOpCodes} from '@angular/core/src/render3/i18n/i18n_apply';
-import {i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
-import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
-import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
-import {HEADER_OFFSET, HOST} from '@angular/core/src/render3/interfaces/view';
 
+import {applyCreateOpCodes} from '../../../src/render3/i18n/i18n_apply';
+import {i18nStartFirstCreatePass} from '../../../src/render3/i18n/i18n_parse';
+import {getTIcu} from '../../../src/render3/i18n/i18n_util';
+import {I18nUpdateOpCodes, IcuType, TI18n} from '../../../src/render3/interfaces/i18n';
+import {HEADER_OFFSET, HOST} from '../../../src/render3/interfaces/view';
 import {matchTI18n, matchTIcu} from '../matchers';
 import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';

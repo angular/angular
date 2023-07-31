@@ -8,10 +8,11 @@
 
 import {NgIf} from '@angular/common';
 import {Component, Directive, inject, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
-import {RuntimeErrorCode} from '@angular/core/src/errors';
-import {global} from '@angular/core/src/util/global';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer} from '@angular/platform-browser';
+
+import {RuntimeErrorCode} from '../../src/errors';
+import {global} from '../../src/util/global';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments

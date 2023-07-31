@@ -11,15 +11,16 @@ import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animat
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
-import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
+import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {RElement} from '../../src/render3/interfaces/renderer_dom';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];

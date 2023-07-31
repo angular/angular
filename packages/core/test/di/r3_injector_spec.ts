@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags, InjectionToken, INJECTOR, Injector, Optional, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '@angular/core';
-import {createInjector} from '@angular/core/src/di/create_injector';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {InjectFlags, InjectionToken, INJECTOR, Injector, Optional, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {R3Injector} from '../../src/di/r3_injector';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {

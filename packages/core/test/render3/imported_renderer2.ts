@@ -9,8 +9,7 @@
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
+import {NgZone, RendererFactory2, RendererType2, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
