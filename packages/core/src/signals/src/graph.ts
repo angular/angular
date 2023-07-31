@@ -10,22 +10,14 @@
 // global `ngDevMode` type is defined.
 import '../../util/ng_dev_mode';
 
-import {newWeakRef, WeakRef} from './weak_ref';
+type Version = number&{__brand: 'Version'};
 
 /**
- * Counter tracking the next `ProducerId` or `ConsumerId`.
- */
-let _nextReactiveId: number = 0;
-
-/**
- * Tracks the currently active reactive consumer (or `null` if there is no active
- * consumer).
+ * The currently active consumer `ReactiveNode`, if running code in a reactive context.
+ *
+ * Change this via `setActiveConsumer`.
  */
 let activeConsumer: ReactiveNode|null = null;
-
-/**
- * Whether the graph is currently propagating change notifications.
- */
 let inNotificationPhase = false;
 
 export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
@@ -34,230 +26,400 @@ export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|nul
   return prev;
 }
 
+export const REACTIVE_NODE = {
+  version: 0 as Version,
+  dirty: false,
+  producerNode: undefined,
+  producerLastReadVersion: undefined,
+  producerIndexOfThis: undefined,
+  nextProducerIndex: 0,
+  liveConsumerNode: undefined,
+  liveConsumerIndexOfThis: undefined,
+  consumerAllowSignalWrites: false,
+  consumerIsAlwaysLive: false,
+  producerMustRecompute: () => false,
+  producerRecomputeValue: () => {},
+  consumerMarkedDirty: () => {},
+};
+
 /**
- * A bidirectional edge in the dependency graph of `ReactiveNode`s.
+ * A producer and/or consumer which participates in the reactive graph.
+ *
+ * Producer `ReactiveNode`s which are accessed when a consumer `ReactiveNode` is the
+ * `activeConsumer` are tracked as dependencies of that consumer.
+ *
+ * Certain consumers are also tracked as "live" consumers and create edges in the other direction,
+ * from producer to consumer. These edges are used to propagate change notifications when a
+ * producer's value is updated.
+ *
+ * A `ReactiveNode` may be both a producer and consumer.
  */
-interface ReactiveEdge {
+export interface ReactiveNode {
   /**
-   * Weakly held reference to the consumer side of this edge.
-   */
-  readonly producerNode: WeakRef<ReactiveNode>;
-
-  /**
-   * Weakly held reference to the producer side of this edge.
-   */
-  readonly consumerNode: WeakRef<ReactiveNode>;
-  /**
-   * `trackingVersion` of the consumer at which this dependency edge was last observed.
+   * Version of the value that this node produces.
    *
-   * If this doesn't match the consumer's current `trackingVersion`, then this dependency record
-   * is stale, and needs to be cleaned up.
+   * This is incremented whenever a new value is produced by this node which is not equal to the
+   * previous value (by whatever definition of equality is in use).
    */
-  atTrackingVersion: number;
+  version: Version;
 
   /**
-   * `valueVersion` of the producer at the time this dependency was last accessed.
+   * Whether this node (in its consumer capacity) is dirty.
+   *
+   * Only live consumers become dirty, when receiving a change notification from a dependency
+   * producer.
    */
-  seenValueVersion: number;
+  dirty: boolean;
+
+  /**
+   * Producers which are dependencies of this consumer.
+   *
+   * Uses the same indices as the `producerLastReadVersion` and `producerIndexOfThis` arrays.
+   */
+  producerNode: ReactiveNode[]|undefined;
+
+  /**
+   * `Version` of the value last read by a given producer.
+   *
+   * Uses the same indices as the `producerNode` and `producerIndexOfThis` arrays.
+   */
+  producerLastReadVersion: Version[]|undefined;
+
+  /**
+   * Index of `this` (consumer) in each producer's `liveConsumers` array.
+   *
+   * This value is only meaningful if this node is live (`liveConsumers.length > 0`). Otherwise
+   * these indices are stale.
+   *
+   * Uses the same indices as the `producerNode` and `producerLastReadVersion` arrays.
+   */
+  producerIndexOfThis: number[]|undefined;
+
+  /**
+   * Index into the producer arrays that the next dependency of this node as a consumer will use.
+   *
+   * This index is zeroed before this node as a consumer begins executing. When a producer is read,
+   * it gets inserted into the producers arrays at this index. There may be an existing dependency
+   * in this location which may or may not match the incoming producer, depending on whether the
+   * same producers were read in the same order as the last computation.
+   */
+  nextProducerIndex: number;
+
+  /**
+   * Array of consumers of this producer that are "live" (they require push notifications).
+   *
+   * `liveConsumerNode.length` is effectively our reference count for this node.
+   */
+  liveConsumerNode: ReactiveNode[]|undefined;
+
+  /**
+   * Index of `this` (producer) in each consumer's `producerNode` array.
+   *
+   * Uses the same indices as the `liveConsumerNode` array.
+   */
+  liveConsumerIndexOfThis: number[]|undefined;
+
+  /**
+   * Whether writes to signals are allowed when this consumer is the `activeConsumer`.
+   *
+   * This is used to enforce guardrails such as preventing writes to writable signals in the
+   * computation function of computed signals, which is supposed to be pure.
+   */
+  consumerAllowSignalWrites: boolean;
+
+  readonly consumerIsAlwaysLive: boolean;
+
+  /**
+   * Tracks whether producers need to recompute their value independently of the reactive graph (for
+   * example, if no initial value has been computed).
+   */
+  producerMustRecompute(node: unknown): boolean;
+  producerRecomputeValue(node: unknown): void;
+  consumerMarkedDirty(node: unknown): void;
+}
+
+interface ConsumerNode extends ReactiveNode {
+  producerNode: NonNullable<ReactiveNode['producerNode']>;
+  producerIndexOfThis: NonNullable<ReactiveNode['producerIndexOfThis']>;
+  producerLastReadVersion: NonNullable<ReactiveNode['producerLastReadVersion']>;
+}
+
+interface ProducerNode extends ReactiveNode {
+  liveConsumerNode: NonNullable<ReactiveNode['liveConsumerNode']>;
+  liveConsumerIndexOfThis: NonNullable<ReactiveNode['liveConsumerIndexOfThis']>;
 }
 
 /**
- * A node in the reactive graph.
- *
- * Nodes can be producers of reactive values, consumers of other reactive values, or both.
- *
- * Producers are nodes that produce values, and can be depended upon by consumer nodes.
- *
- * Producers expose a monotonic `valueVersion` counter, and are responsible for incrementing this
- * version when their value semantically changes. Some producers may produce their values lazily and
- * thus at times need to be polled for potential updates to their value (and by extension their
- * `valueVersion`). This is accomplished via the `onProducerUpdateValueVersion` method for
- * implemented by producers, which should perform whatever calculations are necessary to ensure
- * `valueVersion` is up to date.
- *
- * Consumers are nodes that depend on the values of producers and are notified when those values
- * might have changed.
- *
- * Consumers do not wrap the reads they consume themselves, but rather can be set as the active
- * reader via `setActiveConsumer`. Reads of producers that happen while a consumer is active will
- * result in those producers being added as dependencies of that consumer node.
- *
- * The set of dependencies of a consumer is dynamic. Implementers expose a monotonically increasing
- * `trackingVersion` counter, which increments whenever the consumer is about to re-run any reactive
- * reads it needs and establish a new set of dependencies as a result.
- *
- * Producers store the last `trackingVersion` they've seen from `Consumer`s which have read them.
- * This allows a producer to identify whether its record of the dependency is current or stale, by
- * comparing the consumer's `trackingVersion` to the version at which the dependency was
- * last observed.
+ * Called by implementations when a producer's signal is read.
  */
-export abstract class ReactiveNode {
-  private readonly id = _nextReactiveId++;
+export function producerAccessed(node: ReactiveNode): void {
+  if (inNotificationPhase) {
+    throw new Error(
+        typeof ngDevMode !== 'undefined' && ngDevMode ?
+            `Assertion error: signal read during notification phase` :
+            '');
+  }
 
-  /**
-   * A cached weak reference to this node, which will be used in `ReactiveEdge`s.
-   */
-  private readonly ref = newWeakRef(this);
+  if (activeConsumer === null) {
+    // Accessed outside of a reactive context, so nothing to record.
+    return;
+  }
 
-  /**
-   * Edges to producers on which this node depends (in its consumer capacity).
-   */
-  private readonly producers = new Map<number, ReactiveEdge>();
+  // This producer is the `idx`th dependency of `activeConsumer`.
+  const idx = activeConsumer.nextProducerIndex++;
 
-  /**
-   * Edges to consumers on which this node depends (in its producer capacity).
-   */
-  private readonly consumers = new Map<number, ReactiveEdge>();
+  assertConsumerNode(activeConsumer);
 
-  /**
-   * Monotonically increasing counter representing a version of this `Consumer`'s
-   * dependencies.
-   */
-  protected trackingVersion = 0;
+  if (idx < activeConsumer.producerNode.length && activeConsumer.producerNode[idx] !== node) {
+    // There's been a change in producers since the last execution of `activeConsumer`.
+    // `activeConsumer.producerNode[idx]` holds a stale dependency which will be be removed and
+    // replaced with `this`.
+    //
+    // If `activeConsumer` isn't live, then this is a no-op, since we can replace the producer in
+    // `activeConsumer.producerNode` directly. However, if `activeConsumer` is live, then we need
+    // to remove it from the stale producer's `liveConsumer`s.
+    if (consumerIsLive(activeConsumer)) {
+      const staleProducer = activeConsumer.producerNode[idx];
+      producerRemoveLiveConsumerAtIndex(staleProducer, activeConsumer.producerIndexOfThis[idx]);
 
-  /**
-   * Monotonically increasing counter which increases when the value of this `Producer`
-   * semantically changes.
-   */
-  protected valueVersion = 0;
+      // At this point, the only record of `staleProducer` is the reference at
+      // `activeConsumer.producerNode[idx]` which will be overwritten below.
+    }
+  }
 
-  /**
-   * Whether signal writes should be allowed while this `ReactiveNode` is the current consumer.
-   */
-  protected abstract readonly consumerAllowSignalWrites: boolean;
+  if (activeConsumer.producerNode[idx] !== node) {
+    // We're a new dependency of the consumer (at `idx`).
+    activeConsumer.producerNode[idx] = node;
 
-  /**
-   * Called for consumers whenever one of their dependencies notifies that it might have a new
-   * value.
-   */
-  protected abstract onConsumerDependencyMayHaveChanged(): void;
+    // If the active consumer is live, then add it as a live consumer. If not, then use 0 as a
+    // placeholder value.
+    activeConsumer.producerIndexOfThis[idx] =
+        consumerIsLive(activeConsumer) ? producerAddLiveConsumer(node, activeConsumer, idx) : 0;
+  }
+  activeConsumer.producerLastReadVersion[idx] = node.version;
+}
 
-  /**
-   * Called for producers when a dependent consumer is checking if the producer's value has actually
-   * changed.
-   */
-  protected abstract onProducerUpdateValueVersion(): void;
+/**
+ * Ensure this producer's `version` is up-to-date.
+ */
+export function producerUpdateValueVersion(node: ReactiveNode): void {
+  if (consumerIsLive(node) && !node.dirty) {
+    // A live consumer will be marked dirty by producers, so a clean state means that its version
+    // is guaranteed to be up-to-date.
+    return;
+  }
 
-  /**
-   * Polls dependencies of a consumer to determine if they have actually changed.
-   *
-   * If this returns `false`, then even though the consumer may have previously been notified of a
-   * change, the values of its dependencies have not actually changed and the consumer should not
-   * rerun any reactions.
-   */
-  protected consumerPollProducersForChange(): boolean {
-    for (const [producerId, edge] of this.producers) {
-      const producer = edge.producerNode.deref();
+  if (!node.producerMustRecompute(node) && !consumerPollProducersForChange(node)) {
+    // None of our producers report a change since the last time they were read, so no
+    // recomputation of our value is necessary, and we can consider ourselves clean.
+    node.dirty = false;
+    return;
+  }
 
-      // On Safari < 16.1 deref can return null, we need to check for null also.
-      // See https://github.com/WebKit/WebKit/commit/44c15ba58912faab38b534fef909dd9e13e095e0
-      if (producer == null || edge.atTrackingVersion !== this.trackingVersion) {
-        // This dependency edge is stale, so remove it.
-        this.producers.delete(producerId);
-        producer?.consumers.delete(this.id);
-        continue;
+  node.producerRecomputeValue(node);
+
+  // After recomputing the value, we're no longer dirty.
+  node.dirty = false;
+}
+
+/**
+ * Propagate a dirty notification to live consumers of this producer.
+ */
+export function producerNotifyConsumers(node: ReactiveNode): void {
+  if (node.liveConsumerNode === undefined) {
+    return;
+  }
+
+  // Prevent signal reads when we're updating the graph
+  const prev = inNotificationPhase;
+  inNotificationPhase = true;
+  try {
+    for (const consumer of node.liveConsumerNode) {
+      if (!consumer.dirty) {
+        consumerMarkDirty(consumer);
       }
-
-      if (producer.producerPollStatus(edge.seenValueVersion)) {
-        // One of the dependencies reports a real value change.
-        return true;
-      }
     }
+  } finally {
+    inNotificationPhase = prev;
+  }
+}
 
-    // No dependency reported a real value change, so the `Consumer` has also not been
-    // impacted.
-    return false;
+/**
+ * Whether this `ReactiveNode` in its producer capacity is currently allowed to initiate updates,
+ * based on the current consumer context.
+ */
+export function producerUpdatesAllowed(): boolean {
+  return activeConsumer?.consumerAllowSignalWrites !== false;
+}
+
+export function consumerMarkDirty(node: ReactiveNode): void {
+  node.dirty = true;
+  producerNotifyConsumers(node);
+  node.consumerMarkedDirty?.(node);
+}
+
+/**
+ * Prepare this consumer to run a computation in its reactive context.
+ *
+ * Must be called by subclasses which represent reactive computations, before those computations
+ * begin.
+ */
+export function consumerBeforeComputation(node: ReactiveNode|null): ReactiveNode|null {
+  node && (node.nextProducerIndex = 0);
+  return setActiveConsumer(node);
+}
+
+/**
+ * Finalize this consumer's state after a reactive computation has run.
+ *
+ * Must be called by subclasses which represent reactive computations, after those computations
+ * have finished.
+ */
+export function consumerAfterComputation(
+    node: ReactiveNode|null, prevConsumer: ReactiveNode|null): void {
+  setActiveConsumer(prevConsumer);
+
+  if (!node || node.producerNode === undefined || node.producerIndexOfThis === undefined ||
+      node.producerLastReadVersion === undefined) {
+    return;
   }
 
-  /**
-   * Notify all consumers of this producer that its value may have changed.
-   */
-  protected producerMayHaveChanged(): void {
-    // Prevent signal reads when we're updating the graph
-    const prev = inNotificationPhase;
-    inNotificationPhase = true;
-    try {
-      for (const [consumerId, edge] of this.consumers) {
-        const consumer = edge.consumerNode.deref();
-
-        // On Safari < 16.1 deref can return null, we need to check for null also.
-        // See https://github.com/WebKit/WebKit/commit/44c15ba58912faab38b534fef909dd9e13e095e0
-        if (consumer == null || consumer.trackingVersion !== edge.atTrackingVersion) {
-          this.consumers.delete(consumerId);
-          consumer?.producers.delete(this.id);
-          continue;
-        }
-
-        consumer.onConsumerDependencyMayHaveChanged();
-      }
-    } finally {
-      inNotificationPhase = prev;
-    }
-  }
-
-  /**
-   * Mark that this producer node has been accessed in the current reactive context.
-   */
-  protected producerAccessed(): void {
-    if (inNotificationPhase) {
-      throw new Error(
-          typeof ngDevMode !== 'undefined' && ngDevMode ?
-              `Assertion error: signal read during notification phase` :
-              '');
-    }
-
-    if (activeConsumer === null) {
-      return;
-    }
-
-    // Either create or update the dependency `Edge` in both directions.
-    let edge = activeConsumer.producers.get(this.id);
-    if (edge === undefined) {
-      edge = {
-        consumerNode: activeConsumer.ref,
-        producerNode: this.ref,
-        seenValueVersion: this.valueVersion,
-        atTrackingVersion: activeConsumer.trackingVersion,
-      };
-      activeConsumer.producers.set(this.id, edge);
-      this.consumers.set(activeConsumer.id, edge);
-    } else {
-      edge.seenValueVersion = this.valueVersion;
-      edge.atTrackingVersion = activeConsumer.trackingVersion;
+  if (consumerIsLive(node)) {
+    // For live consumers, we need to remove the producer -> consumer edge for any stale producers
+    // which weren't dependencies after the recomputation.
+    for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
+      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
     }
   }
 
-  /**
-   * Whether this consumer currently has any producers registered.
-   */
-  protected get hasProducers(): boolean {
-    return this.producers.size > 0;
+  // Truncate the producer tracking arrays.
+  for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
+    node.producerNode.pop();
+    node.producerLastReadVersion.pop();
+    node.producerIndexOfThis.pop();
   }
+}
 
-  /**
-   * Whether this `ReactiveNode` in its producer capacity is currently allowed to initiate updates,
-   * based on the current consumer context.
-   */
-  protected get producerUpdatesAllowed(): boolean {
-    return activeConsumer?.consumerAllowSignalWrites !== false;
-  }
+/**
+ * Determine whether this consumer has any dependencies which have changed since the last time
+ * they were read.
+ */
+export function consumerPollProducersForChange(node: ReactiveNode): boolean {
+  assertConsumerNode(node);
 
-  /**
-   * Checks if a `Producer` has a current value which is different than the value
-   * last seen at a specific version by a `Consumer` which recorded a dependency on
-   * this `Producer`.
-   */
-  private producerPollStatus(lastSeenValueVersion: number): boolean {
-    // `producer.valueVersion` may be stale, but a mismatch still means that the value
-    // last seen by the `Consumer` is also stale.
-    if (this.valueVersion !== lastSeenValueVersion) {
+  // Poll producers for change.
+  for (let i = 0; i < node.producerNode.length; i++) {
+    const producer = node.producerNode[i];
+    const seenVersion = node.producerLastReadVersion[i];
+
+    // First check the versions. A mismatch means that the producer's value is known to have
+    // changed since the last time we read it.
+    if (seenVersion !== producer.version) {
       return true;
     }
 
-    // Trigger the `Producer` to update its `valueVersion` if necessary.
-    this.onProducerUpdateValueVersion();
+    // The producer's version is the same as the last time we read it, but it might itself be
+    // stale. Force the producer to recompute its version (calculating a new value if necessary).
+    producerUpdateValueVersion(producer);
 
-    // At this point, we can trust `producer.valueVersion`.
-    return this.valueVersion !== lastSeenValueVersion;
+    // Now when we do this check, `producer.version` is guaranteed to be up to date, so if the
+    // versions still match then it has not changed since the last time we read it.
+    if (seenVersion !== producer.version) {
+      return true;
+    }
   }
+
+  return false;
+}
+
+/**
+ * Disconnect this consumer from the graph.
+ */
+export function consumerDestroy(node: ReactiveNode): void {
+  assertConsumerNode(node);
+  if (consumerIsLive(node)) {
+    // Drop all connections from the graph to this node.
+    for (let i = 0; i < node.producerNode.length; i++) {
+      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+    }
+  }
+
+  // Truncate all the arrays to drop all connection from this node to the graph.
+  node.producerNode.length = node.producerLastReadVersion.length = node.producerIndexOfThis.length =
+      0;
+  if (node.liveConsumerNode) {
+    node.liveConsumerNode.length = node.liveConsumerIndexOfThis!.length = 0;
+  }
+}
+
+/**
+ * Add `consumer` as a live consumer of this node.
+ *
+ * Note that this operation is potentially transitive. If this node becomes live, then it becomes
+ * a live consumer of all of its current producers.
+ */
+function producerAddLiveConsumer(
+    node: ReactiveNode, consumer: ReactiveNode, indexOfThis: number): number {
+  assertProducerNode(node);
+  assertConsumerNode(node);
+  if (node.liveConsumerNode.length === 0) {
+    // When going from 0 to 1 live consumers, we become a live consumer to our producers.
+    for (let i = 0; i < node.producerNode.length; i++) {
+      node.producerIndexOfThis[i] = producerAddLiveConsumer(node.producerNode[i], node, i);
+    }
+  }
+  node.liveConsumerIndexOfThis.push(indexOfThis);
+  return node.liveConsumerNode.push(consumer) - 1;
+}
+
+/**
+ * Remove the live consumer at `idx`.
+ */
+function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): void {
+  assertProducerNode(node);
+  assertConsumerNode(node);
+
+  if (node.liveConsumerNode.length === 1) {
+    // When removing the last live consumer, we will no longer be live. We need to remove
+    // ourselves from our producers' tracking (which may cause consumer-producers to lose
+    // liveness as well).
+    for (let i = 0; i < node.producerNode.length; i++) {
+      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+    }
+  }
+
+  // Move the last value of `liveConsumers` into `idx`. Note that if there's only a single
+  // live consumer, this is a no-op.
+  const lastIdx = node.liveConsumerNode.length - 1;
+  node.liveConsumerNode[idx] = node.liveConsumerNode[lastIdx];
+  node.liveConsumerIndexOfThis[idx] = node.liveConsumerIndexOfThis[lastIdx];
+
+  // Truncate the array.
+  node.liveConsumerNode.length--;
+  node.liveConsumerIndexOfThis.length--;
+
+  // If the index is still valid, then we need to fix the index pointer from the producer to this
+  // consumer, and update it from `lastIdx` to `idx` (accounting for the move above).
+  if (idx < node.liveConsumerNode.length) {
+    const idxProducer = node.liveConsumerIndexOfThis[idx];
+    const consumer = node.liveConsumerNode[idx];
+    assertConsumerNode(consumer);
+    consumer.producerIndexOfThis[idxProducer] = idx;
+  }
+}
+
+function consumerIsLive(node: ReactiveNode): boolean {
+  return node.consumerIsAlwaysLive || (node?.liveConsumerNode?.length ?? 0) > 0;
+}
+
+
+function assertConsumerNode(node: ReactiveNode): asserts node is ConsumerNode {
+  node.producerNode ??= [];
+  node.producerIndexOfThis ??= [];
+  node.producerLastReadVersion ??= [];
+}
+
+function assertProducerNode(node: ReactiveNode): asserts node is ProducerNode {
+  node.liveConsumerNode ??= [];
+  node.liveConsumerIndexOfThis ??= [];
 }

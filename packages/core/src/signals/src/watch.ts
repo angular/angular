@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReactiveNode, setActiveConsumer} from './graph';
+import {consumerAfterComputation, consumerBeforeComputation, consumerMarkDirty, consumerPollProducersForChange, REACTIVE_NODE, ReactiveNode} from './graph';
 
 /**
  * A cleanup function that can be optionally registered from the watch logic. If registered, the
@@ -19,45 +19,8 @@ export type WatchCleanupFn = () => void;
  */
 export type WatchCleanupRegisterFn = (cleanupFn: WatchCleanupFn) => void;
 
-const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
-
-/**
- * Watches a reactive expression and allows it to be scheduled to re-run
- * when any dependencies notify of a change.
- *
- * `Watch` doesn't run reactive expressions itself, but relies on a consumer-
- * provided scheduling operation to coordinate calling `Watch.run()`.
- */
-export class Watch extends ReactiveNode {
-  protected override readonly consumerAllowSignalWrites: boolean;
-  private dirty = false;
-  private cleanupFn = NOOP_CLEANUP_FN;
-  private registerOnCleanup =
-      (cleanupFn: WatchCleanupFn) => {
-        this.cleanupFn = cleanupFn;
-      }
-
-  constructor(
-      private watch: (onCleanup: WatchCleanupRegisterFn) => void,
-      private schedule: (watch: Watch) => void, allowSignalWrites: boolean) {
-    super();
-    this.consumerAllowSignalWrites = allowSignalWrites;
-  }
-
-  notify(): void {
-    if (!this.dirty) {
-      this.schedule(this);
-    }
-    this.dirty = true;
-  }
-
-  protected override onConsumerDependencyMayHaveChanged(): void {
-    this.notify();
-  }
-
-  protected override onProducerUpdateValueVersion(): void {
-    // Watches are not producers.
-  }
+export interface Watch {
+  notify(): void;
 
   /**
    * Execute the reactive expression in the context of this `Watch` consumer.
@@ -65,24 +28,68 @@ export class Watch extends ReactiveNode {
    * Should be called by the user scheduling algorithm when the provided
    * `schedule` hook is called by `Watch`.
    */
-  run(): void {
-    this.dirty = false;
-    if (this.trackingVersion !== 0 && !this.consumerPollProducersForChange()) {
+  run(): void;
+  cleanup(): void;
+}
+
+export function watch(
+    fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void,
+    allowSignalWrites: boolean): Watch {
+  const node: WatchNode = Object.create(WATCH_NODE);
+  if (allowSignalWrites) {
+    node.consumerAllowSignalWrites = true;
+  }
+
+  node.fn = fn;
+  node.schedule = schedule;
+
+  const registerOnCleanup = (cleanupFn: WatchCleanupFn) => {
+    node.cleanupFn = cleanupFn;
+  };
+
+  const run = () => {
+    node.dirty = false;
+    if (node.hasRun && !consumerPollProducersForChange(node)) {
       return;
     }
+    node.hasRun = true;
 
-    const prevConsumer = setActiveConsumer(this);
-    this.trackingVersion++;
+    const prevConsumer = consumerBeforeComputation(node);
     try {
-      this.cleanupFn();
-      this.cleanupFn = NOOP_CLEANUP_FN;
-      this.watch(this.registerOnCleanup);
+      node.cleanupFn();
+      node.cleanupFn = NOOP_CLEANUP_FN;
+      node.fn(registerOnCleanup);
     } finally {
-      setActiveConsumer(prevConsumer);
+      consumerAfterComputation(node, prevConsumer);
     }
-  }
+  };
 
-  cleanup() {
-    this.cleanupFn();
-  }
+  node.ref = {
+    notify: () => consumerMarkDirty(node),
+    run,
+    cleanup: () => node.cleanupFn(),
+  };
+
+  return node.ref;
 }
+
+const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
+
+interface WatchNode extends ReactiveNode {
+  hasRun: boolean;
+  fn: (onCleanup: WatchCleanupRegisterFn) => void;
+  schedule: (watch: Watch) => void;
+  cleanupFn: WatchCleanupFn;
+  ref: Watch;
+}
+
+const WATCH_NODE = {
+  ...REACTIVE_NODE,
+  consumerIsAlwaysLive: true,
+  consumerAllowSignalWrites: false,
+  consumerMarkedDirty: (node: WatchNode) => {
+    node.schedule(node.ref);
+  },
+  hasRun: false,
+  cleanupFn: NOOP_CLEANUP_FN,
+};

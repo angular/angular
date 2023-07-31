@@ -9,6 +9,7 @@
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
+import {consumerDestroy} from '../signals';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertFunction, assertNumber, assertString} from '../util/assert';
 import {escapeCommentText} from '../util/dom';
@@ -376,8 +377,8 @@ export function destroyLView(tView: TView, lView: LView) {
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
     const renderer = lView[RENDERER];
 
-    lView[REACTIVE_TEMPLATE_CONSUMER]?.destroy();
-    lView[REACTIVE_HOST_BINDING_CONSUMER]?.destroy();
+    lView[REACTIVE_TEMPLATE_CONSUMER] && consumerDestroy(lView[REACTIVE_TEMPLATE_CONSUMER]);
+    lView[REACTIVE_HOST_BINDING_CONSUMER] && consumerDestroy(lView[REACTIVE_HOST_BINDING_CONSUMER]);
 
     if (renderer.destroyNode) {
       applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);

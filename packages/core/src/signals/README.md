@@ -73,7 +73,7 @@ Effects do not execute synchronously with the set (see the section on glitch-fre
 
 Internally, the signals implementation is defined in terms of two abstractions, producers and consumers.Producers represents values which can deliver change notifications, such as the various flavors of `Signal`s. Consumers represents a reactive context which may depend on some number of producers. In other words, producers produce reactivity, and consumers consume it.
 
-Implementers of either abstraction derive from the `ReactiveNode` base class, which models participation in the reactive graph. Any `ReactiveNode` can act in the role of a producer, a consumer, or both, by interacting with the appropriate subset of APIs on `ReactiveNode`. For example, `WritableSignal`s extend `ReactiveNode` but only operate against the producer APIs, since `WritableSignal`s don't consume other signal values.
+Implementers of either abstraction define a node object which implements the `ReactiveNode` interface, which models participation in the reactive graph. Any `ReactiveNode` can act in the role of a producer, a consumer, or both, by interacting with the appropriate subset of APIs. For example, `WritableSignal`s implement `ReactiveNode` but only operate against the producer APIs, since `WritableSignal`s don't consume other signal values.
 
 Some concepts are both producers _and_ consumers. For example, derived `computed` expressions consume other signals to produce new reactive values.
 
@@ -81,13 +81,53 @@ Throughout the rest of this document, "producer" and "consumer" are used to desc
 
 ### The Dependency Graph
 
-`ReactiveNode`s keep track of dependency `ReactiveEdge`s to each other. Producers are aware of which consumers depend on their value, while consumers are aware of all of the producers on which they depend. These references are always bidirectional.
+`ReactiveNode`s are linked together through a dependency graph. This dependency graph is bidirectional, but there are differences in which dependencies are tracked in each direction.
 
-A major design feature of Angular Signals is that dependency edges (`ReactiveEdge`s) are tracked using weak references (`WeakRef`). At any point, it's possible that a consumer node may go out of scope and be garbage collected, even if it is still referenced by a producer node (or vice versa). This removes the need for explicit cleanup operations that would remove these dependency edges for signals going "out of scope". Lifecycle management of signals is greatly simplified as a result, and there is no chance of memory leaks due to the dependency tracking.
+Consumers always keep track of the producers they depend on. Producers only track dependencies from consumers which are considered "live". A consumer is "live" when either:
 
-To simplify tracking `ReactiveEdge`s via `WeakRef`s, `ReactiveNode`s have numeric IDs generated when they're created. These IDs are used as `Map` keys instead of the tracked node objects, which are instead stored in the `ReactiveEdge` as `WeakRef`s.
+* It sets the `consumerIsAlwaysLive` property of its `ReactiveNode` to `true`, or
+* It's also a producer which is depended upon by a live consumer.
 
-At various points during the read or write of signal values, these `WeakRef`s are dereferenced. If a reference turns out to be `undefined` (that is, the other side of the dependency edge was reclaimed by garbage collection), then the dependency `ReactiveEdge` can be cleaned up.
+In that sense, "liveness" is a transitive property of consumers.
+
+In practice, effects (including template pseudo-effects) are live consumers, which `computed`s are not inherently live. This means that any `computed` used in an `effect` will be treated as live, but a `computed` not read in any effects will not be.
+
+#### Liveness and memory management
+
+The concept of liveness allows for producer-to-consumer dependency tracking without risking memory leaks.
+
+Consider this contrived case of a `signal` and a `computed`:
+
+```typescript
+const counter = signal(1);
+
+let double = computed(() => counter() * 2);
+console.log(double()); // 2
+double = null;
+```
+
+If the dependency graph maintained a hard reference from `counter` to `double`, then `double` would be retained(not garbage collected) even though the user dropped their last reference to the actual signal. But because `double` is not live, the graph doesn't hold a reference from `counter` to `double`, and `double` can be freed when the user drops it.
+#### Non-live consumers and polling
+
+A consequence of not tracking an edge from `counter` to `double` is that when counter is changed:
+
+```typescript
+counter.set(2);
+```
+
+No notification can propagate in the graph from `counter` to `double`, to let the `computed` know that it needs to throw away its memoized value (2) and recompute (producing 4).
+
+Instead, when `double()` is read, it polls its producers (which _are_ tracked in the graph) and checks whether any of them report having changed since the last time `double` was calculated. If not, it can safely use its memoized value.
+
+#### With a live consumer
+
+If an `effect` is created:
+
+```typescript
+effect(() => console.log(double()));
+```
+
+Then `double` becomes a live consumer, as it's a dependency of a live consumer (the effect), and the graph will have a hard reference from `counter` to `double` to the effect consumer. There is no risk of memory leaks though, since the effect is referencing `double` directly anyway, and the effect cannot just be dropped and must be manually destroyed (which would cause `double` to no longer be live). That is, there is no way for a reference from a producer to a live consumer to exist in the graph _without_ the consumer also referencing the producer outside of the graph.`
 
 ## "Glitch Free" property
 
@@ -109,7 +149,7 @@ In this situation, the logging effect's observation of the inconsistent state "1
 
 ### Push/Pull Algorithm
 
-Angular Signals guarantees glitch-free execution by separating updates to the `ReactiveNode` graph into two phases. The first phase is performed eagerly when a producer value is changed. This change notification is propagated through the graph, notifying consumers which depend on the producer of the potential update. Some of these consumers may be derived values and thus also producers, which invalidate their cached values and then continue the propagation of the change notification to their own consumers, and so on. Other consumers may be effects, which schedule themselves for re-execution.
+Angular Signals guarantees glitch-free execution by separating updates to the `ReactiveNode` graph into two phases. The first phase is performed eagerly when a producer value is changed. This change notification is propagated through the graph, notifying live consumers which depend on the producer of the potential update. Some of these consumers may be derived values and thus also producers, which invalidate their cached values and then continue the propagation of the change notification to their own live consumers, and so on. Ultimately this notification reaches effects, which schedule themselves for re-execution.
 
 Crucially, during this first phase, no side effects are run, and no recomputation of intermediate or derived values is performed, only invalidation of cached values. This allows the change notification to reach all affected nodes in the graph without the possibility of observing intermediate or glitchy states.
 
@@ -129,13 +169,7 @@ reads either `dataA` or `dataB` depending on the value of the `useA` signal. At 
 
 The potential dependencies of a reactive context are unbounded. Signals may be stored in variables or other data structures and swapped out with other signals from time to time. Thus, the signals implementation must deal with potential changes in the set of dependencies of a consumer on each execution.
 
-A naive approach would be to simply remove all old dependency edges before re-executing the reactive operation, or to mark them all as stale beforehand and remove the ones that don't get read. This is conceptually simple, but computationally heavy, especially for reactive contexts that have a largely unchanging set of dependencies.
-
-### Dependency Edge Versioning
-
-Instead, our implementation uses a lighter weight approach to dependency invalidation which relies on a monotonic version counter maintained by the consumer, called the `trackingVersion`. Before the consumer's reactive operation is executed, its `trackingVersion` is incremented. When a signal is read, the `trackingVersion` of the consumer is stored in the dependency `ReactiveEdge`, where it is available to the producer.
-
-When a producer has an updated value, it iterates through its outgoing edges to any interested consumers to notify them of the change. At this point, the producer can check whether the dependency is current or stale by comparing the consumer's current `trackingVersion` to the one stored on the dependency `ReactiveEdge`. A mismatch means that the consumer's dependencies have changed and no longer include that producer, so that consumer is not notified and the stale edge is instead removed.
+Dependencies of a computation are tracked in an array. When the computation is rerun, a pointer into that array is initialized to the index `0`, and each dependency read is compared against the dependency from the previous run at the pointer's current location. If there's a mismatch, then the dependencies have changed since the last run, and the old dependency can be dropped and replaced with the new one. At the end of the run, any remaining unmatched dependencies can be dropped.
 
 ## Equality Semantics
 
@@ -153,11 +187,11 @@ This is a tricky property to guarantee in our implementation because values are 
 
 ### Value Versioning
 
-To solve this problem, our implementation uses a similar technique to tracking dependency staleness. Producers track a monotonically increasing `valueVersion`, representing the semantic identity of their value. `valueVersion` is incremented when the producer produces a semantically new value. The current `valueVersion` is saved into the dependency `ReactiveEdge` structure when a consumer reads from the producer.
+To solve this problem, our implementation uses a similar technique to tracking dependency staleness. Producers track a monotonically increasing `version`, representing the semantic identity of their value. `version` is incremented when the producer produces a semantically new value. The current `version` of each dependency (producer) is saved as part of the tracked dependencies of a consumer.
 
-Before consumers trigger their reactive operations (e.g. the side effect function for `effect`s, or the recomputation for `computed`s), they poll their dependencies and ask for `valueVersion` to be refreshed if needed. For a `computed`, this will trigger recomputation of the value and the subsequent equality check, if the value is stale (which makes this polling a recursive process as the `computed` is also a consumer which will poll its own producers). If this recomputation produces a semantically changed value, `valueVersion` is incremented.
+Before consumers trigger their reactive operations (e.g. the side effect function for `effect`s, or the recomputation for `computed`s), they poll their dependencies and ask for `version` to be refreshed if needed. For a `computed`, this will trigger recomputation of the value and the subsequent equality check, if the value is stale (which makes this polling a recursive process as the `computed` is also a consumer which will poll its own producers). If this recomputation produces a semantically changed value, `version` is incremented.
 
-The consumer can then compare the `valueVersion` of the new value with the one cached in its dependency `ReactiveEdge`, to determine if that particular dependency really did change. By doing this for all producers, the consumer can determine that, if all `valueVersion`s match, that no _actual_ change to any dependency has occurred, and it can skip reacting to that change (e.g. skip running the side effect function).
+The consumer can then compare the `version` of the new value with its last read version to determine if that particular dependency really did change. By doing this for all producers the consumer can determine that, if all `version`s match, that no _actual_ change to any dependency has occurred, and it can skip reacting to that change (e.g. skip running the side effect function).
 
 ## `Watch` primitive
 

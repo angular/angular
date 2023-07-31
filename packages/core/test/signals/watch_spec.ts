@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, Watch} from '@angular/core/src/signals';
+import {computed, signal, watch} from '@angular/core/src/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
@@ -46,7 +46,6 @@ describe('watchers', () => {
     const countA = signal(0);
     const countB = signal(100);
     const useCountA = signal(true);
-
 
     const runLog: number[] = [];
     testingEffect(() => {
@@ -162,7 +161,7 @@ describe('watchers', () => {
   it('should throw an error when reading a signal during the notification phase', () => {
     const source = signal(0);
     let ranScheduler = false;
-    const watch = new Watch(
+    const w = watch(
         () => {
           source();
         },
@@ -173,7 +172,7 @@ describe('watchers', () => {
         false);
 
     // Run the effect manually to initiate dependency tracking.
-    watch.run();
+    w.run();
 
     // Changing the signal will attempt to schedule the effect.
     source.set(1);

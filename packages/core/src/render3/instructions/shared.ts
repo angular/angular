@@ -17,7 +17,7 @@ import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {setActiveConsumer} from '../../signals';
+import {consumerAfterComputation, consumerBeforeComputation, setActiveConsumer} from '../../signals';
 import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -78,8 +78,14 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         const bindingRootIndx = hostBindingOpCodes[++i] as number;
         const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
-        const context = lView[directiveIdx];
-        consumer.runInContext(hostBindingFn, RenderFlags.Update, context);
+        consumer.dirty = false;
+        const prevConsumer = consumerBeforeComputation(consumer);
+        try {
+          const context = lView[directiveIdx];
+          hostBindingFn(RenderFlags.Update, context);
+        } finally {
+          consumerAfterComputation(consumer, prevConsumer);
+        }
       }
     }
   } finally {
@@ -262,15 +268,15 @@ export function executeTemplate<T>(
     const preHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
-    if (isUpdatePhase) {
-      consumer.runInContext(templateFn, rf, context);
-    } else {
-      const prevConsumer = setActiveConsumer(null);
-      try {
-        templateFn(rf, context);
-      } finally {
-        setActiveConsumer(prevConsumer);
+    const effectiveConsumer = isUpdatePhase ? consumer : null;
+    const prevConsumer = consumerBeforeComputation(effectiveConsumer);
+    try {
+      if (effectiveConsumer !== null) {
+        effectiveConsumer.dirty = false;
       }
+      templateFn(rf, context);
+    } finally {
+      consumerAfterComputation(effectiveConsumer, prevConsumer);
     }
   } finally {
     if (isUpdatePhase && lView[REACTIVE_TEMPLATE_CONSUMER] === null) {

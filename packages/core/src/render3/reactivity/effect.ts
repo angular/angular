@@ -11,7 +11,7 @@ import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {DestroyRef} from '../../linker/destroy_ref';
-import {Watch} from '../../signals';
+import {Watch, watch} from '../../signals';
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
@@ -38,7 +38,7 @@ export class EffectManager {
       effectFn: (onCleanup: (cleanupFn: EffectCleanupFn) => void) => void,
       destroyRef: DestroyRef|null, allowSignalWrites: boolean): EffectRef {
     const zone = (typeof Zone === 'undefined') ? null : Zone.current;
-    const watch = new Watch(effectFn, (watch) => {
+    const w = watch(effectFn, (watch) => {
       if (!this.all.has(watch)) {
         return;
       }
@@ -46,18 +46,18 @@ export class EffectManager {
       this.queue.set(watch, zone);
     }, allowSignalWrites);
 
-    this.all.add(watch);
+    this.all.add(w);
 
     // Effects start dirty.
-    watch.notify();
+    w.notify();
 
     let unregisterOnDestroy: (() => void)|undefined;
 
     const destroy = () => {
-      watch.cleanup();
+      w.cleanup();
       unregisterOnDestroy?.();
-      this.all.delete(watch);
-      this.queue.delete(watch);
+      this.all.delete(w);
+      this.queue.delete(w);
     };
 
     unregisterOnDestroy = destroyRef?.onDestroy(destroy);

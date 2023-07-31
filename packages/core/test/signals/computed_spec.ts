@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, Watch} from '@angular/core/src/signals';
+import {computed, signal, watch} from '@angular/core/src/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -136,7 +136,7 @@ describe('computed', () => {
     const derived = computed(() => source().toUpperCase());
 
     let watchCount = 0;
-    const watch = new Watch(
+    const w = watch(
         () => {
           derived();
         },
@@ -145,7 +145,7 @@ describe('computed', () => {
         },
         false);
 
-    watch.run();
+    w.run();
     expect(watchCount).toEqual(0);
 
     // change signal, mark downstream dependencies dirty
@@ -157,7 +157,7 @@ describe('computed', () => {
     expect(watchCount).toEqual(1);
 
     // resetting dependencies back to clean
-    watch.run();
+    w.run();
     expect(watchCount).toEqual(1);
 
     // expecting another notification at this point
