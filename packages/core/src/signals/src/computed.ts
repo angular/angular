@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
-import {ReactiveNode, setActiveConsumer} from './graph';
+import {defaultEquals, SIGNAL, Signal, ValueEqualityFn} from './api';
+import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode} from './graph';
 
 /**
  * Options passed to the `computed` creation function.
@@ -21,19 +21,33 @@ export interface CreateComputedOptions<T> {
   equal?: ValueEqualityFn<T>;
 }
 
-
 /**
  * Create a computed `Signal` which derives a reactive value from an expression.
  *
  * @developerPreview
  */
 export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
-  const node = new ComputedImpl(computation, options?.equal ?? defaultEquals);
+  const node: ComputedNode<T> = Object.create(COMPUTED_NODE);
+  node.computation = computation;
+  options?.equal && (node.equal = options.equal);
 
-  // Casting here is required for g3, as TS inference behavior is slightly different between our
-  // version/options and g3's.
-  return createSignalFromFunction(node, node.signal.bind(node)) as unknown as Signal<T>;
+  const computed = () => {
+    // Check if the value needs updating before returning it.
+    producerUpdateValueVersion(node);
+
+    // Record that someone looked at this signal.
+    producerAccessed(node);
+
+    if (node.value === ERRORED) {
+      throw node.error;
+    }
+
+    return node.value;
+  };
+  (computed as any)[SIGNAL] = node;
+  return computed as any as Signal<T>;
 }
+
 
 /**
  * A dedicated symbol used before a computed value has been calculated for the first time.
@@ -60,116 +74,69 @@ const ERRORED: any = Symbol('ERRORED');
  *
  * `Computed`s are both producers and consumers of reactivity.
  */
-class ComputedImpl<T> extends ReactiveNode {
-  constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {
-    super();
-  }
+interface ComputedNode<T> extends ReactiveNode {
   /**
-   * Current value of the computation.
-   *
-   * This can also be one of the special values `UNSET`, `COMPUTING`, or `ERRORED`.
+   * Current value of the computation, or one of the sentinel values above (`UNSET`, `COMPUTING`,
+   * `ERROR`).
    */
-  private value: T = UNSET;
+  value: T;
 
   /**
    * If `value` is `ERRORED`, the error caught from the last computation attempt which will
    * be re-thrown.
    */
-  private error: unknown = null;
+  error: unknown;
 
   /**
-   * Flag indicating that the computation is currently stale, meaning that one of the
-   * dependencies has notified of a potential change.
-   *
-   * It's possible that no dependency has _actually_ changed, in which case the `stale`
-   * state can be resolved without recomputing the value.
+   * The computation function which will produce a new value.
    */
-  private stale = true;
+  computation: () => T;
 
-  protected override readonly consumerAllowSignalWrites = false;
+  equal: ValueEqualityFn<T>;
+}
 
-  protected override onConsumerDependencyMayHaveChanged(): void {
-    if (this.stale) {
-      // We've already notified consumers that this value has potentially changed.
-      return;
-    }
+const COMPUTED_NODE = {
+  ...REACTIVE_NODE,
+  value: UNSET,
+  dirty: true,
+  error: null,
+  equal: defaultEquals,
 
-    // Record that the currently cached value may be stale.
-    this.stale = true;
+  producerMustRecompute(node: ComputedNode<unknown>): boolean {
+    // Force a recomputation if there's no current value, or if the current value is in the process
+    // of being calculated (which should throw an error).
+    return node.value === UNSET || node.value === COMPUTING;
+  },
 
-    // Notify any consumers about the potential change.
-    this.producerMayHaveChanged();
-  }
-
-  protected override onProducerUpdateValueVersion(): void {
-    if (!this.stale) {
-      // The current value and its version are already up to date.
-      return;
-    }
-
-    // The current value is stale. Check whether we need to produce a new one.
-
-    if (this.value !== UNSET && this.value !== COMPUTING &&
-        !this.consumerPollProducersForChange()) {
-      // Even though we were previously notified of a potential dependency update, all of
-      // our dependencies report that they have not actually changed in value, so we can
-      // resolve the stale state without needing to recompute the current value.
-      this.stale = false;
-      return;
-    }
-
-    // The current value is stale, and needs to be recomputed. It still may not change -
-    // that depends on whether the newly computed value is equal to the old.
-    this.recomputeValue();
-  }
-
-  private recomputeValue(): void {
-    if (this.value === COMPUTING) {
+  producerRecomputeValue(node: ComputedNode<unknown>): void {
+    if (node.value === COMPUTING) {
       // Our computation somehow led to a cyclic read of itself.
       throw new Error('Detected cycle in computations.');
     }
 
-    const oldValue = this.value;
-    this.value = COMPUTING;
+    const oldValue = node.value;
+    node.value = COMPUTING;
 
-    // As we're re-running the computation, update our dependent tracking version number.
-    this.trackingVersion++;
-    const prevConsumer = setActiveConsumer(this);
-    let newValue: T;
+    const prevConsumer = consumerBeforeComputation(node);
+    let newValue: unknown;
     try {
-      newValue = this.computation();
+      newValue = node.computation();
     } catch (err) {
       newValue = ERRORED;
-      this.error = err;
+      node.error = err;
     } finally {
-      setActiveConsumer(prevConsumer);
+      consumerAfterComputation(node, prevConsumer);
     }
 
-    this.stale = false;
-
     if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
-        this.equal(oldValue, newValue)) {
+        node.equal(oldValue, newValue)) {
       // No change to `valueVersion` - old and new values are
       // semantically equivalent.
-      this.value = oldValue;
+      node.value = oldValue;
       return;
     }
 
-    this.value = newValue;
-    this.valueVersion++;
-  }
-
-  signal(): T {
-    // Check if the value needs updating before returning it.
-    this.onProducerUpdateValueVersion();
-
-    // Record that someone looked at this signal.
-    this.producerAccessed();
-
-    if (this.value === ERRORED) {
-      throw this.error;
-    }
-
-    return this.value;
-  }
-}
+    node.value = newValue;
+    node.version++;
+  },
+};
