@@ -124,6 +124,13 @@ v16 - v19
 | `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)            | v16           | v18         |
 | `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser), symbols were moved to `@angular/core`                                        | v16           | v18         |
 
+
+### Deprecated features that can be removed in v19 or later
+
+| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
+|:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
+
 ### Deprecated features with no planned removal version
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
