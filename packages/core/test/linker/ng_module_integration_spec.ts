@@ -770,7 +770,7 @@ describe('NgModule', () => {
         class MyService1 {
           public innerService: MyService2;
           constructor(injector: Injector) {
-            // Create MyService2 before it it's initialized by TestModule.
+            // Create MyService2 before it's initialized by TestModule.
             this.innerService = injector.get(MyService2);
           }
         }
