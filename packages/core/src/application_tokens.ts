@@ -66,6 +66,7 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates the root directory of
  * the application
  * @publicApi
+ * @deprecated
  */
 export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');
 
