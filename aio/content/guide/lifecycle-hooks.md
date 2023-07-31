@@ -101,7 +101,7 @@ The `ngOnDestroy()` method is also the time to notify another part of the applic
 
 ### DestroyRef
 
-In addition to to `ngOnDestroy()`, you can inject Angular's `DestroyRef` and register callback functions to be called when the enclosing context is destroyed. This can be useful for building reusable utilities that require cleanup.
+In addition to `ngOnDestroy()`, you can inject Angular's `DestroyRef` and register callback functions to be called when the enclosing context is destroyed. This can be useful for building reusable utilities that require cleanup.
 
 Register a callback with the `DestroyRef`:
 

@@ -349,7 +349,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     // This function supports 2 signatures and we need to handle options correctly for both:
     //   1. When first argument is a Component type. This signature also requires extra
-    //      options to be provided as as object (more ergonomic option).
+    //      options to be provided as object (more ergonomic option).
     //   2. First argument is a Component factory. In this case extra options are represented as
     //      positional arguments. This signature is less ergonomic and will be deprecated.
     if (isComponentFactory) {

@@ -520,7 +520,7 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
     if (node instanceof e.ASTWithSource) {
       // In order to reduce noise, do not include `ASTWithSource` in the path.
       // For the purpose of source spans, there is no difference between
-      // `ASTWithSource` and and underlying node that it wraps.
+      // `ASTWithSource` and underlying node that it wraps.
       node = node.ast;
     }
     // The third condition is to account for the implicit receiver, which should
