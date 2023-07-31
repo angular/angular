@@ -30,7 +30,6 @@ import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {getNodeInjectable, NodeInjector} from './di';
-import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
@@ -346,13 +345,6 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
 /** Represents a HostFeature function. */
 type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
-
-// TODO: A hack to not pull in the NullInjector from @angular/core.
-export const NULL_INJECTOR: Injector = {
-  get: (token: any, notFoundValue?: any) => {
-    throwProviderNotFoundError(token, 'NullInjector');
-  }
-};
 
 /** Creates a TNode that can be used to instantiate a root component. */
 function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
