@@ -7,17 +7,7 @@
  */
 
 import {CompilerConfig} from '@angular/compiler';
-import {Compiler, CompilerFactory, CompilerOptions, InjectionToken, Injector, MissingTranslationStrategy, PACKAGE_ROOT_URL, StaticProvider, ViewEncapsulation} from '@angular/core';
-
-export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');
-
-/**
- * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
- */
-export const DEFAULT_PACKAGE_URL_PROVIDER = {
-  provide: PACKAGE_ROOT_URL,
-  useValue: '/'
-};
+import {Compiler, CompilerFactory, CompilerOptions, Injector, MissingTranslationStrategy, StaticProvider, ViewEncapsulation} from '@angular/core';
 
 export const COMPILER_PROVIDERS =
     <StaticProvider[]>[{provide: Compiler, useFactory: () => new Compiler()}];
