@@ -371,7 +371,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
 
         ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -400,7 +400,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
         depsTracker.clearScopeCacheFor(MainModule as NgModuleType);
 
