@@ -90,6 +90,7 @@ export {
   ɵɵclassMapInterpolateV,
   ɵɵclassProp,
   ɵɵComponentDeclaration,
+  ɵɵconditional,
   ɵɵcontentQuery,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,

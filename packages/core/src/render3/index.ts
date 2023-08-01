@@ -118,6 +118,8 @@ export {
 
   ɵɵtemplate,
 
+  ɵɵconditional,  
+
   ɵɵdefer,
   ɵɵdeferWhen,
   ɵɵdeferOnIdle,
