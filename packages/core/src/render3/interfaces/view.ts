@@ -916,7 +916,3 @@ export type DestroyHookData = (HookEntry|HookData)[];
 export type TData =
     (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
      ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string|TDeferBlockDetails)[];
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;

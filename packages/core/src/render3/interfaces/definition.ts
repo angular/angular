@@ -531,11 +531,6 @@ export type PipeTypesOrFactory = (() => PipeTypeList)|PipeTypeList;
 export type PipeTypeList =
     (PipeType<any>|Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
-
 /**
  * NgModule scope info as provided by AoT compiler
  *
