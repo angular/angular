@@ -103,7 +103,7 @@ export class Router {
    *
    * - extract: `rawUrlTree` is needed because `extract` may only return part
    * of the navigation URL. Thus, `currentUrlTree` may only represent _part_ of the browser URL.
-   * When a navigation gets cancelled and we need to reset the URL or a new navigation occurs, we
+   * When a navigation gets cancelled, and we need to reset the URL or a new navigation occurs, we
    * need to know the _whole_ browser URL, not just the part handled by UrlHandlingStrategy.
    * - shouldProcessUrl: When this returns `false`, the router just ignores the navigation but still
    * updates the `rawUrlTree` with the assumption that the navigation was caused by the location
@@ -264,7 +264,7 @@ export class Router {
 
   /**
    * Determines when the router updates the browser URL.
-   * By default (`"deferred"`), updates the browser URL after navigation has finished.
+   * By default, (`"deferred"`), updates the browser URL after navigation has finished.
    * Set to `'eager'` to update the browser URL at the beginning of navigation.
    * You can choose to update early so that, if navigation fails,
    * you can show an error message with the URL that failed.
@@ -364,7 +364,7 @@ export class Router {
    * navigation so that the correct events, guards, etc. are triggered.
    */
   setUpLocationChangeListener(): void {
-    // Don't need to use Zone.wrap any more, because zone.js
+    // Don't need to use Zone.wrap anymore, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
     if (!this.locationSubscription) {
@@ -822,7 +822,7 @@ export class Router {
     // configured to handle only part of the navigation URL. This means we would only want to reset
     // the part of the navigation handled by the Angular router rather than the whole URL. In
     // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
-    // when merging, such as the query params so they are not lost on a refresh.
+    // when merging, such as the query params, so they are not lost on a refresh.
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
   }
 
