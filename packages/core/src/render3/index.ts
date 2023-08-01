@@ -92,6 +92,11 @@ export {
 
   ɵɵreference,
 
+  ɵɵrepeater, 
+  ɵɵrepeaterCreate, 
+  ɵɵrepeaterTrackByIdentity, 
+  ɵɵrepeaterTrackByIndex,
+
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,
