@@ -74,7 +74,6 @@
     "name": "Alyssa Nicoll",
     "picture": "alyssa.jpg",
     "twitter": "alyssanicoll",
-    "website": "http://alyssa.io",
     "bio": "Alyssa is an Angular Developer Advocate for KUI and a GDE. Her two degrees (Web Design & Development and Psychology) feed her speaking career. She has spoken at over 35 conferences internationally. She is a weekly panelist on Adventures in Angular and Angular Air, which have a combined following of over 16,000 listeners. She enjoys gaming, scuba diving, and has a newborn that fondly goes by 'Mr. Milks'.",
     "groups": ["GDE"]
   },
@@ -188,7 +187,6 @@
     "name": "Brooke Avery",
     "picture": "bravery_pic.png",
     "twitter": "JediBravery",
-    "website": "https://devlife.show",
     "bio": "Brooke is a software engineer, GDE, & community builder. She is the director of the Angular Community Meetup, a co-producer/host of the Dev.Life Podcast, & has been a co-organizer for ng-conf. Brooke has a strong passion for education & helping others find success in their developer journeys. Outside of programming, Brooke loves to geek out on Star Wars and the Disney Parks.",
     "groups": ["GDE"]
   },
@@ -502,7 +500,7 @@
     "name": "Jordan Powell",
     "picture": "jordanpowell.jpg",
     "twitter": "jordanpowell88",
-    "website": "https://jordanpowell88.com",
+    "website": "https://jordanpowell.online",
     "bio": "Jordan is a GDE (Google Developer Expert) and a self taught software engineer who is passionate about writing 'good code' that is easy to read, test and maintain over time. He has over a decade of freelance experience in software development, marketing, design and video production. He currently is a Developer Experience Engineer at Cypress.io and also serves as the CEO & Co-Founder for the non-profit Dream On: Global.",
     "groups": ["GDE"]
   },
@@ -587,7 +585,6 @@
     "name": "Kim Maida",
     "picture": "kimmaida.jpg",
     "twitter": "KimMaida",
-    "website": "https://kmaida.io/",
     "bio": "Kim is an an Angular consultant, developer, speaker, writer, and Google Developer Expert. She is passionate about learning from and sharing knowledge with other developers through blogging, speaking, workshops, and open source.",
     "groups": ["GDE"]
   },
@@ -792,7 +789,6 @@
   "pascalprecht": {
     "name": "Pascal Precht",
     "picture": "pascalprecht.jpg",
-    "website": "https://twitter.com/PascalPrecht",
     "bio": "Pascal is a software engineer, author and Google Developer Expert for the Angular team. He loves contributing to open source and is the creator of the popular angular-translate module. In his spare time he’s fiddling with EDM production.",
     "groups": ["GDE"]
   },
@@ -839,7 +835,6 @@
     "name": "Ricardo Chavarria",
     "picture": "ricardo-chavarria.jpg",
     "twitter": "ricardo_chl",
-    "website": "https://ricardochavarria.dev",
     "bio": "Ricardo Chavarria is a software developer with focus in frontend technologies. Organizer of Angular Honduras Community and Ng Conf Honduras. Also is Google Developer Expert in Angular and Auth0 ambassador.",
     "groups": ["GDE"]
   },
@@ -1084,7 +1079,7 @@
     "name": "Jay Bell",
     "picture": "jaybell.jpg",
     "twitter": "jaycooperbell",
-    "website": "tech.trellis.org",
+    "website": "https://tech.trellis.org",
     "bio": "Jay is the CTO and Co-Founder of a Social Enterprise in Canada that is using Angular and technology to empower global collective impact in the non-profit and charity industries. He is an avid contributor to Nx and loves Angular, NgRx and Nest. Jay loves to share knowledge he has learned from figuring out problems (complex or otherwise) so that others can solve them easier the next time.",
     "groups": ["GDE"]
   },
