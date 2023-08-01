@@ -11,8 +11,9 @@
  * Intended to be used as a transform function of an input.
  *
  *  @usageNotes
- *   @Input({ transform: booleanAttribute }) status!: boolean;
- *
+ *  ```typescript
+ *  @Input({ transform: booleanAttribute }) status!: boolean;
+ *  ```
  * @param value Value to be transformed.
  *
  * @publicApi
@@ -28,7 +29,9 @@ export function booleanAttribute(value: unknown): boolean {
  * @param fallbackValue Value to use if the provided value can't be parsed as a number.
  *
  *  @usageNotes
+ *  ```typescript
  *  @Input({ transform: numberAttribute }) id!: number;
+ *  ```
  *
  * @publicApi
  */
