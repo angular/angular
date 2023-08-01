@@ -289,7 +289,3 @@ export class NodeInjectorFactory {
 export function isFactory(obj: any): obj is NodeInjectorFactory {
   return obj instanceof NodeInjectorFactory;
 }
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;

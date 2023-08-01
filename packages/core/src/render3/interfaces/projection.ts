@@ -74,7 +74,3 @@ export const enum SelectorFlags {
   /** Mode for matching class names */
   CLASS = 0b1000,
 }
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
