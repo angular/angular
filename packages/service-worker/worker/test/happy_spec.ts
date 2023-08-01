@@ -9,7 +9,7 @@
 import {processNavigationUrls} from '../../config/src/generator';
 import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
-import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
+import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockWindowClient} from '../testing/clients';
@@ -113,24 +113,6 @@ import {envIsSupported} from '../testing/utils';
     navigationUrls: processNavigationUrls(''),
     navigationRequestStrategy: 'performance',
     hashTable: tmpHashTableForFs(brokenFs, {'/bar.txt': true}),
-  };
-
-  // Manifest without navigation urls to test backward compatibility with
-  // versions < 6.0.0.
-  interface ManifestV5 {
-    configVersion: number;
-    appData?: {[key: string]: string};
-    index: string;
-    assetGroups?: AssetGroupConfig[];
-    dataGroups?: DataGroupConfig[];
-    hashTable: {[url: string]: string};
-  }
-
-  // To simulate versions < 6.0.0
-  const manifestOld: ManifestV5 = {
-    configVersion: 1,
-    index: '/foo.txt',
-    hashTable: tmpHashTableForFs(dist),
   };
 
   const manifest: Manifest = {
@@ -291,36 +273,6 @@ import {envIsSupported} from '../testing/utils';
 
       await scope.startup(true);
       expect(claimSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('cleans up old `@angular/service-worker` caches, after activation', async () => {
-      const claimSpy = spyOn(scope.clients, 'claim');
-      const cleanupOldSwCachesSpy = spyOn(driver, 'cleanupOldSwCaches');
-
-      // Automatically advance time to trigger idle tasks as they are added.
-      scope.autoAdvanceTime = true;
-      await scope.startup(true);
-      await scope.resolveSelfMessages();
-      scope.autoAdvanceTime = false;
-
-      expect(cleanupOldSwCachesSpy).toHaveBeenCalledTimes(1);
-      expect(claimSpy).toHaveBeenCalledBefore(cleanupOldSwCachesSpy);
-    });
-
-    it('does not blow up if cleaning up old `@angular/service-worker` caches fails', async () => {
-      spyOn(driver, 'cleanupOldSwCaches').and.callFake(() => Promise.reject('Ooops'));
-
-      // Automatically advance time to trigger idle tasks as they are added.
-      scope.autoAdvanceTime = true;
-      await scope.startup(true);
-      await scope.resolveSelfMessages();
-      scope.autoAdvanceTime = false;
-
-      server.clearRequests();
-
-      expect(driver.state).toBe(DriverReadyState.NORMAL);
-      expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
-      server.assertNoOtherRequests();
     });
 
     it('initializes prefetched content correctly, after activation', async () => {
@@ -2029,53 +1981,6 @@ import {envIsSupported} from '../testing/utils';
       });
     });
 
-    describe('cleanupOldSwCaches()', () => {
-      it('should delete the correct caches', async () => {
-        const oldSwCacheNames = [
-          // Example cache names from the beta versions of `@angular/service-worker`.
-          'ngsw:active',
-          'ngsw:staged',
-          'ngsw:manifest:a1b2c3:super:duper',
-          // Example cache names from the beta versions of `@angular/service-worker`.
-          'ngsw:a1b2c3:assets:foo',
-          'ngsw:db:a1b2c3:assets:bar',
-        ];
-        const otherCacheNames = [
-          'ngsuu:active',
-          'not:ngsw:active',
-          'NgSw:StAgEd',
-          'ngsw:/:db:control',
-          'ngsw:/foo/:active',
-          'ngsw:/bar/:staged',
-        ];
-        const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
-
-        await Promise.all(allCacheNames.map((name) => scope.caches.original.open(name)));
-        expect(await scope.caches.original.keys()).toEqual(
-          jasmine.arrayWithExactContents(allCacheNames),
-        );
-
-        await driver.cleanupOldSwCaches();
-        expect(await scope.caches.original.keys()).toEqual(
-          jasmine.arrayWithExactContents(otherCacheNames),
-        );
-      });
-
-      it('should delete other caches even if deleting one of them fails', async () => {
-        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
-        const deleteSpy = spyOn(scope.caches.original, 'delete').and.callFake((cacheName: string) =>
-          Promise.reject(`Failed to delete cache '${cacheName}'.`),
-        );
-
-        await Promise.all(oldSwCacheNames.map((name) => scope.caches.original.open(name)));
-        const error = await driver.cleanupOldSwCaches().catch((err) => err);
-
-        expect(error).toBe("Failed to delete cache 'ngsw:active'.");
-        expect(deleteSpy).toHaveBeenCalledTimes(3);
-        oldSwCacheNames.forEach((name) => expect(deleteSpy).toHaveBeenCalledWith(name));
-      });
-    });
-
     describe('bugs', () => {
       it('does not crash with bad index hash', async () => {
         scope = new SwTestHarnessBuilder().withServerState(brokenServer).build();
@@ -2608,26 +2513,6 @@ import {envIsSupported} from '../testing/utils';
           // This should also enter the `SW` into degraded mode, because the broken version was the
           // latest one.
           expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
-        });
-      });
-
-      describe('backwards compatibility with v5', () => {
-        beforeEach(() => {
-          const serverV5 = new MockServerStateBuilder()
-            .withStaticFiles(dist)
-            .withManifest(<Manifest>manifestOld)
-            .build();
-
-          scope = new SwTestHarnessBuilder().withServerState(serverV5).build();
-          driver = new Driver(scope, scope, new CacheDatabase(scope));
-        });
-
-        // Test this bug: https://github.com/angular/angular/issues/27209
-        it('fills previous versions of manifests with default navigation urls for backwards compatibility', async () => {
-          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-          await driver.initialized;
-          scope.updateServerState(serverUpdate);
-          expect(await driver.checkForUpdate()).toEqual(true);
         });
       });
     });
