@@ -4,9 +4,6 @@ on:
   schedule:
     # Run at 10:00AM every day.
     - cron: '0 10 * * *'
-  push:
-    branches:
-      - 'migrate-monitoring-jobs'
 
 permissions: {}
 
@@ -22,10 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [
-          'https://next.angular.io/',
-          'https://angular.io/',
-        ]
+        version: ['https://next.angular.io/', 'https://angular.io/']
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0109d498b0f6aae418ed4924a5e5c65695f0ac61
