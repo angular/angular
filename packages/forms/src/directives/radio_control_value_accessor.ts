@@ -207,7 +207,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
      * when an *enabled* control was attached. This bug was fixed in v15 in #47576.
      *
      * This had a side effect: previously, it was possible to instantiate a reactive form control
-     * with `[attr.disabled]=true`, even though the the corresponding control was enabled in the
+     * with `[attr.disabled]=true`, even though the corresponding control was enabled in the
      * model. This resulted in a mismatch between the model and the DOM. Now, because
      * `setDisabledState` is always called, the value in the DOM will be immediately overwritten
      * with the "correct" enabled value.
