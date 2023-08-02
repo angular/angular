@@ -8,8 +8,7 @@
 
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, ElementAttributes} from '../element';
-import {OpKind} from '../enums';
+import {BindingKind, OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
 import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
@@ -75,15 +74,10 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
   xref: XrefId;
 
   /**
-   * Attributes of various kinds on this element.
-   *
-   * Before attribute processing, this is an `ElementAttributes` structure representing the
-   * attributes on this element.
-   *
-   * After processing, it's a `ConstIndex` pointer into the shared `consts` array of the component
-   * compilation.
+   * Attributes of various kinds on this element. Represented as a `ConstIndex` pointer into the
+   * shared `consts` array of the component compilation.
    */
-  attributes: ElementAttributes|ConstIndex|null;
+  attributes: ConstIndex|null;
 
   /**
    * Local references to this element.
