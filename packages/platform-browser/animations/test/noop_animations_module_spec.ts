@@ -38,10 +38,10 @@ describe('provideNoopAnimations()', () => {
 
 
 function noopAnimationTests() {
-  it('should flush and fire callbacks when the zone becomes stable', (async) => {
+  it('should flush and fire callbacks when the zone becomes stable', (done) => {
     // This test is only meant to be run inside the browser.
     if (isNode) {
-      async();
+      done();
       return;
     }
 
@@ -77,7 +77,7 @@ function noopAnimationTests() {
       expect(cmp.startEvent.phaseName).toEqual('start');
       expect(cmp.doneEvent.triggerName).toEqual('myAnimation');
       expect(cmp.doneEvent.phaseName).toEqual('done');
-      async();
+      done();
     });
   });
 

@@ -21,9 +21,9 @@ export class InjectableAnimationEngine extends AnimationEngine implements OnDest
   // Since the `ApplicationRef` should be created earlier before the `AnimationEngine`, they
   // both have `ngOnDestroy` hooks and `flush()` must be called after all views are destroyed.
   constructor(
-      @Inject(DOCUMENT) doc: any, driver: AnimationDriver, normalizer: AnimationStyleNormalizer,
-      appRef: ApplicationRef) {
-    super(doc.body, driver, normalizer);
+      @Inject(DOCUMENT) doc: Document, driver: AnimationDriver,
+      normalizer: AnimationStyleNormalizer, appRef: ApplicationRef) {
+    super(doc, driver, normalizer);
   }
 
   ngOnDestroy(): void {
