@@ -102,6 +102,13 @@ export interface BindingOp extends Op<UpdateOp> {
   securityContext: SecurityContext;
 
   /**
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
+   * TextAttributes differently from `[attr.style]` and `[attr.class]`.
+   */
+  isTextAttribute: boolean;
+
+  /**
    * Whether this binding is on a template.
    */
   isTemplate: boolean;
@@ -114,8 +121,8 @@ export interface BindingOp extends Op<UpdateOp> {
  */
 export function createBindingOp(
     target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
-    unit: string|null, securityContext: SecurityContext, isTemplate: boolean,
-    sourceSpan: ParseSourceSpan): BindingOp {
+    unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
+    isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
   return {
     kind: OpKind.Binding,
     bindingKind: kind,
@@ -124,6 +131,7 @@ export function createBindingOp(
     expression,
     unit,
     securityContext,
+    isTextAttribute,
     isTemplate,
     sourceSpan,
     ...NEW_OP,
@@ -386,6 +394,13 @@ export interface AttributeOp extends Op<UpdateOp> {
   sanitizer: o.Expression|null;
 
   /**
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
+   * TextAttributes differently from `[attr.style]` and `[attr.class]`.
+   */
+  isTextAttribute: boolean;
+
+  /**
    * Whether this binding is on a template.
    */
   isTemplate: boolean;
@@ -398,7 +413,7 @@ export interface AttributeOp extends Op<UpdateOp> {
  */
 export function createAttributeOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext, isTemplate: boolean,
+    securityContext: SecurityContext, isTextAttribute: boolean, isTemplate: boolean,
     sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
@@ -407,6 +422,7 @@ export function createAttributeOp(
     expression,
     securityContext,
     sanitizer: null,
+    isTextAttribute,
     isTemplate,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,

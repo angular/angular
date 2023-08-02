@@ -7,7 +7,6 @@
  */
 
 
-import {SecurityContext} from '../../../../core';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 import {getElementsByXrefId} from '../util/elements';
@@ -80,20 +79,16 @@ function extractAttributeOp(
   }
   const ownerOp = lookupElement(elements, op.target);
 
-  let extractable: boolean;
-  if (op.name === 'style') {
-    // TemplateDefinitionBuilder only extracted string constant style attributes with no security
-    // context, so we emulate that behavior in compaitiblity mode, otherwise we optimize more
-    // aggressively.
-    extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        ir.isStringLiteral(op.expression) && op.securityContext === SecurityContext.NONE :
-        op.expression.isConstant();
-  } else {
-    // TemplateDefinitionBuilder only extracted string constants, so we emulate that behavior in
-    // compaitiblity mode, otherwise we optimize more aggressively.
-    extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        ir.isStringLiteral(op.expression) :
-        op.expression.isConstant();
+  let extractable = op.expression.isConstant();
+  if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+    // TemplateDefinitionBuilder only extracted attributes that were string literals.
+    extractable = ir.isStringLiteral(op.expression);
+    if (op.name === 'style' || op.name === 'class') {
+      // For style and class attributes, TemplateDefinitionBuilder only extracted them if they were
+      // text attributes. For example, `[attr.class]="'my-class'"` was not extracted despite being a
+      // string literal, because it is not a text attribute.
+      extractable &&= op.isTextAttribute;
+    }
   }
 
   if (extractable) {
