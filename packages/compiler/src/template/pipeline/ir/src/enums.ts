@@ -299,3 +299,43 @@ export enum SanitizerFn {
   ResourceUrl,
   IframeAttribute,
 }
+
+/**
+ * Enumeration of the types of attributes which can be applied to an element.
+ */
+export enum BindingKind {
+  /**
+   * Static attributes.
+   */
+  Attribute,
+
+  /**
+   * Class bindings.
+   */
+  ClassName,
+
+  /**
+   * Style bindings.
+   */
+  StyleProperty,
+
+  /**
+   * Dynamic property bindings.
+   */
+  Property,
+
+  /**
+   * Property or attribute bindings on a template.
+   */
+  Template,
+
+  /**
+   * Internationalized attributes.
+   */
+  I18n,
+
+  /**
+   * Animation property bindings.
+   */
+  Animation,
+}

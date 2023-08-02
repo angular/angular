@@ -7,9 +7,9 @@
  */
 
 import * as core from '../../../../core';
+import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ElementAttributes} from '../../ir/src/element';
 import {ComponentCompilationJob} from '../compilation';
 
 /**
@@ -47,6 +47,86 @@ export function phaseConstCollection(cpl: ComponentCompilationJob): void {
   }
 }
 
+/**
+ * Shared instance of an empty array to avoid unnecessary array allocations.
+ */
+const FLYWEIGHT_ARRAY: ReadonlyArray<o.Expression> = Object.freeze<o.Expression[]>([]);
+
+/**
+ * Container for all of the various kinds of attributes which are applied on an element.
+ */
+class ElementAttributes {
+  private known = new Set<string>();
+  private byKind = new Map<ir.BindingKind, o.Expression[]>;
+
+  projectAs: string|null = null;
+
+  get attributes(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.Attribute) ?? FLYWEIGHT_ARRAY;
+  }
+
+  get classes(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.ClassName) ?? FLYWEIGHT_ARRAY;
+  }
+
+  get styles(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.StyleProperty) ?? FLYWEIGHT_ARRAY;
+  }
+
+  get bindings(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.Property) ?? FLYWEIGHT_ARRAY;
+  }
+
+  get template(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.Template) ?? FLYWEIGHT_ARRAY;
+  }
+
+  get i18n(): ReadonlyArray<o.Expression> {
+    return this.byKind.get(ir.BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
+  }
+
+  add(kind: ir.BindingKind, name: string, value: o.Expression|null): void {
+    if (this.known.has(name)) {
+      return;
+    }
+    this.known.add(name);
+    const array = this.arrayFor(kind);
+    array.push(...getAttributeNameLiterals(name));
+    if (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.StyleProperty) {
+      if (value === null) {
+        throw Error('Attribute & style element attributes must have a value');
+      }
+      array.push(value);
+    }
+  }
+
+  private arrayFor(kind: ir.BindingKind): o.Expression[] {
+    if (!this.byKind.has(kind)) {
+      this.byKind.set(kind, []);
+    }
+    return this.byKind.get(kind)!;
+  }
+}
+
+/**
+ * Gets an array of literal expressions representing the attribute's namespaced name.
+ */
+function getAttributeNameLiterals(name: string): o.LiteralExpr[] {
+  const [attributeNamespace, attributeName] = splitNsName(name);
+  const nameLiteral = o.literal(attributeName);
+
+  if (attributeNamespace) {
+    return [
+      o.literal(core.AttributeMarker.NamespaceURI), o.literal(attributeNamespace), nameLiteral
+    ];
+  }
+
+  return [nameLiteral];
+}
+
+/**
+ * Serializes an ElementAttributes object into an array expression.
+ */
 function serializeAttributes({attributes, bindings, classes, i18n, projectAs, styles, template}:
                                  ElementAttributes): o.LiteralArrayExpr {
   const attrArray = [...attributes];
