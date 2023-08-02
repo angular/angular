@@ -6,20 +6,55 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {SecurityContext} from '../../../../core';
 import * as o from '../../../../output/output_ast';
-import {parse as parseStyle} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 import {getElementsByXrefId} from '../util/elements';
 
 /**
- * Find all attribute and binding ops, and collect them into the ElementAttribute structures.
+ * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
 export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
   for (const [_, view] of cpl.views) {
-    populateElementAttributes(view);
+    const elements = getElementsByXrefId(view);
+    for (const op of view.ops()) {
+      switch (op.kind) {
+        case ir.OpKind.Attribute:
+          extractAttributeOp(view, op, elements);
+          break;
+        case ir.OpKind.Property:
+          if (!op.isAnimationTrigger) {
+            ir.OpList.insertBefore<ir.CreateOp>(
+                ir.createExtractedAttributeOp(
+                    op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property,
+                    op.name, null),
+                lookupElement(elements, op.target));
+          }
+          break;
+        case ir.OpKind.StyleProp:
+        case ir.OpKind.ClassProp:
+          // The old compiler treated empty style bindings as regular bindings for the purpose of
+          // directive matching. That behavior is incorrect, but we emulate it in compatibility
+          // mode.
+          if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+              op.expression instanceof ir.EmptyExpr) {
+            ir.OpList.insertBefore<ir.CreateOp>(
+                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
+                lookupElement(elements, op.target));
+          }
+          break;
+        case ir.OpKind.Listener:
+          if (!op.isAnimationListener) {
+            ir.OpList.insertBefore<ir.CreateOp>(
+                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
+                lookupElement(elements, op.target));
+          }
+          break;
+      }
+    }
   }
 }
 
@@ -36,61 +71,15 @@ function lookupElement(
 }
 
 /**
- * Populates the ElementAttributes map for the given view, and removes ops for any bindings that do
- * not need further processing.
+ * Checks whether the given expression is a string literal.
  */
-function populateElementAttributes(view: ViewCompilationUnit) {
-  const elements = getElementsByXrefId(view);
-
-  for (const op of view.ops()) {
-    let ownerOp: ReturnType<typeof lookupElement>;
-    switch (op.kind) {
-      case ir.OpKind.Attribute:
-        extractAttributeOp(view, op, elements);
-        break;
-      case ir.OpKind.Property:
-        if (op.isAnimationTrigger) {
-          continue;  // Don't extract animation properties.
-        }
-
-        ownerOp = lookupElement(elements, op.target);
-        ir.assertIsElementAttributes(ownerOp.attributes);
-
-        ownerOp.attributes.add(
-            op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property, op.name, null);
-        break;
-      case ir.OpKind.StyleProp:
-      case ir.OpKind.ClassProp:
-        ownerOp = lookupElement(elements, op.target);
-        ir.assertIsElementAttributes(ownerOp.attributes);
-
-        // Empty StyleProperty and ClassName expressions are treated differently depending on
-        // compatibility mode.
-        if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-            op.expression instanceof ir.EmptyExpr) {
-          // The old compiler treated empty style bindings as regular bindings for the purpose of
-          // directive matching. That behavior is incorrect, but we emulate it in compatibility
-          // mode.
-          ownerOp.attributes.add(ir.BindingKind.Property, op.name, null);
-        }
-        break;
-      case ir.OpKind.Listener:
-        if (op.isAnimationListener) {
-          continue;  // Don't extract animation listeners.
-        }
-        ownerOp = lookupElement(elements, op.target);
-        ir.assertIsElementAttributes(ownerOp.attributes);
-
-        ownerOp.attributes.add(ir.BindingKind.Property, op.name, null);
-        break;
-    }
-  }
-}
-
 function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{value: string} {
   return expr instanceof o.LiteralExpr && typeof expr.value === 'string';
 }
 
+/**
+ * Extracts an attribute binding.
+ */
 function extractAttributeOp(
     view: ViewCompilationUnit, op: ir.AttributeOp,
     elements: Map<ir.XrefId, ir.ElementOrContainerOps>) {
@@ -98,35 +87,29 @@ function extractAttributeOp(
     return;
   }
   const ownerOp = lookupElement(elements, op.target);
-  ir.assertIsElementAttributes(ownerOp.attributes);
 
-  if (op.name === 'style' && isStringLiteral(op.expression)) {
-    // TemplateDefinitionBuilder did not extract style attributes that had a security context.
-    if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-        op.securityContext !== SecurityContext.NONE) {
-      return;
-    }
-
-    // Extract style attributes.
-    const parsedStyles = parseStyle(op.expression.value);
-    for (let i = 0; i < parsedStyles.length - 1; i += 2) {
-      ownerOp.attributes.add(
-          ir.BindingKind.StyleProperty, parsedStyles[i], o.literal(parsedStyles[i + 1]));
-    }
-    ir.OpList.remove(op as ir.UpdateOp);
-  } else {
-    // The old compiler only extracted string constants, so we emulate that behavior in
-    // compaitiblity mode, otherwise we optimize more aggressively.
-    let extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        (op.expression instanceof o.LiteralExpr && typeof op.expression.value === 'string') :
+  let extractable: boolean;
+  if (op.name === 'style') {
+    // TemplateDefinitionBuilder only extracted string constant style attributes with no security
+    // context, so we emulate that behavior in compaitiblity mode, otherwise we optimize more
+    // aggressively.
+    extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
+        isStringLiteral(op.expression) && op.securityContext === SecurityContext.NONE :
         op.expression.isConstant();
+  } else {
+    // TemplateDefinitionBuilder only extracted string constants, so we emulate that behavior in
+    // compaitiblity mode, otherwise we optimize more aggressively.
+    extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
+        isStringLiteral(op.expression) :
+        op.expression.isConstant();
+  }
 
-    // We don't need to generate instructions for attributes that can be extracted as consts.
-    if (extractable) {
-      ownerOp.attributes.add(
-          op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
-          op.expression);
-      ir.OpList.remove(op as ir.UpdateOp);
-    }
+  if (extractable) {
+    ir.OpList.insertBefore<ir.CreateOp>(
+        ir.createExtractedAttributeOp(
+            op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
+            op.expression),
+        ownerOp);
+    ir.OpList.remove<ir.UpdateOp>(op);
   }
 }
