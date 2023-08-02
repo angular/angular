@@ -1,3 +1,18 @@
+<a name="16.2.0-rc.0"></a>
+# 16.2.0-rc.0 (2023-08-02)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6755f5354c](https://github.com/angular/angular/commit/6755f5354c7657ecb6f2643450dd2572b114a895) | fix | return full spans for Comment nodes ([#50855](https://github.com/angular/angular/pull/50855)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e53d4ecf4c](https://github.com/angular/angular/commit/e53d4ecf4cfd9e64d6ba8c8b19adbb7df9cfc047) | feat | add afterRender and afterNextRender ([#50607](https://github.com/angular/angular/pull/50607)) |
+| [98d262fd27](https://github.com/angular/angular/commit/98d262fd27795014ee3988b08d3c48a0dfb63c40) | feat | create injector debugging APIs ([#48639](https://github.com/angular/angular/pull/48639)) |
+| [cdaa2a8a9e](https://github.com/angular/angular/commit/cdaa2a8a9eab490b55bbb841ede4f54a2656df30) | feat | support Provider type in Injector.create ([#49587](https://github.com/angular/angular/pull/49587)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.8"></a>
 # 16.1.8 (2023-08-02)
 ### compiler
