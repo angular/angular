@@ -8,7 +8,6 @@
 
 
 import {SecurityContext} from '../../../../core';
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 import {getElementsByXrefId} from '../util/elements';
@@ -71,13 +70,6 @@ function lookupElement(
 }
 
 /**
- * Checks whether the given expression is a string literal.
- */
-function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{value: string} {
-  return expr instanceof o.LiteralExpr && typeof expr.value === 'string';
-}
-
-/**
  * Extracts an attribute binding.
  */
 function extractAttributeOp(
@@ -94,13 +86,13 @@ function extractAttributeOp(
     // context, so we emulate that behavior in compaitiblity mode, otherwise we optimize more
     // aggressively.
     extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        isStringLiteral(op.expression) && op.securityContext === SecurityContext.NONE :
+        ir.isStringLiteral(op.expression) && op.securityContext === SecurityContext.NONE :
         op.expression.isConstant();
   } else {
     // TemplateDefinitionBuilder only extracted string constants, so we emulate that behavior in
     // compaitiblity mode, otherwise we optimize more aggressively.
     extractable = view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        isStringLiteral(op.expression) :
+        ir.isStringLiteral(op.expression) :
         op.expression.isConstant();
   }
 
