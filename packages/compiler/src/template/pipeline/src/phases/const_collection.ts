@@ -17,20 +17,31 @@ import {ComponentCompilationJob} from '../compilation';
  * array expressions, and lifts them into the overall component `consts`.
  */
 export function phaseConstCollection(cpl: ComponentCompilationJob): void {
+  // Collect all extracted attributes.
+  const elementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const [_, view] of cpl.views) {
     for (const op of view.create) {
-      if (op.kind !== ir.OpKind.ElementStart && op.kind !== ir.OpKind.Element &&
-          op.kind !== ir.OpKind.Template) {
-        continue;
-      } else if (!(op.attributes instanceof ElementAttributes)) {
-        continue;
+      if (op.kind === ir.OpKind.ExtractedAttribute) {
+        const attributes = elementAttributes.get(op.target) || new ElementAttributes();
+        elementAttributes.set(op.target, attributes);
+        attributes.add(op.bindingKind, op.name, op.expression);
+        ir.OpList.remove<ir.CreateOp>(op);
       }
+    }
+  }
 
-      const attrArray = serializeAttributes(op.attributes);
-      if (attrArray.entries.length > 0) {
-        op.attributes = cpl.addConst(attrArray);
-      } else {
-        op.attributes = null;
+  // Serialize the extracted attributes into the const array.
+  for (const [_, view] of cpl.views) {
+    for (const op of view.create) {
+      if (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart ||
+          op.kind === ir.OpKind.Template) {
+        const attributes = elementAttributes.get(op.xref);
+        if (attributes !== undefined) {
+          const attrArray = serializeAttributes(attributes);
+          if (attrArray.entries.length > 0) {
+            op.attributes = cpl.addConst(attrArray);
+          }
+        }
       }
     }
   }

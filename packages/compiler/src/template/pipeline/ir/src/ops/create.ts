@@ -134,7 +134,7 @@ export function createElementStartOp(
     kind: OpKind.ElementStart,
     xref,
     tag,
-    attributes: new ElementAttributes(),
+    attributes: null,
     localRefs: [],
     nonBindable: false,
     namespace,
@@ -178,7 +178,7 @@ export function createTemplateOp(
   return {
     kind: OpKind.Template,
     xref,
-    attributes: new ElementAttributes(),
+    attributes: null,
     tag,
     decls: null,
     vars: null,
