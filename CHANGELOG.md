@@ -1,3 +1,12 @@
+<a name="16.1.8"></a>
+# 16.1.8 (2023-08-02)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc722ea1f5](https://github.com/angular/angular/commit/cc722ea1f5b16f5a4fddc1ecd91b21b3005242ae) | fix | return full spans for Comment nodes ([#50855](https://github.com/angular/angular/pull/50855)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0-next.4"></a>
 # 16.2.0-next.4 (2023-07-26)
 ### common
