@@ -249,7 +249,7 @@ describe('animation renderer factory', () => {
       declarations: [SomeComponentWithAnimation, SomeComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (d: any) => rendererFactory = getAnimationRendererFactory2(d),
+        useFactory: (d: Document) => rendererFactory = getAnimationRendererFactory2(d),
         deps: [DOCUMENT]
       }]
     });
@@ -319,7 +319,7 @@ describe('animation renderer factory', () => {
   });
 });
 
-function getRendererFactory2(document: any): RendererFactory2 {
+function getRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
@@ -335,12 +335,12 @@ function getRendererFactory2(document: any): RendererFactory2 {
   return rendererFactory;
 }
 
-function getAnimationRendererFactory2(document: any): RendererFactory2 {
+function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
       new ɵAnimationEngine(
-          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
 
@@ -355,7 +355,7 @@ describe('custom renderer', () => {
   /**
    * Creates a patched renderer factory that creates elements with a shape different than DOM node
    */
-  function createPatchedRendererFactory(document: any) {
+  function createPatchedRendererFactory(document: Document) {
     let rendererFactory = getRendererFactory2(document);
     const origCreateRenderer = rendererFactory.createRenderer;
     rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
@@ -376,7 +376,7 @@ describe('custom renderer', () => {
       declarations: [SomeComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (document: any) => createPatchedRendererFactory(document),
+        useFactory: (document: Document) => createPatchedRendererFactory(document),
         deps: [DOCUMENT]
       }]
     });
@@ -431,7 +431,7 @@ describe('Renderer2 destruction hooks', () => {
       declarations: [SimpleApp, AppWithComponents, BasicComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (document: any) => getRendererFactory2(document),
+        useFactory: (document: Document) => getRendererFactory2(document),
         deps: [DOCUMENT]
       }]
     });
