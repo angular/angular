@@ -58,7 +58,7 @@ The `<ng-template>` element is a good choice for dynamic components because it d
 Take a closer look at the methods in `ad-banner.component.ts`.
 
 `AdBannerComponent` takes an array of `AdItem` objects as input, which ultimately comes from `AdService`.
-`AdItem` objects specify the type of component to load and any data to bind to the component.`AdService` returns the actual ads making up the ad campaign.
+`AdItem` objects specify the type of component to load and any data to bind to the component. `AdService` returns the actual ads making up the ad campaign.
 
 Passing an array of components to `AdBannerComponent` allows for a dynamic list of ads without static elements in the template.
 
