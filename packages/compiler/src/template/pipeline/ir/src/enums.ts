@@ -136,6 +136,11 @@ export enum OpKind {
   Attribute,
 
   /**
+   * An attribute that has been extracted for inclusion in the consts array.
+   */
+  ExtractedAttribute,
+
+  /**
    * A host binding property.
    */
   HostProperty,
