@@ -803,6 +803,10 @@ export function transformExpressionsInOp(
         transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
       }
       break;
+    case OpKind.ExtractedAttribute:
+      op.expression =
+          op.expression && transformExpressionsInExpression(op.expression, transform, flags);
+      break;
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
