@@ -31,6 +31,7 @@ import {phaseNgContainer} from './phases/ng_container';
 import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseNonbindable} from './phases/nonbindable';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
+import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePropertyOrdering} from './phases/property_ordering';
@@ -58,6 +59,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseStyleBindingSpecialization(job);
   phaseBindingSpecialization(job);
   phaseAttributeExtraction(job);
+  phaseParseExtractedStyles(job);
   phaseRemoveEmptyBindings(job);
   phaseNoListenersOnTemplates(job);
   phasePipeCreation(job);

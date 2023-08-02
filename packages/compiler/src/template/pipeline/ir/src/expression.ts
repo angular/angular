@@ -902,3 +902,10 @@ export function transformExpressionsInStatement(
     throw new Error(`Unhandled statement kind: ${stmt.constructor.name}`);
   }
 }
+
+/**
+ * Checks whether the given expression is a string literal.
+ */
+export function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{value: string} {
+  return expr instanceof o.LiteralExpr && typeof expr.value === 'string';
+}
