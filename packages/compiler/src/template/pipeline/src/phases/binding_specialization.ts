@@ -48,8 +48,8 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createAttributeOp(
-                    op.target, op.name, op.expression, op.securityContext, op.isTemplate,
-                    op.sourceSpan));
+                    op.target, op.name, op.expression, op.securityContext, op.isTextAttribute,
+                    op.isTemplate, op.sourceSpan));
           }
           break;
         case ir.BindingKind.Property:

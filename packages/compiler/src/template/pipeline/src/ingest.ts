@@ -48,7 +48,7 @@ export function ingestHostBinding(
     constantPool: ConstantPool): HostBindingCompilationJob {
   const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
   for (const property of input.properties ?? []) {
-    ingestHostProperty(job, property);
+    ingestHostProperty(job, property, false);
   }
   for (const event of input.events ?? []) {
     ingestHostEvent(job, event);
@@ -59,7 +59,7 @@ export function ingestHostBinding(
 // TODO: We should refactor the parser to use the same types and structures for host bindings as
 // with ordinary components. This would allow us to share a lot more ingestion code.
 export function ingestHostProperty(
-    job: HostBindingCompilationJob, property: e.ParsedProperty): void {
+    job: HostBindingCompilationJob, property: e.ParsedProperty, isTextAttribute: boolean): void {
   let expression: o.Expression|ir.Interpolation;
   const ast = property.expression.ast;
   if (ast instanceof e.Interpolation) {
@@ -78,7 +78,7 @@ export function ingestHostProperty(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
-      false, property.sourceSpan));
+      isTextAttribute, false, property.sourceSpan));
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
@@ -277,11 +277,11 @@ function ingestBindings(
       if (attr instanceof t.TextAttribute) {
         ingestBinding(
             view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-            SecurityContext.NONE, attr.sourceSpan, true);
+            SecurityContext.NONE, attr.sourceSpan, true, true);
       } else {
         ingestBinding(
             view, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.securityContext,
-            attr.sourceSpan, true);
+            attr.sourceSpan, false, true);
       }
     }
   }
@@ -292,13 +292,13 @@ function ingestBindings(
     // `BindingType.Attribute`.
     ingestBinding(
         view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, false);
+        SecurityContext.NONE, attr.sourceSpan, true, false);
   }
 
   for (const input of element.inputs) {
     ingestBinding(
         view, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
-        input.sourceSpan, false);
+        input.sourceSpan, false, false);
   }
 
   for (const output of element.outputs) {
@@ -352,7 +352,7 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
 function ingestBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, isTemplateBinding: boolean): void {
+    sourceSpan: ParseSourceSpan, isTextAttribute: boolean, isTemplateBinding: boolean): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
@@ -369,7 +369,8 @@ function ingestBinding(
 
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
   view.update.push(ir.createBindingOp(
-      xref, kind, name, expression, unit, securityContext, isTemplateBinding, sourceSpan));
+      xref, kind, name, expression, unit, securityContext, isTextAttribute, isTemplateBinding,
+      sourceSpan));
 }
 
 /**
