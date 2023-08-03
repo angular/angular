@@ -148,12 +148,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock) {
-    t.visitAll(this, deferred.triggers);
-    t.visitAll(this, deferred.prefetchTriggers);
-    t.visitAll(this, deferred.children);
-    deferred.placeholder && this.visit(deferred.placeholder);
-    deferred.loading && this.visit(deferred.loading);
-    deferred.error && this.visit(deferred.error);
+    deferred.visitAll(this);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
