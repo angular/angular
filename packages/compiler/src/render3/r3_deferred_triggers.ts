@@ -51,7 +51,7 @@ export function parseWhenTrigger(
     const start = getTriggerParametersStart(expression, whenIndex + 1);
     const parsed = bindingParser.parseBinding(
         expression.slice(start), false, sourceSpan, sourceSpan.start.offset + start);
-    trackTrigger('when', triggers, new t.BoundDeferredTrigger(parsed, sourceSpan));
+    trackTrigger('when', triggers, errors, new t.BoundDeferredTrigger(parsed, sourceSpan));
   }
 }
 
@@ -243,7 +243,7 @@ class OnTriggerParser {
   }
 
   private trackTrigger(name: keyof t.DeferredBlockTriggers, trigger: t.DeferredTrigger): void {
-    trackTrigger(name, this.triggers, trigger);
+    trackTrigger(name, this.triggers, this.errors, trigger);
   }
 
   private error(token: Token, message: string): void {
@@ -259,9 +259,13 @@ class OnTriggerParser {
 
 /** Adds a trigger to a map of triggers. */
 function trackTrigger(
-    name: keyof t.DeferredBlockTriggers, allTriggers: t.DeferredBlockTriggers,
+    name: keyof t.DeferredBlockTriggers, allTriggers: t.DeferredBlockTriggers, errors: ParseError[],
     trigger: t.DeferredTrigger) {
-  allTriggers[name] = trigger as any;
+  if (allTriggers[name]) {
+    errors.push(new ParseError(trigger.sourceSpan, `Duplicate "${name}" trigger is not allowed`));
+  } else {
+    allTriggers[name] = trigger as any;
+  }
 }
 
 function createIdleTrigger(
