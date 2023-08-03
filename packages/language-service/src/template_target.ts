@@ -478,10 +478,7 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock) {
-    this.visitAll(deferred.children);
-    deferred.placeholder && this.visit(deferred.placeholder);
-    deferred.loading && this.visit(deferred.loading);
-    deferred.error && this.visit(deferred.error);
+    deferred.visitAll(this);
   }
 
   visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder) {

@@ -106,20 +106,11 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const blocks: t.Node[] = [];
-    deferred.placeholder && blocks.push(deferred.placeholder);
-    deferred.loading && blocks.push(deferred.loading);
-    deferred.error && blocks.push(deferred.error);
     this.result.push([
       'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
       humanizeSpan(deferred.endSourceSpan)
     ]);
-    this.visitAll([
-      deferred.triggers,
-      deferred.prefetchTriggers,
-      deferred.children,
-      blocks,
-    ]);
+    deferred.visitAll(this);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {

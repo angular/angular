@@ -177,22 +177,20 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
 
 function parsePrimaryTriggers(
     params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[]) {
-  const triggers: t.DeferredTrigger[] = [];
-  const prefetchTriggers: t.DeferredTrigger[] = [];
+  const triggers: t.DeferredBlockTriggers = {};
+  const prefetchTriggers: t.DeferredBlockTriggers = {};
 
   for (const param of params) {
     // The lexer ignores the leading spaces so we can assume
     // that the expression starts with a keyword.
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
-      const result = parseWhenTrigger(param, bindingParser, errors);
-      result !== null && triggers.push(result);
+      parseWhenTrigger(param, bindingParser, triggers, errors);
     } else if (ON_PARAMETER_PATTERN.test(param.expression)) {
-      triggers.push(...parseOnTrigger(param, errors));
+      parseOnTrigger(param, triggers, errors);
     } else if (PREFETCH_WHEN_PATTERN.test(param.expression)) {
-      const result = parseWhenTrigger(param, bindingParser, errors);
-      result !== null && prefetchTriggers.push(result);
+      parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
-      prefetchTriggers.push(...parseOnTrigger(param, errors));
+      parseOnTrigger(param, prefetchTriggers, errors);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }

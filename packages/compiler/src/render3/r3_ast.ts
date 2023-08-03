@@ -186,16 +186,54 @@ export class DeferredBlockError implements Node {
   }
 }
 
+export interface DeferredBlockTriggers {
+  when?: BoundDeferredTrigger;
+  idle?: IdleDeferredTrigger;
+  immediate?: ImmediateDeferredTrigger;
+  hover?: HoverDeferredTrigger;
+  timer?: TimerDeferredTrigger;
+  interaction?: InteractionDeferredTrigger;
+  viewport?: ViewportDeferredTrigger;
+}
+
 export class DeferredBlock implements Node {
+  readonly triggers: Readonly<DeferredBlockTriggers>;
+  readonly prefetchTriggers: Readonly<DeferredBlockTriggers>;
+  private readonly definedTriggers: (keyof DeferredBlockTriggers)[];
+  private readonly definedPrefetchTriggers: (keyof DeferredBlockTriggers)[];
+
   constructor(
-      public children: Node[], public triggers: DeferredTrigger[],
-      public prefetchTriggers: DeferredTrigger[], public placeholder: DeferredBlockPlaceholder|null,
+      public children: Node[], triggers: DeferredBlockTriggers,
+      prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public endSourceSpan: ParseSourceSpan|null) {
+    this.triggers = triggers;
+    this.prefetchTriggers = prefetchTriggers;
+    // We cache the keys since we know that they won't change and we
+    // don't want to enumarate them every time we're traversing the AST.
+    this.definedTriggers = Object.keys(triggers) as (keyof DeferredBlockTriggers)[];
+    this.definedPrefetchTriggers = Object.keys(prefetchTriggers) as (keyof DeferredBlockTriggers)[];
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlock(this);
+  }
+
+  visitAll(visitor: Visitor<unknown>): void {
+    this.visitTriggers(this.definedTriggers, this.triggers, visitor);
+    this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
+    visitAll(visitor, this.children);
+    this.placeholder && visitor.visitDeferredBlockPlaceholder(this.placeholder);
+    this.loading && visitor.visitDeferredBlockLoading(this.loading);
+    this.error && visitor.visitDeferredBlockError(this.error);
+  }
+
+  private visitTriggers(
+      keys: (keyof DeferredBlockTriggers)[], triggers: DeferredBlockTriggers, visitor: Visitor) {
+    for (const key of keys) {
+      visitor.visitDeferredTrigger(triggers[key]!);
+    }
   }
 }
 
@@ -302,12 +340,7 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, template.variables);
   }
   visitDeferredBlock(deferred: DeferredBlock): void {
-    visitAll(this, deferred.triggers);
-    visitAll(this, deferred.prefetchTriggers);
-    visitAll(this, deferred.children);
-    deferred.placeholder?.visit(this);
-    deferred.loading?.visit(this);
-    deferred.error?.visit(this);
+    deferred.visitAll(this);
   }
   visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder): void {
     visitAll(this, block.children);
