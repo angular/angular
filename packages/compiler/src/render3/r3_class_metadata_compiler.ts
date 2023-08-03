@@ -75,7 +75,7 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  */
 export function compileComponentClassMetadata(
     metadata: R3ClassMetadata, deferrableTypes: Map<string, string>): o.Expression {
-  if (!deferrableTypes || deferrableTypes.size === 0) {
+  if (deferrableTypes.size === 0) {
     // If there are no deferrable symbols - just generate a regular `setClassMetadata` call.
     return compileClassMetadata(metadata);
   }

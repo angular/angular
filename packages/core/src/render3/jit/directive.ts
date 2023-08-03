@@ -22,7 +22,6 @@ import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../d
 import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
-import {getAsyncClassMetadata} from '../metadata';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
@@ -60,12 +59,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
   let ngComponentDef: ComponentDef<unknown>|null = null;
-
-  if (getAsyncClassMetadata(type)) {
-    throw new Error(
-        `Component '${type.name}' has unresolved metadata. ` +
-        `Please call \`await TestBed.compileComponents()\` before running this test.`);
-  }
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);

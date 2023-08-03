@@ -386,11 +386,19 @@ export class TestBedCompiler {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
     this.pendingComponents.forEach(declaration => {
+      if (getAsyncClassMetadata(declaration)) {
+        throw new Error(
+            `Component '${declaration.name}' has unresolved metadata. ` +
+            `Please call \`await TestBed.compileComponents()\` before running this test.`);
+      }
+
       needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
+
       const metadata = this.resolvers.component.resolve(declaration);
       if (metadata === null) {
         throw invalidTypeError(declaration.name, 'Component');
       }
+
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });
