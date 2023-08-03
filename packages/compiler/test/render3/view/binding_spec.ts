@@ -249,6 +249,8 @@ describe('t2 binding', () => {
   });
 
   describe('extracting defer blocks info', () => {
+    const templateOptions = {enabledBlockTypes: new Set(['defer'])};
+
     it('should extract top-level defer blocks', () => {
       const template = parseTemplate(
           `
@@ -256,7 +258,7 @@ describe('t2 binding', () => {
             {#defer}<cmp-b />{/defer}
             <cmp-c />
           `,
-          '', {enabledBlockTypes: new Set(['defer'])});
+          '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -281,7 +283,7 @@ describe('t2 binding', () => {
             {/defer}
             {{ name | pipeF }}
           `,
-          '', {enabledBlockTypes: new Set(['defer'])});
+          '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -296,6 +298,23 @@ describe('t2 binding', () => {
       expect(bound.getUsedPipes()).toEqual([
         'pipeA', 'pipeB', 'pipeD', 'placeholder', 'pipeC', 'loading', 'pipeE', 'error', 'pipeF'
       ]);
+    });
+
+    it('should identify pipes used after a nested defer block as being lazy', () => {
+      const template = parseTemplate(
+          `
+          {#defer}
+            {{ name | pipeA }}
+            {#defer}{{ name | pipeB }}{/defer}
+            {{ name | pipeC }}
+          {/defer}
+          `,
+          '', templateOptions);
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+
+      expect(bound.getUsedPipes()).toEqual(['pipeA', 'pipeB', 'pipeC']);
+      expect(bound.getEagerlyUsedPipes()).toEqual([]);
     });
 
     it('should extract nested defer blocks and associated directives', () => {
@@ -316,7 +335,7 @@ describe('t2 binding', () => {
             {/defer}
             <img *f />
           `,
-          '', {enabledBlockTypes: new Set(['defer'])});
+          '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -337,6 +356,25 @@ describe('t2 binding', () => {
       expect(allDirs.map(dir => dir.name)).toEqual([
         'DirA', 'DirB', 'DirD', 'DirPlaceholder', 'DirC', 'DirLoading', 'DirE', 'DirError', 'DirF'
       ]);
+    });
+
+    it('should identify directives used after a nested defer block as being lazy', () => {
+      const template = parseTemplate(
+          `
+          {#defer}
+            <img *a />
+            {#defer}<img *b />{/defer}
+            <img *c />
+          {/defer}
+          `,
+          '', templateOptions);
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const allDirs = bound.getUsedDirectives().map(dir => dir.name);
+      const eagerDirs = bound.getEagerlyUsedDirectives().map(dir => dir.name);
+
+      expect(allDirs).toEqual(['DirA', 'DirB', 'DirC']);
+      expect(eagerDirs).toEqual([]);
     });
   });
 
