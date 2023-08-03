@@ -238,10 +238,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitDeferredBlock(deferred: TmplAstDeferredBlock) {
-    this.visitAll(deferred.children);
-    deferred.placeholder?.visit(this);
-    deferred.loading?.visit(this);
-    deferred.error?.visit(this);
+    deferred.visitAll(this);
   }
 
   override visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {

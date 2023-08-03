@@ -161,12 +161,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
 
 
   visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
-    this.visitAllNodes(deferred.children);
-    this.visitAllNodes(deferred.triggers);
-    this.visitAllNodes(deferred.prefetchTriggers);
-    deferred.placeholder && this.visit(deferred.placeholder);
-    deferred.loading && this.visit(deferred.loading);
-    deferred.error && this.visit(deferred.error);
+    deferred.visitAll(this);
   }
 
   visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {

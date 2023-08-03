@@ -524,8 +524,6 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     deferred.children.forEach(this.visitNode);
     this.isInDeferBlock = false;
 
-    deferred.triggers.forEach(this.visitNode);
-    deferred.prefetchTriggers.forEach(this.visitNode);
     deferred.placeholder && this.visitNode(deferred.placeholder);
     deferred.loading && this.visitNode(deferred.loading);
     deferred.error && this.visitNode(deferred.error);
