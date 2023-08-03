@@ -74,7 +74,7 @@ class IvyCompilationVisitor extends Visitor {
       // so that we can pass it to the transform visitor that will drop
       // corresponding regular import declarations.
       for (const classResult of result) {
-        if (classResult.deferrableImports && classResult.deferrableImports.size > 0) {
+        if (classResult.deferrableImports !== null && classResult.deferrableImports.size > 0) {
           classResult.deferrableImports.forEach(
               importDecl => this.deferrableImports.add(importDecl));
         }

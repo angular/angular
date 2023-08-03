@@ -1032,7 +1032,8 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
+    return compileResults(
+        fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */);
   }
 
   compileLocal(
@@ -1055,7 +1056,8 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
+    return compileResults(
+        fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */);
   }
 
   /**

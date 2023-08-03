@@ -156,8 +156,13 @@ export class InjectableDecoratorHandler implements
     if (ɵprov === undefined) {
       // Only add a new ɵprov if there is not one already
       const res = compileInjectableFn(analysis.meta);
-      results.push(
-          {name: 'ɵprov', initializer: res.expression, statements: res.statements, type: res.type});
+      results.push({
+        name: 'ɵprov',
+        initializer: res.expression,
+        statements: res.statements,
+        type: res.type,
+        deferrableImports: null
+      });
     }
 
     return results;
