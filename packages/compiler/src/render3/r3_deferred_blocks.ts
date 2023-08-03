@@ -112,6 +112,10 @@ function parsePlaceholderBlock(ast: html.Block, visitor: html.Visitor): t.Deferr
 
   for (const param of ast.parameters) {
     if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
+      if (minimumTime != null) {
+        throw new Error(`Placeholder block can only have one "minimum" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
@@ -137,6 +141,10 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 
   for (const param of ast.parameters) {
     if (AFTER_PARAMETER_PATTERN.test(param.expression)) {
+      if (afterTime != null) {
+        throw new Error(`Loading block can only have one "after" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
@@ -146,6 +154,10 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 
       afterTime = parsedTime;
     } else if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
+      if (minimumTime != null) {
+        throw new Error(`Loading block can only have one "minimum" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
