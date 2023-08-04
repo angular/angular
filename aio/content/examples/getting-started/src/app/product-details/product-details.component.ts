@@ -1,4 +1,3 @@
-// #docplaster
 // #docregion cart-service
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -41,3 +40,5 @@ export class ProductDetailsComponent implements OnInit {
   }
 // #docregion inject-cart-service
 }
+// #enddocregion add-to-cart
+// #enddocregion inject-cart-service
