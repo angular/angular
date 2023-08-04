@@ -14,7 +14,7 @@
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
     "domino": "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1",
-    "google-closure-compiler": "^20230502.0.0",
+    "google-closure-compiler": "^20230802.0.0",
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",
     "jest-environment-node": "^29.0.3",
