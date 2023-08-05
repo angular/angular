@@ -9,6 +9,8 @@
 import {assertInInjectionContext, DestroyRef, effect, EffectRef, inject, Injector, Signal, untracked} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 
+import { finalize } from 'rxjs/operators';
+
 /**
  * Options for `toObservable`.
  *
@@ -57,5 +59,5 @@ export function toObservable<T>(
     subject.complete();
   });
 
-  return subject.asObservable();
+  return subject.asObservable().pipe(finalize(watcher.destroy));
 }
