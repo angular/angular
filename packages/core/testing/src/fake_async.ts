@@ -56,6 +56,32 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
 }
 
 /**
+ * Sets the fake base system time used for a `fakeAsync` test.
+ *
+ * Note: Always call this function inside the test itself, not inside a `beforeEach`.
+ *
+ * During the `fakeAsync` test, APIs that use the native system time, such as `Date.now()`, are
+ * patched to use the given base time value. The value returned as "now" is the base time
+ * plus the time that passed via the `tick` function.
+ *
+ * @example
+ *
+ * setFakeBaseSystemTime(0)     // Now: 1970-01-01 12:00:00 AM
+ * tick(5000)                   // Now: 1970-01-01 12:00:05 AM
+ * setFakeBaseSystemTime(10000) // Now: 1970-01-01 12:00:15 AM <- The previous tick still applies!
+ *
+ * @param baseTimeInMillis The base time to use in milliseconds.
+ *
+ * @publicApi
+ */
+export function setFakeBaseSystemTime(baseTimeInMillis: number): void {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.setFakeBaseSystemTime(baseTimeInMillis);
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+}
+
+/**
  * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone.
  *
  * The microtasks queue is drained at the very start of this function and after any timer callback

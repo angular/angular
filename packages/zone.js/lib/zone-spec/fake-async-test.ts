@@ -813,6 +813,17 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   }
 
   /**
+   * Sets the fake base system time used for a `fakeAsync` test.
+   *
+   * @param baseTimeInMillis The base time to use in milliseconds.
+   *
+   * @experimental
+   */
+  function setFakeBaseSystemTime(baseTimeInMillis: number): void {
+    _getFakeAsyncZoneSpec().setFakeBaseSystemTime(baseTimeInMillis);
+  }
+
+  /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone.
    *
    * The microtasks queue is drained at the very start of this function and after any timer callback
@@ -861,6 +872,13 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   function flushMicrotasks(): void {
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
-  (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+  (Zone as any)[api.symbol('fakeAsyncTest')] = {
+    resetFakeAsyncZone,
+    flushMicrotasks,
+    discardPeriodicTasks,
+    tick,
+    flush,
+    fakeAsync,
+    setFakeBaseSystemTime
+  };
 }, true);

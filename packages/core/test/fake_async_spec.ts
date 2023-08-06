@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
+import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, setFakeBaseSystemTime, tick,} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 
@@ -361,6 +361,24 @@ describe('fake async', () => {
 
          discardPeriodicTasks();
        }));
+
+    it('should use fake base system time', fakeAsync(() => {
+         const fakeBaseTime = 1234500000;
+         const newFakeBaseTime = 9999900000;
+         const tickTime = 500;
+
+         setFakeBaseSystemTime(fakeBaseTime);
+
+         expect(Date.now().valueOf()).toBe(fakeBaseTime);
+
+         tick(tickTime);
+
+         expect(Date.now().valueOf()).toBe(fakeBaseTime + tickTime);
+
+         setFakeBaseSystemTime(newFakeBaseTime);
+
+         expect(Date.now().valueOf()).toBe(newFakeBaseTime + tickTime);
+       }));
   });
 
   describe('outside of the fakeAsync zone', () => {
@@ -385,6 +403,12 @@ describe('fake async', () => {
     it('calling discardPeriodicTasks should throw', () => {
       expect(() => {
         discardPeriodicTasks();
+      }).toThrowError('The code should be running in the fakeAsync zone to call this function');
+    });
+
+    it('calling setFakeBaseSystemTime should throw', () => {
+      expect(() => {
+        setFakeBaseSystemTime(0);
       }).toThrowError('The code should be running in the fakeAsync zone to call this function');
     });
   });
