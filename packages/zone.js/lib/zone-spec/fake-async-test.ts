@@ -813,6 +813,22 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   }
 
   /**
+   * Sets the fake base system time used for fakeAsync tests.
+   *
+   * When using `fakeAsync()`, APIs that use the native system time, such as `Date.now()`, are
+   * patched to use the given fake time value. The fake time advances when explicitly calling
+   * `tick()`: After calling `tick(5000)`, `Date.now()` will return a value 5 seconds after the
+   * given base time. Calling this method again after calling `tick()` will not reset the time.
+   *
+   * @param baseTimeInMillis The base time to use in milliseconds.
+   *
+   * @experimental
+   */
+  function setFakeBaseSystemTime(baseTimeInMillis: number): void {
+    _getFakeAsyncZoneSpec().setFakeBaseSystemTime(baseTimeInMillis);
+  }
+
+  /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone.
    *
    * The microtasks queue is drained at the very start of this function and after any timer callback
@@ -861,6 +877,13 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   function flushMicrotasks(): void {
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
-  (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+  (Zone as any)[api.symbol('fakeAsyncTest')] = {
+    resetFakeAsyncZone,
+    flushMicrotasks,
+    discardPeriodicTasks,
+    tick,
+    flush,
+    fakeAsync,
+    setFakeBaseSystemTime
+  };
 }, true);
