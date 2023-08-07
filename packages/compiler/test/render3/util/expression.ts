@@ -168,6 +168,16 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   visitDeferredBlockLoading(block: t.DeferredBlockLoading) {
     t.visitAll(this, block.children);
   }
+
+  visitSwitchBlock(block: t.SwitchBlock) {
+    block.expression.visit(this);
+    t.visitAll(this, block.cases);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase) {
+    block.expression?.visit(this);
+    t.visitAll(this, block.children);
+  }
 }
 
 /**

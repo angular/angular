@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, Icu, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -153,6 +153,14 @@ class Scope implements Visitor {
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading) {
+    block.children.forEach(node => node.visit(this));
+  }
+
+  visitSwitchBlock(block: SwitchBlock) {
+    block.cases.forEach(node => node.visit(this));
+  }
+
+  visitSwitchBlockCase(block: SwitchBlockCase) {
     block.children.forEach(node => node.visit(this));
   }
 
@@ -359,6 +367,14 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     block.children.forEach(child => child.visit(this));
   }
 
+  visitSwitchBlock(block: SwitchBlock) {
+    block.cases.forEach(node => node.visit(this));
+  }
+
+  visitSwitchBlockCase(block: SwitchBlockCase) {
+    block.children.forEach(node => node.visit(this));
+  }
+
   // Unused visitors.
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
@@ -546,6 +562,16 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading) {
+    block.children.forEach(this.visitNode);
+  }
+
+  visitSwitchBlock(block: SwitchBlock) {
+    block.expression.visit(this);
+    block.cases.forEach(this.visitNode);
+  }
+
+  visitSwitchBlockCase(block: SwitchBlockCase) {
+    block.expression?.visit(this);
     block.children.forEach(this.visitNode);
   }
 
