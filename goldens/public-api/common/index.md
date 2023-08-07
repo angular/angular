@@ -141,9 +141,9 @@ export class DatePipe implements PipeTransform {
 // @public
 export interface DatePipeConfig {
     // (undocumented)
-    dateFormat: string;
+    dateFormat?: string;
     // (undocumented)
-    timezone: string;
+    timezone?: string;
 }
 
 // @public
