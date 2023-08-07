@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 
@@ -250,6 +250,22 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {
+    this.visitAll(block.children);
+  }
+
+  override visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {
+    if (trigger instanceof TmplAstBoundDeferredTrigger) {
+      this.visitExpression(trigger.value);
+    }
+  }
+
+  override visitSwitchBlock(block: TmplAstSwitchBlock) {
+    this.visitExpression(block.expression);
+    this.visitAll(block.cases);
+  }
+
+  override visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+    block.expression && this.visitExpression(block.expression);
     this.visitAll(block.children);
   }
 

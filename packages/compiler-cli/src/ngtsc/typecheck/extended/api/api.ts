@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../core/api';
@@ -179,6 +179,16 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
   }
 
   visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitSwitchBlock(block: TmplAstSwitchBlock): void {
+    this.visitAst(block.expression);
+    this.visitAllNodes(block.cases);
+  }
+
+  visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
+    block.expression && this.visitAst(block.expression);
     this.visitAllNodes(block.children);
   }
 
