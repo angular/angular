@@ -124,11 +124,8 @@ class DepsTracker implements DepsTrackerApi {
 
   /** @override */
   clearScopeCacheFor(type: Type<any>): void {
-    if (isNgModule(type)) {
-      this.ngModulesScopeCache.delete(type);
-    } else if (isComponent(type)) {
-      this.standaloneComponentsScopeCache.delete(type);
-    }
+    this.ngModulesScopeCache.delete(type as NgModuleType);
+    this.standaloneComponentsScopeCache.delete(type as ComponentType<any>);
   }
 
   /** @override */
