@@ -231,6 +231,39 @@ describe('createUrlTree', async () => {
              .toEqual('/case/(foo:foo)');
        });
 
+    it('can change both primary and named outlets under an empty path', async () => {
+      router.resetConfig([{
+        path: 'foo',
+        children: [
+          {
+            path: '',
+            component: class {},
+            children: [
+              {path: 'bar', component: class {}},
+              {path: 'baz', component: class {}, outlet: 'other'},
+            ],
+          },
+        ]
+      }]);
+
+      await router.navigateByUrl('/foo/(bar//other:baz)');
+      expect(router.url).toEqual('/foo/(bar//other:baz)');
+      expect(router
+                 .createUrlTree(
+                     [
+                       {
+                         outlets: {
+                           other: null,
+                           primary: ['bar'],
+                         },
+                       },
+                     ],
+                     // relative to the root '' route
+                     {relativeTo: router.routerState.root.firstChild})
+                 .toString())
+          .toEqual('/foo/bar');
+    });
+
     describe('absolute navigations', () => {
       it('with and pathless root', async () => {
         router.resetConfig([
