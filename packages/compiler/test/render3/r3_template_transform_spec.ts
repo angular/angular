@@ -93,6 +93,17 @@ class R3AstHumanizer implements t.Visitor<void> {
     deferred.visitAll(this);
   }
 
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    this.result.push(['SwitchBlock', unparse(block.expression)]);
+    this.visitAll([block.cases]);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase): void {
+    this.result.push(
+        ['SwitchBlockCase', block.expression === null ? null : unparse(block.expression)]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.result.push(['BoundDeferredTrigger', unparse(trigger.value)]);
@@ -1133,6 +1144,189 @@ describe('R3 template transform', () => {
       it('should report multiple after parameters on a loading block', () => {
         expectDeferredError('{#defer}hello{:loading after 1s; after 500ms}loading{/defer}')
             .toThrowError(/Loading block can only have one "after" parameter/);
+      });
+    });
+  });
+
+  describe('switch blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectSwitch(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['switch']}).nodes);
+    }
+
+    function expectSwitchError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['switch']}));
+    }
+
+    it('should parse a switch block', () => {
+      expectSwitch(`
+          {#switch cond.kind}
+            {:case x()} X case
+            {:case 'hello'} <button>Y case</button>
+            {:case 42} Z case
+            {:default} No case matched
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x()'],
+        ['Text', ' X case '],
+        ['SwitchBlockCase', '"hello"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '42'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
+    it('should parse a switch block with optional parentheses', () => {
+      expectSwitch(`
+          {#switch (cond.kind)}
+            {:case (x())} X case
+            {:case ('hello')} <button>Y case</button>
+            {:case (42)} Z case
+            {:default} No case matched
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x()'],
+        ['Text', ' X case '],
+        ['SwitchBlockCase', '"hello"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '42'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
+    it('should parse a nested switch block', () => {
+      expectSwitch(`
+          {#switch cond}
+            {:case 'a'}
+              {#switch innerCond}
+                {:case 'innerA'} Inner A
+                {:case 'innerB'} Inner B
+              {/switch}
+            {:case 'b'} <button>Y case</button>
+            {:case 'c'} Z case
+            {:default}
+              {#switch innerCond}
+                {:case 'innerC'} Inner C
+                {:case 'innerD'} Inner D
+                {:default}
+                  {#switch innerInnerCond}
+                    {:case 'innerInnerA'} Inner inner A
+                    {:case 'innerInnerA'} Inner inner B
+                  {/switch}
+              {/switch}
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond'],
+        ['SwitchBlockCase', '"a"'],
+        ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCase', '"innerA"'],
+        ['Text', ' Inner A '],
+        ['SwitchBlockCase', '"innerB"'],
+        ['Text', ' Inner B '],
+        ['SwitchBlockCase', '"b"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '"c"'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCase', '"innerC"'],
+        ['Text', ' Inner C '],
+        ['SwitchBlockCase', '"innerD"'],
+        ['Text', ' Inner D '],
+        ['SwitchBlockCase', null],
+        ['SwitchBlock', 'innerInnerCond'],
+        ['SwitchBlockCase', '"innerInnerA"'],
+        ['Text', ' Inner inner A '],
+        ['SwitchBlockCase', '"innerInnerA"'],
+        ['Text', ' Inner inner B '],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report syntax error in switch expression', () => {
+        expectSwitchError(`
+          {#switch cond/.kind}
+            {:case x()} X case
+            {:default} No case matched
+          {/switch}
+        `).toThrowError(/Parser Error: Unexpected token \./);
+      });
+
+      it('should report syntax error in case expression', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case x(} X case
+          {/switch}
+        `).toThrowError(/Unexpected end of expression: x\(/);
+      });
+
+      it('should report if a block different from "case" and "default" is used in a switch', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case x()} X case
+            {:foo} Foo
+          {/switch}
+        `).toThrowError(/Switch block can only contain "case" and "default" blocks/);
+      });
+
+      it('should report if a switch has no parameters', () => {
+        expectSwitchError(`
+          {#switch}
+            {:case 1} case
+          {/switch}
+        `).toThrowError(/Switch block must have exactly one parameter/);
+      });
+
+      it('should report if a switch has more than one parameter', () => {
+        expectSwitchError(`
+          {#switch foo; bar}
+            {:case 1} case
+          {/switch}
+        `).toThrowError(/Switch block must have exactly one parameter/);
+      });
+
+      it('should report if a case has no parameters', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case} case
+          {/switch}
+        `).toThrowError(/Case block must have exactly one parameter/);
+      });
+
+      it('should report if a case has more than one parameter', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo; bar} case
+          {/switch}
+        `).toThrowError(/Case block must have exactly one parameter/);
+      });
+
+      it('should report if a switch has multiple default blocks', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo} foo
+            {:default} one
+            {:default} two
+          {/switch}
+        `).toThrowError(/Switch block can only have one "default" block/);
+      });
+
+      it('should report if a default block has parameters', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo} foo
+            {:default bar} bar
+          {/switch}
+        `).toThrowError(/Default block cannot have parameters/);
       });
     });
   });

@@ -500,6 +500,20 @@ class TemplateTargetVisitor implements t.Visitor {
     }
   }
 
+  visitSwitchBlock(block: t.SwitchBlock) {
+    const visitor = new ExpressionVisitor(this.position);
+    visitor.visit(block.expression, this.path);
+    this.visitAll(block.cases);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase) {
+    if (block.expression !== null) {
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(block.expression, this.path);
+    }
+    this.visitAll(block.children);
+  }
+
   visitAll(nodes: t.Node[]) {
     for (const node of nodes) {
       this.visit(node);

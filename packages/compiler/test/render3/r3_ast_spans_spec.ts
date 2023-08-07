@@ -113,6 +113,20 @@ class R3AstSourceSpans implements t.Visitor<void> {
     deferred.visitAll(this);
   }
 
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    this.result.push([
+      'SwitchBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.cases]);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase): void {
+    this.result.push(
+        ['SwitchBlockCase', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     let name: string;
 
@@ -618,6 +632,33 @@ describe('R3 AST source spans', () => {
         ['Text', 'Loading...'],
         ['DeferredBlockError', '{:error}Loading failed :(', '{:error}', '<empty>'],
         ['Text', 'Loading failed :('],
+      ]);
+    });
+  });
+
+  describe('switch blocks', () => {
+    it('is correct for switch blocks', () => {
+      const html = `{#switch cond.kind}` +
+          `{:case x()} X case` +
+          `{:case 'hello'} Y case` +
+          `{:case 42} Z case` +
+          `{:default} No case matched` +
+          `{/switch}`;
+
+      expectFromHtml(html, ['switch']).toEqual([
+        [
+          'SwitchBlock',
+          '{#switch cond.kind}{:case x()} X case{:case \'hello\'} Y case{:case 42} Z case{:default} No case matched{/switch}',
+          '{#switch cond.kind}', '{/switch}'
+        ],
+        ['SwitchBlockCase', '{:case x()} X case', '{:case x()}'],
+        ['Text', 'X case'],
+        ['SwitchBlockCase', '{:case \'hello\'} Y case', '{:case \'hello\'}'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '{:case 42} Z case', '{:case 42}'],
+        ['Text', 'Z case'],
+        ['SwitchBlockCase', '{:default} No case matched', '{:default}'],
+        ['Text', 'No case matched'],
       ]);
     });
   });
