@@ -447,15 +447,13 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
     if (attribute.valueSpan !== undefined) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(attribute.value, this.path);
+      this.visitExpression(attribute.value);
     }
   }
 
   visitBoundEvent(event: t.BoundEvent) {
     if (!isBoundEventWithSyntheticHandler(event)) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(event.handler, this.path);
+      this.visitExpression(event.handler);
     }
   }
 
@@ -464,8 +462,7 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundText(text: t.BoundText) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(text.value, this.path);
+    this.visitExpression(text.value);
   }
 
   visitIcu(icu: t.Icu) {
@@ -495,22 +492,27 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitDeferredTrigger(trigger: t.DeferredTrigger) {
     if (trigger instanceof t.BoundDeferredTrigger) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(trigger.value, this.path);
+      this.visitExpression(trigger.value);
     }
   }
 
   visitSwitchBlock(block: t.SwitchBlock) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(block.expression, this.path);
+    this.visitExpression(block.expression);
     this.visitAll(block.cases);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase) {
-    if (block.expression !== null) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(block.expression, this.path);
-    }
+    block.expression && this.visitExpression(block.expression);
+    this.visitAll(block.children);
+  }
+
+  visitForLoopBlock(block: t.ForLoopBlock) {
+    this.visitExpression(block.expression);
+    this.visitAll(block.children);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty) {
     this.visitAll(block.children);
   }
 
@@ -518,6 +520,11 @@ class TemplateTargetVisitor implements t.Visitor {
     for (const node of nodes) {
       this.visit(node);
     }
+  }
+
+  private visitExpression(expression: e.AST) {
+    const visitor = new ExpressionVisitor(this.position);
+    visitor.visit(expression, this.path);
   }
 }
 
