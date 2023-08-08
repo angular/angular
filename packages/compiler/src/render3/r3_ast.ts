@@ -257,6 +257,29 @@ export class SwitchBlockCase implements Node {
   }
 }
 
+export class ForLoopBlock implements Node {
+  constructor(
+      public itemName: string, public expression: AST,
+      // TODO(crisbeto): figure out if trackBy should be an AST
+      public trackBy: string, public children: Node[], public empty: ForLoopBlockEmpty|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitForLoopBlock(this);
+  }
+}
+
+export class ForLoopBlockEmpty implements Node {
+  constructor(
+      public children: Node[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitForLoopBlockEmpty(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
       // tagName is the name of the container element, if applicable.
@@ -343,6 +366,8 @@ export interface Visitor<Result = any> {
   visitDeferredTrigger(trigger: DeferredTrigger): Result;
   visitSwitchBlock(block: SwitchBlock): Result;
   visitSwitchBlockCase(block: SwitchBlockCase): Result;
+  visitForLoopBlock(block: ForLoopBlock): Result;
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -377,6 +402,13 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.cases);
   }
   visitSwitchBlockCase(block: SwitchBlockCase): void {
+    visitAll(this, block.children);
+  }
+  visitForLoopBlock(block: ForLoopBlock): void {
+    visitAll(this, block.children);
+    block.empty?.visit(this);
+  }
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
     visitAll(this, block.children);
   }
   visitContent(content: Content): void {}

@@ -1128,6 +1128,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // TODO: implement control flow instructions
   visitSwitchBlock(block: t.SwitchBlock): void {}
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {}
+  visitForLoopBlock(block: t.ForLoopBlock): void {}
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {}
 
   private allocateDataSlot() {
     return this._dataIndex++;

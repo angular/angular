@@ -104,6 +104,17 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    this.result.push(['ForLoopBlock', unparse(block.expression), block.trackBy]);
+    this.visitAll([block.children]);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
+    this.result.push(['ForLoopBlockEmpty']);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.result.push(['BoundDeferredTrigger', unparse(trigger.value)]);
@@ -1327,6 +1338,159 @@ describe('R3 template transform', () => {
             {:default bar} bar
           {/switch}
         `).toThrowError(/Default block cannot have parameters/);
+      });
+    });
+  });
+
+  describe('for loop blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectLoop(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['for']}).nodes);
+    }
+
+    function expectLoopError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['for']}));
+    }
+
+    it('should parse a for loop block', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track item.id}
+          {{ item }}
+        {:empty}
+          There were no items in the list.
+        {/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', ' {{ item }} '],
+        ['ForLoopBlockEmpty'],
+        ['Text', ' There were no items in the list. '],
+      ]);
+    });
+
+    it('should parse a for loop block with optional parentheses', () => {
+      expectLoop(`
+        {#for (item of items.foo.bar); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+
+      expectLoop(`
+        {#for (item of items.foo.bar()); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+
+      expectLoop(`
+        {#for (   ( (item of items.foo.bar()) )   ); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+    });
+
+    it('should parse nested for loop blocks', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track item.id}
+          {{ item }}
+
+          <div>
+            {#for subitem of item.items; track subitem.id}<h1>{{subitem}}</h1>{/for}
+          </div>
+        {:empty}
+          There were no items in the list.
+        {/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', ' {{ item }} '],
+        ['Element', 'div'],
+        ['ForLoopBlock', 'item.items', 'subitem.id'],
+        ['Element', 'h1'],
+        ['BoundText', '{{ subitem }}'],
+        ['ForLoopBlockEmpty'],
+        ['Text', ' There were no items in the list. '],
+      ]);
+    });
+
+    it('should parse a for loop block with a function call in the `track` expression', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track trackBy(item.id, 123)}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'trackBy(item.id, 123)'],
+        ['BoundText', '{{ item }}'],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report if for loop does not have an expression', () => {
+        expectLoopError(`{#for}hello{/for}`).toThrowError(/For loop does not have an expression/);
+      });
+
+      it('should report if for loop does not have a tracking expression', () => {
+        expectLoopError(`{#for a of b}hello{/for}`)
+            .toThrowError(/For loop must have a "track" expression/);
+      });
+
+      it('should report mismatching optional parentheses around for loop expression', () => {
+        expectLoopError(`{#for (a of b; track c}hello{/for}`)
+            .toThrowError(/Unclosed parentheses in expression/);
+        expectLoopError(`{#for (a of b(); track c}hello{/for}`)
+            .toThrowError(/Unexpected end of expression: b\(/);
+        expectLoopError(`{#for a of b); track c}hello{/for}`)
+            .toThrowError(/Parser Error: Unexpected token '\)'/);
+      });
+
+      it('should report unrecognized for loop parameters', () => {
+        expectLoopError(`{#for a of b; foo bar}hello{/for}`)
+            .toThrowError(/Unrecognized loop paramater "foo bar"/);
+      });
+
+      it('should report multiple `track` parameters', () => {
+        expectLoopError(`{#for a of b; track c; track d}hello{/for}`)
+            .toThrowError(/For loop can only have one "track" expression/);
+      });
+
+      it('should report invalid for loop expression', () => {
+        const errorPattern =
+            /Cannot parse expression\. For loop expression must match the pattern "<identifier> of <expression>"/;
+
+        expectLoopError(`{#for //invalid of items}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item in items}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item of    }hello{/for}`).toThrowError(errorPattern);
+      });
+
+      it('should report syntax error in for loop expression', () => {
+        expectLoopError(`{#for item of items..foo}hello{/for}`).toThrowError(/Unexpected token \./);
+      });
+
+      it('should report for loop with multiple `empty` blocks', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:empty} Empty one
+            {:empty} Empty two
+          {/for}
+        `).toThrowError(/For loop can only have one "empty" block/);
+      });
+
+      it('should report empty block with parameters', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:empty foo} empty
+          {/for}
+        `).toThrowError(/Empty block cannot have parameters/);
+      });
+
+      it('should report unrecognized loop blocks', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:unknown} unknown
+          {/for}
+        `).toThrowError(/Unrecognized loop block "unknown"/);
       });
     });
   });

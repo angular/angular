@@ -127,6 +127,21 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    this.result.push([
+      'ForLoopBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
+    this.result.push(
+        ['ForLoopBlockEmpty', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     let name: string;
 
@@ -659,6 +674,28 @@ describe('R3 AST source spans', () => {
         ['Text', 'Z case'],
         ['SwitchBlockCase', '{:default} No case matched', '{:default}'],
         ['Text', 'No case matched'],
+      ]);
+    });
+  });
+
+  describe('for loop blocks', () => {
+    it('is correct for loop blocks', () => {
+      const html = `{#for item of items.foo.bar; track item.id}` +
+          `<h1>{{ item }}</h1>` +
+          `{:empty}` +
+          `There were no items in the list.` +
+          `{/for}`;
+
+      expectFromHtml(html, ['for']).toEqual([
+        [
+          'ForLoopBlock',
+          '{#for item of items.foo.bar; track item.id}<h1>{{ item }}</h1>{:empty}There were no items in the list.{/for}',
+          '{#for item of items.foo.bar; track item.id}', '{/for}'
+        ],
+        ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
+        ['BoundText', '{{ item }}'],
+        ['ForLoopBlockEmpty', '{:empty}There were no items in the list.', '{:empty}'],
+        ['Text', 'There were no items in the list.'],
       ]);
     });
   });

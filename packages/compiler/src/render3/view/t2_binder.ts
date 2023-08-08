@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, Icu, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, Icu, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -161,6 +161,15 @@ class Scope implements Visitor {
   }
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
+    block.children.forEach(node => node.visit(this));
+  }
+
+  visitForLoopBlock(block: ForLoopBlock) {
+    block.children.forEach(node => node.visit(this));
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
     block.children.forEach(node => node.visit(this));
   }
 
@@ -375,6 +384,15 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     block.children.forEach(node => node.visit(this));
   }
 
+  visitForLoopBlock(block: ForLoopBlock) {
+    block.children.forEach(node => node.visit(this));
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+    block.children.forEach(node => node.visit(this));
+  }
+
   // Unused visitors.
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
@@ -572,6 +590,16 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
     block.expression?.visit(this);
+    block.children.forEach(this.visitNode);
+  }
+
+  visitForLoopBlock(block: ForLoopBlock) {
+    block.expression.visit(this);
+    block.children.forEach(this.visitNode);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
     block.children.forEach(this.visitNode);
   }
 
