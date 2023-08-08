@@ -1,4 +1,12 @@
 {
+  "gentleman_programming": {
+    "name": "Alan Buscaglia",
+    "picture": "alan-buscaglia.jpg",
+    "twitter": "G_Programming",
+    "website": "https://www.linktr.ee/gentlemanprogramming",
+    "bio": "Meet Alan Buscaglia, an esteemed Google Developer Expert in Angular hailing from Argentina. As a dedicated software engineer and instructor, Alan is the visionary behind the thriving Gentleman Programming community. With an expansive YouTube channel boasting more than 300 videos covering a diverse array of programming topics, such as Architectures, Angular, Typescript and JavaScript, Alan has established himself as a trusted source of knowledge. Alan's instructional videos stand out for their remarkable clarity, conciseness, and user-friendly approach. Beyond imparting technical wisdom, he effortlessly weaves in humor and personal anecdotes, transforming his lessons into captivating experiences.",
+    "groups": ["GDE"]
+  },
   "achautard": {
     "name": "Alain Chautard",
     "picture": "alainchautard.png",
