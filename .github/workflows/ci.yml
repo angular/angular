@@ -105,7 +105,7 @@ jobs:
         run: yarn install --frozen-lockfile --network-timeout 100000
       - name: Run CI tests for framework
         run: yarn test:ci
-  
+
   aio:
     runs-on: ubuntu-latest-4core
     steps:
@@ -114,14 +114,11 @@ jobs:
         with:
           cache-node-modules: true
           node-module-directories: |
-            ./node_modules
             ./aio/node_modules
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
       - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Run AIO tests with upstream packages
@@ -138,15 +135,12 @@ jobs:
         with:
           cache-node-modules: true
           node-module-directories: |
-            ./node_modules
             ./aio/node_modules
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Install node modules
-        run: yarn install --frozen-lockfile
-      - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Run AIO tests with local packages
         run: yarn --cwd aio test-local:ci
@@ -154,6 +148,8 @@ jobs:
         run: yarn --cwd aio payload-size aio-local
 
   aio-deploy:
+    needs: [aio]
+    if: needs.aio.result == success() && github.event_name == 'push'
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -162,14 +158,11 @@ jobs:
         with:
           cache-node-modules: true
           node-module-directories: |
-            ./node_modules
             ./aio/node_modules
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@45de46d9ba0e0689b7a846fd31ec9e241807ca71
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
       - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Set the stable branch environment variable
