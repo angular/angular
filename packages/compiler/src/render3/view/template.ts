@@ -886,37 +886,28 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-
-  visitTemplate(template: t.Template) {
-    const NG_TEMPLATE_TAG_NAME = 'ng-template';
+  private createEmbeddedTemplateFn(
+      tagName: string|null, children: t.Node[], contextNameSuffix: string,
+      sourceSpan: ParseSourceSpan, variables: t.Variable[] = [], attrsExprs?: o.Expression[],
+      references?: t.Reference[], i18n?: i18n.I18nMeta): number {
     const templateIndex = this.allocateDataSlot();
 
-    if (this.i18n) {
-      this.i18n.appendTemplate(template.i18n!, templateIndex);
+    if (this.i18n && i18n) {
+      this.i18n.appendTemplate(i18n, templateIndex);
     }
 
-    const tagNameWithoutNamespace =
-        template.tagName ? splitNsName(template.tagName)[1] : template.tagName;
-    const contextName = `${this.contextName}${
-        template.tagName ? '_' + sanitizeIdentifier(template.tagName) : ''}_${templateIndex}`;
+    const contextName = `${this.contextName}${contextNameSuffix}_${templateIndex}`;
     const templateName = `${contextName}_Template`;
     const parameters: o.Expression[] = [
       o.literal(templateIndex),
       o.variable(templateName),
-      // We don't care about the tag's namespace here, because we infer
-      // it based on the parent nodes inside the template instruction.
-      o.literal(tagNameWithoutNamespace),
+      o.literal(tagName),
+      this.addAttrsToConsts(attrsExprs || null),
     ];
 
-    // prepare attributes parameter (including attributes used for directive matching)
-    const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        NG_TEMPLATE_TAG_NAME, template.attributes, template.inputs, template.outputs,
-        undefined /* styles */, template.templateAttrs);
-    parameters.push(this.addAttrsToConsts(attrsExprs));
-
     // local refs (ex.: <ng-template #foo>)
-    if (template.references && template.references.length) {
-      const refs = this.prepareRefsArray(template.references);
+    if (references && references.length > 0) {
+      const refs = this.prepareRefsArray(references);
       parameters.push(this.addToConsts(refs));
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
@@ -933,8 +924,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // template definition. e.g. <div *ngIf="showing">{{ foo }}</div>  <div #foo></div>
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
-          template.children, template.variables,
-          this._ngContentReservedSlots.length + this._ngContentSelectorsOffset, template.i18n);
+          children, variables, this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
+          i18n);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName));
       if (templateVisitor._ngContentReservedSlots.length) {
         this._ngContentReservedSlots.push(...templateVisitor._ngContentReservedSlots);
@@ -942,12 +933,32 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // e.g. template(1, MyComp_Template_1)
-    this.creationInstruction(template.sourceSpan, R3.templateCreate, () => {
+    this.creationInstruction(sourceSpan, R3.templateCreate, () => {
       parameters.splice(
           2, 0, o.literal(templateVisitor.getConstCount()),
           o.literal(templateVisitor.getVarCount()));
       return trimTrailingNulls(parameters);
     });
+
+    return templateIndex;
+  }
+
+  visitTemplate(template: t.Template) {
+    // We don't care about the tag's namespace here, because we infer
+    // it based on the parent nodes inside the template instruction.
+    const tagNameWithoutNamespace =
+        template.tagName ? splitNsName(template.tagName)[1] : template.tagName;
+    const contextNameSuffix = template.tagName ? '_' + sanitizeIdentifier(template.tagName) : '';
+    const NG_TEMPLATE_TAG_NAME = 'ng-template';
+
+    // prepare attributes parameter (including attributes used for directive matching)
+    const attrsExprs: o.Expression[] = this.getAttributeExpressions(
+        NG_TEMPLATE_TAG_NAME, template.attributes, template.inputs, template.outputs,
+        undefined /* styles */, template.templateAttrs);
+
+    const templateIndex = this.createEmbeddedTemplateFn(
+        tagNameWithoutNamespace, template.children, contextNameSuffix, template.sourceSpan,
+        template.variables, attrsExprs, template.references, template.i18n);
 
     // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
     this.templatePropertyBindings(templateIndex, template.templateAttrs);
@@ -1074,7 +1085,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const templateIndex = this.allocateDataSlot();
+    const templateIndex =
+        this.createEmbeddedTemplateFn(null, deferred.children, '_Defer', deferred.sourceSpan);
     const deferredDeps = this.deferBlocks.get(deferred);
 
     const contextName = `${this.contextName}_Defer_${templateIndex}`;
@@ -1446,8 +1458,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return o.literal(consts.push(expression) - 1);
   }
 
-  private addAttrsToConsts(attrs: o.Expression[]): o.LiteralExpr {
-    return attrs.length > 0 ? this.addToConsts(o.literalArr(attrs)) : o.TYPED_NULL_EXPR;
+  private addAttrsToConsts(attrs: o.Expression[]|null): o.LiteralExpr {
+    return attrs !== null && attrs.length > 0 ? this.addToConsts(o.literalArr(attrs)) :
+                                                o.TYPED_NULL_EXPR;
   }
 
   private prepareRefsArray(references: t.Reference[]): o.Expression {
