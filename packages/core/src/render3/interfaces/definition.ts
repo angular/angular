@@ -517,21 +517,34 @@ export type PipeTypeList =
 export const unusedValueExportToPlacateAjd = 1;
 
 /**
- * NgModule scope info as provided by NgModule decorator.
+ * NgModule scope info as provided by AoT compiler
+ *
+ * In full compilation Ivy resolved all the "module with providers" and forward refs the whole array
+ * if at least one element is forward refed. So we end up with type `Type<any>[]|(() =>
+ * Type<any>[])`.
+ *
+ * In local mode the compiler passes the raw info as they are to the runtime functions as it is not
+ * possible to resolve them any further due to limited info at compile time. So we end up with type
+ * `RawScopeInfoFromDecorator[]`.
  */
 export interface NgModuleScopeInfoFromDecorator {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[]|(() => Type<any>[]);
+  declarations?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[]|(() => Type<any>[]);
+  /** List of modules or `ModuleWithProviders` or standalone components imported by this module. */
+  imports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports?: Type<any>[]|(() => Type<any>[]);
+  exports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 }
 
+/**
+ * The array element type passed to:
+ *  - NgModule's annotation imports/exports/declarations fields
+ *  - standalone component annotation imports field
+ */
 export type RawScopeInfoFromDecorator =
     Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);
