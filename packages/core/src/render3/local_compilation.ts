@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-
-import {DependencyTypeList, RawScopeInfoFromDecorator} from './interfaces/definition';
+import {depsTracker} from './deps_tracker/deps_tracker';
+import {ComponentType, DependencyTypeList, RawScopeInfoFromDecorator} from './interfaces/definition';
 
 export function ɵɵgetComponentDepsFactory(
-    type: Type<any>, rawImports?: RawScopeInfoFromDecorator): () => DependencyTypeList {
-  // TODO(pmvald): Implement this runtime using deps tracker.
-  return () => [];
+    type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]): () => DependencyTypeList {
+  return () => {
+    return depsTracker.getComponentDependencies(type, rawImports).dependencies;
+  };
 }
