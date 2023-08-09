@@ -986,18 +986,9 @@ describe('runtime dependency tracker', () => {
         class MainComponent {
         }
 
-        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, []);
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
         expect(ans.dependencies).toEqual([MainComponent]);
-      });
-
-      it('should throw if no import is provided', () => {
-        @Component({standalone: true})
-        class MainComponent {
-        }
-
-        expect(() => depsTracker.getComponentDependencies(MainComponent as ComponentType<any>))
-            .toThrow();
       });
 
       it('should include imported standalone component/directive/pipe', () => {
