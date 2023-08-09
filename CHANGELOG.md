@@ -1,20 +1,38 @@
-<a name="16.1.9"></a>
-# 16.1.9 (2023-08-09)
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.2.0-rc.0"></a>
-# 16.2.0-rc.0 (2023-08-02)
+<a name="16.2.0"></a>
+# 16.2.0 (2023-08-09)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd850b2ab7](https://github.com/angular/angular/commit/dd850b2ab781f24065550f8a948ced498e0f1e99) | fix | correctly report GC memory amounts ([#50760](https://github.com/angular/angular/pull/50760)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29d358170b](https://github.com/angular/angular/commit/29d358170b046f4a6773dfdfbbd1050f54deb301) | feat | add component input binding support for NgComponentOutlet ([#51148](https://github.com/angular/angular/pull/51148)) |
+| [1837efb9da](https://github.com/angular/angular/commit/1837efb9daf5c8e86a99a06ecc77bb42bc60dbb0) | feat | Allow ngSrc to be changed post-init ([#50683](https://github.com/angular/angular/pull/50683)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
-| [6755f5354c](https://github.com/angular/angular/commit/6755f5354c7657ecb6f2643450dd2572b114a895) | fix | return full spans for Comment nodes ([#50855](https://github.com/angular/angular/pull/50855)) |
+| [c27a1e61d6](https://github.com/angular/angular/commit/c27a1e61d64a67aa169086f7db11bcfd5bb7d2fc) | feat | scope selectors in @scope queries ([#50747](https://github.com/angular/angular/pull/50747)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [12bad6576d](https://github.com/angular/angular/commit/12bad6576d2ffe4667118b214d9c7598ed3d8edb) | fix | libraries compiled with v16.1+ breaking with Angular framework v16.0.x ([#50714](https://github.com/angular/angular/pull/50714)) |
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
 | [e53d4ecf4c](https://github.com/angular/angular/commit/e53d4ecf4cfd9e64d6ba8c8b19adbb7df9cfc047) | feat | add afterRender and afterNextRender ([#50607](https://github.com/angular/angular/pull/50607)) |
 | [98d262fd27](https://github.com/angular/angular/commit/98d262fd27795014ee3988b08d3c48a0dfb63c40) | feat | create injector debugging APIs ([#48639](https://github.com/angular/angular/pull/48639)) |
 | [cdaa2a8a9e](https://github.com/angular/angular/commit/cdaa2a8a9eab490b55bbb841ede4f54a2656df30) | feat | support Provider type in Injector.create ([#49587](https://github.com/angular/angular/pull/49587)) |
+| [9f490da7e2](https://github.com/angular/angular/commit/9f490da7e27e495cb45d2064af9091731422a6b1) | fix | handle hydration of view containers for root components ([#51247](https://github.com/angular/angular/pull/51247)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0b14e4ef74](https://github.com/angular/angular/commit/0b14e4ef742b1c0f73d873e2c337683b60f46845) | feat | exposes the `fixture` of the `RouterTestingHarness` ([#50280](https://github.com/angular/angular/pull/50280)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.1.9"></a>
+# 16.1.9 (2023-08-09)
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -27,19 +45,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="16.2.0-next.4"></a>
-# 16.2.0-next.4 (2023-07-26)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [29d358170b](https://github.com/angular/angular/commit/29d358170b046f4a6773dfdfbbd1050f54deb301) | feat | add component input binding support for NgComponentOutlet ([#51148](https://github.com/angular/angular/pull/51148)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [57e8412e53](https://github.com/angular/angular/commit/57e8412e53229b0671df02c55be52e88b66a6865) | fix | check whether `Zone` is defined ([#51119](https://github.com/angular/angular/pull/51119)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="16.1.7"></a>
 # 16.1.7 (2023-07-26)
 ### http
@@ -49,53 +54,12 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="16.2.0-next.3"></a>
-# 16.2.0-next.3 (2023-07-19)
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c5608e5ca9](https://github.com/angular/angular/commit/c5608e5ca99805af1a3a7caf4ce28a35f3a13ebf) | fix | Run fetch request out the angular zone ([#50981](https://github.com/angular/angular/pull/50981)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="16.1.6"></a>
 # 16.1.6 (2023-07-19)
 ### http
 | Commit | Type | Description |
 | -- | -- | -- |
 | [dea8dc0378](https://github.com/angular/angular/commit/dea8dc0378c5b777b1879f22189fe32cbe61b36b) | fix | Run fetch request out the angular zone ([#50981](https://github.com/angular/angular/pull/50981)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.2.0-next.2"></a>
-# 16.2.0-next.2 (2023-07-13)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a14bdfe859](https://github.com/angular/angular/commit/a14bdfe8591a33d359bf4940f4efa828499a6373) | fix | Ensure elements are removed from the cache after leave animation. ([#50929](https://github.com/angular/angular/pull/50929)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1837efb9da](https://github.com/angular/angular/commit/1837efb9daf5c8e86a99a06ecc77bb42bc60dbb0) | feat | Allow ngSrc to be changed post-init ([#50683](https://github.com/angular/angular/pull/50683)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c27a1e61d6](https://github.com/angular/angular/commit/c27a1e61d64a67aa169086f7db11bcfd5bb7d2fc) | feat | scope selectors in @scope queries ([#50747](https://github.com/angular/angular/pull/50747)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [031b599a55](https://github.com/angular/angular/commit/031b599a5528e1df5779695eb75b738a5a3076fe) | fix | ensure that standalone components get correct injector instances ([#50954](https://github.com/angular/angular/pull/50954)) |
-| [5d6ec0336b](https://github.com/angular/angular/commit/5d6ec0336bdea22735d0ca2bbd7cfad958efbdda) | fix | handle `deref` returning `null` on `RefactiveNode`. ([#50992](https://github.com/angular/angular/pull/50992)) |
-| [b66a16ec4c](https://github.com/angular/angular/commit/b66a16ec4cf42f47efeafa711ec301efeda272be) | fix | use `setTimeout` when coalescing tasks in Node.js ([#50820](https://github.com/angular/angular/pull/50820)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f1b629961f](https://github.com/angular/angular/commit/f1b629961f75d535982a6196e70b82f177587ebf) | perf | do not remove renderer from cache when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is enabled. ([#51005](https://github.com/angular/angular/pull/51005)) |
-### upgrade
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a19a87df6c](https://github.com/angular/angular/commit/a19a87df6c30a60ca997083b979a8e1e185e5b43) | fix | allow for downgraded components to work with component-router ([#50871](https://github.com/angular/angular/pull/50871)) |
-| [253d756464](https://github.com/angular/angular/commit/253d7564647607804d45404152d1253993177aea) | fix | Use `takeUntil` on leaky subscription. ([#50901](https://github.com/angular/angular/pull/50901)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -134,28 +98,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="16.2.0-next.1"></a>
-# 16.2.0-next.1 (2023-06-28)
-### benchpress
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dd850b2ab7](https://github.com/angular/angular/commit/dd850b2ab781f24065550f8a948ced498e0f1e99) | fix | correctly report GC memory amounts ([#50760](https://github.com/angular/angular/pull/50760)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [29340a0678](https://github.com/angular/angular/commit/29340a06789652e359e61b32f1814dcd20d9bd26) | fix | expose input transform function on ComponentFactory and ComponentMirror ([#50713](https://github.com/angular/angular/pull/50713)) |
-### elements
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d64864e95e](https://github.com/angular/angular/commit/d64864e95e193e46180aeaf0d634152327650871) | fix | support input transform functions ([#50713](https://github.com/angular/angular/pull/50713)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2b55103e94](https://github.com/angular/angular/commit/2b55103e94578ab1cb765147077e82e1228b0dbb) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
-| [0380564f85](https://github.com/angular/angular/commit/0380564f8562f5971cff671319439ad0f2b40a7e) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="16.1.3"></a>
 # 16.1.3 (2023-06-28)
 ### core
@@ -171,19 +113,6 @@
 | -- | -- | -- |
 | [79dd6a847a](https://github.com/angular/angular/commit/79dd6a847a742ccf69597b122026758ad2b0b629) | fix | wait until animation completion before destroying renderer ([#50677](https://github.com/angular/angular/pull/50677)) |
 | [a797f41d1b](https://github.com/angular/angular/commit/a797f41d1bcf11945673ef6d0474f33ad4614602) | fix | wait until animation completion before destroying renderer ([#50860](https://github.com/angular/angular/pull/50860)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.2.0-next.0"></a>
-# 16.2.0-next.0 (2023-06-21)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [12bad6576d](https://github.com/angular/angular/commit/12bad6576d2ffe4667118b214d9c7598ed3d8edb) | fix | libraries compiled with v16.1+ breaking with Angular framework v16.0.x ([#50714](https://github.com/angular/angular/pull/50714)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0b14e4ef74](https://github.com/angular/angular/commit/0b14e4ef742b1c0f73d873e2c337683b60f46845) | feat | exposes the `fixture` of the `RouterTestingHarness` ([#50280](https://github.com/angular/angular/pull/50280)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
