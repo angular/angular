@@ -109,11 +109,6 @@ export class TestBedCompiler {
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
 
-  // List of Promises that represent async process to set Component metadata,
-  // in case those components use `{#defer}` blocks inside.
-  // private componentsWithAsyncMetadata: Array<Promise<Array<Type<unknown>>>> = [];
-  private componentsWithAsyncMetadata = new Set<Type<unknown>>();
-
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
     this.testModuleType = DynamicTestModule as any;
@@ -261,35 +256,35 @@ export class TestBedCompiler {
     this.componentToModuleScope.set(type, TestingModuleOverride.OVERRIDE_TEMPLATE);
   }
 
-  private async resolveComponentsWithAsyncMetadata() {
-    if (this.componentsWithAsyncMetadata.size === 0) return;
+  private async resolvePendingComponentsWithAsyncMetadata() {
+    if (this.pendingComponents.size === 0) return;
 
     const promises = [];
-    for (const component of this.componentsWithAsyncMetadata) {
+    for (const component of this.pendingComponents) {
       const asyncMetadataPromise = getAsyncClassMetadata(component);
       if (asyncMetadataPromise) {
         promises.push(asyncMetadataPromise);
       }
     }
-    this.componentsWithAsyncMetadata.clear();
 
     const resolvedDeps = await Promise.all(promises);
     this.queueTypesFromModulesArray(resolvedDeps.flat(2));
-
-    // If we've got more types with async metadata queued,
-    // recursively process such components again.
-    if (this.componentsWithAsyncMetadata.size > 0) {
-      await this.resolveComponentsWithAsyncMetadata();
-    }
   }
 
   async compileComponents(): Promise<void> {
     this.clearComponentResolutionQueue();
 
-    // Wait for all async metadata for all components.
-    if (this.componentsWithAsyncMetadata.size > 0) {
-      await this.resolveComponentsWithAsyncMetadata();
-    }
+    // Wait for all async metadata for components that were
+    // overridden, we need resolved metadata to perform an override
+    // and re-compile a component.
+    await this.resolvePendingComponentsWithAsyncMetadata();
+
+    // Verify that there were no standalone components present in the `declarations` field
+    // during the `TestBed.configureTestingModule` call. We perform this check here in addition
+    // to the logic in the `configureTestingModule` function, since at this point we have
+    // all async metadata resolved.
+    assertNoStandaloneComponents(
+        this.declarations, this.resolvers.component, '"TestBed.configureTestingModule" call');
 
     // Run compilers for all queued types.
     let needsAsyncResources = this.compileTypesSync();
@@ -641,8 +636,6 @@ export class TestBedCompiler {
       for (const value of arr) {
         if (Array.isArray(value)) {
           queueTypesFromModulesArrayRecur(value);
-        } else if (getAsyncClassMetadata(value)) {
-          this.componentsWithAsyncMetadata.add(value);
         } else if (hasNgModuleDef(value)) {
           const def = value.ɵmod;
           if (processedDefs.has(def)) {
