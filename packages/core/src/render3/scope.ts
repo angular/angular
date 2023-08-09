@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
 
 import {extractDefListOrFactory, getNgModuleDef} from './definition';
-import {ComponentDef, ComponentType, NgModuleScopeInfoFromDecorator} from './interfaces/definition';
+import {depsTracker} from './deps_tracker/deps_tracker';
+import {ComponentDef, ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from './interfaces/definition';
+import {isModuleWithProviders} from './jit/util';
 
 /**
  * Generated next to NgModules to monkey-patch directive and pipe references onto a component's
@@ -43,8 +46,27 @@ export function ɵɵsetComponentScope(
 export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDecorator): unknown {
   return noSideEffects(() => {
     const ngModuleDef = getNgModuleDef(type, true);
-    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+    ngModuleDef.declarations = convertToTypeArray(scope.declarations || EMPTY_ARRAY);
+    ngModuleDef.imports = convertToTypeArray(scope.imports || EMPTY_ARRAY);
+    ngModuleDef.exports = convertToTypeArray(scope.exports || EMPTY_ARRAY);
+
+    depsTracker.registerNgModule(type, scope);
   });
+}
+
+function convertToTypeArray(values: Type<any>[]|(() => Type<any>[])|
+                            RawScopeInfoFromDecorator[]): Type<any>[]|(() => Type<any>[]) {
+  if (typeof values === 'function') {
+    return values;
+  }
+
+  if (values.some(isForwardRef)) {
+    return () => values.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
+  } else {
+    return values.map(maybeUnwrapModuleWithProviders);
+  }
+}
+
+function maybeUnwrapModuleWithProviders(value: any): Type<any> {
+  return isModuleWithProviders(value) ? value.ngModule : value as Type<any>;
 }
