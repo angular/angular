@@ -70,3 +70,17 @@ class NodeInjectorDestroyRef extends DestroyRef {
 function injectDestroyRef(): DestroyRef {
   return new NodeInjectorDestroyRef(getLView());
 }
+
+/**
+ * Destroy implementation where the destroy callback will be called explicitly by calling destroyFn.
+ */
+export class CallableDestroyRef extends DestroyRef {
+  destroyFn: (() => unknown)|undefined;
+
+  override onDestroy(callback: () => void): () => void {
+    this.destroyFn = callback;
+    return () => {
+      this.destroyFn = undefined;
+    };
+  }
+}
