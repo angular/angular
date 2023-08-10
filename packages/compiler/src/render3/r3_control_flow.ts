@@ -19,6 +19,51 @@ const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+(.*)/;
 /** Pattern for the tracking expression in a for loop block. */
 const FOR_LOOP_TRACK_PATTERN = /^track\s+(.*)/;
 
+/** Pattern for the `as` expression in a conditional block. */
+const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
+
+/** Pattern used to identify an `else if` block. */
+const ELSE_IF_PATTERN = /^if\s/;
+
+/** Creates an `if` loop block from an HTML AST node. */
+export function createIfBlock(
+    ast: html.BlockGroup, visitor: html.Visitor,
+    bindingParser: BindingParser): {node: t.IfBlock|null, errors: ParseError[]} {
+  const errors: ParseError[] = validateIfBlock(ast);
+  const branches: t.IfBlockBranch[] = [];
+
+  if (errors.length > 0) {
+    return {node: null, errors};
+  }
+
+  // Assumes that the structure is valid since we validated it above.
+  for (const block of ast.blocks) {
+    const children = html.visitAll(visitor, block.children);
+
+    // `{:else}` block.
+    if (block.name === 'else' && block.parameters.length === 0) {
+      branches.push(
+          new t.IfBlockBranch(null, children, null, block.sourceSpan, block.startSourceSpan));
+      continue;
+    }
+
+    // Expressions for `{:else if}` blocks start at 2 to skip the `if` from the expression.
+    const expressionStart = block.name === 'if' ? 0 : 2;
+    const params = parseConditionalBlockParameters(block, errors, bindingParser, expressionStart);
+
+    if (params !== null) {
+      branches.push(new t.IfBlockBranch(
+          params.expression, children, params.expressionAlias, block.sourceSpan,
+          block.startSourceSpan));
+    }
+  }
+
+  return {
+    node: new t.IfBlock(branches, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan),
+    errors,
+  };
+}
+
 /** Creates a `for` loop block from an HTML AST node. */
 export function createForLoop(
     ast: html.BlockGroup, visitor: html.Visitor,
@@ -153,6 +198,45 @@ function parseForLoopParameters(
   return result;
 }
 
+/** Checks that the shape of a `if` block is valid. Returns an array of errors. */
+function validateIfBlock(ast: html.BlockGroup): ParseError[] {
+  const errors: ParseError[] = [];
+  let hasElse = false;
+
+  for (let i = 0; i < ast.blocks.length; i++) {
+    const block = ast.blocks[i];
+
+    // Conditional blocks only allow `if`, `else if` and `else` blocks.
+    if ((block.name !== 'if' || i > 0) && block.name !== 'else') {
+      errors.push(
+          new ParseError(block.sourceSpan, `Unrecognized conditional block "${block.name}"`));
+      continue;
+    }
+
+    if (block.name === 'if') {
+      continue;
+    }
+
+    if (block.parameters.length === 0) {
+      if (hasElse) {
+        errors.push(new ParseError(block.sourceSpan, 'Conditional can only have one "else" block'));
+      } else if (ast.blocks.length > 1 && i < ast.blocks.length - 1) {
+        errors.push(
+            new ParseError(block.sourceSpan, 'Else block must be last inside the conditional'));
+      }
+      hasElse = true;
+
+      // `else if` is an edge case, because it has a space after the block name
+      // which means that the `if` is captured as a part of the parameters.
+    } else if (
+        block.parameters.length > 0 && !ELSE_IF_PATTERN.test(block.parameters[0].expression)) {
+      errors.push(new ParseError(block.sourceSpan, 'Else block cannot have parameters'));
+    }
+  }
+
+  return errors;
+}
+
 /** Checks that the shape of a `switch` block is valid. Returns an array of errors. */
 function validateSwitchBlock(ast: html.BlockGroup): ParseError[] {
   const [primaryBlock, ...secondaryBlocks] = ast.blocks;
@@ -193,9 +277,43 @@ function validateSwitchBlock(ast: html.BlockGroup): ParseError[] {
 
 /** Parses a block parameter into a binding AST. */
 function parseBlockParameterToBinding(
-    ast: html.BlockParameter, bindingParser: BindingParser): ASTWithSource {
+    ast: html.BlockParameter, bindingParser: BindingParser, start = 0): ASTWithSource {
   return bindingParser.parseBinding(
-      ast.expression, false, ast.sourceSpan, ast.sourceSpan.start.offset);
+      ast.expression.slice(start), false, ast.sourceSpan, ast.sourceSpan.start.offset + start);
+}
+
+/** Parses the parameter of a conditional block (`if` or `else if`). */
+function parseConditionalBlockParameters(
+    block: html.Block, errors: ParseError[], bindingParser: BindingParser,
+    primaryExpressionStart: number) {
+  if (block.parameters.length === 0) {
+    errors.push(new ParseError(block.sourceSpan, 'Conditional block does not have an expression'));
+    return null;
+  }
+
+  const expression =
+      parseBlockParameterToBinding(block.parameters[0], bindingParser, primaryExpressionStart);
+  let expressionAlias: string|null = null;
+
+  // Start from 1 since we processed the first parameter already.
+  for (let i = 1; i < block.parameters.length; i++) {
+    const param = block.parameters[i];
+    const aliasMatch = param.expression.match(CONDITIONAL_ALIAS_PATTERN);
+
+    // For now conditionals can only have an `as` parameter.
+    // We may want to rework this later if we add more.
+    if (aliasMatch === null) {
+      errors.push(new ParseError(
+          param.sourceSpan, `Unrecognized conditional paramater "${param.expression}"`));
+    } else if (expressionAlias !== null) {
+      errors.push(
+          new ParseError(param.sourceSpan, 'Conditional can only have one "as" expression'));
+    } else {
+      expressionAlias = aliasMatch[1].trim();
+    }
+  }
+
+  return {expression, expressionAlias};
 }
 
 /** Strips optional parentheses around from a control from expression parameter. */

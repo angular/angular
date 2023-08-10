@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, Icu, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, Icu, IfBlock, IfBlockBranch, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -170,6 +170,14 @@ class Scope implements Visitor {
   }
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+    block.children.forEach(node => node.visit(this));
+  }
+
+  visitIfBlock(block: IfBlock) {
+    block.branches.forEach(node => node.visit(this));
+  }
+
+  visitIfBlockBranch(block: IfBlockBranch) {
     block.children.forEach(node => node.visit(this));
   }
 
@@ -393,6 +401,14 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     block.children.forEach(node => node.visit(this));
   }
 
+  visitIfBlock(block: IfBlock) {
+    block.branches.forEach(node => node.visit(this));
+  }
+
+  visitIfBlockBranch(block: IfBlockBranch) {
+    block.children.forEach(node => node.visit(this));
+  }
+
   // Unused visitors.
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
@@ -601,6 +617,15 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
     block.children.forEach(this.visitNode);
+  }
+
+  visitIfBlock(block: IfBlock) {
+    block.branches.forEach(node => node.visit(this));
+  }
+
+  visitIfBlockBranch(block: IfBlockBranch) {
+    block.expression?.visit(this);
+    block.children.forEach(node => node.visit(this));
   }
 
   visitBoundText(text: BoundText) {

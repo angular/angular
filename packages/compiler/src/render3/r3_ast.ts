@@ -280,6 +280,26 @@ export class ForLoopBlockEmpty implements Node {
   }
 }
 
+export class IfBlock implements Node {
+  constructor(
+      public branches: IfBlockBranch[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIfBlock(this);
+  }
+}
+
+export class IfBlockBranch implements Node {
+  constructor(
+      public expression: AST|null, public children: Node[], public expressionAlias: string|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIfBlockBranch(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
       // tagName is the name of the container element, if applicable.
@@ -368,6 +388,8 @@ export interface Visitor<Result = any> {
   visitSwitchBlockCase(block: SwitchBlockCase): Result;
   visitForLoopBlock(block: ForLoopBlock): Result;
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
+  visitIfBlock(block: IfBlock): Result;
+  visitIfBlockBranch(block: IfBlockBranch): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -409,6 +431,12 @@ export class RecursiveVisitor implements Visitor<void> {
     block.empty?.visit(this);
   }
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
+    visitAll(this, block.children);
+  }
+  visitIfBlock(block: IfBlock): void {
+    visitAll(this, block.branches);
+  }
+  visitIfBlockBranch(block: IfBlockBranch): void {
     visitAll(this, block.children);
   }
   visitContent(content: Content): void {}
