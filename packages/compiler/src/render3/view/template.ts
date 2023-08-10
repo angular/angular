@@ -997,6 +997,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitTextAttribute = invalid;
   readonly visitBoundAttribute = invalid;
   readonly visitBoundEvent = invalid;
+  readonly visitDeferredTrigger = invalid;
+  readonly visitDeferredBlockError = invalid;
+  readonly visitDeferredBlockLoading = invalid;
+  readonly visitDeferredBlockPlaceholder = invalid;
 
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {
@@ -1085,57 +1089,84 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const templateIndex =
+    const {loading, placeholder, error} = deferred;
+    const primaryTemplateIndex =
         this.createEmbeddedTemplateFn(null, deferred.children, '_Defer', deferred.sourceSpan);
-    const deferredDeps = this.deferBlocks.get(deferred);
+    const loadingIndex = loading ?
+        this.createEmbeddedTemplateFn(null, loading.children, '_DeferLoading', loading.sourceSpan) :
+        null;
+    const loadingConsts = loading ?
+        trimTrailingNulls([o.literal(loading.minimumTime), o.literal(loading.afterTime)]) :
+        null;
 
-    const contextName = `${this.contextName}_Defer_${templateIndex}`;
-    const depsFnName = `${contextName}_DepsFn`;
+    const placeholderIndex = placeholder ?
+        this.createEmbeddedTemplateFn(
+            null, placeholder.children, '_DeferPlaceholder', placeholder.sourceSpan) :
+        null;
+    const placeholderConsts = placeholder && placeholder.minimumTime !== null ?
+        // TODO(crisbeto): potentially pass the time directly instead of storing it in the `consts`
+        // since `{:placeholder}` can only have one parameter?
+        o.literalArr([o.literal(placeholder.minimumTime)]) :
+        null;
 
-    const parameters: o.Expression[] = [
-      o.literal(templateIndex),
-      deferredDeps ? o.variable(depsFnName) : o.TYPED_NULL_EXPR,
-    ];
+    const errorIndex = error ?
+        this.createEmbeddedTemplateFn(null, error.children, '_DeferError', error.sourceSpan) :
+        null;
 
-    if (deferredDeps) {
-      // This defer block has deps for which we need to generate dynamic imports.
-      const dependencyExp: o.Expression[] = [];
-      for (const deferredDep of deferredDeps) {
-        if (deferredDep.isDeferrable) {
-          // Callback function, e.g. `function(m) { return m.MyCmp; }`.
-          const innerFn = o.fn(
-              [new o.FnParam('m', o.DYNAMIC_TYPE)],
-              [new o.ReturnStatement(o.variable('m').prop(deferredDep.symbolName))]);
-
-          const fileName = deferredDep.importPath!;
-          // Dynamic import, e.g. `import('./a').then(...)`.
-          const importExpr = (new o.DynamicImportExpr(fileName)).prop('then').callFn([innerFn]);
-          dependencyExp.push(importExpr);
-        } else {
-          // Non-deferrable symbol, just use a reference to the type.
-          dependencyExp.push(deferredDep.type);
-        }
-      }
-
-      const depsFnBody: o.Statement[] = [];
-      depsFnBody.push(new o.ReturnStatement(o.literalArr(dependencyExp)));
-
-      const depsFnExpr = o.fn([] /* args */, depsFnBody, o.INFERRED_TYPE, null, depsFnName);
-
-      this.constantPool.statements.push(depsFnExpr.toDeclStmt(depsFnName));
-    }
+    // Note: we generate this last so the index matches the instruction order.
+    const deferredIndex = this.allocateDataSlot();
+    const depsFnName = `${this.contextName}_Defer_${deferredIndex}_DepsFn`;
 
     // e.g. `defer(1, MyComp_Defer_1_DepsFn, ...)`
-    this.creationInstruction(deferred.sourceSpan, R3.defer, () => {
-      return trimTrailingNulls(parameters);
-    });
+    this.creationInstruction(
+        deferred.sourceSpan, R3.defer, trimTrailingNulls([
+          o.literal(deferredIndex),
+          o.literal(primaryTemplateIndex),
+          this.createDeferredDepsFunction(depsFnName, deferred),
+          o.literal(loadingIndex),
+          o.literal(placeholderIndex),
+          o.literal(errorIndex),
+          loadingConsts?.length ? this.addToConsts(o.literalArr(loadingConsts)) : o.TYPED_NULL_EXPR,
+          placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
+        ]));
+
+    // TODO(crisbeto): generate trigger instructions
   }
 
-  // TODO: implement nested deferred block instructions.
-  visitDeferredTrigger(trigger: t.DeferredTrigger): void {}
-  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {}
-  visitDeferredBlockError(block: t.DeferredBlockError): void {}
-  visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {}
+  private createDeferredDepsFunction(name: string, deferred: t.DeferredBlock) {
+    const deferredDeps = this.deferBlocks.get(deferred);
+
+    if (!deferredDeps || deferredDeps.length === 0) {
+      return o.TYPED_NULL_EXPR;
+    }
+
+    // This defer block has deps for which we need to generate dynamic imports.
+    const dependencyExp: o.Expression[] = [];
+
+    for (const deferredDep of deferredDeps) {
+      if (deferredDep.isDeferrable) {
+        // Callback function, e.g. `function(m) { return m.MyCmp; }`.
+        const innerFn = o.fn(
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            [new o.ReturnStatement(o.variable('m').prop(deferredDep.symbolName))]);
+
+        // Dynamic import, e.g. `import('./a').then(...)`.
+        const importExpr =
+            (new o.DynamicImportExpr(deferredDep.importPath!)).prop('then').callFn([innerFn]);
+        dependencyExp.push(importExpr);
+      } else {
+        // Non-deferrable symbol, just use a reference to the type.
+        dependencyExp.push(deferredDep.type);
+      }
+    }
+
+    const depsFnExpr =
+        o.fn([], [new o.ReturnStatement(o.literalArr(dependencyExp))], o.INFERRED_TYPE, null, name);
+
+    this.constantPool.statements.push(depsFnExpr.toDeclStmt(name));
+
+    return o.variable(name);
+  }
 
   // TODO: implement control flow instructions
   visitSwitchBlock(block: t.SwitchBlock): void {}
