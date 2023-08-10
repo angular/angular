@@ -447,13 +447,13 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
     if (attribute.valueSpan !== undefined) {
-      this.visitExpression(attribute.value);
+      this.visitBinding(attribute.value);
     }
   }
 
   visitBoundEvent(event: t.BoundEvent) {
     if (!isBoundEventWithSyntheticHandler(event)) {
-      this.visitExpression(event.handler);
+      this.visitBinding(event.handler);
     }
   }
 
@@ -462,7 +462,7 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundText(text: t.BoundText) {
-    this.visitExpression(text.value);
+    this.visitBinding(text.value);
   }
 
   visitIcu(icu: t.Icu) {
@@ -492,27 +492,36 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitDeferredTrigger(trigger: t.DeferredTrigger) {
     if (trigger instanceof t.BoundDeferredTrigger) {
-      this.visitExpression(trigger.value);
+      this.visitBinding(trigger.value);
     }
   }
 
   visitSwitchBlock(block: t.SwitchBlock) {
-    this.visitExpression(block.expression);
+    this.visitBinding(block.expression);
     this.visitAll(block.cases);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase) {
-    block.expression && this.visitExpression(block.expression);
+    block.expression && this.visitBinding(block.expression);
     this.visitAll(block.children);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock) {
-    this.visitExpression(block.expression);
+    this.visitBinding(block.expression);
     this.visitAll(block.children);
     block.empty?.visit(this);
   }
 
   visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty) {
+    this.visitAll(block.children);
+  }
+
+  visitIfBlock(block: t.IfBlock) {
+    this.visitAll(block.branches);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch) {
+    block.expression && this.visitBinding(block.expression);
     this.visitAll(block.children);
   }
 
@@ -522,7 +531,7 @@ class TemplateTargetVisitor implements t.Visitor {
     }
   }
 
-  private visitExpression(expression: e.AST) {
+  private visitBinding(expression: e.AST) {
     const visitor = new ExpressionVisitor(this.position);
     visitor.visit(expression, this.path);
   }
