@@ -50,13 +50,6 @@
       "shortDescription": "Generates an application shell for running a server-side version of an app.",
       "options": [
         {
-          "name": "app-id",
-          "type": "string",
-          "deprecated": "This option is no longer used.",
-          "default": "serverApp",
-          "description": "The application ID to use in withServerTransition()."
-        },
-        {
           "name": "main",
           "type": "string",
           "default": "main.server.ts",
