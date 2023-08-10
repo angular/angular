@@ -13,7 +13,9 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtemplate(2, MyApp_Defer_2_Template, 1, 0);
       $r3$.ɵɵdefer(3, 2);
       $r3$.ɵɵdeferOnIdle();
-      $r3$.ɵɵelementEnd();
+      $r3$.ɵɵelementStart(5, "p");
+      $r3$.ɵɵtext(6, "Content after defer block");
+      $r3$.ɵɵelementEnd()();
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(1);

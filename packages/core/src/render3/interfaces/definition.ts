@@ -491,7 +491,9 @@ export type DirectiveTypeList =
     (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type DependencyTypeList = (DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>)[];
+export type DependencyType = DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>;
+
+export type DependencyTypeList = Array<DependencyType>;
 
 export type TypeOrFactory<T> = T|(() => T);
 

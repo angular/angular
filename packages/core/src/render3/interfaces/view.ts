@@ -23,6 +23,7 @@ import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
+import {TDeferBlockDetails} from './defer';
 
 
 
@@ -908,8 +909,9 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
-                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
+export type TData =
+    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
+     ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string|TDeferBlockDetails)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

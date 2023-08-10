@@ -68,6 +68,8 @@ export {
   setClassMetadataAsync as ɵsetClassMetadataAsync,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
+  ɵDeferBlockDependencyInterceptor,
+  ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   ɵɵadvance,
   ɵɵattribute,
   ɵɵattributeInterpolate1,
