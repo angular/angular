@@ -13,6 +13,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     <div>
       {{message}}
       {#defer}Deferred content{/defer}
+      <p>Content after defer block</p>
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -22,6 +23,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>
       {{message}}
       {#defer}Deferred content{/defer}
+      <p>Content after defer block</p>
     </div>
   `,
                 }]

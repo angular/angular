@@ -111,8 +111,7 @@ export function assertDirectiveDef<T>(obj: any): asserts obj is DirectiveDef<T> 
   }
 }
 
-export function assertIndexInDeclRange(lView: LView, index: number) {
-  const tView = lView[1];
+export function assertIndexInDeclRange(tView: TView, index: number) {
   assertBetween(HEADER_OFFSET, tView.bindingStartIndex, index);
 }
 
