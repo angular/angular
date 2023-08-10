@@ -18,7 +18,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
-import {createForLoop, createSwitchBlock} from './r3_control_flow';
+import {createForLoop, createIfBlock, createSwitchBlock} from './r3_control_flow';
 import {createDeferredBlock} from './r3_deferred_blocks';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
@@ -344,6 +344,10 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       case 'for':
         result = createForLoop(group, this, this.bindingParser);
+        break;
+
+      case 'if':
+        result = createIfBlock(group, this, this.bindingParser);
         break;
 
       default:

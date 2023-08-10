@@ -115,6 +115,18 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitIfBlock(block: t.IfBlock): void {
+    this.result.push(['IfBlock']);
+    this.visitAll([block.branches]);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch): void {
+    const result = ['IfBlockBranch', block.expression === null ? null : unparse(block.expression)];
+    block.expressionAlias !== null && result.push(block.expressionAlias);
+    this.result.push(result);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.result.push(['BoundDeferredTrigger', unparse(trigger.value)]);
@@ -1491,6 +1503,159 @@ describe('R3 template transform', () => {
             {:unknown} unknown
           {/for}
         `).toThrowError(/Unrecognized loop block "unknown"/);
+      });
+    });
+  });
+
+  describe('if blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectIf(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['if']}).nodes);
+    }
+
+    function expectIfError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['if']}));
+    }
+
+    it('should parse an if block', () => {
+      expectIf(`
+        {#if cond.expr; as foo}
+          Main case was true!
+        {:else if other.expr; as bar}
+          Extra case was true!
+        {:else}
+          False case!
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr', 'foo'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr', 'bar'],
+        ['Text', ' Extra case was true! '],
+        ['IfBlockBranch', null],
+        ['Text', ' False case! '],
+      ]);
+    });
+
+    it('should parse an if block with optional parentheses', () => {
+      expectIf(`
+        {#if (cond.expr)}
+          Main case was true!
+        {:else if (other.expr)}
+          Extra case was true!
+        {:else}
+          False case!
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr'],
+        ['Text', ' Extra case was true! '],
+        ['IfBlockBranch', null],
+        ['Text', ' False case! '],
+      ]);
+    });
+
+    it('should parse nested if blocks', () => {
+      expectIf(`
+        {#if a}
+          {#if a1}
+            a1
+            {:else}
+            b1
+          {/if}
+        {:else if b}
+          b
+        {:else}
+          {#if c1}
+            c1
+            {:else if c2}
+            c2
+            {:else}
+            c3
+          {/if}
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'a'],
+        ['IfBlock'],
+        ['IfBlockBranch', 'a1'],
+        ['Text', ' a1 '],
+        ['IfBlockBranch', null],
+        ['Text', ' b1 '],
+        ['IfBlockBranch', 'b'],
+        ['Text', ' b '],
+        ['IfBlockBranch', null],
+        ['IfBlock'],
+        ['IfBlockBranch', 'c1'],
+        ['Text', ' c1 '],
+        ['IfBlockBranch', 'c2'],
+        ['Text', ' c2 '],
+        ['IfBlockBranch', null],
+        ['Text', ' c3 '],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report an if block without a condition', () => {
+        expectIfError(`
+          {#if}hello{/if}
+        `).toThrowError(/Conditional block does not have an expression/);
+      });
+
+      it('should report an unknown parameter in an if block', () => {
+        expectIfError(`
+          {#if foo; bar}hello{/if}
+        `).toThrowError(/Unrecognized conditional paramater "bar"/);
+      });
+
+      it('should report an unknown parameter in an else if block', () => {
+        expectIfError(`
+          {#if foo}hello{:else if bar; baz}goodbye{/if}
+        `).toThrowError(/Unrecognized conditional paramater "baz"/);
+      });
+
+      it('should report an if block that has multiple `as` expressions', () => {
+        expectIfError(`
+          {#if foo; as foo; as bar}hello{/if}
+        `).toThrowError(/Conditional can only have one "as" expression/);
+      });
+
+      it('should report an else if block that has multiple `as` expressions', () => {
+        expectIfError(`
+          {#if foo}hello{:else if bar; as one; as two}goodbye{/if}
+        `).toThrowError(/Conditional can only have one "as" expression/);
+      });
+
+      it('should report an unknown block inside an if block', () => {
+        expectIfError(`
+          {#if foo}hello{:unknown}goodbye{/if}
+        `).toThrowError(/Unrecognized conditional block "unknown"/);
+      });
+
+      it('should report an if block inside an if block', () => {
+        expectIfError(`
+          {#if foo}hello{:if bar}goodbye{:else if baz}{/if}
+        `).toThrowError(/Unrecognized conditional block "if"/);
+      });
+
+      it('should report an else block with parameters', () => {
+        expectIfError(`
+          {#if foo}hello{:else bar}goodbye{/if}
+        `).toThrowError(/Else block cannot have parameters/);
+      });
+
+      it('should report a conditional with multiple else blocks', () => {
+        expectIfError(`
+          {#if foo}hello{:else}goodbye{:else}goodbye again{/if}
+        `).toThrowError(/Conditional can only have one "else" block/);
+      });
+
+      it('should report an else if block after an else block', () => {
+        expectIfError(`
+          {#if foo}hello{:else}goodbye{:else if bar}goodbye again{/if}
+        `).toThrowError(/Else block must be last inside the conditional/);
       });
     });
   });
