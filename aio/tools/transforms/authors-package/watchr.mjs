@@ -20,7 +20,7 @@ function next(error) {
   }
 }
 
-function watch() {
+export function watch() {
   console.log('============================================================================');
   console.log('Started watching files in:');
   console.log(' - ', config.CONTENTS_PATH);
@@ -32,4 +32,3 @@ function watch() {
   watchr.open(config.API_SOURCE_PATH, listener, next);
 }
 
-exports.watch = watch;
