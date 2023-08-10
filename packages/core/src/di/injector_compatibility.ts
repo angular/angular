@@ -155,7 +155,7 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions&{optio
 export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|null;
 /**
  * Injects a token from the currently active injector.
- * `inject` is only supported in a [injection context](/guide/dependency-injection-context). It can
+ * `inject` is only supported in an [injection context](/guide/dependency-injection-context). It can
  * be used during:
  * - Construction (via the `constructor`) of a class being instantiated by the DI system, such
  * as an `@Injectable` or `@Component`.
