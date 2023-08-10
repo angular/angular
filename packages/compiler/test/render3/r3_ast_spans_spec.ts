@@ -142,6 +142,20 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitIfBlock(block: t.IfBlock): void {
+    this.result.push([
+      'IfBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.branches]);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch): void {
+    this.result.push(
+        ['IfBlockBranch', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     let name: string;
 
@@ -696,6 +710,35 @@ describe('R3 AST source spans', () => {
         ['BoundText', '{{ item }}'],
         ['ForLoopBlockEmpty', '{:empty}There were no items in the list.', '{:empty}'],
         ['Text', 'There were no items in the list.'],
+      ]);
+    });
+  });
+
+  describe('if blocks', () => {
+    it('is correct for if blocks', () => {
+      const html = `{#if cond.expr; as foo}` +
+          `Main case was true!` +
+          `{:else if other.expr; as bar}` +
+          `Extra case was true!` +
+          `{:else}` +
+          `False case!` +
+          `{/if}`;
+
+      expectFromHtml(html, ['if']).toEqual([
+        [
+          'IfBlock',
+          '{#if cond.expr; as foo}Main case was true!{:else if other.expr; as bar}Extra case was true!{:else}False case!{/if}',
+          '{#if cond.expr; as foo}', '{/if}'
+        ],
+        ['IfBlockBranch', '{#if cond.expr; as foo}Main case was true!', '{#if cond.expr; as foo}'],
+        ['Text', 'Main case was true!'],
+        [
+          'IfBlockBranch', '{:else if other.expr; as bar}Extra case was true!',
+          '{:else if other.expr; as bar}'
+        ],
+        ['Text', 'Extra case was true!'],
+        ['IfBlockBranch', '{:else}False case!', '{:else}'],
+        ['Text', 'False case!'],
       ]);
     });
   });
