@@ -86,7 +86,7 @@ To clarify how changes are detected and values updated, consider the following c
       value = v;
       // call detectChange manually
       detectChange();
-    }, 100);
+    });
 
     // Example 5: some other asynchronous APIs
     document.getElementById('canvas').toBlob(blob =&gt; {
