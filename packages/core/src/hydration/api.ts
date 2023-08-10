@@ -177,11 +177,15 @@ export function withDomHydration(): EnvironmentProviders {
           const appRef = inject(ApplicationRef);
           const injector = inject(Injector);
           return () => {
+            // Wait until an app becomes stable and cleanup all views that
+            // were not claimed during the application bootstrap process.
+            // The timing is similar to when we start the serialization process
+            // on the server.
+            //
+            // Note: the cleanup task *MUST* be scheduled within the Angular zone
+            // to ensure that change detection is properly run afterward.
             whenStable(appRef, injector).then(() => {
-              // Wait until an app becomes stable and cleanup all views that
-              // were not claimed during the application bootstrap process.
-              // The timing is similar to when we start the serialization process
-              // on the server.
+              NgZone.assertInAngularZone();
               cleanupDehydratedViews(appRef);
 
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
