@@ -251,7 +251,7 @@ Now you can also encapsulate a style sheet within a specific component.
 
 [AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
 
-[AioGuidePipes]: guide/pipes "Transforming Data Using Pipes | Angular"
+[AioGuidePipes]: guide/pipes-overview "Transforming Data Using Pipes | Angular"
 
 [AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
 
@@ -267,4 +267,4 @@ Now you can also encapsulate a style sheet within a specific component.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-14

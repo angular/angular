@@ -180,7 +180,7 @@ For more information, see the [ng-container section](guide/built-in-directives#n
 <live-example name="pipes"></live-example>
 
 Demonstrates Angular pipes.
-For more information, see [Transforming Data Using Pipes](guide/pipes).
+For more information, see [Transforming Data Using Pipes](guide/pipes-overview).
 
 ### Property binding
 
@@ -441,4 +441,4 @@ For more information, see [AngularJS to Angular concepts: Quick reference](guide
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-14

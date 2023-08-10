@@ -6,7 +6,7 @@ describe('Pipes', () => {
 
   it('should open correctly', async () => {
     expect(await element.all(by.tagName('h1')).get(0).getText()).toEqual('Pipes');
-    expect(await element(by.css('app-hero-birthday p')).getText()).toEqual(`The hero's birthday is Apr 15, 1988`);
+    expect(await element(by.css('app-birthday p')).getText()).toEqual(`The hero's birthday is Apr 15, 1988`);
   });
 
   it('should show 4 heroes', async () => {
@@ -18,29 +18,20 @@ describe('Pipes', () => {
   });
 
   it('should show alternate birthday formats', async () => {
-    expect(await element(by.cssContainingText('app-root > p', `The hero's birthday is Apr 15, 1988`)).isDisplayed())
-        .toBe(true);
-    expect(await element(by.cssContainingText('app-root > p', `The hero's birthday is 04/15/88`)).isDisplayed())
-        .toBe(true);
-  });
-
-  it('should be able to toggle birthday formats', async () => {
-    const birthDayEle = element(by.css('app-hero-birthday2 > p'));
-    expect(await birthDayEle.getText()).toEqual(`The hero's birthday is 4/15/88`);
-
-    const buttonEle = element(by.cssContainingText('app-hero-birthday2 > button', 'Toggle Format'));
-    expect(await buttonEle.isDisplayed()).toBe(true);
-
-    await buttonEle.click();
-    expect(await birthDayEle.getText()).toEqual(`The hero's birthday is Friday, April 15, 1988`);
+    expect(await element(
+      by.cssContainingText('app-birthday-formatting > p', `The hero's birthday is 4/15/88`)).isDisplayed())
+      .toBe(true);
+    expect(await element(
+      by.cssContainingText('app-birthday-formatting > p', `The hero's birthday is Apr 15, 1988`)).isDisplayed())
+      .toBe(true);
   });
 
   it('should be able to chain and compose pipes', async () => {
-    const chainedPipeEles = element.all(by.cssContainingText('app-root p', `The chained hero's`));
-    expect(await chainedPipeEles.count()).toBe(3, 'should have 3 chained pipe examples');
+    const chainedPipeEles = element.all(
+      by.cssContainingText('app-birthday-pipe-chaining p', `The chained hero's`));
+    expect(await chainedPipeEles.count()).toBe(2, 'should have 2 chained pipe examples');
     expect(await chainedPipeEles.get(0).getText()).toContain('APR 15, 1988');
     expect(await chainedPipeEles.get(1).getText()).toContain('FRIDAY, APRIL 15, 1988');
-    expect(await chainedPipeEles.get(2).getText()).toContain('FRIDAY, APRIL 15, 1988');
   });
 
   it('should be able to use ExponentialStrengthPipe pipe', async () => {

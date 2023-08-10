@@ -1,13 +1,38 @@
-<!-- #docplaster-->
-<!-- #docregion -->
-<h2>{{title}}</h2>
-
-<p>Basic uppercase pipe (no precedence considerations necessary): {{ 'text' | uppercase }}</p>
-<p>The following shows that a pipe has higher precedence than a ternary operator. If the pipe precedence were lower than the ternary operator precedence, the output would be in uppercase as in 'TRUE'. Instead "true" is lowercase: {{ true ? 'true' : 'false' | uppercase }}</p>
-<p>The following shows how parentheses help Angular evaluate the whole statement:
-<!-- #docregion precedence -->
-<!-- use parentheses in the third operand so the pipe applies to the whole expression -->
-{{ (true ? 'true' : 'false') | uppercase }}
-<!-- #enddocregion precedence -->
+<p>
+  In most cases, you'll wrap the entire ternary expression in parentheses before passing the result to a pipe.
 </p>
 
+<p>
+  Example: <code>(isLeft ? 'left' : 'right') | uppercase</code>
+  <b>
+    {{ (isLeft ? 'left' : 'right') | uppercase }}
+  </b>
+</p>
+<button type="button" (click)="toggleDirection()">Toggle 'isLeft'</button>
+
+
+<p>Without parentheses, only the second value is uppercased.</p>
+
+<p>Example: <code>isGood ? 'good' : 'bad' | uppercase</code>
+  <b>
+    {{ isGood ? 'good' : 'bad' | uppercase }}
+  </b>
+</p>
+
+<p>Same as: <code>isGood ? 'good' : ('bad' | uppercase)</code>
+  <b>
+    {{ isGood ? 'good' : ('bad' | uppercase) }}
+  </b>
+</p>
+<button type="button" (click)="toggleGood()">Toggle 'isGood'</button>
+
+
+<p>If only one of the values should be passed to a pipe,
+  be explicit and surround that value with parentheses.</p>
+
+<p>Example: <code>isUpper ? ('upper' | uppercase) : 'lower'</code>
+  <b>
+    {{ isUpper ? ('upper' | uppercase) : 'lower' }}
+  </b>
+</p>
+<button type="button" (click)="toggleCase()">Toggle 'isUpper'</button>

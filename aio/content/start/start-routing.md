@@ -94,7 +94,7 @@ In this section, you'll use the Angular Router to combine the `products` data an
 
     The line, `<h4>{{ product.price | currency }}</h4>`, uses the `currency` pipe to transform `product.price` from a number to a currency string.
     A pipe is a way you can transform data in your HTML template.
-    For more information about Angular pipes, see [Pipes](guide/pipes "Pipes").
+    For more information about Angular pipes, see [Pipes](guide/pipes-overview "Pipes").
 
 When users click on a name in the product list, the router navigates them to the distinct URL for the product, shows the `ProductDetailsComponent`, and displays the product details.
 
