@@ -228,6 +228,11 @@
                   "url": "guide/pipes-transform-data",
                   "title": "Transforming data with parameters and chained pipes",
                   "tooltip": "Learn how to use a pipe transform data."
+                },
+                {
+                  "url": "guide/pipe-precedence",
+                  "title": "Pipe precedence in template expressions",
+                  "tooltip": "How to use pipes within a ternary operator expression."
                 }
               ]
             },

@@ -157,7 +157,7 @@ A class with the `@Pipe` decorator defines a function that transforms input valu
 Angular defines various pipes, such as the [date](api/common/DatePipe) pipe and [currency](api/common/CurrencyPipe) pipe. For a complete list, see the [Pipes API list](api?type=pipe).
 You can also define new pipes.
 
-To specify a value transformation in an HTML template, use the [pipe operator (`|`)](guide/pipes).
+To specify a value transformation in an HTML template, use the [pipe operator (`|`)](guide/pipes-overview).
 
 <code-example format="html" language="html">
 
@@ -242,4 +242,4 @@ Learn more in the [Attribute Directives](guide/attribute-directives) and [Struct
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-14
