@@ -8,6 +8,7 @@
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 
+import type {DependencyResolverFn} from './definition';
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
@@ -856,6 +857,88 @@ export interface TProjectionNode extends TNode {
   /** Index of the projection node. (See TNode.projection for more info.) */
   projection: number;
   value: null;
+}
+
+/**
+ * Describes the state of defer block dependency loading.
+ */
+export const enum DeferDependenciesLoadingState {
+  /** Initial state, dependency loading is not yet triggered */
+  NOT_STARTED,
+
+  /** Dependency loading is in progress */
+  IN_PROGRESS,
+
+  /** Dependency loading has completed successfully */
+  COMPLETE,
+
+  /** Dependency loading has failed */
+  FAILED,
+}
+
+/** Configuration object for a `{:loading}` block as it is stored in the component constants. */
+export type DeferredLoadingBlockConfig = [minimumTime: number|null, afterTime: number|null];
+
+/** Configuration object for a `{:placeholder}` block as it is stored in the component constants. */
+export type DeferredPlaceholderBlockConfig = [afterTime: number|null];
+
+
+/**
+ * Describes the data shared across all instances of a {#defer} block.
+ */
+export interface TDeferBlockDetails {
+  /**
+   * Index in an LView and TData arrays where a template for the primary content
+   * can be found.
+   */
+  primaryTmplIndex: number;
+
+  /**
+   * Index in an LView and TData arrays where a template for the `{:loading}`
+   * block can be found.
+   */
+  loadingTmplIndex: number|null;
+
+  /**
+   * Extra configuration parameters (such as `after` and `minimum`)
+   * for the `{:loading}` block.
+   */
+  loadingBlockConfig: DeferredLoadingBlockConfig|null;
+
+  /**
+   * Index in an LView and TData arrays where a template for the `{:placeholder}`
+   * block can be found.
+   */
+  placeholderTmplIndex: number|null;
+
+  /**
+   * Extra configuration parameters (such as `after` and `minimum`)
+   * for the `{:placeholder}` block.
+   */
+  placeholderBlockConfig: DeferredPlaceholderBlockConfig|null;
+
+  /**
+   * Index in an LView and TData arrays where a template for the `{:error}`
+   * block can be found.
+   */
+  errorTmplIndex: number|null;
+
+  /**
+   * Compiler-generated function that loads all dependencies for a `{#defer}` block.
+   */
+  dependencyResolverFn: DependencyResolverFn|null;
+
+  /**
+   * Keeps track of the current loading state of defer block dependencies.
+   */
+  loadingState: DeferDependenciesLoadingState;
+
+  /**
+   * Dependency loading Promise. This Promise is helpful for cases when there
+   * are multiple instances of a defer block (e.g. if it was used inside of an *ngFor),
+   * which all await the same set of dependencies.
+   */
+  loadingPromise: Promise<unknown>|null;
 }
 
 /**

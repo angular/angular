@@ -56,3 +56,7 @@ export function isProjectionTNode(tNode: TNode): boolean {
 export function hasI18n(lView: LView): boolean {
   return (lView[FLAGS] & LViewFlags.HasI18n) === LViewFlags.HasI18n;
 }
+
+export function isDestroyed(lView: LView): boolean {
+  return (lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+}
