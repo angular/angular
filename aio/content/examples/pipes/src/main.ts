@@ -1,7 +1,13 @@
-// #docregion
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { bootstrapApplication, provideProtractorTestingSupport } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { importProvidersFrom } from '@angular/core';
 
-import { AppModule } from './app/app.module';
+import {AppComponent} from './app/app.component';
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  // HttpClientModule is only used in deprecated HeroListComponent
+  providers: [
+    importProvidersFrom(HttpClientModule),
+    provideProtractorTestingSupport(), // essential for e2e testing
+  ]
+});

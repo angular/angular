@@ -1,15 +1,17 @@
-// #docregion
 import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 
 import { Observable, interval } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, startWith, take } from 'rxjs/operators';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-async-message',
   template: `
-    <h2>Async Hero Message and AsyncPipe</h2>
-    <p>Message: {{ message$ | async }}</p>
-    <button type="button" (click)="resend()">Resend</button>`,
+    <h2>Async Messages and AsyncPipe</h2>
+    <p>{{ message$ | async }}</p>
+    <button type="button" (click)="resend()">Resend Messages</button>`,
+  imports: [AsyncPipe],
 })
 export class HeroAsyncMessageComponent {
   message$: Observable<string>;
@@ -29,17 +31,10 @@ export class HeroAsyncMessageComponent {
   }
 
   private getResendObservable() {
-    return interval(500).pipe(
-      map(i => this.messages[i]),
-      take(this.messages.length)
+    return interval(1000).pipe(
+      map(i => `Message #${i + 1}: ${this.messages[i]}`),
+      take(this.messages.length),
+      startWith('Waiting for messages...')
     );
   }
 }
-// #enddocregion
-
-// Alternative message$ formula:
-// this.message$ = fromArray(this.messages).pipe(
-//   map(message => timer(500),
-//   map(() => message)),
-//   concatAll()
-// );
