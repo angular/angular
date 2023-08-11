@@ -43,6 +43,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtemplate(4, MyApp_DeferPlaceholder_4_Template, 1, 0);
       $r3$.ɵɵtemplate(5, MyApp_DeferError_5_Template, 3, 0);
       $r3$.ɵɵdefer(6, 2, null, 3, 4, 5);
+      $r3$.ɵɵdeferOnIdle();
       $r3$.ɵɵelementEnd();
     }
     if (rf & 2) {

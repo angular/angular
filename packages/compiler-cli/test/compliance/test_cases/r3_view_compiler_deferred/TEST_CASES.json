@@ -129,6 +129,48 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with triggers",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_with_triggers.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_triggers_template.js",
+              "generated": "deferred_with_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with prefetch triggers",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_with_prefetch_triggers.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_prefetch_triggers_template.js",
+              "generated": "deferred_with_prefetch_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

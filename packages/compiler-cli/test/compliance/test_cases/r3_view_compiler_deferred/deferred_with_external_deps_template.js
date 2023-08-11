@@ -29,6 +29,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtemplate(2, MyApp_Defer_2_Template, 1, 0);
       $r3$.ɵɵtemplate(3, MyApp_DeferLoading_3_Template, 1, 0);
       $r3$.ɵɵdefer(4, 2, MyApp_Defer_4_DepsFn, 3);
+      $r3$.ɵɵdeferOnIdle();
       $r3$.ɵɵelementEnd();
     }
   },
