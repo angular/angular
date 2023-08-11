@@ -383,4 +383,16 @@ export enum ErrorCode {
    * type inference.
    */
   SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
+
+  /**
+   * A string is imported from another file to be used as template string for a component in local
+   * compilation mode.
+   */
+  LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING = 11001,
+
+  /**
+   * A string is imported from another file to be used as styles string for a component in local
+   * compilation mode.
+   */
+  LOCAL_COMPILATION_IMPORTED_STYLES_STRING = 11002,
 }
