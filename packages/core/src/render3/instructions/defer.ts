@@ -42,3 +42,94 @@ export function ɵɵdefer(
     loadingConfigIndex?: number|null,
     placeholderConfigIndex?: number|null,
 ) {}  // TODO: implement runtime logic.
+
+/**
+ * Loads the deferred content when a value becomes truthy.
+ * @codeGenApi
+ */
+export function ɵɵdeferWhen(value: unknown) {}  // TODO: implement runtime logic.
+
+/**
+ * Prefetches the deferred content when a value becomes truthy.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchWhen(value: unknown) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on idle` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnIdle() {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `prefetech on idle` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnIdle() {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on immediate` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnImmediate() {}  // TODO: implement runtime logic.
+
+
+/**
+ * Creates runtime data structures for the `prefetech on immediate` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnImmediate() {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on timer` deferred trigger.
+ * @param delay Amount of time to wait before loading the content.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnTimer(delay: number) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `prefetch on timer` deferred trigger.
+ * @param delay Amount of time to wait before prefetching the content.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnTimer(delay: number) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on hover` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnHover() {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `prefetech on hover` deferred trigger.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnHover() {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on interaction` deferred trigger.
+ * @param target Optional element on which to listen for hover events.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnInteraction(target?: unknown) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `prefetch on interaction` deferred trigger.
+ * @param target Optional element on which to listen for hover events.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnInteraction(target?: unknown) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `on viewport` deferred trigger.
+ * @param target Optional element on which to listen for hover events.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
+
+/**
+ * Creates runtime data structures for the `prefetch on viewport` deferred trigger.
+ * @param target Optional element on which to listen for hover events.
+ * @codeGenApi
+ */
+export function ɵɵdeferPrefetchOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
