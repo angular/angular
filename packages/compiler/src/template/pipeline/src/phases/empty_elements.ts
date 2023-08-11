@@ -12,6 +12,7 @@ import {ComponentCompilationJob} from '../compilation';
 const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
   [ir.OpKind.ElementEnd, [ir.OpKind.ElementStart, ir.OpKind.Element]],
   [ir.OpKind.ContainerEnd, [ir.OpKind.ContainerStart, ir.OpKind.Container]],
+  [ir.OpKind.I18nEnd, [ir.OpKind.I18nStart, ir.OpKind.I18n]],
 ]);
 
 /**

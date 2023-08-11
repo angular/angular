@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
@@ -22,7 +23,7 @@ import type {UpdateOp} from './update';
 export type CreateOp =
     ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
     ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
-    PipeOp|VariableOp<CreateOp>|NamespaceOp|ExtractedAttributeOp;
+    PipeOp|VariableOp<CreateOp>|NamespaceOp|ExtractedAttributeOp|I18nOp|I18nStartOp|I18nEndOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -479,6 +480,72 @@ export function createExtractedAttributeOp(
     bindingKind,
     name,
     expression,
+    ...NEW_OP,
+  };
+}
+
+export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.I18nStart|OpKind.I18n;
+
+  /**
+   * `XrefId` allocated for this i18n block.
+   *
+   * This ID is used to reference this element from other IR structures.
+   */
+  xref: XrefId;
+
+  /**
+   * The i18n metadata associated with this op.
+   */
+  i18n: i18n.I18nMeta;
+}
+
+/**
+ * Represents an empty i18n block.
+ */
+export interface I18nOp extends I18nOpBase {
+  kind: OpKind.I18n;
+}
+
+/**
+ * Represents the start of an i18n block.
+ */
+export interface I18nStartOp extends I18nOpBase {
+  kind: OpKind.I18nStart;
+}
+
+/**
+ * Create an `I18nStartOp`.
+ */
+export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartOp {
+  return {
+    kind: OpKind.I18nStart,
+    xref,
+    i18n,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+  };
+}
+
+/**
+ * Represents the end of an i18n block.
+ */
+export interface I18nEndOp extends Op<CreateOp> {
+  kind: OpKind.I18nEnd;
+
+  /**
+   * The `XrefId` of the `I18nStartOp` that created this block.
+   */
+  xref: XrefId;
+}
+
+/**
+ * Create an `I18nEndOp`.
+ */
+export function createI18nEndOp(xref: XrefId): I18nEndOp {
+  return {
+    kind: OpKind.I18nEnd,
+    xref,
     ...NEW_OP,
   };
 }

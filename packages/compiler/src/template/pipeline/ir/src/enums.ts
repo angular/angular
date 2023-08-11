@@ -150,6 +150,21 @@ export enum OpKind {
    */
   Namespace,
 
+  /**
+   * The start of an i18n block.
+   */
+  I18nStart,
+
+  /**
+   * A self-closing i18n on a single element.
+   */
+  I18n,
+
+  /**
+   * The end of an i18n block.
+   */
+  I18nEnd,
+
   // TODO: Add Host Listeners, and possibly other host ops also.
 }
 

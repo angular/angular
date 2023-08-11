@@ -23,6 +23,7 @@ import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
+import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
 import {phaseLocalRefs} from './phases/local_refs';
 import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
@@ -78,6 +79,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseExpandSafeReads(job);
   phaseTemporaryVariables(job);
   phaseSlotAllocation(job);
+  phaseI18nMessageExtraction(job);
   phaseVarCounting(job);
   phaseGenerateAdvance(job);
   phaseVariableOptimization(job);

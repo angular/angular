@@ -9,6 +9,7 @@
 import {ConstantPool} from '../../../constant_pool';
 import {SecurityContext} from '../../../core';
 import * as e from '../../../expression_parser/ast';
+import * as i18n from '../../../i18n/i18n_ast';
 import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
@@ -120,10 +121,20 @@ function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
       elementName, id, namespaceForKey(namespaceKey), element.startSourceSpan);
   view.create.push(startOp);
 
+  let i18nId: ir.XrefId|null = null;
+  if (element.i18n instanceof i18n.Message) {
+    i18nId = view.job.allocateXrefId();
+    view.create.push(ir.createI18nStartOp(i18nId, element.i18n));
+  }
+
   ingestBindings(view, startOp, element);
   ingestReferences(startOp, element);
 
   ingestNodes(view, element.children);
+
+  if (i18nId !== null) {
+    view.create.push(ir.createI18nEndOp(i18nId));
+  }
   view.create.push(ir.createElementEndOp(id, element.endSourceSpan));
 }
 
@@ -132,6 +143,7 @@ function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
  */
 function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
   const childView = view.job.allocateView(view.xref);
+
 
   let tagNameWithoutNamespace = tmpl.tagName;
   let namespacePrefix: string|null = '';
@@ -148,7 +160,17 @@ function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
   ingestBindings(view, tplOp, tmpl);
   ingestReferences(tplOp, tmpl);
 
+  let i18nId: ir.XrefId|null = null;
+  if (tmpl.i18n !== undefined) {
+    i18nId = view.job.allocateXrefId();
+    childView.create.push(ir.createI18nStartOp(i18nId, tmpl.i18n));
+  }
+
   ingestNodes(childView, tmpl.children);
+
+  if (i18nId !== null) {
+    childView.create.push(ir.createI18nEndOp(i18nId));
+  }
 
   for (const {name, value} of tmpl.variables) {
     childView.contextVariables.set(name, value);
