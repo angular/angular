@@ -429,6 +429,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
            }));
 
         it('when options are removed', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];

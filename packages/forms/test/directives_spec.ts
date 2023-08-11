@@ -7,7 +7,7 @@
  */
 
 import {SimpleChange, ɵWritable as Writable} from '@angular/core';
-import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {composeValidators} from '@angular/forms/src/validators';
@@ -69,10 +69,12 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return select accessor when provided', () => {
-          const selectAccessor = new SelectControlValueAccessor(null!, null!, null!);
-          expect(selectValueAccessor(dir, [
-            defaultAccessor, selectAccessor
-          ])).toEqual(selectAccessor);
+          TestBed.runInInjectionContext(() => {
+            const selectAccessor = new SelectControlValueAccessor(null!, null!);
+            expect(selectValueAccessor(dir, [
+              defaultAccessor, selectAccessor
+            ])).toEqual(selectAccessor);
+          });
         });
 
         it('should return select multiple accessor when provided', () => {
@@ -83,9 +85,11 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should throw when more than one build-in accessor is provided', () => {
-          const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
-          const selectAccessor = new SelectControlValueAccessor(null!, null!, null!);
-          expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
+          TestBed.runInInjectionContext(() => {
+            const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
+            const selectAccessor = new SelectControlValueAccessor(null!, null!);
+            expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
+          });
         });
 
         it('should return custom accessor when provided', () => {
