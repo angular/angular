@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -499,6 +502,64 @@ runInEachFileSystem(() => {
            expect(jsContents)
                .toContain(
                    `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+         });
+    });
+
+    describe('local compilation specific errors', () => {
+      it('should show extensive error message when using an imported symbol for component template',
+         () => {
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({            
+            template: ExternalString,
+          })
+          export class Main {
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.
+
+                                         LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING));
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toContain('Unknown identifier used as template string: ExternalString');
+           expect(text).toContain('either inline it or move it to a separate file');
+         });
+
+      it('should show extensive error message when using an imported symbol for component styles',
+         () => {
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({            
+            styles: [ExternalString],
+            template: '',
+
+          })
+          export class Main {
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_IMPORTED_STYLES_STRING));
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toContain('Unknown identifier used as styles string: ExternalString');
+           expect(text).toContain('either inline it or move it to a separate file');
          });
     });
   });

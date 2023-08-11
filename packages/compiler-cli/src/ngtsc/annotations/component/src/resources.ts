@@ -13,8 +13,9 @@ import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {DependencyTracker} from '../../../incremental/api';
 import {Resource} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
+import {DynamicValue, PartialEvaluator, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection';
+import {CompilationMode} from '../../../transform';
 import {TemplateSourceMapping} from '../../../typecheck/api';
 import {createValueHasWrongTypeError, isStringArray, ResourceLoader} from '../../common';
 
@@ -124,7 +125,7 @@ export interface ExtractTemplateOptions {
 export function extractTemplate(
     node: ClassDeclaration, template: TemplateDeclaration, evaluator: PartialEvaluator,
     depTracker: DependencyTracker|null, resourceLoader: ResourceLoader,
-    options: ExtractTemplateOptions): ParsedTemplateWithSource {
+    options: ExtractTemplateOptions, compilationMode: CompilationMode): ParsedTemplateWithSource {
   if (template.isInline) {
     let sourceStr: string;
     let sourceParseRange: LexerRange|null = null;
@@ -148,6 +149,27 @@ export function extractTemplate(
       sourceMapUrl = template.resolvedTemplateUrl;
     } else {
       const resolvedTemplate = evaluator.evaluate(template.expression);
+
+      // In local compilation mode we use imported strings from another file as template as it
+      // cannot be resolved in single file mode. We warn the user here about the situation
+      // explicitly.
+      if (compilationMode === CompilationMode.LOCAL && resolvedTemplate instanceof DynamicValue &&
+          resolvedTemplate.isFromUnknownIdentifier()) {
+        const relatedInformation = traceDynamicValue(template.expression, resolvedTemplate);
+
+        const chain: ts.DiagnosticMessageChain = {
+          messageText: `Unknown identifier used as template string: ${
+              template.expression
+                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using 'templateUrl')`,
+          category: ts.DiagnosticCategory.Error,
+          code: 0,
+        };
+
+        throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING, template.expression, chain,
+            relatedInformation);
+      }
+
       if (typeof resolvedTemplate !== 'string') {
         throw createValueHasWrongTypeError(
             template.expression, resolvedTemplate, 'template must be a string');
@@ -325,8 +347,8 @@ export function preloadAndParseTemplate(
     evaluator: PartialEvaluator, resourceLoader: ResourceLoader, depTracker: DependencyTracker|null,
     preanalyzeTemplateCache: Map<DeclarationNode, ParsedTemplateWithSource>, node: ClassDeclaration,
     decorator: Decorator, component: Map<string, ts.Expression>, containingFile: string,
-    defaultPreserveWhitespaces: boolean,
-    options: ExtractTemplateOptions): Promise<ParsedTemplateWithSource|null> {
+    defaultPreserveWhitespaces: boolean, options: ExtractTemplateOptions,
+    compilationMode: CompilationMode): Promise<ParsedTemplateWithSource|null> {
   if (component.has('templateUrl')) {
     // Extract the templateUrl and preload it.
     const templateUrlExpr = component.get('templateUrl')!;
@@ -347,8 +369,8 @@ export function preloadAndParseTemplate(
           const templateDecl = parseTemplateDeclaration(
               node, decorator, component, containingFile, evaluator, depTracker, resourceLoader,
               defaultPreserveWhitespaces);
-          const template =
-              extractTemplate(node, templateDecl, evaluator, depTracker, resourceLoader, options);
+          const template = extractTemplate(
+              node, templateDecl, evaluator, depTracker, resourceLoader, options, compilationMode);
           preanalyzeTemplateCache.set(node, template);
           return template;
         });
@@ -369,8 +391,8 @@ export function preloadAndParseTemplate(
     const templateDecl = parseTemplateDeclaration(
         node, decorator, component, containingFile, evaluator, depTracker, resourceLoader,
         defaultPreserveWhitespaces);
-    const template =
-        extractTemplate(node, templateDecl, evaluator, depTracker, resourceLoader, options);
+    const template = extractTemplate(
+        node, templateDecl, evaluator, depTracker, resourceLoader, options, compilationMode);
     preanalyzeTemplateCache.set(node, template);
     return Promise.resolve(template);
   }
