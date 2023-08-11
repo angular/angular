@@ -140,6 +140,26 @@ export class Identifiers {
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};
 
   static defer: o.ExternalReference = {name: 'ɵɵdefer', moduleName: CORE};
+  static deferWhen: o.ExternalReference = {name: 'ɵɵdeferWhen', moduleName: CORE};
+  static deferOnIdle: o.ExternalReference = {name: 'ɵɵdeferOnIdle', moduleName: CORE};
+  static deferOnImmediate: o.ExternalReference = {name: 'ɵɵdeferOnImmediate', moduleName: CORE};
+  static deferOnTimer: o.ExternalReference = {name: 'ɵɵdeferOnTimer', moduleName: CORE};
+  static deferOnHover: o.ExternalReference = {name: 'ɵɵdeferOnHover', moduleName: CORE};
+  static deferOnInteraction: o.ExternalReference = {name: 'ɵɵdeferOnInteraction', moduleName: CORE};
+  static deferOnViewport: o.ExternalReference = {name: 'ɵɵdeferOnViewport', moduleName: CORE};
+  static deferPrefetchWhen: o.ExternalReference = {name: 'ɵɵdeferPrefetchWhen', moduleName: CORE};
+  static deferPrefetchOnIdle:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnIdle', moduleName: CORE};
+  static deferPrefetchOnImmediate:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnImmediate', moduleName: CORE};
+  static deferPrefetchOnTimer:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnTimer', moduleName: CORE};
+  static deferPrefetchOnHover:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnHover', moduleName: CORE};
+  static deferPrefetchOnInteraction:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnInteraction', moduleName: CORE};
+  static deferPrefetchOnViewport:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 
