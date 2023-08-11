@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
 import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
-import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
+import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
@@ -459,6 +459,46 @@ function extractQueriesFromDecorator(
     }
   });
   return {content, view};
+}
+
+export function parseDirectiveStyles(
+    directive: Map<string, ts.Expression>, evaluator: PartialEvaluator,
+    compilationMode: CompilationMode): null|string[] {
+  const expression = directive.get('styles');
+
+  if (!expression) {
+    return null;
+  }
+
+  const value = evaluator.evaluate(expression);
+
+  // Create specific error if any string is imported from external file in local compilation mode
+  if (compilationMode === CompilationMode.LOCAL && Array.isArray(value)) {
+    for (const entry of value) {
+      if (entry instanceof DynamicValue && entry.isFromUnknownIdentifier()) {
+        const relatedInformation = traceDynamicValue(expression, entry);
+
+        const chain: ts.DiagnosticMessageChain = {
+          messageText: `Unknown identifier used as styles string: ${
+              entry.node
+                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using'styleUrls')`,
+          category: ts.DiagnosticCategory.Error,
+          code: 0,
+        };
+
+        throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_IMPORTED_STYLES_STRING, expression, chain,
+            relatedInformation);
+      }
+    }
+  }
+
+  if (!isStringArrayOrDie(value, 'styles', expression)) {
+    throw createValueHasWrongTypeError(
+        expression, value, `Failed to resolve @Directive.styles to a string array`);
+  }
+
+  return value;
 }
 
 export function parseFieldStringArrayValue(
