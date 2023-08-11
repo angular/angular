@@ -352,3 +352,101 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_triggers.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.isReady = true;
+    }
+    isVisible() {
+        return false;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    {{message}}
+    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
+      on interaction(button); on viewport(button)}
+    {{message}}
+    {:placeholder}<button #button>Click me</button>
+  {/defer}
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{message}}
+    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
+      on interaction(button); on viewport(button)}
+    {{message}}
+    {:placeholder}<button #button>Click me</button>
+  {/defer}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_triggers.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    isReady: boolean;
+    isVisible(): boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_prefetch_triggers.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.isReady = true;
+    }
+    isVisible() {
+        return false;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    {{message}}
+    {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
+      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
+    {{message}}
+    {:placeholder}<button #button>Click me</button>
+  {/defer}
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{message}}
+    {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
+      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
+    {{message}}
+    {:placeholder}<button #button>Click me</button>
+  {/defer}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_prefetch_triggers.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    isReady: boolean;
+    isVisible(): boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+

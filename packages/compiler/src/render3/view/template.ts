@@ -1089,7 +1089,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const {loading, placeholder, error} = deferred;
+    const {loading, placeholder, error, triggers, prefetchTriggers} = deferred;
     const primaryTemplateIndex =
         this.createEmbeddedTemplateFn(null, deferred.children, '_Defer', deferred.sourceSpan);
     const loadingIndex = loading ?
@@ -1117,7 +1117,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const deferredIndex = this.allocateDataSlot();
     const depsFnName = `${this.contextName}_Defer_${deferredIndex}_DepsFn`;
 
-    // e.g. `defer(1, MyComp_Defer_1_DepsFn, ...)`
+    // e.g. `defer(1, 0, MyComp_Defer_1_DepsFn, ...)`
     this.creationInstruction(
         deferred.sourceSpan, R3.defer, trimTrailingNulls([
           o.literal(deferredIndex),
@@ -1130,7 +1130,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
         ]));
 
-    // TODO(crisbeto): generate trigger instructions
+    this.createDeferTriggerInstructions(deferredIndex, triggers, false);
+    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, true);
   }
 
   private createDeferredDepsFunction(name: string, deferred: t.DeferredBlock) {
@@ -1168,6 +1169,68 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return o.variable(name);
   }
 
+  private createDeferTriggerInstructions(
+      deferredIndex: number, triggers: t.DeferredBlockTriggers, prefetch: boolean) {
+    const {when, idle, immediate, timer, hover, interaction, viewport} = triggers;
+
+    // `deferWhen(ctx.someValue)`
+    if (when) {
+      this.allocateBindingSlots(null);
+      this.updateInstructionWithAdvance(
+          deferredIndex, when.sourceSpan, prefetch ? R3.deferPrefetchWhen : R3.deferWhen,
+          () => this.convertPropertyBinding(when.value));
+    }
+
+    // Note that we generate an implicit `on idle` if the `deferred` block has no triggers.
+    // TODO(crisbeto): decide if this should be baked into the `defer` instruction.
+    // `deferOnIdle()`
+    if (idle || (!prefetch && Object.keys(triggers).length === 0)) {
+      this.creationInstruction(
+          idle?.sourceSpan || null, prefetch ? R3.deferPrefetchOnIdle : R3.deferOnIdle);
+    }
+
+    // `deferOnImmediate()`
+    if (immediate) {
+      this.creationInstruction(
+          immediate.sourceSpan, prefetch ? R3.deferPrefetchOnImmediate : R3.deferOnImmediate);
+    }
+
+    // `deferOnTimer(1337)`
+    if (timer) {
+      this.creationInstruction(
+          timer.sourceSpan, prefetch ? R3.deferPrefetchOnTimer : R3.deferOnTimer,
+          [o.literal(timer.delay)]);
+    }
+
+    // `deferOnHover()`
+    if (hover) {
+      this.creationInstruction(
+          hover.sourceSpan, prefetch ? R3.deferPrefetchOnHover : R3.deferOnHover);
+    }
+
+    // TODO(crisbeto): currently the reference is passed as a string.
+    // Update this once we figure out how we should refer to the target.
+    // `deferOnInteraction(target)`
+    if (interaction) {
+      this.creationInstruction(
+          interaction.sourceSpan, prefetch ? R3.deferPrefetchOnInteraction : R3.deferOnInteraction,
+          [o.literal(interaction.reference)]);
+    }
+
+    // TODO(crisbeto): currently the reference is passed as a string.
+    // Update this once we figure out how we should refer to the target.
+    // `deferOnViewport(target)`
+    if (viewport) {
+      this.creationInstruction(
+          viewport.sourceSpan, prefetch ? R3.deferPrefetchOnViewport : R3.deferOnViewport,
+          [o.literal(viewport.reference)]);
+    }
+  }
+
+  private allocateDataSlot() {
+    return this._dataIndex++;
+  }
+
   // TODO: implement control flow instructions
   visitSwitchBlock(block: t.SwitchBlock): void {}
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {}
@@ -1175,10 +1238,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {}
   visitIfBlock(block: t.IfBlock): void {}
   visitIfBlockBranch(block: t.IfBlockBranch): void {}
-
-  private allocateDataSlot() {
-    return this._dataIndex++;
-  }
 
   getConstCount() {
     return this._dataIndex;
