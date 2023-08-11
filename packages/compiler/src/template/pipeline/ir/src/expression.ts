@@ -810,6 +810,9 @@ export function transformExpressionsInOp(
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
+    case OpKind.I18n:
+    case OpKind.I18nStart:
+    case OpKind.I18nEnd:
     case OpKind.Container:
     case OpKind.ContainerStart:
     case OpKind.ContainerEnd:

@@ -174,6 +174,18 @@ export function text(
   return call(Identifiers.text, args, sourceSpan);
 }
 
+export function i18nStart(slot: number): ir.CreateOp {
+  return call(Identifiers.i18nStart, [new o.LiteralExpr(slot)], null);
+}
+
+export function i18n(slot: number): ir.CreateOp {
+  return call(Identifiers.i18n, [new o.LiteralExpr(slot)], null);
+}
+
+export function i18nEnd(): ir.CreateOp {
+  return call(Identifiers.i18nEnd, [], null);
+}
+
 export function property(
     name: string, expression: o.Expression, sanitizer: o.Expression|null,
     sourceSpan: ParseSourceSpan): ir.UpdateOp {
