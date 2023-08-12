@@ -17,6 +17,16 @@ import {ComponentCompilationJob} from '../compilation';
  * array expressions, and lifts them into the overall component `consts`.
  */
 export function phaseConstCollection(cpl: ComponentCompilationJob): void {
+  // Serialize the extracted messages into the const array.
+  for (const [_, view] of cpl.views) {
+    for (const op of view.create) {
+      if (op.kind === ir.OpKind.ExtractedMessage) {
+        cpl.addConst(op.expression, op.statements);
+        ir.OpList.remove<ir.CreateOp>(op);
+      }
+    }
+  }
+
   // Collect all extracted attributes.
   const elementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const [_, view] of cpl.views) {

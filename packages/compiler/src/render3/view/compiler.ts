@@ -244,7 +244,13 @@ export function compileComponentFromMetadata(
     definitionMap.set('decls', o.literal(tpl.root.decls as number));
     definitionMap.set('vars', o.literal(tpl.root.vars as number));
     if (tpl.consts.length > 0) {
-      definitionMap.set('consts', o.literalArr(tpl.consts));
+      if (tpl.constsInitializers.length > 0) {
+        definitionMap.set(
+            'consts',
+            o.fn([], [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))]));
+      } else {
+        definitionMap.set('consts', o.literalArr(tpl.consts));
+      }
     }
     definitionMap.set('template', templateFn);
   }

@@ -141,6 +141,11 @@ export enum OpKind {
   ExtractedAttribute,
 
   /**
+   * An i18n message that has been extracted for inclusion in the consts array.
+   */
+  ExtractedMessage,
+
+  /**
    * A host binding property.
    */
   HostProperty,

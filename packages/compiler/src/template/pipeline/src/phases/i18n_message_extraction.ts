@@ -43,7 +43,7 @@ export function phaseI18nMessageExtraction(job: CompilationJob): void {
         // TODO: figure out transformFn.
         const statements = getTranslationDeclStmts(
             op.i18n, mainVar, closureVar, params, undefined /*transformFn*/);
-        job.pool.statements.push(...statements);
+        unit.create.push(ir.createExtractedMessageOp(mainVar, statements));
       }
     }
   }

@@ -74,12 +74,12 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseResolveContexts(job);
   phaseResolveSanitizers(job);
   phaseLocalRefs(job);
-  phaseConstCollection(job);
   phaseNullishCoalescing(job);
   phaseExpandSafeReads(job);
   phaseTemporaryVariables(job);
   phaseSlotAllocation(job);
   phaseI18nMessageExtraction(job);
+  phaseConstCollection(job);
   phaseVarCounting(job);
   phaseGenerateAdvance(job);
   phaseVariableOptimization(job);

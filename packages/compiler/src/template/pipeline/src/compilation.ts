@@ -154,6 +154,11 @@ export class ComponentCompilationJob implements CompilationJob {
   readonly consts: o.Expression[] = [];
 
   /**
+   * Initialization statements needed to set up the consts.
+   */
+  readonly constsInitializers: o.Statement[] = [];
+
+  /**
    * The root view, representing the component's template.
    */
   readonly root: ViewCompilationUnit;
@@ -186,7 +191,7 @@ export class ComponentCompilationJob implements CompilationJob {
   /**
    * Add a constant `o.Expression` to the compilation and return its index in the `consts` array.
    */
-  addConst(newConst: o.Expression): ir.ConstIndex {
+  addConst(newConst: o.Expression, initializers?: o.Statement[]): ir.ConstIndex {
     for (let idx = 0; idx < this.consts.length; idx++) {
       if (this.consts[idx].isEquivalent(newConst)) {
         return idx as ir.ConstIndex;
@@ -194,6 +199,9 @@ export class ComponentCompilationJob implements CompilationJob {
     }
     const idx = this.consts.length;
     this.consts.push(newConst);
+    if (initializers) {
+      this.constsInitializers.push(...initializers);
+    }
     return idx as ir.ConstIndex;
   }
 }

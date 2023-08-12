@@ -20,10 +20,10 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp =
-    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
-    PipeOp|VariableOp<CreateOp>|NamespaceOp|ExtractedAttributeOp|I18nOp|I18nStartOp|I18nEndOp;
+export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
+    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|
+    ExtractedAttributeOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -480,6 +480,36 @@ export function createExtractedAttributeOp(
     bindingKind,
     name,
     expression,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Represents an i18n message that has been extracted for inclusion in the consts array.
+ */
+export interface ExtractedMessageOp extends Op<CreateOp> {
+  kind: OpKind.ExtractedMessage;
+
+  /**
+   * The message expression.
+   */
+  expression: o.Expression;
+
+  /**
+   * The statements to construct the message.
+   */
+  statements: o.Statement[];
+}
+
+/**
+ * Create an `ExtractedMessageOp`.
+ */
+export function createExtractedMessageOp(
+    expression: o.Expression, statements: o.Statement[]): ExtractedMessageOp {
+  return {
+    kind: OpKind.ExtractedMessage,
+    expression,
+    statements,
     ...NEW_OP,
   };
 }
