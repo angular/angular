@@ -419,6 +419,10 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
     onInvokeTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
          applyArgs: any): any => {
+          if (shouldBeIgnoredByZone(applyArgs)) {
+            return delegate.invokeTask(target, task, applyThis, applyArgs);
+          }
+
           try {
             onEnter(zone);
             return delegate.invokeTask(target, task, applyThis, applyArgs);
@@ -584,4 +588,19 @@ export function isStableFactory() {
     };
   });
   return merge(isCurrentlyStable, isStable.pipe(share()));
+}
+
+function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
+  if (!Array.isArray(applyArgs)) {
+    return false;
+  }
+
+  // We should only ever get 1 arg passed through to invokeTask.
+  // Short circuit here incase that behavior changes.
+  if (applyArgs.length !== 1) {
+    return false;
+  }
+
+  // Prevent triggering change detection when the __ignore_ng_zone__ flag is detected.
+  return applyArgs[0].data?.['__ignore_ng_zone__'] === true;
 }
