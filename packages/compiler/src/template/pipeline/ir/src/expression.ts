@@ -807,6 +807,12 @@ export function transformExpressionsInOp(
       op.expression =
           op.expression && transformExpressionsInExpression(op.expression, transform, flags);
       break;
+    case OpKind.ExtractedMessage:
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
+      for (const statement of op.statements) {
+        transformExpressionsInStatement(statement, transform, flags);
+      }
+      break;
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
@@ -875,6 +881,14 @@ export function transformExpressionsInExpression(
     if (expr.falseCase !== null) {
       expr.falseCase = transformExpressionsInExpression(expr.falseCase, transform, flags);
     }
+  } else if (expr instanceof o.TypeofExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
+  } else if (expr instanceof o.WriteVarExpr) {
+    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
+  } else if (expr instanceof o.LocalizedString) {
+    for (let i = 0; i < expr.expressions.length; i++) {
+      expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
+    }
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
@@ -900,6 +914,14 @@ export function transformExpressionsInStatement(
   } else if (stmt instanceof o.DeclareVarStmt) {
     if (stmt.value !== undefined) {
       stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
+    }
+  } else if (stmt instanceof o.IfStmt) {
+    stmt.condition = transformExpressionsInExpression(stmt.condition, transform, flags);
+    for (const caseStatement of stmt.trueCase) {
+      transformExpressionsInStatement(caseStatement, transform, flags);
+    }
+    for (const caseStatement of stmt.falseCase) {
+      transformExpressionsInStatement(caseStatement, transform, flags);
     }
   } else {
     throw new Error(`Unhandled statement kind: ${stmt.constructor.name}`);
