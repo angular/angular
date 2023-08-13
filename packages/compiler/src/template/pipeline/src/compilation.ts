@@ -165,7 +165,8 @@ export class ComponentCompilationJob implements CompilationJob {
 
   constructor(
       readonly componentName: string, readonly pool: ConstantPool,
-      readonly compatibility: ir.CompatibilityMode) {
+      readonly compatibility: ir.CompatibilityMode, readonly relativeContextFilePath: string,
+      readonly i18nUseExternalIds: boolean) {
     // Allocate the root view.
     const root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(root.xref, root);
