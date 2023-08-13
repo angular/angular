@@ -14,7 +14,7 @@ import {createGoogleGetMsgStatements} from '../../../../render3/view/i18n/get_ms
 import {createLocalizeStatements} from '../../../../render3/view/i18n/localize_utils';
 import {declareI18nVariable, formatI18nPlaceholderNamesInMap, getTranslationConstPrefix} from '../../../../render3/view/i18n/util';
 import * as ir from '../../ir';
-import {CompilationJob} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
 
 
 /** Name of the global variable that is used to determine if we use Closure translations or not */
@@ -28,7 +28,9 @@ const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
 export const TRANSLATION_VAR_PREFIX = 'i18n_';
 
 /** Extracts i18n messages into the consts array. */
-export function phaseI18nMessageExtraction(job: CompilationJob): void {
+export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
+  const fileBasedI18nSuffix =
+      job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart && op.i18n instanceof i18n.Message) {
@@ -39,7 +41,8 @@ export function phaseI18nMessageExtraction(job: CompilationJob): void {
         // Closure Compiler requires const names to start with `MSG_` but disallows any other const
         // to start with `MSG_`. We define a variable starting with `MSG_` just for the
         // `goog.getMsg` call
-        const closureVar = i18nGenerateClosureVar(job.pool, op.i18n.id);
+        const closureVar = i18nGenerateClosureVar(
+            job.pool, op.i18n.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
         // TODO: figure out transformFn.
         const statements = getTranslationDeclStmts(
             op.i18n, mainVar, closureVar, params, undefined /*transformFn*/);
@@ -112,12 +115,12 @@ function createClosureModeGuard(): o.BinaryOperatorExpr {
 /**
  * Generates vars with Closure-specific names for i18n blocks (i.e. `MSG_XXX`).
  */
-function i18nGenerateClosureVar(pool: ConstantPool, messageId: string): o.ReadVarExpr {
+function i18nGenerateClosureVar(
+    pool: ConstantPool, messageId: string, fileBasedI18nSuffix: string,
+    useExternalIds: boolean): o.ReadVarExpr {
   let name: string;
-  // TODO: figure out suffix.
-  const suffix = /*this.fileBasedI18nSuffix.toUpperCase()*/ 'XXX';
-  // TODO: figure out condition.
-  if (/*this.i18nUseExternalIds*/ 1 == 1) {
+  const suffix = fileBasedI18nSuffix;
+  if (useExternalIds) {
     const prefix = getTranslationConstPrefix(`EXTERNAL_`);
     const uniqueSuffix = pool.uniqueName(suffix);
     name = `${prefix}${sanitizeIdentifier(messageId)}$$${uniqueSuffix}`;

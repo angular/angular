@@ -27,9 +27,10 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
  * representation.
  */
 export function ingestComponent(
-    componentName: string, template: t.Node[],
-    constantPool: ConstantPool): ComponentCompilationJob {
-  const cpl = new ComponentCompilationJob(componentName, constantPool, compatibilityMode);
+    componentName: string, template: t.Node[], constantPool: ConstantPool,
+    relativeContextFilePath: string, i18nUseExternalIds: boolean): ComponentCompilationJob {
+  const cpl = new ComponentCompilationJob(
+      componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds);
   ingestNodes(cpl.root, template);
   return cpl;
 }
