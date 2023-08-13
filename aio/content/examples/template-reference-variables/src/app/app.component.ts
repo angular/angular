@@ -1,10 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { NgForm, FormsModule } from '@angular/forms';
 
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
+  imports: [ CommonModule, FormsModule ],
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
