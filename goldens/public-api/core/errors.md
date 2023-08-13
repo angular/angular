@@ -85,7 +85,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
-    MISSING_SSR_CONTENT_INTEGRITY_MARKER = 507,
+    MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,
     // (undocumented)
     MISSING_ZONEJS = 908,
     // (undocumented)
