@@ -610,11 +610,11 @@ without NgModel
 </div>
 
 <!-- pipe with configuration argument => "February 25, 1970" -->
-<div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+<div>Birthdate: {{currentHero.birthdate | date:'longDate'}}</div>
 
 <div>{{currentHero | json}}</div>
 
-<div>Birthdate: {{(currentHero?.birthdate | date:'longDate') | uppercase}}</div>
+<div>Birthdate: {{(currentHero.birthdate | date:'longDate') | uppercase}}</div>
 
 <div>
   <!-- pipe price to USD and display the $ symbol -->
@@ -631,7 +631,7 @@ without NgModel
 </div>
 
 <div>
-  The current hero's name is {{currentHero?.name}}
+  The current hero's name is {{currentHero.name}}
 </div>
 
 <div>

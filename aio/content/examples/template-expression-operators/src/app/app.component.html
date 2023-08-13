@@ -1,6 +1,7 @@
+<!-- Archived: see only referencing guide, `template-expression-operators.md`. -->
 <h1>{{title}}</h1>
 
-<hr />
+<hr/>
 
 <h2 id="pipes">Pipes</h2>
 <p>Title through uppercase pipe: {{title | uppercase}}</p>
@@ -16,11 +17,11 @@
 <hr />
 
 <h2>Safe navigation operator: <code>?</code> and <code>null</code></h2>
-<p>The item name is: {{item?.name}}</p>
+<p>The item name is: {{item.name}}</p>
 
 <p>The nullItem name is: {{nullItem?.name}}</p>
 
-<hr />
+<hr/>
 
 <h2>Error because nullItem is null:</h2>
 <!-- uncomment to see error in console -->
@@ -31,14 +32,14 @@
   <p class="error">TypeError: Cannot read property 'name' of null</p>
 </div>
 
-<hr />
+<hr/>
 
-<h2>The div will not display and there's no error: </h2>
+<h2>The div will not display so there's no error when reading `nullItem.name`: </h2>
 <div class="no-show-div">
   <p>There's a child paragraph element in here that doesn't show. </p>
   <p *ngIf="nullItem">The null item's name {{nullItem.name}}</p>
 </div>
-<hr />
+<hr/>
 
 <h2>Div shows but interpolation doesn't:</h2>
 <div>

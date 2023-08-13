@@ -1,4 +1,13 @@
 import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { BigHeroDetailComponent, HeroDetailComponent } from './hero-detail.component';
+import { ClickDirective, ClickDirective2 } from './click.directive';
+import { HeroFormComponent } from './hero-form.component';
+import { heroSwitchComponents } from './hero-switch.components';
+import { SizerComponent } from './sizer.component';
+import { SvgComponent } from './svg.component';
 
 import { Hero } from './hero';
 
@@ -8,8 +17,24 @@ export enum Color {Red, Green, Blue}
  * Giant grab bag of stuff to drive the chapter
  */
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
+  imports: [
+    // Angular Sources
+    CommonModule, FormsModule,
+    DatePipe,
+
+    // Sample Components and Directives
+    BigHeroDetailComponent,
+    ClickDirective,
+    ClickDirective2,
+    HeroDetailComponent,
+    HeroFormComponent,
+    heroSwitchComponents, // an array of components
+    SizerComponent,
+    SvgComponent
+   ],
   styleUrls: [ './app.component.css' ]
 })
 export class AppComponent implements AfterViewInit, OnInit {
