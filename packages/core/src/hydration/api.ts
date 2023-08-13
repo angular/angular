@@ -237,7 +237,7 @@ function verifySsrContentsIntegrity(): void {
         typeof ngDevMode !== 'undefined' && ngDevMode &&
             'Angular hydration logic detected that HTML content of this page was modified after it ' +
                 'was produced during server side rendering. Make sure that there are no optimizations ' +
-                'that remove comment nodes from HTML are enabled on your CDN. Angular hydration ' +
+                'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
                 'relies on HTML produced by the server, including whitespaces and comment nodes.');
   }
 }
