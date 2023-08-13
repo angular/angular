@@ -24,6 +24,7 @@ import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
+import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
 import {phaseLocalRefs} from './phases/local_refs';
 import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
@@ -56,6 +57,7 @@ import {phaseVariableOptimization} from './phases/variable_optimization';
  * processing, the compilation should be in a state where it can be emitted.
  */
 export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseI18nTextExtraction(job);
   phaseNamespace(job);
   phaseStyleBindingSpecialization(job);
   phaseBindingSpecialization(job);
