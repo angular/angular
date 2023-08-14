@@ -18,7 +18,7 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, NgModuleScopeInfoFromDecorator, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
@@ -342,6 +342,23 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
   });
 }
 
+/**
+ * Generated next to NgModules to monkey-patch directive and pipe references onto a component's
+ * definition, when generating a direct reference in the component file would otherwise create an
+ * import cycle.
+ *
+ * See [this explanation](https://hackmd.io/Odw80D0pR6yfsOjg_7XCJg?view) for more details.
+ *
+ * @codeGenApi
+ */
+export function ɵɵsetComponentScope(
+    type: ComponentType<any>, directives: Type<any>[]|(() => Type<any>[]),
+    pipes: Type<any>[]|(() => Type<any>[])): void {
+  const def = type.ɵcmp as ComponentDef<any>;
+  def.directiveDefs = extractDefListOrFactory(directives, /* pipeDef */ false);
+  def.pipeDefs = extractDefListOrFactory(pipes, /* pipeDef */ true);
+}
+
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any>|null {
   return getComponentDef(type) || getDirectiveDef(type);
 }
@@ -390,6 +407,25 @@ export function ɵɵdefineNgModule<T>(def: {
       id: def.id || null,
     };
     return res;
+  });
+}
+
+/**
+ * Adds the module metadata that is necessary to compute the module's transitive scope to an
+ * existing module definition.
+ *
+ * Scope metadata of modules is not used in production builds, so calls to this function can be
+ * marked pure to tree-shake it from the bundle, allowing for all referenced declarations
+ * to become eligible for tree-shaking as well.
+ *
+ * @codeGenApi
+ */
+export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDecorator): unknown {
+  return noSideEffects(() => {
+    const ngModuleDef = getNgModuleDef(type, true);
+    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
+    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
+    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
   });
 }
 
@@ -612,13 +648,13 @@ function initFeatures(definition:|Mutable<DirectiveDef<unknown>, keyof Directive
   definition.features?.forEach((fn) => fn(definition));
 }
 
-export function extractDefListOrFactory(
+function extractDefListOrFactory(
     dependencies: TypeOrFactory<DependencyTypeList>|undefined,
     pipeDef: false): DirectiveDefListOrFactory|null;
-export function extractDefListOrFactory(
+function extractDefListOrFactory(
     dependencies: TypeOrFactory<DependencyTypeList>|undefined, pipeDef: true): PipeDefListOrFactory|
     null;
-export function extractDefListOrFactory(
+function extractDefListOrFactory(
     dependencies: TypeOrFactory<DependencyTypeList>|undefined, pipeDef: boolean): unknown {
   if (!dependencies) {
     return null;
