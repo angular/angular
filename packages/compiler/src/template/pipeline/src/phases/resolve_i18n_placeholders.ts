@@ -69,7 +69,7 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
     // Add the close tags in reverse order that we encountered the start tags, to match
     // TemplateDefinitionBuilder.
     for (let i = closeTags.length - 1; i >= 0; i--) {
-      const {i18nOp, placeholder, value} = closeTags[i]
+      const {i18nOp, placeholder, value} = closeTags[i];
       i18nOp.tagNameParams[placeholder] = value;
     }
   }

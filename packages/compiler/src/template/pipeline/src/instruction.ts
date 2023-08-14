@@ -174,12 +174,12 @@ export function text(
   return call(Identifiers.text, args, sourceSpan);
 }
 
-export function i18nStart(slot: number): ir.CreateOp {
-  return call(Identifiers.i18nStart, [new o.LiteralExpr(slot)], null);
+export function i18nStart(slot: number, constIndex: number): ir.CreateOp {
+  return call(Identifiers.i18nStart, [o.literal(slot), o.literal(constIndex)], null);
 }
 
 export function i18n(slot: number): ir.CreateOp {
-  return call(Identifiers.i18n, [new o.LiteralExpr(slot)], null);
+  return call(Identifiers.i18n, [o.literal(slot)], null);
 }
 
 export function i18nEnd(): ir.CreateOp {
