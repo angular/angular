@@ -500,6 +500,11 @@ export interface ExtractedMessageOp extends Op<CreateOp> {
   kind: OpKind.ExtractedMessage;
 
   /**
+   * A reference to the i18n op this message was extracted from.
+   */
+  owner: XrefId;
+
+  /**
    * The message expression.
    */
   expression: o.Expression;
@@ -514,9 +519,10 @@ export interface ExtractedMessageOp extends Op<CreateOp> {
  * Create an `ExtractedMessageOp`.
  */
 export function createExtractedMessageOp(
-    expression: o.Expression, statements: o.Statement[]): ExtractedMessageOp {
+    owner: XrefId, expression: o.Expression, statements: o.Statement[]): ExtractedMessageOp {
   return {
     kind: OpKind.ExtractedMessage,
+    owner,
     expression,
     statements,
     ...NEW_OP,
@@ -542,6 +548,11 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * Map of values to use for tag name placeholders in the i18n message.
    */
   tagNameParams: {[placeholder: string]: o.Expression};
+
+  /**
+   * The index in the consts array where the message i18n message is stored.
+   */
+  messageIndex: ConstIndex|null;
 }
 
 /**
@@ -567,6 +578,7 @@ export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartO
     xref,
     i18n,
     tagNameParams: {},
+    messageIndex: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
