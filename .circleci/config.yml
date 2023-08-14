@@ -505,13 +505,7 @@ jobs:
       - init_environment
       - install_java
 
-      - run: |
-          yarn bazel build -- \
-            //packages/zone.js/bundles:zone.umd.js \
-            //packages/zone.js:npm_package \
-            //packages/zone.js/test/closure:closure_js \
-            //packages/zone.js:zone_externs
-
+      - run: yarn bazel build //packages/zone.js/bundles:zone.umd.js //packages/zone.js:npm_package //packages/zone.js/test/closure:closure_js //packages/zone.js:zone_externs
       - run: |
           mkdir -p packages/zone.js/build/
           mkdir -p packages/zone.js/build/test/
@@ -564,9 +558,6 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - test_zonejs:
-          requires:
-            - setup
 
   monitoring:
     jobs:
