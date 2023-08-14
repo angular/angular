@@ -96,6 +96,11 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   nonBindable: boolean;
 
+  /**
+   * The i18n metadata associated with this element.
+   */
+  i18n?: i18n.I18nMeta;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -124,7 +129,8 @@ export interface ElementStartOp extends ElementOpBase {
  * Create an `ElementStartOp`.
  */
 export function createElementStartOp(
-    tag: string, xref: XrefId, namespace: Namespace, sourceSpan: ParseSourceSpan): ElementStartOp {
+    tag: string, xref: XrefId, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
+    sourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
     xref,
@@ -133,6 +139,7 @@ export function createElementStartOp(
     localRefs: [],
     nonBindable: false,
     namespace,
+    i18n,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -169,7 +176,8 @@ export interface TemplateOp extends ElementOpBase {
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, namespace: Namespace, sourceSpan: ParseSourceSpan): TemplateOp {
+    xref: XrefId, tag: string, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
+    sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
@@ -180,6 +188,7 @@ export function createTemplateOp(
     localRefs: [],
     nonBindable: false,
     namespace,
+    i18n,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -528,6 +537,11 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * The i18n metadata associated with this op.
    */
   i18n: i18n.I18nMeta;
+
+  /**
+   * Map of values to use for tag name placeholders in the i18n message.
+   */
+  tagNameParams: {[placeholder: string]: o.Expression};
 }
 
 /**
@@ -552,6 +566,7 @@ export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartO
     kind: OpKind.I18nStart,
     xref,
     i18n,
+    tagNameParams: {},
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
