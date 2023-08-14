@@ -21,10 +21,10 @@ describe('type definitions', () => {
     ngLS = new LanguageService(project, tsLS, {});
   });
 
-  const possibleArrayDefFiles = new Set([
+  const possibleArrayDefFiles: readonly string[] = [
     'lib.es5.d.ts', 'lib.es2015.core.d.ts', 'lib.es2015.iterable.d.ts',
     'lib.es2015.symbol.wellknown.d.ts', 'lib.es2016.array.include.d.ts'
-  ]);
+  ];
 
   beforeEach(() => {
     service.reset();
@@ -306,21 +306,27 @@ describe('type definitions', () => {
       const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
       });
-      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
+      expectAllDefinitions(
+          definitions, new Set(['Hero', 'Array']),
+          new Set([...possibleArrayDefFiles, 'app.component.ts']));
     });
 
     it('should work for uses of members in structural directives', () => {
       const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of heroes as heroes2">{{her¦oes2}}</div>`,
       });
-      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
+      expectAllDefinitions(
+          definitions, new Set(['Hero', 'Array']),
+          new Set([...possibleArrayDefFiles, 'app.component.ts']));
     });
 
     it('should work for members in structural directives', () => {
       const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of her¦oes; trackBy: test;"></div>`,
       });
-      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
+      expectAllDefinitions(
+          definitions, new Set(['Hero', 'Array']),
+          new Set([...possibleArrayDefFiles, 'app.component.ts']));
     });
 
     it('should return nothing for the $any() cast function', () => {
@@ -348,7 +354,8 @@ describe('type definitions', () => {
     for (const def of definitions) {
       const fileName = def.fileName.split('/').slice(-1)[0];
       expect(possibleFileNames)
-          .toContain(fileName, `Expected ${fileName} to be one of: ${possibleFileNames}`);
+          .withContext(`Expected ${fileName} to be one of: ${possibleFileNames}`)
+          .toContain(fileName);
     }
   }
 });

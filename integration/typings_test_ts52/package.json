@@ -1,9 +1,8 @@
 {
   "name": "angular-integration",
-  "description": "Assert that users with module: nodenext in their tsconfig can import our packages",
+  "description": "Assert that users with TypeScript 5.2 can type-check an Angular application",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",
@@ -21,7 +20,7 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
+    "typescript": "5.2.1-rc",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "scripts": {

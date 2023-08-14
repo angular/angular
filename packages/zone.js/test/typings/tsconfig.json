@@ -8,7 +8,7 @@
     "rootDir": ".",
     "target": "es2020",
     "module": "Node16",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
