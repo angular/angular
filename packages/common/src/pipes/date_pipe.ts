@@ -52,9 +52,8 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_
  * ]
  * ```
  */
-export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
-    'DATE_PIPE_DEFAULT_OPTIONS',
-);
+export const DATE_PIPE_DEFAULT_OPTIONS =
+    new InjectionToken<DatePipeConfig>('DATE_PIPE_DEFAULT_OPTIONS');
 
 // clang-format off
 /**
@@ -247,25 +246,15 @@ export class DatePipe implements PipeTransform {
    *
    * @returns A date string in the desired format.
    */
-  transform(
-      value: Date|string|number,
-      format?: string,
-      timezone?: string,
-      locale?: string,
-      ): string|null;
+  transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
+      |null;
   transform(value: null|undefined, format?: string, timezone?: string, locale?: string): null;
   transform(
-      value: Date|string|number|null|undefined,
-      format?: string,
-      timezone?: string,
-      locale?: string,
-      ): string|null;
+      value: Date|string|number|null|undefined, format?: string, timezone?: string,
+      locale?: string): string|null;
   transform(
-      value: Date|string|number|null|undefined,
-      format?: string,
-      timezone?: string,
-      locale?: string,
-      ): string|null {
+      value: Date|string|number|null|undefined, format?: string, timezone?: string,
+      locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;
 
     try {
