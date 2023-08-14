@@ -13,14 +13,15 @@ import * as animationsBrowser from '@angular/animations/browser';
 import * as animationsBrowserTesting from '@angular/animations/browser/testing';
 import * as common from '@angular/common';
 import * as commonHttp from '@angular/common/http';
-import * as commonHttpTesting from '@angular/common/http/testing';
 import * as commonTesting from '@angular/common/testing';
+import * as commonHttpTesting from '@angular/common/http/testing';
 import * as compiler from '@angular/compiler';
 import * as compilerTesting from '@angular/compiler/testing';
 import * as core from '@angular/core';
 import * as coreTesting from '@angular/core/testing';
 import * as elements from '@angular/elements';
 import * as forms from '@angular/forms';
+import * as localize from '@angular/localize';
 import * as platformBrowser from '@angular/platform-browser';
 import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
 import * as platformBrowserDynamicTesting from '@angular/platform-browser-dynamic/testing';
@@ -37,14 +38,7 @@ import * as upgrade from '@angular/upgrade';
 import * as upgradeStatic from '@angular/upgrade/static';
 import * as upgradeTesting from '@angular/upgrade/static/testing';
 
-// TODO: temporarily disabled until ESM issue is resolved.
-// import * as compilerCli from '@angular/compiler-cli';
-// import * as localize from '@angular/localize';
-
 export default {
-  // TODO: temporarily disabled until ESM issue is resolved.
-  // compilerCli,
-  // localize,
   animations,
   animationsBrowser,
   animationsBrowserTesting,
@@ -58,6 +52,7 @@ export default {
   coreTesting,
   elements,
   forms,
+  localize,
   platformBrowser,
   platformBrowserTesting,
   platformBrowserDynamic,
