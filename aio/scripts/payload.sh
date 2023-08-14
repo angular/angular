@@ -5,7 +5,6 @@ set -eu -o pipefail
 readonly thisDir=$(cd $(dirname $0); pwd)
 readonly parentDir=$(dirname $thisDir)
 readonly target=${1:-aio}
-readonly PROJECT_ROOT=$(realpath "$(dirname ${thisDir})/..")
 
 # Track payload size functions
 source ../scripts/ci/payload-size.sh
