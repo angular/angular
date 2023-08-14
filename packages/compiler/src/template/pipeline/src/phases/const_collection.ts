@@ -16,21 +16,31 @@ import {ComponentCompilationJob} from '../compilation';
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
  * array expressions, and lifts them into the overall component `consts`.
  */
-export function phaseConstCollection(cpl: ComponentCompilationJob): void {
+export function phaseConstCollection(job: ComponentCompilationJob): void {
   // Serialize the extracted messages into the const array.
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+  const messageConstIndices: {[id: ir.XrefId]: ir.ConstIndex} = {};
+  for (const unit of job.units) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedMessage) {
-        cpl.addConst(op.expression, op.statements);
+        messageConstIndices[op.owner] = job.addConst(op.expression, op.statements);
         ir.OpList.remove<ir.CreateOp>(op);
+      }
+    }
+  }
+
+  // Assign const index to i18n ops that messages were extracted from.
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.I18nStart && messageConstIndices[op.xref] !== undefined) {
+        op.messageIndex = messageConstIndices[op.xref];
       }
     }
   }
 
   // Collect all extracted attributes.
   const elementAttributes = new Map<ir.XrefId, ElementAttributes>();
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+  for (const unit of job.units) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
         const attributes = elementAttributes.get(op.target) || new ElementAttributes();
         elementAttributes.set(op.target, attributes);
@@ -41,15 +51,15 @@ export function phaseConstCollection(cpl: ComponentCompilationJob): void {
   }
 
   // Serialize the extracted attributes into the const array.
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+  for (const unit of job.units) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart ||
           op.kind === ir.OpKind.Template) {
         const attributes = elementAttributes.get(op.xref);
         if (attributes !== undefined) {
           const attrArray = serializeAttributes(attributes);
           if (attrArray.entries.length > 0) {
-            op.attributes = cpl.addConst(attrArray);
+            op.attributes = job.addConst(attrArray);
           }
         }
       }
