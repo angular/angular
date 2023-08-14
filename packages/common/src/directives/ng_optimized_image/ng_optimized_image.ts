@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
@@ -245,7 +245,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input({required: true}) ngSrc!: string;
+  @Input({required: true, transform: unwrapSafeUrl}) ngSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.
@@ -992,4 +992,13 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
 
 function round(input: number): number|string {
   return Number.isInteger(input) ? input : input.toFixed(2);
+}
+
+// Transform function to handle SafeValue input for ngSrc. This doesn't do any sanitization,
+// as that is not needed for img.src and img.srcset. This transform is purely for compatibility.
+function unwrapSafeUrl(value: string|SafeValue): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  return unwrapSafeValue(value);
 }
