@@ -24,7 +24,7 @@ import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponen
  *
  * @deprecated For migration purposes only, to be removed soon.
  */
-export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = true;
+export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = false;
 
 /**
  * An implementation of DepsTrackerApi which will be used for JIT and local compilation.

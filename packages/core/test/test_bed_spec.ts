@@ -11,8 +11,6 @@ import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {NgModuleType} from '../src/render3';
-import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
 const NAME = new InjectionToken<string>('name');
@@ -1630,9 +1628,10 @@ describe('TestBed', () => {
       expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
       expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
 
-      const scopeBeforeReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
-      expect(scopeBeforeReset.compilation.pipes.size).toEqual(1);
-      expect(scopeBeforeReset.compilation.directives.size).toEqual(2);
+      const modDefBeforeReset = (SomeModule as any).ɵmod;
+      const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
+      expect(transitiveScope.pipes.size).toEqual(1);
+      expect(transitiveScope.directives.size).toEqual(2);
 
       TestBed.resetTestingModule();
 
@@ -1640,18 +1639,8 @@ describe('TestBed', () => {
       expect(cmpDefAfterReset.pipeDefs).toBe(null);
       expect(cmpDefAfterReset.directiveDefs).toBe(null);
 
-      const scopeAfterReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
-
-      expect(scopeAfterReset).toEqual({
-        compilation: {
-          pipes: new Set(),
-          directives: new Set([SomeComponent]),
-        },
-        exported: {
-          pipes: new Set(),
-          directives: new Set(),
-        }
-      });
+      const modDefAfterReset = (SomeModule as any).ɵmod;
+      expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
     });
 
     it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)', () => {
