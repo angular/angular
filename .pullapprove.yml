@@ -58,7 +58,6 @@ version: 3
 
 availability:
   users_unavailable:
-    - atscott
     - devversion
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
