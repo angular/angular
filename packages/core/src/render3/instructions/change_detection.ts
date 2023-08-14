@@ -96,18 +96,6 @@ const enum ChangeDetectionMode {
    * flag are refreshed.
    */
   Targeted,
-  /**
-   * Used when refreshing a view to force a refresh of its embedded views. This mode
-   * refreshes views without taking into account their LView flags, i.e. non-dirty OnPush components
-   * will be refreshed in this mode.
-   *
-   * TODO: we should work to remove this mode. It's used in `refreshView` because that's how the
-   * code worked before introducing ChangeDetectionMode. Instead, it should pass `Global` to the
-   * `detectChangesInEmbeddedViews`. We should aim to fix this by v17 or, at the very least, prevent
-   * this flag from affecting signal views not specifically marked for refresh (currently, this flag
-   * would _also_ force signal views to be refreshed).
-   */
-  BugToForceRefreshAndIgnoreViewFlags
 }
 
 /**
@@ -164,7 +152,7 @@ export function refreshView<T>(
     // insertion points. This is needed to avoid the situation where the template is defined in this
     // `LView` but its declaration appears after the insertion component.
     markTransplantedViewsForRefresh(lView);
-    detectChangesInEmbeddedViews(lView, ChangeDetectionMode.BugToForceRefreshAndIgnoreViewFlags);
+    detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
     // Content query results must be refreshed before content hooks are called.
     if (tView.contentQueries !== null) {
@@ -316,8 +304,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   const flags = lView[FLAGS];
   if ((flags & (LViewFlags.CheckAlways | LViewFlags.Dirty) &&
        mode === ChangeDetectionMode.Global) ||
-      flags & LViewFlags.RefreshView ||
-      mode === ChangeDetectionMode.BugToForceRefreshAndIgnoreViewFlags) {
+      flags & LViewFlags.RefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
   } else if (lView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
