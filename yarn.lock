@@ -15964,15 +15964,15 @@ typescript@3.2.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.4.tgz#c585cb952912263d915b462726ce244ba510ef3d"
   integrity sha512-0RNDbSdEokBeEAkgNbxJ+BLwSManFy9TeXz8uW+48j/xhEXv1ePME60olyzw2XzUqUBNAYFeJadIqAgNqIACwg==
 
-typescript@5.1.3:
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.3.tgz#8d84219244a6b40b6fb2b33cc1c062f715b9e826"
-  integrity sha512-XH627E9vkeqhlZFQuL+UsyAXEnibT0kWR2FWONlr4sTjvxyJYnyefgrkyECLzM5NenmKzRAy2rR/OlYLA1HkZw==
-
 typescript@5.1.6:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
   integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
+
+typescript@5.2.1-rc:
+  version "5.2.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.1-rc.tgz#9cf33ff6bc39ba9e1fa59761124f596ecf5e0c07"
+  integrity sha512-gsOdmedQZEWLrYhNqHuzPmcV+4wX7UujzYqszDC5mVMjcN6Nm7lN2eAtndmjWl24aGdAwJqL2ooywkxpaTx8QQ==
 
 typescript@^3.9.10, typescript@^3.9.7:
   version "3.9.10"

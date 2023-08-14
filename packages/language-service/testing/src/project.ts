@@ -118,7 +118,8 @@ export class Project {
         throw new Error(
             `Unable to open ScriptInfo for ${projectFileName} in project ${this.tsConfigPath}`);
       }
-      this.buffers.set(projectFileName, new OpenBuffer(this.ngLS, projectFileName, scriptInfo));
+      this.buffers.set(
+          projectFileName, new OpenBuffer(this.ngLS, this.tsProject, projectFileName, scriptInfo));
     }
 
     return this.buffers.get(projectFileName)!;

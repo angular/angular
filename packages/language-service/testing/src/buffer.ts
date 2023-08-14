@@ -17,8 +17,8 @@ export class OpenBuffer {
   private _cursor: number = 0;
 
   constructor(
-      private ngLS: LanguageService, private projectFileName: string,
-      private scriptInfo: ts.server.ScriptInfo) {}
+      private ngLS: LanguageService, private project: ts.server.Project,
+      private projectFileName: string, private scriptInfo: ts.server.ScriptInfo) {}
 
   get cursor(): number {
     return this._cursor;
@@ -32,6 +32,11 @@ export class OpenBuffer {
   set contents(newContents: string) {
     const snapshot = this.scriptInfo.getSnapshot();
     this.scriptInfo.editContent(0, snapshot.getLength(), newContents);
+
+    // As of TypeScript 5.2 we need to trigger graph update manually in order to satisfy the
+    // following assertion:
+    // https://github.com/microsoft/TypeScript/commit/baf872cba4eb3fbc5e5914385ce534902ae13639#diff-fad6af6557c1406192e30af30e0113a5eb327d60f9e2588bdce6667d619ebd04R1503
+    this.project.updateGraph();
     // If the cursor goes beyond the new length of the buffer, clamp it to the end of the buffer.
     if (this._cursor > newContents.length) {
       this._cursor = newContents.length;
