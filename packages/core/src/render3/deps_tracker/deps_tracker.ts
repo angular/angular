@@ -71,6 +71,11 @@ class DepsTracker implements DepsTrackerApi {
     }
 
     if (def.standalone) {
+      if (!rawImports) {
+        throw new Error(
+            'Standalone component should pass its raw import in order to compute its dependencies');
+      }
+
       const scope = this.getStandaloneComponentScope(type, rawImports);
 
       if (scope.compilation.isPoisoned) {
@@ -215,7 +220,7 @@ class DepsTracker implements DepsTrackerApi {
   /** @override */
   getStandaloneComponentScope(
       type: ComponentType<any>,
-      rawImports?: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
     if (this.standaloneComponentsScopeCache.has(type)) {
       return this.standaloneComponentsScopeCache.get(type)!;
     }
@@ -228,7 +233,7 @@ class DepsTracker implements DepsTrackerApi {
 
   private computeStandaloneComponentScope(
       type: ComponentType<any>,
-      rawImports?: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
+      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope {
     const ans: StandaloneComponentScope = {
       compilation: {
         // Standalone components are always able to self-reference.
@@ -237,7 +242,7 @@ class DepsTracker implements DepsTrackerApi {
       },
     };
 
-    for (const rawImport of rawImports ?? []) {
+    for (const rawImport of rawImports) {
       const imported = resolveForwardRef(rawImport) as Type<any>;
 
       try {
