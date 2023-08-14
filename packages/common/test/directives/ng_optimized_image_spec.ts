@@ -11,6 +11,7 @@ import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
@@ -719,6 +720,30 @@ describe('Image directive', () => {
         fixture.componentInstance.ngSrc = 'newImg.png';
         fixture.detectChanges();
       }).not.toThrowError(new RegExp('was updated after initialization'));
+    });
+    it('should accept a safeUrl ngSrc value', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img
+              [ngSrc]="bypassImage"
+              width="400"
+              height="600"
+            >`
+      })
+      class TestComponent {
+        rawImage = `javascript:alert("Hi there")`;
+        bypassImage: SafeResourceUrl;
+        constructor(private sanitizer: DomSanitizer) {
+          this.bypassImage = sanitizer.bypassSecurityTrustResourceUrl(this.rawImage);
+        }
+      }
+      setupTestingModule({component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let img = nativeElement.querySelector('img')!;
+      expect(img.src).toContain(`${IMG_BASE_URL}/javascript:alert`);
     });
   });
 
