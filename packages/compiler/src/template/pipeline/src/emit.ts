@@ -21,6 +21,7 @@ import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
+import {phaseGenerateI18nBlocks} from './phases/generate_i18n_blocks';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
@@ -43,6 +44,7 @@ import {phaseReify} from './phases/reify';
 import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
 import {phaseResolveContexts} from './phases/resolve_contexts';
 import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
+import {phaseResolveI18nPlaceholders} from './phases/resolve_i18n_placeholders';
 import {phaseResolveNames} from './phases/resolve_names';
 import {phaseResolveSanitizers} from './phases/resolve_sanitizers';
 import {phaseSaveRestoreView} from './phases/save_restore_view';
@@ -57,6 +59,7 @@ import {phaseVariableOptimization} from './phases/variable_optimization';
  * processing, the compilation should be in a state where it can be emitted.
  */
 export function transformTemplate(job: ComponentCompilationJob): void {
+  phaseGenerateI18nBlocks(job);
   phaseI18nTextExtraction(job);
   phaseNamespace(job);
   phaseStyleBindingSpecialization(job);
@@ -80,6 +83,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseExpandSafeReads(job);
   phaseTemporaryVariables(job);
   phaseSlotAllocation(job);
+  phaseResolveI18nPlaceholders(job);
   phaseI18nMessageExtraction(job);
   phaseConstCollection(job);
   phaseVarCounting(job);

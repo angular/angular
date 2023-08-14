@@ -813,11 +813,16 @@ export function transformExpressionsInOp(
         transformExpressionsInStatement(statement, transform, flags);
       }
       break;
+    case OpKind.I18nStart:
+      for (const placeholder in op.tagNameParams) {
+        op.tagNameParams[placeholder] =
+            transformExpressionsInExpression(op.tagNameParams[placeholder], transform, flags);
+      }
+      break;
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
     case OpKind.I18n:
-    case OpKind.I18nStart:
     case OpKind.I18nEnd:
     case OpKind.Container:
     case OpKind.ContainerStart:
