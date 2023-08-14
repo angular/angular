@@ -30,11 +30,12 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
   const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+  const viewInContainerIdx = 0;
 
   if (bindingUpdated(hostLView, bindingIndex, matchingTemplateIndex)) {
     // The index of the view to show changed - remove the previously displayed one
     // (it is a noop if there are no active views in a container).
-    removeLViewFromLContainer(lContainer, 0);
+    removeLViewFromLContainer(lContainer, viewInContainerIdx);
 
     // Index -1 is a special case where none of the conditions evaluates to
     // a truthy value and as the consequence we've got no view to show.
@@ -42,12 +43,12 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
       const templateTNode = getExistingTNode(hostLView[TVIEW], matchingTemplateIndex);
       const embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, value);
 
-      addLViewToLContainer(lContainer, embeddedLView, 0);
+      addLViewToLContainer(lContainer, embeddedLView, viewInContainerIdx);
     }
   } else {
     // We might keep displaying the same template but the actual value of the expression could have
     // changed - re-bind in context.
-    const lView = getLViewFromLContainer<T|undefined>(lContainer, 0);
+    const lView = getLViewFromLContainer<T|undefined>(lContainer, viewInContainerIdx);
     if (lView !== undefined) {
       lView[CONTEXT] = value;
     }
