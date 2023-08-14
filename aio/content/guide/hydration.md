@@ -125,6 +125,13 @@ If you choose to set this setting in your tsconfig, we recommend to set it only 
 
 </div>
 
+<a id="cdn-configuration"></a>
+### CDN Optimizations
+
+Many CDNs offer a feature that will try to optimize your rendered application by stripping all nodes from the rendered DOM that it thinks are unnecessary, which includes comment nodes. Comment nodes are an essential part of Angular's functioning and are critical for hydration to work. You will need to disable this CDN feature in order to ensure your application loads and hydrates.
+
+If CDN optimization is enabled and you have hydration enabled, when you attempt to load the page you will encounter error [NG0507](https://angular.io/errors/NG0507). If you see this error, you should go and disable the CDN optimization.
+
 ### Custom or Noop Zone.js are not yet supported
 
 Hydration relies on a signal from Zone.js when it becomes stable inside an application, so that Angular can start the serialization process on the server or post-hydration cleanup on the client to remove DOM nodes that remained unclaimed.
@@ -184,4 +191,4 @@ re-rendering those components from scratch.
 
 There are a number of third party libraries that depend on DOM manipulation to be able to render. D3 charts is a prime example. These libraries worked without hydration, but they may cause DOM mismatch errors when hydration is enabled. For now, if you encounter DOM mismatch errors using one of these libraries, you can add the `ngSkipHydration` attribute to the component that renders using that library.
 
-@reviewed 2023-06-21
+@reviewed 2023-08-14
