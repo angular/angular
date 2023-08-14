@@ -473,11 +473,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { NgModule } from '@angular/core';
-export let NoAotModule = class NoAotModule {
+let NoAotModule = class NoAotModule {
 };
 NoAotModule = __decorate([
     NgModule({ jit: true })
 ], NoAotModule);
+export { NoAotModule };
 
 /****************************************************************************************************
  * PARTIAL FILE: no_aot.d.ts
