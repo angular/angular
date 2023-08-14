@@ -34,15 +34,10 @@ describe('control flow', () => {
           template:
               function TestComponent_Template(rf: number, ctx: any) {
                 if (rf & 1) {
-                  // QUESTION: fundamental mismatch between the "template" and "container" concepts
-                  // those 2 calls to the ɵɵtemplate instruction will generate comment nodes and
-                  // LContainer
                   ɵɵtemplate(0, App_ng_template_0_Template, 1, 0);
                   ɵɵtemplate(1, App_ng_template_1_Template, 1, 0);
                 }
                 if (rf & 2) {
-                  // CODEGEN: short form if the 'as' form is not used and there is no $implicit
-                  // access
                   ɵɵconditional(0, ctx.show ? 0 : 1);
                 }
               },
@@ -83,14 +78,10 @@ describe('control flow', () => {
           template:
               function TestComponent_Template(rf: number, ctx: any) {
                 if (rf & 1) {
-                  // QUESTION: fundamental mismatch between the "template" and "container" concepts
-                  // those 2 calls to the ɵɵtemplate instruction will generate comment nodes and
-                  // LContainer
                   ɵɵtemplate(0, App_ng_template_0_Template, 1, 1);
                 }
                 if (rf & 2) {
                   let temp: any;
-                  // CODEGEN: longer form, capturing conditional expression value
                   ɵɵconditional(0, (temp = ctx.show) ? 0 : -1, temp);
                 }
               },
@@ -182,8 +173,11 @@ describe('control flow', () => {
                   ɵɵtemplate(2, App_ng_template_default_Template, 1, 0);
                 }
                 if (rf & 2) {
-                  // CODEGEN: like conditional - just no value capturing
-                  ɵɵconditional(0, ctx.case === 0 ? 0 : ctx.case === 1 ? 1 : 2);
+                  const expValue = ctx.case;
+                  // Open question: == vs. === for comparison
+                  // == is the current Angular implementation
+                  // === is used by JavaScript semantics
+                  ɵɵconditional(0, expValue === 0 ? 0 : expValue === 1 ? 1 : 2);
                 }
               },
           encapsulation: 2
