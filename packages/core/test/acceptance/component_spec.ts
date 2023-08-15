@@ -397,8 +397,7 @@ describe('component', () => {
 
       TestBed.configureTestingModule({declarations: [App, CompA, CompB]});
       expect(() => TestBed.createComponent(App))
-          .toThrowError(
-              /NG0300: Multiple components match node with tagname comp: CompA and CompB/);
+          .toThrowError(/Multiple components match node with tagname comp: CompA and CompB/);
     });
 
     it('should not throw if a standalone component imports itself', () => {

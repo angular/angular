@@ -46,14 +46,16 @@ export function assertComponentDef(type: Type<unknown>) {
   }
 }
 
-/** Called when there are multiple component selectors that match a given node */
+/**
+ * Called when there are multiple component selectors that match a given node
+ * changed from RuntimeError(RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH) to error at built-time
+ * */
 export function throwMultipleComponentError(
     tNode: TNode, first: Type<unknown>, second: Type<unknown>): never {
-  throw new RuntimeError(
-      RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
+  throw new Error(
       `Multiple components match node with tagname ${tNode.value}: ` +
-          `${stringifyForError(first)} and ` +
-          `${stringifyForError(second)}`);
+      `${stringifyForError(first)} and ` +
+      `${stringifyForError(second)}`);
 }
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
