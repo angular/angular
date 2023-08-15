@@ -19,6 +19,8 @@ export interface AngularDetection {
   isSupportedAngularVersion: boolean;
 }
 
+let numberOfAngularDetectionTries = 5;
+
 function detectAngular(win: Window): void {
   const isDebugMode = Boolean((win as any).ng);
   const ngVersionElement = document.querySelector('[ng-version]');
@@ -44,8 +46,8 @@ function detectAngular(win: Window): void {
         isAngularDevTools: true,
       } as AngularDetection,
       '*');
-
-  if (!isAngular) {
+  numberOfAngularDetectionTries--;
+  if (!isAngular && numberOfAngularDetectionTries > 0) {
     setTimeout(() => detectAngular(win), 1000);
   }
 }
