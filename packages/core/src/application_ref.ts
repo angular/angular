@@ -389,7 +389,7 @@ export function getPlatform(): PlatformRef|null {
  *
  * @publicApi
  *
- * @see provideZoneChangeDetection
+ * @see {@link provideZoneChangeDetection}
  */
 export interface NgZoneOptions {
   /**
@@ -1290,8 +1290,8 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
  * ```
  *
  * @publicApi
- * @see bootstrapApplication
- * @see NgZoneOptions
+ * @see {@link bootstrapApplication}
+ * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
   const zoneProviders =

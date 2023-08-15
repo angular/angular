@@ -108,7 +108,7 @@ export interface TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see EnvironmentInjector#runInContext
+   * @see {@link EnvironmentInjector#runInContext}
    */
   runInInjectionContext<T>(fn: () => T): T;
 
@@ -335,7 +335,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see EnvironmentInjector#runInContext
+   * @see {@link EnvironmentInjector#runInContext}
    */
   static runInInjectionContext<T>(fn: () => T): T {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);
