@@ -13,7 +13,7 @@ import {RuntimeErrorCode} from './errors';
 
 /**
  * The list of features as an enum to uniquely type each `HydrationFeature`.
- * @see HydrationFeature
+ * @see {@link HydrationFeature}
  *
  * @publicApi
  * @developerPreview
