@@ -161,6 +161,8 @@ export class Identifiers {
   static deferPrefetchOnViewport:
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
 
+  static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
+
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 
   static enableBindings: o.ExternalReference = {name: 'ɵɵenableBindings', moduleName: CORE};
