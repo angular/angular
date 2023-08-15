@@ -1,0 +1,89 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate a basic switch block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["switch"]
+      },
+      "inputFiles": [
+        "basic_switch.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_switch_template.js",
+              "generated": "basic_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a switch block without a default block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["switch"]
+      },
+      "inputFiles": [
+        "switch_without_default.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_without_default_template.js",
+              "generated": "switch_without_default.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate nested switch blocks",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["switch"]
+      },
+      "inputFiles": [
+        "nested_switch.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_switch_template.js",
+              "generated": "nested_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate switch block with a pipe in its expression",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["switch"]
+      },
+      "inputFiles": [
+        "switch_with_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_with_pipe_template.js",
+              "generated": "switch_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    }
+  ]
+}
