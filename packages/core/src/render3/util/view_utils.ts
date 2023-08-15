@@ -199,14 +199,21 @@ function updateViewsToRefresh(lView: LView, amount: 1|- 1) {
     return;
   }
   parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
+
   let viewOrContainer: LView|LContainer = parent;
-  parent = parent[PARENT];
-  while (parent !== null &&
-         ((amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0))) {
+  parent = viewOrContainer[PARENT];
+  function affectsParentCounter() {
+    const shouldIncrementParentCount =
+        amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1;
+    const shouldDecrementParentCount =
+        amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0;
+    return shouldDecrementParentCount || shouldIncrementParentCount;
+  }
+
+  while (parent !== null && affectsParentCounter()) {
     parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
     viewOrContainer = parent;
-    parent = parent[PARENT];
+    parent = viewOrContainer[PARENT];
   }
 }
 
