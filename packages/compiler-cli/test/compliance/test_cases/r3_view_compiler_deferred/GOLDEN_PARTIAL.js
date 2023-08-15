@@ -450,3 +450,62 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_when_with_pipe.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestPipe {
+    tranform() {
+        return true;
+    }
+}
+TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "testPipe" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
+            type: Pipe,
+            args: [{ standalone: true, name: 'testPipe' }]
+        }] });
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.isReady = true;
+    }
+    isVisible() {
+        return false;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    {{message}}
+    {#defer when isVisible() && (isReady | testPipe)}Hello{/defer}
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{message}}
+    {#defer when isVisible() && (isReady | testPipe)}Hello{/defer}
+  `,
+                    standalone: true,
+                    imports: [TestPipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_when_with_pipe.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestPipe {
+    tranform(): boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "testPipe", true>;
+}
+export declare class MyApp {
+    message: string;
+    isReady: boolean;
+    isVisible(): boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

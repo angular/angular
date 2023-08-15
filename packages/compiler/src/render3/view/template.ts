@@ -1175,10 +1175,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // `deferWhen(ctx.someValue)`
     if (when) {
-      this.allocateBindingSlots(null);
+      const value = when.value.visit(this._valueConverter);
+      this.allocateBindingSlots(value);
       this.updateInstructionWithAdvance(
           deferredIndex, when.sourceSpan, prefetch ? R3.deferPrefetchWhen : R3.deferWhen,
-          () => this.convertPropertyBinding(when.value));
+          () => this.convertPropertyBinding(value));
     }
 
     // Note that we generate an implicit `on idle` if the `deferred` block has no triggers.
