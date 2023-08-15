@@ -171,6 +171,27 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with a `when` trigger that has a pipe",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_when_with_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_when_with_pipe_template.js",
+              "generated": "deferred_when_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
