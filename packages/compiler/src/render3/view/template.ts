@@ -178,6 +178,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   /** Temporary variable declarations generated from visiting pipes, literals, etc. */
   private _tempVariables: o.Statement[] = [];
+
+  /**
+   * Temporary variable used to store state between control flow instructions.
+   * Should be accessed via the `allocateControlFlowTempVariable` method.
+   */
+  private _controlFlowTempVariable: o.ReadVarExpr|null = null;
+
   /**
    * List of callbacks to build nested templates. Nested templates must not be visited until
    * after the parent template has finished visiting all of its nodes. This ensures that all
@@ -1001,6 +1008,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitDeferredBlockError = invalid;
   readonly visitDeferredBlockLoading = invalid;
   readonly visitDeferredBlockPlaceholder = invalid;
+  readonly visitSwitchBlockCase = invalid;
 
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {
@@ -1086,6 +1094,66 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.i18nEnd(null, true);
     }
     return null;
+  }
+
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    // Allocate slots for the primary block expression.
+    const blockExpression = block.expression.visit(this._valueConverter);
+    this.allocateBindingSlots(blockExpression);
+
+    // We have to process the block in two steps: once here and again in the update instruction
+    // callback in order to generate the correct expressions when pipes or pure functions are used.
+    const caseData = block.cases.map(currentCase => {
+      const index = this.createEmbeddedTemplateFn(
+          null, currentCase.children, '_Case', currentCase.sourceSpan);
+      let expression: AST|null = null;
+
+      if (currentCase.expression !== null) {
+        expression = currentCase.expression.visit(this._valueConverter);
+        this.allocateBindingSlots(expression);
+      }
+
+      return {index, expression};
+    });
+
+    // Use the index of the first block as the index for the entire container.
+    const containerIndex = caseData[0].index;
+
+    this.updateInstructionWithAdvance(containerIndex, block.sourceSpan, R3.conditional, () => {
+      const generateCases = (caseIndex: number): o.Expression => {
+        // If we've gone beyond the last branch, return the special -1
+        // value which means that no view will be rendered.
+        if (caseIndex > caseData.length - 1) {
+          return o.literal(-1);
+        }
+
+        const {index, expression} = caseData[caseIndex];
+
+        // If the case has no expression, it means that it's the `default` case.
+        // Return its index and stop the recursion. Assumes that there's only one
+        // `default` condition and that it's defined last.
+        if (expression === null) {
+          return o.literal(index);
+        }
+
+        // If this is the very first comparison, we need to assign the value of the primary
+        // expression as a part of the comparison so the remaining cases can reuse it. In practice
+        // this looks as follows:
+        // ```
+        // let temp;
+        // conditional(1, (temp = ctx.foo) === 1 ? 1 : temp === 2 ? 2 : temp === 3 ? 3 : 4);
+        // ```
+        const comparisonTarget = caseIndex === 0 ?
+            this.allocateControlFlowTempVariable().set(
+                this.convertPropertyBinding(blockExpression)) :
+            this.allocateControlFlowTempVariable();
+
+        return comparisonTarget.identical(this.convertPropertyBinding(expression))
+            .conditional(o.literal(index), generateCases(caseIndex + 1));
+      };
+
+      return [o.literal(containerIndex), generateCases(0)];
+    });
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
@@ -1233,8 +1301,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   // TODO: implement control flow instructions
-  visitSwitchBlock(block: t.SwitchBlock): void {}
-  visitSwitchBlockCase(block: t.SwitchBlockCase): void {}
   visitForLoopBlock(block: t.ForLoopBlock): void {}
   visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {}
   visitIfBlock(block: t.IfBlock): void {}
@@ -1404,6 +1470,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     this._tempVariables.push(...stmts);
     return args;
+  }
+
+  /**
+   * Creates and returns a variable that can be used to
+   * store the state between control flow instructions.
+   */
+  private allocateControlFlowTempVariable(): o.ReadVarExpr {
+    // Note: the assumption here is that we'll only need one temporary variable for all control
+    // flow instructions. It's expected that any instructions will overwrite it before passing it
+    // into the parameters.
+    if (this._controlFlowTempVariable === null) {
+      const name = `${this.contextName}_contFlowTmp`;
+      this._tempVariables.push(new o.DeclareVarStmt(name));
+      this._controlFlowTempVariable = o.variable(name);
+    }
+
+    return this._controlFlowTempVariable;
   }
 
   /**
