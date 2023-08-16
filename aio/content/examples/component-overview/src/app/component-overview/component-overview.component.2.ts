@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 
 // #docregion templatebacktick
 @Component({
+  standalone: true,
   selector: 'app-component-overview',
   template: `
     <h1>Hello World!</h1>

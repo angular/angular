@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
 
 // #docregion decorator, decorator-skeleton, selector, templateUrl
 @Component({
+  standalone: true,
 // #enddocregion decorator-skeleton
   selector: 'app-component-overview',
 // #enddocregion selector

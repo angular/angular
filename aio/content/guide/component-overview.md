@@ -3,10 +3,10 @@
 Components are the main building blocks for Angular applications.
 Each component consists of:
 
-*   An HTML template that declares what renders on the page
-*   A TypeScript class that defines behavior
-*   A CSS selector that defines how the component is used in a template
-*   Optionally, CSS styles applied to the template
+- An HTML template that declares what renders on the page
+- A TypeScript class that defines behavior
+- A CSS selector that defines how the component is used in a template
+- Optionally, CSS styles applied to the template
 
 This topic describes how to create and configure an Angular component.
 
@@ -38,11 +38,11 @@ To create a component using the Angular CLI:
 
 By default, this command creates the following:
 
-*   A directory named after the component
-*   A component file, `<component-name>.component.ts`
-*   A template file, `<component-name>.component.html`
-*   A CSS file, `<component-name>.component.css`
-*   A testing specification file, `<component-name>.component.spec.ts`
+- A directory named after the component
+- A component file, `<component-name>.component.ts`
+- A template file, `<component-name>.component.html`
+- A CSS file, `<component-name>.component.css`
+- A testing specification file, `<component-name>.component.spec.ts`
 
 Where `<component-name>` is the name of your component.
 
@@ -66,7 +66,7 @@ To create a new component manually:
 
     <code-example path="component-overview/src/app/component-overview/component-overview.component.ts" region="import"></code-example>
 
-1.  After the `import` statement, add a `@Component` decorator.
+1.  After the `import` statement, add a `@Component` decorator with `standalone` set to `true`.
 
     <code-example path="component-overview/src/app/component-overview/component-overview.component.ts" region="decorator-skeleton"></code-example>
 
@@ -94,7 +94,7 @@ To create a new component manually:
 
 ## Specifying a component's CSS selector
 
-Every component requires a CSS *selector*. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML.
+Every component requires a CSS _selector_. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML.
 For example, consider a component `hello-world.component.ts` that defines its selector as `app-hello-world`.
 This selector instructs Angular to instantiate this component any time the tag `<app-hello-world>` appears in a template.
 
@@ -144,10 +144,10 @@ The `styles` property takes an array of strings that contain the CSS rule declar
 
 ## Next steps
 
-*   For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components)
-*   For additional options to use when creating a component, see [Component](api/core/Component) in the API Reference
-*   For more information on styling components, see [Component styles](guide/component-styles)
-*   For more information on templates, see [Template syntax](guide/template-syntax)
+- For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components)
+- For additional options to use when creating a component, see [Component](api/core/Component) in the API Reference
+- For more information on styling components, see [Component styles](guide/component-styles)
+- For more information on templates, see [Template syntax](guide/template-syntax)
 
 <!-- links -->
 
