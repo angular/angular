@@ -152,6 +152,7 @@ export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
 /**
  * A token for third-party components that can register themselves with NgProbe.
  *
+ * @deprecated
  * @publicApi
  */
 export class NgProbeToken {
