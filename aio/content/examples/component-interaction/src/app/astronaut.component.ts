@@ -5,6 +5,7 @@ import { MissionService } from './mission.service';
 import { Subscription } from 'rxjs';
 
 @Component({
+  standalone: true,
   selector: 'app-astronaut',
   template: `
     <p>

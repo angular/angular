@@ -2,6 +2,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-voter',
   template: `
     <h4>{{name}}</h4>

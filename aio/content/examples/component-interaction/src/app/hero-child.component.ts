@@ -4,6 +4,7 @@ import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-child',
   template: `
     <h3>{{hero.name}} says:</h3>

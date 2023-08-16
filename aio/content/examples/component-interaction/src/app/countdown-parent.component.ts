@@ -11,6 +11,7 @@ import { CountdownTimerComponent } from './countdown-timer.component';
 //// Local variable, #timer, version
 // #docregion lv
 @Component({
+  standalone: true,
   selector: 'app-countdown-parent-lv',
   template: `
     <h3>Countdown to Liftoff (via local variable)</h3>
@@ -27,6 +28,7 @@ export class CountdownLocalVarParentComponent { }
 //// View Child version
 // #docregion vc
 @Component({
+  standalone: true,
   selector: 'app-countdown-parent-vc',
   template: `
     <h3>Countdown to Liftoff (via ViewChild)</h3>

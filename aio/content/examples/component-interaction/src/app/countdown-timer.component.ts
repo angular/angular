@@ -2,6 +2,7 @@
 import { Component, OnDestroy } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-countdown-timer',
   template: '<p>{{message}}</p>'
 })

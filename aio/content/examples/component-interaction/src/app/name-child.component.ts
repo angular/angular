@@ -2,6 +2,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-name-child',
   template: '<h3>"{{name}}"</h3>'
 })

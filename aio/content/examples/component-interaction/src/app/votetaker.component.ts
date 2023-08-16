@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-vote-taker',
   template: `
     <h2>Should mankind colonize the Universe?</h2>

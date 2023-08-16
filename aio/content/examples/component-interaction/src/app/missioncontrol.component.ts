@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { MissionService } from './mission.service';
 
 @Component({
+  standalone: true,
   selector: 'app-mission-control',
   template: `
     <h2>Mission Control</h2>

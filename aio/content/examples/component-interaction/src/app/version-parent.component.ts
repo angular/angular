@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-version-parent',
   template: `
     <h2>Source code version</h2>
