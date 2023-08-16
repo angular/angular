@@ -2,6 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 
 // #docregion
 @Component({
+  standalone: true,
   selector: 'app-emulated-encapsulation',
   template: `
     <h2>Emulated</h2>

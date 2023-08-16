@@ -2,6 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 
 // #docregion
 @Component({
+  standalone: true,
   selector: 'app-shadow-dom-encapsulation',
   template: `
     <h2>ShadowDom</h2>
