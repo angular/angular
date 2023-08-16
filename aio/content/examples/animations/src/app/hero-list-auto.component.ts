@@ -13,11 +13,14 @@ import {
 } from '@angular/animations';
 
 import { Hero } from './hero';
+import { NgFor } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-list-auto',
   templateUrl: 'hero-list-auto.component.html',
   styleUrls: ['./hero-list-page.component.css'],
+  imports: [NgFor],
   // #docregion auto-calc
   animations: [
     trigger('shrinkOut', [

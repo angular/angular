@@ -32,13 +32,21 @@ The guide assumes that you're familiar with building basic Angular apps, as desc
 ## Getting started
 
 The main Angular modules for animations are `@angular/animations` and `@angular/platform-browser`.
-When you create a new project using the CLI, these dependencies are automatically added to your project.
 
 To get started with adding Angular animations to your project, import the animation-specific modules along with standard Angular functionality.
 
 ### Step 1: Enabling the animations module
 
-Import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
+Import `provideAnimations` from `@angular/platform-browser/animations` and add it to the providers list in the `bootstrapApplication` function call.
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(),
+  ]
+});
+```
+
+For `NgModule` based applications import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
 
 <code-example header="src/app/app.module.ts" path="animations/src/app/app.module.1.ts"></code-example>
 
@@ -337,4 +345,4 @@ Check out this [presentation](https://www.youtube.com/watch?v=rnTK9meY5us), show
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-16
