@@ -21,7 +21,7 @@ Start with the top-level component that hosts the view, and nest animations in t
 
 To enable routing transition animation, do the following:
 
-1.  Import the routing module into the application and create a routing configuration that defines the possible routes.
+1.  Create a routing configuration that defines the possible routes. For NgModule based applications, this will include creating a `RouterModule` and adding it to the main `AppModule`.
 1.  Add a router outlet to tell the Angular router where to place the activated components in the DOM.
 1.  Define the animation.
 
@@ -37,15 +37,27 @@ Implement a router transition animation that slides in the new view to the right
 
 ## Route configuration
 
-To begin, configure a set of routes using methods available in the `RouterModule` class.
-This route configuration tells the router how to navigate.
+To begin, configure a set of routes. This route configuration tells the router how to navigate.
 
-Use the `RouterModule.forRoot` method to define a set of routes.
-Also, add `RouterModule` to the `imports` array of the main module, `AppModule`.
+- Create an array called `routes` in `app.routes.ts` to define a set of routes. 
+- Add the routes to the `provideRouter` function in the providers array in `app.config.ts`.
+
+```ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes)
+  ]
+};
+```
 
 <div class="alert is-helpful">
 
 **NOTE**: <br />
+For `NgModule` based applications:
+
+Use the `RouterModule.forRoot` method to define a set of routes.
+Also, add `RouterModule` to the `imports` array of the main module, `AppModule`.
+
 Use the `RouterModule.forRoot` method in the root module, `AppModule`, to register top-level application routes and providers.
 For feature modules, call the `RouterModule.forChild` method instead.
 
@@ -53,7 +65,7 @@ For feature modules, call the `RouterModule.forChild` method instead.
 
 The following configuration defines the possible routes for the application.
 
-<code-example header="src/app/app.module.ts" path="animations/src/app/app.module.ts" region="route-animation-data"></code-example>
+<code-example header="src/app/app.routes.ts" path="animations/src/app/app.routes.ts" region="route-animation-data"></code-example>
 
 The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views.
 The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
