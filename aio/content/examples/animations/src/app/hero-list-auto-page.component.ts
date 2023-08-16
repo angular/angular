@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { HEROES } from './mock-heroes';
+import { HeroListAutoComponent } from './hero-list-auto.component';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-list-auto-page',
   template: `
     <section>
@@ -9,7 +11,8 @@ import { HEROES } from './mock-heroes';
 
       <app-hero-list-auto [heroes]="heroes" (remove)="onRemove($event)"></app-hero-list-auto>
     </section>
-  `
+  `,
+  imports: [HeroListAutoComponent]
 })
 export class HeroListAutoCalcPageComponent {
   heroes = HEROES.slice();

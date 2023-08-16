@@ -1,9 +1,12 @@
 // #docplaster
 import { Component } from '@angular/core';
 import { trigger, transition, animate, style } from '@angular/animations';
+import { NgIf } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-insert-remove',
+  imports: [NgIf],
   animations: [
 // #docregion enter-leave-trigger
     trigger('myInsertRemoveTrigger', [

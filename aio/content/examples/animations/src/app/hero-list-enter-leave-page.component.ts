@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { HEROES } from './mock-heroes';
+import { HeroListEnterLeaveComponent } from './hero-list-enter-leave.component';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-list-enter-leave-page',
   template: `
     <section>
@@ -9,7 +11,8 @@ import { HEROES } from './mock-heroes';
 
       <app-hero-list-enter-leave [heroes]="heroes" (remove)="onRemove($event)"></app-hero-list-enter-leave>
     </section>
-  `
+  `,
+  imports: [HeroListEnterLeaveComponent]
 })
 export class HeroListEnterLeavePageComponent {
   heroes = HEROES.slice();
