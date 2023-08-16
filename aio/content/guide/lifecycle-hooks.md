@@ -159,6 +159,7 @@ Generally, you will want to use `afterNextRender` to perform any one-time initia
 
 ```ts
 @Component({
+  standalone: true,
   selector: 'my-chart-cmp',
   template: `<div #chart>{{ ... }}</div>`,
 })
@@ -178,6 +179,7 @@ Instead of attempting to recreate their behaviors with `afterRender`, you should
 
 ```ts
 @Component({
+  standalone: true,
   selector: 'my-cmp',
   template: `<span #content>{{ ... }}</span>`,
 })
@@ -214,6 +216,7 @@ As an escape hatch for when the browser does not provide a better API to do so, 
 
 ```ts
 @Component({
+  standalone: true,
   selector: 'my-cmp',
   template: `<span #content>{{ ... }}</span>`,
 })

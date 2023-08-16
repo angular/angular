@@ -5,7 +5,10 @@ import { LoggerService } from './logger.service';
 let nextId = 1;
 
 // #docregion ngOnInit
-@Directive({selector: '[appPeekABoo]'})
+@Directive({
+  standalone: true,
+  selector: '[appPeekABoo]'
+})
 export class PeekABooDirective implements OnInit {
   constructor(private logger: LoggerService) { }
 

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 // #docregion child-view
 @Component({
+  standalone: true,
   selector: 'app-child-view',
   template: `
     <label for="hero-name">Hero name: </label>
