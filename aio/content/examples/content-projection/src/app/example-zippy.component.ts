@@ -1,6 +1,7 @@
 import { Component, Directive, Input, TemplateRef, ContentChild, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
+  standalone: true,
   selector: 'button[appExampleZippyToggle]',
 })
 export class ZippyToggleDirective {
@@ -16,6 +17,7 @@ let nextId = 0;
 
 // #docregion zippycontentdirective
 @Directive({
+  standalone: true,
   selector: '[appExampleZippyContent]'
 })
 export class ZippyContentDirective {
@@ -24,6 +26,7 @@ export class ZippyContentDirective {
 // #enddocregion zippycontentdirective
 
 @Component({
+  standalone: true,
   selector: 'app-example-zippy',
   templateUrl: 'example-zippy.template.html',
 })

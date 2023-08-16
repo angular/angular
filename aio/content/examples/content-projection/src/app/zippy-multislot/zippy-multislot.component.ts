@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-zippy-multislot',
   template: `
     <h2>Multi-slot content projection</h2>
