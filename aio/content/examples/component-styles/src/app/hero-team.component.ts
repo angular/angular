@@ -3,6 +3,7 @@ import { Hero } from './hero';
 
 // #docregion stylelink
 @Component({
+  standalone: true,
   selector: 'app-hero-team',
   template: `
     <!-- We must use a relative URL so that the AOT compiler can find the stylesheet -->

@@ -3,6 +3,7 @@ import { Hero } from './hero';
 
 // #docregion
 @Component({
+  standalone: true,
   selector: 'app-root',
   template: `
     <h1>Tour of Heroes</h1>

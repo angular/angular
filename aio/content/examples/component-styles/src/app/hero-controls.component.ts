@@ -3,6 +3,7 @@ import { Hero } from './hero';
 
 // #docregion inlinestyles
 @Component({
+  standalone: true,
   selector: 'app-hero-controls',
   template: `
     <style>

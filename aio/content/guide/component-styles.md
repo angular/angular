@@ -263,6 +263,7 @@ If you're building with the CLI, you can write style files in [sass](https://sas
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
