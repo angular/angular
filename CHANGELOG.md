@@ -1,3 +1,12 @@
+<a name="16.2.1"></a>
+# 16.2.1 (2023-08-16)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [232a8c1b8d](https://github.com/angular/angular/commit/232a8c1b8dadf3f886b4bd0142613d116c865759) | fix | Apply named outlets to children empty paths not appearing in the URL ([#51292](https://github.com/angular/angular/pull/51292)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.0"></a>
 # 16.2.0 (2023-08-09)
 ### benchpress
