@@ -129,6 +129,7 @@ v16 - v19
 |:---                                 |:---                                                                                                        |:---           |:---               |
 | `@angular/animations` | `AnimationDriver.NOOP` | v17 | v19 |
 | `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
+| `@angular/core` | `NgProbeToken` | v17 | v19 |
 
 ### Deprecated features with no planned removal version
 
@@ -193,6 +194,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`providedIn: 'any'`](api/core/Injectable#providedIn) | none | v15 | This option has confusing semantics and nearly zero usage. |
 | [`EnvironmentInjector.runInContext`](api/core/EnvironmentInjector#runInContext) | `runInInjectionContext`  | v16 | `runInInjectionContext` is a more flexible operation which supports element injectors as well |
 | [`@Component.moduleId`](api/core/Component#moduleId) | none | v16 |
+| [`NgProbeToken`](api/core/NgProbeToken) | none | v16 | `ng.prob` was replaced by `ng.getComponent` since Ivy
 
 
 <a id="testing"></a>

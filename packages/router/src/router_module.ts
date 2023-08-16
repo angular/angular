@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink} from './directives/router_link';
@@ -54,10 +54,6 @@ export const ROUTER_PROVIDERS: Provider[] = [
   (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: ROUTER_IS_PROVIDED, useValue: true} :
                                                     [],
 ];
-
-export function routerNgProbeToken() {
-  return new NgProbeToken('Router', Router);
-}
 
 /**
  * @description
@@ -123,7 +119,6 @@ export class RouterModule {
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
-        {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         config?.initialNavigation ? provideInitialNavigation(config) : [],
         config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
         config?.enableViewTransitions ? withViewTransitions().ɵproviders : [],
