@@ -4,6 +4,7 @@ import { Component, Input } from '@angular/core';
 import { AdComponent } from './ad.component';
 
 @Component({
+  standalone: true,
   template: `
     <div class="hero-profile">
       <h3>Featured Hero Profile</h3>
