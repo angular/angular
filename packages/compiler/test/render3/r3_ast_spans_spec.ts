@@ -718,7 +718,7 @@ describe('R3 AST source spans', () => {
     it('is correct for if blocks', () => {
       const html = `{#if cond.expr; as foo}` +
           `Main case was true!` +
-          `{:else if other.expr; as bar}` +
+          `{:else if other.expr}` +
           `Extra case was true!` +
           `{:else}` +
           `False case!` +
@@ -727,15 +727,12 @@ describe('R3 AST source spans', () => {
       expectFromHtml(html, ['if']).toEqual([
         [
           'IfBlock',
-          '{#if cond.expr; as foo}Main case was true!{:else if other.expr; as bar}Extra case was true!{:else}False case!{/if}',
+          '{#if cond.expr; as foo}Main case was true!{:else if other.expr}Extra case was true!{:else}False case!{/if}',
           '{#if cond.expr; as foo}', '{/if}'
         ],
         ['IfBlockBranch', '{#if cond.expr; as foo}Main case was true!', '{#if cond.expr; as foo}'],
         ['Text', 'Main case was true!'],
-        [
-          'IfBlockBranch', '{:else if other.expr; as bar}Extra case was true!',
-          '{:else if other.expr; as bar}'
-        ],
+        ['IfBlockBranch', '{:else if other.expr}Extra case was true!', '{:else if other.expr}'],
         ['Text', 'Extra case was true!'],
         ['IfBlockBranch', '{:else}False case!', '{:else}'],
         ['Text', 'False case!'],
