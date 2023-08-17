@@ -1,35 +1,42 @@
 # HTTP Server communication
 
+<div class="callout is-critical">
+
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Understanding HTTP](guide/understanding-communicating-with-http).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 Most front-end applications need to communicate with a server over the HTTP protocol, to download or upload data and access other back-end services.
-
-## Setup for server communication
-
-Before you can use `HttpClient`, you need to import the Angular `HttpClientModule`.
-Most apps do so in the root `AppModule`.
-
-<code-example header="app/app.module.ts (excerpt)" path="http/src/app/app.module.ts" region="sketch"></code-example>
-
-You can then inject the `HttpClient` service as a dependency of an application class, as shown in the following `ConfigService` example.
-
-<code-example header="app/config/config.service.ts (excerpt)" path="http/src/app/config/config.service.ts" region="proto"></code-example>
-
-The `HttpClient` service makes use of [observables](guide/glossary#observable "Observable definition") for all transactions.
-You must import the RxJS observable and operator symbols that appear in the example snippets.
-These `ConfigService` imports are typical.
-
-<code-example header="app/config/config.service.ts (RxJS imports)" path="http/src/app/config/config.service.ts" region="rxjs-imports"></code-example>
 
 <div class="alert is-helpful">
 
-You can run the <live-example></live-example> that accompanies this guide.
+You can run the <live-example name="http"></live-example> that accompanies this guide.
 
 The sample app does not require a data server.
 It relies on the [Angular *in-memory-web-api*](https://github.com/angular/angular/tree/main/packages/misc/angular-in-memory-web-api), which replaces the *HttpClient* module's `HttpBackend`.
 The replacement service simulates the behavior of a REST-like backend.
 
-Look at the `AppModule` *imports* to see how it is configured.
+Look at the `bootstrapApplication()` method in `main.ts` to see how it is configured.
 
 </div>
+
+## Setup for server communication
+
+Before you can use `HttpClient`, you need to provide the Angular `HttpClientModule` so that it is available for [dependency injection](guide/dependency-injection) into the classes that need it.
+
+Most developers provide the `HttpClientModule` when initializing the app with `bootstrapApplication` in `main.ts` as shown in this example:
+
+<code-example header="main.ts (excerpt)" path="http/src/main.ts" region="sketch"></code-example>
+
+You can then inject the `HttpClient` service as a dependency of an application class, as shown in the following `ConfigService` example.
+
+<code-example header="app/config/config.service.ts (excerpt)" path="http/src/app/config/config.service.ts" region="proto"></code-example>
 
 ## Requesting data from a server
 
@@ -251,4 +258,4 @@ The component's `showConfigResponse()` method displays the response headers as w
 
 As you can see, the response object has a `body` property of the correct type.
 
-@reviewed 2023-02-27
+@reviewed 2023-08-16

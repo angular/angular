@@ -450,11 +450,6 @@
               "tooltip": "Setup a server communication for HTTP"
             },
             {
-              "url": "guide/http-server-communication",
-              "title": "Communicating with backend services",
-              "tooltip": "Understanding communicating with backend services using HTTP"
-            },
-            {
               "url": "guide/http-request-data-from-server",
               "title": "Request data from a server",
               "tooltip": "Learn how to request data from the server via the HTTP client"
