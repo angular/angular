@@ -8,6 +8,7 @@
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setProfiler} from '../profiler';
+
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
