@@ -14,4 +14,5 @@ import {InjectionToken} from './injection_token';
  *
  * @publicApi
  */
-export const ENVIRONMENT_INITIALIZER = new InjectionToken<() => void>('ENVIRONMENT_INITIALIZER');
+export const ENVIRONMENT_INITIALIZER =
+    new InjectionToken<ReadonlyArray<() => void>>('ENVIRONMENT_INITIALIZER');
