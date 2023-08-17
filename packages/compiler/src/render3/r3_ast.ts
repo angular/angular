@@ -259,11 +259,9 @@ export class SwitchBlockCase implements Node {
 
 export class ForLoopBlock implements Node {
   constructor(
-      public itemName: string, public expression: AST,
-      // TODO(crisbeto): figure out if trackBy should be an AST
-      public trackBy: string, public children: Node[], public empty: ForLoopBlockEmpty|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public itemName: string, public expression: AST, public trackBy: AST, public children: Node[],
+      public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
