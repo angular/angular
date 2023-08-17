@@ -575,7 +575,7 @@
             "title": "NGX Cookie Service",
             "url": "https://github.com/stevermeister/ngx-cookie-service"
           },
-          "tailwind-elemetns": {
+          "tailwind-elements": {
             "desc": "Integrate Angular application with Tailwind Elements a open-source collection of components, templates and plugins for Tailwind CSS",
             "title": "Tailwind Elements UI",
             "url": "https://tailwind-elements.com/docs/standard/integrations/angular-integration"
