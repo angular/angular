@@ -1313,7 +1313,7 @@ function writeToDirectiveInput<T>(
   try {
     const inputTransforms = def.inputTransforms;
     if (inputTransforms !== null && inputTransforms.hasOwnProperty(privateName)) {
-      value = inputTransforms[privateName].call(instance, value);
+      value = inputTransforms[privateName](value);
     }
     if (def.setInput !== null) {
       def.setInput(instance, value, publicName, privateName);
