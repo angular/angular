@@ -23,6 +23,6 @@ The HTTP client service offers the following major features.
 
 ## What's next
 
-* [Setup for server communication](guide/http-server-communication)
+* [Setup for server communication](guide/http-setup-server-communication)
 
-@reviewed 2023-03-14
+@reviewed 2023-08-16

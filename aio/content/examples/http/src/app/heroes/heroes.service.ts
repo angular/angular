@@ -6,8 +6,7 @@ import { HttpHeaders } from '@angular/common/http';
 
 // #enddocregion http-options
 
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, catchError, map } from 'rxjs';
 
 import { Hero } from './hero';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
@@ -40,9 +39,10 @@ export class HeroesService {
       );
   }
 
-    // #docregion searchHeroes
+  // #docregion searchHeroes, searchHeroesJsonp
   /* GET heroes whose name contains search term */
   searchHeroes(term: string): Observable<Hero[]> {
+  // #enddocregion searchHeroesJsonp
     term = term.trim();
 
     // Add safe, URL encoded search parameter if there is a search term
@@ -55,6 +55,27 @@ export class HeroesService {
       );
   }
   // #enddocregion searchHeroes
+
+  // This JSONP example doesn't run. It is for the JSONP documentation only.
+  /** Imaginary API in a different domain that supports JSONP. */
+  heroesSearchUrl = 'https://heroes.com/search';
+
+  /** Does whatever is necessary to convert the result from API to Heroes */
+  jsonpResultToHeroes(result: any) { return result as Hero[]; }
+
+  /* GET heroes (using JSONP) whose name contains search term */
+  searchHeroesJsonp(term: string): Observable<Hero[]> {
+    // #docregion searchHeroesJsonp
+    term = term.trim();
+
+    const heroesUrl = `${this.heroesSearchUrl}?${term}`;
+    return this.http.jsonp(heroesUrl, 'callback')
+      .pipe(
+        map(result => this.jsonpResultToHeroes(result)),
+        catchError(this.handleError('searchHeroes', []))
+      );
+  }
+  // #enddocregion searchHeroesJsonp
 
   //////// Save methods //////////
 
