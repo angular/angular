@@ -47,9 +47,7 @@ export function createIfBlock(
       continue;
     }
 
-    // Expressions for `{:else if}` blocks start at 2 to skip the `if` from the expression.
-    const expressionStart = block.name === 'if' ? 0 : 2;
-    const params = parseConditionalBlockParameters(block, errors, bindingParser, expressionStart);
+    const params = parseConditionalBlockParameters(block, errors, bindingParser);
 
     if (params !== null) {
       branches.push(new t.IfBlockBranch(
@@ -284,15 +282,16 @@ function parseBlockParameterToBinding(
 
 /** Parses the parameter of a conditional block (`if` or `else if`). */
 function parseConditionalBlockParameters(
-    block: html.Block, errors: ParseError[], bindingParser: BindingParser,
-    primaryExpressionStart: number) {
+    block: html.Block, errors: ParseError[], bindingParser: BindingParser) {
   if (block.parameters.length === 0) {
     errors.push(new ParseError(block.sourceSpan, 'Conditional block does not have an expression'));
     return null;
   }
 
+  const isPrimaryIfBlock = block.name === 'if';
   const expression =
-      parseBlockParameterToBinding(block.parameters[0], bindingParser, primaryExpressionStart);
+      // Expressions for `{:else if}` blocks start at 2 to skip the `if` from the expression.
+      parseBlockParameterToBinding(block.parameters[0], bindingParser, isPrimaryIfBlock ? 0 : 2);
   let expressionAlias: string|null = null;
 
   // Start from 1 since we processed the first parameter already.
@@ -305,6 +304,9 @@ function parseConditionalBlockParameters(
     if (aliasMatch === null) {
       errors.push(new ParseError(
           param.sourceSpan, `Unrecognized conditional paramater "${param.expression}"`));
+    } else if (!isPrimaryIfBlock) {
+      errors.push(new ParseError(
+          param.sourceSpan, '"as" expression is only allowed on the primary "if" block'));
     } else if (expressionAlias !== null) {
       errors.push(
           new ParseError(param.sourceSpan, 'Conditional can only have one "as" expression'));
