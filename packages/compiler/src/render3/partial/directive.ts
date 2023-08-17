@@ -22,7 +22,7 @@ import {toOptionalLiteralMap} from './util';
  *
  * Do not include any prerelease in these versions as they are ignored.
  */
-const MINIMUM_PARTIAL_LINKER_VERSION = '14.0.0';
+const MINIMUM_PARTIAL_LINKER_VERSION = '16.1.0';
 
 /**
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
@@ -45,7 +45,14 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
     DefinitionMap<R3DeclareDirectiveMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareDirectiveMetadata>();
 
-  definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
+  const hasTransformFunctions =
+      Object.values(meta.inputs).some(input => input.transformFunction !== null);
+  // Note: in order to allow consuming Angular libraries that have been compiled with 16.1+ in
+  // Angular 16.0, we only force a minimum version of 16.1 if input transform feature as introduced
+  // in 16.1 is actually used.
+  const minVersion = hasTransformFunctions ? MINIMUM_PARTIAL_LINKER_VERSION : '14.0.0';
+
+  definitionMap.set('minVersion', o.literal(minVersion));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
 
   // e.g. `type: MyDirective`
