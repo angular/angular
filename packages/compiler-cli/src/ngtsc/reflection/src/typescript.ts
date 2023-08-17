@@ -255,7 +255,11 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
 
-    return {from: importDecl.moduleSpecifier.text, name: getExportedName(decl, id)};
+    return {
+      from: importDecl.moduleSpecifier.text,
+      name: getExportedName(decl, id),
+      node: importDecl,
+    };
   }
 
   /**
@@ -304,6 +308,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       from: importDeclaration.moduleSpecifier.text,
       name: id.text,
+      node: namespaceDeclaration.parent.parent,
     };
   }
 
@@ -659,7 +664,7 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
  * Return the ImportDeclaration for the given `node` if it is either an `ImportSpecifier` or a
  * `NamespaceImport`. If not return `null`.
  */
-function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
+export function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
   return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
       ts.isNamespaceImport(node)    ? node.parent.parent :
                                       null;

@@ -29,6 +29,7 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
  */
 const AOT_ONLY = new Set<string>([
   'ɵsetClassMetadata',
+  'ɵsetClassMetadataAsync',
 ]);
 
 /**
@@ -56,8 +57,7 @@ describe('r3 jit environment', () => {
   it('should support all r3 symbols', () => {
     Object
         // Map over the static properties of Identifiers.
-        .keys(Identifiers)
-        .map(key => (Identifiers as any as {[key: string]: string | ExternalReference})[key])
+        .values(Identifiers)
         // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
         .filter(isExternalReference)
         // Some references are to interface types. Only take properties which have runtime values.

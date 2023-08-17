@@ -14,7 +14,7 @@ import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
@@ -1017,6 +1017,8 @@ export class NgCompiler {
 
     const resourceRegistry = new ResourceRegistry();
 
+    const deferredSymbolsTracker = new DeferredSymbolTracker(this.inputProgram.getTypeChecker());
+
     // Note: If this compilation builds `@angular/core`, we always build in full compilation
     // mode. Code inside the core package is always compatible with itself, so it does not
     // make sense to go through the indirection of partial compilation
@@ -1070,7 +1072,7 @@ export class NgCompiler {
           this.moduleResolver, this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
           referencesRegistry, this.incrementalCompilation.depGraph, injectableRegistry,
           semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder,
-          hostDirectivesResolver, supportTestBed, compilationMode),
+          hostDirectivesResolver, supportTestBed, compilationMode, deferredSymbolsTracker),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1080,17 +1082,17 @@ export class NgCompiler {
             injectableRegistry, refEmitter, referencesRegistry, isCore, strictCtorDeps, semanticDepGraphUpdater,
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
-          supportTestBed,
+          supportTestBed, compilationMode,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
-          this.delegatingPerfRecorder, supportTestBed),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode),
       new InjectableDecoratorHandler(
           reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
-          this.delegatingPerfRecorder, supportTestBed),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,

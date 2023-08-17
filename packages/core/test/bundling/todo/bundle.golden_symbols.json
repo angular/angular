@@ -12,6 +12,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -604,6 +607,9 @@
   },
   {
     "name": "activeConsumer"
+  },
+  {
+    "name": "addLViewToLContainer"
   },
   {
     "name": "addPropertyAlias"

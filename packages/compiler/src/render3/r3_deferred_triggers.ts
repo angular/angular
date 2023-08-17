@@ -40,51 +40,50 @@ enum OnTriggerType {
 /** Parses a `when` deferred trigger. */
 export function parseWhenTrigger(
     {expression, sourceSpan}: html.BlockParameter, bindingParser: BindingParser,
-    errors: ParseError[]): t.BoundDeferredTrigger|null {
+    triggers: t.DeferredBlockTriggers, errors: ParseError[]): void {
   const whenIndex = expression.indexOf('when');
 
   // This is here just to be safe, we shouldn't enter this function
   // in the first place if a block doesn't have the "when" keyword.
   if (whenIndex === -1) {
     errors.push(new ParseError(sourceSpan, `Could not find "when" keyword in expression`));
-    return null;
+  } else {
+    const start = getTriggerParametersStart(expression, whenIndex + 1);
+    const parsed = bindingParser.parseBinding(
+        expression.slice(start), false, sourceSpan, sourceSpan.start.offset + start);
+    trackTrigger('when', triggers, errors, new t.BoundDeferredTrigger(parsed, sourceSpan));
   }
-
-  const start = getTriggerParametersStart(expression, whenIndex + 1);
-  const parsed = bindingParser.parseBinding(
-      expression.slice(start), false, sourceSpan, sourceSpan.start.offset + start);
-
-  return new t.BoundDeferredTrigger(parsed, sourceSpan);
 }
 
 /** Parses an `on` trigger */
 export function parseOnTrigger(
-    {expression, sourceSpan}: html.BlockParameter, errors: ParseError[]): t.DeferredTrigger[] {
+    {expression, sourceSpan}: html.BlockParameter, triggers: t.DeferredBlockTriggers,
+    errors: ParseError[]): void {
   const onIndex = expression.indexOf('on');
 
   // This is here just to be safe, we shouldn't enter this function
   // in the first place if a block doesn't have the "on" keyword.
   if (onIndex === -1) {
     errors.push(new ParseError(sourceSpan, `Could not find "on" keyword in expression`));
-    return [];
+  } else {
+    const start = getTriggerParametersStart(expression, onIndex + 1);
+    const parser = new OnTriggerParser(expression, start, sourceSpan, triggers, errors);
+    parser.parse();
   }
-
-  const start = getTriggerParametersStart(expression, onIndex + 1);
-  return new OnTriggerParser(expression, start, sourceSpan, errors).parse();
 }
+
 
 class OnTriggerParser {
   private index = 0;
   private tokens: Token[];
-  private triggers: t.DeferredTrigger[] = [];
 
   constructor(
       private expression: string, private start: number, private span: ParseSourceSpan,
-      private errors: ParseError[]) {
+      private triggers: t.DeferredBlockTriggers, private errors: ParseError[]) {
     this.tokens = new Lexer().tokenize(expression.slice(start));
   }
 
-  parse(): t.DeferredTrigger[] {
+  parse(): void {
     while (this.tokens.length > 0 && this.index < this.tokens.length) {
       const token = this.token();
 
@@ -113,8 +112,6 @@ class OnTriggerParser {
 
       this.advance();
     }
-
-    return this.triggers;
   }
 
   private advance() {
@@ -141,27 +138,27 @@ class OnTriggerParser {
     try {
       switch (identifier.toString()) {
         case OnTriggerType.IDLE:
-          this.triggers.push(createIdleTrigger(parameters, sourceSpan));
+          this.trackTrigger('idle', createIdleTrigger(parameters, sourceSpan));
           break;
 
         case OnTriggerType.TIMER:
-          this.triggers.push(createTimerTrigger(parameters, sourceSpan));
+          this.trackTrigger('timer', createTimerTrigger(parameters, sourceSpan));
           break;
 
         case OnTriggerType.INTERACTION:
-          this.triggers.push(createInteractionTrigger(parameters, sourceSpan));
+          this.trackTrigger('interaction', createInteractionTrigger(parameters, sourceSpan));
           break;
 
         case OnTriggerType.IMMEDIATE:
-          this.triggers.push(createImmediateTrigger(parameters, sourceSpan));
+          this.trackTrigger('immediate', createImmediateTrigger(parameters, sourceSpan));
           break;
 
         case OnTriggerType.HOVER:
-          this.triggers.push(createHoverTrigger(parameters, sourceSpan));
+          this.trackTrigger('hover', createHoverTrigger(parameters, sourceSpan));
           break;
 
         case OnTriggerType.VIEWPORT:
-          this.triggers.push(createViewportTrigger(parameters, sourceSpan));
+          this.trackTrigger('viewport', createViewportTrigger(parameters, sourceSpan));
           break;
 
         default:
@@ -245,6 +242,10 @@ class OnTriggerParser {
     return this.expression.slice(this.start + this.token().index, this.start + this.token().end);
   }
 
+  private trackTrigger(name: keyof t.DeferredBlockTriggers, trigger: t.DeferredTrigger): void {
+    trackTrigger(name, this.triggers, this.errors, trigger);
+  }
+
   private error(token: Token, message: string): void {
     const newStart = this.span.start.moveBy(this.start + token.index);
     const newEnd = newStart.moveBy(token.end - token.index);
@@ -253,6 +254,17 @@ class OnTriggerParser {
 
   private unexpectedToken(token: Token) {
     this.error(token, `Unexpected token "${token}"`);
+  }
+}
+
+/** Adds a trigger to a map of triggers. */
+function trackTrigger(
+    name: keyof t.DeferredBlockTriggers, allTriggers: t.DeferredBlockTriggers, errors: ParseError[],
+    trigger: t.DeferredTrigger) {
+  if (allTriggers[name]) {
+    errors.push(new ParseError(trigger.sourceSpan, `Duplicate "${name}" trigger is not allowed`));
+  } else {
+    allTriggers[name] = trigger as any;
   }
 }
 

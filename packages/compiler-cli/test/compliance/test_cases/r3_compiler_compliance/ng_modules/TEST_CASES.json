@@ -101,6 +101,10 @@
             "imports_exports.js"
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "local compile"
       ]
     },
     {

@@ -12,6 +12,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -786,9 +789,6 @@
     "name": "getComponentLViewByIndex"
   },
   {
-    "name": "getComponentLViewForHydration"
-  },
-  {
     "name": "getCurrentTNode"
   },
   {
@@ -823,6 +823,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getLNodeForHydration"
   },
   {
     "name": "getLView"
@@ -975,9 +978,6 @@
     "name": "isArrayLike"
   },
   {
-    "name": "isBrowser"
-  },
-  {
     "name": "isComponentDef"
   },
   {
@@ -1009,6 +1009,9 @@
   },
   {
     "name": "isObject"
+  },
+  {
+    "name": "isPlatformBrowser"
   },
   {
     "name": "isPlatformServer"
@@ -1231,6 +1234,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setSegmentHead"
   },
   {
     "name": "setSelectedIndex"

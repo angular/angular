@@ -211,7 +211,8 @@
         {
           "failureMessage": "Incorrect `hostBindings` function."
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should bind to class and style names",
@@ -237,8 +238,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should de-duplicate attribute arrays",

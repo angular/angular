@@ -8,10 +8,10 @@
 
 import * as ir from '../../ir';
 
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 import {varsUsedByIrExpression} from './var_counting';
 
-export function phaseAlignPipeVariadicVarOffset(cpl: ComponentCompilation): void {
+export function phaseAlignPipeVariadicVarOffset(cpl: ComponentCompilationJob): void {
   for (const view of cpl.views.values()) {
     for (const op of view.update) {
       ir.visitExpressionsInOp(op, expr => {

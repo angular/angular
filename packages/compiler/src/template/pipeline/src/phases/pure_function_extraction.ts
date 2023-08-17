@@ -10,10 +10,10 @@ import {GenericKeyFn, SharedConstantDefinition} from '../../../../constant_pool'
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
-export function phasePureFunctionExtraction(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
+export function phasePureFunctionExtraction(job: CompilationJob): void {
+  for (const view of job.units) {
     for (const op of view.ops()) {
       ir.visitExpressionsInOp(op, expr => {
         if (!(expr instanceof ir.PureFunctionExpr) || expr.body === null) {
@@ -21,7 +21,7 @@ export function phasePureFunctionExtraction(cpl: ComponentCompilation): void {
         }
 
         const constantDef = new PureFunctionConstant(expr.args.length);
-        expr.fn = cpl.pool.getSharedConstant(constantDef, expr.body);
+        expr.fn = job.pool.getSharedConstant(constantDef, expr.body);
         expr.body = null;
       });
     }

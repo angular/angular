@@ -18,6 +18,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createForLoop, createIfBlock, createSwitchBlock} from './r3_control_flow';
 import {createDeferredBlock} from './r3_deferred_blocks';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
@@ -325,14 +326,41 @@ class HtmlAstToIvyAst implements html.Visitor {
       return null;
     }
 
-    if (primaryBlock.name === 'defer' && this.options.enabledBlockTypes.has(primaryBlock.name)) {
-      const {node, errors} = createDeferredBlock(group, this, this.bindingParser);
-      this.errors.push(...errors);
-      return node;
+    if (!this.options.enabledBlockTypes.has(primaryBlock.name)) {
+      this.reportError(`Unrecognized block "${primaryBlock.name}".`, primaryBlock.sourceSpan);
+      return null;
     }
 
-    this.reportError(`Unrecognized block "${primaryBlock.name}".`, primaryBlock.sourceSpan);
-    return null;
+    let result: {node: t.Node|null, errors: ParseError[]}|null = null;
+
+    switch (primaryBlock.name) {
+      case 'defer':
+        result = createDeferredBlock(group, this, this.bindingParser);
+        break;
+
+      case 'switch':
+        result = createSwitchBlock(group, this, this.bindingParser);
+        break;
+
+      case 'for':
+        result = createForLoop(group, this, this.bindingParser);
+        break;
+
+      case 'if':
+        result = createIfBlock(group, this, this.bindingParser);
+        break;
+
+      default:
+        result = {
+          node: null,
+          errors: [new ParseError(
+              primaryBlock.sourceSpan, `Unrecognized block "${primaryBlock.name}".`)]
+        };
+        break;
+    }
+
+    this.errors.push(...result.errors);
+    return result.node;
   }
 
   visitBlock(block: html.Block, context: any) {}

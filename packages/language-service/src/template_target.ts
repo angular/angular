@@ -447,15 +447,13 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
     if (attribute.valueSpan !== undefined) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(attribute.value, this.path);
+      this.visitBinding(attribute.value);
     }
   }
 
   visitBoundEvent(event: t.BoundEvent) {
     if (!isBoundEventWithSyntheticHandler(event)) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(event.handler, this.path);
+      this.visitBinding(event.handler);
     }
   }
 
@@ -464,8 +462,7 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundText(text: t.BoundText) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(text.value, this.path);
+    this.visitBinding(text.value);
   }
 
   visitIcu(icu: t.Icu) {
@@ -478,10 +475,7 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock) {
-    this.visitAll(deferred.children);
-    deferred.placeholder && this.visit(deferred.placeholder);
-    deferred.loading && this.visit(deferred.loading);
-    deferred.error && this.visit(deferred.error);
+    deferred.visitAll(this);
   }
 
   visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder) {
@@ -498,15 +492,48 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitDeferredTrigger(trigger: t.DeferredTrigger) {
     if (trigger instanceof t.BoundDeferredTrigger) {
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(trigger.value, this.path);
+      this.visitBinding(trigger.value);
     }
+  }
+
+  visitSwitchBlock(block: t.SwitchBlock) {
+    this.visitBinding(block.expression);
+    this.visitAll(block.cases);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase) {
+    block.expression && this.visitBinding(block.expression);
+    this.visitAll(block.children);
+  }
+
+  visitForLoopBlock(block: t.ForLoopBlock) {
+    this.visitBinding(block.expression);
+    this.visitAll(block.children);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty) {
+    this.visitAll(block.children);
+  }
+
+  visitIfBlock(block: t.IfBlock) {
+    this.visitAll(block.branches);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch) {
+    block.expression && this.visitBinding(block.expression);
+    this.visitAll(block.children);
   }
 
   visitAll(nodes: t.Node[]) {
     for (const node of nodes) {
       this.visit(node);
     }
+  }
+
+  private visitBinding(expression: e.AST) {
+    const visitor = new ExpressionVisitor(this.position);
+    visitor.visit(expression, this.path);
   }
 }
 
@@ -520,7 +547,7 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
     if (node instanceof e.ASTWithSource) {
       // In order to reduce noise, do not include `ASTWithSource` in the path.
       // For the purpose of source spans, there is no difference between
-      // `ASTWithSource` and and underlying node that it wraps.
+      // `ASTWithSource` and underlying node that it wraps.
       node = node.ast;
     }
     // The third condition is to account for the implicit receiver, which should

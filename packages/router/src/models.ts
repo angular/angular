@@ -124,7 +124,7 @@ export type Data = {
  *
  * Represents the resolved data associated with a particular route.
  *
- * @see {@link Route#resolve}.
+ * @see {@link Route#resolve}
  *
  * @publicApi
  */
@@ -716,7 +716,7 @@ export interface CanActivate {
  * navigation is cancelled. If any guard returns a `UrlTree`, the current navigation
  * is cancelled and a new navigation begins to the `UrlTree` returned from the guard.
  *
- * The following example implements and uses a `CanActivateChildFn` that checks whether the
+ * The following example implements and uses a `CanActivateFn` that checks whether the
  * current user has permission to activate the requested route.
  *
  * {@example router/route_functional_guards.ts region="CanActivateFn"}

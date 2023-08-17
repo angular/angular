@@ -21,6 +21,9 @@
     "name": "ActivatedRouteSnapshot"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -847,6 +850,9 @@
   },
   {
     "name": "addEmptyPathsToChildrenIfNeeded"
+  },
+  {
+    "name": "addLViewToLContainer"
   },
   {
     "name": "addPropertyAlias"

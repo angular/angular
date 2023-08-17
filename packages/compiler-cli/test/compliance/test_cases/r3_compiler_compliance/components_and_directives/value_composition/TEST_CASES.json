@@ -61,6 +61,10 @@
             }
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "local compile"
       ]
     },
     {

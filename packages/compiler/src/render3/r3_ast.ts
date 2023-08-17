@@ -186,16 +186,117 @@ export class DeferredBlockError implements Node {
   }
 }
 
+export interface DeferredBlockTriggers {
+  when?: BoundDeferredTrigger;
+  idle?: IdleDeferredTrigger;
+  immediate?: ImmediateDeferredTrigger;
+  hover?: HoverDeferredTrigger;
+  timer?: TimerDeferredTrigger;
+  interaction?: InteractionDeferredTrigger;
+  viewport?: ViewportDeferredTrigger;
+}
+
 export class DeferredBlock implements Node {
+  readonly triggers: Readonly<DeferredBlockTriggers>;
+  readonly prefetchTriggers: Readonly<DeferredBlockTriggers>;
+  private readonly definedTriggers: (keyof DeferredBlockTriggers)[];
+  private readonly definedPrefetchTriggers: (keyof DeferredBlockTriggers)[];
+
   constructor(
-      public children: Node[], public triggers: DeferredTrigger[],
-      public prefetchTriggers: DeferredTrigger[], public placeholder: DeferredBlockPlaceholder|null,
+      public children: Node[], triggers: DeferredBlockTriggers,
+      prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {
+    this.triggers = triggers;
+    this.prefetchTriggers = prefetchTriggers;
+    // We cache the keys since we know that they won't change and we
+    // don't want to enumarate them every time we're traversing the AST.
+    this.definedTriggers = Object.keys(triggers) as (keyof DeferredBlockTriggers)[];
+    this.definedPrefetchTriggers = Object.keys(prefetchTriggers) as (keyof DeferredBlockTriggers)[];
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitDeferredBlock(this);
+  }
+
+  visitAll(visitor: Visitor<unknown>): void {
+    this.visitTriggers(this.definedTriggers, this.triggers, visitor);
+    this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
+    visitAll(visitor, this.children);
+    this.placeholder && visitor.visitDeferredBlockPlaceholder(this.placeholder);
+    this.loading && visitor.visitDeferredBlockLoading(this.loading);
+    this.error && visitor.visitDeferredBlockError(this.error);
+  }
+
+  private visitTriggers(
+      keys: (keyof DeferredBlockTriggers)[], triggers: DeferredBlockTriggers, visitor: Visitor) {
+    for (const key of keys) {
+      visitor.visitDeferredTrigger(triggers[key]!);
+    }
+  }
+}
+
+export class SwitchBlock implements Node {
+  constructor(
+      public expression: AST, public cases: SwitchBlockCase[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitSwitchBlock(this);
+  }
+}
+
+export class SwitchBlockCase implements Node {
+  constructor(
+      public expression: AST|null, public children: Node[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitSwitchBlockCase(this);
+  }
+}
+
+export class ForLoopBlock implements Node {
+  constructor(
+      public itemName: string, public expression: AST,
+      // TODO(crisbeto): figure out if trackBy should be an AST
+      public trackBy: string, public children: Node[], public empty: ForLoopBlockEmpty|null,
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
       public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
-    return visitor.visitDeferredBlock(this);
+    return visitor.visitForLoopBlock(this);
+  }
+}
+
+export class ForLoopBlockEmpty implements Node {
+  constructor(
+      public children: Node[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitForLoopBlockEmpty(this);
+  }
+}
+
+export class IfBlock implements Node {
+  constructor(
+      public branches: IfBlockBranch[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIfBlock(this);
+  }
+}
+
+export class IfBlockBranch implements Node {
+  constructor(
+      public expression: AST|null, public children: Node[], public expressionAlias: string|null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIfBlockBranch(this);
   }
 }
 
@@ -283,6 +384,12 @@ export interface Visitor<Result = any> {
   visitDeferredBlockError(block: DeferredBlockError): Result;
   visitDeferredBlockLoading(block: DeferredBlockLoading): Result;
   visitDeferredTrigger(trigger: DeferredTrigger): Result;
+  visitSwitchBlock(block: SwitchBlock): Result;
+  visitSwitchBlockCase(block: SwitchBlockCase): Result;
+  visitForLoopBlock(block: ForLoopBlock): Result;
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
+  visitIfBlock(block: IfBlock): Result;
+  visitIfBlockBranch(block: IfBlockBranch): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -302,12 +409,7 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, template.variables);
   }
   visitDeferredBlock(deferred: DeferredBlock): void {
-    visitAll(this, deferred.triggers);
-    visitAll(this, deferred.prefetchTriggers);
-    visitAll(this, deferred.children);
-    deferred.placeholder?.visit(this);
-    deferred.loading?.visit(this);
-    deferred.error?.visit(this);
+    deferred.visitAll(this);
   }
   visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder): void {
     visitAll(this, block.children);
@@ -316,6 +418,25 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.children);
   }
   visitDeferredBlockLoading(block: DeferredBlockLoading): void {
+    visitAll(this, block.children);
+  }
+  visitSwitchBlock(block: SwitchBlock): void {
+    visitAll(this, block.cases);
+  }
+  visitSwitchBlockCase(block: SwitchBlockCase): void {
+    visitAll(this, block.children);
+  }
+  visitForLoopBlock(block: ForLoopBlock): void {
+    visitAll(this, block.children);
+    block.empty?.visit(this);
+  }
+  visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
+    visitAll(this, block.children);
+  }
+  visitIfBlock(block: IfBlock): void {
+    visitAll(this, block.branches);
+  }
+  visitIfBlockBranch(block: IfBlockBranch): void {
     visitAll(this, block.children);
   }
   visitContent(content: Content): void {}

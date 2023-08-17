@@ -85,6 +85,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
+    MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,
+    // (undocumented)
     MISSING_ZONEJS = 908,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
@@ -106,6 +108,8 @@ export const enum RuntimeErrorCode {
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
+    // (undocumented)
+    RECURSIVE_APPLICATION_RENDER = 102,
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)

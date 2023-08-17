@@ -423,40 +423,40 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       describe('blocks', () => {
         it('should report nested blocks', () => {
           expect(extractErrors(`<!-- i18n --><!-- i18n --><!-- /i18n --><!-- /i18n -->`)).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report unclosed blocks', () => {
           expect(extractErrors(`<!-- i18n -->`)).toEqual([
-            ['Unclosed block', '<!--'],
+            ['Unclosed block', '<!-- i18n -->'],
           ]);
         });
 
         it('should report translatable blocks in translatable elements', () => {
           expect(extractErrors(`<p i18n><!-- i18n --><!-- /i18n --></p>`)).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report translatable blocks in implicit elements', () => {
           expect(extractErrors(`<p><!-- i18n --><!-- /i18n --></p>`, ['p'])).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report when start and end of a block are not at the same level', () => {
           expect(extractErrors(`<!-- i18n --><p><!-- /i18n --></p>`)).toEqual([
-            ['I18N blocks should not cross element boundaries', '<!--'],
+            ['I18N blocks should not cross element boundaries', '<!-- /i18n -->'],
             ['Unclosed block', '<p><!-- /i18n --></p>'],
           ]);
 
           expect(extractErrors(`<p><!-- i18n --></p><!-- /i18n -->`)).toEqual([
-            ['I18N blocks should not cross element boundaries', '<!--'],
-            ['Unclosed block', '<!--'],
+            ['I18N blocks should not cross element boundaries', '<!-- /i18n -->'],
+            ['Unclosed block', '<!-- /i18n -->'],
           ]);
         });
       });

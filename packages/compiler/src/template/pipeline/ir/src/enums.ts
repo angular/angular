@@ -64,6 +64,17 @@ export enum OpKind {
   ContainerEnd,
 
   /**
+   * An operation disable binding for subsequent elements, which are descendants of a non-bindable
+   * node.
+   */
+  DisableBindings,
+
+  /**
+   * An operation to re-enable binding, after it was previously disabled.
+   */
+  EnableBindings,
+
+  /**
    * An operation to render a text node.
    */
   Text,
@@ -77,6 +88,12 @@ export enum OpKind {
    * An operation to interpolate text into a text node.
    */
   InterpolateText,
+
+  /**
+   * An intermediate binding op, that has not yet been processed into an individual property,
+   * attribute, style, etc.
+   */
+  Binding,
 
   /**
    * An operation to bind an expression to a property of an element.
@@ -104,26 +121,6 @@ export enum OpKind {
   ClassMap,
 
   /**
-   * An operation to interpolate text into a property binding.
-   */
-  InterpolateProperty,
-
-  /**
-   * An operation to interpolate text into a style property binding.
-   */
-  InterpolateStyleProp,
-
-  /**
-   * An operation to interpolate text into a style mapping.
-   */
-  InterpolateStyleMap,
-
-  /**
-   * An operation to interpolate text into a class mapping.
-   */
-  InterpolateClassMap,
-
-  /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,
@@ -139,9 +136,21 @@ export enum OpKind {
   Attribute,
 
   /**
-   * An operation to interpolate text into an attribute binding.
+   * An attribute that has been extracted for inclusion in the consts array.
    */
-  InterpolateAttribute,
+  ExtractedAttribute,
+
+  /**
+   * A host binding property.
+   */
+  HostProperty,
+
+  /**
+   * A namespace change, which causes the subsequent elements to be processed as either HTML or SVG.
+   */
+  Namespace,
+
+  // TODO: Add Host Listeners, and possibly other host ops also.
 }
 
 /**
@@ -242,6 +251,11 @@ export enum ExpressionKind {
    * A reference to a temporary variable.
    */
   ReadTemporaryExpr,
+
+  /**
+   * An expression representing a sanitizer function.
+   */
+  SanitizerExpr,
 }
 
 /**
@@ -262,4 +276,66 @@ export enum SemanticVariableKind {
    * Represents a saved state that can be used to restore a view in a listener handler function.
    */
   SavedView,
+}
+
+/**
+ * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
+ * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost of
+ * producing quirky or larger code in some cases.
+ */
+export enum CompatibilityMode {
+  Normal,
+  TemplateDefinitionBuilder,
+}
+
+/**
+ * Represents functions used to sanitize different pieces of a template.
+ */
+export enum SanitizerFn {
+  Html,
+  Script,
+  Style,
+  Url,
+  ResourceUrl,
+  IframeAttribute,
+}
+
+/**
+ * Enumeration of the types of attributes which can be applied to an element.
+ */
+export enum BindingKind {
+  /**
+   * Static attributes.
+   */
+  Attribute,
+
+  /**
+   * Class bindings.
+   */
+  ClassName,
+
+  /**
+   * Style bindings.
+   */
+  StyleProperty,
+
+  /**
+   * Dynamic property bindings.
+   */
+  Property,
+
+  /**
+   * Property or attribute bindings on a template.
+   */
+  Template,
+
+  /**
+   * Internationalized attributes.
+   */
+  I18n,
+
+  /**
+   * Animation property bindings.
+   */
+  Animation,
 }

@@ -7,10 +7,21 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
 import * as ng from '../instruction';
+
+/**
+ * Map of sanitizers to their identifier.
+ */
+const sanitizerIdentifierMap = new Map<ir.SanitizerFn, o.ExternalReference>([
+  [ir.SanitizerFn.Html, Identifiers.sanitizeHtml],
+  [ir.SanitizerFn.IframeAttribute, Identifiers.validateIframeAttribute],
+  [ir.SanitizerFn.ResourceUrl, Identifiers.sanitizeResourceUrl],
+  [ir.SanitizerFn.Script, Identifiers.sanitizeScript],
+  [ir.SanitizerFn.Style, Identifiers.sanitizeStyle], [ir.SanitizerFn.Url, Identifiers.sanitizeUrl]
+]);
 
 /**
  * Compiles semantic operations across all views and generates output `o.Statement`s with actual
@@ -20,53 +31,60 @@ import * as ng from '../instruction';
  * structures. After reification, the create/update operation lists of all views should only contain
  * `ir.StatementOp`s (which wrap generated `o.Statement`s).
  */
-export function phaseReify(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    reifyCreateOperations(view, view.create);
-    reifyUpdateOperations(view, view.update);
+export function phaseReify(cpl: CompilationJob): void {
+  for (const unit of cpl.units) {
+    reifyCreateOperations(unit, unit.create);
+    reifyUpdateOperations(unit, unit.update);
   }
 }
 
-function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp>): void {
+function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
     switch (op.kind) {
       case ir.OpKind.Text:
-        ir.OpList.replace(op, ng.text(op.slot!, op.initialValue));
+        ir.OpList.replace(op, ng.text(op.slot!, op.initialValue, op.sourceSpan));
         break;
       case ir.OpKind.ElementStart:
         ir.OpList.replace(
             op,
             ng.elementStart(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
             op,
             ng.element(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.ElementEnd:
-        ir.OpList.replace(op, ng.elementEnd());
+        ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
         break;
       case ir.OpKind.ContainerStart:
         ir.OpList.replace(
             op,
             ng.elementContainerStart(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.Container:
         ir.OpList.replace(
             op,
             ng.elementContainer(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.sourceSpan));
         break;
       case ir.OpKind.ContainerEnd:
         ir.OpList.replace(op, ng.elementContainerEnd());
         break;
       case ir.OpKind.Template:
-        const childView = view.tpl.views.get(op.xref)!;
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
             op,
             ng.template(
@@ -76,14 +94,22 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 childView.vars!,
                 op.tag,
                 op.attributes as number,
+                op.sourceSpan,
                 ),
         );
+        break;
+      case ir.OpKind.DisableBindings:
+        ir.OpList.replace(op, ng.disableBindings());
+        break;
+      case ir.OpKind.EnableBindings:
+        ir.OpList.replace(op, ng.enableBindings());
         break;
       case ir.OpKind.Pipe:
         ir.OpList.replace(op, ng.pipe(op.slot!, op.name));
         break;
       case ir.OpKind.Listener:
-        const listenerFn = reifyListenerHandler(view, op.handlerFnName!, op.handlerOps);
+        const listenerFn =
+            reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         ir.OpList.replace(
             op,
             ng.listener(
@@ -100,6 +126,19 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
             ir.createStatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
+      case ir.OpKind.Namespace:
+        switch (op.active) {
+          case ir.Namespace.HTML:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceHTML());
+            break;
+          case ir.Namespace.SVG:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceSVG());
+            break;
+          case ir.Namespace.Math:
+            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceMath());
+            break;
+        }
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -110,50 +149,76 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
     switch (op.kind) {
       case ir.OpKind.Advance:
-        ir.OpList.replace(op, ng.advance(op.delta));
+        ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        ir.OpList.replace(op, ng.property(op.name, op.expression));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.propertyInterpolate(
+                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer,
+                  op.sourceSpan));
+        } else {
+          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
+        }
         break;
       case ir.OpKind.StyleProp:
-        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.stylePropInterpolate(
+                  op.name, op.expression.strings, op.expression.expressions, op.unit));
+        } else {
+          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+        }
         break;
       case ir.OpKind.ClassProp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression));
         break;
       case ir.OpKind.StyleMap:
-        ir.OpList.replace(op, ng.styleMap(op.expression));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op, ng.styleMapInterpolate(op.expression.strings, op.expression.expressions));
+        } else {
+          ir.OpList.replace(op, ng.styleMap(op.expression));
+        }
         break;
       case ir.OpKind.ClassMap:
-        ir.OpList.replace(op, ng.classMap(op.expression));
-        break;
-      case ir.OpKind.InterpolateProperty:
-        ir.OpList.replace(op, ng.propertyInterpolate(op.name, op.strings, op.expressions));
-        break;
-      case ir.OpKind.InterpolateStyleProp:
-        ir.OpList.replace(
-            op, ng.stylePropInterpolate(op.name, op.strings, op.expressions, op.unit));
-        break;
-      case ir.OpKind.InterpolateStyleMap:
-        ir.OpList.replace(op, ng.styleMapInterpolate(op.strings, op.expressions));
-        break;
-      case ir.OpKind.InterpolateClassMap:
-        ir.OpList.replace(op, ng.classMapInterpolate(op.strings, op.expressions));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op, ng.classMapInterpolate(op.expression.strings, op.expression.expressions));
+        } else {
+          ir.OpList.replace(op, ng.classMap(op.expression));
+        }
         break;
       case ir.OpKind.InterpolateText:
-        ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
+        ir.OpList.replace(
+            op,
+            ng.textInterpolate(
+                op.interpolation.strings, op.interpolation.expressions, op.sourceSpan));
         break;
       case ir.OpKind.Attribute:
-        ir.OpList.replace(op, ng.attribute(op.name, op.value));
+        if (op.expression instanceof ir.Interpolation) {
+          ir.OpList.replace(
+              op,
+              ng.attributeInterpolate(
+                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer));
+        } else {
+          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
+        }
         break;
-      case ir.OpKind.InterpolateAttribute:
-        ir.OpList.replace(op, ng.attributeInterpolate(op.name, op.strings, op.expressions));
+      case ir.OpKind.HostProperty:
+        if (op.expression instanceof ir.Interpolation) {
+          throw new Error('not yet handled');
+        } else {
+          ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+        }
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
@@ -221,6 +286,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pipeBind(expr.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.PipeBindingVariadic:
       return ng.pipeBindV(expr.slot!, expr.varOffset!, expr.args);
+    case ir.ExpressionKind.SanitizerExpr:
+      return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);
@@ -232,11 +299,10 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
  * parameter defined.
  */
 function reifyListenerHandler(
-    view: ViewCompilation, name: string, handlerOps: ir.OpList<ir.UpdateOp>): o.FunctionExpr {
-  const lookForEvent = new LookForEventVisitor();
-
+    unit: CompilationUnit, name: string, handlerOps: ir.OpList<ir.UpdateOp>,
+    consumesDollarEvent: boolean): o.FunctionExpr {
   // First, reify all instruction calls within `handlerOps`.
-  reifyUpdateOperations(view, handlerOps);
+  reifyUpdateOperations(unit, handlerOps);
 
   // Next, extract all the `o.Statement`s from the reified operations. We can expect that at this
   // point, all operations have been converted to statements.
@@ -249,28 +315,12 @@ function reifyListenerHandler(
     handlerStmts.push(op.statement);
   }
 
-  // Scan the statement list for usages of `$event`. If referenced, we need to generate it as a
-  // parameter.
-  lookForEvent.visitAllStatements(handlerStmts, null);
-
+  // If `$event` is referenced, we need to generate it as a parameter.
   const params: o.FnParam[] = [];
-  if (lookForEvent.seenEventRead) {
+  if (consumesDollarEvent) {
     // We need the `$event` parameter.
     params.push(new o.FnParam('$event'));
   }
 
   return o.fn(params, handlerStmts, undefined, undefined, name);
-}
-
-/**
- * Visitor which scans for reads of the `$event` special variable.
- */
-class LookForEventVisitor extends o.RecursiveAstVisitor {
-  seenEventRead = false;
-
-  override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    if (ast.name === '$event') {
-      this.seenEventRead = true;
-    }
-  }
 }

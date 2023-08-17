@@ -11,8 +11,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map simple element with content (partial compile)",
@@ -46,8 +45,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map void element (partial compile)",
@@ -81,8 +79,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a mix of interpolated and static content (partial compile)",
@@ -116,8 +113,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a complex interpolated expression (partial compile)",
@@ -151,8 +147,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map interpolated properties (partial compile)",
@@ -186,8 +181,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map interpolation with pipe (partial compile)",
@@ -221,8 +215,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a simple input binding expression (partial compile)",
@@ -256,8 +249,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a complex input binding expression (partial compile)",
@@ -291,8 +283,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a longhand input binding expression (partial compile)",
@@ -536,8 +527,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map *ngIf scenario (partial compile)",
@@ -571,8 +561,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map ng-template [ngIf] scenario (partial compile)",
@@ -921,8 +910,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create (simple string) inline template source-mapping (partial compile)",

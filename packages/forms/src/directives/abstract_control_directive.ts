@@ -60,7 +60,7 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Reports whether a control is pending, meaning that that async validation is occurring and
+   * Reports whether a control is pending, meaning that async validation is occurring and
    * errors are not yet available for the input value. If the control is not present, null is
    * returned.
    */

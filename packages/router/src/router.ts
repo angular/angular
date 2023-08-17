@@ -65,7 +65,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  *
  * A service that provides navigation among views and URL manipulation capabilities.
  *
- * @see {@link Route}.
+ * @see {@link Route}
  * @see [Routing and Navigation Guide](guide/router).
  *
  * @ngModule RouterModule
@@ -312,7 +312,7 @@ export class Router {
   private readonly location = inject(Location);
 
   /**
-   * Indicates whether the the application has opted in to binding Router data to component inputs.
+   * Indicates whether the application has opted in to binding Router data to component inputs.
    *
    * This option is enabled by the `withComponentInputBinding` feature of `provideRouter` or
    * `bindToComponentInputs` in the `ExtraOptions` of `RouterModule.forRoot`.

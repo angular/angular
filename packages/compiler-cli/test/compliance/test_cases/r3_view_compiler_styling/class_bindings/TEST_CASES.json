@@ -3,43 +3,57 @@
   "cases": [
     {
       "description": "should create class styling instructions on the element",
-      "inputFiles": ["class_binding.ts"],
+      "inputFiles": [
+        "class_binding.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["class_binding.js"]
+          "files": [
+            "class_binding.js"
+          ]
         }
       ]
     },
     {
       "description": "should place initial, multi, singular and application followed by attribute class instructions in the template code in that order",
-      "inputFiles": ["class_ordering.ts"],
+      "inputFiles": [
+        "class_ordering.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["class_ordering.js"]
+          "files": [
+            "class_ordering.js"
+          ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate the styling apply instruction if there are only static style/class attributes",
-      "inputFiles": ["static_bindings.ts"],
+      "inputFiles": [
+        "static_bindings.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["static_bindings.js"]
+          "files": [
+            "static_bindings.js"
+          ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not create instructions for empty class bindings",
-      "inputFiles": ["empty_class_bindings.ts"],
+      "inputFiles": [
+        "empty_class_bindings.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["empty_class_bindings.js"]
+          "files": [
+            "empty_class_bindings.js"
+          ]
         }
       ]
     }

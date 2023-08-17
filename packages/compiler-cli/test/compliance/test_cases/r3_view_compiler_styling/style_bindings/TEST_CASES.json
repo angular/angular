@@ -29,8 +29,7 @@
           "failureMessage": "Incorrect template",
           "files": ["binding_slots_interpolations.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected",
@@ -40,8 +39,7 @@
           "failureMessage": "Incorrect template",
           "files": ["style_ordering.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support [style.foo.suffix] style bindings with a suffix",

@@ -26,7 +26,7 @@ import {createModuleWithProvidersResolver, isResolvedModuleWithProviders} from '
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
-  inj: Omit<R3InjectorMetadata, 'imports'>;
+  inj: R3InjectorMetadata;
   fac: R3FactoryMetadata;
   classMetadata: R3ClassMetadata|null;
   declarations: Reference<ClassDeclaration>[];
@@ -437,17 +437,29 @@ export class NgModuleDecoratorHandler implements
       }
     }
 
-    const injectorMetadata: Omit<R3InjectorMetadata, 'imports'> = {
+    const injectorMetadata: R3InjectorMetadata = {
       name,
       type,
       providers: wrappedProviders,
+      imports: [],
     };
+
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      if (rawImports !== null && ts.isArrayLiteralExpression(rawImports) && rawImports.elements) {
+        injectorMetadata.imports.push(...rawImports.elements.map(n => new WrappedNodeExpr(n)));
+      }
+
+      if (rawExports !== null && ts.isArrayLiteralExpression(rawExports) && rawExports.elements) {
+        injectorMetadata.imports.push(...rawExports.elements.map(n => new WrappedNodeExpr(n)));
+      }
+    }
 
     const factoryMetadata: R3FactoryMetadata = {
       name,
       type,
       typeArgumentCount: 0,
-      deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
+      deps:
+          getValidConstructorDependencies(node, this.reflector, this.isCore, this.compilationMode),
       target: FactoryTarget.NgModule,
     };
 
@@ -705,7 +717,6 @@ export class NgModuleDecoratorHandler implements
     const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector({
       ...inj,
-      imports: [],
     });
     const ngModuleDef = compileNgModule(mod);
     const statements = ngModuleDef.statements;
@@ -779,12 +790,14 @@ export class NgModuleDecoratorHandler implements
         initializer: ngModuleDef.expression,
         statements: ngModuleDef.statements,
         type: ngModuleDef.type,
+        deferrableImports: null,
       },
       {
         name: 'ɵinj',
         initializer: injectorDef.expression,
         statements: injectorDef.statements,
         type: injectorDef.type,
+        deferrableImports: null,
       },
     ];
     return res;

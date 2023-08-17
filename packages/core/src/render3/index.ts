@@ -118,6 +118,24 @@ export {
 
   ɵɵtemplate,
 
+  ɵɵconditional,  
+
+  ɵɵdefer,
+  ɵɵdeferWhen,
+  ɵɵdeferOnIdle,
+  ɵɵdeferOnImmediate,
+  ɵɵdeferOnTimer,
+  ɵɵdeferOnHover,
+  ɵɵdeferOnInteraction,
+  ɵɵdeferOnViewport,
+  ɵɵdeferPrefetchWhen,
+  ɵɵdeferPrefetchOnIdle,
+  ɵɵdeferPrefetchOnImmediate,
+  ɵɵdeferPrefetchOnTimer,
+  ɵɵdeferPrefetchOnHover,
+  ɵɵdeferPrefetchOnInteraction,
+  ɵɵdeferPrefetchOnViewport,
+
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
@@ -142,6 +160,7 @@ export {
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
   setClassMetadata,
+  setClassMetadataAsync,
 } from './metadata';
 export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref';
 export {
@@ -179,6 +198,7 @@ export {
 export {NO_CHANGE} from './tokens';
 export { ɵɵresolveBody, ɵɵresolveDocument,ɵɵresolveWindow} from './util/misc_utils';
 export { ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
+export {ɵɵgetComponentDepsFactory} from './local_compilation';
 // clang-format on
 
 export {

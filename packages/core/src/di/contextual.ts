@@ -7,6 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {InjectorProfilerContext, setInjectorProfilerContext} from '../render3/debug/injector_profiler';
 import type {Injector} from './injector';
 import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
 import {getInjectImplementation, setInjectImplementation} from './inject_switch';
@@ -31,12 +32,17 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
     injector.assertNotDestroyed();
   }
 
+  let prevInjectorProfilerContext: InjectorProfilerContext;
+  if (ngDevMode) {
+    prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
+  }
   const prevInjector = setCurrentInjector(injector);
   const previousInjectImplementation = setInjectImplementation(undefined);
   try {
     return fn();
   } finally {
     setCurrentInjector(prevInjector);
+    ngDevMode && setInjectorProfilerContext(prevInjectorProfilerContext!);
     setInjectImplementation(previousInjectImplementation);
   }
 }

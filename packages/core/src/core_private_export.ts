@@ -19,12 +19,14 @@ export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeErr
 export {annotateForHydration as ɵannotateForHydration} from './hydration/annotate';
 export {withDomHydration as ɵwithDomHydration} from './hydration/api';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
+export {SSR_CONTENT_INTEGRITY_MARKER as ɵSSR_CONTENT_INTEGRITY_MARKER} from './hydration/utils';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initial_render_pending_tasks';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, resolveComponentResources as ɵresolveComponentResources} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
+export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';

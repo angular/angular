@@ -106,20 +106,54 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const blocks: t.Node[] = [];
-    deferred.placeholder && blocks.push(deferred.placeholder);
-    deferred.loading && blocks.push(deferred.loading);
-    deferred.error && blocks.push(deferred.error);
     this.result.push([
       'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
       humanizeSpan(deferred.endSourceSpan)
     ]);
-    this.visitAll([
-      deferred.triggers,
-      deferred.prefetchTriggers,
-      deferred.children,
-      blocks,
+    deferred.visitAll(this);
+  }
+
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    this.result.push([
+      'SwitchBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
     ]);
+    this.visitAll([block.cases]);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase): void {
+    this.result.push(
+        ['SwitchBlockCase', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    this.result.push([
+      'ForLoopBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
+    this.result.push(
+        ['ForLoopBlockEmpty', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
+  visitIfBlock(block: t.IfBlock): void {
+    this.result.push([
+      'IfBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.branches]);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch): void {
+    this.result.push(
+        ['IfBlockBranch', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
@@ -627,6 +661,84 @@ describe('R3 AST source spans', () => {
         ['Text', 'Loading...'],
         ['DeferredBlockError', '{:error}Loading failed :(', '{:error}', '<empty>'],
         ['Text', 'Loading failed :('],
+      ]);
+    });
+  });
+
+  describe('switch blocks', () => {
+    it('is correct for switch blocks', () => {
+      const html = `{#switch cond.kind}` +
+          `{:case x()} X case` +
+          `{:case 'hello'} Y case` +
+          `{:case 42} Z case` +
+          `{:default} No case matched` +
+          `{/switch}`;
+
+      expectFromHtml(html, ['switch']).toEqual([
+        [
+          'SwitchBlock',
+          '{#switch cond.kind}{:case x()} X case{:case \'hello\'} Y case{:case 42} Z case{:default} No case matched{/switch}',
+          '{#switch cond.kind}', '{/switch}'
+        ],
+        ['SwitchBlockCase', '{:case x()} X case', '{:case x()}'],
+        ['Text', 'X case'],
+        ['SwitchBlockCase', '{:case \'hello\'} Y case', '{:case \'hello\'}'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '{:case 42} Z case', '{:case 42}'],
+        ['Text', 'Z case'],
+        ['SwitchBlockCase', '{:default} No case matched', '{:default}'],
+        ['Text', 'No case matched'],
+      ]);
+    });
+  });
+
+  describe('for loop blocks', () => {
+    it('is correct for loop blocks', () => {
+      const html = `{#for item of items.foo.bar; track item.id}` +
+          `<h1>{{ item }}</h1>` +
+          `{:empty}` +
+          `There were no items in the list.` +
+          `{/for}`;
+
+      expectFromHtml(html, ['for']).toEqual([
+        [
+          'ForLoopBlock',
+          '{#for item of items.foo.bar; track item.id}<h1>{{ item }}</h1>{:empty}There were no items in the list.{/for}',
+          '{#for item of items.foo.bar; track item.id}', '{/for}'
+        ],
+        ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
+        ['BoundText', '{{ item }}'],
+        ['ForLoopBlockEmpty', '{:empty}There were no items in the list.', '{:empty}'],
+        ['Text', 'There were no items in the list.'],
+      ]);
+    });
+  });
+
+  describe('if blocks', () => {
+    it('is correct for if blocks', () => {
+      const html = `{#if cond.expr; as foo}` +
+          `Main case was true!` +
+          `{:else if other.expr; as bar}` +
+          `Extra case was true!` +
+          `{:else}` +
+          `False case!` +
+          `{/if}`;
+
+      expectFromHtml(html, ['if']).toEqual([
+        [
+          'IfBlock',
+          '{#if cond.expr; as foo}Main case was true!{:else if other.expr; as bar}Extra case was true!{:else}False case!{/if}',
+          '{#if cond.expr; as foo}', '{/if}'
+        ],
+        ['IfBlockBranch', '{#if cond.expr; as foo}Main case was true!', '{#if cond.expr; as foo}'],
+        ['Text', 'Main case was true!'],
+        [
+          'IfBlockBranch', '{:else if other.expr; as bar}Extra case was true!',
+          '{:else if other.expr; as bar}'
+        ],
+        ['Text', 'Extra case was true!'],
+        ['IfBlockBranch', '{:else}False case!', '{:else}'],
+        ['Text', 'False case!'],
       ]);
     });
   });

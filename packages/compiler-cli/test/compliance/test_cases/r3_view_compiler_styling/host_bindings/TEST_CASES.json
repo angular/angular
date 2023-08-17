@@ -3,27 +3,39 @@
   "cases": [
     {
       "description": "should generate style/class instructions for a host component creation definition",
-      "inputFiles": ["static_and_dynamic.ts"],
+      "inputFiles": [
+        "static_and_dynamic.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["static_and_dynamic.js"]
+          "files": [
+            "static_and_dynamic.js"
+          ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate style/class instructions for multiple host binding definitions",
-      "inputFiles": ["multiple_dynamic.ts"],
+      "inputFiles": [
+        "multiple_dynamic.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["multiple_dynamic.js"]
+          "files": [
+            "multiple_dynamic.js"
+          ]
         }
       ]
     },
     {
       "description": "should generate override instructions for only single-level styling bindings when !important is present",
-      "inputFiles": ["important.ts"],
+      "inputFiles": [
+        "important.ts"
+      ],
+      "skipForTemplatePipeline": true,
       "expectations": [
         {
           "failureMessage": "Incorrect template",
@@ -47,31 +59,43 @@
     },
     {
       "description": "should support class interpolation",
-      "inputFiles": ["class_interpolation.ts"],
+      "inputFiles": [
+        "class_interpolation.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["class_interpolation.js"]
+          "files": [
+            "class_interpolation.js"
+          ]
         }
       ]
     },
     {
       "description": "should support style interpolation",
-      "inputFiles": ["style_interpolation.ts"],
+      "inputFiles": [
+        "style_interpolation.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["style_interpolation.js"]
+          "files": [
+            "style_interpolation.js"
+          ]
         }
       ]
     },
     {
       "description": "should generate styling instructions for multiple directives that contain host binding definitions",
-      "inputFiles": ["multiple_directives.ts"],
+      "inputFiles": [
+        "multiple_directives.ts"
+      ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["multiple_directives.js"]
+          "files": [
+            "multiple_directives.js"
+          ]
         }
       ]
     }

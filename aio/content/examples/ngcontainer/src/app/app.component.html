@@ -52,7 +52,7 @@
 
 <h4>#3 &lt;ng-container&gt; and &lt;p&gt;</h4>
   <p>
-    <label><input type="checkbox" [checked]="showId" (change)="showId=!showId">Show ID</label>
+    <label for="showId"><input id="showId" type="checkbox" [checked]="showId" (change)="showId=!showId">Show ID</label>
   </p>
 
   <div>
@@ -113,7 +113,10 @@
 <p><em>&lt;select&gt; with &lt;span&gt;</em></p>
 <div>
   Pick your favorite hero
-  (<label><input type="checkbox" checked (change)="showSad=!showSad">show sad</label>)
+  (<label for="favorite-hero">
+    <input id="favorite-hero" type="checkbox" checked (change)="showSad=!showSad">
+    show sad
+  </label>)
 </div>
 <select [(ngModel)]="hero">
   <span *ngFor="let h of heroes">
@@ -126,7 +129,7 @@
 <p><em>&lt;select&gt; with &lt;ng-container&gt;</em></p>
 <div>
   Pick your favorite hero
-  (<label><input type="checkbox" checked (change)="showSad=!showSad">show sad</label>)
+  (<label for="show-sad"><input id="show-sad" type="checkbox" checked (change)="showSad=!showSad">show sad</label>)
 </div>
 <select [(ngModel)]="hero">
   <ng-container *ngFor="let h of heroes">
@@ -140,8 +143,8 @@
 
 <h4>#2 &lt;ng-container&gt; and &lt;options&gt;</h4>
 <p>
-  <label (change)="traitPicker.value=showDefaultTraits ? 'loyal' : heroTraits[0]">
-    <input type="checkbox"
+  <label for="default-traits" (change)="traitPicker.value=showDefaultTraits ? 'loyal' : heroTraits[0]">
+    <input id="default-traits" type="checkbox"
           [checked]="showDefaultTraits"
           (change)="showDefaultTraits=!showDefaultTraits">Show default traits
   </label>
@@ -179,9 +182,18 @@
 
 <h4>&lt;ng-container&gt; and &lt;table&gt;</h4>
 <p>
-  <label><input type="checkbox" checked (change)="attrDirs=!attrDirs">Attribute directives</label>
-  <label><input type="checkbox" checked (change)="strucDirs=!strucDirs">Structural directives</label>
-  <label><input type="checkbox" (change)="divNgIf=!divNgIf">div with *ngIf</label>
+  <label for="attrDirs">
+    <input id="attrDirs" type="checkbox" checked (change)="attrDirs=!attrDirs">
+    Attribute directives
+  </label>
+  <label for="strucDirs">
+    <input id="strucDirs" type="checkbox" checked (change)="strucDirs=!strucDirs">
+    Structural directives
+  </label>
+  <label for="divNgIf">
+    <input id="divNgIf" type="checkbox" (change)="divNgIf=!divNgIf">
+    div with *ngIf
+  </label>
 </p>
 
 <table>

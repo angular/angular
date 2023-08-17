@@ -65,6 +65,7 @@ export {
   PipeDef as ɵPipeDef,
   RenderFlags as ɵRenderFlags,
   setClassMetadata as ɵsetClassMetadata,
+  setClassMetadataAsync as ɵsetClassMetadataAsync,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
   ɵɵadvance,
@@ -90,6 +91,7 @@ export {
   ɵɵclassMapInterpolateV,
   ɵɵclassProp,
   ɵɵComponentDeclaration,
+  ɵɵconditional,
   ɵɵcontentQuery,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
@@ -172,6 +174,7 @@ export {
 
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
+  ɵɵgetComponentDepsFactory,
   ɵɵStandaloneFeature,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
@@ -197,6 +200,21 @@ export {
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
+  ɵɵdefer,
+  ɵɵdeferWhen,
+  ɵɵdeferOnIdle,
+  ɵɵdeferOnImmediate,
+  ɵɵdeferOnTimer,
+  ɵɵdeferOnHover,
+  ɵɵdeferOnInteraction,
+  ɵɵdeferOnViewport,
+  ɵɵdeferPrefetchWhen,
+  ɵɵdeferPrefetchOnIdle,
+  ɵɵdeferPrefetchOnImmediate,
+  ɵɵdeferPrefetchOnTimer,
+  ɵɵdeferPrefetchOnHover,
+  ɵɵdeferPrefetchOnInteraction,
+  ɵɵdeferPrefetchOnViewport,
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
@@ -281,6 +299,6 @@ export {
 export {
   noSideEffects as ɵnoSideEffects,
 } from './util/closure';
-
+export { AfterRenderEventManager as ɵAfterRenderEventManager } from './render3/after_render_hooks';
 
 // clang-format on

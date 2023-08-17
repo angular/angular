@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '../../../../../core';
 import * as o from '../../../../../output/output_ast';
-import {ElementAttributeKind} from '../element';
-import {OpKind} from '../enums';
+import {ParseSourceSpan} from '../../../../../parse_util';
+import {BindingKind, OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
 
+import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
+
 
 /**
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp =
     ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|ClassPropOp|
-    StyleMapOp|ClassMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
-    InterpolateStyleMapOp|InterpolateClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+    StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|HostPropertyOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -37,33 +39,101 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
    */
   target: XrefId;
 
-  /**
-   * All of the literal strings in the text interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
+  interpolation: Interpolation;
 
-  /**
-   * All of the dynamic expressions in the text interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateTextOp {
+    xref: XrefId, interpolation: Interpolation, sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
-    strings,
-    expressions,
+    interpolation,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+export class Interpolation {
+  constructor(readonly strings: string[], readonly expressions: o.Expression[]) {}
+}
+
+/**
+ * An intermediate binding op, that has not yet been processed into an individual property,
+ * attribute, style, etc.
+ */
+export interface BindingOp extends Op<UpdateOp> {
+  kind: OpKind.Binding;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   *  The kind of binding represented by this op.
+   */
+  bindingKind: BindingKind;
+
+  /**
+   *  The name of this binding.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression|Interpolation;
+
+  /**
+   * The unit of the bound value.
+   */
+  unit: string|null;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext;
+
+  /**
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
+   * TextAttributes differently from `[attr.style]` and `[attr.class]`.
+   */
+  isTextAttribute: boolean;
+
+  /**
+   * Whether this binding is on a template.
+   */
+  isTemplate: boolean;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `BindingOp`, not yet transformed into a particular type of binding.
+ */
+export function createBindingOp(
+    target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
+    unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
+    isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
+  return {
+    kind: OpKind.Binding,
+    bindingKind: kind,
+    target,
+    name,
+    expression,
+    unit,
+    securityContext,
+    isTextAttribute,
+    isTemplate,
+    sourceSpan,
     ...NEW_OP,
   };
 }
@@ -87,26 +157,49 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression;
+  expression: o.Expression|Interpolation;
 
   /**
-   * The kind of binding represented by this op, either a template binding or a normal binding.
+   * Whether this property is an animation trigger.
    */
-  bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
+  isAnimationTrigger: boolean;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext;
+
+  /**
+   * The sanitizer for this property.
+   */
+  sanitizer: o.Expression|null;
+
+  /**
+   * Whether this binding is on a template.
+   */
+  isTemplate: boolean;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create a `PropertyOp`.
  */
 export function createPropertyOp(
-    xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
-    name: string, expression: o.Expression): PropertyOp {
+    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
+
+    sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
-    target: xref,
-    bindingKind,
+    target,
     name,
     expression,
+    isAnimationTrigger,
+    securityContext,
+    sanitizer: null,
+    isTemplate,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -132,23 +225,27 @@ export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression;
+  expression: o.Expression|Interpolation;
 
   /**
    * The unit of the bound value.
    */
   unit: string|null;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /** Create a `StylePropOp`. */
 export function createStylePropOp(
-    xref: XrefId, name: string, expression: o.Expression, unit: string|null): StylePropOp {
+    xref: XrefId, name: string, expression: o.Expression|Interpolation, unit: string|null,
+    sourceSpan: ParseSourceSpan): StylePropOp {
   return {
     kind: OpKind.StyleProp,
     target: xref,
     name,
     expression,
     unit,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -175,18 +272,22 @@ export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
    * Expression which is bound to the property.
    */
   expression: o.Expression;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create a `ClassPropOp`.
  */
 export function createClassPropOp(
-    xref: XrefId, name: string, expression: o.Expression): ClassPropOp {
+    xref: XrefId, name: string, expression: o.Expression,
+    sourceSpan: ParseSourceSpan): ClassPropOp {
   return {
     kind: OpKind.ClassProp,
     target: xref,
     name,
     expression,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -207,15 +308,19 @@ export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression;
+  expression: o.Expression|Interpolation;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /** Create a `StyleMapOp`. */
-export function createStyleMapOp(xref: XrefId, expression: o.Expression): StyleMapOp {
+export function createStyleMapOp(
+    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): StyleMapOp {
   return {
     kind: OpKind.StyleMap,
     target: xref,
     expression,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -236,17 +341,21 @@ export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression;
+  expression: o.Expression|Interpolation;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create a `ClassMapOp`.
  */
-export function createClassMapOp(xref: XrefId, expression: o.Expression): ClassMapOp {
+export function createClassMapOp(
+    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): ClassMapOp {
   return {
     kind: OpKind.ClassMap,
     target: xref,
     expression,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -254,7 +363,7 @@ export function createClassMapOp(xref: XrefId, expression: o.Expression): ClassM
 }
 
 /**
- * A logical operation representing setting an attribute  on an element in the update IR.
+ * A logical operation representing setting an attribute on an element in the update IR.
  */
 export interface AttributeOp extends Op<UpdateOp> {
   kind: OpKind.Attribute;
@@ -265,11 +374,6 @@ export interface AttributeOp extends Op<UpdateOp> {
   target: XrefId;
 
   /**
-   * The kind of attribute.
-   */
-  attributeKind: ElementAttributeKind;
-
-  /**
    * The name of the attribute.
    */
   name: string;
@@ -277,268 +381,50 @@ export interface AttributeOp extends Op<UpdateOp> {
   /**
    * The value of the attribute.
    */
-  value: o.Expression;
+  expression: o.Expression|Interpolation;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext;
+
+  /**
+   * The sanitizer for this attribute.
+   */
+  sanitizer: o.Expression|null;
+
+  /**
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
+   * TextAttributes differently from `[attr.style]` and `[attr.class]`.
+   */
+  isTextAttribute: boolean;
+
+  /**
+   * Whether this binding is on a template.
+   */
+  isTemplate: boolean;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create an `AttributeOp`.
  */
 export function createAttributeOp(
-    target: XrefId, attributeKind: ElementAttributeKind, name: string,
-    value: o.Expression): AttributeOp {
+    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    securityContext: SecurityContext, isTextAttribute: boolean, isTemplate: boolean,
+    sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
-    attributeKind,
     name,
-    value,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
-}
-
-/**
- * A logical operation representing binding an interpolation to a property in the update IR.
- */
-export interface InterpolatePropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                               DependsOnSlotContextOpTrait {
-  kind: OpKind.InterpolateProperty;
-
-  /**
-   * Reference to the element on which the property is bound.
-   */
-  target: XrefId;
-
-  /**
-   * Name of the bound property.
-   */
-  name: string;
-
-  /**
-   * All of the literal strings in the property interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
-
-  /**
-   * All of the dynamic expressions in the property interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
-
-  /**
-   * The kind of binding represented by this op, either a template binding or a normal binding.
-   */
-  bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
-}
-
-/**
- * Create a `InterpolateProperty`.
- */
-export function createInterpolatePropertyOp(
-    xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
-    name: string, strings: string[], expressions: o.Expression[]): InterpolatePropertyOp {
-  return {
-    kind: OpKind.InterpolateProperty,
-    target: xref,
-    bindingKind,
-    name,
-    strings,
-    expressions,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
-}
-export interface InterpolateAttributeOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                                DependsOnSlotContextOpTrait {
-  kind: OpKind.InterpolateAttribute;
-
-  /**
-   * The `XrefId` of the template-like element the attribute will belong to.
-   */
-  target: XrefId;
-
-  /**
-   * The kind of attribute.
-   */
-  attributeKind: ElementAttributeKind;
-
-  /**
-   * The name of the attribute.
-   */
-  name: string;
-
-  /**
-   * All of the literal strings in the attribute interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
-
-  /**
-   * All of the dynamic expressions in the attribute interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
-}
-
-export function createInterpolateAttributeOp(
-    target: XrefId, attributeKind: ElementAttributeKind, name: string, strings: string[],
-    expressions: o.Expression[]): InterpolateAttributeOp {
-  return {
-    kind: OpKind.InterpolateAttribute,
-    target: target,
-    attributeKind,
-    name,
-    strings,
-    expressions,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
-}
-
-/**
- * A logical operation representing binding an interpolation to a style property in the update IR.
- */
-export interface InterpolateStylePropOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                                DependsOnSlotContextOpTrait {
-  kind: OpKind.InterpolateStyleProp;
-
-  /**
-   * Reference to the element on which the property is bound.
-   */
-  target: XrefId;
-
-  /**
-   * Name of the bound property.
-   */
-  name: string;
-
-  /**
-   * All of the literal strings in the property interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
-
-  /**
-   * All of the dynamic expressions in the property interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
-
-  /**
-   * The unit of the bound value.
-   */
-  unit: string|null;
-}
-
-/**
- * Create a `InterpolateStyleProp`.
- */
-export function createInterpolateStylePropOp(
-    xref: XrefId, name: string, strings: string[], expressions: o.Expression[],
-    unit: string|null): InterpolateStylePropOp {
-  return {
-    kind: OpKind.InterpolateStyleProp,
-    target: xref,
-    name,
-    strings,
-    expressions,
-    unit,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
-}
-
-/**
- * A logical operation representing binding an interpolation to a style mapping in the update IR.
- */
-export interface InterpolateStyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                               DependsOnSlotContextOpTrait {
-  kind: OpKind.InterpolateStyleMap;
-
-  /**
-   * Reference to the element on which the property is bound.
-   */
-  target: XrefId;
-
-  /**
-   * All of the literal strings in the property interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
-
-  /**
-   * All of the dynamic expressions in the property interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
-}
-
-/**
- * Create a `InterpolateStyleMap`.
- */
-export function createInterpolateStyleMapOp(
-    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateStyleMapOp {
-  return {
-    kind: OpKind.InterpolateStyleMap,
-    target: xref,
-    strings,
-    expressions,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
-}
-
-/**
- * A logical operation representing binding an interpolation to a class mapping in the update IR.
- */
-export interface InterpolateClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                               DependsOnSlotContextOpTrait {
-  kind: OpKind.InterpolateClassMap;
-
-  /**
-   * Reference to the element on which the property is bound.
-   */
-  target: XrefId;
-
-  /**
-   * All of the literal strings in the property interpolation, in order.
-   *
-   * Conceptually interwoven around the `expressions`.
-   */
-  strings: string[];
-
-  /**
-   * All of the dynamic expressions in the property interpolation, in order.
-   *
-   * Conceptually interwoven in between the `strings`.
-   */
-  expressions: o.Expression[];
-}
-
-/**
- * Create a `InterpolateStyleMap`.
- */
-export function createInterpolateClassMapOp(
-    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateClassMapOp {
-  return {
-    kind: OpKind.InterpolateClassMap,
-    target: xref,
-    strings,
-    expressions,
+    expression,
+    securityContext,
+    sanitizer: null,
+    isTextAttribute,
+    isTemplate,
+    sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
@@ -555,15 +441,19 @@ export interface AdvanceOp extends Op<UpdateOp> {
    * Delta by which to advance the pointer.
    */
   delta: number;
+
+  // Source span of the binding that caused the advance
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Create an `AdvanceOp`.
  */
-export function createAdvanceOp(delta: number): AdvanceOp {
+export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): AdvanceOp {
   return {
     kind: OpKind.Advance,
     delta,
+    sourceSpan,
     ...NEW_OP,
   };
 }

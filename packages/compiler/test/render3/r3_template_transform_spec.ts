@@ -89,17 +89,42 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const blocks: t.Node[] = [];
-    deferred.placeholder && blocks.push(deferred.placeholder);
-    deferred.loading && blocks.push(deferred.loading);
-    deferred.error && blocks.push(deferred.error);
     this.result.push(['DeferredBlock']);
-    this.visitAll([
-      deferred.triggers,
-      deferred.prefetchTriggers,
-      deferred.children,
-      blocks,
-    ]);
+    deferred.visitAll(this);
+  }
+
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    this.result.push(['SwitchBlock', unparse(block.expression)]);
+    this.visitAll([block.cases]);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase): void {
+    this.result.push(
+        ['SwitchBlockCase', block.expression === null ? null : unparse(block.expression)]);
+    this.visitAll([block.children]);
+  }
+
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    this.result.push(['ForLoopBlock', unparse(block.expression), block.trackBy]);
+    this.visitAll([block.children]);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
+    this.result.push(['ForLoopBlockEmpty']);
+    this.visitAll([block.children]);
+  }
+
+  visitIfBlock(block: t.IfBlock): void {
+    this.result.push(['IfBlock']);
+    this.visitAll([block.branches]);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch): void {
+    const result = ['IfBlockBranch', block.expression === null ? null : unparse(block.expression)];
+    block.expressionAlias !== null && result.push(block.expressionAlias);
+    this.result.push(result);
+    this.visitAll([block.children]);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
@@ -1104,6 +1129,533 @@ describe('R3 template transform', () => {
       it('should report if `viewport` trigger has more than one parameter', () => {
         expectDeferredError('{#defer on viewport(a, b)}hello{/defer}')
             .toThrowError(/"viewport" trigger can only have zero or one parameters/);
+      });
+
+      it('should report duplicate when triggers', () => {
+        expectDeferredError('{#defer when isVisible(); when somethingElse()}hello{/defer}')
+            .toThrowError(/Duplicate "when" trigger is not allowed/);
+      });
+
+      it('should report duplicate on triggers', () => {
+        expectDeferredError('{#defer on idle; when isVisible(); on timer(10), idle}hello{/defer}')
+            .toThrowError(/Duplicate "idle" trigger is not allowed/);
+      });
+
+      it('should report duplicate prefetch when triggers', () => {
+        expectDeferredError(
+            '{#defer prefetch when isVisible(); prefetch when somethingElse()}hello{/defer}')
+            .toThrowError(/Duplicate "when" trigger is not allowed/);
+      });
+
+      it('should report duplicate prefetch on triggers', () => {
+        expectDeferredError(
+            '{#defer prefetch on idle; prefetch when isVisible(); prefetch on timer(10), idle}hello{/defer}')
+            .toThrowError(/Duplicate "idle" trigger is not allowed/);
+      });
+
+      it('should report multiple minimum parameters on a placeholder block', () => {
+        expectDeferredError(
+            '{#defer}hello{:placeholder minimum 1s; minimum 500ms}placeholder{/defer}')
+            .toThrowError(/Placeholder block can only have one "minimum" parameter/);
+      });
+
+      it('should report multiple minimum parameters on a loading block', () => {
+        expectDeferredError('{#defer}hello{:loading minimum 1s; minimum 500ms}loading{/defer}')
+            .toThrowError(/Loading block can only have one "minimum" parameter/);
+      });
+
+      it('should report multiple after parameters on a loading block', () => {
+        expectDeferredError('{#defer}hello{:loading after 1s; after 500ms}loading{/defer}')
+            .toThrowError(/Loading block can only have one "after" parameter/);
+      });
+    });
+  });
+
+  describe('switch blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectSwitch(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['switch']}).nodes);
+    }
+
+    function expectSwitchError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['switch']}));
+    }
+
+    it('should parse a switch block', () => {
+      expectSwitch(`
+          {#switch cond.kind}
+            {:case x()} X case
+            {:case 'hello'} <button>Y case</button>
+            {:case 42} Z case
+            {:default} No case matched
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x()'],
+        ['Text', ' X case '],
+        ['SwitchBlockCase', '"hello"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '42'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
+    it('should parse a switch block with optional parentheses', () => {
+      expectSwitch(`
+          {#switch (cond.kind)}
+            {:case (x())} X case
+            {:case ('hello')} <button>Y case</button>
+            {:case (42)} Z case
+            {:default} No case matched
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x()'],
+        ['Text', ' X case '],
+        ['SwitchBlockCase', '"hello"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '42'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
+    it('should parse a nested switch block', () => {
+      expectSwitch(`
+          {#switch cond}
+            {:case 'a'}
+              {#switch innerCond}
+                {:case 'innerA'} Inner A
+                {:case 'innerB'} Inner B
+              {/switch}
+            {:case 'b'} <button>Y case</button>
+            {:case 'c'} Z case
+            {:default}
+              {#switch innerCond}
+                {:case 'innerC'} Inner C
+                {:case 'innerD'} Inner D
+                {:default}
+                  {#switch innerInnerCond}
+                    {:case 'innerInnerA'} Inner inner A
+                    {:case 'innerInnerA'} Inner inner B
+                  {/switch}
+              {/switch}
+          {/switch}
+        `).toEqual([
+        ['SwitchBlock', 'cond'],
+        ['SwitchBlockCase', '"a"'],
+        ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCase', '"innerA"'],
+        ['Text', ' Inner A '],
+        ['SwitchBlockCase', '"innerB"'],
+        ['Text', ' Inner B '],
+        ['SwitchBlockCase', '"b"'],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '"c"'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCase', null],
+        ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCase', '"innerC"'],
+        ['Text', ' Inner C '],
+        ['SwitchBlockCase', '"innerD"'],
+        ['Text', ' Inner D '],
+        ['SwitchBlockCase', null],
+        ['SwitchBlock', 'innerInnerCond'],
+        ['SwitchBlockCase', '"innerInnerA"'],
+        ['Text', ' Inner inner A '],
+        ['SwitchBlockCase', '"innerInnerA"'],
+        ['Text', ' Inner inner B '],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report syntax error in switch expression', () => {
+        expectSwitchError(`
+          {#switch cond/.kind}
+            {:case x()} X case
+            {:default} No case matched
+          {/switch}
+        `).toThrowError(/Parser Error: Unexpected token \./);
+      });
+
+      it('should report syntax error in case expression', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case x(} X case
+          {/switch}
+        `).toThrowError(/Unexpected end of expression: x\(/);
+      });
+
+      it('should report if a block different from "case" and "default" is used in a switch', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case x()} X case
+            {:foo} Foo
+          {/switch}
+        `).toThrowError(/Switch block can only contain "case" and "default" blocks/);
+      });
+
+      it('should report if a switch has no parameters', () => {
+        expectSwitchError(`
+          {#switch}
+            {:case 1} case
+          {/switch}
+        `).toThrowError(/Switch block must have exactly one parameter/);
+      });
+
+      it('should report if a switch has more than one parameter', () => {
+        expectSwitchError(`
+          {#switch foo; bar}
+            {:case 1} case
+          {/switch}
+        `).toThrowError(/Switch block must have exactly one parameter/);
+      });
+
+      it('should report if a case has no parameters', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case} case
+          {/switch}
+        `).toThrowError(/Case block must have exactly one parameter/);
+      });
+
+      it('should report if a case has more than one parameter', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo; bar} case
+          {/switch}
+        `).toThrowError(/Case block must have exactly one parameter/);
+      });
+
+      it('should report if a switch has multiple default blocks', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo} foo
+            {:default} one
+            {:default} two
+          {/switch}
+        `).toThrowError(/Switch block can only have one "default" block/);
+      });
+
+      it('should report if a default block has parameters', () => {
+        expectSwitchError(`
+          {#switch cond}
+            {:case foo} foo
+            {:default bar} bar
+          {/switch}
+        `).toThrowError(/Default block cannot have parameters/);
+      });
+    });
+  });
+
+  describe('for loop blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectLoop(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['for']}).nodes);
+    }
+
+    function expectLoopError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['for']}));
+    }
+
+    it('should parse a for loop block', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track item.id}
+          {{ item }}
+        {:empty}
+          There were no items in the list.
+        {/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', ' {{ item }} '],
+        ['ForLoopBlockEmpty'],
+        ['Text', ' There were no items in the list. '],
+      ]);
+    });
+
+    it('should parse a for loop block with optional parentheses', () => {
+      expectLoop(`
+        {#for (item of items.foo.bar); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+
+      expectLoop(`
+        {#for (item of items.foo.bar()); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+
+      expectLoop(`
+        {#for (   ( (item of items.foo.bar()) )   ); track item.id}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['BoundText', '{{ item }}'],
+      ]);
+    });
+
+    it('should parse nested for loop blocks', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track item.id}
+          {{ item }}
+
+          <div>
+            {#for subitem of item.items; track subitem.id}<h1>{{subitem}}</h1>{/for}
+          </div>
+        {:empty}
+          There were no items in the list.
+        {/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['BoundText', ' {{ item }} '],
+        ['Element', 'div'],
+        ['ForLoopBlock', 'item.items', 'subitem.id'],
+        ['Element', 'h1'],
+        ['BoundText', '{{ subitem }}'],
+        ['ForLoopBlockEmpty'],
+        ['Text', ' There were no items in the list. '],
+      ]);
+    });
+
+    it('should parse a for loop block with a function call in the `track` expression', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track trackBy(item.id, 123)}{{ item }}{/for}
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'trackBy(item.id, 123)'],
+        ['BoundText', '{{ item }}'],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report if for loop does not have an expression', () => {
+        expectLoopError(`{#for}hello{/for}`).toThrowError(/For loop does not have an expression/);
+      });
+
+      it('should report if for loop does not have a tracking expression', () => {
+        expectLoopError(`{#for a of b}hello{/for}`)
+            .toThrowError(/For loop must have a "track" expression/);
+      });
+
+      it('should report mismatching optional parentheses around for loop expression', () => {
+        expectLoopError(`{#for (a of b; track c}hello{/for}`)
+            .toThrowError(/Unclosed parentheses in expression/);
+        expectLoopError(`{#for (a of b(); track c}hello{/for}`)
+            .toThrowError(/Unexpected end of expression: b\(/);
+        expectLoopError(`{#for a of b); track c}hello{/for}`)
+            .toThrowError(/Parser Error: Unexpected token '\)'/);
+      });
+
+      it('should report unrecognized for loop parameters', () => {
+        expectLoopError(`{#for a of b; foo bar}hello{/for}`)
+            .toThrowError(/Unrecognized loop paramater "foo bar"/);
+      });
+
+      it('should report multiple `track` parameters', () => {
+        expectLoopError(`{#for a of b; track c; track d}hello{/for}`)
+            .toThrowError(/For loop can only have one "track" expression/);
+      });
+
+      it('should report invalid for loop expression', () => {
+        const errorPattern =
+            /Cannot parse expression\. For loop expression must match the pattern "<identifier> of <expression>"/;
+
+        expectLoopError(`{#for //invalid of items}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item in items}hello{/for}`).toThrowError(errorPattern);
+        expectLoopError(`{#for item of    }hello{/for}`).toThrowError(errorPattern);
+      });
+
+      it('should report syntax error in for loop expression', () => {
+        expectLoopError(`{#for item of items..foo}hello{/for}`).toThrowError(/Unexpected token \./);
+      });
+
+      it('should report for loop with multiple `empty` blocks', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:empty} Empty one
+            {:empty} Empty two
+          {/for}
+        `).toThrowError(/For loop can only have one "empty" block/);
+      });
+
+      it('should report empty block with parameters', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:empty foo} empty
+          {/for}
+        `).toThrowError(/Empty block cannot have parameters/);
+      });
+
+      it('should report unrecognized loop blocks', () => {
+        expectLoopError(`
+          {#for a of b}
+            main
+            {:unknown} unknown
+          {/for}
+        `).toThrowError(/Unrecognized loop block "unknown"/);
+      });
+    });
+  });
+
+  describe('if blocks', () => {
+    // TODO(crisbeto): temporary utility while control flow is disabled by default.
+    function expectIf(html: string) {
+      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['if']}).nodes);
+    }
+
+    function expectIfError(html: string) {
+      return expect(() => parse(html, {enabledBlockTypes: ['if']}));
+    }
+
+    it('should parse an if block', () => {
+      expectIf(`
+        {#if cond.expr; as foo}
+          Main case was true!
+        {:else if other.expr; as bar}
+          Extra case was true!
+        {:else}
+          False case!
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr', 'foo'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr', 'bar'],
+        ['Text', ' Extra case was true! '],
+        ['IfBlockBranch', null],
+        ['Text', ' False case! '],
+      ]);
+    });
+
+    it('should parse an if block with optional parentheses', () => {
+      expectIf(`
+        {#if (cond.expr)}
+          Main case was true!
+        {:else if (other.expr)}
+          Extra case was true!
+        {:else}
+          False case!
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr'],
+        ['Text', ' Extra case was true! '],
+        ['IfBlockBranch', null],
+        ['Text', ' False case! '],
+      ]);
+    });
+
+    it('should parse nested if blocks', () => {
+      expectIf(`
+        {#if a}
+          {#if a1}
+            a1
+            {:else}
+            b1
+          {/if}
+        {:else if b}
+          b
+        {:else}
+          {#if c1}
+            c1
+            {:else if c2}
+            c2
+            {:else}
+            c3
+          {/if}
+        {/if}
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'a'],
+        ['IfBlock'],
+        ['IfBlockBranch', 'a1'],
+        ['Text', ' a1 '],
+        ['IfBlockBranch', null],
+        ['Text', ' b1 '],
+        ['IfBlockBranch', 'b'],
+        ['Text', ' b '],
+        ['IfBlockBranch', null],
+        ['IfBlock'],
+        ['IfBlockBranch', 'c1'],
+        ['Text', ' c1 '],
+        ['IfBlockBranch', 'c2'],
+        ['Text', ' c2 '],
+        ['IfBlockBranch', null],
+        ['Text', ' c3 '],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report an if block without a condition', () => {
+        expectIfError(`
+          {#if}hello{/if}
+        `).toThrowError(/Conditional block does not have an expression/);
+      });
+
+      it('should report an unknown parameter in an if block', () => {
+        expectIfError(`
+          {#if foo; bar}hello{/if}
+        `).toThrowError(/Unrecognized conditional paramater "bar"/);
+      });
+
+      it('should report an unknown parameter in an else if block', () => {
+        expectIfError(`
+          {#if foo}hello{:else if bar; baz}goodbye{/if}
+        `).toThrowError(/Unrecognized conditional paramater "baz"/);
+      });
+
+      it('should report an if block that has multiple `as` expressions', () => {
+        expectIfError(`
+          {#if foo; as foo; as bar}hello{/if}
+        `).toThrowError(/Conditional can only have one "as" expression/);
+      });
+
+      it('should report an else if block that has multiple `as` expressions', () => {
+        expectIfError(`
+          {#if foo}hello{:else if bar; as one; as two}goodbye{/if}
+        `).toThrowError(/Conditional can only have one "as" expression/);
+      });
+
+      it('should report an unknown block inside an if block', () => {
+        expectIfError(`
+          {#if foo}hello{:unknown}goodbye{/if}
+        `).toThrowError(/Unrecognized conditional block "unknown"/);
+      });
+
+      it('should report an if block inside an if block', () => {
+        expectIfError(`
+          {#if foo}hello{:if bar}goodbye{:else if baz}{/if}
+        `).toThrowError(/Unrecognized conditional block "if"/);
+      });
+
+      it('should report an else block with parameters', () => {
+        expectIfError(`
+          {#if foo}hello{:else bar}goodbye{/if}
+        `).toThrowError(/Else block cannot have parameters/);
+      });
+
+      it('should report a conditional with multiple else blocks', () => {
+        expectIfError(`
+          {#if foo}hello{:else}goodbye{:else}goodbye again{/if}
+        `).toThrowError(/Conditional can only have one "else" block/);
+      });
+
+      it('should report an else if block after an else block', () => {
+        expectIfError(`
+          {#if foo}hello{:else}goodbye{:else if bar}goodbye again{/if}
+        `).toThrowError(/Else block must be last inside the conditional/);
       });
     });
   });

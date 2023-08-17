@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Generate a preamble sequence for each view creation block and listener function which declares
@@ -25,7 +25,7 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * Variables are generated here unconditionally, and may optimized away in future operations if it
  * turns out their values (and any side effects) are unused.
  */
-export function phaseGenerateVariables(cpl: ComponentCompilation): void {
+export function phaseGenerateVariables(cpl: ComponentCompilationJob): void {
   recursivelyProcessView(cpl.root, /* there is no parent scope for the root view */ null);
 }
 
@@ -36,7 +36,7 @@ export function phaseGenerateVariables(cpl: ComponentCompilation): void {
  * @param `parentScope` a scope extracted from the parent view which captures any variables which
  *     should be inherited by this view. `null` if the current view is the root view.
  */
-function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null): void {
+function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|null): void {
   // Extract a `Scope` from this view.
   const scope = getScopeForView(view, parentScope);
 
@@ -44,7 +44,7 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
     switch (op.kind) {
       case ir.OpKind.Template:
         // Descend into child embedded views.
-        recursivelyProcessView(view.tpl.views.get(op.xref)!, scope);
+        recursivelyProcessView(view.job.views.get(op.xref)!, scope);
         break;
       case ir.OpKind.Listener:
         // Prepend variables to listener handler functions.
@@ -113,7 +113,7 @@ interface Reference {
  * Process a view and generate a `Scope` representing the variables available for reference within
  * that view.
  */
-function getScopeForView(view: ViewCompilation, parent: Scope|null): Scope {
+function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
   const scope: Scope = {
     view: view.xref,
     viewContextVariable: {
@@ -170,7 +170,7 @@ function getScopeForView(view: ViewCompilation, parent: Scope|null): Scope {
  * itself may have inherited variables, etc.
  */
 function generateVariablesInScopeForView(
-    view: ViewCompilation, scope: Scope): ir.VariableOp<ir.UpdateOp>[] {
+    view: ViewCompilationUnit, scope: Scope): ir.VariableOp<ir.UpdateOp>[] {
   const newOps: ir.VariableOp<ir.UpdateOp>[] = [];
 
   if (scope.view !== view.xref) {
@@ -178,20 +178,20 @@ function generateVariablesInScopeForView(
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
+        view.job.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
   }
 
   // Add variables for all context variables available in this scope's view.
-  for (const [name, value] of view.tpl.views.get(scope.view)!.contextVariables) {
+  for (const [name, value] of view.job.views.get(scope.view)!.contextVariables) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), scope.contextVariables.get(name)!,
+        view.job.allocateXrefId(), scope.contextVariables.get(name)!,
         new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
+        view.job.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
   }
 
   if (scope.parent !== null) {

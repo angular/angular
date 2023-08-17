@@ -4187,7 +4187,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         // - FormControlDirective was destroyed and connection to a value accessor and view
         //   validators should also be destroyed.
         // - Since there is a second instance of the FormControlDirective directive present in the
-        //   template, we expect to see see calls to value accessor B (since it's applied to
+        //   template, we expect to see calls to value accessor B (since it's applied to
         //   that directive instance) and validators applied on a control instance itself (not a
         //   part of a view setup).
         expect(valueAccessorBSpy).toHaveBeenCalledWith('Updated Value');
@@ -4262,7 +4262,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         // - `FormControlName` was destroyed and connection to the value accessor A and
         //   validators should also be destroyed.
         // - Since there is a second instance of `FormControlName` directive present in the
-        //   template, we expect to see see calls to the value accessor B (since it's applied to
+        //   template, we expect to see calls to the value accessor B (since it's applied to
         //   that directive instance) and validators applied on a control instance itself (not a
         //   part of a view setup).
         expect(valueAccessorBSpy).toHaveBeenCalledWith('Updated value');

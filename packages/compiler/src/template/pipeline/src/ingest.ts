@@ -7,29 +7,86 @@
  */
 
 import {ConstantPool} from '../../../constant_pool';
+import {SecurityContext} from '../../../core';
 import * as e from '../../../expression_parser/ast';
+import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
+import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {ComponentCompilation, ViewCompilation} from './compilation';
-import {BINARY_OPERATORS} from './conversion';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
+import {BINARY_OPERATORS, namespaceForKey} from './conversion';
+
+const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
  * representation.
  */
-export function ingest(
-    componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
-  const cpl = new ComponentCompilation(componentName, constantPool);
+export function ingestComponent(
+    componentName: string, template: t.Node[],
+    constantPool: ConstantPool): ComponentCompilationJob {
+  const cpl = new ComponentCompilationJob(componentName, constantPool, compatibilityMode);
   ingestNodes(cpl.root, template);
   return cpl;
 }
 
+export interface HostBindingInput {
+  componentName: string;
+  properties: e.ParsedProperty[]|null;
+  events: e.ParsedEvent[]|null;
+}
+
+/**
+ * Process a host binding AST and convert it into a `HostBindingCompilationJob` in the intermediate
+ * representation.
+ */
+export function ingestHostBinding(
+    input: HostBindingInput, bindingParser: BindingParser,
+    constantPool: ConstantPool): HostBindingCompilationJob {
+  const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
+  for (const property of input.properties ?? []) {
+    ingestHostProperty(job, property, false);
+  }
+  for (const event of input.events ?? []) {
+    ingestHostEvent(job, event);
+  }
+  return job;
+}
+
+// TODO: We should refactor the parser to use the same types and structures for host bindings as
+// with ordinary components. This would allow us to share a lot more ingestion code.
+export function ingestHostProperty(
+    job: HostBindingCompilationJob, property: e.ParsedProperty, isTextAttribute: boolean): void {
+  let expression: o.Expression|ir.Interpolation;
+  const ast = property.expression.ast;
+  if (ast instanceof e.Interpolation) {
+    expression =
+        new ir.Interpolation(ast.strings, ast.expressions.map(expr => convertAst(expr, job)));
+  } else {
+    expression = convertAst(ast, job);
+  }
+  let bindingKind = ir.BindingKind.Property;
+  // TODO: this should really be handled in the parser.
+  if (property.name.startsWith('attr.')) {
+    property.name = property.name.substring('attr.'.length);
+    bindingKind = ir.BindingKind.Attribute;
+  }
+  job.update.push(ir.createBindingOp(
+      job.root.xref, bindingKind, property.name, expression, null,
+      SecurityContext
+          .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
+      isTextAttribute, false, property.sourceSpan));
+}
+
+export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
+
 /**
  * Ingest the nodes of a template AST into the given `ViewCompilation`.
  */
-function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
+function ingestNodes(view: ViewCompilationUnit, template: t.Node[]): void {
   for (const node of template) {
     if (node instanceof t.Element) {
       ingestElement(view, node);
@@ -45,34 +102,47 @@ function ingestNodes(view: ViewCompilation, template: t.Node[]): void {
   }
 }
 
+
+
 /**
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
-function ingestElement(view: ViewCompilation, element: t.Element): void {
+function ingestElement(view: ViewCompilationUnit, element: t.Element): void {
   const staticAttributes: Record<string, string> = {};
   for (const attr of element.attributes) {
     staticAttributes[attr.name] = attr.value;
   }
-  const id = view.tpl.allocateXrefId();
+  const id = view.job.allocateXrefId();
 
-  const startOp = ir.createElementStartOp(element.name, id);
+  const [namespaceKey, elementName] = splitNsName(element.name);
+
+  const startOp = ir.createElementStartOp(
+      elementName, id, namespaceForKey(namespaceKey), element.startSourceSpan);
   view.create.push(startOp);
 
   ingestBindings(view, startOp, element);
   ingestReferences(startOp, element);
 
   ingestNodes(view, element.children);
-  view.create.push(ir.createElementEndOp(id));
+  view.create.push(ir.createElementEndOp(id, element.endSourceSpan));
 }
 
 /**
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
-function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
-  const childView = view.tpl.allocateView(view.xref);
+function ingestTemplate(view: ViewCompilationUnit, tmpl: t.Template): void {
+  const childView = view.job.allocateView(view.xref);
+
+  let tagNameWithoutNamespace = tmpl.tagName;
+  let namespacePrefix: string|null = '';
+  if (tmpl.tagName) {
+    [namespacePrefix, tagNameWithoutNamespace] = splitNsName(tmpl.tagName);
+  }
 
   // TODO: validate the fallback tag name here.
-  const tplOp = ir.createTemplateOp(childView.xref, tmpl.tagName ?? 'ng-template');
+  const tplOp = ir.createTemplateOp(
+      childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
+      tmpl.startSourceSpan);
   view.create.push(tplOp);
 
   ingestBindings(view, tplOp, tmpl);
@@ -88,14 +158,14 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
 /**
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
-function ingestText(view: ViewCompilation, text: t.Text): void {
-  view.create.push(ir.createTextOp(view.tpl.allocateXrefId(), text.value));
+function ingestText(view: ViewCompilationUnit, text: t.Text): void {
+  view.create.push(ir.createTextOp(view.job.allocateXrefId(), text.value, text.sourceSpan));
 }
 
 /**
  * Ingest an interpolated text node from the AST into the given `ViewCompilation`.
  */
-function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
+function ingestBoundText(view: ViewCompilationUnit, text: t.BoundText): void {
   let value = text.value;
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
@@ -105,20 +175,23 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
         `AssertionError: expected Interpolation for BoundText node, got ${value.constructor.name}`);
   }
 
-  const textXref = view.tpl.allocateXrefId();
-  view.create.push(ir.createTextOp(textXref, ''));
+  const textXref = view.job.allocateXrefId();
+  view.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
   view.update.push(ir.createInterpolateTextOp(
-      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+      textXref,
+      new ir.Interpolation(
+          value.strings, value.expressions.map(expr => convertAst(expr, view.job))),
+      text.sourceSpan));
 }
 
 /**
  * Convert a template AST expression into an output AST expression.
  */
-function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
+function convertAst(ast: e.AST, cpl: CompilationJob): o.Expression {
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, cpl);
   } else if (ast instanceof e.PropertyRead) {
-    if (ast.receiver instanceof e.ImplicitReceiver) {
+    if (ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver)) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(convertAst(ast.receiver, cpl), ast.name);
@@ -198,32 +271,46 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
  * to their IR representation.
  */
 function ingestBindings(
-    view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
+    view: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       if (attr instanceof t.TextAttribute) {
-        view.update.push(ir.createAttributeOp(
-            op.xref, ir.ElementAttributeKind.Template, attr.name, o.literal(attr.value)));
+        ingestBinding(
+            view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+            SecurityContext.NONE, attr.sourceSpan, true, true);
       } else {
-        ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Template, attr);
+        ingestBinding(
+            view, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.securityContext,
+            attr.sourceSpan, false, true);
       }
     }
   }
 
   for (const attr of element.attributes) {
-    // This is only attribute TextLiteral bindings, such as `attr.foo="bar'`. This can never be
+    // This is only attribute TextLiteral bindings, such as `attr.foo="bar"`. This can never be
     // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
     // `BindingType.Attribute`.
-    view.update.push(ir.createAttributeOp(
-        op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
+    ingestBinding(
+        view, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+        SecurityContext.NONE, attr.sourceSpan, true, false);
   }
 
   for (const input of element.inputs) {
-    ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, input);
+    ingestBinding(
+        view, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
+        input.sourceSpan, false, false);
   }
 
   for (const output of element.outputs) {
-    const listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
+    let listenerOp: ir.ListenerOp;
+    if (output.type === e.ParsedEventType.Animation) {
+      if (output.phase === null) {
+        throw Error('Animation listener should have a phase');
+      }
+      listenerOp = ir.createListenerOpForAnimation(op.xref, output.name, output.phase!, op.tag);
+    } else {
+      listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
+    }
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?
     let inputExprs: e.AST[];
@@ -242,7 +329,7 @@ function ingestBindings(
       throw new Error('Expected listener to have non-empty expression list.');
     }
 
-    const expressions = inputExprs.map(expr => convertAst(expr, view.tpl));
+    const expressions = inputExprs.map(expr => convertAst(expr, view.job));
     const returnExpr = expressions.pop()!;
 
     for (const expr of expressions) {
@@ -254,103 +341,36 @@ function ingestBindings(
   }
 }
 
-function ingestPropertyBinding(
-    view: ViewCompilation, xref: ir.XrefId,
-    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
-    {name, value, type, unit}: t.BoundAttribute): void {
+const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
+  [e.BindingType.Property, ir.BindingKind.Property],
+  [e.BindingType.Attribute, ir.BindingKind.Attribute],
+  [e.BindingType.Class, ir.BindingKind.ClassName],
+  [e.BindingType.Style, ir.BindingKind.StyleProperty],
+  [e.BindingType.Animation, ir.BindingKind.Animation],
+]);
+
+function ingestBinding(
+    view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
+    type: e.BindingType, unit: string|null, securityContext: SecurityContext,
+    sourceSpan: ParseSourceSpan, isTextAttribute: boolean, isTemplateBinding: boolean): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
 
+  let expression: o.Expression|ir.Interpolation;
   if (value instanceof e.Interpolation) {
-    switch (type) {
-      case e.BindingType.Property:
-        if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createInterpolateStyleMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
-        } else if (name === 'class') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected class binding on ng-template');
-          }
-          view.update.push(ir.createInterpolateClassMapOp(
-              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
-        } else {
-          view.update.push(ir.createInterpolatePropertyOp(
-              xref, bindingKind, name, value.strings,
-              value.expressions.map(expr => convertAst(expr, view.tpl))));
-        }
-        break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createInterpolateStylePropOp(
-            xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)),
-            unit));
-        break;
-      case e.BindingType.Attribute:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw new Error('Attribute bindings on templates are not expected to be valid');
-        }
-        const attributeInterpolate = ir.createInterpolateAttributeOp(
-            xref, bindingKind, name, value.strings,
-            value.expressions.map(expr => convertAst(expr, view.tpl)));
-        view.update.push(attributeInterpolate);
-        break;
-      case e.BindingType.Class:
-        throw Error('Unexpected interpolation in class property binding');
-      // TODO: implement remaining binding types.
-      case e.BindingType.Animation:
-      default:
-        throw Error(`Interpolated property binding type not handled: ${type}`);
-    }
+    expression = new ir.Interpolation(
+        value.strings, value.expressions.map(expr => convertAst(expr, view.job)));
+  } else if (value instanceof e.AST) {
+    expression = convertAst(value, view.job);
   } else {
-    switch (type) {
-      case e.BindingType.Property:
-        // Bindings to [style] are mapped to their own special instruction.
-        if (name === 'style') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected style binding on ng-template');
-          }
-          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
-        } else if (name === 'class') {
-          if (bindingKind !== ir.ElementAttributeKind.Binding) {
-            throw Error('Unexpected class binding on ng-template');
-          }
-          view.update.push(ir.createClassMapOp(xref, convertAst(value, view.tpl)));
-        } else {
-          view.update.push(
-              ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
-        }
-        break;
-      case e.BindingType.Style:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected style binding on ng-template');
-        }
-        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
-        break;
-      case e.BindingType.Attribute:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw new Error('Attribute bindings on templates are not expected to be valid');
-        }
-        const attrOp = ir.createAttributeOp(xref, bindingKind, name, convertAst(value, view.tpl));
-        view.update.push(attrOp);
-        break;
-      case e.BindingType.Class:
-        if (bindingKind !== ir.ElementAttributeKind.Binding) {
-          throw Error('Unexpected class binding on ng-template');
-        }
-        view.update.push(ir.createClassPropOp(xref, name, convertAst(value, view.tpl)));
-        break;
-      // TODO: implement remaining binding types.
-      case e.BindingType.Animation:
-      default:
-        throw Error(`Property binding type not handled: ${type}`);
-    }
+    expression = value;
   }
+
+  const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
+  view.update.push(ir.createBindingOp(
+      xref, kind, name, expression, unit, securityContext, isTextAttribute, isTemplateBinding,
+      sourceSpan));
 }
 
 /**

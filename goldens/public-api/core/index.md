@@ -25,6 +25,22 @@ export interface AfterContentInit {
 }
 
 // @public
+export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export interface AfterRenderOptions {
+    injector?: Injector;
+}
+
+// @public
+export interface AfterRenderRef {
+    destroy(): void;
+}
+
+// @public
 export interface AfterViewChecked {
     ngAfterViewChecked(): void;
 }
@@ -795,7 +811,7 @@ export abstract class Injector {
     // @deprecated (undocumented)
     static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
-        providers: StaticProvider[];
+        providers: Array<Provider | StaticProvider>;
         parent?: Injector;
         name?: string;
     }): Injector;
@@ -1110,7 +1126,7 @@ export interface OutputDecorator {
     new (alias?: string): any;
 }
 
-// @public
+// @public @deprecated
 export const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 // @public

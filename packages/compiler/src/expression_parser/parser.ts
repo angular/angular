@@ -81,6 +81,7 @@ export class Parser {
     return checker.errors;
   }
 
+  // Host bindings parsed here
   parseSimpleBinding(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {

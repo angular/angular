@@ -1,6 +1,6 @@
 // #docregion
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-compose-message',
@@ -12,7 +12,7 @@ export class ComposeMessageComponent {
   message = '';
   sending = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   send() {
     this.sending = true;
@@ -32,7 +32,7 @@ export class ComposeMessageComponent {
   closePopup() {
     // Providing a `null` value to the named outlet
     // clears the contents of the named outlet
-    this.router.navigate([{ outlets: { popup: null }}]);
+    this.router.navigate([{outlets: {popup: null}}], {relativeTo: this.route.parent});
   }
   // #enddocregion closePopup
 }

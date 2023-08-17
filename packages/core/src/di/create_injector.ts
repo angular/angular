@@ -10,19 +10,17 @@ import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
 import {Injector} from './injector';
-import {StaticProvider} from './interface/provider';
+import {Provider, StaticProvider} from './interface/provider';
 import {importProvidersFrom} from './provider_collection';
 import {getNullInjector, R3Injector} from './r3_injector';
 import {InjectorScope} from './scope';
 
 /**
  * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.
- *
- * @publicApi
  */
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: StaticProvider[]|null = null, name?: string): Injector {
+    additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string): Injector {
   const injector =
       createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
   injector.resolveInjectorInitializers();
@@ -36,7 +34,7 @@ export function createInjector(
  */
 export function createInjectorWithoutInjectorInstances(
     defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: StaticProvider[]|null = null, name?: string,
+    additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string,
     scopes = new Set<InjectorScope>()): R3Injector {
   const providers = [
     additionalProviders || EMPTY_ARRAY,

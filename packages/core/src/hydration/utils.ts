@@ -9,10 +9,11 @@
 
 import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
+import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {isLContainer, isRootView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {isRootView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
@@ -35,6 +36,11 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
  * state that contains the necessary hydration info for this component.
  */
 export const NGH_ATTR_NAME = 'ngh';
+
+/**
+ * Marker used in a comment node to ensure hydration content integrity
+ */
+export const SSR_CONTENT_INTEGRITY_MARKER = 'nghm';
 
 export const enum TextNodeMarker {
 
@@ -64,14 +70,33 @@ export const enum TextNodeMarker {
  *
  * @param rNode Component's host element.
  * @param injector Injector that this component has access to.
+ * @param isRootView Specifies whether we trying to read hydration info for the root view.
  */
 let _retrieveHydrationInfoImpl: typeof retrieveHydrationInfoImpl =
-    (rNode: RElement, injector: Injector) => null;
+    (rNode: RElement, injector: Injector, isRootView?: boolean) => null;
 
-export function retrieveHydrationInfoImpl(rNode: RElement, injector: Injector): DehydratedView|
-    null {
-  const nghAttrValue = rNode.getAttribute(NGH_ATTR_NAME);
+export function retrieveHydrationInfoImpl(
+    rNode: RElement, injector: Injector, isRootView = false): DehydratedView|null {
+  let nghAttrValue = rNode.getAttribute(NGH_ATTR_NAME);
   if (nghAttrValue == null) return null;
+
+  // For cases when a root component also acts as an anchor node for a ViewContainerRef
+  // (for example, when ViewContainerRef is injected in a root component), there is a need
+  // to serialize information about the component itself, as well as an LContainer that
+  // represents this ViewContainerRef. Effectively, we need to serialize 2 pieces of info:
+  // (1) hydration info for the root component itself and (2) hydration info for the
+  // ViewContainerRef instance (an LContainer). Each piece of information is included into
+  // the hydration data (in the TransferState object) separately, thus we end up with 2 ids.
+  // Since we only have 1 root element, we encode both bits of info into a single string:
+  // ids are separated by the `|` char (e.g. `10|25`, where `10` is the ngh for a component view
+  // and 25 is the `ngh` for a root view which holds LContainer).
+  const [componentViewNgh, rootViewNgh] = nghAttrValue.split('|');
+  nghAttrValue = isRootView ? rootViewNgh : componentViewNgh;
+  if (!nghAttrValue) return null;
+
+  // We've read one of the ngh ids, keep the remaining one, so that
+  // we can set it back on the DOM element.
+  const remainingNgh = isRootView ? componentViewNgh : (rootViewNgh ? `|${rootViewNgh}` : '');
 
   let data: SerializedView = {};
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
@@ -96,9 +121,31 @@ export function retrieveHydrationInfoImpl(rNode: RElement, injector: Injector): 
     data,
     firstChild: rNode.firstChild ?? null,
   };
-  // The `ngh` attribute is cleared from the DOM node now
-  // that the data has been retrieved.
-  rNode.removeAttribute(NGH_ATTR_NAME);
+
+  if (isRootView) {
+    // If there is hydration info present for the root view, it means that there was
+    // a ViewContainerRef injected in the root component. The root component host element
+    // acted as an anchor node in this scenario. As a result, the DOM nodes that represent
+    // embedded views in this ViewContainerRef are located as siblings to the host node,
+    // i.e. `<app-root /><#VIEW1><#VIEW2>...<!--container-->`. In this case, the current
+    // node becomes the first child of this root view and the next sibling is the first
+    // element in the DOM segment.
+    dehydratedView.firstChild = rNode;
+
+    // We use `0` here, since this is the slot (right after the HEADER_OFFSET)
+    // where a component LView or an LContainer is located in a root LView.
+    setSegmentHead(dehydratedView, 0, rNode.nextSibling);
+  }
+
+  if (remainingNgh) {
+    // If we have only used one of the ngh ids, store the remaining one
+    // back on this RNode.
+    rNode.setAttribute(NGH_ATTR_NAME, remainingNgh);
+  } else {
+    // The `ngh` attribute is cleared from the DOM node now
+    // that the data has been retrieved for all indices.
+    rNode.removeAttribute(NGH_ATTR_NAME);
+  }
 
   // Note: don't check whether this node was claimed for hydration,
   // because this node might've been previously claimed while processing
@@ -120,15 +167,18 @@ export function enableRetrieveHydrationInfoImpl() {
  * Retrieves hydration info by reading the value from the `ngh` attribute
  * and accessing a corresponding slot in TransferState storage.
  */
-export function retrieveHydrationInfo(rNode: RElement, injector: Injector): DehydratedView|null {
-  return _retrieveHydrationInfoImpl(rNode, injector);
+export function retrieveHydrationInfo(
+    rNode: RElement, injector: Injector, isRootView = false): DehydratedView|null {
+  return _retrieveHydrationInfoImpl(rNode, injector, isRootView);
 }
 
 /**
- * Retrieves an instance of a component LView from a given ViewRef.
- * Returns an instance of a component LView or `null` in case of an embedded view.
+ * Retrieves the necessary object from a given ViewRef to serialize:
+ *  - an LView for component views
+ *  - an LContainer for cases when component acts as a ViewContainerRef anchor
+ *  - `null` in case of an embedded view
  */
-export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
+export function getLNodeForHydration(viewRef: ViewRef): LView|LContainer|null {
   // Reading an internal field from `ViewRef` instance.
   let lView = (viewRef as any)._lView as LView;
   const tView = lView[TVIEW];
@@ -143,12 +193,6 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
     lView = lView[HEADER_OFFSET];
   }
 
-  // If a `ViewContainerRef` was injected in a component class, this resulted
-  // in an LContainer creation at that location. In this case, the component
-  // LView is in the LContainer's `HOST` slot.
-  if (isLContainer(lView)) {
-    lView = lView[HOST];
-  }
   return lView;
 }
 

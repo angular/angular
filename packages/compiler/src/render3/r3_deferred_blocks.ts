@@ -112,6 +112,10 @@ function parsePlaceholderBlock(ast: html.Block, visitor: html.Visitor): t.Deferr
 
   for (const param of ast.parameters) {
     if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
+      if (minimumTime != null) {
+        throw new Error(`Placeholder block can only have one "minimum" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
@@ -137,6 +141,10 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 
   for (const param of ast.parameters) {
     if (AFTER_PARAMETER_PATTERN.test(param.expression)) {
+      if (afterTime != null) {
+        throw new Error(`Loading block can only have one "after" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
@@ -146,6 +154,10 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 
       afterTime = parsedTime;
     } else if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
+      if (minimumTime != null) {
+        throw new Error(`Loading block can only have one "minimum" parameter`);
+      }
+
       const parsedTime =
           parseDeferredTime(param.expression.slice(getTriggerParametersStart(param.expression)));
 
@@ -177,22 +189,20 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
 
 function parsePrimaryTriggers(
     params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[]) {
-  const triggers: t.DeferredTrigger[] = [];
-  const prefetchTriggers: t.DeferredTrigger[] = [];
+  const triggers: t.DeferredBlockTriggers = {};
+  const prefetchTriggers: t.DeferredBlockTriggers = {};
 
   for (const param of params) {
     // The lexer ignores the leading spaces so we can assume
     // that the expression starts with a keyword.
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
-      const result = parseWhenTrigger(param, bindingParser, errors);
-      result !== null && triggers.push(result);
+      parseWhenTrigger(param, bindingParser, triggers, errors);
     } else if (ON_PARAMETER_PATTERN.test(param.expression)) {
-      triggers.push(...parseOnTrigger(param, errors));
+      parseOnTrigger(param, triggers, errors);
     } else if (PREFETCH_WHEN_PATTERN.test(param.expression)) {
-      const result = parseWhenTrigger(param, bindingParser, errors);
-      result !== null && prefetchTriggers.push(result);
+      parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
-      prefetchTriggers.push(...parseOnTrigger(param, errors));
+      parseOnTrigger(param, prefetchTriggers, errors);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
