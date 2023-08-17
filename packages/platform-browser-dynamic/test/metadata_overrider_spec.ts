@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MetadataOverrider} from '@angular/platform-browser-dynamic/testing/src/metadata_overrider';
+import {ɵMetadataOverrider as MetadataOverrider} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 interface SomeMetadataType {
