@@ -5,10 +5,7 @@ import { HttpClient } from '@angular/common/http';
 // #enddocregion proto
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
-// #docregion rxjs-imports
-import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
-// #enddocregion rxjs-imports
+import { Observable, catchError, retry, throwError } from 'rxjs';
 
 // #docregion config-interface
 export interface Config {
@@ -62,6 +59,13 @@ export class ConfigService {
       );
   }
   // #enddocregion getConfig_3
+
+
+  getConfig_untyped_response() {
+  // #docregion untyped_response
+    return this.http.get(this.configUrl);
+    // #enddocregion untyped_response
+  }
 
   // #docregion getConfigResponse
   getConfigResponse(): Observable<HttpResponse<Config>> {
