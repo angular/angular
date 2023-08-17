@@ -50,7 +50,7 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
-// @public
+// @public @deprecated
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
 // @public

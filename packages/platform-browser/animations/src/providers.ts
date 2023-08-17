@@ -15,6 +15,9 @@ import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-br
 import {BrowserAnimationBuilder} from './animation_builder';
 import {AnimationRendererFactory} from './animation_renderer';
 
+// NOTE: ANIMATION_MODULE_TYPE cannot be imported from ./animations because of a circularity
+// Once ANIMATION_MODULE_TYPE has been removed from core, it can be moved here
+
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {
   // The `ApplicationRef` is injected here explicitly to force the dependency ordering.

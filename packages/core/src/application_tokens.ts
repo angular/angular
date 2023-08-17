@@ -79,6 +79,7 @@ export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates which animations
  * module has been loaded.
  * @publicApi
+ * @deprecated Use the export from `@angular/platform-browser/animations`
  */
 export const ANIMATION_MODULE_TYPE =
     new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');
