@@ -1521,7 +1521,7 @@ describe('R3 template transform', () => {
       expectIf(`
         {#if cond.expr; as foo}
           Main case was true!
-        {:else if other.expr; as bar}
+        {:else if other.expr}
           Extra case was true!
         {:else}
           False case!
@@ -1530,7 +1530,7 @@ describe('R3 template transform', () => {
         ['IfBlock'],
         ['IfBlockBranch', 'cond.expr', 'foo'],
         ['Text', ' Main case was true! '],
-        ['IfBlockBranch', 'other.expr', 'bar'],
+        ['IfBlockBranch', 'other.expr'],
         ['Text', ' Extra case was true! '],
         ['IfBlockBranch', null],
         ['Text', ' False case! '],
@@ -1622,10 +1622,10 @@ describe('R3 template transform', () => {
         `).toThrowError(/Conditional can only have one "as" expression/);
       });
 
-      it('should report an else if block that has multiple `as` expressions', () => {
+      it('should report an else if block that has an `as` expression', () => {
         expectIfError(`
-          {#if foo}hello{:else if bar; as one; as two}goodbye{/if}
-        `).toThrowError(/Conditional can only have one "as" expression/);
+          {#if foo}hello{:else if bar; as alias}goodbye{/if}
+        `).toThrowError(/"as" expression is only allowed on the primary "if" block/);
       });
 
       it('should report an unknown block inside an if block', () => {
