@@ -24,7 +24,7 @@ export class FetchBackend implements HttpBackend {
 }
 
 // @public
-export const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
+export const HTTP_INTERCEPTORS: InjectionToken<readonly HttpInterceptor[]>;
 
 // @public
 export abstract class HttpBackend implements HttpHandler {

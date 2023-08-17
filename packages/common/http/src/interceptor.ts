@@ -175,19 +175,19 @@ function chainedInterceptorFn(
  * @publicApi
  */
 export const HTTP_INTERCEPTORS =
-    new InjectionToken<HttpInterceptor[]>(ngDevMode ? 'HTTP_INTERCEPTORS' : '');
+    new InjectionToken<readonly HttpInterceptor[]>(ngDevMode ? 'HTTP_INTERCEPTORS' : '');
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s.
  */
 export const HTTP_INTERCEPTOR_FNS =
-    new InjectionToken<HttpInterceptorFn[]>(ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '');
+    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '');
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s that are only set in root.
  */
 export const HTTP_ROOT_INTERCEPTOR_FNS =
-    new InjectionToken<HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
+    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
 
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
