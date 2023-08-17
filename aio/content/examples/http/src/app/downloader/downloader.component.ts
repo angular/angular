@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DownloaderService } from './downloader.service';
 
 @Component({
+  standalone: true,
   selector: 'app-downloader',
   templateUrl: './downloader.component.html',
+  imports: [ CommonModule ],
   providers: [ DownloaderService ]
 })
 export class DownloaderComponent {

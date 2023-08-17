@@ -1,12 +1,10 @@
 // #docplaster
 import { Injectable } from '@angular/core';
 import {
-  HttpEvent, HttpHeaders, HttpRequest, HttpResponse,
-  HttpInterceptor, HttpHandler
+  HttpEvent, HttpRequest, HttpResponse, HttpInterceptor, HttpHandler
 } from '@angular/common/http';
 
-import { Observable, of } from 'rxjs';
-import { startWith, tap } from 'rxjs/operators';
+import { Observable, of, startWith, tap } from 'rxjs';
 
 import { RequestCache } from '../request-cache.service';
 import { searchUrl } from '../package-search/package-search.service';

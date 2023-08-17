@@ -50,11 +50,4 @@ The following example shows how to pipe a failed request to the `retry()` operat
 
 <code-example header="app/config/config.service.ts (getConfig with retry)" path="http/src/app/config/config.service.ts" region="getConfig"></code-example>
 
-## Sending data to a server
-
-In addition to fetching data from a server, `HttpClient` supports other HTTP methods such as PUT, POST, and DELETE, which you can use to modify the remote data.
-
-The sample app for this guide includes an abridged version of the "Tour of Heroes" example that fetches heroes and enables users to add, delete, and update them.
-The following sections show examples of the data-update methods from the sample's `HeroesService`.
-
-@reviewed 2023-08-14
+@reviewed 2023-08-29
