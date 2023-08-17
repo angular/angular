@@ -166,15 +166,8 @@ function parseForLoopParameters(
   const [, itemName, rawExpression] = match;
   const result = {
     itemName,
-    trackBy: null as string | null,
-    expression: bindingParser.parseBinding(
-        rawExpression, false, expressionParam.sourceSpan,
-        // Note: `lastIndexOf` here should be enough to know the start index of the expression,
-        // because we know that it'll be the last matching group. Ideally we could use the `d`
-        // flag on the regex and get the index from `match.indices`, but it's unclear if we can
-        // use it yet since it's a relatively new feature. See:
-        // https://github.com/tc39/proposal-regexp-match-indices
-        Math.max(0, expressionParam.expression.lastIndexOf(rawExpression)))
+    trackBy: null as ASTWithSource | null,
+    expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression)
   };
 
   for (const param of secondaryParams) {
@@ -189,7 +182,7 @@ function parseForLoopParameters(
       errors.push(
           new ParseError(param.sourceSpan, 'For loop can only have one "track" expression'));
     } else {
-      result.trackBy = trackMatch[1].trim();
+      result.trackBy = parseBlockParameterToBinding(param, bindingParser, trackMatch[1]);
     }
   }
 
@@ -273,11 +266,45 @@ function validateSwitchBlock(ast: html.BlockGroup): ParseError[] {
   return errors;
 }
 
-/** Parses a block parameter into a binding AST. */
+/**
+ * Parses a block parameter into a binding AST.
+ * @param ast Block parameter that should be parsed.
+ * @param bindingParser Parser that the expression should be parsed with.
+ * @param start Index from which to start the parsing. Defaults to 0.
+ */
 function parseBlockParameterToBinding(
-    ast: html.BlockParameter, bindingParser: BindingParser, start = 0): ASTWithSource {
+    ast: html.BlockParameter, bindingParser: BindingParser, start?: number): ASTWithSource;
+
+/**
+ * Parses a block parameter into a binding AST.
+ * @param ast Block parameter that should be parsed.
+ * @param bindingParser Parser that the expression should be parsed with.
+ * @param part Specific part of the expression that should be parsed.
+ */
+function parseBlockParameterToBinding(
+    ast: html.BlockParameter, bindingParser: BindingParser, part: string): ASTWithSource;
+
+function parseBlockParameterToBinding(
+    ast: html.BlockParameter, bindingParser: BindingParser,
+    part: string|number = 0): ASTWithSource {
+  let start: number;
+  let end: number;
+
+  if (typeof part === 'number') {
+    start = part;
+    end = ast.expression.length;
+  } else {
+    // Note: `lastIndexOf` here should be enough to know the start index of the expression,
+    // because we know that it'll be at the end of the param. Ideally we could use the `d`
+    // flag when matching via regex and get the index from `match.indices`, but it's unclear
+    // if we can use it yet since it's a relatively new feature. See:
+    // https://github.com/tc39/proposal-regexp-match-indices
+    start = Math.max(0, ast.expression.lastIndexOf(part));
+    end = start + part.length;
+  }
+
   return bindingParser.parseBinding(
-      ast.expression.slice(start), false, ast.sourceSpan, ast.sourceSpan.start.offset + start);
+      ast.expression.slice(start, end), false, ast.sourceSpan, ast.sourceSpan.start.offset + start);
 }
 
 /** Parses the parameter of a conditional block (`if` or `else if`). */
