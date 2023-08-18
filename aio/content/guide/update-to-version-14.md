@@ -10,7 +10,7 @@ For step-by-step instructions on how to update to the latest Angular release and
 
 <div class="alert is-helpful">
 
-For information about the deprecation and removal practices of Angular, see [Angular Release Practices](guide/releases#deprecation-practices).
+For information about the deprecation and removal practices of Angular, see [Angular Release Practices](guide/releases#deprecation-policy).
 
 </div>
 

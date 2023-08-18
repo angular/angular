@@ -13,7 +13,7 @@ comprehensive details on deprecations and breaking changes.
 <div class="alert is-helpful">
 
 Features and APIs that were deprecated in v6 or earlier are candidates for removal in version 9 or any later major version.
-For information about Angular's deprecation and removal practices, see [Angular Release Practices](guide/releases#deprecation-practices "Angular Release Practices: Deprecation practices").
+For information about Angular's deprecation and removal practices, see [Angular Release Practices](guide/releases#deprecation-policy "Angular Release Practices: Deprecation policy").
 
 For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io).
 
