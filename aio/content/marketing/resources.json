@@ -112,12 +112,6 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
-          },
-          "ngxp": {
-            "desc": "Weekly technical-adjacent podcast by Brooke Avery & Erik Slack. Don't just code in Angular, come enjoy the Angular Experience!",
-            "logo": "",
-            "title": "Angular Experience (NgXP)",
-            "url": "https://ngxp.show"
           }
         }
       }
