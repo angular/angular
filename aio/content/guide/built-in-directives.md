@@ -12,8 +12,8 @@ See the <live-example></live-example> for a working example containing the code 
 
 The different types of Angular directives are as follows:
 
-| Directive Types                                                                   | Details |
-|:---                                                                               |:---     |
+| Directive Types                                                                   | Details                                                                           |
+| :-------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
 | [Components](guide/component-overview)                                            | Used with a template. This type of directive is the most common directive type.   |
 | [Attribute directives](guide/built-in-directives#built-in-attribute-directives)   | Change the appearance or behavior of an element, component, or another directive. |
 | [Structural directives](guide/built-in-directives#built-in-structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
@@ -26,11 +26,12 @@ This guide covers built-in [attribute directives](guide/built-in-directives#buil
 
 Attribute directives listen to and modify the behavior of other HTML elements, attributes, properties, and components.
 
-Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation") and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
+Many attribute directives are defined through modules such as the [`CommonModule`](api/common/CommonModule), [`RouterModule`](guide/router 'Routing and Navigation') and [`FormsModule`](guide/forms 'Forms').
+
 The most common attribute directives are as follows:
 
-| Common directives                              | Details |
-|:---                                            |:---     |
+| Common directives                              | Details                                            |
+| :--------------------------------------------- | :------------------------------------------------- |
 | [`NgClass`](guide/built-in-directives#ngClass) | Adds and removes a set of CSS classes.             |
 | [`NgStyle`](guide/built-in-directives#ngstyle) | Adds and removes a set of HTML styles.             |
 | [`NgModel`](guide/built-in-directives#ngModel) | Adds two-way data binding to an HTML form element. |
@@ -50,9 +51,15 @@ Add or remove multiple CSS classes simultaneously with `ngClass`.
 
 <div class="alert is-helpful">
 
-To add or remove a *single* class, use [class binding](guide/class-binding) rather than `NgClass`.
+To add or remove a _single_ class, use [class binding](guide/class-binding) rather than `NgClass`.
 
 </div>
+
+### Import `CommonModule` in the component
+
+To use `NgClass`, import `CommonModule` and add it to the component's `imports` list.
+
+<code-example header="src/app/app.component.ts (CommonModule import)" path="built-in-directives/src/app/app.component.ts" region="import-common-module"></code-example>
 
 ### Using `NgClass` with an expression
 
@@ -86,6 +93,14 @@ For more information, see the <live-example></live-example> `app.component.ts` a
 
 ## Setting inline styles with `NgStyle`
 
+### Import `CommonModule` in the component
+
+To use `NgStyle`, import `CommonModule` and add it to the component's `imports` list.
+
+<code-example header="src/app/app.component.ts (CommonModule import)" path="built-in-directives/src/app/app.component.ts" region="import-common-module"></code-example>
+
+### Using `NgStyle` in your component
+
 Use `NgStyle` to set multiple inline styles simultaneously, based on the state of the component.
 
 1.  To use `NgStyle`, add a method to the component class.
@@ -109,9 +124,9 @@ See the <live-example></live-example> `app.component.ts` and `app.component.html
 
 Use the `NgModel` directive to display a data property and update that property when the user makes changes.
 
-1.  Import `FormsModule`  and add it to the NgModule's `imports` list.
+1.  Import `FormsModule` and add it to the AppComponent's `imports` list.
 
-    <code-example header="src/app/app.module.ts (FormsModule import)" path="built-in-directives/src/app/app.module.ts" region="import-forms-module"></code-example>
+    <code-example header="src/app/app.component.ts (FormsModule import)" path="built-in-directives/src/app/app.component.ts" region="import-forms-module"></code-example>
 
 1.  Add an `[(ngModel)]` binding on an HTML `<form>` element and set it equal to the property, here `name`.
 
@@ -136,7 +151,7 @@ Here are all variations in action, including the uppercase version:
 ### `NgModel` and value accessors
 
 The `NgModel` directive works for an element supported by a [ControlValueAccessor](api/forms/ControlValueAccessor).
-Angular provides *value accessors* for all of the basic HTML form elements.
+Angular provides _value accessors_ for all of the basic HTML form elements.
 For more information, see [Forms](guide/forms).
 
 To apply `[(ngModel)]` to a non-form built-in element or a third-party custom component, you have to write a value accessor.
@@ -144,7 +159,7 @@ For more information, see the API documentation on [DefaultValueAccessor](api/fo
 
 <div class="alert is-helpful">
 
-When you write an Angular component, you don't need a value accessor or `NgModel` if you  name the value and event properties according to Angular's [two-way binding syntax](guide/two-way-binding#how-two-way-binding-works).
+When you write an Angular component, you don't need a value accessor or `NgModel` if you name the value and event properties according to Angular's [two-way binding syntax](guide/two-way-binding#how-two-way-binding-works).
 
 </div>
 
@@ -157,13 +172,19 @@ They shape or reshape the DOM's structure, typically by adding, removing, and ma
 
 This section introduces the most common built-in structural directives:
 
-| Common built-in structural directives            | Details |
-|:---                                              |:---     |
+| Common built-in structural directives            | Details                                                          |
+| :----------------------------------------------- | :--------------------------------------------------------------- |
 | [`NgIf`](guide/built-in-directives#ngIf)         | Conditionally creates or disposes of subviews from the template. |
 | [`NgFor`](guide/built-in-directives#ngFor)       | Repeat a node for each item in a list.                           |
 | [`NgSwitch`](guide/built-in-directives#ngSwitch) | A set of directives that switch among alternative views.         |
 
 For more information, see [Structural Directives](guide/structural-directives).
+
+### Import `CommonModule` in the component
+
+To use built-in structural directives, import `CommonModule` and add it to the component's `imports` list.
+
+<code-example header="src/app/app.component.ts (CommonModule import)" path="built-in-directives/src/app/app.component.ts" region="import-common-module"></code-example>
 
 <a id="ngIf"></a>
 
@@ -210,10 +231,10 @@ Use the `NgFor` directive to present a list of items.
 
 The string `"let item of items"` instructs Angular to do the following:
 
-*   Store each item in the `items` array in the local `item` looping variable
-*   Make each item available to the templated HTML for each iteration
-*   Translate `"let item of items"` into an `<ng-template>` around the host element
-*   Repeat the `<ng-template>` for each `item` in the list
+- Store each item in the `items` array in the local `item` looping variable
+- Make each item available to the templated HTML for each iteration
+- Translate `"let item of items"` into an `<ng-template>` around the host element
+- Repeat the `<ng-template>` for each `item` in the list
 
 For more information see the [Structural directive shorthand](guide/structural-directives#shorthand) section of [Structural directives](guide/structural-directives).
 
@@ -226,8 +247,8 @@ In the following example, the selector is `<app-item-detail>`.
 
 Reference a template input variable, such as `item`, in the following locations:
 
-*   Within the `ngFor` host element
-*   Within the host element descendants to access the item's properties
+- Within the `ngFor` host element
+- Within the host element descendants to access the item's properties
 
 The following example references `item` first in an interpolation and then passes in a binding to the `item` property of the `<app-item-detail>` component.
 
@@ -250,7 +271,6 @@ Angular translates this instruction into an `<ng-template>` around the host elem
 then uses this template repeatedly to create a new set of elements and bindings for each `item`
 in the list.
 For more information about shorthand, see the [Structural Directives](guide/structural-directives#shorthand) guide.
-
 
 ## Repeating elements when a condition is true
 
@@ -278,8 +298,8 @@ With the `*ngFor` `trackBy` property, Angular can change and re-render only thos
 **Change ids** creates new items with new `item.id`s.
 In the following illustration of the `trackBy` effect, **Reset items** creates new items with the same `item.id`s.
 
-*   With no `trackBy`, both buttons trigger complete DOM element replacement.
-*   With `trackBy`, only changing the `id` triggers element replacement.
+- With no `trackBy`, both buttons trigger complete DOM element replacement.
+- With `trackBy`, only changing the `id` triggers element replacement.
 
 <div class="lightbox">
 
@@ -330,8 +350,8 @@ Angular puts only the selected element into the DOM.
 
 `NgSwitch` is a set of three directives:
 
-| `NgSwitch` directives | Details |
-|:---                   |:---     |
+| `NgSwitch` directives | Details                                                                                                                                                                |
+| :-------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NgSwitch`            | An attribute directive that changes the behavior of its companion directives.                                                                                          |
 | `NgSwitchCase`        | Structural directive that adds its element to the DOM when its bound value equals the switch value and removes its bound value when it doesn't equal the switch value. |
 | `NgSwitchDefault`     | Structural directive that adds its element to the DOM when there is no selected `NgSwitchCase`.                                                                        |
@@ -347,7 +367,7 @@ Angular puts only the selected element into the DOM.
 
     <code-example header="src/app/app.component.ts" path="built-in-directives/src/app/app.component.ts" region="item"></code-example>
 
-1.  In each child component, add an `item` [input property](guide/inputs-outputs#input "Input property") which is bound to the `currentItem` of the parent component.
+1.  In each child component, add an `item` [input property](guide/inputs-outputs#input 'Input property') which is bound to the `currentItem` of the parent component.
     The following two snippets show the parent component and one of the child components.
     The other child components are identical to `StoutItemComponent`.
 
