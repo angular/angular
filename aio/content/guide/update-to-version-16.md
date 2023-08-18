@@ -158,7 +158,7 @@ the `relativeTo` property should be removed.
 ## Deprecations highlights in Angular v16
 
 These APIs remain available in v16, but may be removed in future versions as described by Angular's
-[deprecation practices](/guide/releases#deprecation-practices).
+[deprecation policy](/guide/releases#deprecation-policy).
 
 To maintain the reliability of your Angular application, always update your application as soon as
 practicable.

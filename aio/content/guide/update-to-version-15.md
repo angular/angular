@@ -197,7 +197,7 @@ For more information, see [the error page](/errors/NG0910).
 ## Deprecations in Angular v15
 
 These are the aspects of Angular that are being phased out.
-They are still available in v15, but they can be removed in future versions as Angular's [deprecation practices](/guide/releases#deprecation-practices) describe.
+They are still available in v15, but they can be removed in future versions as Angular's [deprecation policy](/guide/releases#deprecation-policy) describe.
 
 To maintain the reliability of your Angular application, review these notes and update your application as soon as practicable.
 

@@ -11,6 +11,13 @@ This document contains the practices that we follow to provide you with a leadin
 We strive to ensure that future changes are always introduced in a predictable way.
 We want everyone who depends on Angular to know when and how new features are added, and to be well-prepared when obsolete ones are removed.
 
+Sometimes *breaking changes*, such as the removal of APIs or features, are necessary to innovate and stay current with evolving best practices, changing dependencies, or shifts in the web platform. These breaking changes go through a deprecation process explained in our [deprecation policy](#deprecation-policy).
+
+To make these transitions as straightforward as possible, the Angular team makes these commitments:
+
+*   We work hard to minimize the number of breaking changes and to provide migration tools when possible
+*   We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices
+
 <div class="alert is-helpful">
 
 The practices described in this document apply to Angular 2.0 and later.
@@ -44,25 +51,6 @@ As of Angular version 7, the major versions of Angular core and the CLI are alig
 This means that in order to use the CLI as you develop an Angular app, the version of `@angular/core` and the CLI need to be the same.
 
 </div>
-
-<a id="updating"></a>
-
-### Supported update paths
-
-You can `ng update` to any version of Angular, provided that the following criteria are met:
-
-*   The version you want to update *to* is supported.
-*   The version you want to update *from* is within one major version of the version you want to
-    upgrade to.
-
-For example, you can update from version 11 to version 12, provided that version 12 is still supported.
-If you want to update across multiple major versions, perform each update one major version at a time.
-For example, to update from version 10 to version 12:
-
-1.  Update from version 10 to version 11.
-1.  Update from version 11 to version 12.
-
-See [Keeping Up-to-Date](guide/updating "Updating your projects") for more information about updating your Angular projects to the most recent version.
 
 <a id="previews"></a>
 
@@ -147,32 +135,57 @@ As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 <a id="deprecation"></a>
 
-## Deprecation practices
+## Deprecation policy
 
-Sometimes "breaking changes", such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the \(web\) platform itself.
-
-To make these transitions as straightforward as possible, we make these commitments to you:
-
-*   We work hard to minimize the number of breaking changes and to provide migration tools when possible
-*   We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices
+When the Angular team intends to remove an API or feature, it will be marked as *deprecated*. This occurs when when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
 | Deprecation stages | Details |
 |:---                |:---     |
-| Announcement       | We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough~~. When we announce a deprecation, we also announce a recommended update path. For convenience, [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.                            |
-| Deprecation period | When an API or a feature is deprecated, it is still present in the next two major releases. After that, deprecated APIs and features are candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed. |
+| Announcement       | We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough~~. When we announce a deprecation, we also announce a recommended update path. For convenience, [Deprecations](guide/deprecations) contains a summary of deprecated APIs, and features. Additionally, all deprecated APIs are annotated with `@deprecated` in the corresponding documentation, which enables text editors and IDEs to provide hints if your project depends on them.                            |
+| Deprecation period | When an API or a feature is deprecated, it will remain in a supported release for a period of at least 12 months. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed. |
 | npm dependencies   | We only make npm dependency updates that require changes to your applications in a major release. In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. This means that during minor Angular releases, npm dependency updates within Angular applications and libraries are optional.                                               |
 
 <a id="public-api"></a>
 
-## Public API surface
+## Compatibility policy
 
 Angular is a collection of many packages, subprojects, and tools.
 To prevent accidental use of private APIs and so that you can clearly understand what is covered by the practices described here &mdash; we document what is and is not considered our public API surface.
 For details, see [Supported Public API Surface of Angular](https://github.com/angular/angular/blob/main/docs/PUBLIC_API.md "Supported Public API Surface of Angular").
 
-Any changes to the public API surface are done using the versioning, support, and depreciation policies previously described.
+To guarantee backward compatibility of Angular we run a series of checks before we merge any change:
+
+* Unit tests and integration tests
+* Comparing the type definitions of the public API surface before and after the change
+* Running the tests of all the applications at Google that depend on Angular
+
+Any changes to the public API surface are made in accordance with the versioning, support, and depreciation policies previously described. In exceptional cases, such as critical security patches, fixes may introduce backwards incompatible changes. Such exceptional cases are accompanied by explicit notice on the framework's official communication channels.
+<a id="updating"></a>
+
+## Breaking change policy and update paths
+
+Breaking change requires you to do work because the state after it is not backward compatible with the state before it. You can find the rare exceptions from this rule in the [Compatibility policy](#compatibility-policy). Examples of breaking changes are the removal of public APIs or other changes of the type definition of Angular, changing the timing of calls, or updating to a new version of a dependency of Angular, which includes breaking changes itself.
+
+To support you in case of breaking changes in Angular:
+
+* We follow our [deprecation policy](#deprecation-policy) before we remove a public API
+* Support update automation via the `ng update` command. It provides code transformations which we often have tested ahead of time over hundreds of thousands of projects at Google
+* Step by step instructions how to update from one major version to another at the ["Angular Update Guide"](https://update.angular.io/)
+
+You can `ng update` to any version of Angular, provided that the following criteria are met:
+
+*   The version you want to update *to* is supported.
+*   The version you want to update *from* is within one major version of the version you want to
+    upgrade to.
+
+For example, you can update from version 11 to version 12, provided that version 12 is still supported.
+If you want to update across multiple major versions, perform each update one major version at a time.
+For example, to update from version 10 to version 12:
+
+1.  Update from version 10 to version 11.
+1.  Update from version 11 to version 12.
 
 <a id="developer-preview"></a>
 
@@ -196,4 +209,4 @@ The policies and practices that are described in this document do not apply to A
 
 <!-- end links -->
 
-@reviewed 2023-12-13
+@reviewed 2024-02-08
