@@ -1,16 +1,16 @@
 // #docplaster
 // #docregion imports
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import {Directive, ElementRef, HostListener} from '@angular/core';
 // #enddocregion imports
-import { Input } from '@angular/core';
+import {Input} from '@angular/core';
 // #docregion
 
 @Directive({
-  selector: '[appHighlight]'
+  standalone: true,
+  selector: '[appHighlight]',
 })
 export class HighlightDirective {
-
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef) {}
 
   // #docregion mouse-methods
   @HostListener('mouseenter') onMouseEnter() {
@@ -25,6 +25,5 @@ export class HighlightDirective {
     this.el.nativeElement.style.backgroundColor = color;
   }
   // #enddocregion mouse-methods
-
 }
 // #enddocregion

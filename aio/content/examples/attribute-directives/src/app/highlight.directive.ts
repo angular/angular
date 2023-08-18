@@ -1,11 +1,11 @@
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 
 @Directive({
-  selector: '[appHighlight]'
+  standalone: true,
+  selector: '[appHighlight]',
 })
 export class HighlightDirective {
-
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef) {}
 
   // #docregion defaultColor
   @Input() defaultColor = '';

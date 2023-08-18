@@ -1,9 +1,8 @@
 // #docregion
-import { Directive } from '@angular/core';
+import {Directive} from '@angular/core';
 
 @Directive({
-  selector: '[appHighlight]'
+  standalone: true,
+  selector: '[appHighlight]',
 })
-export class HighlightDirective {
-
-}
+export class HighlightDirective {}
