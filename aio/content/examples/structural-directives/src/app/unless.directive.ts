@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
 // #docregion no-docs, skeleton
-import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 // #enddocregion skeleton
 /**
@@ -24,7 +24,10 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 // #docregion no-docs
  */
 // #docregion skeleton
-@Directive({ selector: '[appUnless]'})
+@Directive({
+  standalone: true,
+  selector: '[appUnless]',
+})
 export class UnlessDirective {
   // #enddocregion skeleton
   private hasView = false;
@@ -32,7 +35,8 @@ export class UnlessDirective {
   // #docregion ctor
   constructor(
     private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef) { }
+    private viewContainer: ViewContainerRef,
+  ) {}
   // #enddocregion ctor
 
   // #docregion set
