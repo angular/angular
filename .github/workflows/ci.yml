@@ -172,12 +172,16 @@ jobs:
 
   zone-js:
     runs-on:
-      labels: ubuntu-latest
+      labels: ubuntu-latest-4core
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@45de46d9ba0e0689b7a846fd31ec9e241807ca71
         with:
           cache-node-modules: true
+          node-module-directories: |
+            ./node_modules
+            ./packages/zone.js
+            ./packages/zone.js/test/typings
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
@@ -203,7 +207,7 @@ jobs:
           cp dist/bin/packages/zone.js/zone_externs.js ./packages/zone.js/build/zone_externs.js
 
         # Install
-      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
@@ -211,5 +215,5 @@ jobs:
       - run: yarn --cwd packages/zone.js jest:nodetest
       - run: yarn --cwd packages/zone.js electrontest
       - run: yarn --cwd packages/zone.js closuretest
-      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
