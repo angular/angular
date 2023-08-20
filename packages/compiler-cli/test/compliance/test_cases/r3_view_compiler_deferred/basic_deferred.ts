@@ -5,6 +5,7 @@ import {Component} from '@angular/core';
     <div>
       {{message}}
       {#defer}Deferred content{/defer}
+      <p>Content after defer block</p>
     </div>
   `,
 })

@@ -1300,6 +1300,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     this.createDeferTriggerInstructions(deferredIndex, triggers, false);
     this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, true);
+
+    // Allocate an extra data slot right after a defer block slot to store
+    // instance-specific state of that defer block at runtime.
+    this.allocateDataSlot();
   }
 
   private createDeferredDepsFunction(name: string, deferred: t.DeferredBlock) {

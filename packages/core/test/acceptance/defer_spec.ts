@@ -14,7 +14,7 @@ describe('#defer', () => {
   beforeEach(() => setEnabledBlockTypes(['defer']));
   afterEach(() => setEnabledBlockTypes([]));
 
-  it('should work in simple cases', async () => {
+  it('should transition between placeholder, loading and loaded states', async () => {
     @Component({
       selector: 'my-lazy-cmp',
       standalone: true,

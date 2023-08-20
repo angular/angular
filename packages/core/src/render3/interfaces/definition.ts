@@ -495,8 +495,6 @@ export type DependencyType = DirectiveType<any>|ComponentType<any>|PipeType<any>
 
 export type DependencyTypeList = Array<DependencyType>;
 
-export type DependencyResolverFn = () => Array<Promise<DependencyType>>;
-
 export type TypeOrFactory<T> = T|(() => T);
 
 export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;

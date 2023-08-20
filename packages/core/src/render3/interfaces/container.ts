@@ -47,7 +47,6 @@ export const NATIVE = 7;
 export const VIEW_REFS = 8;
 export const MOVED_VIEWS = 9;
 export const DEHYDRATED_VIEWS = 10;
-export const DEFER_BLOCK_DETAILS = 11;
 
 
 /**
@@ -56,38 +55,7 @@ export const DEFER_BLOCK_DETAILS = 11;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 12;
-
-/**
- * Describes the current state of this {#defer} block instance.
- */
-export const enum DeferBlockInstanceState {
-  /** Initial state, nothing is rendered yet */
-  INITIAL,
-
-  /** The {:placeholder} block content is rendered */
-  PLACEHOLDER,
-
-  /** The {:loading} block content is rendered */
-  LOADING,
-
-  /** The main content block content is rendered */
-  COMPLETE,
-
-  /** The {:error} block content is rendered */
-  ERROR
-}
-
-/**
- * Describes instance-specific {#defer} block data.
- *
- * Note: currently there is only the `state` field, but more fields
- * would be added later to keep track of `after` and `maximum` features
- * (which would require per-instance state).
- */
-export interface LDeferBlockDetails {
-  state: DeferBlockInstanceState;
-}
+export const CONTAINER_HEADER_OFFSET = 11;
 
 /**
  * The state associated with a container.
@@ -176,12 +144,6 @@ export interface LContainer extends Array<any> {
    * logic finishes.
    */
   [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;
-
-  /**
-   * If this LContainer represents an instance of a `{#defer}` block -
-   * this field contains instance-specific information about the block.
-   */
-  [DEFER_BLOCK_DETAILS]: LDeferBlockDetails|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
