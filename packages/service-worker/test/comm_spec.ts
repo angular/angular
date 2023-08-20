@@ -418,23 +418,6 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         update = new SwUpdate(comm);
         mock.setupSw();
       });
-      it('processes update availability notifications when sent', done => {
-        update.available.subscribe(event => {
-          expect(event.current).toEqual({hash: 'A'});
-          expect(event.available).toEqual({hash: 'B'});
-          expect(event.type).toEqual('UPDATE_AVAILABLE');
-          done();
-        });
-        mock.sendMessage({
-          type: 'VERSION_READY',
-          currentVersion: {
-            hash: 'A',
-          },
-          latestVersion: {
-            hash: 'B',
-          },
-        });
-      });
       it('processes unrecoverable notifications when sent', done => {
         update.unrecoverable.subscribe(event => {
           expect(event.reason).toEqual('Invalid Resource');
@@ -442,23 +425,6 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           done();
         });
         mock.sendMessage({type: 'UNRECOVERABLE_STATE', reason: 'Invalid Resource'});
-      });
-      it('processes update activation notifications when sent', done => {
-        update.activated.subscribe(event => {
-          expect(event.previous).toEqual({hash: 'A'});
-          expect(event.current).toEqual({hash: 'B'});
-          expect(event.type).toEqual('UPDATE_ACTIVATED');
-          done();
-        });
-        mock.sendMessage({
-          type: 'UPDATE_ACTIVATED',
-          previous: {
-            hash: 'A',
-          },
-          current: {
-            hash: 'B',
-          },
-        });
       });
       it('processes a no new version event when sent', done => {
         update.versionUpdates.subscribe(event => {
@@ -526,8 +492,6 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
         it('does not crash on subscription to observables', () => {
           update = new SwUpdate(comm);
-          update.available.toPromise().catch(err => fail(err));
-          update.activated.toPromise().catch(err => fail(err));
           update.unrecoverable.toPromise().catch(err => fail(err));
           update.versionUpdates.toPromise().catch(err => fail(err));
         });

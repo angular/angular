@@ -83,22 +83,22 @@ v16 - v19
 
 ### Deprecated features that can be removed in v16 or later
 
-| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
-|:---                                 |:---                                                                                                        |:---           |:---               |
-| `@angular/common/http/testing`      | [`TestRequest` accepting `ErrorEvent` for error simulation](#testrequest-errorevent)                       | v13           | v16         |
-| `@angular/core`                     | [`getModuleFactory`](#core)                                                                                | v13           | v16         |
-| `@angular/core`                     | [`ModuleWithComponentFactories`](#core)                                                                    | v13           | v16         |
-| `@angular/core`                     | [`Compiler`](#core)                                                                                        | v13           | v16         |
-| `@angular/core`                     | [`CompilerFactory`](#core)                                                                                 | v13           | v16         |
-| `@angular/core`                     | [`NgModuleFactory`](#core)                                                                                 | v13           | v16         |
-| `@angular/core`                     | [`ComponentFactory`](#core)                                                                                | v13           | v16         |
-| `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                        | v13           | v16         |
-| `@angular/core`                     | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](#core)                    | v13           | v16         |
-| `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | v13           | v16         |
-| `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                     | v13           | v16         |
-| `@angular/platform-server`          | [`ServerTransferStateModule`](#platform-server)                                                            | v14           | v16         |
-| `@angular/service-worker`           | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                              | v13           | v16         |
-| `@angular/service-worker`           | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                              | v13           | v16         |
+| Area                                | API or Feature                                                                                          | Deprecated in | May be removed in |
+|:---                                 |:--------------------------------------------------------------------------------------------------------|:---           |:---               |
+| `@angular/common/http/testing`      | [`TestRequest` accepting `ErrorEvent` for error simulation](#testrequest-errorevent)                    | v13           | v16         |
+| `@angular/core`                     | [`getModuleFactory`](#core)                                                                             | v13           | v16         |
+| `@angular/core`                     | [`ModuleWithComponentFactories`](#core)                                                                 | v13           | v16         |
+| `@angular/core`                     | [`Compiler`](#core)                                                                                     | v13           | v16         |
+| `@angular/core`                     | [`CompilerFactory`](#core)                                                                              | v13           | v16         |
+| `@angular/core`                     | [`NgModuleFactory`](#core)                                                                              | v13           | v16         |
+| `@angular/core`                     | [`ComponentFactory`](#core)                                                                             | v13           | v16         |
+| `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                     | v13           | v16         |
+| `@angular/core`                     | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](#core)                 | v13           | v16         |
+| `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                       | v13           | v16         |
+| `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                  | v13           | v16         |
+| `@angular/platform-server`          | [`ServerTransferStateModule`](#platform-server)                                                         | v14           | v16         |
+| `@angular/service-worker`           | [`SwUpdate#activated`](#service-worker)                                                                 | v13           | v16         |
+| `@angular/service-worker`           | [`SwUpdate#available`](#service-worker)                                                                 | v13           | v16         |
 
 ### Deprecated features that can be removed in v17 or later
 
@@ -251,10 +251,10 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 
 ### &commat;angular/service-worker
 
-| API                                                           | Replacement                                                                            | Deprecation announced | Details |
-|:---                                                           |:---                                                                                    |:---                   |:---     |
-| [`SwUpdate#activated`](api/service-worker/SwUpdate#activated) | [`SwUpdate#activateUpdate()` return value](api/service-worker/SwUpdate#activateUpdate) | v13                   | The return value of `SwUpdate#activateUpdate()` indicates whether an update was successfully activated.                                                                    |
-| [`SwUpdate#available`](api/service-worker/SwUpdate#available) | [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates)                | v13                   | The behavior of `SwUpdate#available` can be rebuilt by filtering for `VersionReadyEvent` events on [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates) |
+| API                                                          | Replacement                                                                            | Deprecation announced | Details |
+|:-------------------------------------------------------------|:---                                                                                    |:---                   |:---     |
+| `SwUpdate#activated` | [`SwUpdate#activateUpdate()` return value](api/service-worker/SwUpdate#activateUpdate) | v13                   | The return value of `SwUpdate#activateUpdate()` indicates whether an update was successfully activated.                                                                    |
+| `SwUpdate#available` | [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates)                | v13                   | The behavior of `SwUpdate#available` can be rebuilt by filtering for `VersionReadyEvent` events on [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates) |
 
 <a id="upgrade"></a>
 

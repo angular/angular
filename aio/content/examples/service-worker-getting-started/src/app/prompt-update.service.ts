@@ -1,8 +1,6 @@
 // #docplaster
 import { Injectable } from '@angular/core';
-// #docregion sw-replicate-available
-    import { filter, map } from 'rxjs/operators';
-// #enddocregion sw-replicate-available
+import { filter } from 'rxjs/operators';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 
 function promptUser(event: VersionReadyEvent): boolean {
@@ -22,18 +20,6 @@ export class PromptUpdateService {
             document.location.reload();
           }
         });
-    // #enddocregion sw-version-ready
-    // #docregion sw-replicate-available
-    // ...
-    const updatesAvailable = swUpdate.versionUpdates.pipe(
-        filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-        map(evt => ({
-          type: 'UPDATE_AVAILABLE',
-          current: evt.currentVersion,
-          available: evt.latestVersion,
-        })));
-    // #enddocregion sw-replicate-available
-    // #docregion sw-version-ready
   }
 
 }
