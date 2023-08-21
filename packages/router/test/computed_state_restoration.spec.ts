@@ -109,6 +109,10 @@ describe('`restoredState#ɵrouterPageId`', () => {
       },
       {path: 'loaded', loadChildren: () => of(ModuleWithSimpleCmpAsRoute), canLoad: ['alwaysFalse']}
     ]);
+    router.initialNavigation();
+    advance(fixture);
+    expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 0}));
+
     router.navigateByUrl('/first');
     advance(fixture);
     expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
