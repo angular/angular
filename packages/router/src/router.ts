@@ -762,7 +762,7 @@ export class Router {
     const path = this.urlSerializer.serialize(url);
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
       // replacements do not update the target page
-      const currentBrowserPageId = this.browserPageId;
+      const currentBrowserPageId = this.browserPageId ?? 0;
       const state = {
         ...transition.extras.state,
         ...this.generateNgRouterState(transition.id, currentBrowserPageId)
@@ -832,7 +832,7 @@ export class Router {
         this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
   }
 
-  private generateNgRouterState(navigationId: number, routerPageId?: number) {
+  private generateNgRouterState(navigationId: number, routerPageId: number) {
     if (this.canceledNavigationResolution === 'computed') {
       return {navigationId, ɵrouterPageId: routerPageId};
     }
