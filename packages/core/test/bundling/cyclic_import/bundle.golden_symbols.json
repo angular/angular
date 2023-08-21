@@ -588,6 +588,9 @@
     "name": "collectNativeNodes"
   },
   {
+    "name": "collectNativeNodesInLContainer"
+  },
+  {
     "name": "commitLViewConsumerIfHasProducers"
   },
   {

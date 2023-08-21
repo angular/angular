@@ -1674,6 +1674,126 @@ describe('platform-server hydration integration', () => {
                verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
              });
 
+          it('should hydrate dynamically created components using ' +
+                 'another component\'s host node as an anchor',
+             async () => {
+               @Component({
+                 standalone: true,
+                 selector: 'another-dynamic',
+                 template: `<span>This is a content of another dynamic component.</span>`,
+               })
+               class AnotherDynamicComponent {
+                 vcr = inject(ViewContainerRef);
+               }
+
+               @Component({
+                 standalone: true,
+                 selector: 'dynamic',
+                 template: `<span>This is a content of a dynamic component.</span>`,
+               })
+               class DynamicComponent {
+                 vcr = inject(ViewContainerRef);
+
+                 ngAfterViewInit() {
+                   const compRef = this.vcr.createComponent(AnotherDynamicComponent);
+                   compRef.changeDetectorRef.detectChanges();
+                 }
+               }
+
+               @Component({
+                 standalone: true,
+                 selector: 'app',
+                 template: `<main>Hi! This is the main content.</main>`,
+               })
+               class SimpleComponent {
+                 vcr = inject(ViewContainerRef);
+
+                 ngAfterViewInit() {
+                   const compRef = this.vcr.createComponent(DynamicComponent);
+                   compRef.changeDetectorRef.detectChanges();
+                 }
+               }
+
+               const html = await ssr(SimpleComponent);
+               const ssrContents = getAppContents(html);
+
+               expect(ssrContents).toContain('<app ngh');
+
+               resetTViewsFor(SimpleComponent, DynamicComponent);
+
+               const appRef = await hydrate(html, SimpleComponent);
+               const compRef = getComponentRef<SimpleComponent>(appRef);
+               appRef.tick();
+
+               // Compare output starting from the parent node above the component node,
+               // because component host node also acted as a ViewContainerRef anchor,
+               // thus there are elements after this node (as next siblings).
+               const clientRootNode = compRef.location.nativeElement.parentNode;
+               await whenStable(appRef);
+
+               verifyAllChildNodesClaimedForHydration(clientRootNode);
+               verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+             });
+
+          it('should hydrate dynamically created embedded views using ' +
+                 'another component\'s host node as an anchor',
+             async () => {
+               @Component({
+                 standalone: true,
+                 selector: 'dynamic',
+                 template: `
+                      <ng-template #tmpl>
+                        <h1>Content of an embedded view</h1>
+                      </ng-template>
+                      <main>Hi! This is the dynamic component content.</main>
+                    `,
+               })
+               class DynamicComponent {
+                 @ViewChild('tmpl', {read: TemplateRef}) tmpl!: TemplateRef<unknown>;
+
+                 vcr = inject(ViewContainerRef);
+
+                 ngAfterViewInit() {
+                   const viewRef = this.vcr.createEmbeddedView(this.tmpl);
+                   viewRef.detectChanges();
+                 }
+               }
+
+               @Component({
+                 standalone: true,
+                 selector: 'app',
+                 template: `<main>Hi! This is the main content.</main>`,
+               })
+               class SimpleComponent {
+                 vcr = inject(ViewContainerRef);
+
+                 ngAfterViewInit() {
+                   const compRef = this.vcr.createComponent(DynamicComponent);
+                   compRef.changeDetectorRef.detectChanges();
+                 }
+               }
+
+               const html = await ssr(SimpleComponent);
+               const ssrContents = getAppContents(html);
+
+               expect(ssrContents).toContain('<app ngh');
+
+               resetTViewsFor(SimpleComponent, DynamicComponent);
+
+               const appRef = await hydrate(html, SimpleComponent);
+               const compRef = getComponentRef<SimpleComponent>(appRef);
+               appRef.tick();
+
+               // Compare output starting from the parent node above the component node,
+               // because component host node also acted as a ViewContainerRef anchor,
+               // thus there are elements after this node (as next siblings).
+               const clientRootNode = compRef.location.nativeElement.parentNode;
+               await whenStable(appRef);
+
+               verifyAllChildNodesClaimedForHydration(clientRootNode);
+               verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+             });
+
           it('should re-create the views from the ViewContainerRef ' +
                  'if there is a mismatch in template ids between the current view ' +
                  '(that is being created) and the first dehydrated view in the list',
