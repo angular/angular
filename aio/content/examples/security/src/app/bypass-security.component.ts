@@ -1,9 +1,10 @@
 // #docplaster
 // #docregion
-import { Component } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 @Component({
+  standalone: true,
   selector: 'app-bypass-security',
   templateUrl: './bypass-security.component.html',
 })
@@ -31,8 +32,7 @@ export class BypassSecurityComponent {
     // close as possible to the input data so
     // that it's easier to check if the value is safe.
     this.dangerousVideoUrl = 'https://www.youtube.com/embed/' + id;
-    this.videoUrl =
-        this.sanitizer.bypassSecurityTrustResourceUrl(this.dangerousVideoUrl);
+    this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.dangerousVideoUrl);
   }
   // #enddocregion trust-video-url
 }
