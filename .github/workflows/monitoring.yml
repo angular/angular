@@ -2,6 +2,7 @@ name: Monitoring
 
 on:
   schedule:
+    # Run at 10:00AM every day.
     - cron: '0 10 * * *'
 
 permissions: {}
@@ -11,7 +12,7 @@ defaults:
     shell: bash
 
 jobs:
-  check_aio_production:
+  check_aio:
     runs-on: ubuntu-latest
     env:
       MINIMUM_PWA_SCORE: 95
