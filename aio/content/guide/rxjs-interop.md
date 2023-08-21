@@ -13,11 +13,12 @@ Angular's `@angular/core/rxjs-interop` package which provides useful utilities t
 The `toSignal` function creates a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
 ```ts
-import { Component } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { interval } from 'rxjs';
+import {Component} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {interval} from 'rxjs';
 
 @Component({
+  standalone: true,
   template: `{{ counter() }}`,
 })
 export class Ticker {
@@ -93,7 +94,7 @@ Unlike Observables, signals never provide a synchronous notification of changes.
 
 ```ts
 const obs$ = toObservable(mySignal);
-obs$.subscribe(value => console.log(value));
+obs$.subscribe((value) => console.log(value));
 
 mySignal.set(1);
 mySignal.set(2);
