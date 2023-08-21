@@ -54,6 +54,12 @@ When a component has dependencies, you might want to use the `TestBed` to both c
 
 The following `WelcomeComponent` depends on the `UserService` to know the name of the user to greet.
 
+<div class="alert is-important">
+
+Remember to either *import* or *provide* each standalone component you want to test.
+
+</div>
+
 <code-example header="app/welcome/welcome.component.ts" path="testing/src/app/welcome/welcome.component.ts" region="class"></code-example>
 
 You might start by creating a mock of the `UserService` that meets the minimum needs of this component.
