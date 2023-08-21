@@ -9,14 +9,14 @@
 import {ApplicationRef} from '../application_ref';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
-import {collectNativeNodes} from '../render3/collect_native_nodes';
+import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {hasI18n, isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
-import {unwrapRNode} from '../render3/util/view_utils';
+import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
@@ -93,6 +93,16 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
 }
 
 /**
+ * Computes the number of root nodes in all views in a given LContainer.
+ */
+function calcNumRootNodesInLContainer(lContainer: LContainer): number {
+  const rootNodes: unknown[] = [];
+  collectNativeNodesInLContainer(lContainer, rootNodes);
+  return rootNodes.length;
+}
+
+
+/**
  * Annotates root level component's LView for hydration,
  * see `annotateHostElementForHydration` for additional information.
  */
@@ -113,7 +123,7 @@ function annotateComponentLViewForHydration(lView: LView, context: HydrationCont
  * container.
  */
 function annotateLContainerForHydration(lContainer: LContainer, context: HydrationContext) {
-  const componentLView = lContainer[HOST] as LView<unknown>;
+  const componentLView = unwrapLView(lContainer[HOST]) as LView<unknown>;
 
   // Serialize the root component itself.
   const componentLViewNghIndex = annotateComponentLViewForHydration(componentLView, context);
@@ -191,41 +201,67 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 function serializeLContainer(
     lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
   const views: SerializedContainerView[] = [];
-  let lastViewAsString: string = '';
+  let lastViewAsString = '';
 
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     let childLView = lContainer[i] as LView;
 
-    // If this is a root view, get an LView for the underlying component,
-    // because it contains information about the view to serialize.
-    if (isRootView(childLView)) {
-      childLView = childLView[HEADER_OFFSET];
-    }
-    const childTView = childLView[TVIEW];
-
     let template: string;
-    let numRootNodes = 0;
-    if (childTView.type === TViewType.Component) {
-      template = childTView.ssrId!;
+    let numRootNodes: number;
+    let serializedView: SerializedContainerView|undefined;
 
-      // This is a component view, thus it has only 1 root node: the component
-      // host node itself (other nodes would be inside that host node).
-      numRootNodes = 1;
-    } else {
-      template = getSsrId(childTView);
-      numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
+    if (isRootView(childLView)) {
+      // If this is a root view, get an LView for the underlying component,
+      // because it contains information about the view to serialize.
+      childLView = childLView[HEADER_OFFSET];
+
+      // If we have an LContainer at this position, this indicates that the
+      // host element was used as a ViewContainerRef anchor (e.g. a `ViewContainerRef`
+      // was injected within the component class). This case requires special handling.
+      if (isLContainer(childLView)) {
+        // Calculate the number of root nodes in all views in a given container
+        // and increment by one to account for an anchor node itself, i.e. in this
+        // scenario we'll have a layout that would look like this:
+        // `<app-root /><#VIEW1><#VIEW2>...<!--container-->`
+        // The `+1` is to capture the `<app-root />` element.
+        numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
+
+        annotateLContainerForHydration(childLView, context);
+
+        const componentLView = unwrapLView(childLView[HOST]) as LView<unknown>;
+
+        serializedView = {
+          [TEMPLATE_ID]: componentLView[TVIEW].ssrId!,
+          [NUM_ROOT_NODES]: numRootNodes,
+        };
+      }
     }
 
-    const view: SerializedContainerView = {
-      [TEMPLATE_ID]: template,
-      [NUM_ROOT_NODES]: numRootNodes,
-      ...serializeLView(lContainer[i] as LView, context),
-    };
+    if (!serializedView) {
+      const childTView = childLView[TVIEW];
+
+      if (childTView.type === TViewType.Component) {
+        template = childTView.ssrId!;
+
+        // This is a component view, thus it has only 1 root node: the component
+        // host node itself (other nodes would be inside that host node).
+        numRootNodes = 1;
+      } else {
+        template = getSsrId(childTView);
+        numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
+      }
+
+      serializedView = {
+        [TEMPLATE_ID]: template,
+        [NUM_ROOT_NODES]: numRootNodes,
+        ...serializeLView(lContainer[i] as LView, context),
+      };
+    }
 
     // Check if the previous view has the same shape (for example, it was
     // produced by the *ngFor), in which case bump the counter on the previous
     // view instead of including the same information again.
-    const currentViewAsString = JSON.stringify(view);
+    const currentViewAsString = JSON.stringify(serializedView);
     if (views.length > 0 && currentViewAsString === lastViewAsString) {
       const previousView = views[views.length - 1];
       previousView[MULTIPLIER] ??= 1;
@@ -233,7 +269,7 @@ function serializeLContainer(
     } else {
       // Record this view as most recently added.
       lastViewAsString = currentViewAsString;
-      views.push(view);
+      views.push(serializedView);
     }
   }
   return views;
@@ -355,6 +391,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
           annotateHostElementForHydration(targetNode, hostNode as LView, context);
         }
       }
+
       ngh[CONTAINERS] ??= {};
       ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);
     } else if (Array.isArray(lView[i])) {
