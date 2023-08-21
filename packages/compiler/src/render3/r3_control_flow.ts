@@ -8,7 +8,7 @@
 
 import {ASTWithSource} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
-import {ParseError} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
@@ -24,6 +24,13 @@ const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
 
 /** Pattern used to identify an `else if` block. */
 const ELSE_IF_PATTERN = /^if\s/;
+
+/** Pattern used to identify a `let` parameter. */
+const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
+
+/** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
+const ALLOWED_FOR_LOOP_LET_VARIABLES =
+    new Set(['$index', '$first', '$last', '$even', '$odd', '$count']);
 
 /** Creates an `if` loop block from an HTML AST node. */
 export function createIfBlock(
@@ -92,7 +99,7 @@ export function createForLoop(
       errors.push(new ParseError(ast.sourceSpan, 'For loop must have a "track" expression'));
     } else {
       node = new t.ForLoopBlock(
-          params.itemName, params.expression, params.trackBy,
+          params.itemName, params.expression, params.trackBy, params.context,
           html.visitAll(visitor, primaryBlock.children), empty, ast.sourceSpan, ast.startSourceSpan,
           ast.endSourceSpan);
     }
@@ -167,26 +174,65 @@ function parseForLoopParameters(
   const result = {
     itemName,
     trackBy: null as ASTWithSource | null,
-    expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression)
+    expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
+    context: null as t.ForLoopBlockContext | null,
   };
 
   for (const param of secondaryParams) {
+    const letMatch = param.expression.match(FOR_LOOP_LET_PATTERN);
+
+    if (letMatch !== null) {
+      result.context = result.context || {};
+      parseLetParameter(param.sourceSpan, letMatch[1], result.context, errors);
+      continue;
+    }
+
     const trackMatch = param.expression.match(FOR_LOOP_TRACK_PATTERN);
 
-    // For now loops can only have a `track` parameter.
-    // We may want to rework this later if we add more.
-    if (trackMatch === null) {
-      errors.push(
-          new ParseError(param.sourceSpan, `Unrecognized loop paramater "${param.expression}"`));
-    } else if (result.trackBy !== null) {
-      errors.push(
-          new ParseError(param.sourceSpan, 'For loop can only have one "track" expression'));
-    } else {
-      result.trackBy = parseBlockParameterToBinding(param, bindingParser, trackMatch[1]);
+    if (trackMatch !== null) {
+      if (result.trackBy !== null) {
+        errors.push(
+            new ParseError(param.sourceSpan, 'For loop can only have one "track" expression'));
+      } else {
+        result.trackBy = parseBlockParameterToBinding(param, bindingParser, trackMatch[1]);
+      }
+      continue;
     }
+
+    errors.push(
+        new ParseError(param.sourceSpan, `Unrecognized loop paramater "${param.expression}"`));
   }
 
   return result;
+}
+
+/** Parses the `let` parameter of a `for` loop block. */
+function parseLetParameter(
+    sourceSpan: ParseSourceSpan, expression: string, context: t.ForLoopBlockContext,
+    errors: ParseError[]): void {
+  const parts = expression.split(',');
+
+  for (const part of parts) {
+    const expressionParts = part.split('=');
+    const name = expressionParts.length === 2 ? expressionParts[0].trim() : '';
+    const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '';
+
+    if (name.length === 0 || variableName.length === 0) {
+      errors.push(new ParseError(
+          sourceSpan,
+          `Invalid for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"`));
+    } else if (!ALLOWED_FOR_LOOP_LET_VARIABLES.has(variableName)) {
+      errors.push(new ParseError(
+          sourceSpan,
+          `Unknown "let" parameter variable "${variableName}". The allowed variables are: ${
+              Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES).join(', ')}`));
+    } else if (context.hasOwnProperty(variableName)) {
+      errors.push(
+          new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`));
+    } else {
+      context[variableName as keyof t.ForLoopBlockContext] = name;
+    }
+  }
 }
 
 /** Checks that the shape of a `if` block is valid. Returns an array of errors. */
