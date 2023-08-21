@@ -257,9 +257,19 @@ export class SwitchBlockCase implements Node {
   }
 }
 
+export interface ForLoopBlockContext {
+  $index?: string;
+  $first?: string;
+  $last?: string;
+  $even?: string;
+  $odd?: string;
+  $count?: string;
+}
+
 export class ForLoopBlock implements Node {
   constructor(
-      public itemName: string, public expression: AST, public trackBy: AST, public children: Node[],
+      public itemName: string, public expression: AST, public trackBy: AST,
+      public contextVariables: ForLoopBlockContext|null, public children: Node[],
       public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
