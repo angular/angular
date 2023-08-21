@@ -105,7 +105,9 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
-    this.result.push(['ForLoopBlock', unparse(block.expression), unparse(block.trackBy)]);
+    const result: any[] = ['ForLoopBlock', unparse(block.expression), unparse(block.trackBy)];
+    block.contextVariables !== null && result.push(block.contextVariables);
+    this.result.push(result);
     this.visitAll([block.children]);
     block.empty?.visit(this);
   }
@@ -1402,6 +1404,20 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a for loop block with let parameters', () => {
+      expectLoop(`
+        {#for item of items.foo.bar; track item.id; let idx = $index, f = $first, c = $count; let l = $last, ev = $even, od = $odd}
+          {{ item }}
+        {/for}
+      `).toEqual([
+        [
+          'ForLoopBlock', 'items.foo.bar', 'item.id',
+          {'$index': 'idx', '$first': 'f', '$last': 'l', '$even': 'ev', '$odd': 'od', '$count': 'c'}
+        ],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
     it('should parse nested for loop blocks', () => {
       expectLoop(`
         {#for item of items.foo.bar; track item.id}
@@ -1503,6 +1519,29 @@ describe('R3 template transform', () => {
             {:unknown} unknown
           {/for}
         `).toThrowError(/Unrecognized loop block "unknown"/);
+      });
+
+      it('should report an empty `let` parameter', () => {
+        expectLoopError(`{#for item of items.foo.bar; track item.id; let }{/for}`)
+            .toThrowError(
+                /Invalid for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"/);
+      });
+
+      it('should report an invalid `let` parameter', () => {
+        expectLoopError(`{#for item of items.foo.bar; track item.id; let i = $index, $odd}{/for}`)
+            .toThrowError(
+                /Invalid for loop "let" parameter\. Parameter should match the pattern "<name> = <variable name>"/);
+      });
+
+      it('should an unknown variable in a `let` parameter', () => {
+        expectLoopError(`{#for item of items.foo.bar; track item.id; let foo = $foo}{/for}`)
+            .toThrowError(/Unknown "let" parameter variable "\$foo"\. The allowed variables are:/);
+      });
+
+      it('should report duplicate `let` parameter variables', () => {
+        expectLoopError(
+            `{#for item of items.foo.bar; track item.id; let i = $index, f = $first, in = $index}{/for}`)
+            .toThrowError(/Duplicate "let" parameter variable "\$index"/);
       });
     });
   });
