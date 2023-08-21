@@ -146,17 +146,17 @@ export class Router {
    * the router can then use this to compute how to restore the state back to the previously active
    * page.
    */
-  private currentPageId: number = 0;
+  private currentPageId = 0;
   /**
    * The ɵrouterPageId of whatever page is currently active in the browser history. This is
    * important for computing the target page id for new navigations because we need to ensure each
    * page id in the browser history is 1 more than the previous entry.
    */
-  private get browserPageId(): number|undefined {
+  private get browserPageId(): number {
     if (this.canceledNavigationResolution !== 'computed') {
-      return undefined;
+      return this.currentPageId;
     }
-    return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
+    return (this.location.getState() as RestoredState | null)?.ɵrouterPageId ?? this.currentPageId;
   }
   private console = inject(Console);
   private isNgZoneEnabled: boolean = false;
@@ -332,7 +332,7 @@ export class Router {
     this.navigationTransitions.setupNavigations(this).subscribe(
         t => {
           this.lastSuccessfulId = t.id;
-          this.currentPageId = this.browserPageId ?? 0;
+          this.currentPageId = this.browserPageId;
         },
         e => {
           this.console.warn(`Unhandled Navigation Error: ${e}`);
@@ -771,7 +771,7 @@ export class Router {
     } else {
       const state = {
         ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, (this.browserPageId ?? 0) + 1)
+        ...this.generateNgRouterState(transition.id, this.browserPageId + 1)
       };
       this.location.go(path, '', state);
     }
@@ -784,7 +784,7 @@ export class Router {
    */
   restoreHistory(transition: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
-      const currentBrowserPageId = this.browserPageId ?? this.currentPageId;
+      const currentBrowserPageId = this.browserPageId;
       const targetPagePosition = this.currentPageId - currentBrowserPageId;
       if (targetPagePosition !== 0) {
         this.location.historyGo(targetPagePosition);
@@ -832,7 +832,7 @@ export class Router {
         this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
   }
 
-  private generateNgRouterState(navigationId: number, routerPageId?: number) {
+  private generateNgRouterState(navigationId: number, routerPageId: number) {
     if (this.canceledNavigationResolution === 'computed') {
       return {navigationId, ɵrouterPageId: routerPageId};
     }
