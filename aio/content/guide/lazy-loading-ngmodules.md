@@ -75,13 +75,6 @@ ng new customer-app --routing
 This creates an application called `customer-app` and the `--routing` flag generates a file called `app-routing.module.ts`. This is one of the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 
-<div class="alert is-helpful">
-
-The `--routing` option requires Angular CLI version 8.1 or higher.
-See [Keeping Up to Date](guide/updating).
-
-</div>
-
 ### Create a feature module with routing
 
 Next, you need a feature module with a component to route to.
@@ -251,7 +244,7 @@ For more information, see the [`forRoot()` pattern](guide/singleton-services#for
 ## Preloading
 
 Preloading improves UX by loading parts of your application in the background.
-You can preload modules, standalone components or component data. 
+You can preload modules, standalone components or component data.
 
 ### Preloading modules and standalone components
 
