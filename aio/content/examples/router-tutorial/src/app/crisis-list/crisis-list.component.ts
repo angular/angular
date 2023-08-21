@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-crisis-list',
+  standalone: true,
   templateUrl: './crisis-list.component.html',
   styleUrls: ['./crisis-list.component.css']
 })
