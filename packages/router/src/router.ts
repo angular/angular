@@ -161,6 +161,11 @@ export class Router {
   private console = inject(Console);
   private isNgZoneEnabled: boolean = false;
 
+  /**
+   * The private `Subject` type for the public events exposed in the getter. This is used internally
+   * to push events to. The separate field allows us to expose separate types in the public API
+   * (i.e., an Observable rather than the Subject).
+   */
   private _events = new Subject<Event>();
   /**
    * An event stream for routing events.
@@ -347,7 +352,7 @@ export class Router {
   private subscribeToNavigationEvents() {
     const subscription = this.navigationTransitions.events.subscribe(e => {
       try {
-        const currentTransition = this.navigationTransitions.currentTransition;
+        const {currentTransition} = this.navigationTransitions;
         if (currentTransition === null) {
           if (isPublicRouterEvent(e)) {
             this._events.next(e);
@@ -358,16 +363,12 @@ export class Router {
         if (e instanceof NavigationStart) {
           // If the source of the navigation is from a browser event, the URL is
           // already updated. We already need to sync the internal state.
-          if (isBrowserTriggeredNavigation(currentTransition!.source)) {
+          if (isBrowserTriggeredNavigation(currentTransition.source)) {
             this.browserUrlTree = currentTransition.extractedUrl;
           }
-        }
-
-        if (e instanceof NavigationSkipped) {
+        } else if (e instanceof NavigationSkipped) {
           this.rawUrlTree = currentTransition.rawUrl;
-        }
-
-        if (e instanceof RoutesRecognized) {
+        } else if (e instanceof RoutesRecognized) {
           if (this.urlUpdateStrategy === 'eager') {
             if (!currentTransition.extras.skipLocationChange) {
               const rawUrl = this.urlHandlingStrategy.merge(
@@ -376,9 +377,7 @@ export class Router {
             }
             this.browserUrlTree = currentTransition.urlAfterRedirects!;
           }
-        }
-
-        if (e instanceof BeforeActivateRoutes) {
+        } else if (e instanceof BeforeActivateRoutes) {
           this.currentUrlTree = currentTransition.urlAfterRedirects!;
           this.rawUrlTree = this.urlHandlingStrategy.merge(
               currentTransition.urlAfterRedirects!, currentTransition.rawUrl);
@@ -389,9 +388,7 @@ export class Router {
             }
             this.browserUrlTree = currentTransition.urlAfterRedirects!;
           }
-        }
-
-        if (e instanceof NavigationCancel) {
+        } else if (e instanceof NavigationCancel) {
           if (e.code !== NavigationCancellationCode.Redirect &&
               e.code !== NavigationCancellationCode.SupersededByNewNavigation) {
             // It seems weird that `navigated` is set to `true` when the navigation is rejected,
@@ -403,9 +400,7 @@ export class Router {
               e.code === NavigationCancellationCode.NoDataFromResolver) {
             this.restoreHistory(currentTransition);
           }
-        }
-
-        if (e instanceof RedirectRequest) {
+        } else if (e instanceof RedirectRequest) {
           const mergedTree = this.urlHandlingStrategy.merge(e.url, currentTransition.currentRawUrl);
           const extras = {
             skipLocationChange: currentTransition.extras.skipLocationChange,

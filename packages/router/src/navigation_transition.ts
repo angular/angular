@@ -262,8 +262,10 @@ export interface NavigationTransition {
  * directly.
  */
 interface InternalRouterInterface {
-  // All of these are public API of router interface and can change during runtime
-  // Ideally, these are removed
+  config: Routes;
+  // All of these are public API of router interface and can change during runtime because they are
+  // writeable. Ideally, these would be removed and the values retrieved instead from the values
+  // available in DI.
   errorHandler: ErrorHandler;
   titleStrategy?: TitleStrategy;
   navigated: boolean;
@@ -271,7 +273,6 @@ interface InternalRouterInterface {
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload'|'ignore';
   paramsInheritanceStrategy: 'emptyOnly'|'always';
-  config: Routes;
 }
 
 @Injectable({providedIn: 'root'})
@@ -279,6 +280,11 @@ export class NavigationTransitions {
   currentNavigation: Navigation|null = null;
   currentTransition: NavigationTransition|null = null;
   lastSuccessfulNavigation: Navigation|null = null;
+  /**
+   * These events are used to communicate back to the Router about the state of the transition. The
+   * Router wants to respond to these events in various ways. Because the `NavigationTransition`
+   * class is not public, this event subject is not publicly exposed.
+   */
   readonly events = new Subject<Event|BeforeActivateRoutes|RedirectRequest>();
   /**
    * Used to abort the current transition with an error.
