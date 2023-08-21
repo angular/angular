@@ -782,6 +782,7 @@
     "name": "Nishu Goel",
     "picture": "nishugoel.jpg",
     "twitter": "TheNishuGoel",
+    "website": "https://unravelweb.dev",
     "bio": "Nishu is a Google Developer Expert for Angular and loves to share her learning with everyone. She is the author of the book Step by Step Angular Routing and has written a code-text based course on educative.io. She is a frontend engineer at The DataWorks, London and is recognized as a Microsoft MVP.",
     "groups": ["GDE"]
   },
