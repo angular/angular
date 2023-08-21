@@ -172,6 +172,11 @@ export {
   ɵɵresolveWindow,
   ɵɵrestoreView,
 
+  ɵɵrepeater, 
+  ɵɵrepeaterCreate, 
+  ɵɵrepeaterTrackByIdentity, 
+  ɵɵrepeaterTrackByIndex,
+
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵgetComponentDepsFactory,

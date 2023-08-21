@@ -8,8 +8,7 @@
 
 
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
-import {Component, Pipe, PipeTransform, ɵɵdefineComponent, ɵɵtext, ɵɵtextInterpolate2} from '@angular/core';
-import {ɵɵrepeater, ɵɵrepeaterCreate, ɵɵrepeaterTrackByIdentity, ɵɵrepeaterTrackByIndex} from '@angular/core/src/render3/instructions/control_flow';
+import {Component, Pipe, PipeTransform, ɵɵadvance, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵrepeater, ɵɵrepeaterCreate, ɵɵrepeaterTrackByIdentity, ɵɵrepeaterTrackByIndex, ɵɵtext, ɵɵtextInterpolate, ɵɵtextInterpolate2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow', () => {
@@ -267,7 +266,7 @@ describe('control flow', () => {
           decls: 2,
           vars: 0,
 
-          // {#for (item of items); track item; let idx = index}{{item}}|{/for}
+          // {#for (item of items); track item; let idx = index}{{item}}({{idx}}){/for}
           template:
               function TestComponent_Template(rf: number, ctx: TestComponent) {
                 if (rf & 1) {
@@ -275,7 +274,7 @@ describe('control flow', () => {
                 }
 
                 if (rf & 2) {
-                  ɵɵrepeater(1, ctx.items);
+                  ɵɵrepeater(0, ctx.items);
                 }
               },
           encapsulation: 2
@@ -332,7 +331,7 @@ describe('control flow', () => {
                 }
 
                 if (rf & 2) {
-                  ɵɵrepeater(1, ctx.items);
+                  ɵɵrepeater(0, ctx.items);
                 }
               },
           encapsulation: 2
@@ -369,7 +368,13 @@ describe('control flow', () => {
 
       function App_ng_template_0_EMPTY(rf: number) {
         if (rf & 1) {
-          ɵɵtext(0, 'Empty');
+          ɵɵelementStart(0, 'div');
+          ɵɵtext(1);
+          ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          ɵɵadvance(1);
+          ɵɵtextInterpolate('Empty');
         }
       }
 
@@ -388,10 +393,10 @@ describe('control flow', () => {
                 if (rf & 1) {
                   ɵɵrepeaterCreate(
                       0, App_ng_template_0_Template, 1, 0, ɵɵrepeaterTrackByIndex,
-                      App_ng_template_0_EMPTY, 1, 0);
+                      App_ng_template_0_EMPTY, 2, 1);
                 }
                 if (rf & 2) {
-                  ɵɵrepeater(2, ctx.items);
+                  ɵɵrepeater(0, ctx.items);
                 }
               },
           encapsulation: 2
@@ -427,15 +432,18 @@ describe('control flow', () => {
     });
 
     it('should have access to the host context in the track function', () => {
-      function App_ng_template_0_Template(rf: number) {
+      function App_ng_template_0_Template(rf: number, ctx: any) {
         if (rf & 1) {
-          ɵɵtext(0, '|');
+          ɵɵtext(0);
+        }
+        if (rf & 2) {
+          ɵɵtextInterpolate(ctx.$implicit);
         }
       }
 
       class TestComponent {
         offset = 0;
-        items = [1, 2, 3];
+        items = ['a', 'b', 'c'];
 
         static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
@@ -443,15 +451,15 @@ describe('control flow', () => {
           decls: 2,
           vars: 1,
 
-          // {#for (item of items); track $index + offset}{{item}}|{/for}
+          // {#for (item of items); track $index + offset}{{item}}{{item}}{/for}
           template:
               function TestComponent_Template(rf: number, ctx: any) {
                 if (rf & 1) {
                   ɵɵrepeaterCreate(
-                      0, App_ng_template_0_Template, 1, 0, ($index) => $index + ctx.offset);
+                      0, App_ng_template_0_Template, 1, 1, ($index) => $index + ctx.offset);
                 }
                 if (rf & 2) {
-                  ɵɵrepeater(1, ctx.items);
+                  ɵɵrepeater(0, ctx.items);
                 }
               },
           encapsulation: 2
@@ -463,7 +471,14 @@ describe('control flow', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('|||');
+      expect(fixture.nativeElement.textContent).toBe('abc');
+
+      // explicitly modify the DOM text node to make sure that the list reconciliation algorithm
+      // based on tracking indices overrides it.
+      fixture.debugElement.childNodes[1].nativeNode.data = 'x';
+      fixture.componentInstance.items.shift();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('bc');
     });
   });
 });

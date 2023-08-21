@@ -69,45 +69,73 @@ export class RepeaterContext<T> {
   }
 }
 
+/**
+ * A built-in trackBy function used for situations where users specified collection index as a
+ * tracking expression. Having this function body in the runtime avoids unnecessary code generation.
+ *
+ * @param index
+ * @returns
+ */
 export function ɵɵrepeaterTrackByIndex(index: number) {
   return index;
 }
 
+/**
+ * A built-in trackBy function used for situations where users specified collection item reference
+ * as a tracking expression. Having this function body in the runtime avoids unnecessary code
+ * generation.
+ *
+ * @param index
+ * @returns
+ */
 export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
   return value;
 }
 
-interface RepeaterMetadata {
-  hasEmptyBlock: boolean;
-  differ: DefaultIterableDiffer<unknown>;
+class RepeaterMetadata {
+  constructor(public hasEmptyBlock: boolean, public differ: DefaultIterableDiffer<unknown>) {}
 }
 
+/**
+ * The repeaterCreate instruction runs in the creation part of the template pass and initializes
+ * internal data structures required by the update pass of the built-in repeater logic. Repeater
+ * metadata are allocated in the data part of LView with the following layout:
+ * - LView[HEADER_OFFSET + index] - metadata
+ * - LView[HEADER_OFFSET + index + 1] - reference to a template function rendering an item
+ * - LView[HEADER_OFFSET + index + 2] - optional reference to a template function rendering an empty
+ * block
+ *
+ * @codeGenApi
+ */
 export function ɵɵrepeaterCreate(
     index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
     trackByFn: TrackByFunction<unknown>, emptyTemplateFn?: ComponentTemplate<unknown>,
     emptyDecls?: number, emptyVars?: number): void {
-  ɵɵtemplate(index, templateFn, decls, vars);
-
   const hasEmptyBlock = emptyTemplateFn !== undefined;
+  const hostLView = getLView();
+  const metadata = new RepeaterMetadata(hasEmptyBlock, new DefaultIterableDiffer(trackByFn));
+  hostLView[HEADER_OFFSET + index] = metadata;
+
+  ɵɵtemplate(index + 1, templateFn, decls, vars);
+
   if (hasEmptyBlock) {
     ngDevMode &&
         assertDefined(emptyDecls, 'Missing number of declarations for the empty repeater block.');
     ngDevMode &&
         assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
-    ɵɵtemplate(index + 1, emptyTemplateFn, decls, vars);
+    ɵɵtemplate(index + 2, emptyTemplateFn, emptyDecls!, emptyVars!);
   }
-
-  const hostLView = getLView();
-  const metadata: RepeaterMetadata = {
-    hasEmptyBlock: emptyTemplateFn !== undefined,
-    differ: new DefaultIterableDiffer(trackByFn),
-  };
-  hostLView[HEADER_OFFSET + index + (hasEmptyBlock ? 2 : 1)] = metadata;
 }
 
-
 /**
+ * The repeater instruction does update-time diffing of a provided collection (against the
+ * collection seen previously) and maps changes in the collection to views structure (by adding,
+ * removing or moving views as needed).
+ * @param metadataSlotIdx - index in data where we can find an instance of RepeaterMetadata with
+ *     additional information (ex. differ) needed to process collection diffing and view
+ *     manipulation
+ * @param collection - the collection instance to be checked for changes
  * @codeGenApi
  */
 export function ɵɵrepeater(
@@ -119,35 +147,16 @@ export function ɵɵrepeater(
   const differ = metadata.differ;
   const changes = differ.diff(collection);
 
-  // handle empty blocks
-  const bindingIndex = nextBindingIndex();
-  if (metadata.hasEmptyBlock) {
-    const hasItemsInCollection = differ.length > 0;
-    if (bindingUpdated(hostLView, bindingIndex, hasItemsInCollection)) {
-      const emptyTemplateIndex = metadataSlotIdx - 1;
-      const lContainer = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
-      if (hasItemsInCollection) {
-        removeLViewFromLContainer(lContainer, 0);
-      } else {
-        const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-        const embeddedLView =
-            createAndRenderEmbeddedLView(hostLView, emptyTemplateTNode, undefined);
-        addLViewToLContainer(lContainer, embeddedLView, 0);
-      }
-    }
-  }
-
   // handle repeater changes
   if (changes !== null) {
-    const containerAdjustedIndex =
-        HEADER_OFFSET + metadataSlotIdx + (metadata.hasEmptyBlock ? -2 : -1);
-    const itemTemplateTNode = getExistingTNode(hostTView, containerAdjustedIndex - HEADER_OFFSET);
-    const lContainer = getLContainer(hostLView, containerAdjustedIndex);
+    const containerIndex = metadataSlotIdx + 1;
+    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
+    const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
     let needsIndexUpdate = false;
     changes.forEachOperation(
         (item: IterableChangeRecord<unknown>, adjustedPreviousIndex: number|null,
          currentIndex: number|null) => {
-          if (item.previousIndex == null) {
+          if (item.previousIndex === null) {
             // add
             const newViewIdx = adjustToLastLContainerIndex(lContainer, currentIndex);
             const embeddedLView = createAndRenderEmbeddedLView(
@@ -155,7 +164,7 @@ export function ɵɵrepeater(
                 new RepeaterContext(lContainer, item.item, newViewIdx));
             addLViewToLContainer(lContainer, embeddedLView, newViewIdx);
             needsIndexUpdate = true;
-          } else if (currentIndex == null) {
+          } else if (currentIndex === null) {
             // remove
             adjustedPreviousIndex = adjustToLastLContainerIndex(lContainer, adjustedPreviousIndex);
             removeLViewFromLContainer(lContainer, adjustedPreviousIndex);
@@ -174,16 +183,32 @@ export function ɵɵrepeater(
     changes.forEachIdentityChange((record: IterableChangeRecord<unknown>) => {
       const viewIdx = adjustToLastLContainerIndex(lContainer, record.currentIndex);
       const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, viewIdx);
-      const ctx = lView[CONTEXT];
-      ctx.$implicit = record.item;
+      lView[CONTEXT].$implicit = record.item;
     });
 
     // moves in the container might caused context's index to get out of order, re-adjust
     if (needsIndexUpdate) {
       for (let i = 0; i < lContainer.length - CONTAINER_HEADER_OFFSET; i++) {
         const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, i);
-        const ctx = lView[CONTEXT];
-        ctx.$index = i;
+        lView[CONTEXT].$index = i;
+      }
+    }
+  }
+
+  // handle empty blocks
+  const bindingIndex = nextBindingIndex();
+  if (metadata.hasEmptyBlock) {
+    const hasItemsInCollection = differ.length > 0;
+    if (bindingUpdated(hostLView, bindingIndex, hasItemsInCollection)) {
+      const emptyTemplateIndex = metadataSlotIdx + 2;
+      const lContainer = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
+      if (hasItemsInCollection) {
+        removeLViewFromLContainer(lContainer, 0);
+      } else {
+        const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
+        const embeddedLView =
+            createAndRenderEmbeddedLView(hostLView, emptyTemplateTNode, undefined);
+        addLViewToLContainer(lContainer, embeddedLView, 0);
       }
     }
   }
