@@ -765,6 +765,9 @@
     "name": "collectNativeNodes"
   },
   {
+    "name": "collectNativeNodesInLContainer"
+  },
+  {
     "name": "collectStylingFromDirectives"
   },
   {
