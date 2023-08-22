@@ -149,7 +149,7 @@ jobs:
 
   aio-deploy:
     needs: [aio]
-    if: needs.aio.result == success() && github.event_name == 'push'
+    if: needs.aio.result == 'success' && github.event_name == 'push'
     runs-on:
       labels: ubuntu-latest
     steps:
