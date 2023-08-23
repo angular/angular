@@ -311,6 +311,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         this.factory.createBlock(this.visitStatements(ast.statements, context)));
   }
 
+  visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
+    return this.factory.createArrowFunctionExpression(
+        ast.params.map(param => param.name),
+        Array.isArray(ast.body) ?
+            this.factory.createBlock(this.visitStatements(ast.body, context)) :
+            ast.body.visitExpression(this, context));
+  }
+
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, context: Context): TExpression {
     if (!BINARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
