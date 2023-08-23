@@ -20,7 +20,7 @@ For a quick introduction to localization and internationalization watch this vid
 
 <div class="video-container">
 
-<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/KNTN-nsbV7M"></iframe>
+<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" title="Angular Internationalization" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/KNTN-nsbV7M"></iframe>
 
 </div>
 
