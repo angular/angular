@@ -131,7 +131,6 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
     native.filegroup(
         name = "files",
         srcs = native.glob(["**"], exclude = [
-            "BUILD.bazel",
             "**/node_modules/**",  # Node modules may exist from the legacy setup.
         ]),
     )
