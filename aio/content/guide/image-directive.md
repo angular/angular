@@ -220,7 +220,7 @@ You may want to have images displayed at varying widths on differently-sized scr
 
 The `sizes` attribute in the above example says "I expect this image to be 100 percent of the screen width on devices under 768px wide. Otherwise, I expect it to be 50 percent of the screen width.
 
-For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [mdn](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
+For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
 ## Configuring an image loader for `NgOptimizedImage`
 
