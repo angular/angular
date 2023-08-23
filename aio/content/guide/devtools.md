@@ -5,7 +5,7 @@ Angular DevTools supports Angular v12 and later when compiled with the [optimiza
 
 <div class="video-container">
 
-<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/bavWOHZM6zE"></iframe>
+<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" title="DevTools Overview" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/bavWOHZM6zE"></iframe>
 
 </div>
 

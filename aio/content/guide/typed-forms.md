@@ -12,7 +12,11 @@ As background for this guide, you should already be familiar with [Angular React
 
 ## Overview of Typed Forms
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/L-odCf4MfJc" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="video-container">
+
+<iframe src="https://www.youtube.com/embed/L-odCf4MfJc" title="Angular Typed Forms" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+</div>
 
 With Angular reactive forms, you explicitly specify a *form model*. As a simple example, consider this basic user login form:
 
