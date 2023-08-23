@@ -177,8 +177,9 @@ jobs:
           CI_REPO_NAME: 'angular'
           CI_PULL_REQUEST: 'false'
           CI_REPO_OWNER: 'angular'
-          CI_BUILD_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          CI_BUILD_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           CI_STABLE_BRANCH: ${{ steps.latest_version.outputs.CI_STABLE_BRANCH }}
           CI_BRANCH: ${{ steps.latest_version.outputs.CI_BRANCH }}
           CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: ${{ secrets.AIO_DEPLOY_TOKEN }}
+          CI_SECRET_PAYLOAD_FIREBASE_TOKEN: ${{ secrets.AIO_PAYLOAD_TOKEN }}
         run: yarn --cwd aio deploy-production
