@@ -106,6 +106,12 @@ export class DocViewerComponent implements OnDestroy {
       embeddedToc.remove();
     }
 
+    const firstParagraph = targetElem.querySelector('p');
+    if (firstParagraph) {
+      const descriptionMeta = this.metaService.getTag('description');
+      descriptionMeta?.setAttribute('content', firstParagraph.textContent || '');
+    }
+
     return () => {
       this.tocService.reset();
       let title: string|null = '';
