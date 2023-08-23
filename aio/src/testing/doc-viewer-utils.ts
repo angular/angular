@@ -21,7 +21,7 @@ export class TestDocViewerComponent extends DocViewerComponent {
   override nextViewContainer: HTMLElement;
 
   // Only used for type-casting; the actual implementation is irrelevant.
-  override prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void {
+  override prepareMetadataAndToc(_targetElem: HTMLElement, _docId: string): () => void {
     return null as any;
   }
 

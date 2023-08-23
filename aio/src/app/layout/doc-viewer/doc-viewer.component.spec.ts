@@ -12,8 +12,8 @@ import { Logger } from 'app/shared/logger.service';
 import { fromOuterHTML } from 'app/shared/security';
 import { TocService } from 'app/shared/toc.service';
 import {
-MockTitle, MockTocService, ObservableWithSubscriptionSpies,
-TestDocViewerComponent, TestModule, TestParentComponent, MockElementsLoader
+  MockTitle, MockTocService, ObservableWithSubscriptionSpies,
+  TestDocViewerComponent, TestModule, TestParentComponent, MockElementsLoader, MockMeta
 } from 'testing/doc-viewer-utils';
 import { MockLogger } from 'testing/logger.service';
 import { DocViewerComponent, NO_ANIMATIONS } from './doc-viewer.component';
@@ -110,7 +110,7 @@ describe('DocViewerComponent', () => {
     });
   });
 
-  describe('#prepareTitleAndToc()', () => {
+  describe('#prepareMetadataAndToc()', () => {
     const EMPTY_DOC = '';
     const DOC_WITHOUT_H1 = 'Some content';
     const DOC_WITH_H1 = '<h1>Features</h1>Some content';
@@ -124,12 +124,12 @@ describe('DocViewerComponent', () => {
     let targetEl: HTMLElement;
 
     const getTocEl = () => targetEl.querySelector('aio-toc');
-    const doPrepareTitleAndToc = (contents: string, docId = '') => {
+    const prepareMetadataAndToc = (contents: string, docId = '') => {
       targetEl.innerHTML = contents;
-      return docViewer.prepareTitleAndToc(targetEl, docId);
+      return docViewer.prepareMetadataAndToc(targetEl, docId);
     };
     const doAddTitleAndToc = (contents: string, docId = '') => {
-      const addTitleAndToc = doPrepareTitleAndToc(contents, docId);
+      const addTitleAndToc = prepareMetadataAndToc(contents, docId);
       return addTitleAndToc();
     };
 
@@ -144,7 +144,7 @@ describe('DocViewerComponent', () => {
     afterEach(() => document.body.removeChild(targetEl));
 
     it('should return a function for doing the actual work', () => {
-      const addTitleAndToc = doPrepareTitleAndToc(DOC_WITH_H1);
+      const addTitleAndToc = prepareMetadataAndToc(DOC_WITH_H1);
 
       expect(getTocEl()).toBeTruthy();
       expect(titleService.setTitle).not.toHaveBeenCalled();
@@ -156,6 +156,39 @@ describe('DocViewerComponent', () => {
       expect(titleService.setTitle).toHaveBeenCalledTimes(1);
       expect(tocService.reset).toHaveBeenCalledTimes(1);
       expect(tocService.genToc).toHaveBeenCalledTimes(1);
+    });
+
+    it('should set the meta description to the first paragraph text', () => {
+      const contentWithParagraphTags = `
+      <h1>NgIf</h1>
+      <p>NgIf is a directive</p>
+      <p>It hides and shows content</p>`;
+
+      const meta = TestBed.inject(Meta) as unknown as MockMeta;
+      const metaElement = document.createElement('meta');
+      metaElement.setAttribute('name', 'Description');
+      (meta as any).getTag = jasmine.createSpy('Meta#getTag').and.returnValue(metaElement);
+
+      doAddTitleAndToc(contentWithParagraphTags);
+
+      expect(metaElement?.getAttribute('content')).toBe('NgIf is a directive');
+    });
+
+    it('should set the meta description when there is an empty paragraph', () => {
+      const contentWithParagraphTags = `
+      <h1>NgIf</h1>
+      <p><a></a></p>
+      <p>NgIf is a directive</p>
+      <p>It hides and shows content</p>`;
+
+      const meta = TestBed.inject(Meta) as unknown as MockMeta;
+      const metaElement = document.createElement('meta');
+      metaElement.setAttribute('name', 'Description');
+      (meta as any).getTag = jasmine.createSpy('Meta#getTag').and.returnValue(metaElement);
+
+      doAddTitleAndToc(contentWithParagraphTags);
+
+      expect(metaElement?.getAttribute('content')).toBe('NgIf is a directive');
     });
 
     describe('(title)', () => {
@@ -216,7 +249,7 @@ describe('DocViewerComponent', () => {
     describe('(ToC)', () => {
       describe('needed', () => {
         it('should add an embedded ToC element if there is an `<h1>` heading', () => {
-          doPrepareTitleAndToc(DOC_WITH_H1);
+          prepareMetadataAndToc(DOC_WITH_H1);
           const tocEl = getTocEl();
 
           expect(tocEl).toBeTruthy();
@@ -224,7 +257,7 @@ describe('DocViewerComponent', () => {
         });
 
         it('should not add a second ToC element if there a hard coded one in place', () => {
-          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC);
+          prepareMetadataAndToc(DOC_WITH_EMBEDDED_TOC);
           expect(targetEl.querySelectorAll('aio-toc').length).toEqual(1);
         });
       });
@@ -232,23 +265,23 @@ describe('DocViewerComponent', () => {
 
       describe('not needed', () => {
         it('should not add a ToC element if there is a `.no-toc` `<h1>` heading', () => {
-          doPrepareTitleAndToc(DOC_WITH_NO_TOC_H1);
+          prepareMetadataAndToc(DOC_WITH_NO_TOC_H1);
           expect(getTocEl()).toBeFalsy();
         });
 
         it('should not add a ToC element if there is no `<h1>` heading', () => {
-          doPrepareTitleAndToc(DOC_WITHOUT_H1);
+          prepareMetadataAndToc(DOC_WITHOUT_H1);
           expect(getTocEl()).toBeFalsy();
 
-          doPrepareTitleAndToc(EMPTY_DOC);
+          prepareMetadataAndToc(EMPTY_DOC);
           expect(getTocEl()).toBeFalsy();
         });
 
         it('should remove ToC a hard coded one', () => {
-          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC_WITHOUT_H1);
+          prepareMetadataAndToc(DOC_WITH_EMBEDDED_TOC_WITHOUT_H1);
           expect(getTocEl()).toBeFalsy();
 
-          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC_WITH_NO_TOC_H1);
+          prepareMetadataAndToc(DOC_WITH_EMBEDDED_TOC_WITH_NO_TOC_H1);
           expect(getTocEl()).toBeFalsy();
         });
       });
@@ -297,7 +330,7 @@ describe('DocViewerComponent', () => {
   });
 
   describe('#render()', () => {
-    let prepareTitleAndTocSpy: jasmine.Spy;
+    let prepareMetadataAndTocSpy: jasmine.Spy;
     let swapViewsSpy: jasmine.Spy;
     let loadElementsSpy: jasmine.Spy;
 
@@ -307,7 +340,7 @@ describe('DocViewerComponent', () => {
     beforeEach(() => {
       const elementsLoader = TestBed.inject(ElementsLoader) as Partial<ElementsLoader> as MockElementsLoader;
       loadElementsSpy = elementsLoader.loadContainedCustomElements.and.callFake(() => of(undefined));
-      prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
+      prepareMetadataAndTocSpy = spyOn(docViewer, 'prepareMetadataAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.callFake(() => of(undefined));
     });
 
@@ -341,20 +374,20 @@ describe('DocViewerComponent', () => {
       });
 
       it('should prepare the title and ToC (before embedding components)', async () => {
-        prepareTitleAndTocSpy.and.callFake((targetEl: HTMLElement, docId: string) => {
+        prepareMetadataAndTocSpy.and.callFake((targetEl: HTMLElement, docId: string) => {
           expect(targetEl.innerHTML).toBe('Some content');
           expect(docId).toBe('foo');
         });
 
         await doRender(htmlEscape('Some content'), 'foo');
 
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledBefore(loadElementsSpy);
+        expect(prepareMetadataAndTocSpy).toHaveBeenCalledTimes(1);
+        expect(prepareMetadataAndTocSpy).toHaveBeenCalledBefore(loadElementsSpy);
       });
 
       it('should set the title and ToC (after the content has been set)', async () => {
         const addTitleAndTocSpy = jasmine.createSpy('addTitleAndToc');
-        prepareTitleAndTocSpy.and.returnValue(addTitleAndTocSpy);
+        prepareMetadataAndTocSpy.and.returnValue(addTitleAndTocSpy);
 
         addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.textContent).toBe('Foo content'));
         await doRender(htmlEscape('Foo content'));
@@ -433,7 +466,7 @@ describe('DocViewerComponent', () => {
 
       it('should pass the `addTitleAndToc` callback', async () => {
         const addTitleAndTocSpy = jasmine.createSpy('addTitleAndToc');
-        prepareTitleAndTocSpy.and.returnValue(addTitleAndTocSpy);
+        prepareMetadataAndTocSpy.and.returnValue(addTitleAndTocSpy);
 
         const el = document.createElement('div');
         await doRender(fromOuterHTML(el));
@@ -465,16 +498,16 @@ describe('DocViewerComponent', () => {
         logger = TestBed.inject(Logger) as unknown as MockLogger;
       });
 
-      it('when `prepareTitleAndTocSpy()` fails', async () => {
-        const error = Error('Typical `prepareTitleAndToc()` error');
-        prepareTitleAndTocSpy.and.callFake(() => {
+      it('when `prepareMetadataAndTocSpy()` fails', async () => {
+        const error = Error('Typical `prepareMetadataAndToc()` error');
+        prepareMetadataAndTocSpy.and.callFake(() => {
           expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
           throw error;
         });
 
         await doRender(htmlEscape('Some content'), 'foo');
 
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
+        expect(prepareMetadataAndTocSpy).toHaveBeenCalledTimes(1);
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
@@ -493,7 +526,7 @@ describe('DocViewerComponent', () => {
 
         await doRender(htmlEscape('Some content'), 'bar');
 
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
+        expect(prepareMetadataAndTocSpy).toHaveBeenCalledTimes(1);
         expect(loadElementsSpy).toHaveBeenCalledTimes(1);
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
@@ -512,7 +545,7 @@ describe('DocViewerComponent', () => {
 
         await doRender(htmlEscape('Some content'), 'qux');
 
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
+        expect(prepareMetadataAndTocSpy).toHaveBeenCalledTimes(1);
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
