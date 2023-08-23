@@ -1,6 +1,7 @@
-import { Component, HostBinding } from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'comp-with-host-binding',
   template: 'I am a component!',
 })
