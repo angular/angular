@@ -87,10 +87,10 @@ export class DocViewerComponent implements OnDestroy {
   }
 
   /**
-   * Prepare for setting the window title and ToC.
+   * Prepare for setting the page metadata (title + description) and table-of-contents.
    * Return a function to actually set them.
    */
-  protected prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void {
+  prepareMetadataAndToc(targetElem: HTMLElement, docId: string): () => void {
     const titleEl = targetElem.querySelector('h1');
     const needsTitle = !!titleEl && !/no-?title/i.test(titleEl.className);
     const needsToc = !!titleEl && !/no-?toc/i.test(titleEl.className);
@@ -123,6 +123,21 @@ export class DocViewerComponent implements OnDestroy {
       }
 
       this.titleService.setTitle(title ? `Angular - ${title}` : 'Angular');
+
+      // Set the page description via the existing `<meta name="Description">` tag.
+      // Updating the page description provides information for internet search indexers.
+      // Pull the next from the first paragraph element that has text since the docs
+      // processing pipeline sometimes results in pages where the first paragraph tag
+      // is empty.
+      const paragraphs = targetElem.querySelectorAll('p');
+      const firstParagraph =
+          Array.from(paragraphs).find(p => p.textContent?.trim());
+
+      const firstParagraphText = firstParagraph?.textContent?.trim();
+      if (firstParagraphText) {
+        const descriptionMeta = this.metaService.getTag('name="Description"');
+        descriptionMeta?.setAttribute('content', firstParagraphText);
+      }
     };
   }
 
@@ -144,7 +159,7 @@ export class DocViewerComponent implements OnDestroy {
             this.nextViewContainer.innerHTML = unwrapHtml(doc.contents) as string;
           }
         }),
-        tap(() => addTitleAndToc = this.prepareTitleAndToc(this.nextViewContainer, doc.id)),
+        tap(() => addTitleAndToc = this.prepareMetadataAndToc(this.nextViewContainer, doc.id)),
         switchMap(() => this.elementsLoader.loadContainedCustomElements(this.nextViewContainer)),
         tap(() => this.docReady.emit()),
         switchMap(() => this.swapViews(addTitleAndToc)),
