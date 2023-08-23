@@ -367,6 +367,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   abstract visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any;
+  abstract visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any): any;
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, ctx: EmitterVisitorContext): any {

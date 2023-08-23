@@ -170,6 +170,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
