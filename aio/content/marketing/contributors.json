@@ -254,6 +254,14 @@
     "lead": "dgp1130",
     "picture": "clydin.jpg"
   },
+  "connieleung": {
+    "name": "Connie Leung",
+    "picture": "connieleung.jpg",
+    "twitter": "connieleung404",
+    "website": "https://www.blueskyconnie.com",
+    "bio": "Connie is a software architect who is passionate about Angular, NestJS and web technologies. She loves coding with Angular and NestJS, and blogging about these topics to share knowledge to members in the communities. Connie is the channel host of Angular Nation East where she hosts events and do talks to Angular developers in the APAC region.",
+    "groups": ["GDE"]
+  },
   "coryrylan": {
     "name": "Cory Rylan",
     "picture": "cory-rylan.jpg",
