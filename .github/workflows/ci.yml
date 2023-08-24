@@ -166,6 +166,19 @@ jobs:
       - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Set the stable branch environment variable
-        run: export CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\\s*([0-9]+\\.[0-9]+)\\.[0-9]+.*$/\\1.x/')
+        id: latest_version
+        run: |
+          echo "CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\\s*([0-9]+\\.[0-9]+)\\.[0-9]+.*$/\\1.x/')" >> $GITHUB_OUTPUT
+          echo "CI_BRANCH=$(echo ${{ github.event.ref }} | cut -d '/' -f 3)" >> $GITHUB_OUTPUT
       - name: Deploy aio to production
+        env:
+          CI_AIO_MIN_PWA_SCORE: '95'
+          CI_COMMIT: ${{ github.event.after }}
+          CI_REPO_NAME: 'angular'
+          CI_PULL_REQUEST: 'false'
+          CI_REPO_OWNER: 'angular'
+          CI_BUILD_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          CI_STABLE_BRANCH: ${{ steps.latest_version.outputs.CI_STABLE_BRANCH }}
+          CI_BRANCH: ${{ steps.latest_version.outputs.CI_BRANCH }}
+          CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: ${{ secrets.AIO_DEPLOY_TOKEN }}
         run: yarn --cwd aio deploy-production

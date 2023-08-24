@@ -1,3 +1,46 @@
+<a name="17.0.0-next.1"></a>
+# 17.0.0-next.1 (2023-08-23)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d910bf8a84](https://github.com/angular/angular/commit/d910bf8a843c07a096969d5e47b49f60981b00e9) | fix | Allow safeUrl for ngSrc in NgOptimizedImage ([#51351](https://github.com/angular/angular/pull/51351)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5bd9fbd2c3](https://github.com/angular/angular/commit/5bd9fbd2c3ab4467074fac5e4d689b3c85bf08cd) | fix | enforce a minimum version to be used when a library uses input transform ([#51413](https://github.com/angular/angular/pull/51413)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9cc52b9b85](https://github.com/angular/angular/commit/9cc52b9b85ffa5cb65c6886e81b5bff10dde8d52) | feat | support TypeScript 5.2 ([#51334](https://github.com/angular/angular/pull/51334)) |
+| [a9b3c006f8](https://github.com/angular/angular/commit/a9b3c006f8593e0187298df21418644070312a40) | fix | guard the jasmine hooks ([#51394](https://github.com/angular/angular/pull/51394)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [96d94ad130](https://github.com/angular/angular/commit/96d94ad13072032326446e8a20658c9f38fd1b8e) | fix | Ensure `canceledNavigationResolution: 'computed'` works on first page ([#51441](https://github.com/angular/angular/pull/51441)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.2"></a>
+# 16.2.2 (2023-08-23)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a43c0772ea](https://github.com/angular/angular/commit/a43c0772ea74410b0492a178c656268a465d3b09) | fix | Allow safeUrl for ngSrc in NgOptimizedImage ([#51351](https://github.com/angular/angular/pull/51351)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39ace8664b](https://github.com/angular/angular/commit/39ace8664b843225a75dd706236ae13e171126d3) | fix | enforce a minimum version to be used when a library uses input transform ([#51413](https://github.com/angular/angular/pull/51413)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [36f434e49d](https://github.com/angular/angular/commit/36f434e49d24f0393950299486141a121d42e044) | fix | guard the jasmine hooks ([#51394](https://github.com/angular/angular/pull/51394)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b0396e7164](https://github.com/angular/angular/commit/b0396e7164c08e01d24d2d8411edf1ccf4b52826) | fix | Ensure `canceledNavigationResolution: 'computed'` works on first page ([#51441](https://github.com/angular/angular/pull/51441)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.0"></a>
 # 17.0.0-next.0 (2023-08-16)
 
