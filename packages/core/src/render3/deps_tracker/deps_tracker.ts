@@ -10,6 +10,7 @@ import {resolveForwardRef} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
+import {global} from '../../util/global';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
@@ -283,7 +284,15 @@ function addSet<T>(sourceSet: Set<T>, targetSet: Set<T>): void {
   }
 }
 
+/** Provides a singleton instance of deps tracker cross the whole app. */
+function getGlobalDepsTracker() {
+  const globalNg: {ɵdepsTracker?: DepsTracker} = global.ng || (global.ng = {});
+  globalNg.ɵdepsTracker = globalNg.ɵdepsTracker || new DepsTracker();
+
+  return globalNg.ɵdepsTracker;
+}
+
 /** The deps tracker to be used in the current Angular app in dev mode. */
-export const depsTracker = new DepsTracker();
+export const depsTracker = getGlobalDepsTracker();
 
 export const TEST_ONLY = {DepsTracker};
