@@ -38,8 +38,8 @@ export function phaseNonbindable(job: ComponentCompilationJob): void {
     }
   }
 
-  for (const [_, view] of job.views) {
-    for (const op of view.create) {
+  for (const unit of job.units) {
+    for (const op of unit.create) {
       if ((op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.ContainerStart) &&
           op.nonBindable) {
         ir.OpList.insertAfter<ir.CreateOp>(ir.createDisableBindingsOp(op.xref), op);

@@ -24,11 +24,11 @@ const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
 /**
  * Resolves sanitization functions for ops that need them.
  */
-export function phaseResolveSanitizers(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    const elements = getElementsByXrefId(view);
+export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
+  for (const unit of job.units) {
+    const elements = getElementsByXrefId(unit);
     let sanitizerFn: ir.SanitizerFn|null;
-    for (const op of view.update) {
+    for (const op of unit.update) {
       switch (op.kind) {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
