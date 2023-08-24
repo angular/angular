@@ -5,7 +5,6 @@
 
 // REM Font Adjustments
 @mixin font-size($sizeValue) {
-  font-size: ($sizeValue) + px;
   font-size: math.div($sizeValue, 10) + rem;
 }
 
