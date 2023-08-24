@@ -16,8 +16,8 @@ import type {ComponentCompilationJob} from '../compilation';
  * the `consts` array for the whole component.
  */
 export function phaseLocalRefs(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.create) {
+  for (const unit of cpl.units) {
+    for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.ElementStart:
         case ir.OpKind.Element:
