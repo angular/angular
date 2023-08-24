@@ -22,7 +22,7 @@ import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler} from './router_config';
+import {ErrorHandler, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
@@ -267,12 +267,10 @@ interface InternalRouterInterface {
   // writeable. Ideally, these would be removed and the values retrieved instead from the values
   // available in DI.
   errorHandler: ErrorHandler;
-  titleStrategy?: TitleStrategy;
   navigated: boolean;
   urlHandlingStrategy: UrlHandlingStrategy;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload'|'ignore';
-  paramsInheritanceStrategy: 'emptyOnly'|'always';
 }
 
 @Injectable({providedIn: 'root'})
@@ -295,6 +293,11 @@ export class NavigationTransitions {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
+  private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
+  private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
+  private readonly paramsInheritanceStrategy =
+      this.options.paramsInheritanceStrategy || 'emptyOnly';
+
   navigationId = 0;
   get hasRequestedNavigation() {
     return this.navigationId !== 0;
@@ -429,7 +432,7 @@ export class NavigationTransitions {
                                  recognize(
                                      this.environmentInjector, this.configLoader,
                                      this.rootComponentType, router.config, this.urlSerializer,
-                                     router.paramsInheritanceStrategy),
+                                     this.paramsInheritanceStrategy),
 
                                  // Update URL if in `eager` update mode
                                  tap(t => {
@@ -545,7 +548,7 @@ export class NavigationTransitions {
                                    let dataResolved = false;
                                    return of(t).pipe(
                                        resolveData(
-                                           router.paramsInheritanceStrategy,
+                                           this.paramsInheritanceStrategy,
                                            this.environmentInjector),
                                        tap({
                                          next: () => dataResolved = true,
@@ -627,7 +630,7 @@ export class NavigationTransitions {
                              this.events.next(new NavigationEnd(
                                  t.id, this.urlSerializer.serialize(t.extractedUrl),
                                  this.urlSerializer.serialize(t.urlAfterRedirects!)));
-                             router.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+                             this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
                              t.resolve(true);
                            },
                            complete: () => {

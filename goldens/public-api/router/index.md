@@ -687,8 +687,6 @@ export class RouteConfigLoadStart {
 // @public
 export class Router {
     constructor();
-    // @deprecated
-    canceledNavigationResolution: 'replace' | 'computed';
     readonly componentInputBindingEnabled: boolean;
     // (undocumented)
     config: Routes;
@@ -703,8 +701,6 @@ export class Router {
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
     get lastSuccessfulNavigation(): Navigation | null;
-    // @deprecated
-    malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     navigated: boolean;
@@ -712,8 +708,6 @@ export class Router {
     ngOnDestroy(): void;
     // @deprecated
     onSameUrlNavigation: OnSameUrlNavigation;
-    // @deprecated
-    paramsInheritanceStrategy: 'emptyOnly' | 'always';
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
     // @deprecated
@@ -721,13 +715,9 @@ export class Router {
     readonly routerState: RouterState;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
-    // @deprecated
-    titleStrategy?: TitleStrategy;
     get url(): string;
     // @deprecated
     urlHandlingStrategy: UrlHandlingStrategy;
-    // @deprecated
-    urlUpdateStrategy: 'deferred' | 'eager';
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
     // (undocumented)
