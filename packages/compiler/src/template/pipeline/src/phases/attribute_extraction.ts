@@ -16,12 +16,12 @@ import {getElementsByXrefId} from '../util/elements';
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
 export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    const elements = getElementsByXrefId(view);
-    for (const op of view.ops()) {
+  for (const unit of cpl.units) {
+    const elements = getElementsByXrefId(unit);
+    for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Attribute:
-          extractAttributeOp(view, op, elements);
+          extractAttributeOp(unit, op, elements);
           break;
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
@@ -37,7 +37,7 @@ export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
-          if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+          if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
@@ -80,7 +80,7 @@ function extractAttributeOp(
   const ownerOp = lookupElement(elements, op.target);
 
   let extractable = op.expression.isConstant();
-  if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+  if (view.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
     // TemplateDefinitionBuilder only extracted attributes that were string literals.
     extractable = ir.isStringLiteral(op.expression);
     if (op.name === 'style' || op.name === 'class') {

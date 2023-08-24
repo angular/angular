@@ -14,8 +14,8 @@ import {ComponentCompilationJob} from '../compilation';
  * Find any function calls to `$any`, excluding `this.$any`, and delete them.
  */
 export function phaseFindAnyCasts(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.ops()) {
+  for (const unit of cpl.units) {
+    for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, removeAnys, ir.VisitorContextFlag.None);
     }
   }

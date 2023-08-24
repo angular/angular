@@ -14,10 +14,10 @@ import {ComponentCompilationJob} from '../compilation';
  * context will be advanced correctly.
  */
 export function phaseGenerateAdvance(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
+  for (const unit of cpl.units) {
     // First build a map of all of the declarations in the view that have assigned slots.
     const slotMap = new Map<ir.XrefId, number>();
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
       } else if (op.slot === null) {
@@ -34,7 +34,7 @@ export function phaseGenerateAdvance(cpl: ComponentCompilationJob): void {
     //
     // To do that, we track what the runtime's slot counter will be through the update operations.
     let slotContext = 0;
-    for (const op of view.update) {
+    for (const op of unit.update) {
       if (!ir.hasDependsOnSlotContextTrait(op)) {
         // `op` doesn't depend on the slot counter, so it can be skipped.
         continue;

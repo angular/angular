@@ -137,15 +137,15 @@ export function emitTemplateFn(tpl: ComponentCompilationJob, pool: ConstantPool)
 }
 
 function emitChildViews(parent: ViewCompilationUnit, pool: ConstantPool): void {
-  for (const view of parent.job.views.values()) {
-    if (view.parent !== parent.xref) {
+  for (const unit of parent.job.units) {
+    if (unit.parent !== parent.xref) {
       continue;
     }
 
     // Child views are emitted depth-first.
-    emitChildViews(view, pool);
+    emitChildViews(unit, pool);
 
-    const viewFn = emitView(view);
+    const viewFn = emitView(unit);
     pool.statements.push(viewFn.toDeclStmt(viewFn.name!));
   }
 }
@@ -203,12 +203,12 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
 }
 
 export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr|null {
-  if (job.fnName === null) {
+  if (job.root.fnName === null) {
     throw new Error(`AssertionError: host binding function is unnamed`);
   }
 
   const createStatements: o.Statement[] = [];
-  for (const op of job.create) {
+  for (const op of job.root.create) {
     if (op.kind !== ir.OpKind.Statement) {
       throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
           ir.OpKind[op.kind]}`);
@@ -216,7 +216,7 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
-  for (const op of job.update) {
+  for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Statement) {
       throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
           ir.OpKind[op.kind]}`);
@@ -239,5 +239,5 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
         ...createCond,
         ...updateCond,
       ],
-      /* type */ undefined, /* sourceSpan */ undefined, job.fnName);
+      /* type */ undefined, /* sourceSpan */ undefined, job.root.fnName);
 }

@@ -9,14 +9,14 @@
 import * as ir from '../../ir';
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
-export function phasePipeCreation(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
-    processPipeBindingsInView(view);
+export function phasePipeCreation(job: ComponentCompilationJob): void {
+  for (const unit of job.units) {
+    processPipeBindingsInView(unit);
   }
 }
 
-function processPipeBindingsInView(view: ViewCompilationUnit): void {
-  for (const updateOp of view.update) {
+function processPipeBindingsInView(unit: ViewCompilationUnit): void {
+  for (const updateOp of unit.update) {
     ir.visitExpressionsInOp(updateOp, (expr, flags) => {
       if (!ir.isIrExpression(expr)) {
         return;
@@ -35,17 +35,17 @@ function processPipeBindingsInView(view: ViewCompilationUnit): void {
             ir.OpKind[updateOp.kind]}`);
       }
 
-      addPipeToCreationBlock(view, updateOp.target, expr);
+      addPipeToCreationBlock(unit, updateOp.target, expr);
     });
   }
 }
 
 function addPipeToCreationBlock(
-    view: ViewCompilationUnit, afterTargetXref: ir.XrefId, binding: ir.PipeBindingExpr): void {
+    unit: ViewCompilationUnit, afterTargetXref: ir.XrefId, binding: ir.PipeBindingExpr): void {
   // Find the appropriate point to insert the Pipe creation operation.
   // We're looking for `afterTargetXref` (and also want to insert after any other pipe operations
   // which might be beyond it).
-  for (let op = view.create.head.next!; op.kind !== ir.OpKind.ListEnd; op = op.next!) {
+  for (let op = unit.create.head.next!; op.kind !== ir.OpKind.ListEnd; op = op.next!) {
     if (!ir.hasConsumesSlotTrait<ir.CreateOp>(op)) {
       continue;
     }

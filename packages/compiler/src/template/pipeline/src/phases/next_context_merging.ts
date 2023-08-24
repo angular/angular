@@ -24,13 +24,13 @@ import type {ComponentCompilationJob} from '../compilation';
  *   * No operations in between them uses the implicit context.
  */
 export function phaseMergeNextContext(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.create) {
+  for (const unit of cpl.units) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.Listener) {
         mergeNextContextsInOps(op.handlerOps);
       }
     }
-    mergeNextContextsInOps(view.update);
+    mergeNextContextsInOps(unit.update);
   }
 }
 

@@ -20,8 +20,8 @@ const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
  * element (e.g. `Element`).
  */
 export function phaseEmptyElements(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+  for (const unit of cpl.units) {
+    for (const op of unit.create) {
       const opReplacements = REPLACEMENTS.get(op.kind);
       if (opReplacements === undefined) {
         continue;

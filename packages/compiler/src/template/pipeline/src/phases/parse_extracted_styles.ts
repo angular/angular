@@ -16,8 +16,8 @@ import {ComponentCompilationJob} from '../compilation';
  * class property.
  */
 export function phaseParseExtractedStyles(cpl: ComponentCompilationJob) {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+  for (const unit of cpl.units) {
+    for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute && op.bindingKind === ir.BindingKind.Attribute &&
           ir.isStringLiteral(op.expression!)) {
         if (op.name === 'style') {
