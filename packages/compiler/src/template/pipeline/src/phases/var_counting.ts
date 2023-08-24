@@ -44,8 +44,8 @@ export function phaseVarCounting(job: CompilationJob): void {
   if (job instanceof ComponentCompilationJob) {
     // Add var counts for each view to the `ir.TemplateOp` which declares that view (if the view is
     // an embedded view).
-    for (const view of job.views.values()) {
-      for (const op of view.create) {
+    for (const unit of job.units) {
+      for (const op of unit.create) {
         if (op.kind !== ir.OpKind.Template) {
           continue;
         }

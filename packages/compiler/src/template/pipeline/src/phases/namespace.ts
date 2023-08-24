@@ -14,10 +14,10 @@ import type {ComponentCompilationJob} from '../compilation';
  * Change namespaces between HTML, SVG and MathML, depending on the next element.
  */
 export function phaseNamespace(job: ComponentCompilationJob): void {
-  for (const [_, view] of job.views) {
+  for (const unit of job.units) {
     let activeNamespace = ir.Namespace.HTML;
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (op.kind !== ir.OpKind.Element && op.kind !== ir.OpKind.ElementStart) {
         continue;
       }

@@ -14,15 +14,15 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
  * Any variable inside a listener with the name `$event` will be transformed into a output lexical
  * read immediately, and does not participate in any of the normal logic for handling variables.
  */
-export function phaseResolveDollarEvent(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    resolveDollarEvent(view, view.create);
-    resolveDollarEvent(view, view.update);
+export function phaseResolveDollarEvent(job: ComponentCompilationJob): void {
+  for (const unit of job.units) {
+    resolveDollarEvent(unit, unit.create);
+    resolveDollarEvent(unit, unit.update);
   }
 }
 
 function resolveDollarEvent(
-    view: ViewCompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
+    unit: ViewCompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     if (op.kind === ir.OpKind.Listener) {
       ir.transformExpressionsInOp(op, (expr) => {

@@ -16,7 +16,7 @@ import * as t from '../../../render3/r3_ast';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit, HostBindingCompilationUnit} from './compilation';
 import {BINARY_OPERATORS, namespaceForKey} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
@@ -75,7 +75,7 @@ export function ingestHostProperty(
     property.name = property.name.substring('attr.'.length);
     bindingKind = ir.BindingKind.Attribute;
   }
-  job.update.push(ir.createBindingOp(
+  job.root.update.push(ir.createBindingOp(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,

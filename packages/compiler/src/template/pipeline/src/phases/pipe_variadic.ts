@@ -12,8 +12,8 @@ import * as ir from '../../ir';
 import type {ComponentCompilationJob} from '../compilation';
 
 export function phasePipeVariadic(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.update) {
+  for (const unit of cpl.units) {
+    for (const op of unit.update) {
       ir.transformExpressionsInOp(op, expr => {
         if (!(expr instanceof ir.PipeBindingExpr)) {
           return expr;

@@ -15,7 +15,7 @@ const STYLE_DOT = 'style.';
 const CLASS_DOT = 'class.';
 
 export function phaseHostStylePropertyParsing(job: HostBindingCompilationJob): void {
-  for (const op of job.update) {
+  for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Binding) {
       continue;
     }
