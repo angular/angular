@@ -10,7 +10,7 @@ import {DOCUMENT} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
+import {Router, RouterModule, RouterStateSnapshot, TitleStrategy, withRouterConfig} from '@angular/router';
 
 import {provideRouter} from '../src/provide_router';
 
@@ -26,7 +26,7 @@ describe('title strategy', () => {
         ],
         providers: [
           provideLocationMocks(),
-          provideRouter([]),
+          provideRouter([], withRouterConfig({paramsInheritanceStrategy: 'always'})),
         ]
       });
       router = TestBed.inject(Router);
@@ -84,8 +84,7 @@ describe('title strategy', () => {
          expect(document.title).toBe('child title');
        }));
 
-    it('sets page title with paramsInheritanceStrategy=always', fakeAsync(() => {
-         router.paramsInheritanceStrategy = 'always';
+    it('sets page title with inherited params', fakeAsync(() => {
          router.resetConfig([
            {
              path: 'home',

@@ -16,7 +16,6 @@ import {RuntimeErrorCode} from './errors';
 import {BeforeActivateRoutes, Event, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, NavigationTrigger, PrivateRouterEvents, RedirectRequest, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {isBrowserTriggeredNavigation, Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
-import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
@@ -201,11 +200,9 @@ export class Router {
    * The most common case is a `%` sign
    * that's not encoded and is not part of a percent encoded sequence.
    *
-   * @deprecated URI parsing errors should be handled in the `UrlSerializer`.
-   *
    * @see {@link RouterModule}
    */
-  malformedUriErrorHandler =
+  private malformedUriErrorHandler =
       this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
 
   /**
@@ -233,14 +230,6 @@ export class Router {
   routeReuseStrategy = inject(RouteReuseStrategy);
 
   /**
-   * A strategy for setting the title based on the `routerState`.
-   *
-   * @deprecated Configure using `providers` instead:
-   *   `{provide: TitleStrategy, useClass: MyStrategy}`.
-   */
-  titleStrategy?: TitleStrategy = inject(TitleStrategy);
-
-  /**
    * How to handle a navigation request to the current URL.
    *
    *
@@ -251,36 +240,7 @@ export class Router {
    */
   onSameUrlNavigation: OnSameUrlNavigation = this.options.onSameUrlNavigation || 'ignore';
 
-  /**
-   * How to merge parameters, data, resolved data, and title from parent to child
-   * routes. One of:
-   *
-   * - `'emptyOnly'` : Inherit parent parameters, data, and resolved data
-   * for path-less or component-less routes.
-   * - `'always'` : Inherit parent parameters, data, and resolved data
-   * for all child routes.
-   *
-   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see {@link withRouterConfig}
-   * @see {@link provideRouter}
-   * @see {@link RouterModule}
-   */
-  paramsInheritanceStrategy: 'emptyOnly'|'always' =
-      this.options.paramsInheritanceStrategy || 'emptyOnly';
-
-  /**
-   * Determines when the router updates the browser URL.
-   * By default (`"deferred"`), updates the browser URL after navigation has finished.
-   * Set to `'eager'` to update the browser URL at the beginning of navigation.
-   * You can choose to update early so that, if navigation fails,
-   * you can show an error message with the URL that failed.
-   *
-   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see {@link withRouterConfig}
-   * @see {@link provideRouter}
-   * @see {@link RouterModule}
-   */
-  urlUpdateStrategy: 'deferred'|'eager' = this.options.urlUpdateStrategy || 'deferred';
+  private urlUpdateStrategy: 'deferred'|'eager' = this.options.urlUpdateStrategy || 'deferred';
 
   /**
    * Configures how the Router attempts to restore state when a navigation is cancelled.
@@ -303,12 +263,11 @@ export class Router {
    *
    * The default value is `replace`.
    *
-   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
    * @see {@link withRouterConfig}
    * @see {@link provideRouter}
    * @see {@link RouterModule}
    */
-  canceledNavigationResolution: 'replace'|'computed' =
+  private canceledNavigationResolution: 'replace'|'computed' =
       this.options.canceledNavigationResolution || 'replace';
 
   config: Routes = inject(ROUTES, {optional: true})?.flat() ?? [];
