@@ -1,0 +1,13 @@
+<div *ngIf = "(messages$ | async) as message" class="small">
+  Received message, "{{message.text}}", of type "{{message.type}}."
+</div>
+
+<div>
+  <span>Last Error:</span>
+  {{ errors$ | async }}
+</div>
+
+<div>
+  <span>Last Warning:</span>
+  {{ warnings$ | async }}
+</div>

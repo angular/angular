@@ -85,7 +85,7 @@ EXAMPLES = {
     "router": {"stackblitz": True, "zip": True},
     "router-tutorial": {"stackblitz": True, "zip": True},
     "routing-with-urlmatcher": {"stackblitz": True, "zip": True},
-    "rx-library": {"stackblitz": False, "zip": False},
+    "rx-library": {"stackblitz": True, "zip": True},
     "schematics-for-libraries": {"stackblitz": False, "zip": True},
     "security": {"stackblitz": True, "zip": True},
     "service-worker-getting-started": {"stackblitz": False, "zip": False},
