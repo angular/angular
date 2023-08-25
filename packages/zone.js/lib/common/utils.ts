@@ -289,25 +289,12 @@ export function patchClass(className: string) {
 
   _global[className] = function() {
     const a = bindArguments(<any>arguments, className);
-    switch (a.length) {
-      case 0:
-        this[originalInstanceKey] = new OriginalClass();
-        break;
-      case 1:
-        this[originalInstanceKey] = new OriginalClass(a[0]);
-        break;
-      case 2:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1]);
-        break;
-      case 3:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2]);
-        break;
-      case 4:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2], a[3]);
-        break;
-      default:
-        throw new Error('Arg list too long.');
+
+    if (a.length > 4) {
+      throw new Error('Arg list too long.');
     }
+
+    this[originalInstanceKey] = new OriginalClass(...a);
   };
 
   // attach original delegate to patched function
