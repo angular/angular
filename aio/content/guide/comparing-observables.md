@@ -12,7 +12,7 @@ Here are detailed comparisons of the differences.
 Observables are often compared to promises.
 Here are some key differences:
 
-*   Observables are declarative; computation does not start until subscription.
+*   Observable execution is deferred; computation does not start until subscription.
     Promises execute immediately on creation.
     This makes observables useful for defining recipes that can be run whenever you need the result.
 
@@ -20,40 +20,46 @@ Here are some key differences:
     Promises provide one.
     This makes observables useful for getting multiple values over time.
 
-*   Observables differentiate between chaining and subscription.
-    Promises only have `.then()` clauses.
-    This makes observables useful for creating complex transformation recipes to be used by other part of the system, without causing the work to be executed.
+*   Observable values can be transformed with operators as well as in the subscription.  The rich variety of RxJS operators observables enables complex transformations that can be passed around to other parts of the system, without causing the work to be executed prematurely.
+    
+    Promises have `.then()` clauses which can transform values but only after the work is done.
 
-*   Observables `subscribe()` is responsible for handling errors.
-    Promises push errors to the child promises.
-    This makes observables useful for centralized and predictable error handling.
+*   Observables and Promises handle errors differently with roughly comparable efficacy.
 
+The following sections explore these points in greater detail.
 ### Creation and subscription
 
 *   Observables are not executed until a consumer subscribes.
-    The `subscribe()` executes the defined behavior once, and it can be called again.
-    Each subscription has its own computation.
-    Resubscription causes recomputation of values.
+    
+    The `subscribe()` initiates the observable's behavior which may execute synchronously or asynchronously and could produce one, many or no values over time.
+
+    For "unicast" observables, if you call `subscribe` again, you get a new observable execution with its own production of values.
+    Calling `subscribe` on a "multicast" observable (e.g., `Subject` or an observable with the `shareReplay` operator) simply adds another *subscriber* to the already running observable.
+
+    The `subscribe` call is the end-of-the-line. You cannot continue to manipulate values after `subscribe(...)`.
 
     <code-example header="src/observables.ts (observable)" path="comparing-observables/src/observables.ts" region="observable"></code-example>
 
-*   Promises execute immediately, and just once.
-    The computation of the result is initiated when the promise is created.
-    There is no way to restart work.
-    All `then` clauses \(subscriptions\) share the same computation.
+*   Promises execute immediately when they are created. There is no deferred execution and, therefore, no equivalent to `subscribe()`.
+
+    A promise is always asynchronous and can produce at most one value.
+    
+    There is no way to restart a promise and it retains its result value for the life of the promise.
+
+    You can chain additional `then` clauses to a promise.
 
     <code-example header="src/promises.ts (promise)" path="comparing-observables/src/promises.ts" region="promise"></code-example>
 
-### Chaining
+<a id="chaining"></a>
+### Transformations
 
-*   Observables differentiate between transformation function such as a map and subscription.
-    Only subscription activates the subscriber function to start computing the values.
+*   Developers can transform values both in the *subscription* and in piped *operators*. There are large number of RxJS operators to suit many complex scenarios, including numerous ways to combine and split observables.
 
-    <code-example header="src/observables.ts (chain)" path="comparing-observables/src/observables.ts" region="chain"></code-example>
+    <code-example header="src/observables.ts (operators and multiple values)" path="comparing-observables/src/observables.ts" region="operators"></code-example>
 
-*   Promises do not differentiate between the last `.then` clauses \(equivalent to subscription\) and intermediate `.then` clauses \(equivalent to map\).
+*   Promises do not have an equivalent to `subscribe()`. You can transform the emitted value of a promise through one or more `.then` clauses. Promises have a small set of combiners (e.g., `all`, `any`, `race`).
 
-    <code-example header="src/promises.ts (chain)" path="comparing-observables/src/promises.ts" region="chain"></code-example>
+    <code-example header="src/promises.ts (chained .then)" path="comparing-observables/src/promises.ts" region="chain"></code-example>
 
 ### Cancellation
 
@@ -66,11 +72,13 @@ Here are some key differences:
 
 ### Error handling
 
-*   Observable execution errors are delivered to the subscriber's error handler, and the subscriber automatically unsubscribes from the observable.
+*   Observable execution errors can be handled with the `catchError()` operator or in the `subscribe`.
+
+    `catchError` can put the observable back on the normal path where it continues to produce values or it can rethrow the error. An uncaught error unsubscribes all subscribers.
 
     <code-example header="src/observables.ts (error)" path="comparing-observables/src/observables.ts" region="error"></code-example>
 
-*   Promises push errors to the child promises.
+*   Promise errors can be handled with a `.catch()` or in the second argument of a `.then()`.
 
     <code-example header="src/promises.ts (error)" path="comparing-observables/src/promises.ts" region="error"></code-example>
 
@@ -126,4 +134,4 @@ In the following examples, <code>&rarr;</code> implies asynchronous value delive
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-25

@@ -1,157 +1,134 @@
-# Using observables to pass values
+<a id="using-observables-to-pass-values"></a>
+# Using observables for streams of values
 
-Observables provide support for passing messages between parts of your application.
-They are used frequently in Angular and are a technique for event handling, asynchronous programming, and handling multiple values.
+Observables are a technique for event handling, asynchronous programming, and handling multiple values emitted over time.
 
 The observer pattern is a software design pattern in which an object, called the *subject*, maintains a list of its dependents, called *observers*, and notifies them automatically of state changes.
 This pattern is similar \(but not identical\) to the [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern.
 
-Observables are declarative &mdash;that is, you define a function for publishing values, but it is not executed until a consumer subscribes to it.
-The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
-
-An observable can deliver multiple values of any type &mdash;literals, messages, or events, depending on the context.
-The API for receiving values is the same whether the values are delivered synchronously or asynchronously.
-Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values, and when done, unsubscribing.
-Whether the stream was keystrokes, an HTTP response, or an interval timer, the interface for listening to values and stopping listening is the same.
-
-Because of these advantages, observables are used extensively within Angular, and for application development as well.
-
+Angular apps tend to use the [RxJS library for Observables](https://rxjs.dev/). This overview covers just the basics of observables as implemented by that library.
 ## Basic usage and terms
 
-As a publisher, you create an `Observable` instance that defines a *subscriber* function.
-This is the function that is executed when a consumer calls the `subscribe()` method.
-The subscriber function defines how to obtain or generate values or messages to be published.
+Observables are declarative.  You define a function for publishing values &mdash; the *source* &mdash; but that function is not executed until a consumer subscribes to the observable by calling the observable's `subscribe` method.
 
-To execute the observable you have created and begin receiving notifications, you call its `subscribe()` method, passing an *observer*.
-This is a JavaScript object that defines the handlers for the notifications you receive.
-The `subscribe()` call returns a `Subscription` object that has an `unsubscribe()` method, which you call to stop receiving notifications.
+This *subscriber* then receives notifications from the observable until it completes, emits an error, or the consumer unsubscribes.
 
-Here's an example that demonstrates the basic usage model by showing how an observable could be used to provide geolocation updates.
+An observable can deliver multiple values of any type &mdash; literals, messages, or events &mdash; depending on the context. A stream of keystrokes, an HTTP response, and the ticks of an interval timer are among the typical observable sources. The observable API applies consistently across all of these diverse sources.
 
-<code-example header="Observe geolocation updates" class="no-auto-link" path="observables/src/geolocation.ts"></code-example>
+An observable can emit one, many, or no values while subscribed. It can emit synchronously (emit the first value immediately) or asynchronously (emit values over time).
 
-## Defining observers
+Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values and unsubscribing when done.
 
-A handler for receiving observable notifications implements the `Observer` interface.
-It is an object that defines callback methods to handle the three types of notifications that an observable can send:
+[RxJS *Operators*](guide/rx-library#operators) enable transformations of observable values. An *Operator* takes an observable source, manipulates the values from that source in some useful way, and returns a new observable of the transformed values. When you subscribe to that new observable, you get the results of the intermediate transformations.
 
-| Notification type | Details |
-|:---               |:---     |
-| `next`            | Required. A handler for each delivered value. Called zero or more times after execution starts.                                                           |
-| `error`           | Optional. A handler for an error notification. An error halts execution of the observable instance.                                                       |
-| `complete`        | Optional. A handler for the execution-complete notification. Delayed values can continue to be delivered to the next handler after execution is complete. |
+This ability to progressively transform observable values - and even combine multiple observable sources into a consolidated observable - is one of the most powerful and appealing of RxJS features.
 
-An observer object can define any combination of these handlers.
-If you don't supply a handler for a notification type, the observer ignores notifications of that type.
+Accordingly, observables are used extensively within Angular applications and within Angular itself. 
+
+<div class="alert is-helpful">
+
+To be fair, RxJS has a steep learning curve and sometimes bewildering behavior. Use them judiciously.
+
+</div>
+
+## Observable
+
+An observable is an object that can emit one or more values over time.
+
+Here's a simple observable that will emit `1`, then `2`, then `3`, and then completes.
+
+<code-example header="An observable emitting 3 integers" path="observables/src/subscribing.ts" region="observable"></code-example>
+
+<div class="alert is-helpful">
+
+The RxJS method, `of(...values)`, creates an `Observable` instance that synchronously delivers each of the values provided as arguments. 
+
+</div>
+
+### Naming conventions for observables
+
+Notice the "&dollar;" on the end of the observable name. The "&dollar;" signifies that the variable is an observable "&dollar;tream" of values.
+
+This is a widely adopted naming convention for observables. 
+
+Not everyone likes it. Because Angular applications are written in TypeScript and code editors are good at revealing an object's type, you can usually tell  when a variable is an observable. Many feel the "&dollar;" suffix is unnecessary and potentially misleading.
+
+On the other hand, the trailing "&dollar;" can help you quickly identify observables when scanning the code. Also, if you want a property to hold the most recent value emitted from an observable, it can be convenient to use the source observable's root name without the "&dollar;".
+
+The Angular framework and tooling do not enforce this convention. Feel free to use it or not.
 
 ## Subscribing
 
-An `Observable` instance begins publishing values only when someone subscribes to it.
-You subscribe by calling the `subscribe()` method of the instance, passing an observer object to receive the notifications.
+An observable begins publishing values only when someone subscribes to it. That "1-2-3" observable won't emit any numbers until you subscribe by calling the observable's `subscribe()` method.
+
+If you want to begin publishing but don't care about the values or when it completes, you can call subscribe with no arguments at all
+
+<code-example header="Start publishing" path="observables/src/subscribing.ts" region="no-params"></code-example>
+
+You're more likely interested in doing something with the values. Pass in a method - called a "next" handler - that does something every time the observable emits a value.
+
+<code-example header="Subscribe to emitted values" path="observables/src/subscribing.ts" region="next-param"></code-example>
+
+Passing a `next()` function into `subcribe` is a convenient syntax for this most typical case. If you also need to know when the observable emits an error or completes, you'll have to pass in an `Observer` instead.
+
+## Defining observers
+
+An observable has three types of notifications: "next", "error", and "complete".
+
+An `Observer` is an object whose properties contain handlers for these notifications.
+
+| Notification type | Details |
+|:---               |:---     |
+| `next`            | A handler for each delivered value. Called zero or more times after execution starts.                                                           |
+| `error`           | A handler for an error notification. An error halts execution of the observable instance and unsubscribes.                                                       |
+| `complete`        | A handler for the execution-complete notification. Do not expect `next` or `error` to be called again. Automatically unsubscribes. |
+
+Here is an example of passing an observer object to `subscribe`:
+
+<code-example header="Subscribe with full observer object" path="observables/src/subscribing.ts" region="object-param"></code-example>
 
 <div class="alert is-helpful">
 
-In order to show how subscribing works, we need to create a new observable.
-There is a constructor that you use to create new instances, but for illustration, we can use some methods from the RxJS library that create simple observables of frequently used types:
+Alternatively, you can create the `Observer` object with functions named `next()`, `error()` and `complete()`. 
 
-| RxJS methods     | Details |
-|:---              |:---     |
-| `of(...items)`   | Returns an `Observable` instance that synchronously delivers the values provided as arguments.                        |
-| `from(iterable)` | Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable. |
+<code-example path="observables/src/subscribing.ts" region="object-with-fns"></code-example>
+
+This works because JavaScript turns the function names into the property names.
 
 </div>
 
-Here's an example of creating and subscribing to a simple observable, with an observer that logs the received message to the console:
-
-<code-example header="Subscribe using observer" path="observables/src/subscribing.ts" region="observer"></code-example>
-
-Alternatively, the `subscribe()` method can accept callback function definitions in line, for `next`, `error`, and `complete` handlers.
-For example, the following `subscribe()` call is the same as the one that specifies the predefined observer:
-
-<code-example header="Subscribe with positional arguments" path="observables/src/subscribing.ts" region="sub_fn"></code-example>
-
-In either case, a `next` handler is required.
-The `error` and `complete` handlers are optional.
-
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-A `next()` function could receive, for instance, message strings, or event objects, numeric values, or structures, depending on context.
-As a general term, we refer to data published by an observable as a *stream*.
-Any type of value can be represented with an observable, and the values are published as a stream.
-
-</div>
-
-## Creating observables
-
-Use the `Observable` constructor to create an observable stream of any type.
-The constructor takes as its argument the subscriber function to run when the observable's `subscribe()` method executes.
-A subscriber function receives an `Observer` object, and can publish values to the observer's `next()` method.
-
-For example, to create an observable equivalent to the `of(1, 2, 3)` above, you could do something like this:
-
-<code-example header="Create observable with constructor" path="observables/src/creating.ts" region="subscriber"></code-example>
-
-To take this example a little further, we can create an observable that publishes events.
-In this example, the subscriber function is defined inline.
-
-<code-example header="Create with custom fromEvent function" path="observables/src/creating.ts" region="fromevent"></code-example>
-
-Now you can use this function to create an observable that publishes keydown events:
-
-<code-example header="Use custom fromEvent function" path="observables/src/creating.ts" region="fromevent_use"></code-example>
-
-## Multicasting
-
-A typical observable creates a new, independent execution for each subscribed observer.
-When an observer subscribes, the observable wires up an event handler and delivers values to that observer.
-When a second observer subscribes, the observable then wires up a new event handler and delivers values to that second observer in a separate execution.
-
-Sometimes, instead of starting an independent execution for each subscriber, you want each subscription to get the same values &mdash;even if values have already started emitting.
-This might be the case with something like an observable of clicks on the document object.
-
-*Multicasting* is the practice of broadcasting to a list of multiple subscribers in a single execution.
-With a multicasting observable, you don't register multiple listeners on the document, but instead re-use the first listener and send values out to each subscriber.
-
-When creating an observable you should determine how you want that observable to be used and whether or not you want to multicast its values.
-
-Let's look at an example that counts from 1 to 3, with a one-second delay after each number emitted.
-
-<code-example header="Create a delayed sequence" path="observables/src/multicasting.ts" region="delay_sequence"></code-example>
-
-Notice that if you subscribe twice, there will be two separate streams, each emitting values every second.
-It looks something like this:
-
-<code-example header="Two subscriptions" path="observables/src/multicasting.ts" region="subscribe_twice"></code-example>
-
- Changing the observable to be multicasting could look something like this:
-
-<code-example header="Create a multicast subscriber" path="observables/src/multicasting.ts" region="multicast_sequence"></code-example>
-
-<div class="alert is-helpful">
-
-Multicasting observables take a bit more setup, but they can be useful for certain applications.
-Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.
-
-</div>
+All of the handler properties are optional.
+If you omit a handler for one of these properties, the observer ignores notifications of that type.
 
 ## Error handling
 
-Because observables produce values asynchronously, try/catch will not effectively catch errors.
-Instead, you handle errors by specifying an `error` callback on the observer.
+Because observables can produce values asynchronously, try/catch will not effectively catch errors.
+Instead, you handle errors by specifying an `error` function on the observer.
+
 Producing an error also causes the observable to clean up subscriptions and stop producing values.
-An observable can either produce values \(calling the `next` callback\), or it can complete, calling either the `complete` or `error` callback.
 
-<code-example format="typescript" language="typescript">
+<code-example  path="observables/src/subscribing.ts" region="next-or-error"></code-example>
 
-myObservable.subscribe({
-  next(num) { console.log('Next num: ' + num)},
-  error(err) { console.log('Received an error: ' + err)}
-});
+Error handling \(and specifically recovering from an error\) is [covered in more detail in a later section](guide/rx-library#error-handling).
 
-</code-example>
+## Creating observables
 
-Error handling \(and specifically recovering from an error\) is covered in more detail in a later section.
+The RxJS library contains a number of functions for creating observables. Some of the most useful are [covered later](guide/rx-library#observable-creation-functions).
+
+You can also use the `Observable` constructor to create an observable stream of any type.
+The constructor takes as its argument the *subscriber function* to run when the observable's `subscribe()` method executes.
+
+A subscriber function receives an `Observer` object, and can publish values to the observer's `next()`, `error`, and `complete` handlers.
+
+For example, to create an observable equivalent to the `of(1, 2, 3)` above, you could write something like this:
+
+<code-example header="Create observable with constructor" path="observables/src/creating.ts" region="subscriber"></code-example>
+
+## Geolocation example
+
+The following example demonstrates the concepts above by showing how to create and consume an observable that reports geolocation updates.
+
+<code-example header="Observe geolocation updates" class="no-auto-link" path="observables/src/geolocation.ts"></code-example>
 
 <!-- links -->
 
@@ -159,4 +136,4 @@ Error handling \(and specifically recovering from an error\) is covered in more 
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-25
