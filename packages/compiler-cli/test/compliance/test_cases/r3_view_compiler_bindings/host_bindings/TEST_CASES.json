@@ -183,8 +183,7 @@
             "chain_attribute_bindings_mixed.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple host listeners into a single instruction",
