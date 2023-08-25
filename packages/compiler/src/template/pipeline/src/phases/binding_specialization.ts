@@ -55,9 +55,11 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
         case ir.BindingKind.Property:
         case ir.BindingKind.Animation:
           if (job instanceof HostBindingCompilationJob) {
-            // TODO: host property animations
             ir.OpList.replace<ir.UpdateOp>(
-                op, ir.createHostPropertyOp(op.name, op.expression, op.sourceSpan));
+                op,
+                ir.createHostPropertyOp(
+                    op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
+                    op.sourceSpan));
           } else {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
