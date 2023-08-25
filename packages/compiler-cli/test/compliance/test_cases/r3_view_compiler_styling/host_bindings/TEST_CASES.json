@@ -13,8 +13,7 @@
             "static_and_dynamic.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate style/class instructions for multiple host binding definitions",

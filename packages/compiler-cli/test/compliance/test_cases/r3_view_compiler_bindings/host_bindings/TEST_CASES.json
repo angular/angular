@@ -84,8 +84,7 @@
             "host_attributes_with_classes_and_styles.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple host property bindings into a single instruction",
