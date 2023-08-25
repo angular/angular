@@ -28,3 +28,4 @@ export {VERSION} from './version';
 export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from './viewport_scroller';
 export {XhrFactory} from './xhr';
 export {IMAGE_CONFIG, ImageConfig, IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImage, PRECONNECT_CHECK_BLOCKLIST, provideCloudflareLoader, provideCloudinaryLoader, provideImageKitLoader, provideImgixLoader} from './directives/ng_optimized_image';
+export {normalizeQueryParams as ɵnormalizeQueryParams} from './location/util';
