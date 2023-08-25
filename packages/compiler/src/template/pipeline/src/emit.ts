@@ -109,7 +109,9 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
   phaseHostStylePropertyParsing(job);
   phaseStyleBindingSpecialization(job);
   phaseBindingSpecialization(job);
+  phaseAttributeExtraction(job);
   phasePureLiteralStructures(job);
+  phaseConstCollection(job);
   phaseNullishCoalescing(job);
   phaseExpandSafeReads(job);
   phaseTemporaryVariables(job);
