@@ -9,7 +9,7 @@
 import {sanitizeIdentifier} from '../../../../parse_util';
 import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {ViewCompilationUnit, type CompilationJob, type CompilationUnit, HostBindingCompilationUnit} from '../compilation';
 import {prefixWithNamespace} from '../conversion';
 
 /**
@@ -43,18 +43,25 @@ function addNamesToView(
         }
         break;
       case ir.OpKind.Listener:
-        if (op.handlerFnName === null) {
-          if (op.slot === null) {
-            throw new Error(`Expected a slot to be assigned`);
-          }
-          const safeTagName = op.tag.replace('-', '_');
-          if (op.isAnimationListener) {
-            op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${safeTagName}_animation_${
-                op.name}_${op.animationPhase}_${op.slot}_listener`);
-            op.name = `@${op.name}.${op.animationPhase}`;
-          } else {
-            op.handlerFnName =
-                sanitizeIdentifier(`${unit.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
+        // TODO: Once we drop compatibility mode, it's likely not important to preserve the distinct
+        // naming scheme
+        if (unit.job.compatibility && unit instanceof HostBindingCompilationUnit) {
+          // TODO: Host binding animation listeners
+          op.handlerFnName = sanitizeIdentifier(`${baseName}_${op.name}_HostBindingHandler`);
+        } else {
+          if (op.handlerFnName === null) {
+            if (op.slot === null) {
+              throw new Error(`Expected a slot to be assigned`);
+            }
+            const safeTagName = op.tag ? op.tag.replace('-', '_') : 'host';
+            if (op.isAnimationListener) {
+              op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${safeTagName}_animation_${
+                  op.name}_${op.animationPhase}_${op.slot}_listener`);
+              op.name = `@${op.name}.${op.animationPhase}`;
+            } else {
+              op.handlerFnName = sanitizeIdentifier(
+                  `${unit.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
+            }
           }
         }
         break;

@@ -196,8 +196,7 @@
             "chain_multiple_listeners.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple synthetic host listeners into a single instruction",

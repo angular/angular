@@ -340,9 +340,10 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
   name: string;
 
   /**
-   * Tag name of the element on which this listener is placed.
+   * Tag name of the element on which this listener is placed. Might be null, if this listener
+   * belongs to a host binding.
    */
-  tag: string;
+  tag: string|null;
 
   /**
    * A list of `UpdateOp`s representing the body of the event listener.
@@ -373,7 +374,7 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
 /**
  * Create a `ListenerOp`.
  */
-export function createListenerOp(target: XrefId, name: string, tag: string): ListenerOp {
+export function createListenerOp(target: XrefId, name: string, tag: string|null): ListenerOp {
   return {
     kind: OpKind.Listener,
     target,

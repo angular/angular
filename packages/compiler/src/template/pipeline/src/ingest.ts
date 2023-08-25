@@ -97,7 +97,13 @@ export function ingestHostAttribute(
   job.root.update.push(attrBinding);
 }
 
-export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}
+export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
+  const eventBinding = ir.createListenerOp(job.root.xref, event.name, null);
+  // TODO: Can this be a chain?
+  eventBinding.handlerOps.push(
+      ir.createStatementOp(new o.ReturnStatement(convertAst(event.handler.ast, job))));
+  job.root.create.push(eventBinding);
+}
 
 /**
  * Ingest the nodes of a template AST into the given `ViewCompilation`.
