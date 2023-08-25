@@ -70,8 +70,7 @@
             "host_attributes.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support host attributes together with host classes and styles",

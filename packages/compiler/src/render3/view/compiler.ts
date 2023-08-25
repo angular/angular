@@ -580,6 +580,7 @@ function createHostBindingsFunction(
           componentName: name,
           properties: bindings,
           events: eventBindings,
+          attributes: hostBindingsMetadata.attributes,
         },
         bindingParser, constantPool);
     transformHostBinding(hostJob);
@@ -588,6 +589,7 @@ function createHostBindingsFunction(
     if (varCount !== null && varCount > 0) {
       definitionMap.set('hostVars', o.literal(varCount));
     }
+    definitionMap.set('hostAttrs', hostJob.root.attributes);
 
     return emitHostBindingFunction(hostJob);
   }
