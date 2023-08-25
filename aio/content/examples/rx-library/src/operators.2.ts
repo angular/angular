@@ -4,8 +4,7 @@
   we need to indent the imports with the function below.
 */
 // #docregion
-  import { of } from 'rxjs';
-  import { filter, map } from 'rxjs/operators';
+  import { of, filter, map } from 'rxjs';
 
 // #enddocregion
 
@@ -13,7 +12,7 @@ export function docRegionDefault(console: Console) {
   // #docregion
   const squareOdd = of(1, 2, 3, 4, 5)
     .pipe(
-      filter(n => n % 2 !== 0),
+      filter(n => n % 2 === 1),
       map(n => n * n)
     );
 

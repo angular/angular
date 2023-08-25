@@ -1,4 +1,4 @@
-import { docRegionChain, docRegionObservable, docRegionUnsubscribe } from './observables';
+import { docRegionOperators, docRegionObservable, docRegionError, docRegionUnsubscribe } from './observables';
 
 describe('observables', () => {
   it('should print 2', (doneFn: DoneFn) => {
@@ -16,11 +16,23 @@ describe('observables', () => {
     expect(subscription.closed).toBeTruthy();
   });
 
-  it('should chain an observable', (doneFn: DoneFn) => {
-    const observable = docRegionChain();
-    observable.subscribe(value => {
-      expect(value).toBe(4);
-      doneFn();
+  it('should transform an observable with operators', (doneFn: DoneFn) => {
+    const results = [] as (number | string)[];
+    const observable = docRegionOperators();
+    observable.subscribe({
+      next: value => results.push(value),
+      complete: () => {
+        expect(results).toEqual([0, 2, 4, 'Ta Da!']);
+        doneFn();
+      }
     });
+  });
+
+  it('should handle errors', (doneFn: DoneFn) => {
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['error']);
+    docRegionError(consoleSpy);
+    expect(consoleSpy.error).toHaveBeenCalledTimes(1);
+    expect(consoleSpy.error).toHaveBeenCalledWith(new Error('revised error'));
+    doneFn();
   });
 });
