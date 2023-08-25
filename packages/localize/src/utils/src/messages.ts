@@ -7,6 +7,7 @@
  */
 // This module specifier is intentionally a relative path to allow bundling the code directly
 // into the package.
+// @ng_package: ignore-cross-repo-import
 import {computeMsgId} from '../../../../compiler/src/i18n/digest';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
