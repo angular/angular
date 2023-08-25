@@ -87,6 +87,11 @@ function extractAttributeOp(
       // string literal, because it is not a text attribute.
       extractable &&= op.isTextAttribute;
     }
+    if (unit.job instanceof HostBindingCompilationJob) {
+      // TemplateDefinitionBuilder also does not seem to extract string literals if they are part of
+      // a host attribute.
+      extractable &&= op.isTextAttribute;
+    }
   }
 
   if (extractable) {
