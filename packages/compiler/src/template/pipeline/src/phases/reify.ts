@@ -226,7 +226,11 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
-          ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+          if (op.isAnimationTrigger) {
+            ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression));
+          } else {
+            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+          }
         }
         break;
       case ir.OpKind.Variable:
