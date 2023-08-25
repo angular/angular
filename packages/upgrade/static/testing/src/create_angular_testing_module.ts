@@ -7,9 +7,8 @@
  */
 
 import {Injector, NgModule, Type} from '@angular/core';
+import {ɵangular1 as angular, ɵconstants} from '@angular/upgrade/static';
 
-import * as angular from '../../../src/common/src/angular1';
-import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '../../../src/common/src/constants';
 import {UpgradeAppType} from '../../../src/common/src/util';
 
 let $injector: angular.IInjectorService|null = null;
@@ -19,7 +18,7 @@ export function $injectorFactory() {
   return $injector;
 }
 
-@NgModule({providers: [{provide: $INJECTOR, useFactory: $injectorFactory}]})
+@NgModule({providers: [{provide: ɵconstants.$INJECTOR, useFactory: $injectorFactory}]})
 export class AngularTestingModule {
   constructor(i: Injector) {
     injector = i;
@@ -94,8 +93,8 @@ export class AngularTestingModule {
 export function createAngularTestingModule(
     angularJSModules: string[], strictDi?: boolean): Type<any> {
   angular.module_('$$angularJSTestingModule', angularJSModules)
-      .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
-      .factory(INJECTOR_KEY, () => injector);
+      .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+      .factory(ɵconstants.INJECTOR_KEY, () => injector);
   $injector = angular.injector(['ng', '$$angularJSTestingModule'], strictDi);
   return AngularTestingModule;
 }

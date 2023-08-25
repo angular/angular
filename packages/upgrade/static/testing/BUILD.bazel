@@ -14,7 +14,7 @@ ng_module(
     ),
     deps = [
         "//packages/core/testing",
-        "//packages/upgrade/src/common",
+        "//packages/upgrade/static",
     ],
 )
 
