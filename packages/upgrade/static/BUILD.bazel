@@ -15,7 +15,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/upgrade/src/common",
+        "//packages/upgrade",
     ],
 )
 
