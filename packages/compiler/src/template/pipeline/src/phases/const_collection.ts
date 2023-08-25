@@ -10,29 +10,32 @@ import * as core from '../../../../core';
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import {HostBindingCompilationJob, type CompilationJob, ComponentCompilationJob} from '../compilation';
+import {element} from '../instruction';
 
 /**
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
  * array expressions, and lifts them into the overall component `consts`.
  */
-export function phaseConstCollection(job: ComponentCompilationJob): void {
-  // Serialize the extracted messages into the const array.
-  const messageConstIndices: {[id: ir.XrefId]: ir.ConstIndex} = {};
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ExtractedMessage) {
-        messageConstIndices[op.owner] = job.addConst(op.expression, op.statements);
-        ir.OpList.remove<ir.CreateOp>(op);
+export function phaseConstCollection(job: CompilationJob): void {
+  if (job instanceof ComponentCompilationJob) {
+    // Serialize the extracted messages into the const array.
+    const messageConstIndices: {[id: ir.XrefId]: ir.ConstIndex} = {};
+    for (const unit of job.units) {
+      for (const op of unit.create) {
+        if (op.kind === ir.OpKind.ExtractedMessage) {
+          messageConstIndices[op.owner] = job.addConst(op.expression, op.statements);
+          ir.OpList.remove<ir.CreateOp>(op);
+        }
       }
     }
-  }
 
-  // Assign const index to i18n ops that messages were extracted from.
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart && messageConstIndices[op.xref] !== undefined) {
-        op.messageIndex = messageConstIndices[op.xref];
+    // Assign const index to i18n ops that messages were extracted from.
+    for (const unit of job.units) {
+      for (const op of unit.create) {
+        if (op.kind === ir.OpKind.I18nStart && messageConstIndices[op.xref] !== undefined) {
+          op.messageIndex = messageConstIndices[op.xref];
+        }
       }
     }
   }
@@ -51,17 +54,32 @@ export function phaseConstCollection(job: ComponentCompilationJob): void {
   }
 
   // Serialize the extracted attributes into the const array.
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart ||
-          op.kind === ir.OpKind.Template) {
-        const attributes = elementAttributes.get(op.xref);
-        if (attributes !== undefined) {
-          const attrArray = serializeAttributes(attributes);
-          if (attrArray.entries.length > 0) {
-            op.attributes = job.addConst(attrArray);
+  if (job instanceof ComponentCompilationJob) {
+    for (const unit of job.units) {
+      for (const op of unit.create) {
+        if (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart ||
+            op.kind === ir.OpKind.Template) {
+          const attributes = elementAttributes.get(op.xref);
+          if (attributes !== undefined) {
+            const attrArray = serializeAttributes(attributes);
+            if (attrArray.entries.length > 0) {
+              op.attributes = job.addConst(attrArray);
+            }
           }
         }
+      }
+    }
+  } else if (job instanceof HostBindingCompilationJob) {
+    // TODO: If the host binding case further diverges, we may want to split it into its own
+    // phase.
+    for (const [xref, attributes] of elementAttributes.entries()) {
+      if (xref !== job.root.xref) {
+        throw new Error(
+            `An attribute would be const collected into the host binding's template function, but is not associated with the root xref.`);
+      }
+      const attrArray = serializeAttributes(attributes);
+      if (attrArray.entries.length > 0) {
+        job.root.attributes = attrArray;
       }
     }
   }

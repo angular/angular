@@ -37,6 +37,7 @@ export function ingestComponent(
 export interface HostBindingInput {
   componentName: string;
   properties: e.ParsedProperty[]|null;
+  attributes: {[key: string]: o.Expression};
   events: e.ParsedEvent[]|null;
 }
 
@@ -50,6 +51,9 @@ export function ingestHostBinding(
   const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
   for (const property of input.properties ?? []) {
     ingestHostProperty(job, property, false);
+  }
+  for (const [name, expr] of Object.entries(input.attributes) ?? []) {
+    ingestHostAttribute(job, name, expr);
   }
   for (const event of input.events ?? []) {
     ingestHostEvent(job, event);
@@ -80,6 +84,14 @@ export function ingestHostProperty(
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
       isTextAttribute, false, property.sourceSpan));
+}
+
+export function ingestHostAttribute(
+    job: HostBindingCompilationJob, name: string, value: o.Expression): void {
+  const attrBinding = ir.createBindingOp(
+      job.root.xref, ir.BindingKind.Attribute, name, value, null, SecurityContext.NONE, true, false,
+      /* TODO: host attribute source spans */ null!);
+  job.root.update.push(attrBinding);
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {}

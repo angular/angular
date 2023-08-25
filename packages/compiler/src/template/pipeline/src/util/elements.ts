@@ -7,14 +7,14 @@
  */
 
 import * as ir from '../../ir';
-import {CompilationUnit} from '../compilation';
+import type {CompilationUnit} from '../compilation';
 
 /**
  * Gets a map of all elements in the given view by their xref id.
  */
-export function getElementsByXrefId(view: CompilationUnit) {
+export function getElementsByXrefId(unit: CompilationUnit) {
   const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
-  for (const op of view.create) {
+  for (const op of unit.create) {
     if (!ir.isElementOrContainerOp(op)) {
       continue;
     }
