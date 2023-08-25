@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInInjectionContext, computed, DestroyRef, inject, Injector, signal, Signal, WritableSignal} from '@angular/core';
+import {assertInInjectionContext, computed, DestroyRef, inject, Injector, signal, Signal, untracked, WritableSignal, ɵRuntimeError, ɵRuntimeErrorCode} from '@angular/core';
 import {Observable, Subscribable} from 'rxjs';
-
-import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
-import {untracked} from '../../src/signals';
 
 /**
  * Options for `toSignal`.
@@ -186,8 +183,8 @@ export function toSignal<T, U = undefined>(
   });
 
   if (ngDevMode && options?.requireSync && untracked(state).kind === StateKind.NoValue) {
-    throw new RuntimeError(
-        RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+    throw new ɵRuntimeError(
+        ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
         '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
   }
 
@@ -206,8 +203,8 @@ export function toSignal<T, U = undefined>(
       case StateKind.NoValue:
         // This shouldn't really happen because the error is thrown on creation.
         // TODO(alxhub): use a RuntimeError when we finalize the error semantics
-        throw new RuntimeError(
-            RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+        throw new ɵRuntimeError(
+            ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
             '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
     }
   });

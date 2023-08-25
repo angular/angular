@@ -27,6 +27,7 @@ import {
   Type,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
+  ɵgetAsyncClassMetadata as getAsyncClassMetadata,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
   ɵRender3ComponentFactory as ComponentFactory,
@@ -35,12 +36,11 @@ import {
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
-  ɵstringify as stringify
-} from '@angular/core';
-
-import { getAsyncClassMetadata } from '../../src/render3/metadata';
+  ɵstringify as stringify} from '@angular/core';
 
 /* clang-format on */
+
+
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
