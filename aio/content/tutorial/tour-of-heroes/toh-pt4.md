@@ -20,10 +20,7 @@ This tutorial creates a `HeroService` that all application classes can use to ge
 Instead of creating that service with the [`new` keyword](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/new), use the [*dependency injection*](guide/dependency-injection) that Angular supports to inject it into the `HeroesComponent` constructor.
 
 Services are a great way to share information among classes that *don't know each other*.
-Create a `MessageService` next and inject it in these two places.
-
-*   Inject in `HeroService`, which uses the service to send a message
-*   Inject in `MessagesComponent`, which displays that message, and also displays the ID when the user clicks a hero
+Create a `HeroService` next and inject it in the `HeroesComponent`, to provide hero data.
 
 ## Create the `HeroService`
 
