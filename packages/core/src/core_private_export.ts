@@ -15,7 +15,7 @@ export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDeclaration, ɵɵI
 export {InternalEnvironmentProviders as ɵInternalEnvironmentProviders, isEnvironmentProviders as ɵisEnvironmentProviders} from './di/interface/provider';
 export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
 export {XSS_SECURITY_URL as ɵXSS_SECURITY_URL} from './error_details_base_url';
-export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError} from './errors';
+export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError, RuntimeErrorCode as ɵRuntimeErrorCode} from './errors';
 export {annotateForHydration as ɵannotateForHydration} from './hydration/annotate';
 export {withDomHydration as ɵwithDomHydration} from './hydration/api';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
@@ -24,7 +24,7 @@ export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleD
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initial_render_pending_tasks';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
-export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, resolveComponentResources as ɵresolveComponentResources} from './metadata/resource_loading';
+export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
