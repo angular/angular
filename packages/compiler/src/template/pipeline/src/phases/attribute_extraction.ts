@@ -8,14 +8,14 @@
 
 
 import * as ir from '../../ir';
-import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
+import {HostBindingCompilationJob, type CompilationJob, type CompilationUnit} from '../compilation';
 import {getElementsByXrefId} from '../util/elements';
 
 /**
  * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
+export function phaseAttributeExtraction(cpl: CompilationJob): void {
   for (const unit of cpl.units) {
     const elements = getElementsByXrefId(unit);
     for (const op of unit.ops()) {
@@ -72,15 +72,13 @@ function lookupElement(
  * Extracts an attribute binding.
  */
 function extractAttributeOp(
-    view: ViewCompilationUnit, op: ir.AttributeOp,
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>) {
+    unit: CompilationUnit, op: ir.AttributeOp, elements: Map<ir.XrefId, ir.ElementOrContainerOps>) {
   if (op.expression instanceof ir.Interpolation) {
     return;
   }
-  const ownerOp = lookupElement(elements, op.target);
 
   let extractable = op.expression.isConstant();
-  if (view.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+  if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
     // TemplateDefinitionBuilder only extracted attributes that were string literals.
     extractable = ir.isStringLiteral(op.expression);
     if (op.name === 'style' || op.name === 'class') {
@@ -92,11 +90,17 @@ function extractAttributeOp(
   }
 
   if (extractable) {
-    ir.OpList.insertBefore<ir.CreateOp>(
-        ir.createExtractedAttributeOp(
-            op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
-            op.expression),
-        ownerOp);
+    const extractedAttributeOp = ir.createExtractedAttributeOp(
+        op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
+        op.expression);
+    if (unit.job instanceof HostBindingCompilationJob) {
+      // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
+      // matter.
+      unit.create.push(extractedAttributeOp);
+    } else {
+      const ownerOp = lookupElement(elements, op.target);
+      ir.OpList.insertBefore<ir.CreateOp>(extractedAttributeOp, ownerOp);
+    }
     ir.OpList.remove<ir.UpdateOp>(op);
   }
 }
