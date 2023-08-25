@@ -15,8 +15,8 @@ import {getElementsByXrefId} from '../util/elements';
  * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(cpl: CompilationJob): void {
-  for (const unit of cpl.units) {
+export function phaseAttributeExtraction(job: CompilationJob): void {
+  for (const unit of job.units) {
     const elements = getElementsByXrefId(unit);
     for (const op of unit.ops()) {
       switch (op.kind) {
@@ -46,9 +46,16 @@ export function phaseAttributeExtraction(cpl: CompilationJob): void {
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
-            ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
-                lookupElement(elements, op.target));
+            const extractedAttributeOp =
+                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
+            if (job instanceof HostBindingCompilationJob) {
+              // This attribute will apply to the enclosing host binding compilation unit, so order
+              // doesn't matter.
+              unit.create.push(extractedAttributeOp);
+            } else {
+              ir.OpList.insertBefore<ir.CreateOp>(
+                  extractedAttributeOp, lookupElement(elements, op.target));
+            }
           }
           break;
       }
