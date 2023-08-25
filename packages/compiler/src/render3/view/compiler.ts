@@ -566,15 +566,24 @@ function createHostBindingsFunction(
   const bindings =
       bindingParser.createBoundHostProperties(hostBindingsMetadata.properties, typeSourceSpan);
 
-
   // Calculate host event bindings
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
 
   if (USE_TEMPLATE_PIPELINE) {
-    // TODO: host binding metadata is not yet parsed in the template pipeline, so we need to extract
-    // that code from below. Then, we will ingest a `HostBindingJob`, and run the template pipeline
-    // phases.
+    // The parser for host bindings treats class and style attributes specially -- they are
+    // extracted into these separate fields. This is not the case for templates, so the compiler can
+    // actually already handle these special attributes internally. Therefore, we just drop them
+    // into the attributes map.
+    if (hostBindingsMetadata.specialAttributes.styleAttr) {
+      hostBindingsMetadata.attributes.style =
+          o.literal(hostBindingsMetadata.specialAttributes.styleAttr);
+    }
+    if (hostBindingsMetadata.specialAttributes.classAttr) {
+      hostBindingsMetadata.attributes.class =
+          o.literal(hostBindingsMetadata.specialAttributes.classAttr);
+    }
+
     const hostJob = ingestHostBinding(
         {
           componentName: name,
@@ -585,11 +594,12 @@ function createHostBindingsFunction(
         bindingParser, constantPool);
     transformHostBinding(hostJob);
 
+    definitionMap.set('hostAttrs', hostJob.root.attributes);
+
     const varCount = hostJob.root.vars;
     if (varCount !== null && varCount > 0) {
       definitionMap.set('hostVars', o.literal(varCount));
     }
-    definitionMap.set('hostAttrs', hostJob.root.attributes);
 
     return emitHostBindingFunction(hostJob);
   }
