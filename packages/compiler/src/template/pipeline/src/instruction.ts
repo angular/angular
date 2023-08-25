@@ -330,6 +330,10 @@ export function hostProperty(name: string, expression: o.Expression): ir.UpdateO
   return call(Identifiers.hostProperty, [o.literal(name), expression], null);
 }
 
+export function syntheticHostProperty(name: string, expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.syntheticHostProperty, [o.literal(name), expression], null);
+}
+
 export function pureFunction(
     varOffset: number, fn: o.Expression, args: o.Expression[]): o.Expression {
   return callVariadicInstructionExpr(

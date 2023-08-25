@@ -24,17 +24,19 @@ export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.HostProperty;
   name: string;
   expression: o.Expression|Interpolation;
+  isAnimationTrigger: boolean;
 
   sourceSpan: ParseSourceSpan|null;
 }
 
 export function createHostPropertyOp(
-    name: string, expression: o.Expression|Interpolation,
+    name: string, expression: o.Expression|Interpolation, isAnimationTrigger: boolean,
     sourceSpan: ParseSourceSpan|null): HostPropertyOp {
   return {
     kind: OpKind.HostProperty,
     name,
     expression,
+    isAnimationTrigger,
     sourceSpan,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,

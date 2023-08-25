@@ -37,6 +37,7 @@ function addNamesToView(
   for (const op of unit.ops()) {
     switch (op.kind) {
       case ir.OpKind.Property:
+      case ir.OpKind.HostProperty:
         if (op.isAnimationTrigger) {
           op.name = '@' + op.name;
         }
