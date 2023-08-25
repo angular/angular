@@ -79,6 +79,9 @@ export function ingestHostProperty(
     property.name = property.name.substring('attr.'.length);
     bindingKind = ir.BindingKind.Attribute;
   }
+  if (property.isAnimation) {
+    bindingKind = ir.BindingKind.Animation;
+  }
   job.root.update.push(ir.createBindingOp(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext

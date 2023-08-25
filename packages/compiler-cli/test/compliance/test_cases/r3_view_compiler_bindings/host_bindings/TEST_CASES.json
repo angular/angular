@@ -127,8 +127,7 @@
             "chain_property_bindings_mixed.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple synthetic properties into a single instruction call",
@@ -142,8 +141,7 @@
             "chain_synthetic_properties.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple host attribute bindings into a single instruction",
@@ -157,8 +155,7 @@
             "chain_multiple_attribute_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain both host attributes in the decorator and on the class",
@@ -172,8 +169,7 @@
             "chain_attribute_bindings_all.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple host attribute bindings in the presence of other bindings",
