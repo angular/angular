@@ -22,19 +22,25 @@ const ORDERING: {
   transform?: (ops: Array<ir.UpdateOp>) => Array<ir.UpdateOp>
 }[] =
     [
+      {
+        test: (op: ir.UpdateOp) =>
+            op.kind === ir.OpKind.HostProperty && op.expression instanceof ir.Interpolation
+      },
+      {
+        test: (op: ir.UpdateOp) =>
+            op.kind === ir.OpKind.HostProperty && !(op.expression instanceof ir.Interpolation)
+      },
       {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
       {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
       {test: kindTest(ir.OpKind.StyleProp)},
       {test: kindTest(ir.OpKind.ClassProp)},
       {
         test: (op: ir.UpdateOp) =>
-            (op.kind === ir.OpKind.Property || op.kind === ir.OpKind.HostProperty) &&
-            op.expression instanceof ir.Interpolation
+            op.kind === ir.OpKind.Property && op.expression instanceof ir.Interpolation
       },
       {
         test: (op: ir.UpdateOp) =>
-            (op.kind === ir.OpKind.Property || op.kind === ir.OpKind.HostProperty) &&
-            !(op.expression instanceof ir.Interpolation)
+            op.kind === ir.OpKind.Property && !(op.expression instanceof ir.Interpolation)
       },
       {test: kindTest(ir.OpKind.Attribute)},
     ];
