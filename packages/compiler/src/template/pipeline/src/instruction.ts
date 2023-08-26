@@ -105,6 +105,16 @@ export function listener(name: string, handlerFn: o.Expression): ir.CreateOp {
       null);
 }
 
+export function syntheticHostListener(name: string, handlerFn: o.Expression): ir.CreateOp {
+  return call(
+      Identifiers.syntheticHostListener,
+      [
+        o.literal(name),
+        handlerFn,
+      ],
+      null);
+}
+
 export function pipe(slot: number, name: string): ir.CreateOp {
   return call(
       Identifiers.pipe,

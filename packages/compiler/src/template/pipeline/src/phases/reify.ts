@@ -119,12 +119,10 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.Listener:
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
-        ir.OpList.replace(
-            op,
-            ng.listener(
-                op.name,
-                listenerFn,
-                ));
+        const reified = op.hostListener && op.isAnimationListener ?
+            ng.syntheticHostListener(op.name, listenerFn) :
+            ng.listener(op.name, listenerFn);
+        ir.OpList.replace(op, reified);
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
