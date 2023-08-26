@@ -87,7 +87,14 @@ export class OpList<OpT extends Op<OpT>> {
   /**
    * Push a new operation to the tail of the list.
    */
-  push(op: OpT): void {
+  push(op: OpT|Array<OpT>): void {
+    if (Array.isArray(op)) {
+      for (const o of op) {
+        this.push(o);
+      }
+      return;
+    }
+
     OpList.assertIsNotEnd(op);
     OpList.assertIsUnowned(op);
 
@@ -267,7 +274,14 @@ export class OpList<OpT extends Op<OpT>> {
   /**
    * Insert `op` before `target`.
    */
-  static insertBefore<OpT extends Op<OpT>>(op: OpT, target: OpT): void {
+  static insertBefore<OpT extends Op<OpT>>(op: OpT|OpT[], target: OpT): void {
+    if (Array.isArray(op)) {
+      for (const o of op) {
+        this.insertBefore(o, target);
+      }
+      return;
+    }
+
     OpList.assertIsOwned(target);
     if (target.prev === null) {
       throw new Error(`AssertionError: illegal operation on list start`);
