@@ -43,27 +43,24 @@ function addNamesToView(
         }
         break;
       case ir.OpKind.Listener:
-        // TODO: Once we drop compatibility mode, it's likely not important to preserve the distinct
-        // naming scheme
-        if (unit.job.compatibility && unit instanceof HostBindingCompilationUnit) {
-          // TODO: Host binding animation listeners
-          op.handlerFnName = sanitizeIdentifier(`${baseName}_${op.name}_HostBindingHandler`);
-        } else {
-          if (op.handlerFnName === null) {
-            if (op.slot === null) {
-              throw new Error(`Expected a slot to be assigned`);
-            }
-            const safeTagName = op.tag ? op.tag.replace('-', '_') : 'host';
-            if (op.isAnimationListener) {
-              op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${safeTagName}_animation_${
-                  op.name}_${op.animationPhase}_${op.slot}_listener`);
-              op.name = `@${op.name}.${op.animationPhase}`;
-            } else {
-              op.handlerFnName = sanitizeIdentifier(
-                  `${unit.fnName}_${safeTagName}_${op.name}_${op.slot}_listener`);
-            }
-          }
+        if (op.handlerFnName !== null) {
+          break;
         }
+        if (!op.hostListener && op.slot === null) {
+          throw new Error(`Expected a slot to be assigned`);
+        }
+        let animation = '';
+        if (op.isAnimationListener) {
+          op.name = `@${op.name}.${op.animationPhase}`;
+          animation = 'animation';
+        }
+        if (op.hostListener) {
+          op.handlerFnName = `${baseName}_${animation}${op.name}_HostBindingHandler`;
+        } else {
+          op.handlerFnName = `${unit.fnName}_${op.tag!.replace('-', '_')}_${animation}${op.name}_${
+              op.slot}_listener`;
+        }
+        op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
       case ir.OpKind.Variable:
         varNames.set(op.xref, getVariableName(op.variable, state));
