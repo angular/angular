@@ -82,7 +82,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseGenerateVariables},
   {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
   {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
-  {kind: Kind.Tmpl, fn: phaseResolveDollarEvent},
+  {kind: Kind.Both, fn: phaseResolveDollarEvent},
   {kind: Kind.Both, fn: phaseResolveNames},
   {kind: Kind.Both, fn: phaseResolveContexts},
   {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
