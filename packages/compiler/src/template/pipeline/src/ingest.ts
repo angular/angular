@@ -98,7 +98,8 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const eventBinding = ir.createListenerOp(job.root.xref, event.name, null);
+  const eventBinding =
+      ir.createListenerOp(job.root.xref, event.name, null, event.targetOrPhase, true);
   // TODO: Can this be a chain?
   eventBinding.handlerOps.push(
       ir.createStatementOp(new o.ReturnStatement(convertAst(event.handler.ast, job))));
@@ -329,10 +330,9 @@ function ingestBindings(
       if (output.phase === null) {
         throw Error('Animation listener should have a phase');
       }
-      listenerOp = ir.createListenerOpForAnimation(op.xref, output.name, output.phase!, op.tag);
-    } else {
-      listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
     }
+    listenerOp = ir.createListenerOp(op.xref, output.name, op.tag, output.phase, false);
+
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?
     let inputExprs: e.AST[];

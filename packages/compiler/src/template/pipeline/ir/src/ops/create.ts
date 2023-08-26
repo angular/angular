@@ -335,6 +335,11 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
   kind: OpKind.Listener;
 
   /**
+   * Whether this listener is from a host binding.
+   */
+  hostListener: boolean;
+
+  /**
    * Name of the event which is being listened to.
    */
   name: string;
@@ -372,39 +377,22 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
 }
 
 /**
- * Create a `ListenerOp`.
+ * Create a `ListenerOp`. Host bindings reuse all the listener logic.
  */
-export function createListenerOp(target: XrefId, name: string, tag: string|null): ListenerOp {
+export function createListenerOp(
+    target: XrefId, name: string, tag: string|null, animationPhase: string|null,
+    hostListener: boolean): ListenerOp {
   return {
     kind: OpKind.Listener,
     target,
     tag,
+    hostListener,
     name,
     handlerOps: new OpList(),
     handlerFnName: null,
     consumesDollarEvent: false,
-    isAnimationListener: false,
-    animationPhase: null,
-    ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
-  };
-}
-
-/**
- * Create a `ListenerOp` for an animation.
- */
-export function createListenerOpForAnimation(
-    target: XrefId, name: string, animationPhase: string, tag: string): ListenerOp {
-  return {
-    kind: OpKind.Listener,
-    target,
-    tag,
-    name,
-    handlerOps: new OpList(),
-    handlerFnName: null,
-    consumesDollarEvent: false,
-    isAnimationListener: true,
-    animationPhase,
+    isAnimationListener: animationPhase !== null,
+    animationPhase: animationPhase,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
   };
