@@ -180,8 +180,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should assume $event is referring to the event variable in a listener by default",
@@ -248,8 +247,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should preserve accesses to $event if it is done through `this` in a listener inside a host binding",
