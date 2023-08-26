@@ -210,8 +210,7 @@
             "chain_synthetic_listeners.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple regular and synthetic host listeners into two instructions",
