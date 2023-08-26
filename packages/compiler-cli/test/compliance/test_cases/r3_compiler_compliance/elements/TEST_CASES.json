@@ -25,8 +25,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle SVG with an embedded ng-template",
@@ -43,8 +42,7 @@
           ],
           "failureMessage": "Incorrect template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle MathML",
@@ -70,8 +68,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should translate DOM structure",
@@ -97,8 +94,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support namespaced attributes",
@@ -124,8 +120,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support <ng-container>",
@@ -249,8 +244,7 @@
         {
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should specify security-sensitive constant attributes as template literals",
