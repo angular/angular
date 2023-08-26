@@ -37,7 +37,7 @@ import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phasePropertyOrdering} from './phases/property_ordering';
+import {phaseOrdering} from './phases/ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -96,7 +96,7 @@ export function transformTemplate(job: ComponentCompilationJob): void {
   phaseNonbindable(job);
   phasePureFunctionExtraction(job);
   phaseAlignPipeVariadicVarOffset(job);
-  phasePropertyOrdering(job);
+  phaseOrdering(job);
   phaseReify(job);
   phaseChaining(job);
 }
@@ -124,7 +124,7 @@ export function transformHostBinding(job: HostBindingCompilationJob): void {
   // phaseResolveSanitizers(job);
   phaseNaming(job);
   phasePureFunctionExtraction(job);
-  phasePropertyOrdering(job);
+  phaseOrdering(job);
   phaseReify(job);
   phaseChaining(job);
 }

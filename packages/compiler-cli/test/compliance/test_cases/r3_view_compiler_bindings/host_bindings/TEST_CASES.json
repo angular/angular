@@ -224,8 +224,7 @@
             "chain_synthetic_listeners_mixed.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle host bindings with the same name as a primitive value",

@@ -163,8 +163,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the $event argument if it is being used in a host listener",
@@ -267,8 +266,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the view restoration statements if a keyed write is used in an event listener from within an ng-template",
