@@ -1489,12 +1489,12 @@
         },
         {
           "url": "resources",
-          "title": "Resource listing",
+          "title": "Resource Listing",
           "tooltip": "Angular tools, training, and blogs from around the web."
         },
         {
           "url": "presskit",
-          "title": "Press kit",
+          "title": "Press Kit",
           "tooltip": "Press contacts, logos, and branding."
         },
         {
@@ -1589,7 +1589,7 @@
           "url": "https://angular.kr/"
         },
         {
-          "title": "Complete language list",
+          "title": "Complete Language List",
           "url": "guide/localized-documentation"
         }
       ]
