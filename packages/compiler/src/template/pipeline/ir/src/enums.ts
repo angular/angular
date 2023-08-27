@@ -70,6 +70,11 @@ export enum OpKind {
   DisableBindings,
 
   /**
+   * An op to conditionally render a template.
+   */
+  Conditional,
+
+  /**
    * An operation to re-enable binding, after it was previously disabled.
    */
   EnableBindings,
@@ -276,6 +281,11 @@ export enum ExpressionKind {
    * An expression representing a sanitizer function.
    */
   SanitizerExpr,
+
+  /**
+   * An expression that will cause a literal slot index to be emitted.
+   */
+  SlotLiteralExpr,
 }
 
 /**

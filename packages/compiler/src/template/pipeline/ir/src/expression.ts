@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
-import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {ConsumesVarsTrait, TRAIT_USES_SLOT_INDEX, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -23,7 +23,7 @@ export type Expression =
     LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
     ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
     PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr;
+    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -734,6 +734,33 @@ export class SanitizerExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
+export class SlotLiteralExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SlotLiteralExpr;
+  readonly[UsesSlotIndex] = true;
+
+  constructor(readonly target: XrefId) {
+    super();
+  }
+
+  slot: number|null = null;
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof SlotLiteralExpr && e.target === this.target && e.slot === this.slot;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): SlotLiteralExpr {
+    return new SlotLiteralExpr(this.target);
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -797,6 +824,18 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Variable:
       op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);
+      break;
+    case OpKind.Conditional:
+      for (const condition of op.conditions) {
+        if (condition[1] === null) {
+          // This is a default case.
+          continue;
+        }
+        condition[1] = transformExpressionsInExpression(condition[1]!, transform, flags);
+      }
+      if (op.processed !== null) {
+        op.processed = transformExpressionsInExpression(op.processed, transform, flags);
+      }
       break;
     case OpKind.Listener:
       for (const innerOp of op.handlerOps) {

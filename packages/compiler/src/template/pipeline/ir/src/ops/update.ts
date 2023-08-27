@@ -11,7 +11,7 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
-import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
+import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
@@ -20,9 +20,9 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp =
-    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|ClassPropOp|
-    StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|HostPropertyOp;
+export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
+    ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
+    HostPropertyOp|ConditionalOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -455,5 +455,61 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
     delta,
     sourceSpan,
     ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing a conditional expression in the update IR.
+ */
+export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
+                                       UsesSlotIndexTrait {
+  kind: OpKind.Conditional;
+
+  /**
+   * The insertion point, which is the first template in the creation block belonging to this
+   * condition.
+   */
+  target: XrefId;
+
+  /**
+   * The slot of the target, to be populated during slot allocation.
+   */
+  slot: number|null;
+
+  /**
+   * The main test expression.
+   */
+  test: o.Expression;
+
+  /**
+   * Each possible embedded view that could be displayed has a condition (or is default). This
+   * structure maps each view xref to its corresponding condition.
+   */
+  conditions: Array<[XrefId, o.Expression|null]>;
+
+  /**
+   * After processing, this will be a single collapsed Joost-expression that evaluates to the right
+   * slot..
+   */
+  processed: o.Expression|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a conditional op, which will display an embedded view according to a condtion.
+ */
+export function createConditionalOp(
+    target: XrefId, test: o.Expression, sourceSpan: ParseSourceSpan): ConditionalOp {
+  return {
+    kind: OpKind.Conditional,
+    target,
+    test,
+    conditions: [],
+    processed: null,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
   };
 }

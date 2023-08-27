@@ -4,7 +4,9 @@
     {
       "description": "should generate a basic switch block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["switch"]
+        "_enabledBlockTypes": [
+          "switch"
+        ]
       },
       "inputFiles": [
         "basic_switch.ts"
@@ -19,13 +21,14 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a switch block without a default block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["switch"]
+        "_enabledBlockTypes": [
+          "switch"
+        ]
       },
       "inputFiles": [
         "switch_without_default.ts"
@@ -46,7 +49,9 @@
     {
       "description": "should generate nested switch blocks",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["switch"]
+        "_enabledBlockTypes": [
+          "switch"
+        ]
       },
       "inputFiles": [
         "nested_switch.ts"
@@ -67,7 +72,9 @@
     {
       "description": "should generate switch block with a pipe in its expression",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["switch"]
+        "_enabledBlockTypes": [
+          "switch"
+        ]
       },
       "inputFiles": [
         "switch_with_pipe.ts"
@@ -88,7 +95,9 @@
     {
       "description": "should generate a basic if block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "basic_if.ts"
@@ -109,7 +118,9 @@
     {
       "description": "should generate a basic if/else block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "basic_if_else.ts"
@@ -130,7 +141,9 @@
     {
       "description": "should generate a basic if/else if block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "basic_if_else_if.ts"
@@ -151,7 +164,9 @@
     {
       "description": "should generate a nested if block",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "nested_if.ts"
@@ -172,7 +187,9 @@
     {
       "description": "should generate an if block using pipes in its conditions",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "if_with_pipe.ts"
@@ -193,7 +210,9 @@
     {
       "description": "should generate an if block with an aliased expression",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "if_with_alias.ts"
@@ -214,7 +233,9 @@
     {
       "description": "should expose the alias to nested conditional blocks",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "if_nested_alias.ts"
@@ -235,7 +256,9 @@
     {
       "description": "should expose the alias to nested event listeners",
       "angularCompilerOptions": {
-        "_enabledBlockTypes": ["if"]
+        "_enabledBlockTypes": [
+          "if"
+        ]
       },
       "inputFiles": [
         "if_nested_alias_listeners.ts"
