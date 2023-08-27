@@ -99,7 +99,7 @@ Angular packages include them already.
 ### `lib`
 
 TypeScript includes a default set of declaration files.
-These files contain the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
+These files contain the ambient declarations for various common JavaScript constructs present in JavaScript runtime and the DOM.
 
 For more information, see [lib](https://www.typescriptlang.org/tsconfig#lib) in the TypeScript guide.
 
