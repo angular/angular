@@ -78,7 +78,7 @@ function cleanupLView(lView: LView) {
     if (isLContainer(lView[i])) {
       const lContainer = lView[i];
       cleanupLContainer(lContainer);
-    } else if (Array.isArray(lView[i])) {
+    } else if (isLView(lView[i])) {
       // This is a component, enter the `cleanupLView` recursively.
       cleanupLView(lView[i]);
     }

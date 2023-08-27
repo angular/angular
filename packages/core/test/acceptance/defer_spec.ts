@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
-import {Component, Input, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {Component, Input, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 
@@ -26,9 +27,17 @@ function clearDirectiveDefs(type: Type<unknown>): void {
   cmpDef!.directiveDefs = null;
 }
 
+// Set `PLATFORM_ID` to a browser platform value to trigger defer loading
+// while running tests in Node.
+const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+
 describe('#defer', () => {
   beforeEach(() => setEnabledBlockTypes(['defer']));
   afterEach(() => setEnabledBlockTypes([]));
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: COMMON_PROVIDERS});
+  });
 
   it('should transition between placeholder, loading and loaded states', async () => {
     @Component({

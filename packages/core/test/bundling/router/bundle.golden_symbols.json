@@ -1419,6 +1419,9 @@
     "name": "hasEmptyPathConfig"
   },
   {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -1927,6 +1930,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldAddViewToDom"
   },
   {
     "name": "shouldSearchParent"

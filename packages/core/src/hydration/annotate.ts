@@ -12,7 +12,7 @@ import {Renderer2} from '../render';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
-import {TNode, TNodeType} from '../render3/interfaces/node';
+import {isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {hasI18n, isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
@@ -315,11 +315,13 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     const tNode = tView.data[i] as TNode;
     const noOffsetIndex = i - HEADER_OFFSET;
-    // Local refs (e.g. <div #localRef>) take up an extra slot in LViews
-    // to store the same element. In this case, there is no information in
-    // a corresponding slot in TNode data structure. If that's the case, just
-    // skip this slot and move to the next one.
-    if (!tNode) {
+    // Skip processing of a given slot in the following cases:
+    // - Local refs (e.g. <div #localRef>) take up an extra slot in LViews
+    //   to store the same element. In this case, there is no information in
+    //   a corresponding slot in TNode data structure.
+    // - When a slot contains something other than a TNode. For example, there
+    //   might be some metadata information about a defer block or a control flow block.
+    if (!isTNodeShape(tNode)) {
       continue;
     }
 

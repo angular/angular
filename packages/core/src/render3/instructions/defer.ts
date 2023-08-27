@@ -7,6 +7,8 @@
  */
 
 import {InjectionToken, Injector} from '../../di';
+import {findMatchingDehydratedView} from '../../hydration/views';
+import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertEqual, throwError} from '../../util/assert';
 import {assertIndexInDeclRange, assertLContainer, assertTNodeForLView} from '../assert';
 import {bindingUpdated} from '../bindings';
@@ -18,10 +20,21 @@ import {TContainerNode, TNode} from '../interfaces/node';
 import {isDestroyed} from '../interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {isPlatformBrowser} from '../util/misc_utils';
 import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy} from '../util/view_utils';
-import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer} from '../view_manipulation';
+import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
 import {ɵɵtemplate} from './template';
+
+/**
+ * Returns whether defer blocks should be triggered.
+ *
+ * Currently, defer blocks are not triggered on the server,
+ * only placeholder content is rendered (if provided).
+ */
+function shouldTriggerDeferBlock(injector: Injector): boolean {
+  return isPlatformBrowser(injector);
+}
 
 /**
  * Shims for the `requestIdleCallback` and `cancelIdleCallback` functions for environments
@@ -79,6 +92,11 @@ export function ɵɵdefer(
 
     setTDeferBlockDetails(tView, adjustedIndex, deferBlockConfig);
   }
+
+  // Lookup dehydrated views that belong to this LContainer.
+  // In client-only mode, this operation is noop.
+  const lContainer = lView[adjustedIndex];
+  populateDehydratedViewsInContainer(lContainer);
 
   // Init instance-specific defer details and store it.
   const lDetails = [];
@@ -315,9 +333,13 @@ function renderDeferBlockState(
     // There is only 1 view that can be present in an LContainer that
     // represents a `{#defer}` block, so always refer to the first one.
     const viewIndex = 0;
+
     removeLViewFromLContainer(lContainer, viewIndex);
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null);
-    addLViewToLContainer(lContainer, embeddedLView, viewIndex);
+
+    const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
+    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
+    addLViewToLContainer(
+        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
   }
 }
 
@@ -331,6 +353,8 @@ function renderDeferBlockState(
 function triggerResourceLoading(
     tDetails: TDeferBlockDetails, primaryBlockTNode: TNode, injector: Injector) {
   const tView = primaryBlockTNode.tView!;
+
+  if (!shouldTriggerDeferBlock(injector)) return;
 
   if (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED) {
     // If the loading status is different from initial one, it means that
@@ -458,7 +482,10 @@ function getPrimaryBlockTNode(tView: TView, tDetails: TDeferBlockDetails): TCont
 function triggerDeferBlock(lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
   const lContainer = lView[tNode.index];
+  const injector = lView[INJECTOR]!;
   ngDevMode && assertLContainer(lContainer);
+
+  if (!shouldTriggerDeferBlock(injector)) return;
 
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
