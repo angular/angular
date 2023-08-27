@@ -35,7 +35,7 @@
       "name": "common-chunk",
       "type": "boolean",
       "default": true,
-      "description": "Generate a seperate bundle containing code used across multiple bundles."
+      "description": "Generate a separate bundle containing code used across multiple bundles."
     },
     {
       "name": "configuration",
@@ -227,7 +227,7 @@
       "name": "vendor-chunk",
       "type": "boolean",
       "default": false,
-      "description": "Generate a seperate bundle containing only vendor libraries. This option should only be used for development to reduce the incremental compilation time."
+      "description": "Generate a separate bundle containing only vendor libraries. This option should only be used for development to reduce the incremental compilation time."
     },
     {
       "name": "verbose",
