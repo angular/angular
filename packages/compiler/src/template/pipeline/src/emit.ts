@@ -17,6 +17,7 @@ import {phaseFindAnyCasts} from './phases/any_cast';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
 import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseChaining} from './phases/chaining';
+import {phaseConditionals} from './phases/conditionals';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
@@ -75,6 +76,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
+  {kind: Kind.Tmpl, fn: phaseConditionals},
   {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phasePipeVariadic},

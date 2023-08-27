@@ -240,6 +240,15 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
             ir.createStatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
+      case ir.OpKind.Conditional:
+        if (op.processed === null) {
+          throw new Error(`Conditional test was not set.`);
+        }
+        if (op.slot === null) {
+          throw new Error(`Conditional slot was not set.`);
+        }
+        ir.OpList.replace(op, ng.conditional(op.slot, op.processed));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -299,6 +308,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pipeBindV(expr.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.SanitizerExpr:
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
+    case ir.ExpressionKind.SlotLiteralExpr:
+      return o.literal(expr.slot);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);
