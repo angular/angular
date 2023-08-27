@@ -634,7 +634,7 @@
             },
             {
               "title": "Optional internationalization practices",
-              "tooltip": "Task-based content on many of the optional pratices associated with Angular internationalization",
+              "tooltip": "Task-based content on many of the optional practices associated with Angular internationalization",
               "children": [
                 {
                   "url": "guide/i18n-optional-overview",
