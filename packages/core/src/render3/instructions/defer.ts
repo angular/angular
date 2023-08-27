@@ -18,7 +18,6 @@ import {TContainerNode, TNode} from '../interfaces/node';
 import {isDestroyed} from '../interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer} from '../view_manipulation';
 
@@ -119,7 +118,21 @@ export function ɵɵdeferWhen(rawValue: unknown) {
  * Prefetches the deferred content when a value becomes truthy.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchWhen(value: unknown) {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
+  const lView = getLView();
+  const bindingIndex = nextBindingIndex();
+
+  if (bindingUpdated(lView, bindingIndex, rawValue)) {
+    const value = Boolean(rawValue);  // handle truthy or falsy values
+    const tView = lView[TVIEW];
+    const tNode = getSelectedTNode();
+    const tDetails = getTDeferBlockDetails(tView, tNode);
+    if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+      // If loading has not been started yet, trigger it now.
+      triggerResourceLoading(tDetails, getPrimaryBlockTNode(tView, tDetails), lView[INJECTOR]!);
+    }
+  }
+}
 
 /**
  * Sets up handlers that represent `on idle` deferred trigger.
@@ -431,6 +444,12 @@ function renderDeferStateAfterResourceLoading(
   });
 }
 
+/** Retrieves a TNode that represents main content of a defer block. */
+function getPrimaryBlockTNode(tView: TView, tDetails: TDeferBlockDetails): TContainerNode {
+  const adjustedIndex = tDetails.primaryTmplIndex + HEADER_OFFSET;
+  return getTNode(tView, adjustedIndex) as TContainerNode;
+}
+
 /**
  * Attempts to trigger loading of defer block dependencies.
  * If the block is already in a loading, completed or an error state -
@@ -450,9 +469,8 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:
-      const adjustedIndex = tDetails.primaryTmplIndex + HEADER_OFFSET;
-      const primaryBlockTNode = getTNode(lView[TVIEW], adjustedIndex) as TContainerNode;
-      triggerResourceLoading(tDetails, primaryBlockTNode, lView[INJECTOR]!);
+      triggerResourceLoading(
+          tDetails, getPrimaryBlockTNode(lView[TVIEW], tDetails), lView[INJECTOR]!);
 
       // The `loadingState` might have changed to "loading".
       if ((tDetails.loadingState as DeferDependenciesLoadingState) ===
