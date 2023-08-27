@@ -933,6 +933,9 @@
     "name": "hasSkipHydrationAttrOnRElement"
   },
   {
+    "name": "hasSkipHydrationAttrOnTNode"
+  },
+  {
     "name": "hostReportError"
   },
   {
@@ -1168,6 +1171,9 @@
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "populateDehydratedViewsInContainerImpl"
   },
   {
     "name": "processInjectorTypesWithProviders"

@@ -76,8 +76,8 @@ export const enum TNodeType {
   // if `TNode.type` is one of several choices.
 
   // See: https://github.com/microsoft/TypeScript/issues/35875 why we can't refer to existing enum.
-  AnyRNode = 0b11,        // Text | Element,
-  AnyContainer = 0b1100,  // Container | ElementContainer, // See:
+  AnyRNode = 0b11,        // Text | Element
+  AnyContainer = 0b1100,  // Container | ElementContainer
 }
 
 /**
@@ -94,6 +94,22 @@ export function toTNodeTypeAsString(tNodeType: TNodeType): string {
   (tNodeType & TNodeType.Icu) && (text += '|IcuContainer');
   (tNodeType & TNodeType.Placeholder) && (text += '|Placeholder');
   return text.length > 0 ? text.substring(1) : text;
+}
+
+/**
+ * Helper function to detect if a given value matches a `TNode` shape.
+ *
+ * The logic uses the `insertBeforeIndex` and its possible values as
+ * a way to differentiate a TNode shape from other types of objects
+ * within the `TView.data`. This is not a perfect check, but it can
+ * be a reasonable differentiator, since we control the shapes of objects
+ * within `TView.data`.
+ */
+export function isTNodeShape(value: unknown): value is TNode {
+  return value != null && typeof value === 'object' &&
+      ((value as TNode).insertBeforeIndex === null ||
+       typeof (value as TNode).insertBeforeIndex === 'number' ||
+       Array.isArray((value as TNode).insertBeforeIndex));
 }
 
 /**

@@ -71,7 +71,7 @@ export abstract class TemplateRef<C> {
    */
   abstract createEmbeddedViewImpl(
       context: C, injector?: Injector,
-      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<C>;
+      dehydratedView?: DehydratedContainerView|null): EmbeddedViewRef<C>;
 
   /**
    * Returns an `ssrId` associated with a TView, which was used to
@@ -118,9 +118,9 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
    */
   override createEmbeddedViewImpl(
       context: T, injector?: Injector,
-      hydrationInfo?: DehydratedContainerView): EmbeddedViewRef<T> {
+      dehydratedView?: DehydratedContainerView): EmbeddedViewRef<T> {
     const embeddedLView = createAndRenderEmbeddedLView(
-        this._declarationLView, this._declarationTContainer, context, {injector, hydrationInfo});
+        this._declarationLView, this._declarationTContainer, context, {injector, dehydratedView});
     return new R3_ViewRef<T>(embeddedLView);
   }
 };
