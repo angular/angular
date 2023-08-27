@@ -1134,6 +1134,9 @@
     "name": "handleError"
   },
   {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -1651,6 +1654,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldAddViewToDom"
   },
   {
     "name": "shouldSearchParent"

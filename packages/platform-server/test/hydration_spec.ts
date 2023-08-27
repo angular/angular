@@ -10,6 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
+import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {afterRender, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
@@ -232,6 +233,12 @@ function withDebugConsole() {
 }
 
 describe('platform-server hydration integration', () => {
+  // Keep those `beforeEach` and `afterEach` blocks separate,
+  // since we'll need to remove them once new control flow
+  // syntax is enabled by default.
+  beforeEach(() => setEnabledBlockTypes(['defer']));
+  afterEach(() => setEnabledBlockTypes([]));
+
   beforeEach(() => {
     if (typeof ngDevMode === 'object') {
       // Reset all ngDevMode counters.
@@ -2226,6 +2233,356 @@ describe('platform-server hydration integration', () => {
         appRef.tick();
 
         const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+    });
+
+    describe('defer blocks', () => {
+      it('should not trigger defer blocks on the server', async () => {
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp],
+          template: `
+            Visible: {{ isVisible }}.
+
+            {#defer when isVisible}
+              <my-lazy-cmp />
+            {:loading}
+              Loading...
+            {:placeholder}
+              Placeholder!
+            {:error}
+              Failed to load dependencies :(
+            {/defer}
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+
+          ngOnInit() {
+            setTimeout(() => {
+              // This changes the triggering condition of the defer block,
+              // but it should be ignored and the placeholder content should be visible.
+              this.isVisible = true;
+            });
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+        expect(ssrContents).toContain('<app ngh');
+
+        // Even though trigger condition is `true`,
+        // the defer block remains in the "placeholder" mode on the server.
+        expect(ssrContents).toContain('Visible: true.');
+        expect(ssrContents).toContain('Placeholder');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // This content is rendered only on the client, since it's
+        // inside a defer block.
+        const innerComponent = clientRootNode.querySelector('my-lazy-cmp');
+        const exceptions = [innerComponent];
+
+        verifyAllNodesClaimedForHydration(clientRootNode, exceptions);
+
+        // Verify that defer block renders correctly after hydration and triggering
+        // loading condition.
+        expect(clientRootNode.outerHTML).toContain('<my-lazy-cmp>Hi!</my-lazy-cmp>');
+      });
+
+      it('should hydrate a placeholder block', async () => {
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          selector: 'my-placeholder-cmp',
+          standalone: true,
+          imports: [NgIf],
+          template: '<div *ngIf="true">Hi!</div>',
+        })
+        class MyPlaceholderCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp, MyPlaceholderCmp],
+          template: `
+            Visible: {{ isVisible }}.
+
+            {#defer when isVisible}
+              <my-lazy-cmp />
+            {:loading}
+              Loading...
+            {:placeholder}
+              Placeholder!
+              <my-placeholder-cmp />
+            {:error}
+              Failed to load dependencies :(
+            {/defer}
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure we have placeholder contents in SSR output.
+        expect(ssrContents).toContain('Placeholder! <my-placeholder-cmp ngh="0"><div>Hi!</div>');
+
+        resetTViewsFor(SimpleComponent, MyPlaceholderCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should render nothing on the server if no placeholder block is provided', async () => {
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          selector: 'my-placeholder-cmp',
+          standalone: true,
+          imports: [NgIf],
+          template: '<div *ngIf="true">Hi!</div>',
+        })
+        class MyPlaceholderCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp, MyPlaceholderCmp],
+          template: `
+            Before|{#defer when isVisible}<my-lazy-cmp />{/defer}|After
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure no elements from a defer block is present in SSR output.
+        // Note: comment nodes represent main content and defer block anchors,
+        // which is expected.
+        expect(ssrContents).toContain('Before|<!--container--><!--container-->|After');
+
+        resetTViewsFor(SimpleComponent, MyPlaceholderCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should not hydrate when an entire block in skip hydration section', async () => {
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+             <main>
+               <ng-content />
+             </main>
+           `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          selector: 'my-placeholder-cmp',
+          standalone: true,
+          imports: [NgIf],
+          template: '<div *ngIf="true">Hi!</div>',
+        })
+        class MyPlaceholderCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp, MyPlaceholderCmp, ProjectorCmp],
+          template: `
+            Visible: {{ isVisible }}.
+
+            <projector-cmp ngSkipHydration="true">
+              {#defer when isVisible}
+                <my-lazy-cmp />
+              {:loading}
+                Loading...
+              {:placeholder}
+                <my-placeholder-cmp />
+              {:error}
+                Failed to load dependencies :(
+              {/defer}
+            </projector-cmp>
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure we have placeholder contents in SSR output.
+        expect(ssrContents).toContain('<my-placeholder-cmp');
+
+        resetTViewsFor(SimpleComponent, MyPlaceholderCmp, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // Verify that placeholder nodes were not claimed for hydration,
+        // i.e. nodes were re-created since placeholder was in skip hydration block.
+        const placeholderCmp = clientRootNode.querySelector('my-placeholder-cmp');
+        verifyNoNodesWereClaimedForHydration(placeholderCmp);
+
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+
+      it('should not hydrate when a placeholder block in skip hydration section', async () => {
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+             <main>
+               <ng-content />
+             </main>
+           `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          selector: 'my-placeholder-cmp',
+          standalone: true,
+          imports: [NgIf],
+          template: '<div *ngIf="true">Hi!</div>',
+        })
+        class MyPlaceholderCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp, MyPlaceholderCmp, ProjectorCmp],
+          template: `
+            Visible: {{ isVisible }}.
+
+            <projector-cmp ngSkipHydration="true">
+              {#defer when isVisible}
+                <my-lazy-cmp />
+              {:loading}
+                Loading...
+              {:placeholder}
+                <my-placeholder-cmp ngSkipHydration="true" />
+              {:error}
+                Failed to load dependencies :(
+              {/defer}
+            </projector-cmp>
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure we have placeholder contents in SSR output.
+        expect(ssrContents).toContain('<my-placeholder-cmp');
+
+        resetTViewsFor(SimpleComponent, MyPlaceholderCmp, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // Verify that placeholder nodes were not claimed for hydration,
+        // i.e. nodes were re-created since placeholder was in skip hydration block.
+        const placeholderCmp = clientRootNode.querySelector('my-placeholder-cmp');
+        verifyNoNodesWereClaimedForHydration(placeholderCmp);
+
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
