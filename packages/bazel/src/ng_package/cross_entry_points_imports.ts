@@ -10,6 +10,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
 
+import {BazelFileInfo, EntryPointInfo, PackageMetadata} from './api';
+
 /** Interface describing an entry-point Bazel package. */
 interface EntryPointPackage {
   /** Module name of the entry-point. */
@@ -19,8 +21,6 @@ interface EntryPointPackage {
   /** Extracted info for the entry-point. */
   info: EntryPointInfo;
 }
-
-import {BazelFileInfo, EntryPointInfo, PackageMetadata} from './api';
 
 /** Comment that can be used to skip a single import from being flagged. */
 const skipComment = '// @ng_package: ignore-cross-repo-import';
