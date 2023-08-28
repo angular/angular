@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Merges logically sequential `NextContextExpr` operations.
@@ -23,8 +23,8 @@ import type {ComponentCompilationJob} from '../compilation';
  *     is, the call is purely side-effectful).
  *   * No operations in between them uses the implicit context.
  */
-export function phaseMergeNextContext(cpl: ComponentCompilationJob): void {
-  for (const unit of cpl.units) {
+export function phaseMergeNextContext(job: CompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.Listener) {
         mergeNextContextsInOps(op.handlerOps);
