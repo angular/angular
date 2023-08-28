@@ -15,7 +15,8 @@ import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util'
 import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
-import {emitHostBindingFunction, emitTemplateFn, transformHostBinding, transformTemplate} from '../../template/pipeline/src/emit';
+import {CompilationJobKind} from '../../template/pipeline/src/compilation';
+import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {USE_TEMPLATE_PIPELINE} from '../../template/pipeline/switch';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -239,7 +240,7 @@ export function compileComponentFromMetadata(
         meta.i18nUseExternalIds);
 
     // Then the IR is transformed to prepare it for cod egeneration.
-    transformTemplate(tpl);
+    transform(tpl, CompilationJobKind.Tmpl);
 
     // Finally we emit the template function:
     const templateFn = emitTemplateFn(tpl, constantPool);
@@ -592,7 +593,7 @@ function createHostBindingsFunction(
           attributes: hostBindingsMetadata.attributes,
         },
         bindingParser, constantPool);
-    transformHostBinding(hostJob);
+    transform(hostJob, CompilationJobKind.Host);
 
     definitionMap.set('hostAttrs', hostJob.root.attributes);
 
