@@ -12,7 +12,7 @@ import {Inject, Injectable, InjectionToken, NgZone, ɵRuntimeError as RuntimeErr
 import {RuntimeErrorCode} from '../../errors';
 
 /**
- * The injection token for the event-manager plug-in service.
+ * The injection token for plugins of the `EventManager` service.
  *
  * @publicApi
  */
@@ -82,13 +82,28 @@ export class EventManager {
   }
 }
 
+/**
+ * The plugin definition for the `EventManager` class
+ *
+ * It can be used as a base class to create custom manager plugins, i.e. you can create your own
+ * class that extends the `EventManagerPlugin` one.
+ *
+ * @publicApi
+ */
 export abstract class EventManagerPlugin {
+  // TODO: remove (has some usage in G3)
   constructor(private _doc: any) {}
 
   // Using non-null assertion because it's set by EventManager's constructor
   manager!: EventManager;
 
+  /**
+   * Should return `true` for every event name that should be supported by this plugin
+   */
   abstract supports(eventName: string): boolean;
 
+  /**
+   * Implement the behaviour for the supported events
+   */
   abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
 }
