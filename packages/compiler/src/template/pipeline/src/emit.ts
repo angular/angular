@@ -10,7 +10,7 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import type {ComponentCompilationJob, HostBindingCompilationJob, ViewCompilationUnit} from './compilation';
+import {CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit, CompilationJob} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
@@ -54,79 +54,73 @@ import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 
-/**
- * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
- * processing, the compilation should be in a state where it can be emitted.
- */
-export function transformTemplate(job: ComponentCompilationJob): void {
-  phaseGenerateI18nBlocks(job);
-  phaseI18nTextExtraction(job);
-  phaseNamespace(job);
-  phaseStyleBindingSpecialization(job);
-  phaseBindingSpecialization(job);
-  phaseAttributeExtraction(job);
-  phaseParseExtractedStyles(job);
-  phaseRemoveEmptyBindings(job);
-  phaseNoListenersOnTemplates(job);
-  phasePipeCreation(job);
-  phasePipeVariadic(job);
-  phasePureLiteralStructures(job);
-  phaseGenerateVariables(job);
-  phaseSaveRestoreView(job);
-  phaseFindAnyCasts(job);
-  phaseResolveDollarEvent(job);
-  phaseResolveNames(job);
-  phaseResolveContexts(job);
-  phaseResolveSanitizers(job);
-  phaseLocalRefs(job);
-  phaseNullishCoalescing(job);
-  phaseExpandSafeReads(job);
-  phaseTemporaryVariables(job);
-  phaseSlotAllocation(job);
-  phaseResolveI18nPlaceholders(job);
-  phaseI18nMessageExtraction(job);
-  phaseConstCollection(job);
-  phaseVarCounting(job);
-  phaseGenerateAdvance(job);
-  phaseVariableOptimization(job);
-  phaseNaming(job);
-  phaseMergeNextContext(job);
-  phaseNgContainer(job);
-  phaseEmptyElements(job);
-  phaseNonbindable(job);
-  phasePureFunctionExtraction(job);
-  phaseAlignPipeVariadicVarOffset(job);
-  phaseOrdering(job);
-  phaseReify(job);
-  phaseChaining(job);
+type Phase = {
+  fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
+}|{
+  fn: (job: ComponentCompilationJob) => void;
+  kind: Kind.Tmpl;
 }
+|{
+  fn: (job: HostBindingCompilationJob) => void;
+  kind: Kind.Host;
+};
+
+const phases: Phase[] = [
+  {kind: Kind.Tmpl, fn: phaseGenerateI18nBlocks},
+  {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
+  {kind: Kind.Host, fn: phaseHostStylePropertyParsing},
+  {kind: Kind.Tmpl, fn: phaseNamespace},
+  {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
+  {kind: Kind.Both, fn: phaseBindingSpecialization},
+  {kind: Kind.Both, fn: phaseAttributeExtraction},
+  {kind: Kind.Both, fn: phaseParseExtractedStyles},
+  {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
+  {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
+  {kind: Kind.Tmpl, fn: phasePipeCreation},
+  {kind: Kind.Tmpl, fn: phasePipeVariadic},
+  {kind: Kind.Both, fn: phasePureLiteralStructures},
+  {kind: Kind.Tmpl, fn: phaseGenerateVariables},
+  {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
+  {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
+  {kind: Kind.Tmpl, fn: phaseResolveDollarEvent},
+  {kind: Kind.Both, fn: phaseResolveNames},
+  {kind: Kind.Both, fn: phaseResolveContexts},
+  {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
+  {kind: Kind.Tmpl, fn: phaseLocalRefs},
+  {kind: Kind.Both, fn: phaseNullishCoalescing},
+  {kind: Kind.Both, fn: phaseExpandSafeReads},
+  {kind: Kind.Both, fn: phaseTemporaryVariables},
+  {kind: Kind.Tmpl, fn: phaseSlotAllocation},
+  {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
+  {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
+  {kind: Kind.Both, fn: phaseConstCollection},
+  {kind: Kind.Both, fn: phaseVarCounting},
+  {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
+  {kind: Kind.Both, fn: phaseVariableOptimization},
+  {kind: Kind.Both, fn: phaseNaming},
+  {kind: Kind.Tmpl, fn: phaseMergeNextContext},
+  {kind: Kind.Tmpl, fn: phaseNgContainer},
+  {kind: Kind.Tmpl, fn: phaseEmptyElements},
+  {kind: Kind.Tmpl, fn: phaseNonbindable},
+  {kind: Kind.Both, fn: phasePureFunctionExtraction},
+  {kind: Kind.Tmpl, fn: phaseAlignPipeVariadicVarOffset},
+  {kind: Kind.Both, fn: phaseOrdering},
+  {kind: Kind.Both, fn: phaseReify},
+  {kind: Kind.Both, fn: phaseChaining},
+];
 
 /**
- * Run all transformation phases in the correct order against a `HostBindingCompilationJob`. After
- * this processing, the compilation should be in a state where it can be emitted.
+ * Run all transformation phases in the correct order against a compilation job. After this
+ * processing, the compilation should be in a state where it can be emitted.
  */
-export function transformHostBinding(job: HostBindingCompilationJob): void {
-  phaseHostStylePropertyParsing(job);
-  phaseStyleBindingSpecialization(job);
-  phaseBindingSpecialization(job);
-  phaseAttributeExtraction(job);
-  phaseParseExtractedStyles(job);
-  phasePureLiteralStructures(job);
-  phaseConstCollection(job);
-  phaseNullishCoalescing(job);
-  phaseExpandSafeReads(job);
-  phaseTemporaryVariables(job);
-  phaseVarCounting(job);
-  phaseVariableOptimization(job);
-  phaseResolveNames(job);
-  phaseResolveContexts(job);
-  // TODO: Figure out how to make this work for host bindings.
-  // phaseResolveSanitizers(job);
-  phaseNaming(job);
-  phasePureFunctionExtraction(job);
-  phaseOrdering(job);
-  phaseReify(job);
-  phaseChaining(job);
+export function transform(job: CompilationJob, kind: Kind): void {
+  for (const phase of phases) {
+    if (phase.kind === kind || phase.kind === Kind.Both) {
+      // The type of `Phase` above ensures it is impossible to call a phase that doesn't support the
+      // job kind.
+      phase.fn(job as CompilationJob & ComponentCompilationJob & HostBindingCompilationJob);
+    }
+  }
 }
 
 /**

@@ -15,8 +15,8 @@ import type {ComponentCompilationJob} from '../compilation';
  * Lifts local reference declarations on element-like structures within each view into an entry in
  * the `consts` array for the whole component.
  */
-export function phaseLocalRefs(cpl: ComponentCompilationJob): void {
-  for (const unit of cpl.units) {
+export function phaseLocalRefs(job: ComponentCompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.ElementStart:
@@ -29,7 +29,7 @@ export function phaseLocalRefs(cpl: ComponentCompilationJob): void {
 
           if (op.localRefs.length > 0) {
             const localRefs = serializeLocalRefs(op.localRefs);
-            op.localRefs = cpl.addConst(localRefs);
+            op.localRefs = job.addConst(localRefs);
           } else {
             op.localRefs = null;
           }

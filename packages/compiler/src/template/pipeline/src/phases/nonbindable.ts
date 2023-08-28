@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Looks up an element in the given map by xref ID.
@@ -27,7 +27,7 @@ function lookupElement(
  * all descendants of that container. Therefore, we must emit `disableBindings` and `enableBindings`
  * instructions for every such container.
  */
-export function phaseNonbindable(job: ComponentCompilationJob): void {
+export function phaseNonbindable(job: CompilationJob): void {
   const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
   for (const view of job.units) {
     for (const op of view.create) {

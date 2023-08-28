@@ -8,7 +8,7 @@
 
 
 import * as ir from '../../ir';
-import {HostBindingCompilationJob, type CompilationJob, type CompilationUnit} from '../compilation';
+import {type CompilationJob, type CompilationUnit, CompilationJobKind} from '../compilation';
 import {getElementsByXrefId} from '../util/elements';
 
 /**
@@ -48,7 +48,7 @@ export function phaseAttributeExtraction(job: CompilationJob): void {
           if (!op.isAnimationListener) {
             const extractedAttributeOp =
                 ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
-            if (job instanceof HostBindingCompilationJob) {
+            if (job.kind === CompilationJobKind.Host) {
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
               unit.create.push(extractedAttributeOp);
@@ -94,7 +94,7 @@ function extractAttributeOp(
       // string literal, because it is not a text attribute.
       extractable &&= op.isTextAttribute;
     }
-    if (unit.job instanceof HostBindingCompilationJob) {
+    if (unit.job.kind === CompilationJobKind.Host) {
       // TemplateDefinitionBuilder also does not seem to extract string literals if they are part of
       // a host attribute.
       extractable &&= op.isTextAttribute;
@@ -105,7 +105,7 @@ function extractAttributeOp(
     const extractedAttributeOp = ir.createExtractedAttributeOp(
         op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
         op.expression);
-    if (unit.job instanceof HostBindingCompilationJob) {
+    if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.
       unit.create.push(extractedAttributeOp);

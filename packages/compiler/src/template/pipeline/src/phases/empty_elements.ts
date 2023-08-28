@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
   [ir.OpKind.ElementEnd, [ir.OpKind.ElementStart, ir.OpKind.Element]],
@@ -19,8 +19,8 @@ const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
  * Replace sequences of mergable elements (e.g. `ElementStart` and `ElementEnd`) with a consolidated
  * element (e.g. `Element`).
  */
-export function phaseEmptyElements(cpl: ComponentCompilationJob): void {
-  for (const unit of cpl.units) {
+export function phaseEmptyElements(job: CompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.create) {
       const opReplacements = REPLACEMENTS.get(op.kind);
       if (opReplacements === undefined) {

@@ -7,15 +7,15 @@
  */
 
 import * as ir from '../../ir';
-import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
+import type {CompilationJob, CompilationUnit} from '../compilation';
 
-export function phasePipeCreation(job: ComponentCompilationJob): void {
+export function phasePipeCreation(job: CompilationJob): void {
   for (const unit of job.units) {
     processPipeBindingsInView(unit);
   }
 }
 
-function processPipeBindingsInView(unit: ViewCompilationUnit): void {
+function processPipeBindingsInView(unit: CompilationUnit): void {
   for (const updateOp of unit.update) {
     ir.visitExpressionsInOp(updateOp, (expr, flags) => {
       if (!ir.isIrExpression(expr)) {
@@ -41,7 +41,7 @@ function processPipeBindingsInView(unit: ViewCompilationUnit): void {
 }
 
 function addPipeToCreationBlock(
-    unit: ViewCompilationUnit, afterTargetXref: ir.XrefId, binding: ir.PipeBindingExpr): void {
+    unit: CompilationUnit, afterTargetXref: ir.XrefId, binding: ir.PipeBindingExpr): void {
   // Find the appropriate point to insert the Pipe creation operation.
   // We're looking for `afterTargetXref` (and also want to insert after any other pipe operations
   // which might be beyond it).

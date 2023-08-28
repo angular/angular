@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {HostBindingCompilationJob} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 const STYLE_DOT = 'style.';
 const CLASS_DOT = 'class.';
@@ -17,7 +17,7 @@ const CLASS_DOT = 'class.';
 const STYLE_BANG = 'style!';
 const CLASS_BANG = 'class!';
 
-export function phaseHostStylePropertyParsing(job: HostBindingCompilationJob): void {
+export function phaseHostStylePropertyParsing(job: CompilationJob): void {
   for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Binding) {
       continue;
