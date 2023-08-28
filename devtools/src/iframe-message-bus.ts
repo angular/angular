@@ -69,6 +69,12 @@ export class IFrameMessageBus extends MessageBus<Events> {
           source: this._source,
           topic,
           args,
+          // Since both the devtools app and the demo app use IframeMessageBus,
+          // we want to only ignore the ngZone for the demo app. This will let us
+          // prevent infinite change detection loops triggered by message
+          // event listeners but also not prevent the NgZone in the devtools app
+          // from updating its UI.
+          __ignore_ng_zone__: this._source === 'angular-devtools',
         },
         '*');
     return true;
