@@ -9,10 +9,10 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob, ComponentCompilationJob} from '../compilation';
 
-export function phasePipeVariadic(cpl: ComponentCompilationJob): void {
-  for (const unit of cpl.units) {
+export function phasePipeVariadic(job: CompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.update) {
       ir.transformExpressionsInOp(op, expr => {
         if (!(expr instanceof ir.PipeBindingExpr)) {

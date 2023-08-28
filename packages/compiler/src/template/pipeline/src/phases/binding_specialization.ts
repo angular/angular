@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import {CompilationJob, HostBindingCompilationJob} from '../compilation';
+import {CompilationJob, CompilationJobKind} from '../compilation';
 
 /**
  * Looks up an element in the given map by xref ID.
@@ -54,7 +54,7 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
           break;
         case ir.BindingKind.Property:
         case ir.BindingKind.Animation:
-          if (job instanceof HostBindingCompilationJob) {
+          if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createHostPropertyOp(
