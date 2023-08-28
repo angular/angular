@@ -17,7 +17,7 @@ import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 const defaultCapabilities = {
   recordVideo: false,
   recordScreenshots: false,
-  idleTimeout: 90,
+  idleTimeout: 1000,
   // These represent the maximum values supported by Saucelabs.
   // See: https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
   commandTimeout: 600,
