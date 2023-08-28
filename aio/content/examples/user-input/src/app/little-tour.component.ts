@@ -1,18 +1,25 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 // #docregion little-tour
 @Component({
+  standalone: true,
   selector: 'app-little-tour',
   template: `
-    <input #newHero
+    <input
+      #newHero
       (keyup.enter)="addHero(newHero.value)"
-      (blur)="addHero(newHero.value); newHero.value='' ">
+      (blur)="addHero(newHero.value); newHero.value = ''"
+    />
 
     <button type="button" (click)="addHero(newHero.value)">Add</button>
 
-    <ul><li *ngFor="let hero of heroes">{{hero}}</li></ul>
-  `
+    <ul>
+      <li *ngFor="let hero of heroes">{{ hero }}</li>
+    </ul>
+  `,
+  imports: [CommonModule],
 })
 export class LittleTourComponent {
   heroes = ['Windstorm', 'Bombasto', 'Magneta', 'Tornado'];
