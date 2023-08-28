@@ -15,7 +15,8 @@ import {IpcServer} from './ipc';
 import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {
-  recordVideo: false,
+  // TODO: Turn off long-term. Right now this is just for debugging.
+  recordVideo: true,
   recordScreenshots: false,
   idleTimeout: 1000,
   // These represent the maximum values supported by Saucelabs.
