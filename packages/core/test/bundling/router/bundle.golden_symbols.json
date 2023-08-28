@@ -1260,6 +1260,9 @@
     "name": "getDOM"
   },
   {
+    "name": "getData"
+  },
+  {
     "name": "getDataKeys"
   },
   {
@@ -1375,6 +1378,9 @@
   },
   {
     "name": "getQueryResults"
+  },
+  {
+    "name": "getResolve"
   },
   {
     "name": "getSanitizer"

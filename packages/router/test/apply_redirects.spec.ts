@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injectable, NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Observable, of} from 'rxjs';
+import {provideRouter, withRouterConfig} from '@angular/router';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {delay, map, tap} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
+import {Router} from '../src/router';
 import {RouterConfigLoader} from '../src/router_config_loader';
+import {ParamsInheritanceStrategy, RouterStateSnapshot} from '../src/router_state';
 import {
   DefaultUrlSerializer,
   equalSegments,
@@ -25,11 +28,6 @@ import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 
 describe('redirects', () => {
   const serializer = new DefaultUrlSerializer();
-  let testModule: NgModuleRef<unknown>;
-
-  beforeEach(() => {
-    testModule = TestBed.inject(NgModuleRef);
-  });
 
   it('should return the same url tree when no redirects', () => {
     checkRedirect(
@@ -67,7 +65,10 @@ describe('redirects', () => {
       {path: '**', component: ComponentA},
     ];
 
-    checkRedirect(config, 'single_value', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1'));
+    checkRedirect(config, 'single_value', (t: UrlTree, state: RouterStateSnapshot) => {
+      expectTreeToBe(t, '/dst?k=v1');
+      expect(state.root.queryParams).toEqual({k: 'v1'});
+    });
     checkRedirect(config, 'multiple_values', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1&k=v2'));
   });
 
@@ -86,7 +87,7 @@ describe('redirects', () => {
 
   it('should throw when cannot handle a positional parameter', () => {
     recognize(
-      testModule.injector,
+      TestBed.inject(EnvironmentInjector),
       null!,
       null,
       [{path: 'a/:id', redirectTo: 'a/:other'}],
@@ -276,7 +277,14 @@ describe('redirects', () => {
       },
       {path: 'doesNotMatch', providers: []},
     ];
-    recognize(testModule.injector, null!, null, routes, tree('a/b/c'), serializer).subscribe({
+    recognize(
+      TestBed.inject(EnvironmentInjector),
+      null!,
+      null,
+      routes,
+      tree('a/b/c'),
+      serializer,
+    ).subscribe({
       next: () => {
         throw 'Should not be reached';
       },
@@ -310,7 +318,14 @@ describe('redirects', () => {
         providers: [],
       },
     ];
-    recognize(testModule.injector, null!, null, routes, tree('a'), serializer).subscribe({
+    recognize(
+      TestBed.inject(EnvironmentInjector),
+      null!,
+      null,
+      routes,
+      tree('a'),
+      serializer,
+    ).subscribe({
       next: () => {
         // The 'a' segment matched, so we needed to create the injector for the `Route`
         expect(getProvidersInjector(routes[0])).toBeDefined();
@@ -328,11 +343,11 @@ describe('redirects', () => {
     it('should load config on demand', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => {
-          if (injector !== testModule.injector) throw 'Invalid Injector';
+          if (injector !== TestBed.inject(EnvironmentInjector)) throw 'Invalid Injector';
           return of(loadedConfig);
         },
       };
@@ -340,12 +355,17 @@ describe('redirects', () => {
         {path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('a/b'), serializer).forEach(
-        ({tree}) => {
-          expectTreeToBe(tree, '/a/b');
-          expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a/b'),
+        serializer,
+      ).forEach(({tree}) => {
+        expectTreeToBe(tree, '/a/b');
+        expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
+      });
     });
 
     it('should handle the case when the loader errors', () => {
@@ -356,7 +376,14 @@ describe('redirects', () => {
         {path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('a/b'), serializer).subscribe(
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a/b'),
+        serializer,
+      ).subscribe(
         () => {},
         (e) => {
           expect(e.message).toEqual('Loading Error');
@@ -367,7 +394,7 @@ describe('redirects', () => {
     it('should load when all canLoad guards return true', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -397,7 +424,7 @@ describe('redirects', () => {
     it('should not load when any canLoad guards return false', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -434,7 +461,7 @@ describe('redirects', () => {
     it('should not load when any canLoad guards is rejected (promises)', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -469,7 +496,7 @@ describe('redirects', () => {
     it('should work with objects implementing the CanLoad interface', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -504,7 +531,7 @@ describe('redirects', () => {
     it('should pass UrlSegments to functions implementing the canLoad guard interface', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -549,7 +576,7 @@ describe('redirects', () => {
     it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
       const loadedConfig = {
         routes: [{path: 'b', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: any) => of(loadedConfig),
@@ -590,7 +617,7 @@ describe('redirects', () => {
     it('should work with absolute redirects', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
@@ -602,18 +629,23 @@ describe('redirects', () => {
         {path: 'a', loadChildren: jasmine.createSpy('children')},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree(''), serializer).forEach(
-        ({tree: r}) => {
-          expectTreeToBe(r, 'a');
-          expect(getLoadedRoutes(config[1])).toBe(loadedConfig.routes);
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree(''),
+        serializer,
+      ).forEach(({tree: r}) => {
+        expectTreeToBe(r, 'a');
+        expect(getLoadedRoutes(config[1])).toBe(loadedConfig.routes);
+      });
     });
 
     it('should load the configuration only once', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       let called = false;
@@ -627,11 +659,23 @@ describe('redirects', () => {
 
       const config: Routes = [{path: 'a', loadChildren: jasmine.createSpy('children')}];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('a?k1'), serializer).subscribe(
-        (r) => {},
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a?k1'),
+        serializer,
+      ).subscribe((r) => {});
 
-      recognize(testModule.injector, <any>loader, null, config, tree('a?k2'), serializer).subscribe(
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a?k2'),
+        serializer,
+      ).subscribe(
         ({tree: r}) => {
           expectTreeToBe(r, 'a?k2');
           expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
@@ -645,7 +689,7 @@ describe('redirects', () => {
     it('should load the configuration of a wildcard route', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
@@ -654,17 +698,22 @@ describe('redirects', () => {
 
       const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer).forEach(
-        ({tree: r}) => {
-          expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('xyz'),
+        serializer,
+      ).forEach(({tree: r}) => {
+        expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
+      });
     });
 
     it('should not load the configuration of a wildcard route if there is a match', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       const loader: jasmine.SpyObj<Pick<RouterConfigLoader, 'loadChildren'>> = jasmine.createSpyObj(
@@ -678,22 +727,27 @@ describe('redirects', () => {
         {path: '**', loadChildren: jasmine.createSpy('children')},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree(''), serializer).forEach(
-        ({tree: r}) => {
-          expect(loader.loadChildren.calls.count()).toEqual(1);
-          expect(loader.loadChildren.calls.first().args).not.toContain(
-            jasmine.objectContaining({
-              loadChildren: jasmine.createSpy('children'),
-            }),
-          );
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree(''),
+        serializer,
+      ).forEach(({tree: r}) => {
+        expect(loader.loadChildren.calls.count()).toEqual(1);
+        expect(loader.loadChildren.calls.first().args).not.toContain(
+          jasmine.objectContaining({
+            loadChildren: jasmine.createSpy('children'),
+          }),
+        );
+      });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
@@ -705,17 +759,22 @@ describe('redirects', () => {
         {path: '**', redirectTo: 'not-found'},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer).forEach(
-        ({tree: r}) => {
-          expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('xyz'),
+        serializer,
+      ).forEach(({tree: r}) => {
+        expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
+      });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
 
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
@@ -727,17 +786,22 @@ describe('redirects', () => {
         {path: '**', redirectTo: '/not-found'},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer).forEach(
-        ({tree: r}) => {
-          expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
-        },
-      );
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('xyz'),
+        serializer,
+      ).forEach(({tree: r}) => {
+        expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
+      });
     });
 
     it('should load all matching configurations of empty path, including an auxiliary outlets', fakeAsync(() => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       let loadCalls = 0;
       let loaded: string[] = [];
@@ -756,7 +820,14 @@ describe('redirects', () => {
         {path: '', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree(''), serializer).subscribe();
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree(''),
+        serializer,
+      ).subscribe();
       expect(loadCalls).toBe(1);
       tick(100);
       expect(loaded).toEqual(['root']);
@@ -768,7 +839,7 @@ describe('redirects', () => {
     it('should not try to load any matching configuration if previous load completed', fakeAsync(() => {
       const loadedConfig = {
         routes: [{path: 'a', component: ComponentA}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       let loadCalls = 0;
       let loaded: string[] = [];
@@ -785,7 +856,7 @@ describe('redirects', () => {
       const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         <any>loader,
         null,
         config,
@@ -796,7 +867,7 @@ describe('redirects', () => {
       tick(50);
       expect(loaded).toEqual([]);
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         <any>loader,
         null,
         config,
@@ -808,7 +879,7 @@ describe('redirects', () => {
       expect(loadCalls).toBe(2);
       tick(200);
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         <any>loader,
         null,
         config,
@@ -823,7 +894,7 @@ describe('redirects', () => {
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       let loadCalls = 0;
       let loaded: string[] = [];
@@ -841,7 +912,14 @@ describe('redirects', () => {
         {path: 'a', loadChildren: jasmine.createSpy('second')},
       ];
 
-      recognize(testModule.injector, <any>loader, null, config, tree('a'), serializer).subscribe();
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a'),
+        serializer,
+      ).subscribe();
       expect(loadCalls).toBe(1);
       expect(loaded).toEqual(['first']);
     });
@@ -849,7 +927,7 @@ describe('redirects', () => {
     it('should load the configuration of empty root path if the entry is an aux outlet', fakeAsync(() => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
-        injector: testModule.injector,
+        injector: TestBed.inject(EnvironmentInjector),
       };
       let loaded: string[] = [];
       const rootDelay = 100;
@@ -872,7 +950,7 @@ describe('redirects', () => {
       ];
 
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         <any>loader,
         null,
         config,
@@ -930,7 +1008,14 @@ describe('redirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'},
       ];
 
-      recognize(testModule.injector, null!, null, config, tree('b'), serializer).subscribe(
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        null!,
+        null,
+        config,
+        tree('b'),
+        serializer,
+      ).subscribe(
         (_) => {
           throw 'Should not be reached';
         },
@@ -1123,7 +1208,14 @@ describe('redirects', () => {
           },
           {path: 'c', component: ComponentC},
         ];
-        recognize(testModule.injector, null!, null, config, tree('/b'), serializer).subscribe(
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          null!,
+          null,
+          config,
+          tree('/b'),
+          serializer,
+        ).subscribe(
           (_) => {
             throw 'Should not be reached';
           },
@@ -1240,7 +1332,7 @@ describe('redirects', () => {
         ];
 
         recognize(
-          testModule.injector,
+          TestBed.inject(EnvironmentInjector),
           null!,
           null,
           config,
@@ -1291,7 +1383,7 @@ describe('redirects', () => {
 
     it('should error when no children matching and some url is left', () => {
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         null!,
         null,
         [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
@@ -1337,7 +1429,7 @@ describe('redirects', () => {
   describe('multiple matches with empty path named outlets', () => {
     it('should work with redirects when other outlet comes before the one being activated', () => {
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         null!,
         null,
         [
@@ -1368,7 +1460,7 @@ describe('redirects', () => {
 
     it('should prevent empty named outlets from appearing in leaves, resulting in odd tree url', () => {
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         null!,
         null,
         [
@@ -1395,7 +1487,7 @@ describe('redirects', () => {
 
     it('should work when entry point is named outlet', () => {
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         null!,
         null,
         [
@@ -1446,7 +1538,7 @@ describe('redirects', () => {
 
     it('should throw when using non-absolute redirects', () => {
       recognize(
-        testModule.injector,
+        TestBed.inject(EnvironmentInjector),
         null!,
         null,
         [{path: 'a', redirectTo: 'b(aux:c)'}],
@@ -1465,6 +1557,236 @@ describe('redirects', () => {
     });
   });
 
+  describe('can use redirectTo as a function', () => {
+    it('with a simple function returning a string', () => {
+      checkRedirect(
+        [
+          {path: 'a/b', redirectTo: () => 'other'},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/other');
+        },
+      );
+    });
+
+    it('with a simple function returning a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () =>
+              new UrlTree(
+                new UrlSegmentGroup([], {
+                  'primary': new UrlSegmentGroup(
+                    [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('c', {})],
+                    {},
+                  ),
+                }),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/a/b/c');
+        },
+      );
+    });
+
+    it('with a function using inject and returning a UrlTree', () => {
+      checkRedirect(
+        [
+          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a/b/c')},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/a/b/c');
+        },
+      );
+    });
+
+    it('can access query params and redirect using them', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: ({queryParams}) => {
+              const tree = inject(Router).parseUrl('other');
+              tree.queryParams = queryParams;
+              return tree;
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b?hl=en&q=hello',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'other?hl=en&q=hello');
+        },
+      );
+    });
+
+    it('with a function using inject and returning a UrlTree with params', () => {
+      checkRedirect(
+        [
+          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a;a1=1,a2=2/b/c?qp=123')},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/a;a1=1,a2=2/b/c?qp=123');
+        },
+      );
+    });
+
+    it('receives positional params from the current route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            redirectTo: ({params}) =>
+              inject(Router).parseUrl(`/redirect?id1=${params['id1']}&id2=${params['id2']}`),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives params from the parent route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({params}) =>
+                  inject(Router).parseUrl(`/redirect?id1=${params['id1']}&id2=${params['id2']}`),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives data from the parent componentless route', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({data}) => `/redirect?id1=${data['data1']}&id2=${data['data2']}`,
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=hello&id2=world');
+        },
+      );
+    });
+
+    it('does not receive data from the parent route with component (default paramsInheritanceStrategy is emptyOnly)', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({data}) => {
+                  expect(data['data1']).toBeUndefined();
+                  expect(data['data2']).toBeUndefined();
+                  return `/redirect`;
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+      );
+    });
+
+    it('has access to inherited data from all ancestor routes with paramsInheritanceStrategy always', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            data: {data1: 'hello'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'b',
+                data: {data2: 'world'},
+                component: ComponentB,
+                children: [
+                  {
+                    path: 'c',
+                    redirectTo: ({data}) => {
+                      expect(data['data1']).toBe('hello');
+                      expect(data['data2']).toBe('world');
+                      return `/redirect`;
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+        'always',
+      );
+    });
+
+    it('has access to path params', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            children: [
+              {
+                path: 'b',
+                redirectTo: ({params}) =>
+                  `/redirect?k1=${params['k1']}&k2=${params['k2']}&k3=${params['k3']}&k4=${params['k4']}`,
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a;k1=v1;k2=v2/b;k3=v3;k4=v4',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?k1=v1&k2=v2&k3=v3&k4=v4');
+        },
+      );
+    });
+  });
+
   // internal failure b/165719418
   it('does not fail with large configs', () => {
     const config: Routes = [];
@@ -1472,15 +1794,25 @@ describe('redirects', () => {
       config.push({path: 'no_match', component: ComponentB});
     }
     config.push({path: 'match', component: ComponentA});
-    recognize(testModule.injector, null!, null, config, tree('match'), serializer).forEach(
-      ({tree: r}) => {
-        expectTreeToBe(r, 'match');
-      },
-    );
+    recognize(
+      TestBed.inject(EnvironmentInjector),
+      null!,
+      null,
+      config,
+      tree('match'),
+      serializer,
+    ).forEach(({tree: r}) => {
+      expectTreeToBe(r, 'match');
+    });
   });
 });
 
-function checkRedirect(config: Routes, url: string, callback: any): void {
+function checkRedirect(
+  config: Routes,
+  url: string,
+  callback: (t: UrlTree, state: RouterStateSnapshot) => void,
+  paramsInheritanceStrategy?: ParamsInheritanceStrategy,
+): void {
   recognize(
     TestBed.inject(EnvironmentInjector),
     TestBed.inject(RouterConfigLoader),
@@ -1488,14 +1820,13 @@ function checkRedirect(config: Routes, url: string, callback: any): void {
     config,
     tree(url),
     new DefaultUrlSerializer(),
-  )
-    .pipe(map((result) => result.tree))
-    .subscribe({
-      next: callback,
-      error: (e) => {
-        throw e;
-      },
-    });
+    paramsInheritanceStrategy,
+  ).subscribe({
+    next: (v) => callback(v.tree, v.state),
+    error: (e) => {
+      throw e;
+    },
+  });
 }
 
 function tree(url: string): UrlTree {

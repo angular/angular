@@ -103,25 +103,11 @@ export class Recognizer {
     const rootSegmentGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
 
     return this.match(rootSegmentGroup).pipe(
-      map((children) => {
-        // Use Object.freeze to prevent readers of the Router state from modifying it outside
-        // of a navigation, resulting in the router being out of sync with the browser.
-        const root = new ActivatedRouteSnapshot(
-          [],
-          Object.freeze({}),
-          Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment,
-          {},
-          PRIMARY_OUTLET,
-          this.rootComponentType,
-          null,
-          {},
-        );
-
-        const rootNode = new TreeNode(root, children);
+      map(({children, rootSnapshot}) => {
+        const rootNode = new TreeNode(rootSnapshot, children);
         const routeState = new RouterStateSnapshot('', rootNode);
         const tree = createUrlTreeFromSnapshot(
-          root,
+          rootSnapshot,
           [],
           this.urlTree.queryParams,
           this.urlTree.fragment,
@@ -131,20 +117,38 @@ export class Recognizer {
         // We don't want to do this here so reassign them to the original.
         tree.queryParams = this.urlTree.queryParams;
         routeState.url = this.urlSerializer.serialize(tree);
-        this.inheritParamsAndData(routeState._root, null);
         return {state: routeState, tree};
       }),
     );
   }
 
-  private match(rootSegmentGroup: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
-    const expanded$ = this.processSegmentGroup(
+  private match(rootSegmentGroup: UrlSegmentGroup): Observable<{
+    children: TreeNode<ActivatedRouteSnapshot>[];
+    rootSnapshot: ActivatedRouteSnapshot;
+  }> {
+    // Use Object.freeze to prevent readers of the Router state from modifying it outside
+    // of a navigation, resulting in the router being out of sync with the browser.
+    const rootSnapshot = new ActivatedRouteSnapshot(
+      [],
+      Object.freeze({}),
+      Object.freeze({...this.urlTree.queryParams}),
+      this.urlTree.fragment,
+      Object.freeze({}),
+      PRIMARY_OUTLET,
+      this.rootComponentType,
+      null,
+      {},
+    );
+    return this.processSegmentGroup(
       this.injector,
       this.config,
       rootSegmentGroup,
       PRIMARY_OUTLET,
-    );
-    return expanded$.pipe(
+      rootSnapshot,
+    ).pipe(
+      map((children) => {
+        return {children, rootSnapshot};
+      }),
       catchError((e: any) => {
         if (e instanceof AbsoluteRedirect) {
           this.urlTree = e.urlTree;
@@ -159,27 +163,15 @@ export class Recognizer {
     );
   }
 
-  inheritParamsAndData(
-    routeNode: TreeNode<ActivatedRouteSnapshot>,
-    parent: ActivatedRouteSnapshot | null,
-  ): void {
-    const route = routeNode.value;
-    const i = getInherited(route, parent, this.paramsInheritanceStrategy);
-
-    route.params = Object.freeze(i.params);
-    route.data = Object.freeze(i.data);
-
-    routeNode.children.forEach((n) => this.inheritParamsAndData(n, route));
-  }
-
   processSegmentGroup(
     injector: EnvironmentInjector,
     config: Route[],
     segmentGroup: UrlSegmentGroup,
     outlet: string,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
-      return this.processChildren(injector, config, segmentGroup);
+      return this.processChildren(injector, config, segmentGroup, parentRoute);
     }
 
     return this.processSegment(
@@ -189,6 +181,7 @@ export class Recognizer {
       segmentGroup.segments,
       outlet,
       true,
+      parentRoute,
     ).pipe(map((child) => (child instanceof TreeNode ? [child] : [])));
   }
 
@@ -204,6 +197,7 @@ export class Recognizer {
     injector: EnvironmentInjector,
     config: Route[],
     segmentGroup: UrlSegmentGroup,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
     // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
     // because an absolute redirect from the primary outlet takes precedence.
@@ -222,7 +216,7 @@ export class Recognizer {
         // appear first, followed by routes for other outlets, which might match if they have
         // an empty path.
         const sortedConfig = sortByMatchingOutlets(config, childOutlet);
-        return this.processSegmentGroup(injector, sortedConfig, child, childOutlet);
+        return this.processSegmentGroup(injector, sortedConfig, child, childOutlet, parentRoute);
       }),
       scan((children, outletChildren) => {
         children.push(...outletChildren);
@@ -254,6 +248,7 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     allowRedirects: boolean,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
     return from(routes).pipe(
       concatMap((r) => {
@@ -265,6 +260,7 @@ export class Recognizer {
           segments,
           outlet,
           allowRedirects,
+          parentRoute,
         ).pipe(
           catchError((e: any) => {
             if (e instanceof NoMatch) {
@@ -295,11 +291,19 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     allowRedirects: boolean,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
     if (!isImmediateMatch(route, rawSegment, segments, outlet)) return noMatch(rawSegment);
 
     if (route.redirectTo === undefined) {
-      return this.matchSegmentAgainstRoute(injector, rawSegment, route, segments, outlet);
+      return this.matchSegmentAgainstRoute(
+        injector,
+        rawSegment,
+        route,
+        segments,
+        outlet,
+        parentRoute,
+      );
     }
 
     if (this.allowRedirects && allowRedirects) {
@@ -310,6 +314,7 @@ export class Recognizer {
         route,
         segments,
         outlet,
+        parentRoute,
       );
     }
 
@@ -323,17 +328,15 @@ export class Recognizer {
     route: Route,
     segments: UrlSegment[],
     outlet: string,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
-    const {matched, consumedSegments, positionalParamSegments, remainingSegments} = match(
-      segmentGroup,
-      route,
-      segments,
-    );
+    const {matched, parameters, consumedSegments, positionalParamSegments, remainingSegments} =
+      match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
     // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
     // size exceeded in production
-    if (route.redirectTo!.startsWith('/')) {
+    if (typeof route.redirectTo === 'string' && route.redirectTo.startsWith('/')) {
       this.absoluteRedirectCount++;
       if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
         if (ngDevMode) {
@@ -347,10 +350,26 @@ export class Recognizer {
         this.allowRedirects = false;
       }
     }
+    const currentSnapshot = new ActivatedRouteSnapshot(
+      segments,
+      parameters,
+      Object.freeze({...this.urlTree.queryParams}),
+      this.urlTree.fragment,
+      getData(route),
+      getOutlet(route),
+      route.component ?? route._loadedComponent ?? null,
+      route,
+      getResolve(route),
+    );
+    const inherited = getInherited(currentSnapshot, parentRoute, this.paramsInheritanceStrategy);
+    currentSnapshot.params = Object.freeze(inherited.params);
+    currentSnapshot.data = Object.freeze(inherited.data);
     const newTree = this.applyRedirects.applyRedirectCommands(
       consumedSegments,
       route.redirectTo!,
       positionalParamSegments,
+      currentSnapshot,
+      injector,
     );
 
     return this.applyRedirects.lineralizeSegments(route, newTree).pipe(
@@ -362,6 +381,7 @@ export class Recognizer {
           newSegments.concat(remainingSegments),
           outlet,
           false,
+          parentRoute,
         );
       }),
     );
@@ -373,6 +393,7 @@ export class Recognizer {
     route: Route,
     segments: UrlSegment[],
     outlet: string,
+    parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot>> {
     const matchResult = matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer);
     if (route.path === '**') {
@@ -388,14 +409,13 @@ export class Recognizer {
         if (!result.matched) {
           return noMatch(rawSegment);
         }
-
         // If the route has an injector created from providers, we should start using that.
         injector = route._injector ?? injector;
         return this.getChildConfig(injector, route, segments).pipe(
           switchMap(({routes: childConfig}) => {
             const childInjector = route._loadedInjector ?? injector;
 
-            const {consumedSegments, remainingSegments, parameters} = result;
+            const {parameters, consumedSegments, remainingSegments} = result;
             const snapshot = new ActivatedRouteSnapshot(
               consumedSegments,
               parameters,
@@ -407,6 +427,9 @@ export class Recognizer {
               route,
               getResolve(route),
             );
+            const inherited = getInherited(snapshot, parentRoute, this.paramsInheritanceStrategy);
+            snapshot.params = Object.freeze(inherited.params);
+            snapshot.data = Object.freeze(inherited.data);
 
             const {segmentGroup, slicedSegments} = split(
               rawSegment,
@@ -416,11 +439,8 @@ export class Recognizer {
             );
 
             if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
-              return this.processChildren(childInjector, childConfig, segmentGroup).pipe(
+              return this.processChildren(childInjector, childConfig, segmentGroup, snapshot).pipe(
                 map((children) => {
-                  if (children === null) {
-                    return null;
-                  }
                   return new TreeNode(snapshot, children);
                 }),
               );
@@ -446,6 +466,7 @@ export class Recognizer {
               slicedSegments,
               matchedOnOutlet ? PRIMARY_OUTLET : outlet,
               true,
+              snapshot,
             ).pipe(
               map((child) => {
                 return new TreeNode(snapshot, child instanceof TreeNode ? [child] : []);

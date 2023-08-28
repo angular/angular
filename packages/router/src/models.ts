@@ -257,6 +257,28 @@ export type LoadChildren = LoadChildrenCallback;
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
+ * The type for the function that returns a used to handle redirects when the path matches a `Route` config.
+ *
+ * The `RedirectFunction` does have access to the full
+ * `ActivatedRouteSnapshot` interface. Some data are not accurately known
+ * at the route matching phase. For example, resolvers are not run until
+ * later, so any resolved title would not be populated. The same goes for lazy
+ * loaded components. This is also true for all the snapshots up to the
+ * root, so properties that include parents (root, parent, pathFromRoot)
+ * are also excluded. And naturally, the full route matching hasn't yet
+ * happened so firstChild and children are not available either.
+ *
+ * @see {@link Route#redirectTo}
+ * @publicApi
+ */
+export type RedirectFunction = (
+  redirectData: Pick<
+    ActivatedRouteSnapshot,
+    'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
+  >,
+) => string | UrlTree;
+
+/**
  * A policy for when to run guards and resolvers on a route.
  *
  * Guards and/or resolvers will always run when a route is activated or deactivated. When a route is
@@ -568,13 +590,17 @@ export interface Route {
   _loadedComponent?: Type<unknown>;
 
   /**
-   * A URL to redirect to when the path matches.
+   * A URL or function that returns a URL to redirect to when the path matches.
    *
-   * Absolute if the URL begins with a slash (/), otherwise relative to the path URL.
+   * Absolute if the URL begins with a slash (/) or the function returns a `UrlTree`, otherwise
+   * relative to the path URL.
+   *
+   * The `RedirectFunction` is run in an injection context so it can call `inject` to get any
+   * required dependencies.
    *
    * When not present, router does not redirect.
    */
-  redirectTo?: string;
+  redirectTo?: string | RedirectFunction;
   /**
    * Name of a `RouterOutlet` object where the component can be placed
    * when the path matches.

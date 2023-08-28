@@ -49,6 +49,7 @@ export {
   NavigationBehaviorOptions,
   OnSameUrlNavigation,
   QueryParamsHandling,
+  RedirectFunction,
   ResolveData,
   ResolveFn,
   Route,

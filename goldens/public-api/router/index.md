@@ -604,6 +604,9 @@ export class RedirectCommand {
     readonly redirectTo: UrlTree;
 }
 
+// @public
+export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'>) => string | UrlTree;
+
 // @public @deprecated
 export interface Resolve<T> {
     // (undocumented)
@@ -670,7 +673,7 @@ export interface Route {
     path?: string;
     pathMatch?: 'prefix' | 'full';
     providers?: Array<Provider | EnvironmentProviders>;
-    redirectTo?: string;
+    redirectTo?: string | RedirectFunction;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
     title?: string | Type<Resolve<string>> | ResolveFn<string>;
