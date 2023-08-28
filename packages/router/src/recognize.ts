@@ -217,8 +217,7 @@ export class Recognizer {
     if (!isImmediateMatch(route, rawSegment, segments, outlet)) return noMatch(rawSegment);
 
     if (route.redirectTo === undefined) {
-      return this.matchSegmentAgainstRoute(
-          injector, rawSegment, route, segments, outlet, allowRedirects);
+      return this.matchSegmentAgainstRoute(injector, rawSegment, route, segments, outlet);
     }
 
     if (allowRedirects && this.allowRedirects) {
@@ -278,8 +277,7 @@ export class Recognizer {
 
   matchSegmentAgainstRoute(
       injector: EnvironmentInjector, rawSegment: UrlSegmentGroup, route: Route,
-      segments: UrlSegment[], outlet: string,
-      allowRedirects: boolean): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
+      segments: UrlSegment[], outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
     let matchResult: Observable<{
       snapshot: ActivatedRouteSnapshot,
       consumedSegments: UrlSegment[],
