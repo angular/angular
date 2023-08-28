@@ -10,6 +10,7 @@ import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
+import {assertGreaterThan} from '../util/assert';
 import {NgZone} from '../zone';
 
 import {isPlatformBrowser} from './util/misc_utils';
@@ -92,14 +93,17 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
   const manager = injector.get(AfterRenderEventManager);
+  // Lazily initialize the handler implementation, if necessary. This is so that it can be
+  // tree-shaken if `afterRender` and `afterNextRender` aren't used.
+  const handler = manager.handler ??= new AfterRenderCallbackHandlerImpl();
   const ngZone = injector.get(NgZone);
   const instance = new AfterRenderCallback(() => ngZone.runOutsideAngular(callback));
 
   destroy = () => {
-    manager.unregister(instance);
+    handler.unregister(instance);
     unregisterFn();
   };
-  manager.register(instance);
+  handler.register(instance);
   return {destroy};
 }
 
@@ -157,6 +161,9 @@ export function afterNextRender(
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
   const manager = injector.get(AfterRenderEventManager);
+  // Lazily initialize the handler implementation, if necessary. This is so that it can be
+  // tree-shaken if `afterRender` and `afterNextRender` aren't used.
+  const handler = manager.handler ??= new AfterRenderCallbackHandlerImpl();
   const ngZone = injector.get(NgZone);
   const instance = new AfterRenderCallback(() => {
     destroy?.();
@@ -164,16 +171,15 @@ export function afterNextRender(
   });
 
   destroy = () => {
-    manager.unregister(instance);
+    handler.unregister(instance);
     unregisterFn();
   };
-  manager.register(instance);
+  handler.register(instance);
   return {destroy};
 }
 
 /**
  * A wrapper around a function to be used as an after render callback.
- * @private
  */
 class AfterRenderCallback {
   private callback: VoidFunction;
@@ -188,68 +194,124 @@ class AfterRenderCallback {
 }
 
 /**
- * Implements `afterRender` and `afterNextRender` callback manager logic.
+ * Implements `afterRender` and `afterNextRender` callback handler logic.
  */
-export class AfterRenderEventManager {
-  private callbacks = new Set<AfterRenderCallback>();
-  private deferredCallbacks = new Set<AfterRenderCallback>();
-  private renderDepth = 0;
-  private runningCallbacks = false;
+interface AfterRenderCallbackHandler {
+  /**
+   * Validate that it's safe for a render operation to begin,
+   * throwing if not. Not guaranteed to be called if a render
+   * operation is started before handler was registered.
+   */
+  validateBegin(): void;
 
   /**
-   * Mark the beginning of a render operation (i.e. CD cycle).
-   * Throws if called from an `afterRender` callback.
+   * Register a new callback.
    */
-  begin() {
-    if (this.runningCallbacks) {
+  register(callback: AfterRenderCallback): void;
+
+  /**
+   * Unregister an existing callback.
+   */
+  unregister(callback: AfterRenderCallback): void;
+
+  /**
+   * Execute callbacks.
+   */
+  execute(): void;
+
+  /**
+   * Perform any necessary cleanup.
+   */
+  destroy(): void;
+}
+
+/**
+ * Core functionality for `afterRender` and `afterNextRender`. Kept separate from
+ * `AfterRenderEventManager` for tree-shaking.
+ */
+class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
+  private executingCallbacks = false;
+  private callbacks = new Set<AfterRenderCallback>();
+  private deferredCallbacks = new Set<AfterRenderCallback>();
+
+  validateBegin(): void {
+    if (this.executingCallbacks) {
       throw new RuntimeError(
           RuntimeErrorCode.RECURSIVE_APPLICATION_RENDER,
           ngDevMode &&
               'A new render operation began before the previous operation ended. ' +
                   'Did you trigger change detection from afterRender or afterNextRender?');
     }
-
-    this.renderDepth++;
   }
 
-  /**
-   * Mark the end of a render operation. Registered callbacks
-   * are invoked if there are no more pending operations.
-   */
-  end() {
-    this.renderDepth--;
-
-    if (this.renderDepth === 0) {
-      try {
-        this.runningCallbacks = true;
-        for (const callback of this.callbacks) {
-          callback.invoke();
-        }
-      } finally {
-        this.runningCallbacks = false;
-        for (const callback of this.deferredCallbacks) {
-          this.callbacks.add(callback);
-        }
-        this.deferredCallbacks.clear();
-      }
-    }
-  }
-
-  register(callback: AfterRenderCallback) {
+  register(callback: AfterRenderCallback): void {
     // If we're currently running callbacks, new callbacks should be deferred
     // until the next render operation.
-    const target = this.runningCallbacks ? this.deferredCallbacks : this.callbacks;
+    const target = this.executingCallbacks ? this.deferredCallbacks : this.callbacks;
     target.add(callback);
   }
 
-  unregister(callback: AfterRenderCallback) {
+  unregister(callback: AfterRenderCallback): void {
     this.callbacks.delete(callback);
     this.deferredCallbacks.delete(callback);
   }
 
-  ngOnDestroy() {
+  execute(): void {
+    try {
+      this.executingCallbacks = true;
+      for (const callback of this.callbacks) {
+        callback.invoke();
+      }
+    } finally {
+      this.executingCallbacks = false;
+      for (const callback of this.deferredCallbacks) {
+        this.callbacks.add(callback);
+      }
+      this.deferredCallbacks.clear();
+    }
+  }
+
+  destroy(): void {
     this.callbacks.clear();
     this.deferredCallbacks.clear();
+  }
+}
+
+/**
+ * Implements core timing for `afterRender` and `afterNextRender` events.
+ * Delegates to an optional `AfterRenderCallbackHandler` for implementation.
+ */
+export class AfterRenderEventManager {
+  private renderDepth = 0;
+
+  /* @internal */
+  handler: AfterRenderCallbackHandler|null = null;
+
+  /**
+   * Mark the beginning of a render operation (i.e. CD cycle).
+   * Throws if called while executing callbacks.
+   */
+  begin() {
+    this.handler?.validateBegin();
+    this.renderDepth++;
+  }
+
+  /**
+   * Mark the end of a render operation. Callbacks will be
+   * executed if there are no more pending operations.
+   */
+  end() {
+    ngDevMode && assertGreaterThan(this.renderDepth, 0, 'renderDepth must be greater than 0');
+    this.renderDepth--;
+
+    if (this.renderDepth === 0) {
+      this.handler?.execute();
+    }
+  }
+
+  ngOnDestroy() {
+    this.handler?.destroy();
+    this.handler = null;
   }
 
   /** @nocollapse */
