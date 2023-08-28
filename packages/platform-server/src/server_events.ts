@@ -8,17 +8,20 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
+import {EventManagerPlugin} from '@angular/platform-browser';
 
 @Injectable()
-export class ServerEventManagerPlugin /* extends EventManagerPlugin which is private */ {
-  constructor(@Inject(DOCUMENT) private doc: any) {}
+export class ServerEventManagerPlugin extends EventManagerPlugin {
+  constructor(@Inject(DOCUMENT) private doc: any) {
+    super(doc);
+  }
 
   // Handle all events on the server.
-  supports(eventName: string) {
+  override supports(eventName: string) {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     return getDOM().onAndCancel(element, eventName, handler);
   }
 }
