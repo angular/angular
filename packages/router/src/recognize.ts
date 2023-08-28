@@ -21,7 +21,7 @@ import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {last} from './utils/collection';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
+import {isImmediateMatch, match, MatchResult, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 import {TreeNode} from './utils/tree';
 import {isEmptyError} from './utils/type_guards';
 
@@ -239,43 +239,17 @@ export class Recognizer {
       injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[],
       outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>|NoLeftoversInUrl> {
-    if (route.path === '**') {
-      return this.expandWildCardWithParamsAgainstRouteUsingRedirect(
-          injector, routes, route, outlet);
-    }
-
-    return this.expandRegularSegmentAgainstRouteUsingRedirect(
-        injector, segmentGroup, routes, route, segments, outlet);
-  }
-
-  private expandWildCardWithParamsAgainstRouteUsingRedirect(
-      injector: EnvironmentInjector, routes: Route[], route: Route,
-      outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>|NoLeftoversInUrl> {
-    const newTree = this.applyRedirects.applyRedirectCommands([], route.redirectTo!, {});
-    if (route.redirectTo!.startsWith('/')) {
-      return absoluteRedirect(newTree);
-    }
-
-    return this.applyRedirects.lineralizeSegments(route, newTree)
-        .pipe(mergeMap((newSegments: UrlSegment[]) => {
-          const group = new UrlSegmentGroup(newSegments, {});
-          return this.processSegment(injector, routes, group, newSegments, outlet, false);
-        }));
-  }
-
-  private expandRegularSegmentAgainstRouteUsingRedirect(
-      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
-      segments: UrlSegment[],
-      outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>|NoLeftoversInUrl> {
-    const {matched, consumedSegments, remainingSegments, positionalParamSegments} =
-        match(segmentGroup, route, segments);
+    const {
+      matched,
+      consumedSegments,
+      positionalParamSegments,
+      remainingSegments,
+    } = route.path === '**' ? createWildcardMatchResult(segments) :
+                              match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
     const newTree = this.applyRedirects.applyRedirectCommands(
         consumedSegments, route.redirectTo!, positionalParamSegments);
-    if (route.redirectTo!.startsWith('/')) {
-      return absoluteRedirect(newTree);
-    }
 
     return this.applyRedirects.lineralizeSegments(route, newTree)
         .pipe(mergeMap((newSegments: UrlSegment[]) => {
@@ -287,46 +261,21 @@ export class Recognizer {
   matchSegmentAgainstRoute(
       injector: EnvironmentInjector, rawSegment: UrlSegmentGroup, route: Route,
       segments: UrlSegment[], outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>> {
-    let matchResult: Observable<{
-      snapshot: ActivatedRouteSnapshot,
-      consumedSegments: UrlSegment[],
-      remainingSegments: UrlSegment[],
-    }|null>;
+    let matchResult: Observable<MatchResult>;
 
     if (route.path === '**') {
-      const params = segments.length > 0 ? last(segments)!.parameters : {};
-      const snapshot = new ActivatedRouteSnapshot(
-          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
-          getData(route), getOutlet(route), route.component ?? route._loadedComponent ?? null,
-          route, getResolve(route));
-      matchResult = of({
-        snapshot,
-        consumedSegments: [],
-        remainingSegments: [],
-      });
+      matchResult = of(createWildcardMatchResult(segments));
       // Prior versions of the route matching algorithm would stop matching at the wildcard route.
       // We should investigate a better strategy for any existing children. Otherwise, these
       // child segments are silently dropped from the navigation.
       // https://github.com/angular/angular/issues/40089
       rawSegment.children = {};
     } else {
-      matchResult =
-          matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer)
-              .pipe(map(({matched, consumedSegments, remainingSegments, parameters}) => {
-                if (!matched) {
-                  return null;
-                }
-
-                const snapshot = new ActivatedRouteSnapshot(
-                    consumedSegments, parameters, Object.freeze({...this.urlTree.queryParams}),
-                    this.urlTree.fragment, getData(route), getOutlet(route),
-                    route.component ?? route._loadedComponent ?? null, route, getResolve(route));
-                return {snapshot, consumedSegments, remainingSegments};
-              }));
+      matchResult = matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer);
     }
 
     return matchResult.pipe(switchMap((result) => {
-      if (result === null) {
+      if (!result.matched) {
         return noMatch(rawSegment);
       }
 
@@ -336,7 +285,11 @@ export class Recognizer {
           .pipe(switchMap(({routes: childConfig}) => {
             const childInjector = route._loadedInjector ?? injector;
 
-            const {snapshot, consumedSegments, remainingSegments} = result;
+            const {consumedSegments, remainingSegments, parameters} = result;
+            const snapshot = new ActivatedRouteSnapshot(
+                consumedSegments, parameters, Object.freeze({...this.urlTree.queryParams}),
+                this.urlTree.fragment, getData(route), getOutlet(route),
+                route.component ?? route._loadedComponent ?? null, route, getResolve(route));
 
             const {segmentGroup, slicedSegments} =
                 split(rawSegment, consumedSegments, remainingSegments, childConfig);
@@ -476,4 +429,14 @@ function getData(route: Route): Data {
 
 function getResolve(route: Route): ResolveData {
   return route.resolve || {};
+}
+
+function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
+  return {
+    matched: true,
+    parameters: segments.length > 0 ? last(segments)!.parameters : {},
+    consumedSegments: segments,
+    remainingSegments: [],
+    positionalParamSegments: {},
+  };
 }

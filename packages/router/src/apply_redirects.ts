@@ -25,8 +25,10 @@ export class NoMatch {
   }
 }
 
-export class AbsoluteRedirect {
-  constructor(public urlTree: UrlTree) {}
+export class AbsoluteRedirect extends Error {
+  constructor(public urlTree: UrlTree) {
+    super();
+  }
 }
 
 export function noMatch(segmentGroup: UrlSegmentGroup): Observable<any> {
@@ -82,8 +84,12 @@ export class ApplyRedirects {
 
   applyRedirectCommands(
       segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
-    return this.applyRedirectCreateUrlTree(
+    const newTree = this.applyRedirectCreateUrlTree(
         redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
+    if (redirectTo.startsWith('/')) {
+      throw new AbsoluteRedirect(newTree);
+    }
+    return newTree;
   }
 
   applyRedirectCreateUrlTree(
