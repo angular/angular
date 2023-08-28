@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderRef, ChangeDetectorRef, Component, inject, Injector, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderRef, ChangeDetectorRef, Component, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
@@ -225,6 +225,29 @@ describe('after render hooks', () => {
         expect(outerHookCount).toBe(3);
         expect(innerHookCount).toBe(2);
       });
+
+      it('should run outside of the Angular zone', () => {
+        const zoneLog: boolean[] = [];
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            afterRender(() => {
+              zoneLog.push(NgZone.isInAngularZone());
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(zoneLog).toEqual([]);
+        fixture.detectChanges();
+        expect(zoneLog).toEqual([false]);
+      });
     });
 
     describe('afterNextRender', () => {
@@ -430,6 +453,29 @@ describe('after render hooks', () => {
         fixture.detectChanges();
         expect(outerHookCount).toBe(1);
         expect(innerHookCount).toBe(1);
+      });
+
+      it('should run outside of the Angular zone', () => {
+        const zoneLog: boolean[] = [];
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            afterNextRender(() => {
+              zoneLog.push(NgZone.isInAngularZone());
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(zoneLog).toEqual([]);
+        fixture.detectChanges();
+        expect(zoneLog).toEqual([false]);
       });
     });
   });

@@ -10,6 +10,7 @@ import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
+import {NgZone} from '../zone';
 
 import {isPlatformBrowser} from './util/misc_utils';
 
@@ -91,7 +92,8 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
   const manager = injector.get(AfterRenderEventManager);
-  const instance = new AfterRenderCallback(callback);
+  const ngZone = injector.get(NgZone);
+  const instance = new AfterRenderCallback(() => ngZone.runOutsideAngular(callback));
 
   destroy = () => {
     manager.unregister(instance);
@@ -155,9 +157,10 @@ export function afterNextRender(
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
   const manager = injector.get(AfterRenderEventManager);
+  const ngZone = injector.get(NgZone);
   const instance = new AfterRenderCallback(() => {
     destroy?.();
-    callback();
+    ngZone.runOutsideAngular(callback);
   });
 
   destroy = () => {
