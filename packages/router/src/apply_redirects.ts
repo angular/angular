@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Injector, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, throwError} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
-import {LoadedRouterConfig, Route} from './models';
+import {LoadedRouterConfig, RedirectFunction, Route} from './models';
 import {navigationCancelingError} from './navigation_canceling_error';
+import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 
@@ -74,7 +75,7 @@ export class ApplyRedirects {
       }
 
       if (c.numberOfChildren > 1 || !c.children[PRIMARY_OUTLET]) {
-        return namedOutletsRedirect(route.redirectTo!);
+        return namedOutletsRedirect(`${route.redirectTo!}`);
       }
 
       c = c.children[PRIMARY_OUTLET];
@@ -83,9 +84,25 @@ export class ApplyRedirects {
 
   applyRedirectCommands(
     segments: UrlSegment[],
-    redirectTo: string,
+    redirectTo: string | RedirectFunction,
     posParams: {[k: string]: UrlSegment},
+    currentSnapshot: ActivatedRouteSnapshot,
+    injector: Injector,
   ): UrlTree {
+    if (typeof redirectTo !== 'string') {
+      const redirectToFn = redirectTo;
+      const {queryParams, fragment, routeConfig, url, outlet, params, data, title} =
+        currentSnapshot;
+      const newRedirect = runInInjectionContext(injector, () =>
+        redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+      );
+      if (newRedirect instanceof UrlTree) {
+        throw new AbsoluteRedirect(newRedirect);
+      }
+
+      redirectTo = newRedirect;
+    }
+
     const newTree = this.applyRedirectCreateUrlTree(
       redirectTo,
       this.urlSerializer.parse(redirectTo),
