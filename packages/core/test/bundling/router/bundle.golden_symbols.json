@@ -849,9 +849,6 @@
     "name": "_wrapInTimeout"
   },
   {
-    "name": "absoluteRedirect"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -1074,6 +1071,9 @@
     "name": "createUrlTreeFromSegmentGroup"
   },
   {
+    "name": "createWildcardMatchResult"
+  },
+  {
     "name": "currentConsumer"
   },
   {
@@ -1284,9 +1284,6 @@
     "name": "getDOM"
   },
   {
-    "name": "getData"
-  },
-  {
     "name": "getDataKeys"
   },
   {
@@ -1399,9 +1396,6 @@
   },
   {
     "name": "getReactiveLViewConsumer"
-  },
-  {
-    "name": "getResolve"
   },
   {
     "name": "getSanitizer"
