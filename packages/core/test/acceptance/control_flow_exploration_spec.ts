@@ -8,7 +8,7 @@
 
 
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
-import {Component, Pipe, PipeTransform, ɵɵadvance, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵrepeater, ɵɵrepeaterCreate, ɵɵrepeaterTrackByIdentity, ɵɵrepeaterTrackByIndex, ɵɵtext, ɵɵtextInterpolate, ɵɵtextInterpolate2} from '@angular/core';
+import {Component, Pipe, PipeTransform, ɵɵdefineComponent, ɵɵrepeater, ɵɵrepeaterCreate, ɵɵtext, ɵɵtextInterpolate} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow', () => {
@@ -245,43 +245,15 @@ describe('control flow', () => {
   });
 
   describe('for', () => {
-    it('should create, remove and move views corresponding to items in a collection', () => {
-      function App_ng_template_0_Template(rf: number, ctx: any) {
-        if (rf & 1) {
-          ɵɵtext(0);
-        }
-        if (rf & 2) {
-          const item = ctx.$implicit;
-          const idx = ctx.$index;
-          ɵɵtextInterpolate2('', item, '(', idx, ')|');
-        }
-      }
+    beforeEach(() => setEnabledBlockTypes(['for']));
+    afterEach(() => setEnabledBlockTypes([]));
 
+    it('should create, remove and move views corresponding to items in a collection', () => {
+      @Component({
+        template: '{#for (item of items); track item; let idx = $index}{{item}}({{idx}})|{/for}',
+      })
       class TestComponent {
         items = [1, 2, 3];
-
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          selectors: [['some-cmp']],
-          decls: 2,
-          vars: 0,
-
-          // {#for (item of items); track item; let idx = index}{{item}}({{idx}}){/for}
-          template:
-              function TestComponent_Template(rf: number, ctx: TestComponent) {
-                if (rf & 1) {
-                  ɵɵrepeaterCreate(0, App_ng_template_0_Template, 1, 2, ɵɵrepeaterTrackByIdentity);
-                }
-
-                if (rf & 2) {
-                  ɵɵrepeater(0, ctx.items);
-                }
-              },
-          encapsulation: 2
-        });
-        static ɵfac = function TestComponent_Factory(t: any) {
-          return new (t || TestComponent)();
-        };
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -303,42 +275,11 @@ describe('control flow', () => {
     });
 
     it('should work correctly with trackBy index', () => {
-      function App_ng_template_0_Template(rf: number, ctx: any) {
-        if (rf & 1) {
-          ɵɵtext(0);
-        }
-        if (rf & 2) {
-          const item = ctx.$implicit;
-          const idx = ctx.$index;
-          ɵɵtextInterpolate2('', item, '(', idx, ')|');
-        }
-      }
-
+      @Component({
+        template: '{#for (item of items); track idx; let idx = $index}{{item}}({{idx}})|{/for}',
+      })
       class TestComponent {
         items = [1, 2, 3];
-
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          selectors: [['some-cmp']],
-          decls: 2,
-          vars: 0,
-
-          // {#for (item of items); track index; let idx = index}{{item}}|{/for}
-          template:
-              function TestComponent_Template(rf: number, ctx: any) {
-                if (rf & 1) {
-                  ɵɵrepeaterCreate(0, App_ng_template_0_Template, 1, 2, ɵɵrepeaterTrackByIndex);
-                }
-
-                if (rf & 2) {
-                  ɵɵrepeater(0, ctx.items);
-                }
-              },
-          encapsulation: 2
-        });
-        static ɵfac = function TestComponent_Factory(t: any) {
-          return new (t || TestComponent)();
-        };
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -360,50 +301,11 @@ describe('control flow', () => {
     });
 
     it('should support empty blocks', () => {
-      function App_ng_template_0_Template(rf: number) {
-        if (rf & 1) {
-          ɵɵtext(0, '|');
-        }
-      }
-
-      function App_ng_template_0_EMPTY(rf: number) {
-        if (rf & 1) {
-          ɵɵelementStart(0, 'div');
-          ɵɵtext(1);
-          ɵɵelementEnd();
-        }
-        if (rf & 2) {
-          ɵɵadvance(1);
-          ɵɵtextInterpolate('Empty');
-        }
-      }
-
+      @Component({
+        template: '{#for (item of items); track idx; let idx = $index}|{:empty}Empty{/for}',
+      })
       class TestComponent {
         items: number[]|null|undefined = [1, 2, 3];
-
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          selectors: [['some-cmp']],
-          decls: 3,
-          vars: 1,
-
-          // {#for (item of items); track index; let idx = index}{{item}}|{/for}
-          template:
-              function TestComponent_Template(rf: number, ctx: any) {
-                if (rf & 1) {
-                  ɵɵrepeaterCreate(
-                      0, App_ng_template_0_Template, 1, 0, ɵɵrepeaterTrackByIndex,
-                      App_ng_template_0_EMPTY, 2, 1);
-                }
-                if (rf & 2) {
-                  ɵɵrepeater(0, ctx.items);
-                }
-              },
-          encapsulation: 2
-        });
-        static ɵfac = function TestComponent_Factory(t: any) {
-          return new (t || TestComponent)();
-        };
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -431,6 +333,7 @@ describe('control flow', () => {
       expect(fixture.nativeElement.textContent).toBe('Empty');
     });
 
+    // TODO(crisbeto): rewrite using template once advanced tracking expressions are supported.
     it('should have access to the host context in the track function', () => {
       function App_ng_template_0_Template(rf: number, ctx: any) {
         if (rf & 1) {
