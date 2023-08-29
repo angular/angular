@@ -170,19 +170,25 @@ export interface TemplateOp extends ElementOpBase {
    * not yet been counted.
    */
   vars: number|null;
+
+  /**
+   * Whether or not this template was automatically created for built-in control flow.
+   */
+  controlFlow: boolean;
 }
 
 /**
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
-    sourceSpan: ParseSourceSpan): TemplateOp {
+    xref: XrefId, tag: string, namespace: Namespace, controlFlow: boolean,
+    i18n: i18n.I18nMeta|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
     attributes: null,
     tag,
+    controlFlow,
     decls: null,
     vars: null,
     localRefs: [],

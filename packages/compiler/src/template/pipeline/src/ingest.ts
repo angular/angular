@@ -168,7 +168,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   // TODO: validate the fallback tag name here.
   const tplOp = ir.createTemplateOp(
       childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
-      tmpl.i18n, tmpl.startSourceSpan);
+      false, tmpl.i18n, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -218,7 +218,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
     if (!firstXref) firstXref = cView.xref;
-    unit.create.push(ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, undefined, null!));
+    unit.create.push(
+        ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, undefined, null!));
     const caseExpr = switchCase.expression ? convertAst(switchCase.expression, unit.job) : null;
     conditions.push([cView.xref, caseExpr]);
     ingestNodes(cView, switchCase.children);

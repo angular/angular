@@ -97,14 +97,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.template(
-                op.slot!,
-                o.variable(childView.fnName!),
-                childView.decls!,
-                childView.vars!,
-                op.tag,
-                op.attributes as number,
-                op.sourceSpan,
-                ),
+                op.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
+                op.controlFlow ? null : op.tag, op.attributes as number, op.sourceSpan),
         );
         break;
       case ir.OpKind.DisableBindings:
