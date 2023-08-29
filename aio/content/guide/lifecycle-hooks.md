@@ -169,7 +169,7 @@ export class MyChartCmp {
   constructor() {
     afterNextRender(() => {
       this.chart = new MyChart(this.chartRef.nativeElement);
-    });
+    }, {phase: AfterRenderPhase.Write});
   }
 }
 ```
@@ -192,7 +192,7 @@ export class MyComponent {
       });
 
       this.resizeObserver.observe(this.contentRef.nativeElement);
-    });
+    }, {phase: AfterRenderPhase.Write});
   }
 
   ngOnDestroy() {
@@ -224,7 +224,7 @@ export class MyComponent {
     afterRender(() => {
       const elem = this.contentRef.nativeElement;
       console.log(`content position: (${elem.offsetLeft}, ${elem.offsetTop})`);
-    });
+    }, {phase: AfterRenderPhase.Read});
   }
 }
 ```
