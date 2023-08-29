@@ -18,7 +18,7 @@ import {AnimationDslVisitor} from './animation_dsl_visitor';
 import {parseTransitionExpr} from './animation_transition_expr';
 
 const SELF_TOKEN = ':self';
-const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
+const SELF_TOKEN_REGEX = new RegExp(`s*${SELF_TOKEN}s*,?`, 'g');
 
 /*
  * [Validation]
