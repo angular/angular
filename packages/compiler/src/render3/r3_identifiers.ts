@@ -162,6 +162,12 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
 
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
+  static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
+  static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
+  static repeaterTrackByIndex:
+      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIndex', moduleName: CORE};
+  static repeaterTrackByIdentity:
+      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIdentity', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 

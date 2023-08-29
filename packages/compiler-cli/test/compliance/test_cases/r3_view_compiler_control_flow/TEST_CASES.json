@@ -275,6 +275,237 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a basic for block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "basic_for.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_for_template.js",
+              "generated": "basic_for.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a for block with an empty block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_with_empty.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_with_empty_template.js",
+              "generated": "for_with_empty.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a for block that tracks by index",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_track_by_index.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_by_index_template.js",
+              "generated": "for_track_by_index.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a for block that tracks by a field on the item",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_track_by_field.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_by_field_template.js",
+              "generated": "for_track_by_field.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a nested for block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "nested_for.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_template.js",
+              "generated": "nested_for.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a for block with template variables",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_template_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_template.js",
+              "generated": "for_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a for block with aliased template variables",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_aliased_template_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_aliased_template_variables_template.js",
+              "generated": "for_aliased_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should be able to refer to aliased template variables in nested for blocks",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "nested_for_template_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_template_variables_template.js",
+              "generated": "nested_for_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should be able to use for loop variables in an event listener",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_template_variables_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_listener_template.js",
+              "generated": "for_template_variables_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should parenthesize context variables used in an expression",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_variables_expression.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_variables_expression_template.js",
+              "generated": "for_variables_expression.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should implicitly allocate data slots for primary and empty block",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_data_slots.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_data_slots_template.js",
+              "generated": "for_data_slots.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

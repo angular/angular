@@ -156,6 +156,19 @@ function createComponentDefConsts(): ComponentDefConsts {
   };
 }
 
+class TemplateData {
+  constructor(
+      readonly name: string, readonly index: number, private visitor: TemplateDefinitionBuilder) {}
+
+  getConstCount() {
+    return this.visitor.getConstCount();
+  }
+
+  getVarCount() {
+    return this.visitor.getVarCount();
+  }
+}
+
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
@@ -913,21 +926,49 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
+  private prepareEmbeddedTemplateFn(
+      children: t.Node[], contextNameSuffix: string, variables: t.Variable[] = [],
+      i18n?: i18n.I18nMeta) {
+    const index = this.allocateDataSlot();
+
+    if (this.i18n && i18n) {
+      this.i18n.appendTemplate(i18n, index);
+    }
+
+    const contextName = `${this.contextName}${contextNameSuffix}_${index}`;
+    const name = `${contextName}_Template`;
+
+    // Create the template function
+    const visitor = new TemplateDefinitionBuilder(
+        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, index, name,
+        this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds, this.deferBlocks,
+        this._constants);
+
+    // Nested templates must not be visited until after their parent templates have completed
+    // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
+    // be able to support bindings in nested templates to local refs that occur after the
+    // template definition. e.g. <div *ngIf="showing">{{ foo }}</div>  <div #foo></div>
+    this._nestedTemplateFns.push(() => {
+      const templateFunctionExpr = visitor.buildTemplateFunction(
+          children, variables, this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
+          i18n);
+      this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(name));
+      if (visitor._ngContentReservedSlots.length) {
+        this._ngContentReservedSlots.push(...visitor._ngContentReservedSlots);
+      }
+    });
+
+    return new TemplateData(name, index, visitor);
+  }
+
   private createEmbeddedTemplateFn(
       tagName: string|null, children: t.Node[], contextNameSuffix: string,
       sourceSpan: ParseSourceSpan, variables: t.Variable[] = [], attrsExprs?: o.Expression[],
       references?: t.Reference[], i18n?: i18n.I18nMeta): number {
-    const templateIndex = this.allocateDataSlot();
-
-    if (this.i18n && i18n) {
-      this.i18n.appendTemplate(i18n, templateIndex);
-    }
-
-    const contextName = `${this.contextName}${contextNameSuffix}_${templateIndex}`;
-    const templateName = `${contextName}_Template`;
+    const data = this.prepareEmbeddedTemplateFn(children, contextNameSuffix, variables, i18n);
     const parameters: o.Expression[] = [
-      o.literal(templateIndex),
-      o.variable(templateName),
+      o.literal(data.index),
+      o.variable(data.name),
       o.literal(tagName),
       this.addAttrsToConsts(attrsExprs || null),
     ];
@@ -939,35 +980,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
-    // Create the template function
-    const templateVisitor = new TemplateDefinitionBuilder(
-        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
-        templateIndex, templateName, this._namespace, this.fileBasedI18nSuffix,
-        this.i18nUseExternalIds, this.deferBlocks, this._constants);
-
-    // Nested templates must not be visited until after their parent templates have completed
-    // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
-    // be able to support bindings in nested templates to local refs that occur after the
-    // template definition. e.g. <div *ngIf="showing">{{ foo }}</div>  <div #foo></div>
-    this._nestedTemplateFns.push(() => {
-      const templateFunctionExpr = templateVisitor.buildTemplateFunction(
-          children, variables, this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
-          i18n);
-      this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName));
-      if (templateVisitor._ngContentReservedSlots.length) {
-        this._ngContentReservedSlots.push(...templateVisitor._ngContentReservedSlots);
-      }
-    });
-
     // e.g. template(1, MyComp_Template_1)
     this.creationInstruction(sourceSpan, R3.templateCreate, () => {
-      parameters.splice(
-          2, 0, o.literal(templateVisitor.getConstCount()),
-          o.literal(templateVisitor.getVarCount()));
+      parameters.splice(2, 0, o.literal(data.getConstCount()), o.literal(data.getVarCount()));
       return trimTrailingNulls(parameters);
     });
 
-    return templateIndex;
+    return data.index;
   }
 
   visitTemplate(template: t.Template) {
@@ -1030,6 +1049,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitDeferredBlockPlaceholder = invalid;
   readonly visitIfBlockBranch = invalid;
   readonly visitSwitchBlockCase = invalid;
+  readonly visitForLoopBlockEmpty = invalid;
 
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {
@@ -1404,9 +1424,102 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this._dataIndex++;
   }
 
-  // TODO: implement for loop instructions
-  visitForLoopBlock(block: t.ForLoopBlock): void {}
-  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {}
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    // Allocate one slot for the repeater metadata. The slots for the primary and empty block
+    // are implicitly inferred by the runtime to index + 1 and index + 2.
+    const blockIndex = this.allocateDataSlot();
+    const templateVariables = this.createForLoopVariables(block);
+    const primaryData = this.prepareEmbeddedTemplateFn(block.children, '_For', templateVariables);
+    const emptyData = block.empty === null ?
+        null :
+        this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
+    const trackByFn = this.createTrackByFunction(block);
+    const value = block.expression.visit(this._valueConverter);
+    this.allocateBindingSlots(value);
+
+    // `repeaterCreate(0, ...)`
+    this.creationInstruction(block.sourceSpan, R3.repeaterCreate, () => {
+      const params = [
+        o.literal(blockIndex),
+        o.variable(primaryData.name),
+        o.literal(primaryData.getConstCount()),
+        o.literal(primaryData.getVarCount()),
+        trackByFn,
+      ];
+
+      if (emptyData !== null) {
+        params.push(
+            o.variable(emptyData.name), o.literal(emptyData.getConstCount()),
+            o.literal(emptyData.getVarCount()));
+      }
+
+      return params;
+    });
+
+    // `repeater(0, iterable)`
+    this.updateInstruction(
+        block.sourceSpan, R3.repeater,
+        () => [o.literal(blockIndex), this.convertPropertyBinding(value)]);
+  }
+
+  private createForLoopVariables(block: t.ForLoopBlock): t.Variable[] {
+    const indexLocalName = getLoopLocalName(block, '$index');
+    const countLocalName = getLoopLocalName(block, '$count');
+
+    this._bindingScope.set(
+        this.level, getLoopLocalName(block, '$odd'),
+        scope => scope.get(indexLocalName)!.modulo(o.literal(2)).notIdentical(o.literal(0)));
+
+    this._bindingScope.set(
+        this.level, getLoopLocalName(block, '$even'),
+        scope => scope.get(indexLocalName)!.modulo(o.literal(2)).identical(o.literal(0)));
+
+    this._bindingScope.set(
+        this.level, getLoopLocalName(block, '$first'),
+        scope => scope.get(indexLocalName)!.identical(o.literal(0)));
+
+    this._bindingScope.set(
+        this.level, getLoopLocalName(block, '$last'),
+        scope =>
+            scope.get(indexLocalName)!.identical(scope.get(countLocalName)!.minus(o.literal(1))));
+
+    return [
+      new t.Variable(block.itemName, '$implicit', block.sourceSpan, block.sourceSpan),
+      new t.Variable(indexLocalName, '$index', block.sourceSpan, block.sourceSpan),
+      new t.Variable(countLocalName, '$count', block.sourceSpan, block.sourceSpan),
+    ];
+  }
+
+  private createTrackByFunction(block: t.ForLoopBlock): o.Expression {
+    const ast = block.trackBy.ast;
+
+    // Top-level access of `$index` uses the built in `repeaterTrackByIndex`.
+    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
+        ast.name === getLoopLocalName(block, '$index')) {
+      return o.importExpr(R3.repeaterTrackByIndex);
+    }
+
+    // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
+    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
+        ast.name === block.itemName) {
+      return o.importExpr(R3.repeaterTrackByIdentity);
+    }
+
+    // Otherwise transpile to an inline arrow function.
+    if (ast instanceof PropertyRead && ast.receiver instanceof PropertyRead &&
+        ast.receiver.receiver instanceof ImplicitReceiver && ast.receiver.name === block.itemName) {
+      // TODO(crisbeto): support references outside the function scope.
+      const params = [getLoopLocalName(block, '$index'), block.itemName];
+      const scope = this._bindingScope.nestedScope(this.level + 1, new Set(params));
+      const binding =
+          convertPropertyBinding(scope, o.variable(CONTEXT_NAME), block.trackBy, 'trackBy');
+      return o.arrowFn(params.map(param => new o.FnParam(param)), binding.currValExpr);
+    }
+
+    // TODO(crisbeto): this is a temporary restriction to land the initial implementation of the
+    // `for` blocks. A follow-up PR will introduce more flexibility to the `trackBy` expression.
+    throw new Error('Unsupported track expression');
+  }
 
   getConstCount() {
     return this._dataIndex;
@@ -2681,6 +2794,11 @@ function createClosureModeGuard(): o.BinaryOperatorExpr {
   return o.typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
       .notIdentical(o.literal('undefined', o.STRING_TYPE))
       .and(o.variable(NG_I18N_CLOSURE_MODE));
+}
+
+/** Determines the name that a built in loop context variable is available under. */
+function getLoopLocalName(block: t.ForLoopBlock, name: keyof t.ForLoopBlockContext): string {
+  return block.contextVariables?.[name] || name;
 }
 
 /**
