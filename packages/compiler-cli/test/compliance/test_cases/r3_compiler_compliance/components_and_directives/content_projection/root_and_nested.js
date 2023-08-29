@@ -15,8 +15,6 @@ function Cmp_ng_template_2_Template(rf, ctx) {
     $r3$.ɵɵprojection(1, 4);
   }
 }
-const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]], "*"];
-const $_c1$ = ["[id=toMainBefore]", "[id=toMainAfter]", "[id=toTemplate]", "[id=toNestedTemplate]", "*"];
 // ...
 template: function Cmp_Template(rf, ctx) {
   if (rf & 1) {

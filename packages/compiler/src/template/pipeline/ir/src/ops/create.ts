@@ -22,20 +22,21 @@ import type {UpdateOp} from './update';
  */
 export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
     ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|
-    ExtractedAttributeOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
+    ProjectionOp|ExtractedAttributeOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
 
 /**
  * An operation representing the creation of an element or container.
  */
 export type ElementOrContainerOps =
-    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp;
+    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp|ProjectionOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
  */
 const elementContainerOpKinds = new Set([
-  OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template
+  OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template,
+  OpKind.Projection
 ]);
 
 /**
@@ -442,6 +443,56 @@ export function createNamespaceOp(namespace: Namespace): NamespaceOp {
     kind: OpKind.Namespace,
     active: namespace,
     ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a content projection slot.
+ */
+export interface ProjectionDefOp extends Op<CreateOp> {
+  kind: OpKind.ProjectionDef;
+
+  // The parsed selector information for this projection def.
+  def: o.Expression|null;
+}
+
+export function createProjectionDefOp(def: o.Expression|null): ProjectionDefOp {
+  return {
+    kind: OpKind.ProjectionDef,
+    def,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a content projection slot.
+ */
+export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait, ElementOrContainerOpBase {
+  kind: OpKind.Projection;
+
+  xref: XrefId;
+
+  slot: number|null;
+
+  projectionSlotIndex: number;
+
+  selector: string;
+}
+
+export function createProjectionOp(xref: XrefId, selector: string): ProjectionOp {
+  return {
+    kind: OpKind.Projection,
+    xref,
+    selector,
+    projectionSlotIndex: 0,
+    attributes: null,
+    localRefs: [],
+    nonBindable: false,
+    i18n: undefined,    // TODO
+    sourceSpan: null!,  // TODO
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 

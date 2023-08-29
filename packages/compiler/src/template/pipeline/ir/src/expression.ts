@@ -858,6 +858,8 @@ export function transformExpressionsInOp(
             transformExpressionsInExpression(op.tagNameParams[placeholder], transform, flags);
       }
       break;
+    case OpKind.Projection:
+    case OpKind.ProjectionDef:
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:

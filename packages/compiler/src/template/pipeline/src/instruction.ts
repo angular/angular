@@ -181,6 +181,22 @@ export function text(
   return call(Identifiers.text, args, sourceSpan);
 }
 
+export function projectionDef(def: o.Expression|null): ir.CreateOp {
+  return call(Identifiers.projectionDef, def ? [def] : [], null);
+}
+
+export function projection(
+    slot: number, projectionSlotIndex: number, attributes: number|null): ir.CreateOp {
+  const args = [o.literal(slot)];
+  if (projectionSlotIndex !== 0 || attributes !== null) {
+    args.push(o.literal(projectionSlotIndex));
+    if (attributes != null) {
+      args.push(o.literal(attributes));
+    }
+  }
+  return call(Identifiers.projection, args, null);
+}
+
 export function i18nStart(slot: number, constIndex: number): ir.CreateOp {
   return call(Identifiers.i18nStart, [o.literal(slot), o.literal(constIndex)], null);
 }

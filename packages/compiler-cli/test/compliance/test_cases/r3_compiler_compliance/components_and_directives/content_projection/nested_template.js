@@ -16,7 +16,6 @@ function Cmp_ng_template_2_Template(rf, ctx) {
     $r3$.ɵɵprojection(1, 1);
   }
 }
-const $_c4$ = [[["span", "title", "tofirst"]], "*"];
 // ...
 consts: [["id", "second", __AttributeMarker.Template__, "ngIf"], ["id", "third", __AttributeMarker.Template__, "ngIf"], ["id", "second"], ["id", "third"]],
 template: function Cmp_Template(rf, ctx) {

@@ -54,6 +54,7 @@ import {phaseStyleBindingSpecialization} from './phases/style_binding_specializa
 import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
+import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -81,6 +82,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phasePipeVariadic},
   {kind: Kind.Both, fn: phasePureLiteralStructures},
+  {kind: Kind.Tmpl, fn: phaseGenerateProjectionDef},
   {kind: Kind.Tmpl, fn: phaseGenerateVariables},
   {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
   {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
