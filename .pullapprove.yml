@@ -517,7 +517,9 @@ groups:
           'packages/platform-server/**/{*,.*}',
           'aio/content/guide/prerendering.md',
           'aio/content/guide/universal.md',
-          'aio/content/examples/universal/**/{*,.*}'
+          'aio/content/examples/universal/**/{*,.*}',
+          'aio/content/guide/universal-ngmodule.md',
+          'aio/content/examples/universal-ngmodule/**/{*,.*}'
           ])
     reviewers:
       users:
