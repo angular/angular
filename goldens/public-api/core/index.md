@@ -33,6 +33,15 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
+    phase?: AfterRenderPhase;
+}
+
+// @public
+export enum AfterRenderPhase {
+    EarlyRead = 0,
+    MixedReadWrite = 2,
+    Read = 3,
+    Write = 1
 }
 
 // @public

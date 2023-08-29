@@ -40,7 +40,7 @@ export {Sanitizer} from './sanitization/sanitizer';
 export {createNgModule, createNgModuleRef, createEnvironmentInjector} from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
 export {isStandalone} from './render3/definition';
-export {AfterRenderRef, AfterRenderOptions, afterRender, afterNextRender} from './render3/after_render_hooks';
+export {AfterRenderRef, AfterRenderOptions, AfterRenderPhase, afterRender, afterNextRender} from './render3/after_render_hooks';
 export {ApplicationConfig, mergeApplicationConfig} from './application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
