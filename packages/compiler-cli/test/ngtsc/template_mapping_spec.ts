@@ -689,7 +689,7 @@ runInEachFileSystem((os) => {
 
     async function compileAndMap(template: string, templateUrl: string|null = null) {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
-                                           ('template: `' + template.replace(/`/g, '\\`') + '`');
+                                           ('template: `' + template.replace(/\`/g, '\\`') + '`');
       env.write('test.ts', `
         import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
 
