@@ -3,9 +3,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementStart(0, "div");
     $r3$.ɵɵtext(1);
     $r3$.ɵɵpipe(2, "test");
-    $r3$.ɵɵtemplate(3, MyApp_Case_3_Template, 1, 0);
-    $r3$.ɵɵtemplate(4, MyApp_Case_4_Template, 1, 0);
-    $r3$.ɵɵtemplate(5, MyApp_Case_5_Template, 1, 0);
+    $r3$.ɵɵtemplate(3, MyApp_Case_3_Template, 1, 0)(4, MyApp_Case_4_Template, 1, 0)(5, MyApp_Case_5_Template, 1, 0);
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
