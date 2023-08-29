@@ -140,6 +140,16 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             break;
         }
         break;
+      case ir.OpKind.ProjectionDef:
+        ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
+        break;
+      case ir.OpKind.Projection:
+        if (op.slot === null) {
+          throw new Error('No slot was assigned for project instruction');
+        }
+        ir.OpList.replace<ir.CreateOp>(
+            op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;

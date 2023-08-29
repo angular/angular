@@ -115,6 +115,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestElement(unit, node);
     } else if (node instanceof t.Template) {
       ingestTemplate(unit, node);
+    } else if (node instanceof t.Content) {
+      ingestContent(unit, node);
     } else if (node instanceof t.Text) {
       ingestText(unit, node);
     } else if (node instanceof t.BoundText) {
@@ -126,8 +128,6 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
     }
   }
 }
-
-
 
 /**
  * Ingest an element AST from the template into the given `ViewCompilation`.
@@ -178,6 +178,23 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   for (const {name, value} of tmpl.variables) {
     childView.contextVariables.set(name, value);
   }
+}
+
+/**
+ * Ingest a literal text node from the AST into the given `ViewCompilation`.
+ */
+function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
+  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector);
+  for (const attr of content.attributes) {
+    // Attributes named 'select' are specifically excluded, because they control which content
+    // matches as a property of the `projection`, and are not a plain attribute.
+    if (attr.name.toLowerCase() !== 'select') {
+      ingestBinding(
+          unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+          SecurityContext.NONE, attr.sourceSpan, true, false);
+    }
+  }
+  unit.create.push(op);
 }
 
 /**

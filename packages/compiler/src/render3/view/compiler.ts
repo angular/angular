@@ -244,6 +244,11 @@ export function compileComponentFromMetadata(
 
     // Finally we emit the template function:
     const templateFn = emitTemplateFn(tpl, constantPool);
+
+    if (tpl.contentSelectors !== null) {
+      definitionMap.set('ngContentSelectors', tpl.contentSelectors);
+    }
+
     definitionMap.set('decls', o.literal(tpl.root.decls as number));
     definitionMap.set('vars', o.literal(tpl.root.vars as number));
     if (tpl.consts.length > 0) {

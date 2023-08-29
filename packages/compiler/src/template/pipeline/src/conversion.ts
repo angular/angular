@@ -53,3 +53,10 @@ export function prefixWithNamespace(strippedTag: string, namespace: ir.Namespace
   }
   return `:${keyForNamespace(namespace)}:${strippedTag}`;
 }
+
+export function literalOrArrayLiteral(value: any): o.Expression {
+  if (Array.isArray(value)) {
+    return o.literalArr(value.map(literalOrArrayLiteral));
+  }
+  return o.literal(value, o.INFERRED_TYPE);
+}

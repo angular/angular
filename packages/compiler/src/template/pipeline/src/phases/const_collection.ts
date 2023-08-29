@@ -57,8 +57,7 @@ export function phaseConstCollection(job: CompilationJob): void {
   if (job instanceof ComponentCompilationJob) {
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart ||
-            op.kind === ir.OpKind.Template) {
+        if (ir.isElementOrContainerOp(op)) {
           const attributes = elementAttributes.get(op.xref);
           if (attributes !== undefined) {
             const attrArray = serializeAttributes(attributes);
