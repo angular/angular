@@ -203,7 +203,7 @@ function flagUnion(pattern: RegExp, getFlagValue: (...match: string[]) => number
   return [
     // Match at least one occurrence of the pattern, optionally followed by more occurrences
     // separated by a pipe.
-    new RegExp(pattern.source + '(?:\s*\\\|\s*' + pattern.source + ')*', 'g'),
+    new RegExp(pattern.source + '(?:s*\\\|s*' + pattern.source + ')*', 'g'),
     (match: string) => {
       // Replace all matches with the union of the individually matched flags.
       return String(match.split('|')
