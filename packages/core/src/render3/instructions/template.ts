@@ -74,7 +74,7 @@ function templateFirstCreatePass(
 export function ɵɵtemplate(
     index: number, templateFn: ComponentTemplate<any>|null, decls: number, vars: number,
     tagName?: string|null, attrsIndex?: number|null, localRefsIndex?: number|null,
-    localRefExtractor?: LocalRefExtractor) {
+    localRefExtractor?: LocalRefExtractor): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
@@ -101,6 +101,8 @@ export function ɵɵtemplate(
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   }
+
+  return ɵɵtemplate;
 }
 
 let _locateOrCreateContainerAnchor = createContainerAnchorImpl;

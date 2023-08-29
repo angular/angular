@@ -1761,6 +1761,9 @@
     "name": "ɵɵproperty"
   },
   {
+    "name": "ɵɵtemplate"
+  },
+  {
     "name": "ɵɵtext"
   }
 ]

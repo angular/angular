@@ -23,8 +23,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵpipe(2, "test");
     $r3$.ɵɵtemplate(3, MyApp_Conditional_3_Template, 1, 0);
     $r3$.ɵɵpipe(4, "test");
-    $r3$.ɵɵtemplate(5, MyApp_Conditional_5_Template, 1, 0);
-    $r3$.ɵɵtemplate(6, MyApp_Conditional_6_Template, 1, 0);
+    $r3$.ɵɵtemplate(5, MyApp_Conditional_5_Template, 1, 0)(6, MyApp_Conditional_6_Template, 1, 0);
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {

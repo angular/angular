@@ -36,6 +36,7 @@ const CHAINABLE = new Set([
   R3.elementContainer,
   R3.listener,
   R3.syntheticHostListener,
+  R3.templateCreate,
 ]);
 
 /**
