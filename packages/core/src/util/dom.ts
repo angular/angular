@@ -15,7 +15,7 @@ const COMMENT_DISALLOWED = /^>|^->|<!--|-->|--!>|<!-$/g;
 /**
  * Delimiter in the disallowed strings which needs to be wrapped with zero with character.
  */
-const COMMENT_DELIMITER = /(<|>)/;
+const COMMENT_DELIMITER = /(<|>)/g;
 const COMMENT_DELIMITER_ESCAPED = '\u200B$1\u200B';
 
 /**
