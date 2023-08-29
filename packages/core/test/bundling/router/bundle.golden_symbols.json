@@ -1266,6 +1266,9 @@
     "name": "getData"
   },
   {
+    "name": "getDataKeys"
+  },
+  {
     "name": "getDeclarationTNode"
   },
   {

@@ -8,11 +8,11 @@
 
 import {DOCUMENT} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
-import {Component, Inject, Injectable, NgModule} from '@angular/core';
+import {Component, inject, Inject, Injectable, NgModule} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule, RouterStateSnapshot, TitleStrategy, withRouterConfig} from '@angular/router';
-
-import {provideRouter} from '../src/provide_router';
+import {ActivatedRoute, provideRouter, ResolveFn, Router, RouterModule, RouterStateSnapshot, TitleStrategy, withRouterConfig} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
 
 describe('title strategy', () => {
   describe('DefaultTitleStrategy', () => {
@@ -113,6 +113,31 @@ describe('title strategy', () => {
       ]);
       await router.navigateByUrl('home');
       expect(router.routerState.snapshot.root.firstChild!.title).toEqual('My Application');
+    });
+
+    it('pushes updates through the title observable', async () => {
+      @Component({template: '', standalone: true})
+      class HomeCmp {
+        private readonly title$ = inject(ActivatedRoute).title.pipe(takeUntilDestroyed());
+        title?: string;
+
+        constructor() {
+          this.title$.subscribe(v => this.title = v);
+        }
+      }
+      const titleResolver: ResolveFn<string> = route => route.queryParams.id;
+      router.resetConfig([{
+        path: 'home',
+        title: titleResolver,
+        component: HomeCmp,
+        runGuardsAndResolvers: 'paramsOrQueryParamsChange'
+      }]);
+
+      const harness = await RouterTestingHarness.create();
+      const homeCmp = await harness.navigateByUrl('/home?id=1', HomeCmp);
+      expect(homeCmp.title).toEqual('1');
+      await harness.navigateByUrl('home?id=2');
+      expect(homeCmp.title).toEqual('2');
     });
   });
 
