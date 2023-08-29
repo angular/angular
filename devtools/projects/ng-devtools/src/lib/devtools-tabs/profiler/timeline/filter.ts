@@ -88,7 +88,7 @@ const queryMap: {[query in QueryType]: Query} =
       return map;
     }, {} as {[query in QueryType]: Query});
 
-const queryRe = new RegExp(`!?\s*(${QueryType.Duration}|${QueryType.Source})$`, 'g');
+const queryRe = new RegExp(`!?s*(${QueryType.Duration}|${QueryType.Source})$`, 'g');
 
 type Predicate = true|false;
 type QueryAST = [Predicate, QueryType, QueryArguments];
