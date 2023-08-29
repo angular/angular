@@ -61,7 +61,7 @@ function quoteKey(key: string): string {
   if (/^[a-z0-9_]+$/i.test(key)) {
     return key;
   } else {
-    return `'${key.replace(/'/g, '\\\'')}'`;
+    return `'${key.replace(/(?<!\\)'/g, '\\\'')}'`;
   }
 }
 

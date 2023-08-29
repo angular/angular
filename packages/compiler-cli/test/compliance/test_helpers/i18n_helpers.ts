@@ -150,5 +150,5 @@ function i18nMsgLocalizeMeta(meta?: Meta): string {
  * placeholder value. Such special cases should not be wrapped in quotes.
  */
 function quotedValue(value: string): string {
-  return value.startsWith('$') ? value : `"${value.replace(/"/g, '\\"')}"`;
+  return value.startsWith('$') ? value : `"${value.replace(/(?<!\\)"/g, '\\"')}"`;
 }
