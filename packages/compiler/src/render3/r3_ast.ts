@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
+import {AST, ASTWithSource, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
 import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -268,7 +268,7 @@ export interface ForLoopBlockContext {
 
 export class ForLoopBlock implements Node {
   constructor(
-      public itemName: string, public expression: AST, public trackBy: AST,
+      public itemName: string, public expression: ASTWithSource, public trackBy: ASTWithSource,
       public contextVariables: ForLoopBlockContext|null, public children: Node[],
       public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
