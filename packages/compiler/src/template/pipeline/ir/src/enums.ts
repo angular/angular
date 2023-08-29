@@ -161,6 +161,16 @@ export enum OpKind {
   Namespace,
 
   /**
+   * Configure a content projeciton definition for the view.
+   */
+  ProjectionDef,
+
+  /**
+   * Create a content projection slot.
+   */
+  Projection,
+
+  /**
    * The start of an i18n block.
    */
   I18nStart,
@@ -174,8 +184,6 @@ export enum OpKind {
    * The end of an i18n block.
    */
   I18nEnd,
-
-  // TODO: Add Host Listeners, and possibly other host ops also.
 }
 
 /**
@@ -310,8 +318,8 @@ export enum SemanticVariableKind {
 
 /**
  * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
- * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost of
- * producing quirky or larger code in some cases.
+ * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost
+ * of producing quirky or larger code in some cases.
  */
 export enum CompatibilityMode {
   Normal,
