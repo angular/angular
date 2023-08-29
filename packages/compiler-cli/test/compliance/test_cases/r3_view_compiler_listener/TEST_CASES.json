@@ -281,8 +281,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reference correct context in listener inside embedded view",
