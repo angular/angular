@@ -1252,6 +1252,11 @@
                   "tooltip": "Understand the details of NgModules."
                 },
                 {
+                  "url": "guide/universal-ngmodule",
+                  "title": "Server-side rendering with NgModule applications",
+                  "tooltip": "Render HTML server-side with Angular Universal (using NgModule)."
+                },
+                {
                   "url": "guide/ngmodule-faq",
                   "title": "NgModule FAQs",
                   "tooltip": "Answers to frequently asked questions about NgModules."
