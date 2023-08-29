@@ -179,7 +179,7 @@ function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.Bo
   // Any dollar signs that appear in the attribute name and/or value need to be escaped because they
   // need to be taken as literal characters rather than special selector behavior of dollar signs in
   // CSS.
-  return selector.replace('$', '\\$');
+  return selector.replace(/\$/g, '\\$');
 }
 
 function getNodeName(node: t.Template|t.Element): string {
