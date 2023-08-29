@@ -693,9 +693,9 @@ export interface CookedRawString {
 
 const escapeSlashes = (str: string): string => str.replace(/\\/g, '\\\\');
 const escapeStartingColon = (str: string): string => str.replace(/^:/, '\\:');
-const escapeColons = (str: string): string => str.replace(/:/g, '\\:');
+const escapeColons = (str: string): string => str.replace(/(?<!\\):/g, '\\:');
 const escapeForTemplateLiteral = (str: string): string =>
-    str.replace(/`/g, '\\`').replace(/\${/g, '$\\{');
+    str.replace(/(?<!\\)`/g, '\\`').replace(/\${/g, '$\\{');
 
 /**
  * Creates a `{cooked, raw}` object from the `metaBlock` and `messagePart`.
@@ -1605,7 +1605,7 @@ function tagToString(tag: JSDocTag): string {
     if (tag.text.match(/\/\*|\*\//)) {
       throw new Error('JSDoc text cannot contain "/*" and "*/"');
     }
-    out += ' ' + tag.text.replace(/@/g, '\\@');
+    out += ' ' + tag.text.replace(/(?<!\\)@/g, '\\@');
   }
   return out;
 }

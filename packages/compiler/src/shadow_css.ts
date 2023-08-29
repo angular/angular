@@ -621,8 +621,8 @@ export class ShadowCss {
   }
 
   private _makeScopeMatcher(scopeSelector: string): RegExp {
-    const lre = /\[/g;
-    const rre = /\]/g;
+    const lre = /(?<!\\)\[/g;
+    const rre = /(?<!\\)\]/g;
     scopeSelector = scopeSelector.replace(lre, '\\[').replace(rre, '\\]');
     return new RegExp('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
   }
