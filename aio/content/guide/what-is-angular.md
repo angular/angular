@@ -1,168 +1,365 @@
 # What is Angular?
 
-This topic can help you understand Angular: what Angular is, what advantages it provides, and what you might expect as you start to build your applications.
-
 Angular is a development platform, built on [TypeScript](https://www.typescriptlang.org).
+
 As a platform, Angular includes:
 
-*   A component-based framework for building scalable web applications
-*   A collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more
-*   A suite of developer tools to help you develop, build, test, and update your code
+- A component-based framework for building scalable web applications
+- A collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more
+- A suite of developer tools to help you develop, build, test, and update your code
 
-With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications.
-Angular is designed to make updating as straightforward as possible, so take advantage of the latest developments with minimal effort.
-Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
-
-<div class="alert is-helpful">
-
-See the <live-example name="what-is-angular"></live-example> for a working example containing the code snippets in this guide.
-
-</div>
+With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications. Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
 
 <a id="essentials"></a>
 
-## Angular applications: The essentials
+## Prerequisites
 
-This section explains the core ideas behind Angular.
-Understanding these ideas can help you design and build your applications more effectively.
+Like most modern frameworks, Angular expects you to be familiar with HTML, CSS and JavaScript. In addition, it’s recommended to have familiarity with the following concepts and tools:
+
+<a id="concepts"></a>
+
+### Concepts
+
+- [JavaScript Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+- [TypeScript fundamentals](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
+- [TypeScript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+
+<a id="tools"></a>
+
+### Tools
+
+- **TypeScript** - This is shipped by default with every Angular app to provide improved tooling and enhanced maintainability for a better developer experience.
+- **Command Line Interface (CLI)** - Angular uses a compiler in order to abstract tooling complexity and optimize your code so you can focus on building your app.
 
 <a id="components"></a>
 
-### Components
+## Components
 
-Components are the building blocks that compose an application.
-A component includes a TypeScript class with a `@Component()` decorator, an HTML template, and styles.
-The `@Component()` decorator specifies the following Angular-specific information:
+Components are the fundamental building block for creating applications in Angular. By leveraging component architecture, Angular aims to provide structure for organizing your project into manageable, well organized parts with clear responsibilities so that your code is maintainable and scalable.
 
-*   A CSS selector that defines how the component is used in a template.
-    HTML elements in your template that match this selector become instances of the component.
+An Angular component can be identified by the `component` suffix (e.g., `my-custom-name.component.ts` and has the following:
 
-*   An HTML template that instructs Angular how to render the component
-*   An optional set of CSS styles that define the appearance of the template's HTML elements
+- A decorator to define configuration options for things like:
+  - A selector that defines what the tag name is when referring a component in a template
+  - An HTML template that controls what is rendered to the browser
+- A TypeScript class that defines the behavior of the component. Examples include handling user input, managing state, defining methods, etc.
 
-The following is a minimal Angular component.
+Here is a simplified example of a TodoListItem component.
 
-<code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world/hello-world.component.ts"></code-example>
+```ts
+// 📄 todo-list-item.component.ts
+@Component({
+  standalone: true,
+  selector: 'todo-list-item',
+  template: ` <li>(TODO) Read cup of coffee introduction</li> `,
+  styles: ['li { color: papayawhip; }'],
+})
+export class TodoListItem {
+  /* Component behavior is defined in here */
+}
+```
 
-To use this component, you write the following in a template:
+<a id="behavior"></a>
 
-<code-example format="html" language="html" path="what-is-angular/src/app/app.component.html" region="hello-world-selector"></code-example>
+### Behavior
 
-When Angular renders this component, the resulting DOM looks like this:
+Now that we have the basic structure for the component, let’s learn more about how you define the component’s behavior.
 
-<code-example format="html" language="html" path="what-is-angular/src/app/hello-world-example.html"></code-example>
+#### State
 
-Angular's component model offers strong encapsulation and an intuitive application structure.
-Components also make your application painless to unit test and can improve the general readability of your code.
+When defining data that you want the component to manage, this can be accomplished by declaring it by defining [class fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields).
 
-For more information on what to do with components, see the [Components](guide/component-overview) section.
+In the example of a `todo-list-item.component.ts`, there are two properties we want to track: `taskTitle` and `isComplete`. Using the [class field syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields), they can be defined as follows:
+
+```ts
+// 📄 todo-list-item.component.ts
+@Component({ ... })
+export class TodoList {
+  taskTitle = '';
+  isComplete = false;
+}
+```
+
+#### Methods
+
+You can define functions for a component by declaring methods within the component class.
+
+```ts
+// 📄 todo-list-item.component.ts
+@Component({ ... })
+export class TodoList {
+  taskTitle = '';
+  isComplete = false;
+
+  updateTitle(newTitle: string) {
+    this.taskTitle = newTitle;
+  }
+
+  completeTask() {
+    this.isComplete = true;
+  }
+}
+```
 
 <a id="templates"></a>
 
 ### Templates
 
-<!-- vale Angular.Google_WordListWarnings = NO -->
+Every component has an HTML template that defines what that component renders to the DOM.
 
-Every component has an HTML template that declares how that component renders.
-You define this template either inline or by file path.
+HTML templates can be defined as an inline template within the TypeScript class, or in separate files with the `templateUrl` property. To learn more, check out [the docs on defining component templates](guide/component-overview#defining-a-components-template).
 
-<!-- vale Angular.Google_WordListWarnings = YES -->
+Within this document, the examples will use inline templates for more concise code snippets.
 
-Angular adds syntax elements that extend HTML so you can insert dynamic values from your component.
-Angular automatically updates the rendered DOM when your component's state changes.
-One application of this feature is inserting dynamic text, as shown in the following example.
+#### Rendering Dynamic Data
 
-<code-example format="html" language="html" path="what-is-angular/src/app/hello-world-interpolation/hello-world-interpolation.component.html" region="say-hello"></code-example>
+When you need to display dynamic content in your template, Angular uses the double curly brace syntax in order to distinguish between static and dynamic content.
 
-The value for message comes from the component class:
+```ts
+@Component({
+  template: ` <p>Title: {{ taskTitle }}</p> `,
+})
+export class TodoListItem {
+  taskTitle = 'Read cup of coffee';
+}
+```
 
-<code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world-interpolation/hello-world-interpolation.component.ts"></code-example>
+This is how it renders to the page.
 
-When the application loads the component and its template, the user sees the following:
+```html
+<p>Title: Read cup of coffee</p>
+```
 
-<code-example format="shell" language="html">
+This syntax declares an **interpolation** between the dynamic data property inside of the HTML. As a result, whenever the data changes, Angular will automatically update the DOM reflecting the new value of the property.
 
-&lt;p&gt;Hello, World!&lt;/p&gt;
+#### Dynamic Properties and Attributes
 
-</code-example>
+When you need to dynamically set the value of attributes in an HTML element, the target property is wrapped in square brackets. This binds the attribute with the desired dynamic data by informing Angular that the declared value should be interpreted as a JavaScript-like statement ([with some Angular enhancements](guide/understanding-template-expr-overview)) instead of a plain string.
 
-Notice the use of double curly braces—they instruct Angular to interpolate the contents within them.
+```html
+<button [disabled]="hasPendingChanges"></button>
+```
 
-Angular also supports property bindings, to help you set values for properties and attributes of HTML elements and pass values to your application's presentation logic.
+In this example, the disabled property is tied to the `hasPendingChanges` variable that Angular would expect to find within the component’s state.
 
-<code-example format="html" language="html" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html" region="bindings"></code-example>
+#### Event Handling
 
-Notice the use of the square brackets—that syntax indicates that you're binding the property or attribute to a value in the component class.
+You can bind event listeners by specifying the event name in parenthesis and invoking a method on the right-hand-side of the equals sign:
 
-Declare event listeners to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
-You declare an event listener by specifying the event name in parentheses:
+```html
+<button (click)="saveChanges()">Save Changes</button>
+```
 
-<code-example format="html" language="html" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html" region="event-binding"></code-example>
+If you need to pass the event object to your event listener, Angular provides an implicit `$event` variable that can be used inside the function call:
 
-The preceding example calls a method, which is defined in the component class:
+```html
+<button (click)="saveChanges($event)">Save Changes</button>
+```
 
-<code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts" region="method"></code-example>
+<a id="styles"></a>
 
-The following is a combined example of Interpolation, Property Binding, and Event Binding within an Angular template:
+### Styles
 
-<code-tabs linenums="true">
-    <code-pane header="hello-world-bindings.component.ts" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts"></code-pane>
-    <code-pane header="hello-world-bindings.component.html" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html"></code-pane>
-</code-tabs>
+When you need to style a component, there are two optional properties that you can configure inside of the `@Component` decorator.
 
-Add features to your templates by using [directives](guide/built-in-directives).
-The most popular directives in Angular are `*ngIf` and `*ngFor`.
-Use directives to perform a variety of tasks, such as dynamically modifying the DOM structure.
-And create your own custom directives to create great user experiences.
+Similar to component templates, you can manage a component's styles in the same file as the TypeScript class, or in separate files with the `styleUrls` properties.
 
-The following code is an example of the `*ngIf` directive.
+Components can optionally include a list of CSS styles that apply to that component's DOM:
 
-<code-tabs linenums="true">
-  <code-pane header="hello-world-ngif.component.ts" path="what-is-angular/src/app/hello-world-ngif/hello-world-ngif.component.ts"></code-pane>
-  <code-pane header="hello-world-ngif.component.html" path="what-is-angular/src/app/hello-world-ngif/hello-world-ngif.component.html"></code-pane>
-</code-tabs>
+```ts
+@Component({
+  selector: 'profile-pic',
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
+  styles: [
+    `
+      img {
+        border-radius: 50%;
+      }
+    `,
+  ],
+})
+export class ProfilePic {
+  /* Your code goes here */
+}
+```
 
-Angular's declarative templates let you cleanly separate your application's logic from its presentation.
-Templates are based on standard HTML, for ease in building, maintaining, and updating.
+By default, a component's style will only apply to elements in that component's template in order to limit the side effects.
 
-For more information on templates, see the [Templates](guide/template-syntax) section.
+To learn more, check out [the docs on component styling](guide/component-styles).
 
-<a id="di"></a>
+<a id="directives"></a>
 
-### Dependency injection
+## Directives
 
-Dependency injection lets you declare the dependencies of your TypeScript classes without taking care of their instantiation.
-Instead, Angular handles the instantiation for you.
-This design pattern lets you write more testable and flexible code.
-Understanding dependency injection is not critical to start using Angular, but it is strongly recommended as a best practice. Many aspects of Angular take advantage of it to some degree.
+When building applications, developers often need to extend on the behavior of an HTML element or Angular directives/components. Examples of this include: displaying content based on a certain condition, rendering a list of items based on application data, changing the styles on an element based on user interaction, etc.
 
-To illustrate how dependency injection works, consider the following example.
-The first file, `logger.service.ts`, defines a `Logger` class.
-This class contains a `writeCount` function that logs a number to the console.
+To solve this problem, Angular uses the concept of directives, which allow you to add new behaviors to an element in a declarative and reusable way.
 
-<code-example format="typescript" language="typescript" path="what-is-angular/src/app/logger.service.ts"></code-example>
+### Conditional rendering
 
-Next, the `hello-world-di.component.ts` file defines an Angular component.
-This component contains a button that uses the `writeCount` function of the Logger class.
-To access that function, the `Logger` service is injected into the `HelloWorldDI` class by adding `private logger: Logger` to the constructor.
+One of the most common scenarios that developers encounter is the desire to show or hide content in templates based on a condition.
 
-<code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world-di/hello-world-di.component.ts"></code-example>
+Similar to JavaScript's `if` control block, Angular provides a built-in `ngIf` directive to control whether an element will render if the expression returns a truthy value.
 
-For more information about dependency injection and Angular, see the [Dependency injection in Angular](guide/dependency-injection) section.
+```html
+<section class="admin-controls" *ngIf="hasAdminPrivliges">
+  The content you are looking for is here.
+</section>
+```
+
+If `hasAdminPrivileges` is true, the application will display the content to the user, otherwise, the element is removed from the DOM entirely.
+
+### Rendering a list
+
+Another common scenario is to render a list of items based on dynamic data.
+
+Similar to JavaScript’s `for` loop, Angular provides another built-in directive called `ngFor`, The following code will render one `<li>` element for each item in `taskList`.
+
+```html
+<ul class="ingredient-list">
+  <li *ngFor="let task of taskList">{{ task }}</li>
+</ul>
+```
+
+### Custom directives
+
+While built-in directives help to solve common problems that developers encounter, there are situations where developers require custom behavior that’s specific to their application. In these cases, Angular provides a way for you to create custom directives.
+
+Custom Angular directives can be identified by the `directive` suffix (e.g., `my-custom-name.directive.ts`).
+
+Similar to defining a component, directives are comprised of the following:
+
+- A TypeScript decorator to define configuration options for things like:
+  - A selector that defines the tag name is when the component is called
+- A TypeScript class that defines the extended behavior the directive will add to the respective HTML element.
+
+For example, here’s what a custom directive for highlighting an element:
+
+```ts
+@Directive({
+  selector: '[appHighlight]',
+})
+export class HighlightDirective {
+  private el = inject(ElementRef);
+  constructor() {
+    this.el.nativeElement.style.backgroundColor = 'yellow';
+  }
+}
+```
+
+To apply this to an element, the directive is called by adding it as an attribute.
+
+```html
+<p appHighlight>Look at me!</p>
+```
+
+Directives can also leverage user events, take input for additional customization, but this goes beyond the scope of this article. To learn more, check out [the docs on creating custom directives](guide/attribute-directives).
+
+<a id="services"></a>
+
+## Services
+
+When you need to share logic between components, Angular allows you to create a “service” which allows you to inject code into components while managing it from a single source of truth.
+
+Angular services can be identified by the `service` suffix (e.g., `my-custom-name.service.ts`).
+
+Similar to defining a component, services are comprised of the following:
+
+- A TypeScript decorator to define configuration options for things like:
+  - [`providedIn`](api/core/Injectable#providedIn) - This allows you to define what parts of the application can access the service. For example, ‘root’ will allow a service to be accessed anywhere within the application.
+- A TypeScript class that defines the desired code that will be accessible when the service is injected
+
+Here is an example of a `Calculator` service.
+
+```ts
+import {Injectable} from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+class CalculatorService {
+  add(x: number, y: number) {
+    return x + y;
+  }
+}
+```
+
+If we wanted to call the service in a Receipt component for example, here’s what it might look like:
+
+```ts
+import { Component } from '@angular/core';
+import { CalculatorService } from './calculator.service';
+
+@Component({
+  selector: 'app-receipt’,
+  template: `<p>The total is {{ totalCost }}</h1>`,
+})
+export class Receipt {
+  private calculatorService = inject(CalculatorService);
+  totalCost = this.calculatorService.add(50, 25);
+}
+```
+
+In this example, the `CalculatorService` is being used by calling the Angular function `inject` and passing in the service to it.
+
+<a id="organization"></a>
+
+## Organization
+
+Standalone components are a new organizational pattern that were introduced in Angular v15 and is the recommended place to start. In contrast to [NgModules](guide/ngmodules), it allows developers to organize code and manage dependencies through components rather than feature modules.
+
+For example, in the traditional NgModule pattern, you would need to create a TodoModule and manage all of its dependencies through this module.
+
+```ts (Todo.module.ts)
+import {FormsModule} from '@angular/forms';
+import {TodoList} from '../todo/todo-list.component';
+
+@NgModule({
+  declarations: [TodoList],
+  imports: [FormsModule],
+  exports: [TodoList, FormsModule],
+})
+export class TodoModule {}
+```
+
+However, you can now achieve something similar with a standalone component without the need for a module file:
+
+```ts (Todo.component.ts)
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {TodoList} from '../todo/todo-list.component';
+
+@Component({
+  standalone: true,
+  selector: 'todo-app',
+  imports: [FormsModule, TodoList],
+  template: ` ... <todo-list [tasks]="taskList"></todo-list> `,
+})
+export class PhotoGalleryComponent {
+  // component logic
+}
+```
+
+While most of this should be familiar (from the Components section), two things that are unique to this new pattern are the `standalone` flag and the `imports` key.
+
+- `standalone` - When provided the value `true`, this tells Angular that the component does not need to be declared in an NgModule
+- `imports` - Allows developers to declare what dependencies will be used in the component
+
+In other words, rather than having to define a specific context in which code should be organized, developers are able to specify the dependencies directly within the component context itself.
 
 <a id="cli"></a>
 
-## Angular CLI
+## Command Line Interface (CLI)
 
-The Angular CLI is the fastest, straightforward, and recommended way to develop Angular applications.
-The Angular CLI makes some tasks trouble-free.
-For example:
+The Angular CLI is the recommended way to develop Angular applications and can make some tasks trouble-free.
+
+Some examples of commom Angular CLI commands include:
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
-| Command                     | Details |
-|:---                         |:---     |
-| [ng build](cli/build)       | Compiles an Angular application into an output directory.                     |
+| Command                     | Details                                                               |
+| :-------------------------- | :-------------------------------------------------------------------- |
+| [ng build](cli/build)       | Compiles an Angular application into an output directory.             |
 | [ng serve](cli/serve)       | Builds and serves your application, rebuilding on file changes.       |
 | [ng generate](cli/generate) | Generates or modifies files based on a schematic.                     |
 | [ng test](cli/test)         | Runs unit tests on a given project.                                   |
@@ -170,54 +367,37 @@ For example:
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-The Angular CLI is a valuable tool for building out your applications.
-
 For more information about the Angular CLI, see the [Angular CLI Reference](cli) section.
 
 <a id="1p-libraries"></a>
 
 ## First-party libraries
 
-The section, [Angular applications: the essentials](#essentials), provides a brief overview of a couple of the key architectural elements that are used when building Angular applications.
-The many benefits of Angular really become clear when your application grows and you want to add functions such as site navigation or user input.
-Use the Angular platform to incorporate one of the many first-party libraries that Angular provides.
+Angular provides many first-party libraries to support common functionality that developers often encounter when building their apps.
 
-Some of the libraries available to you include:
+Some of the popular libraries available in the ecosystem include:
 
 <!-- vale Angular.Google_Acronyms = NO -->
 
-| Library                                   | Details |
-|:---                                       |:---     |
-| [Angular Router](guide/router)            | Advanced client-side navigation and routing based on Angular components. Supports lazy-loading, nested routes, custom path matching, and more. |
-| [Angular Forms](guide/forms-overview)     | Uniform system for form participation and validation.                                                                                          |
-| [Angular HttpClient](guide/understanding-communicating-with-http)          | Robust HTTP client that can power more advanced client-server communication.                                                                   |
-| [Angular Animations](guide/animations)    | Rich system for driving animations based on application state.                                                                                 |
-| [Angular PWA](guide/service-worker-intro) | Tools for building Progressive Web Applications \(PWA\) including a service worker and Web application manifest.                                      |
-| [Angular Schematics](guide/schematics)    | Automated scaffolding, refactoring, and update tools that simplify development at large scale.                                                 |
+| Library                                                           | Details                                                                                                                                        |
+| :---------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Angular Router](guide/router)                                    | Advanced client-side navigation and routing based on Angular components. Supports lazy-loading, nested routes, custom path matching, and more. |
+| [Angular Forms](guide/forms-overview)                             | Uniform system for form participation and validation.                                                                                          |
+| [Angular HttpClient](guide/understanding-communicating-with-http) | Robust HTTP client that can power more advanced client-server communication.                                                                   |
+| [Angular Animations](guide/animations)                            | Rich system for driving animations based on application state.                                                                                 |
+| [Angular PWA](guide/service-worker-intro)                         | Tools for building Progressive Web Applications \(PWA\) including a service worker and Web application manifest.                               |
+| [Angular Schematics](guide/schematics)                            | Automated scaffolding, refactoring, and update tools that simplify development at large scale.                                                 |
 
 <!-- vale Angular.Google_Acronyms = YES -->
 
-These libraries expand your application's capabilities while also letting you focus more on the features that make your application unique.
-Add these libraries knowing that they're designed to integrate flawlessly into and update simultaneously with the Angular framework.
-
-These libraries are only required when they can help you add features to your applications or solve a particular problem.
-
 ## Next steps
-
-This topic gives you a brief overview of what Angular is, the advantages it provides, and what to expect as you start to build your applications.
 
 To see Angular in action, see the [Getting Started](start) tutorial.
 This tutorial uses [stackblitz.com](https://stackblitz.com), for you to explore a working example of Angular without any installation requirements.
 
-The following sections are recommended to explore Angular's capabilities further:
+If you’re interested in learning more about how you can build apps with Angular, check out the following resources:
 
-*   [Understanding Angular](guide/understanding-angular-overview)
-*   [Angular Developer Guide](guide/developer-guide-overview)
+- [Tutorials](tutorial/first-app)
+- [In-Depth Guides](guide/developer-guide-overview)
 
-<!-- links -->
-
-<!-- external links -->
-
-<!-- end links -->
-
-@reviewed 2022-02-28
+@reviewed 2023-08-15
