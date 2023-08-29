@@ -55,6 +55,7 @@ import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
+import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -97,6 +98,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseSlotAllocation},
   {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
+  {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
   {kind: Kind.Both, fn: phaseConstCollection},
   {kind: Kind.Both, fn: phaseVarCounting},
   {kind: Kind.Tmpl, fn: phaseGenerateAdvance},

@@ -18,28 +18,6 @@ import {element} from '../instruction';
  * array expressions, and lifts them into the overall component `consts`.
  */
 export function phaseConstCollection(job: CompilationJob): void {
-  if (job instanceof ComponentCompilationJob) {
-    // Serialize the extracted messages into the const array.
-    const messageConstIndices: {[id: ir.XrefId]: ir.ConstIndex} = {};
-    for (const unit of job.units) {
-      for (const op of unit.create) {
-        if (op.kind === ir.OpKind.ExtractedMessage) {
-          messageConstIndices[op.owner] = job.addConst(op.expression, op.statements);
-          ir.OpList.remove<ir.CreateOp>(op);
-        }
-      }
-    }
-
-    // Assign const index to i18n ops that messages were extracted from.
-    for (const unit of job.units) {
-      for (const op of unit.create) {
-        if (op.kind === ir.OpKind.I18nStart && messageConstIndices[op.xref] !== undefined) {
-          op.messageIndex = messageConstIndices[op.xref];
-        }
-      }
-    }
-  }
-
   // Collect all extracted attributes.
   const elementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const unit of job.units) {
