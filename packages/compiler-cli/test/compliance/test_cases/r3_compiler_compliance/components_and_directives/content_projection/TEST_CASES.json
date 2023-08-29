@@ -99,8 +99,7 @@
             "ng_project_as_selector.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should take the first selector if multiple values are passed into ngProjectAs",
@@ -114,8 +113,7 @@
             "ng_project_as_compound_selector.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should include parsed ngProjectAs selectors into template attrs",
@@ -129,8 +127,7 @@
             "ng_project_as_attribute.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should capture the node name of ng-content with a structural directive",
