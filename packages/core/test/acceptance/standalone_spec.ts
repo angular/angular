@@ -765,7 +765,7 @@ describe('standalone components, directives, and pipes', () => {
           tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
       const message2 = `2. If '${
           tag}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`;
-      return new RegExp(`${prefix}\s*\n\s*${message1}\s*\n\s*${message2}`);
+      return new RegExp(`${prefix}s*\ns*${message1}s*\ns*${message2}`);
     };
 
     it('should warn the user when an unknown element is present', () => {
