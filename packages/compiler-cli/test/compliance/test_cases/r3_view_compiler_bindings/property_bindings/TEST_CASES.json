@@ -126,8 +126,7 @@
             "chain_synthetic_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple property bindings on an ng-template",
