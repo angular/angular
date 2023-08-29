@@ -1,17 +1,21 @@
 // #docregion
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormGroup, ReactiveFormsModule} from '@angular/forms';
 
-import { QuestionBase } from './question-base';
-import { QuestionControlService } from './question-control.service';
+import {DynamicFormQuestionComponent} from './dynamic-form-question.component';
+
+import {QuestionBase} from './question-base';
+import {QuestionControlService} from './question-control.service';
 
 @Component({
+  standalone: true,
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
-  providers: [ QuestionControlService ]
+  providers: [QuestionControlService],
+  imports: [CommonModule, DynamicFormQuestionComponent, ReactiveFormsModule],
 })
 export class DynamicFormComponent implements OnInit {
-
   @Input() questions: QuestionBase<string>[] | null = [];
   form!: FormGroup;
   payLoad = '';
