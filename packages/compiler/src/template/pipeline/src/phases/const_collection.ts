@@ -11,6 +11,7 @@ import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {HostBindingCompilationJob, type CompilationJob, ComponentCompilationJob} from '../compilation';
+import {literalOrArrayLiteral} from '../conversion';
 import {element} from '../instruction';
 
 /**
@@ -19,12 +20,12 @@ import {element} from '../instruction';
  */
 export function phaseConstCollection(job: CompilationJob): void {
   // Collect all extracted attributes.
-  const elementAttributes = new Map<ir.XrefId, ElementAttributes>();
+  const allElementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
-        const attributes = elementAttributes.get(op.target) || new ElementAttributes();
-        elementAttributes.set(op.target, attributes);
+        const attributes = allElementAttributes.get(op.target) || new ElementAttributes();
+        allElementAttributes.set(op.target, attributes);
         attributes.add(op.bindingKind, op.name, op.expression);
         ir.OpList.remove<ir.CreateOp>(op);
       }
@@ -36,7 +37,7 @@ export function phaseConstCollection(job: CompilationJob): void {
     for (const unit of job.units) {
       for (const op of unit.create) {
         if (ir.isElementOrContainerOp(op)) {
-          const attributes = elementAttributes.get(op.xref);
+          const attributes = allElementAttributes.get(op.xref);
           if (attributes !== undefined) {
             const attrArray = serializeAttributes(attributes);
             if (attrArray.entries.length > 0) {
@@ -49,7 +50,7 @@ export function phaseConstCollection(job: CompilationJob): void {
   } else if (job instanceof HostBindingCompilationJob) {
     // TODO: If the host binding case further diverges, we may want to split it into its own
     // phase.
-    for (const [xref, attributes] of elementAttributes.entries()) {
+    for (const [xref, attributes] of allElementAttributes.entries()) {
       if (xref !== job.root.xref) {
         throw new Error(
             `An attribute would be const collected into the host binding's template function, but is not associated with the root xref.`);
@@ -105,6 +106,18 @@ class ElementAttributes {
       return;
     }
     this.known.add(name);
+    if (name === 'ngProjectAs') {
+      // TODO: Perhaps we should consider ingesting raw attribute strings instead of expressions, in
+      // order to avoid this messy unboxing?
+      if (value === null || !(value instanceof o.LiteralExpr)) {
+        throw Error('ngProjectAs must have a string literal value');
+      }
+      this.projectAs = value.value as string;
+      // TODO: TemplateDefinitionBuilder allows `ngProjectAs` to also be assigned as a literal
+      // attribute. Is this sane?
+    }
+
+
     const array = this.arrayFor(kind);
     array.push(...getAttributeNameLiterals(name));
     if (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.StyleProperty) {
@@ -147,7 +160,11 @@ function serializeAttributes({attributes, bindings, classes, i18n, projectAs, st
   const attrArray = [...attributes];
 
   if (projectAs !== null) {
-    attrArray.push(o.literal(core.AttributeMarker.ProjectAs), o.literal(projectAs));
+    // Parse the attribute value into a CssSelectorList. Note that we only take the
+    // first selector, because we don't support multiple selectors in ngProjectAs.
+    const parsedR3Selector = core.parseSelectorToR3Selector(projectAs)[0];
+    attrArray.push(
+        o.literal(core.AttributeMarker.ProjectAs), literalOrArrayLiteral(parsedR3Selector));
   }
   if (classes.length > 0) {
     attrArray.push(o.literal(core.AttributeMarker.Classes), ...classes);
