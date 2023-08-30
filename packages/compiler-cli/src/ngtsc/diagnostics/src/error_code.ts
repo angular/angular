@@ -199,10 +199,9 @@ export enum ErrorCode {
   WARN_NGMODULE_ID_UNNECESSARY = 6100,
 
   /**
-   * Not actually raised by the compiler, but reserved for documentation of a View Engine error when
-   * a View Engine build depends on an Ivy-compiled NgModule.
+   * 6999 was previously assigned to NGMODULE_VE_DEPENDENCY_ON_IVY_LIB
+   * To prevent any confusion, let's not reassign it.
    */
-  NGMODULE_VE_DEPENDENCY_ON_IVY_LIB = 6999,
 
   /**
    * An element name failed validation against the DOM schema.
