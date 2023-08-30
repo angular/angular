@@ -162,6 +162,7 @@ ts_library(
         "detect-angular-for-extension-icon.ts",
     ],
     deps = [
+        "//devtools/projects/shared-utils",
         "@npm//@types",
     ],
 )

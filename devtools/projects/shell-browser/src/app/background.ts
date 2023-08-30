@@ -172,7 +172,7 @@ const getPopUpName = (ng: AngularDetection) => {
   return 'supported.html';
 };
 
-chrome.runtime.onMessage.addListener((req, sender) => {
+chrome.runtime.onMessage.addListener((req: AngularDetection, sender) => {
   if (!req.isAngularDevTools) {
     return;
   }

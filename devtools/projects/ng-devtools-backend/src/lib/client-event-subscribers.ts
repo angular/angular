@@ -8,8 +8,8 @@
 
 import {ComponentExplorerViewQuery, ComponentType, DevToolsNode, DirectivePosition, DirectiveType, ElementPosition, Events, MessageBus, ProfilerFrame, SerializedInjector, SerializedProviderRecord} from 'protocol';
 import {debounceTime} from 'rxjs/operators';
+import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from 'shared-utils';
 
-import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {getElementInjectorElement, getInjectorFromElementNode, getInjectorProviders, getInjectorResolutionPath, getLatestComponentState, hasDiDebugAPIs, idToInjector, injectorsSeen, isElementInjector, nodeInjectorToResolutionPath, queryDirectiveForest, serializeProviderRecord, serializeResolutionPath, updateState} from './component-tree';
 import {unHighlight} from './highlighter';
