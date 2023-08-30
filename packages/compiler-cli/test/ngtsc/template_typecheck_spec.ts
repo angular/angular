@@ -3655,6 +3655,52 @@ suppress
           `Property 'does_not_exist_error' does not exist on type 'Main'.`,
         ]);
       });
+
+      it('should check `when` trigger expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#defer when isVisible() || does_not_exist}Hello{/defer}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            isVisible() {
+              return true;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check `prefetch when` trigger expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#defer prefetch when isVisible() || does_not_exist}Hello{/defer}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            isVisible() {
+              return true;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        ]);
+      });
     });
 
     describe('conditional blocks', () => {
