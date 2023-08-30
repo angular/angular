@@ -1175,8 +1175,9 @@ describe('R3 template transform', () => {
 
   describe('switch blocks', () => {
     // TODO(crisbeto): temporary utility while control flow is disabled by default.
-    function expectSwitch(html: string) {
-      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['switch']}).nodes);
+    function expectSwitch(html: string, preserveWhitespaces?: boolean) {
+      return expectFromR3Nodes(
+          parse(html, {enabledBlockTypes: ['switch'], preserveWhitespaces}).nodes);
     }
 
     function expectSwitchError(html: string) {
@@ -1202,6 +1203,36 @@ describe('R3 template transform', () => {
         ['Text', ' Z case '],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
+      ]);
+    });
+
+    // This is a special case for `switch` blocks, because `preserveWhitespaces` will cause
+    // some text nodes with whitespace to be preserve in the primary block.
+    it('should parse a switch block when preserveWhitespaces is enabled', () => {
+      const template = `
+        {#switch cond.kind}
+          {:case x()} X case
+          {:case 'hello'} <button>Y case</button>
+          {:case 42} Z case
+          {:default} No case matched
+        {/switch}
+      `;
+
+      expectSwitch(template, true).toEqual([
+        ['Text', '\n        '],
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x()'],
+        ['Text', ' X case\n          '],
+        ['SwitchBlockCase', '"hello"'],
+        ['Text', ' '],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['Text', '\n          '],
+        ['SwitchBlockCase', '42'],
+        ['Text', ' Z case\n          '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched\n        '],
+        ['Text', '\n      '],
       ]);
     });
 
