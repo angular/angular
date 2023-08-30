@@ -7,7 +7,7 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {Events, MessageBus, ProfilerFrame} from 'protocol';
 import {Subject, Subscription} from 'rxjs';
 
