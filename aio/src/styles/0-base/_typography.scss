@@ -41,28 +41,32 @@ h2 {
   }
 }
 
+h3, h4, h5, h6 {
+  clear: both;
+}
+
+h3, h4 {
+  margin-top: 3rem;
+}
+
+h5, h6 {
+  margin-top: 2rem;
+}
+
 h3 {
   @include mixins.font-size(24);
-  margin-top: 3rem;
-  clear: both;
 }
 
 h4 {
   @include mixins.font-size(20);
-  margin-top: 3rem;
-  clear: both;
 }
 
 h5 {
   @include mixins.font-size(18);
-  margin-top: 2rem;
-  clear: both;
 }
 
 h6 {
   @include mixins.font-size(16);
-  margin-top: 2rem;
-  clear: both;
 }
 
 h2,
