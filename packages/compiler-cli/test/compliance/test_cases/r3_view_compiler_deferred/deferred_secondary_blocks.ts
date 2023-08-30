@@ -5,10 +5,10 @@ import {Component} from '@angular/core';
     <div>
       {{message}}
       {#defer}
-        <calendar-cmp/>
+        <button></button>
         {:loading} {{loadingMessage}}
         {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <icon>sad</icon>
+        {:error} Calendar failed to load <i>sad</i>
       {/defer}
     </div>
   `,
