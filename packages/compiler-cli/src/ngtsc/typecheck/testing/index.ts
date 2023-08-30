@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
@@ -269,7 +269,7 @@ export type TestDeclaration = TestDirective|TestPipe;
 
 export function tcb(
     template: string, declarations: TestDeclaration[] = [], config?: Partial<TypeCheckingConfig>,
-    options?: {emitSpans?: boolean}): string {
+    options?: {emitSpans?: boolean}, templateParserOptions?: ParseTemplateOptions): string {
   const codeLines = [`export class Test<T extends string> {}`];
 
   (function addCodeLines(currentDeclarations) {
@@ -290,7 +290,11 @@ export function tcb(
   const sf = getSourceFileOrError(program, rootFilePath);
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
-  const {nodes} = parseTemplate(template, templateUrl);
+  const {nodes, errors} = parseTemplate(template, templateUrl, templateParserOptions);
+
+  if (errors !== null) {
+    throw new Error('Template parse errors: \n' + errors.join('\n'));
+  }
 
   const {matcher, pipes} =
       prepareDeclarations(declarations, decl => getClass(sf, decl.name), new Map());

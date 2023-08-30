@@ -55,10 +55,10 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     <div>
       {{message}}
       {#defer}
-        <calendar-cmp/>
+        <button></button>
         {:loading} {{loadingMessage}}
         {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <icon>sad</icon>
+        {:error} Calendar failed to load <i>sad</i>
       {/defer}
     </div>
   `, isInline: true });
@@ -69,10 +69,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>
       {{message}}
       {#defer}
-        <calendar-cmp/>
+        <button></button>
         {:loading} {{loadingMessage}}
         {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <icon>sad</icon>
+        {:error} Calendar failed to load <i>sad</i>
       {/defer}
     </div>
   `,
@@ -100,7 +100,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {#defer}
-      <calendar-cmp/>
+      <button></button>
       {:placeholder minimum 2s} <img src="placeholder.gif">
     {/defer}
   `, isInline: true });
@@ -109,7 +109,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {#defer}
-      <calendar-cmp/>
+      <button></button>
       {:placeholder minimum 2s} <img src="placeholder.gif">
     {/defer}
   `,
@@ -135,7 +135,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {#defer}
-      <calendar-cmp/>
+      <button></button>
       {:loading minimum 2s; after 500ms} <img src="loading.gif">
     {/defer}
   `, isInline: true });
@@ -144,7 +144,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {#defer}
-      <calendar-cmp/>
+      <button></button>
       {:loading minimum 2s; after 500ms} <img src="loading.gif">
     {/defer}
   `,

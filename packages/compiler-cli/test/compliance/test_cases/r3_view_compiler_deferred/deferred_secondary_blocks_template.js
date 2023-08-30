@@ -1,6 +1,6 @@
 function MyApp_Defer_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelement(0, "calendar-cmp");
+    $r3$.ɵɵelement(0, "button");
   }
 }
 
@@ -24,7 +24,7 @@ function MyApp_DeferPlaceholder_4_Template(rf, ctx) {
 function MyApp_DeferError_5_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0, " Calendar failed to load ");
-    $r3$.ɵɵelementStart(1, "icon");
+    $r3$.ɵɵelementStart(1, "i");
     $r3$.ɵɵtext(2, "sad");
     $r3$.ɵɵelementEnd();
   }
