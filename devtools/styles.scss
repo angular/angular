@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use 'external/npm/node_modules/@angular/material/index' as mat;
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+@include mat.all-component-typographies();
+@include mat.core();
 
 html,
 body {
@@ -40,9 +40,21 @@ $dark-theme: map.deep-merge(
 );
 
 .light-theme {
-  @include mat.all-legacy-component-themes($light-theme);
+  @include mat.all-component-themes($light-theme);
 }
 
 .dark-theme {
-  @include mat.all-legacy-component-themes($dark-theme);
+  background: #202124;
+  @include mat.all-component-themes($dark-theme);
+}
+
+
+ng-devtools {
+  .mdc-card {
+    padding: 4px;
+  }
+}
+
+.mat-mdc-menu-content {
+  padding: 0 !important;
 }

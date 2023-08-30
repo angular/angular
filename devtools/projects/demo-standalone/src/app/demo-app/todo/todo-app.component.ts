@@ -9,9 +9,9 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyDialog as MatDialog, MatLegacyDialogModule as MatDialogModule} from '@angular/material/legacy-dialog';
-import {MatLegacyFormFieldModule as MatFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {RouterLink, RouterOutlet} from '@angular/router';
 
 import {DialogComponent} from './dialog.component';

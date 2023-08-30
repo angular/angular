@@ -1,7 +1,9 @@
 <mat-card class="bar-graph-container">
+
   <p class="txt-frames" matTooltip="{{ selectionLabel }} / {{ (graphData$ | async)?.length }}">
     {{ selectionLabel }} / {{ (graphData$ | async)?.length }}
   </p>
+
   <button
     mat-icon-button
     matTooltip="Select previous frame"
