@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     {#defer}
-      <calendar-cmp/>
+      <button></button>
       {:loading minimum 2s; after 500ms} <img src="loading.gif">
     {/defer}
   `,

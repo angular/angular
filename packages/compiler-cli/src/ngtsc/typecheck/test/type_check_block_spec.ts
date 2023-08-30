@@ -1355,4 +1355,28 @@ describe('type check blocks', () => {
          expect(block).toContain('_t1["hostOutput"].subscribe');
        });
   });
+
+  // TODO(crisbeto): test for `when` and `prefetchWhen` triggers.
+  describe('deferred blocks', () => {
+    // TODO(crisbeto): temporary utility while deferred blocks are disabled by default
+    function deferredTcb(template: string): string {
+      return tcb(
+          template, undefined, undefined, undefined, {enabledBlockTypes: new Set(['defer'])});
+    }
+
+    it('should generate bindings inside deferred blocks', () => {
+      const TEMPLATE = `
+        {#defer}
+          {{main()}}
+          {:placeholder}{{placeholder()}}
+          {:loading}{{loading()}}
+          {:error}{{error()}}
+        {/defer}
+      `;
+
+      expect(deferredTcb(TEMPLATE))
+          .toContain(
+              '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
+    });
+  });
 });

@@ -266,6 +266,7 @@ function parseExtractedTemplate(
     i18nNormalizeLineEndingsInICUs,
     leadingTriviaChars: [],
     alwaysAttemptHtmlToR3AstConversion: options.usePoisonedData,
+    enabledBlockTypes: options.enabledBlockTypes,
   });
 
   return {

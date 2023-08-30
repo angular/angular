@@ -3623,5 +3623,38 @@ suppress
             .toContain('HostBindDirective');
       });
     });
+
+    describe('deferred blocks', () => {
+      beforeEach(() => {
+        env.tsconfig({_enabledBlockTypes: ['defer']});
+      });
+
+      it('should check bindings inside deferred blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#defer}
+                {{does_not_exist_main}}
+                {:placeholder}{{does_not_exist_placeholder}}
+                {:loading}{{does_not_exist_loading}}
+                {:error}{{does_not_exist_error}}
+              {/defer}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_placeholder' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_loading' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_error' does not exist on type 'Main'.`,
+        ]);
+      });
+    });
   });
 });
