@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  display: block;
+  display: block;  
 }
 
 .hidden {
@@ -15,6 +15,25 @@
 
 #nav-buttons {
   display: flex;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:active {
+      opacity: 1
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  #nav-buttons {
+    button {
+      color: #fff;
+    }
+  }
 }
 
 .inspector-active {
@@ -42,24 +61,14 @@
   user-select: text;
 }
 
-button.mat-icon-button {
-  height: 30px;
-  width: 30px;
-  line-height: 30px;
-  margin-right: 0px;
-}
-
 mat-icon {
-  font-size: 16px;
-
-  .mat-menu-item & {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-  }
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.mat-tab-link {
+.mat-mdc-tab-link {
   min-width: unset;
   line-height: 30px;
   height: 30px;
@@ -67,24 +76,6 @@ mat-icon {
   padding: 0px 10px;
   opacity: 1;
   font-weight: 400;
-}
-
-.mat-menu-item {
-  font-size: 0.7em;
-  font-weight: 500;
-  height: 36px;
-  line-height: 36px;
-  overflow: visible; // Avoids clipping of the button toggle ripple.
-  color: #777;
-
-  ::ng-deep .dark-theme & {
-    color: white;
-  }
-
-  mat-slide-toggle {
-    width: 100%;
-    height: 100%;
-  }
 }
 
 :host-context(.dark-theme) {
@@ -106,5 +97,17 @@ mat-icon {
 @media only screen and (max-width: 420px) {
   #app-angular-version {
     display: none;
+  }
+}
+
+.mat-mdc-tab-header {
+  --mdc-secondary-navigation-tab-container-height: 30px;
+}
+
+.mat-mdc-menu-item.mdc-list-item {
+  ::ng-deep {
+    label {
+      cursor: pointer;
+    }
   }
 }
