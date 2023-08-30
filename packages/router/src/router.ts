@@ -125,7 +125,7 @@ export class Router {
    *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
    * @see {@link withNavigationErrorHandler}
    */
-  errorHandler = this.options.errorHandler || defaultErrorHandler;
+  errorHandler: (error: any) => any = this.options.errorHandler || defaultErrorHandler;
 
   /**
    * A handler for errors thrown by `Router.parseUrl(url)`
@@ -151,7 +151,7 @@ export class Router {
    * @deprecated Configure using `providers` instead:
    *   `{provide: UrlHandlingStrategy, useClass: MyStrategy}`.
    */
-  get urlHandlingStrategy() {
+  get urlHandlingStrategy(): UrlHandlingStrategy {
     return this.stateManager.urlHandlingStrategy;
   }
   /**
@@ -168,7 +168,7 @@ export class Router {
    * @deprecated Configure using `providers` instead:
    *   `{provide: RouteReuseStrategy, useClass: MyStrategy}`.
    */
-  routeReuseStrategy = inject(RouteReuseStrategy);
+  routeReuseStrategy: RouteReuseStrategy = inject(RouteReuseStrategy);
 
   /**
    * How to handle a navigation request to the current URL.
@@ -189,7 +189,7 @@ export class Router {
    * This option is enabled by the `withComponentInputBinding` feature of `provideRouter` or
    * `bindToComponentInputs` in the `ExtraOptions` of `RouterModule.forRoot`.
    */
-  readonly componentInputBindingEnabled = !!inject(INPUT_BINDER, {optional: true});
+  readonly componentInputBindingEnabled: boolean = !!inject(INPUT_BINDER, {optional: true});
 
   constructor() {
     this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
@@ -199,7 +199,7 @@ export class Router {
     this.navigationTransitions.setupNavigations(this, this.currentUrlTree, this.routerState)
         .subscribe({
           error: (e) => {
-            this.console.warn(`Unhandled Navigation Error: ${e}`);
+            this.console.warn(ngDevMode ? `Unhandled Navigation Error: ${e}` : e);
           }
         });
     this.subscribeToNavigationEvents();

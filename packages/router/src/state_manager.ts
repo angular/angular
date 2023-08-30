@@ -40,7 +40,7 @@ export class StateManager {
    * `UrlHandlingStrategy.shouldProcessUrl` is `false`, only the `browserUrlTree` is updated.
    * @internal
    */
-  currentUrlTree: UrlTree;
+  currentUrlTree = new UrlTree();
   /**
    * Meant to represent the entire browser url after a successful navigation. In the life of a
    * navigation transition:
@@ -68,7 +68,7 @@ export class StateManager {
    * know what the browser's URL is for future navigations.
    *
    */
-  rawUrlTree: UrlTree;
+  rawUrlTree = this.currentUrlTree;
   /**
    * Meant to represent the part of the browser url that the `Router` is set up to handle (via the
    * `UrlHandlingStrategy`). This value is updated immediately after the browser url is updated (or
@@ -85,7 +85,7 @@ export class StateManager {
    * This should match the `currentUrlTree` when the navigation succeeds.
    * @internal
    */
-  browserUrlTree: UrlTree;
+  browserUrlTree = this.currentUrlTree;
   /**
    * The id of the currently active page in the router.
    * Updated to the transition's target id on a successful navigation.
@@ -107,15 +107,8 @@ export class StateManager {
     }
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId ?? this.currentPageId;
   }
-  routerState: RouterState;
+  routerState = createEmptyState(this.currentUrlTree, null);
   private stateMemento = this.createStateMemento();
-
-  constructor() {
-    this.currentUrlTree = new UrlTree();
-    this.rawUrlTree = this.currentUrlTree;
-    this.browserUrlTree = this.currentUrlTree;
-    this.routerState = createEmptyState(this.currentUrlTree, null);
-  }
 
   private createStateMemento() {
     return {
