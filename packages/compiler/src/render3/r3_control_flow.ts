@@ -279,8 +279,13 @@ function validateSwitchBlock(ast: html.BlockGroup): ParseError[] {
   const [primaryBlock, ...secondaryBlocks] = ast.blocks;
   const errors: ParseError[] = [];
   let hasDefault = false;
+  const hasPrimary = primaryBlock.children.length > 0 && primaryBlock.children.some(child => {
+    // The main block might have empty text nodes if `preserveWhitespaces` is enabled.
+    // Allow them since they might be used for code formatting.
+    return !(child instanceof html.Text) || child.value.trim().length > 0;
+  });
 
-  if (primaryBlock.children.length > 0) {
+  if (hasPrimary) {
     errors.push(new ParseError(
         primaryBlock.sourceSpan, 'Switch block can only contain "case" and "default" blocks'));
   }
