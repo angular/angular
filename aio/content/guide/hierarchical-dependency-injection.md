@@ -1,11 +1,10 @@
 # Hierarchical injectors
 
 Injectors in Angular have rules that you can leverage to achieve the desired visibility of injectables in your applications.
-By understanding these rules, you can determine in which NgModule, Component, or Directive you should declare a provider.
+By understanding these rules, you can determine whether to declare a provider at the application level, in a Component, or in a Directive.
 
 <div class="alert is-helpful">
 
-**NOTE**:<br />
 This topic uses the following pictographs.
 
 | html entities | pictographs |
@@ -21,7 +20,7 @@ This topic uses the following pictographs.
 
 </div>
 
-The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into many small well-encapsulated modules, that are by themselves split up into a well-defined tree of components.
+The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into a well-defined tree of components.
 
 There can be sections of your page that works in a completely independent way than the rest of the application, with its own local copies of the services and other dependencies that it needs. Some of the services that these sections of the application use might be shared with other parts of the application, or with parent components that are further up in the component tree, while other dependencies are meant to be private.
 
@@ -31,40 +30,44 @@ With hierarchical dependency injection, you can isolate sections of the applicat
 
 Injectors in Angular have rules that you can leverage to
 achieve the desired visibility of injectables in your applications.
-By understanding these rules, you can determine in which
-NgModule, Component, or Directive you should declare a provider.
+By understanding these rules, you can determine whether to declare a provider at the application level, in a Component, or in a Directive.
 
 Angular has two injector hierarchies:
 
 | Injector hierarchies        | Details |
 |:---                         |:---     |
-| `ModuleInjector` hierarchy  | Configure a `ModuleInjector` in this hierarchy using an `@NgModule()` or `@Injectable()` annotation.                                                                      |
+| `EnvironmentInjector` hierarchy | Configure an `ElementInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
 | `ElementInjector` hierarchy | Created implicitly at each DOM element. An `ElementInjector` is empty by default unless you configure it in the `providers` property on `@Directive()` or `@Component()`. |
+
+<div class="callout is-helpful">
+
+<header>NgModule Based Applications</header>
+
+For `NgModule` based applications, you can provide dependencies with the `ModuleInjector` hierarchy using an `@NgModule()` or `@Injectable()` annotation.
+
+</div>
 
 <a id="register-providers-injectable"></a>
 
-### `ModuleInjector`
+### `EnvironmentInjector`
 
-The `ModuleInjector` can be configured in one of two ways by using:
+The `EnvironmentInjector` can be configured in one of two ways by using:
 
 *   The `@Injectable()` `providedIn` property to refer to `root` or `platform`
-*   The `@NgModule()` `providers` array
+*   The `ApplicationConfig` `providers` array
 
 <div class="callout is-helpful">
 
 <header>Tree-shaking and &commat;Injectable()</header>
 
-Using the `@Injectable()` `providedIn` property is preferable to using the `@NgModule()` `providers` array. With `@Injectable()` `providedIn`, optimization tools can perform tree-shaking, which removes services that your application isn't using. This results in smaller bundle sizes.
+Using the `@Injectable()` `providedIn` property is preferable to using the `ApplicationConfig` `providers` array. With `@Injectable()` `providedIn`, optimization tools can perform tree-shaking, which removes services that your application isn't using. This results in smaller bundle sizes.
 
 Tree-shaking is especially useful for a library because the application which uses the library may not have a need to inject it.
 Read more about [tree-shakable providers](guide/architecture-services#providing-services) in [Introduction to services and dependency injection](guide/architecture-services).
 
 </div>
 
-`ModuleInjector` is configured by the `@NgModule.providers` and `NgModule.imports` property.
-`ModuleInjector` is a flattening of all the providers arrays that can be reached by following the `NgModule.imports` recursively.
-
-Child `ModuleInjector` hierarchies are created when lazy loading other `@NgModules`.
+`EnvironmentInjector` is configured by the `ApplicationConfig.providers`.
 
 Provide services with the `providedIn` property of `@Injectable()` as follows:
 
@@ -73,7 +76,7 @@ Provide services with the `providedIn` property of `@Injectable()` as follows:
 import { Injectable } from '&commat;angular/core';
 
 &commat;Injectable({
-  providedIn: 'root'  // &lt;--provides this service in the root ModuleInjector
+  providedIn: 'root'  // &lt;--provides this service in the root ElementInjector
 })
 export class ItemService {
   name = 'telephone';
@@ -82,22 +85,32 @@ export class ItemService {
 </code-example>
 
 The `@Injectable()` decorator identifies a service class.
-The `providedIn` property configures a specific `ModuleInjector`, here `root`, which makes the service available in the `root` `ModuleInjector`.
+The `providedIn` property configures a specific `EnvironmentInjector`, here `root`, which makes the service available in the `root` `EnvironmentInjector`.
 
-#### Platform injector
+### ModuleInjector
+In the case of `NgModule` based applications, the ModuleInjector can be configured in one of two ways by using:
 
-There are two more injectors above `root`, an additional `ModuleInjector` and `NullInjector()`.
+* The `@Injectable()` `providedIn` property to refer to `root` or `platform`
+* The `@NgModule()` `providers` array
+
+`ModuleInjector` is configured by the `@NgModule.providers` and `NgModule.imports` property. `ModuleInjector` is a flattening of all the providers arrays that can be reached by following the `NgModule.imports` recursively.
+
+Child `ModuleInjector` hierarchies are created when lazy loading other `@NgModules`.
+
+### Platform injector
+
+There are two more injectors above `root`, an additional `EnvironmentInjector` and `NullInjector()`.
 
 Consider how Angular bootstraps the application with the following in `main.ts`:
 
 <code-example format="javascript" language="javascript">
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(ref =&gt; {&hellip;})
+bootstrapApplication(AppComponent, appConfig);
 
 </code-example>
 
-The `bootstrapModule()` method creates a child injector of the platform injector which is configured by the `AppModule`.
-This is the `root` `ModuleInjector`.
+The `bootstrapApplication()` method creates a child injector of the platform injector which is configured by the `ApplicationConfig` instance.
+This is the `root` `EnvironmentInjector`.
 
 The `platformBrowserDynamic()` method creates an injector configured by a `PlatformModule`, which contains platform-specific dependencies.
 This allows multiple applications to share a platform configuration.
@@ -116,25 +129,27 @@ The following diagram represents the relationship between the `root` `ModuleInje
 
 </div>
 
-While the name `root` is a special alias, other `ModuleInjector` hierarchies don't have aliases.
-You have the option to create `ModuleInjector` hierarchies whenever a dynamically loaded component is created, such as with the Router, which will create child `ModuleInjector` hierarchies.
+While the name `root` is a special alias, other `EnvironmentInjector` hierarchies don't have aliases.
+You have the option to create `EnvironmentInjector` hierarchies whenever a dynamically loaded component is created, such as with the Router, which will create child `EnvironmentInjector` hierarchies.
 
-All requests forward up to the root injector, whether you configured it with the `bootstrapModule()` method, or registered all providers with `root` in their own services.
+All requests forward up to the root injector, whether you configured it with the `ApplicationConfig` instance passed to the `boostrapApplication()` method, or registered all providers with `root` in their own services.
 
 <div class="callout is-helpful">
 
-<header>&commat;Injectable() vs. &commat;NgModule()</header>
+<header>&commat;Injectable() vs. ApplicationConfig</header>
 
-If you configure an app-wide provider in the `@NgModule()` of `AppModule`, it overrides one configured for `root` in the `@Injectable()` metadata.
+If you configure an app-wide provider in the `ApplicationConfig` of `bootstrapApplication`, it overrides one configured for `root` in the `@Injectable()` metadata.
 You can do this to configure a non-default provider of a service that is shared with multiple applications.
 
-Here is an example of the case where the component router configuration includes a non-default [location strategy](guide/router#location-strategy) by listing its provider in the `providers` list of the `AppModule`.
+Here is an example of the case where the component router configuration includes a non-default [location strategy](guide/router#location-strategy) by listing its provider in the `providers` list of the `ApplicationConfig`.
 
 ```
  providers: [
   { provide: LocationStrategy, useClass: HashLocationStrategy }
 ]
 ```
+
+For `NgModule` based applications, configure app-wide providers in the `AppModule`.
 
 </div>
 
@@ -157,8 +172,7 @@ export class TestComponent
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
-See the [resolution rules](guide/hierarchical-dependency-injection#resolution-rules) section to understand the relationship between the `ModuleInjector` tree and the `ElementInjector` tree.
+See the [resolution rules](guide/hierarchical-dependency-injection#resolution-rules) section to understand the relationship between the `EnvironmentInjector` tree, the `ModuleInjector` tree, and the `ElementInjector` tree.
 
 </div>
 
@@ -181,24 +195,30 @@ Components and directives on the same element share an injector.
 When resolving a token for a component/directive, Angular resolves it in two phases:
 
 1.  Against its parents in the `ElementInjector` hierarchy.
-2.  Against its parents in the `ModuleInjector` hierarchy.
+2.  Against its parents in the `EnvironmentInjector` hierarchy.
 
 When a component declares a dependency, Angular tries to satisfy that dependency with its own `ElementInjector`.
 If the component's injector lacks the provider, it passes the request up to its parent component's `ElementInjector`.
 
 The requests keep forwarding up until Angular finds an injector that can handle the request or runs out of ancestor `ElementInjector` hierarchies.
 
-If Angular doesn't find the provider in any `ElementInjector` hierarchies, it goes back to the element where the request originated and looks in the `ModuleInjector` hierarchy.
+If Angular doesn't find the provider in any `ElementInjector` hierarchies, it goes back to the element where the request originated and looks in the `EnvironmentInjector` hierarchy.
 If Angular still doesn't find the provider, it throws an error.
 
 If you have registered a provider for the same DI token at different levels, the first one Angular encounters is the one it uses to resolve the dependency.
 If, for example, a provider is registered locally in the component that needs a service,
 Angular doesn't look for another provider of the same service.
 
+<div class="alert is-helpful">
+
+For `NgModule` based applications, Angular will search the `ModuleInjector` hierarchy if it cannot find a provider in the `ElementInjector` hierarchies.
+
+</div>
+
 ## Resolution modifiers
 
 Angular's resolution behavior can be modified with `@Optional()`, `@Self()`, `@SkipSelf()` and `@Host()`.
-Import each of them from `@angular/core` and use each in the component class constructor when you inject your service.
+Import each of them from `@angular/core` and use each in the component class constructor or in the `inject` configuration when you inject your service.
 
 For a working application showcasing the resolution modifiers that this section covers, see the <live-example name="resolution-modifiers">resolution modifiers example</live-example>.
 
@@ -213,7 +233,9 @@ Resolution modifiers fall into three categories:
 By default, Angular always starts at the current `Injector` and keeps searching all the way up.
 Modifiers allow you to change the starting, or _self_, location and the ending location.
 
-Additionally, you can combine all of the modifiers except `@Host()` and `@Self()` and of course `@SkipSelf()` and `@Self()`.
+Additionally, you can combine all of the modifiers except:
+* `@Host()` and `@Self()`
+* `@SkipSelf()` and `@Self()`.
 
 <a id="optional"></a>
 
@@ -221,7 +243,7 @@ Additionally, you can combine all of the modifiers except `@Host()` and `@Self()
 
 `@Optional()` allows Angular to consider a service you inject to be optional.
 This way, if it can't be resolved at runtime, Angular resolves the service as `null`, rather than throwing an error.
-In the following example, the service, `OptionalService`, isn't provided in the service, `@NgModule()`, or component class, so it isn't available anywhere in the app.
+In the following example, the service, `OptionalService`, isn't provided in the service, `ApplicationConfig`, `@NgModule()`, or component class, so it isn't available anywhere in the app.
 
 <code-example header="src/app/optional/optional.component.ts" path="resolution-modifiers/src/app/optional/optional.component.ts" region="optional-component"></code-example>
 
@@ -302,7 +324,6 @@ Components are used in your templates, as in the following example:
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
 Usually, you declare the components and their templates in separate files.
 For the purposes of understanding how the injection system works, it is useful to look at them from the point of view of a combined logical tree.
 The term _logical_ distinguishes it from the render tree, which is your application's DOM tree.
@@ -344,14 +365,13 @@ To understand how the `providers` and `viewProviders` influence service visibili
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
-In the logical tree, you'll see `@Provide`, `@Inject`, and `@NgModule`, which are not real HTML attributes but are here to demonstrate what is going on under the hood.
+In the logical tree, you'll find `@Provide`, `@Inject`, and `ApplicationConfig`, which are not real HTML attributes but are here to demonstrate what is going on under the hood.
 
 | Angular service attribute                                                                                          | Details |
 |:---                                                                                                                |:---     |
 | <code-example format="typescript" hideCopy language="typescript"> &commat;Inject(Token)=&gt;Value </code-example> | Demonstrates that if `Token` is injected at this location in the logical tree its value would be `Value`.             |
 | <code-example format="typescript" hideCopy language="typescript"> &commat;Provide(Token=Value) </code-example>    | Demonstrates that there is a declaration of `Token` provider with value `Value` at this location in the logical tree. |
-| <code-example format="typescript" hideCopy language="typescript"> &commat;NgModule(Token) </code-example>         | Demonstrates that a fallback `NgModule` injector should be used at this location.                                     |
+| <code-example format="typescript" hideCopy language="typescript"> ApplicationConfig(Token) </code-example>         | Demonstrates that a fallback `EnvironmentInjector` should be used at this location.                                     |
 
 </div>
 
@@ -413,7 +433,7 @@ In the logical tree, this would be represented as follows:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt;
     &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33A;)&lt;/p&gt;
@@ -433,7 +453,7 @@ The resolution of the token happens in two phases:
     The injector begins with the starting location and looks for the token at each level in the logical tree.
     If the token is found it is returned.
 
-1.  If the token is not found, the injector looks for the closest parent `@NgModule()` to delegate the request to.
+1.  If the token is not found, the injector looks for the closest parent `EnvironmentInjector` to delegate the request to.
 
 In the example case, the constraints are:
 
@@ -445,7 +465,7 @@ In the example case, the constraints are:
 
     *   The ending location happens to be the same as the component itself, because it is the topmost component in this application.
 
-1.  The `AppModule` acts as the fallback injector when the injection token can't be found in the `ElementInjector` hierarchies.
+1.  The `ElementInjector` provided by the `ApplicationConfig` acts as the fallback injector when the injection token can't be found in the `ElementInjector` hierarchies.
 
 ### Using the `providers` array
 
@@ -473,7 +493,7 @@ In the logical tree, this is represented as follows:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt;
     &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33A;)&lt;/p&gt;
@@ -522,7 +542,6 @@ Following the same pattern as with the `FlowerService`, inject the `AnimalServic
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
 You can leave all the `FlowerService` related code in place as it will allow a comparison with the `AnimalService`.
 
 </div>
@@ -557,7 +576,7 @@ The logic tree for this example of `viewProviders` is as follows:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
          &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;
     &lt;app-child&gt;
@@ -589,9 +608,16 @@ Next, in `inspector.component.html`, add the same markup from previous component
 
 <code-example header="src/app/inspector/inspector.component.html" path="providers-viewproviders/src/app/inspector/inspector.component.html" region="binding"></code-example>
 
-Remember to add the `InspectorComponent` to the `AppModule` `declarations` array.
+Remember to add the `InspectorComponent` to the `ChildComponent` `imports` array.
 
-<code-example header="src/app/app.module.ts" path="providers-viewproviders/src/app/app.module.ts" region="appmodule"></code-example>
+<code-example header="src/app/child/child.component.ts" language="typescript" format="typescript">
+
+@Component({
+  ...
+  imports: [InspectorComponent]
+})
+
+</code-example>
 
 Next, make sure your `child.component.html` contains the following:
 
@@ -632,7 +658,7 @@ The `AnimalService` in the logical tree would look like this:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
          &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;
     &lt;app-child&gt;
@@ -698,7 +724,7 @@ In a logical tree, this same idea might look like this:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt;
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")&gt;
@@ -719,7 +745,7 @@ Here's the idea in the logical tree:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt; &lt;!-- end search here with null--&gt;
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")&gt; &lt;!-- start search here --&gt;
@@ -735,7 +761,6 @@ Here, the services and their values are the same, but `@Host()` stops the inject
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
 The example application uses `@Optional()` so the application does not throw an error, but the principles are the same.
 
 </div>
@@ -764,10 +789,12 @@ Remember that the `<app-child>` class provides the `AnimalService` in the `viewP
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
+  standalone: true,
   selector: 'app-child',
   &hellip;
   viewProviders:
   [{ provide: AnimalService, useValue: { emoji: '&#x1F436;' } }]
+  ...
 })
 
 </code-example>
@@ -776,7 +803,7 @@ The logical tree looks like this with `@SkipSelf()` in `<app-child>`:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
           &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
   &lt;#VIEW&gt;&lt;!-- search begins here --&gt;
     &lt;app-child&gt;
@@ -800,10 +827,12 @@ Here is the `viewProviders` array in the `<app-child>` class and `@Host()` in th
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
+  standone: true,
   selector: 'app-child',
   &hellip;
   viewProviders:
   [{ provide: AnimalService, useValue: { emoji: '&#x1F436;' } }]
+  ...
 
 })
 export class ChildComponent {
@@ -816,7 +845,7 @@ export class ChildComponent {
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
           &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
   &lt;#VIEW&gt;
     &lt;app-child&gt;
@@ -834,10 +863,12 @@ Add a `viewProviders` array with a third animal, hedgehog <code>&#x1F994;</code>
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ],
   viewProviders: [{ provide: AnimalService, useValue: { emoji: '&#x1F994;' } }]
+  ...
 })
 
 </code-example>
@@ -865,7 +896,7 @@ The logical tree representation shows why this is:
 
 <code-example format="html" language="html">
 
-&lt;app-root &commat;NgModule(AppModule)
+&lt;app-root ApplicationConfig
         &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
   &lt;#VIEW &commat;Provide(AnimalService="&#x1F994;")
          &commat;Inject(AnimalService, &commat;Optional)=&gt;"&#x1F994;"&gt;
