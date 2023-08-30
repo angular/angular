@@ -1,3 +1,68 @@
+<a name="17.0.0-next.2"></a>
+# 17.0.0-next.2 (2023-08-30)
+## Breaking Changes
+### platform-browser
+- `REMOVE_STYLES_ON_COMPONENT_DESTROY` default value is now `true`. This causes CSS of components to be removed from the DOM when destroyed. You retain the previous behaviour by providing the `REMOVE_STYLES_ON_COMPONENT_DESTROY` injection token.
+  
+  ```ts
+  import {REMOVE_STYLES_ON_COMPONENT_DESTROY} from '@angular/platform-browser';
+  ...
+  providers: [{
+    provide: REMOVE_STYLES_ON_COMPONENT_DESTROY,
+    useValue: false,
+  }]
+  ```
+### router
+- The following Router properties have been removed from
+  the public API:
+  
+  - canceledNavigationResolution
+  - paramsInheritanceStrategy
+  - titleStrategy
+  - urlUpdateStrategy
+  - malformedUriErrorHandler
+  
+  These should instead be configured through the `provideRouter` or
+  `RouterModule.forRoot` APIs.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [698c058e1c](https://github.com/angular/angular/commit/698c058e1c975c573722407f4843a4a774ceb92a) | fix | remove code duplication between entry-points ([#51500](https://github.com/angular/angular/pull/51500)) |
+| [18be804c03](https://github.com/angular/angular/commit/18be804c038e8d81a60c9a72521cfa640c8a1d5a) | fix | remove unnecessary escaping in regex expressions ([#51554](https://github.com/angular/angular/pull/51554)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [86c5e34601](https://github.com/angular/angular/commit/86c5e34601d7901a11688124aa902646524177eb) | fix | remove code duplication between entry-points ([#51500](https://github.com/angular/angular/pull/51500)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de2550d988](https://github.com/angular/angular/commit/de2550d9886394e1ecde586d72bf2bab5b65cb39) | fix | correct incomplete escaping ([#51557](https://github.com/angular/angular/pull/51557)) |
+| [3bca9db4a5](https://github.com/angular/angular/commit/3bca9db4a56d61ac22b4ce87591d8862606177c8) | fix | remove unnecessary escaping in regex expressions ([#51554](https://github.com/angular/angular/pull/51554)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbffdc09c2](https://github.com/angular/angular/commit/dbffdc09c25c93868aa13ae368c9fd21a4c359fb) | fix | avoid duplicated code between entry-points (primary, testing, rxjs-interop) ([#51500](https://github.com/angular/angular/pull/51500)) |
+| [45d2ded0ea](https://github.com/angular/angular/commit/45d2ded0ea9ef414948256099f8dc9c4598fdc2b) | fix | correct incomplete escaping ([#51557](https://github.com/angular/angular/pull/51557)) |
+| [006577f39c](https://github.com/angular/angular/commit/006577f39c0e46e37491e44687142521fe7fab54) | fix | handle hydration of view containers that use component hosts as anchors ([#51456](https://github.com/angular/angular/pull/51456)) |
+| [1423bfbf8f](https://github.com/angular/angular/commit/1423bfbf8ffa3b43d0dea41054c8f950e669a697) | fix | remove unnecessary escaping in regex expressions ([#51554](https://github.com/angular/angular/pull/51554)) |
+| [3a19d6b743](https://github.com/angular/angular/commit/3a19d6b7437e1812ae70b3784fd6a8a185b330b1) | fix | run afterRender callbacks outside of the Angular zone ([#51385](https://github.com/angular/angular/pull/51385)) |
+| [685d01e106](https://github.com/angular/angular/commit/685d01e1065dad6dc52eaac9eb9527100994f5ce) | perf | chain template instructions ([#51546](https://github.com/angular/angular/pull/51546)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [88b1575271](https://github.com/angular/angular/commit/88b157527172d70ed3e5aa11aa8b7963a8612e49) | fix | correct incomplete escaping ([#51557](https://github.com/angular/angular/pull/51557)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c340d6e044](https://github.com/angular/angular/commit/c340d6e0440bd982dff6f9f4f4229931c62d2c08) | feat | enable removal of styles on component destroy by default ([#51571](https://github.com/angular/angular/pull/51571)) |
+| [c5daa6ce77](https://github.com/angular/angular/commit/c5daa6ce776724d44c02cc97f1a349a85cb2a819) | feat | expose `EventManagerPlugin` in the public API. ([#49969](https://github.com/angular/angular/pull/49969)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c62e680098](https://github.com/angular/angular/commit/c62e680098a8c26fb2234336613185f7ab273483) | fix | Remove deprecated Router properties ([#51502](https://github.com/angular/angular/pull/51502)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.3"></a>
 # 16.2.3 (2023-08-30)
 ### animations
