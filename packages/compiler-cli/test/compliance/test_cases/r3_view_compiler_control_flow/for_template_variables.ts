@@ -18,4 +18,13 @@ import {Component} from '@angular/core';
 export class MyApp {
   message = 'hello';
   items = [];
+
+  // TODO(crisbeto): remove this once template type checking is full implemented.
+  item: any;
+  $index: any;
+  $first: any;
+  $last: any;
+  $even: any;
+  $odd: any;
+  $count: any;
 }
