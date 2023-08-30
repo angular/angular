@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1510,6 +1510,20 @@ class Scope {
       node.placeholder !== null && this.appendChildren(node.placeholder);
       node.loading !== null && this.appendChildren(node.loading);
       node.error !== null && this.appendChildren(node.error);
+    } else if (node instanceof TmplAstIfBlock) {
+      // TODO(crisbeto): type check the branch expression.
+      for (const branch of node.branches) {
+        this.appendChildren(branch);
+      }
+    } else if (node instanceof TmplAstSwitchBlock) {
+      // TODO(crisbeto): type check switch condition
+      for (const currentCase of node.cases) {
+        this.appendChildren(currentCase);
+      }
+    } else if (node instanceof TmplAstForLoopBlock) {
+      // TODO(crisbeto): type check loop expression, context variables and trackBy
+      this.appendChildren(node);
+      node.empty && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
     } else if (node instanceof TmplAstIcu) {
