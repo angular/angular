@@ -143,56 +143,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       expect(otherChild.parentNode).toBe(template.content);
     });
 
-    describe('should not cleanup styles of destroyed components by default', () => {
-      it('works for components without encapsulation emulated', async () => {
-        const fixture = TestBed.createComponent(SomeAppForCleanUp);
-        const compInstance = fixture.componentInstance;
-        compInstance.showEmulatedComponents = true;
-
-        fixture.detectChanges();
-        // verify style is in DOM
-        expect(await styleCount(fixture, '.emulated')).toBe(1);
-
-        // Remove a single instance of the component.
-        compInstance.componentOneInstanceHidden = true;
-        fixture.detectChanges();
-        // Verify style is still in DOM
-        expect(await styleCount(fixture, '.emulated')).toBe(1);
-
-        // Hide all instances of the component
-        compInstance.componentTwoInstanceHidden = true;
-        fixture.detectChanges();
-
-        // Verify style is still in DOM
-        expect(await styleCount(fixture, '.emulated')).toBe(1);
-      });
-
-      it('works for components without encapsulation none', async () => {
-        const fixture = TestBed.createComponent(SomeAppForCleanUp);
-        const compInstance = fixture.componentInstance;
-        compInstance.showEmulatedComponents = false;
-
-        fixture.detectChanges();
-        // verify style is in DOM
-        expect(await styleCount(fixture, '.none')).toBe(1);
-
-        // Remove a single instance of the component.
-        compInstance.componentOneInstanceHidden = true;
-        fixture.detectChanges();
-        // Verify style is still in DOM
-        expect(await styleCount(fixture, '.none')).toBe(1);
-
-        // Hide all instances of the component
-        compInstance.componentTwoInstanceHidden = true;
-        fixture.detectChanges();
-
-        // Verify style is still in DOM
-        expect(await styleCount(fixture, '.none')).toBe(1);
-      });
-    });
-
     describe(
-        'should cleanup styles of destroyed components when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is `true`',
+        'should not cleanup styles of destroyed components when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is `false`',
         () => {
           beforeEach(() => {
             TestBed.resetTestingModule();
@@ -206,7 +158,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
               providers: [
                 {
                   provide: REMOVE_STYLES_ON_COMPONENT_DESTROY,
-                  useValue: true,
+                  useValue: false,
                 },
               ],
             });
@@ -216,6 +168,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
             const fixture = TestBed.createComponent(SomeAppForCleanUp);
             const compInstance = fixture.componentInstance;
             compInstance.showEmulatedComponents = true;
+
             fixture.detectChanges();
             // verify style is in DOM
             expect(await styleCount(fixture, '.emulated')).toBe(1);
@@ -230,8 +183,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
             compInstance.componentTwoInstanceHidden = true;
             fixture.detectChanges();
 
-            // Verify style is not in DOM
-            expect(await styleCount(fixture, '.emulated')).toBe(0);
+            // Verify style is still in DOM
+            expect(await styleCount(fixture, '.emulated')).toBe(1);
           });
 
           it('works for components without encapsulation none', async () => {
@@ -253,10 +206,57 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
             compInstance.componentTwoInstanceHidden = true;
             fixture.detectChanges();
 
-            // Verify style is not in DOM
-            expect(await styleCount(fixture, '.emulated')).toBe(0);
+            // Verify style is still in DOM
+            expect(await styleCount(fixture, '.none')).toBe(1);
           });
         });
+
+    describe('should cleanup styles of destroyed components by default', () => {
+      it('works for components without encapsulation emulated', async () => {
+        const fixture = TestBed.createComponent(SomeAppForCleanUp);
+        const compInstance = fixture.componentInstance;
+        compInstance.showEmulatedComponents = true;
+        fixture.detectChanges();
+        // verify style is in DOM
+        expect(await styleCount(fixture, '.emulated')).toBe(1);
+
+        // Remove a single instance of the component.
+        compInstance.componentOneInstanceHidden = true;
+        fixture.detectChanges();
+        // Verify style is still in DOM
+        expect(await styleCount(fixture, '.emulated')).toBe(1);
+
+        // Hide all instances of the component
+        compInstance.componentTwoInstanceHidden = true;
+        fixture.detectChanges();
+
+        // Verify style is not in DOM
+        expect(await styleCount(fixture, '.emulated')).toBe(0);
+      });
+
+      it('works for components without encapsulation none', async () => {
+        const fixture = TestBed.createComponent(SomeAppForCleanUp);
+        const compInstance = fixture.componentInstance;
+        compInstance.showEmulatedComponents = false;
+
+        fixture.detectChanges();
+        // verify style is in DOM
+        expect(await styleCount(fixture, '.none')).toBe(1);
+
+        // Remove a single instance of the component.
+        compInstance.componentOneInstanceHidden = true;
+        fixture.detectChanges();
+        // Verify style is still in DOM
+        expect(await styleCount(fixture, '.none')).toBe(1);
+
+        // Hide all instances of the component
+        compInstance.componentTwoInstanceHidden = true;
+        fixture.detectChanges();
+
+        // Verify style is not in DOM
+        expect(await styleCount(fixture, '.emulated')).toBe(0);
+      });
+    });
   });
 }
 
