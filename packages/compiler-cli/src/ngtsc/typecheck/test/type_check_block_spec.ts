@@ -1356,7 +1356,6 @@ describe('type check blocks', () => {
        });
   });
 
-  // TODO(crisbeto): test for `when` and `prefetchWhen` triggers.
   describe('deferred blocks', () => {
     // TODO(crisbeto): temporary utility while deferred blocks are disabled by default
     function deferredTcb(template: string): string {
@@ -1377,6 +1376,22 @@ describe('type check blocks', () => {
       expect(deferredTcb(TEMPLATE))
           .toContain(
               '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
+    });
+
+    it('should generate `when` trigger', () => {
+      const TEMPLATE = `
+        {#defer when shouldShow() && isVisible}{{main()}}{/defer}
+      `;
+
+      expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+    });
+
+    it('should generate `prefetch when` trigger', () => {
+      const TEMPLATE = `
+        {#defer prefetch when shouldShow() && isVisible}{{main()}}{/defer}
+      `;
+
+      expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
     });
   });
 
