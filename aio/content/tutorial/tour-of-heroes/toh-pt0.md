@@ -152,4 +152,4 @@ Here are the code files discussed on this page.
 *   You learned that Angular components display data
 *   You used the double curly braces of interpolation to display the application title
 
-@reviewed 2022-02-28
+@reviewed 2023-08-30
