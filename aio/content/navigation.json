@@ -642,11 +642,6 @@
                   "tooltip": "Introduces the optional Angular internationalization tasks and lists topics that teach you how to manually configure localization settings for your applications"
                 },
                 {
-                  "url": "guide/i18n-optional-manual-runtime-locale",
-                  "title": "Set the runtime locale manually",
-                  "tooltip": "Set the runtime locale manually"
-                },
-                {
                   "url": "guide/i18n-optional-import-global-variants",
                   "title": "Import global variants of the locale data",
                   "tooltip": "Import global variants of the locale data"
