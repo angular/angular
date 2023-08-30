@@ -242,3 +242,4 @@
 /tutorial/toh-pt6 --> /tutorial/tour-of-heroes/toh-pt6
 /cli/usage-analytics-gathering --> /cli/analytics
 /analytics --> /cli/analytics
+/errors/NG6999 --> https://v13.angular.io/errors/NG6999
