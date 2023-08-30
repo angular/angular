@@ -3656,5 +3656,106 @@ suppress
         ]);
       });
     });
+
+    describe('conditional blocks', () => {
+      beforeEach(() => {
+        env.tsconfig({_enabledBlockTypes: ['if', 'switch']});
+      });
+
+      // TODO(crisbeto): test to check the bindings of the branches.
+      // TODO(crisbeto): test for an `if` block with an `as` assignment.
+      // TODO(crisbeto): test for type narrowing.
+      it('should check bindings inside if blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#if expr}
+                {{does_not_exist_main}}
+                {:else if expr1}{{does_not_exist_one}}
+                {:else if expr2}{{does_not_exist_two}}
+                {:else}{{does_not_exist_else}}
+              {/if}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr = false;
+            expr1 = false;
+            expr2 = false;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_one' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_two' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_else' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      // TODO(crisbeto): test to check the bindings of the cases.
+      // TODO(crisbeto): test for type narrowing.
+      it('should check bindings inside switch blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#switch expr}
+                {:case 1}{{does_not_exist_one}}
+                {:case 2}{{does_not_exist_two}}
+                {:default}{{does_not_exist_default}}
+              {/switch}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: any;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_one' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_two' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_default' does not exist on type 'Main'.`,
+        ]);
+      });
+    });
+
+    // TODO(crisbeto): test for the loop expression binding
+    // TODO(crisbeto): test for the track expression.
+    // TODO(crisbeto): test for the context variables ($index, $odd etc).
+    describe('for loop blocks', () => {
+      beforeEach(() => {
+        env.tsconfig({_enabledBlockTypes: ['for']});
+      });
+
+      it('should check bindings inside of for loop blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#for item of items; track item}
+                {{does_not_exist_main}}
+                {:empty}{{does_not_exist_empty}}
+              {/for}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_empty' does not exist on type 'Main'.`,
+        ]);
+      });
+    });
   });
 });

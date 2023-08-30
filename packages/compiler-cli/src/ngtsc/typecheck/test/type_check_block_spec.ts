@@ -1379,4 +1379,61 @@ describe('type check blocks', () => {
               '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
     });
   });
+
+  // TODO(crisbeto): tests for the bindings of conditionals and context variables.
+  describe('conditional blocks', () => {
+    // TODO(crisbeto): temporary utility while conditional blocks are disabled by default
+    function conditionalTcb(template: string): string {
+      return tcb(
+          template, undefined, undefined, undefined,
+          {enabledBlockTypes: new Set(['if', 'switch'])});
+    }
+
+    it('should generate bindings inside if block', () => {
+      const TEMPLATE = `
+        {#if expr}
+          {{main()}}
+          {:else if expr1}{{one()}}
+          {:else if expr2}{{two()}}
+          {:else}{{other()}}
+        {/if}
+      `;
+
+      expect(conditionalTcb(TEMPLATE))
+          .toContain(
+              '"" + ((this).main()); "" + ((this).one()); "" + ((this).two()); "" + ((this).other());');
+    });
+
+    it('should generate bindings inside switch block', () => {
+      const TEMPLATE = `
+        {#switch expr}
+          {:case 1}{{one()}}
+          {:case 2}{{two()}}
+          {:default}{{default()}}
+        {/switch}
+      `;
+
+      expect(conditionalTcb(TEMPLATE))
+          .toContain('"" + ((this).one()); "" + ((this).two()); "" + ((this).default());');
+    });
+  });
+
+  // TODO(crisbeto): tests for the for loop expression and context variables
+  describe('for loop blocks', () => {
+    // TODO(crisbeto): temporary utility while for loop blocks are disabled by default
+    function loopTcb(template: string): string {
+      return tcb(template, undefined, undefined, undefined, {enabledBlockTypes: new Set(['for'])});
+    }
+
+    it('should generate bindings inside for loop blocks', () => {
+      const TEMPLATE = `
+        {#for item of items; track item}
+          {{main()}}
+          {:empty}{{empty()}}
+        {/for}
+      `;
+
+      expect(loopTcb(TEMPLATE)).toContain('"" + ((this).main()); "" + ((this).empty());');
+    });
+  });
 });
