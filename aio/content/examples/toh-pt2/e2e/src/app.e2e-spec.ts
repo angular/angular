@@ -74,7 +74,7 @@ function selectHeroTests() {
   it(`has selected ${targetHero.name}`, async () => {
     const page = getPageElts();
     const expectedText = `${targetHero.id} ${targetHero.name}`;
-    expect((await page.selected.getText()).replace('\n', ' ')).toBe(expectedText);
+    expect((await page.selected.getText()).replace(/\n/g, ' ')).toBe(expectedText);
   });
 
   it('shows selected hero details', async () => {
@@ -101,7 +101,7 @@ function updateHeroTests() {
 
   it(`shows updated hero name in list`, async () => {
     const page = getPageElts();
-    const hero = Hero.fromString((await page.selected.getText()).replace('\n', ' '));
+    const hero = Hero.fromString((await page.selected.getText()).replace(/\n/g, ' '));
     const newName = targetHero.name + nameSuffix;
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(newName);
