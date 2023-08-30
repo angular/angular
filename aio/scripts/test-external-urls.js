@@ -64,7 +64,7 @@ const contributorsFilePath = join(__dirname, '../content/marketing/contributors.
         // the page is working as expected as linkedin.com returns a `999` status for
         // non-browser based requests.  Other pages returning a `999` may still indicate an
         // error in the request for the page.
-        if ([405, 999].includes(result.status) && url.hostname.includes('linkedin.com')) {
+        if ([405, 999].includes(result.status) && url.hostname === 'linkedin.com') {
           return;
         }
 
