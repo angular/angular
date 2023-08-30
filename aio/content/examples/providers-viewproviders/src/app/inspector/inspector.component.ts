@@ -3,6 +3,7 @@ import { FlowerService } from '../flower.service';
 import { AnimalService } from '../animal.service';
 
 @Component({
+  standalone: true,
   selector: 'app-inspector',
   templateUrl: './inspector.component.html',
   styleUrls: ['./inspector.component.css']

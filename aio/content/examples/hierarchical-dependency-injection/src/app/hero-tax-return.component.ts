@@ -3,14 +3,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HeroTaxReturn } from './hero';
 import { HeroTaxReturnService } from './hero-tax-return.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+  standalone: true,
   selector: 'app-hero-tax-return',
   templateUrl: './hero-tax-return.component.html',
   styleUrls: [ './hero-tax-return.component.css' ],
   // #docregion providers
-  providers: [ HeroTaxReturnService ]
-  // #enddocregion providers
+  providers: [ HeroTaxReturnService ],
+  // #enddocregion providers,
+  imports: [FormsModule]
 })
 export class HeroTaxReturnComponent {
   message = '';

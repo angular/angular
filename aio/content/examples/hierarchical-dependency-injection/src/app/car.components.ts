@@ -7,6 +7,7 @@ import {
 
 ////////// CCarComponent ////////////
 @Component({
+  standalone: true,
   selector: 'c-car',
   template: '<div>C: {{description}}</div>',
   providers: [
@@ -22,6 +23,7 @@ export class CCarComponent {
 
 ////////// BCarComponent ////////////
 @Component({
+  standalone: true,
   selector: 'b-car',
   template: `
     <div>B: {{description}}</div>
@@ -30,7 +32,8 @@ export class CCarComponent {
   providers: [
     { provide: CarService,    useClass: CarService2 },
     { provide: EngineService, useClass: EngineService2 }
-  ]
+  ],
+  imports: [CCarComponent]
 })
 export class BCarComponent {
   description: string;
@@ -41,10 +44,12 @@ export class BCarComponent {
 
 ////////// ACarComponent ////////////
 @Component({
+  standalone: true,
   selector: 'a-car',
   template: `
   <div>A: {{description}}</div>
-  <b-car></b-car>`
+  <b-car></b-car>`,
+  imports: [BCarComponent]
 })
 export class ACarComponent {
   description: string;
@@ -54,10 +59,12 @@ export class ACarComponent {
 }
 ////////// CarsComponent ////////////
 @Component({
+  standalone: true,
   selector: 'app-cars',
   template: `
   <h3>Cars</h3>
-  <a-car></a-car>`
+  <a-car></a-car>`,
+  imports: [ACarComponent]
 })
 export class CarsComponent { }
 
