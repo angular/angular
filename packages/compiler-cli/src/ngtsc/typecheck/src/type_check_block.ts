@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -407,12 +407,12 @@ class TcbTemplateBodyOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which renders a text binding (interpolation) into the TCB.
+ * A `TcbOp` which renders an Angular expression (e.g. `{{foo() && bar.baz}}`).
  *
  * Executing this operation returns nothing.
  */
-class TcbTextInterpolationOp extends TcbOp {
-  constructor(private tcb: Context, private scope: Scope, private binding: TmplAstBoundText) {
+class TcbExpressionOp extends TcbOp {
+  constructor(private tcb: Context, private scope: Scope, private expression: AST) {
     super();
   }
 
@@ -421,7 +421,7 @@ class TcbTextInterpolationOp extends TcbOp {
   }
 
   override execute(): null {
-    const expr = tcbExpression(this.binding.value, this.tcb, this.scope);
+    const expr = tcbExpression(this.expression, this.tcb, this.scope);
     this.scope.addStatement(ts.factory.createExpressionStatement(expr));
     return null;
   }
@@ -1505,7 +1505,10 @@ class Scope {
       }
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof TmplAstDeferredBlock) {
-      // TODO(crisbeto): type check `when` and `prefetchWhen` triggers.
+      node.triggers.when !== undefined &&
+          this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.triggers.when.value));
+      node.prefetchTriggers.when !== undefined &&
+          this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.prefetchTriggers.when.value));
       this.appendChildren(node);
       node.placeholder !== null && this.appendChildren(node.placeholder);
       node.loading !== null && this.appendChildren(node.loading);
@@ -1525,7 +1528,7 @@ class Scope {
       this.appendChildren(node);
       node.empty && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
-      this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
     } else if (node instanceof TmplAstIcu) {
       this.appendIcuExpressions(node);
     }
@@ -1684,11 +1687,11 @@ class Scope {
 
   private appendIcuExpressions(node: TmplAstIcu): void {
     for (const variable of Object.values(node.vars)) {
-      this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, variable));
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, variable.value));
     }
     for (const placeholder of Object.values(node.placeholders)) {
       if (placeholder instanceof TmplAstBoundText) {
-        this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, placeholder));
+        this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value));
       }
     }
   }

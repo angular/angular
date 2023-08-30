@@ -458,7 +458,7 @@ export declare class MyApp {
 import { Component, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestPipe {
-    tranform() {
+    transform() {
         return true;
     }
 }
@@ -499,7 +499,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestPipe {
-    tranform(): boolean;
+    transform(): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "testPipe", true>;
 }
