@@ -1,18 +1,23 @@
-<nav #navBar mat-tab-nav-bar [color]="'accent'">
+<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'">
+
   <div id="nav-buttons">
-    <button mat-icon-button color="primary" (click)="toggleInspector()" matTooltip="Inspect element">
-      <mat-icon [class.inspector-active]="inspectorRunning">pin_end</mat-icon>
+    <button (click)="toggleInspector()" matTooltip="Inspect element">
+      <mat-icon [class.inspector-active]="inspectorRunning"> pin_end </mat-icon>
     </button>
-    <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" matTooltip="Open settings">
+
+    <button [matMenuTriggerFor]="menu" matTooltip="Open settings">
       <mat-icon> settings </mat-icon>
     </button>
-    <button mat-icon-button color="primary" [matMenuTriggerFor]="info" matTooltip="Info">
+
+    <button [matMenuTriggerFor]="info" matTooltip="Info">
       <mat-icon> info </mat-icon>
     </button>
   </div>
+
   <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">
     {{ tab }}
   </a>
+
   <section *ngIf="angularVersion" id="app-angular-version">
     Angular version:
     <span id="version-number">
@@ -20,6 +25,7 @@
     </span>
     <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
   </section>
+
 </nav>
 
 <div class="tab-content">
@@ -33,21 +39,20 @@
 </div>
 
 <mat-menu #menu="matMenu">
-  <div mat-menu-item disableRipple>
-    <mat-slide-toggle
-      (change)="toggleTimingAPI($event)"
-      (click)="$event.stopPropagation()">Enable timing API</mat-slide-toggle>
+  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
+    <mat-slide-toggle [checked]="timingAPIEnabled">
+      Enable timing API
+    </mat-slide-toggle>
   </div>
-  <div mat-menu-item disableRipple>
-    <mat-slide-toggle
-      [checked]="currentTheme === 'dark-theme'"
-      (change)="themeService.toggleDarkMode($event.checked)"
-      (click)="$event.stopPropagation()">Dark Mode</mat-slide-toggle>
+  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
+    <mat-slide-toggle [checked]="currentTheme === 'dark-theme'">
+      Dark Mode
+    </mat-slide-toggle>
   </div>
-  <div mat-menu-item disableRipple>
-    <mat-slide-toggle
-      (change)="showCommentNodes = $event.checked"
-      (click)="$event.stopPropagation()">Show comment nodes</mat-slide-toggle>
+  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); showCommentNodes = $event.checked">
+    <mat-slide-toggle [checked]="showCommentNodes">
+      Show comment nodes
+    </mat-slide-toggle>
   </div>
 </mat-menu>
 
