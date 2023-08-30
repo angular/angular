@@ -8,8 +8,8 @@
 
 import {ComponentExplorerViewQuery, ComponentType, DevToolsNode, DirectivePosition, DirectiveType, ElementPosition, Events, MessageBus, ProfilerFrame,} from 'protocol';
 import {debounceTime} from 'rxjs/operators';
+import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from 'shared-utils';
 
-import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {getLatestComponentState, queryDirectiveForest, updateState} from './component-tree';
 import {unHighlight} from './highlighter';
