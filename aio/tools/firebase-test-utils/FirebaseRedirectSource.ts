@@ -20,7 +20,7 @@ export class FirebaseRedirectSource {
   }
 
   static fromGlobPattern(glob: string): FirebaseRedirectSource {
-    const dot = /\./g;
+    const dot = /(?<!\\)\./g;
     const star = /\*/g;
     const doubleStar = /(^|\/)\*\*($|\/)/g;             // e.g. a/**/b or **/b or a/** but not a**b
     const modifiedPatterns = /(.)\(([^)]+)\)/g;         // e.g. `@(a|b)
