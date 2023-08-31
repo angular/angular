@@ -52,6 +52,15 @@ describe('TypeScriptAstFactory', () => {
     });
   });
 
+  describe('createDynamicImport()', () => {
+    it('should create a dynamic import expression', () => {
+      const {generate} = setupExpressions(``);
+      const url = './some/path';
+      const assignment = factory.createDynamicImport(url);
+      expect(generate(assignment)).toEqual(`import("${url}")`);
+    });
+  });
+
   describe('createBlock()', () => {
     it('should create a block statement containing the given statements', () => {
       const {items: stmts, generate} = setupStatements('x = 10; y = 20;');
@@ -172,6 +181,28 @@ describe('TypeScriptAstFactory', () => {
         '    x = 10;',
       ].join('\n'));
     });
+  });
+
+  describe('createArrowFunctionExpression()', () => {
+    it('should create an arrow function with an implicit return if a single statement is provided',
+       () => {
+         const {items: [body], generate} = setupExpressions('arg2 + arg1');
+         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], body);
+         expect(generate(fn)).toEqual('(arg1, arg2) => arg2 + arg1');
+       });
+
+    it('should create an arrow function with an implicit return object literal', () => {
+      const {items: [body], generate} = setupExpressions('{a: 1, b: 2}');
+      const fn = factory.createArrowFunctionExpression([], body);
+      expect(generate(fn)).toEqual('() => ({ a: 1, b: 2 })');
+    });
+
+    it('should create an arrow function with a body when an array of statements is provided',
+       () => {
+         const {items: [body], generate} = setupStatements('{x = 10; y = 20; return x + y;}');
+         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], body);
+         expect(generate(fn)).toEqual('(arg1, arg2) => { x = 10; y = 20; return x + y; }');
+       });
   });
 
   describe('createLiteral()', () => {

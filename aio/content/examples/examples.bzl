@@ -67,6 +67,7 @@ EXAMPLES = {
     "http": {"stackblitz": True, "zip": True},
     "i18n": {"stackblitz": True, "zip": True},
     "inputs-outputs": {"stackblitz": True, "zip": True},
+    "injection-token": {"stackblitz": False, "zip": False},
     "interpolation": {"stackblitz": True, "zip": True},
     "lazy-loading-ngmodules": {"stackblitz": True, "zip": True},
     "lifecycle-hooks": {"stackblitz": True, "zip": True},
@@ -131,7 +132,6 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
     native.filegroup(
         name = "files",
         srcs = native.glob(["**"], exclude = [
-            "BUILD.bazel",
             "**/node_modules/**",  # Node modules may exist from the legacy setup.
         ]),
     )

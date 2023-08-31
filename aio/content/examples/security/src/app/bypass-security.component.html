@@ -12,6 +12,6 @@
 <h4>Resource URL:</h4>
 <p>Showing: {{dangerousVideoUrl}}</p>
 <p>Trusted:</p>
-<iframe class="e2e-iframe-trusted-src" width="640" height="390" [src]="videoUrl"></iframe>
+<iframe class="e2e-iframe-trusted-src" width="640" height="390" [src]="videoUrl" title="trusted video url"></iframe>
 <p>Untrusted:</p>
-<iframe class="e2e-iframe-untrusted-src" width="640" height="390" [src]="dangerousVideoUrl"></iframe>
+<iframe class="e2e-iframe-untrusted-src" width="640" height="390" [src]="dangerousVideoUrl" title="unTrusted video url"></iframe>

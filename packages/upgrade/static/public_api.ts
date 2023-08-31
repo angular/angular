@@ -13,6 +13,7 @@ export {VERSION} from '../src/common/src/version';
 export {downgradeModule} from './src/downgrade_module';
 export {UpgradeComponent} from './src/upgrade_component';
 export {UpgradeModule} from './src/upgrade_module';
+export * from './common';
 
 
 // This file only re-exports items to appear in the public api. Keep it that way.

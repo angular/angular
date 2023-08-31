@@ -20,7 +20,6 @@ import {getLView} from '@angular/core/src/render3/state';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
@@ -1617,7 +1616,7 @@ describe('acceptance integration tests', () => {
     fixture.detectChanges();
 
     expect(subInstance.dirs.length).toBe(1);
-    expect(subInstance.dirs.first).toBeAnInstanceOf(SomeDir);
+    expect(subInstance.dirs.first).toBeInstanceOf(SomeDir);
   });
 
   it('should not set inputs after destroy', () => {

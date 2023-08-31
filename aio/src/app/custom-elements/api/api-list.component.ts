@@ -59,6 +59,7 @@ export class ApiListComponent implements OnInit {
   statuses: Option[] = [
     { value: 'all', title: 'All' },
     { value: 'stable', title: 'Stable'},
+    { value: 'developer-preview', title: 'Developer Preview'},
     { value: 'deprecated', title: 'Deprecated' },
     { value: 'security-risk', title: 'Security Risk' }
   ];
@@ -119,7 +120,10 @@ export class ApiListComponent implements OnInit {
     const matchesQuery = (item: ApiItem) =>
       sectionNameMatches || item.name.indexOf(query) !== -1;
     const matchesStatus = (item: ApiItem) =>
-      status === 'all' || status === item.stability || (status === 'security-risk' && item.securityRisk);
+      status === 'all' ||
+      status === item.stability ||
+      (status === 'security-risk' && item.securityRisk) ||
+      (status === 'developer-preview' && item.developerPreview);
     const matchesType = (item: ApiItem) =>
       type === 'all' || type === item.docType;
 

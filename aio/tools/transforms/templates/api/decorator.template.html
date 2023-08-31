@@ -42,6 +42,7 @@
           </code-example>
         </td>
       </tr>
+      {%- if option.description or option.usageNotes %}
       <tr>
         <td>
           {%- if option.description %}
@@ -53,6 +54,7 @@
           {% endif %}
         </td>
       </tr>
+      {% endif %}
     </tbody>
   </table>
   {% endfor %}

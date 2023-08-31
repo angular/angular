@@ -43,7 +43,8 @@ export function enterViewWithOneDiv() {
   const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);
   const lView = createLView(
       null, tView, null, LViewFlags.CheckAlways, null, null,
-      {rendererFactory, sanitizer: null, effectManager: null}, renderer, null, null, null);
+      {rendererFactory, sanitizer: null, effectManager: null, afterRenderEventManager: null},
+      renderer, null, null, null);
   lView[HEADER_OFFSET] = div;
   tView.data[HEADER_OFFSET] = tNode;
   enterView(lView);

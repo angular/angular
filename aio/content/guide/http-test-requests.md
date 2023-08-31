@@ -12,7 +12,7 @@ At the end, tests can verify that the app made no unexpected requests.
 
 <div class="alert is-helpful">
 
-You can run <live-example stackblitz="specs">these sample tests</live-example> in a live coding environment.
+You can run <live-example stackblitz="specs" name="http">these sample tests</live-example> in a live coding environment.
 
 The tests described in this guide are in `src/testing/http-client.spec.ts`.
 There are also tests of an application data service that call `HttpClient` in `src/app/heroes/heroes.service.spec.ts`.

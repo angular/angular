@@ -297,6 +297,10 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         ast.falseCase!.visitExpression(this, context));
   }
 
+  visitDynamicImportExpr(ast: o.DynamicImportExpr, context: any) {
+    return this.factory.createDynamicImport(ast.url);
+  }
+
   visitNotExpr(ast: o.NotExpr, context: Context): TExpression {
     return this.factory.createUnaryExpression('!', ast.condition.visitExpression(this, context));
   }
@@ -305,6 +309,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     return this.factory.createFunctionExpression(
         ast.name ?? null, ast.params.map(param => param.name),
         this.factory.createBlock(this.visitStatements(ast.statements, context)));
+  }
+
+  visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
+    return this.factory.createArrowFunctionExpression(
+        ast.params.map(param => param.name),
+        Array.isArray(ast.body) ?
+            this.factory.createBlock(this.visitStatements(ast.body, context)) :
+            ast.body.visitExpression(this, context));
   }
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, context: Context): TExpression {

@@ -99,11 +99,11 @@ import * as i0 from "@angular/core";
 export declare class FooComponent {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<FooComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<FooComponent, "foo", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<FooComponent, "foo", never, {}, {}, never, never, false, never>;
 }
 export declare class BarDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<BarDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<BarDirective, "[bar]", never, {}, {}, never, never, false, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<BarDirective, "[bar]", never, {}, {}, never, never, false, never>;
 }
 export declare class QuxPipe implements PipeTransform {
     transform(): void;
@@ -167,11 +167,11 @@ import * as i0 from "@angular/core";
 export declare class FooComponent {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<FooComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<FooComponent, "foo", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<FooComponent, "foo", never, {}, {}, never, never, false, never>;
 }
 export declare class BarDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<BarDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<BarDirective, "[bar]", never, {}, {}, never, never, false, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<BarDirective, "[bar]", never, {}, {}, never, never, false, never>;
 }
 export declare class QuxPipe implements PipeTransform {
     transform(): void;
@@ -332,11 +332,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class A1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<A1Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<A1Component, "a1", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<A1Component, "a1", never, {}, {}, never, never, false, never>;
 }
 export declare class A2Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<A2Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<A2Component, "a2", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<A2Component, "a2", never, {}, {}, never, never, false, never>;
 }
 export declare class AModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AModule, never>;
@@ -345,11 +345,11 @@ export declare class AModule {
 }
 export declare class B1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B1Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<B1Component, "b1", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<B1Component, "b1", never, {}, {}, never, never, false, never>;
 }
 export declare class B2Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B2Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<B2Component, "b2", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<B2Component, "b2", never, {}, {}, never, never, false, never>;
 }
 export declare class BModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BModule, never>;
@@ -433,11 +433,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class A1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<A1Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<A1Component, "a1", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<A1Component, "a1", never, {}, {}, never, never, false, never>;
 }
 export declare class A2Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<A2Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<A2Component, "a2", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<A2Component, "a2", never, {}, {}, never, never, false, never>;
 }
 export declare class AModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AModule, never>;
@@ -446,11 +446,11 @@ export declare class AModule {
 }
 export declare class B1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B1Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<B1Component, "b1", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<B1Component, "b1", never, {}, {}, never, never, false, never>;
 }
 export declare class B2Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B2Component, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<B2Component, "b2", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<B2Component, "b2", never, {}, {}, never, never, false, never>;
 }
 export declare class BModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BModule, never>;
@@ -473,11 +473,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { NgModule } from '@angular/core';
-export let NoAotModule = class NoAotModule {
+let NoAotModule = class NoAotModule {
 };
 NoAotModule = __decorate([
     NgModule({ jit: true })
 ], NoAotModule);
+export { NoAotModule };
 
 /****************************************************************************************************
  * PARTIAL FILE: no_aot.d.ts

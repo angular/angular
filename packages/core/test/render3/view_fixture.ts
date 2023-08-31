@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Sanitizer, Type} from '@angular/core';
+import {Sanitizer, Type, ɵAfterRenderEventManager as AfterRenderEventManager} from '@angular/core';
 import {EffectManager} from '@angular/core/src/render3/reactivity/effect';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -16,7 +16,7 @@ import {renderView} from '../../src/render3/instructions/render';
 import {createLView, createTNode, createTView} from '../../src/render3/instructions/shared';
 import {DirectiveDef, DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory, RenderFlags} from '../../src/render3/interfaces/definition';
 import {TConstants, TElementNode, TNodeType} from '../../src/render3/interfaces/node';
-import {LView, LViewFlags, TView, TViewType} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TView, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
 import {noop} from '../../src/util/noop';
 
@@ -76,6 +76,7 @@ export class ViewFixture {
           rendererFactory,
           sanitizer: sanitizer || null,
           effectManager: new EffectManager(),
+          afterRenderEventManager: new AfterRenderEventManager(),
         },
         hostRenderer, null, null, null);
 
@@ -98,6 +99,8 @@ export class ViewFixture {
         consts || null, null);
     const hostTNode =
         createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null) as TElementNode;
+    // Store TNode at the first slot right after the header part
+    hostTView.data[HEADER_OFFSET] = hostTNode;
     this.lView = createLView(
         hostLView, this.tView, context || {}, LViewFlags.CheckAlways, this.host, hostTNode, null,
         hostRenderer, null, null, null);

@@ -12,6 +12,7 @@ import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation} from '@angular/core';
+import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
@@ -869,6 +870,22 @@ describe('platform-server integration', () => {
            const output = await bootstrap;
            expect(output).toMatch(/ng-server-context="other"/);
          });
+
+      it('appends SSR integrity marker comment when hydration is enabled', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: ``,
+        })
+        class SimpleApp {
+        }
+
+        const bootstrap = renderApplication(
+            getStandaloneBoostrapFn(SimpleApp, [provideClientHydration()]), {document: doc});
+        // HttpClient cache and DOM hydration are enabled by default.
+        const output = await bootstrap;
+        expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
+      });
 
       it('includes a set of features into `ng-server-context` attribute', async () => {
         const options = {

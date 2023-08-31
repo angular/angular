@@ -14,6 +14,16 @@ import { Provider } from '@angular/core';
 import { XhrFactory } from '@angular/common';
 
 // @public
+export class FetchBackend implements HttpBackend {
+    // (undocumented)
+    handle(request: HttpRequest<any>): Observable<HttpEvent<any>>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FetchBackend, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<FetchBackend>;
+}
+
+// @public
 export const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
 
 // @public
@@ -1741,6 +1751,8 @@ export enum HttpFeatureKind {
     // (undocumented)
     CustomXsrfConfiguration = 2,
     // (undocumented)
+    Fetch = 6,
+    // (undocumented)
     Interceptors = 0,
     // (undocumented)
     JsonpSupport = 4,
@@ -1783,7 +1795,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
 export class HttpHeaders {
     constructor(headers?: string | {
         [name: string]: string | number | (string | number)[];
-    });
+    } | Headers);
     append(name: string, value: string | string[]): HttpHeaders;
     delete(name: string, value?: string | string[]): HttpHeaders;
     get(name: string): string | null;
@@ -2164,6 +2176,9 @@ export class JsonpInterceptor {
 
 // @public
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
+
+// @public
+export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeature<HttpFeatureKind.Interceptors>;

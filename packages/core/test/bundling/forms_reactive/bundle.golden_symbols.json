@@ -24,6 +24,9 @@
     "name": "AbstractFormGroupDirective"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -693,6 +696,9 @@
     "name": "activeConsumer"
   },
   {
+    "name": "addLViewToLContainer"
+  },
+  {
     "name": "addPropertyAlias"
   },
   {
@@ -778,6 +784,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "collectNativeNodesInLContainer"
   },
   {
     "name": "collectStylingFromDirectives"
@@ -1500,9 +1509,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "providerToFactory"
   },
   {
@@ -1570,9 +1576,6 @@
   },
   {
     "name": "scheduleArray"
-  },
-  {
-    "name": "scheduleMicroTask"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1771,6 +1774,9 @@
   },
   {
     "name": "ɵɵproperty"
+  },
+  {
+    "name": "ɵɵtemplate"
   },
   {
     "name": "ɵɵtext"

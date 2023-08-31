@@ -162,7 +162,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * represent the same underlying entity (for example, when data is re-fetched from the server,
    * and the iterable is recreated and re-rendered, but most of the data is still the same).
    *
-   * @see `TrackByFunction`
+   * @see {@link TrackByFunction}
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {

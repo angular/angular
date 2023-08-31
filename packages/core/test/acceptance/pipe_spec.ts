@@ -411,12 +411,12 @@ describe('pipe', () => {
       TestBed.createComponent(App);
 
       expect(impurePipeInstances.length).toEqual(4);
-      expect(impurePipeInstances[0]).toBeAnInstanceOf(CountingImpurePipe);
-      expect(impurePipeInstances[1]).toBeAnInstanceOf(CountingImpurePipe);
+      expect(impurePipeInstances[0]).toBeInstanceOf(CountingImpurePipe);
+      expect(impurePipeInstances[1]).toBeInstanceOf(CountingImpurePipe);
       expect(impurePipeInstances[1]).not.toBe(impurePipeInstances[0]);
-      expect(impurePipeInstances[2]).toBeAnInstanceOf(CountingImpurePipe);
+      expect(impurePipeInstances[2]).toBeInstanceOf(CountingImpurePipe);
       expect(impurePipeInstances[2]).not.toBe(impurePipeInstances[0]);
-      expect(impurePipeInstances[3]).toBeAnInstanceOf(CountingImpurePipe);
+      expect(impurePipeInstances[3]).toBeInstanceOf(CountingImpurePipe);
       expect(impurePipeInstances[3]).not.toBe(impurePipeInstances[0]);
     });
   });

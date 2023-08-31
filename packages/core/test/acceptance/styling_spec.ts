@@ -12,7 +12,6 @@ import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
 
 describe('styling', () => {
@@ -1583,7 +1582,7 @@ describe('styling', () => {
       fixture.detectChanges();
 
       const childDir = fixture.debugElement.query(By.directive(ChildDir)).injector.get(ChildDir);
-      expect(childDir.parent).toBeAnInstanceOf(TestDir);
+      expect(childDir.parent).toBeInstanceOf(TestDir);
       expect(testDirDiv.classList).not.toContain('with-button');
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
     });
@@ -2476,10 +2475,10 @@ describe('styling', () => {
        }
 
        const header = fixture.nativeElement.querySelector('header');
-       expect(header.classList.contains('header'));
+       expect(header.classList.contains('header')).toBeTrue();
 
        const footer = fixture.nativeElement.querySelector('footer');
-       expect(footer.classList.contains('footer'));
+       expect(footer.classList.contains('footer')).toBeTrue();
 
        expect(getItemElements().length).toEqual(3);
        expect(getItemClasses()).toEqual([

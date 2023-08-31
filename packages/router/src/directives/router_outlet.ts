@@ -27,7 +27,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * `ChildrenOutletContexts#onChildOutletDestroyed`. When the `Router` identifies a matched `Route`,
  * it looks for a registered outlet in the `ChildrenOutletContexts` and activates it.
  *
- * @see `ChildrenOutletContexts`
+ * @see {@link ChildrenOutletContexts}
  * @publicApi
  */
 export interface RouterOutletContract {
@@ -155,8 +155,8 @@ export interface RouterOutletContract {
  *
  * @see [Routing tutorial](guide/router-tutorial-toh#named-outlets "Example of a named
  * outlet and secondary route configuration").
- * @see `RouterLink`
- * @see `Route`
+ * @see {@link RouterLink}
+ * @see {@link Route}
  * @ngModule RouterModule
  *
  * @publicApi

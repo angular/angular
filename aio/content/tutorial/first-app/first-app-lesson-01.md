@@ -1,30 +1,17 @@
-# First Angular app lesson 1 - Hello world
-
+# Lesson 1: Hello world
 This first lesson serves as the starting point from which each lesson in this tutorial adds new features to build a complete Angular app. In this lesson, we'll update the application to display the famous text, "Hello World".
 
-**Time required:** expect to spend about 15 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-00"></live-example>
 
-This lesson starts from a pre-built app that will serve as a baseline for the application you'll be building in this tutorial. We've provided starter code so you can:
+**Completed code:** <live-example name="first-app-lesson-01"></live-example>
 
-*   Start with the code example for the beginning of this lesson. Choose from the <live-example name="first-app-lesson-00"></live-example> to:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and unzip it into a directory named: `first-app`. Open that directory in your IDE.
+## What you'll learn
 
-If you haven't reviewed the introduction, visit the [tutorial overview page](tutorial/first-app) to make sure you have everything you need to complete this lesson.
+The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
 
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
-
-* The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
-
-## Lesson steps
-
-Perform these steps on the app code in your chosen IDE (locally or using the StackBlitz).
-
-### Step 1 - Test the default app
+## Step 1 - Test the default app
 
 In this step, after you download the default starting app, you build the default Angular app.
 This confirms that your development environment has what you need to continue the tutorial.
@@ -52,9 +39,9 @@ In the **Terminal** pane of your IDE:
 
 1.  In a web browser on your development computer, open `http://localhost:4200`.
 1.  Confirm that the default web site appears in the browser.
-1.  You can leave `ng serve` running for as you complete the next steps.
+1.  You can leave `ng serve` running as you complete the next steps.
 
-### Step 2 - Review the files in the project
+## Step 2 - Review the files in the project
 
 In this step, you get to know the files that make up a default Angular app.
 
@@ -66,7 +53,7 @@ In the **Explorer** pane of your IDE:
         1.  `index.html` is the app's top level HTML template.
         1.  `style.css` is the app's top level style sheet.
         1.  `main.ts` is where the app start running.
-        1.  `favicon.ico` is the app's icon, just as you would find in web site.
+        1.  `favicon.ico` is the app's icon, just as you would find in any web site.
     1.  In the file explorer, find the Angular app's component files (`/app`).
         1.  `app.component.ts` is the source file that describes the `app-root` component.
             This is the top-level Angular component in the app. A component is the basic building block of an Angular application.
@@ -75,8 +62,8 @@ In the **Explorer** pane of your IDE:
             In this app, the styles are in a separate file while the component's code and HTML template are in this file.
         1.  `app.component.css` is the style sheet for this component.
         1.  New components are added to this directory.
-    1.  In the file explorer, find the image directory (`/assets`) contains images used by the app.
-    1.  In the file explorer, find the support files are files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
+    1.  In the file explorer, find the image directory (`/assets`) that contains images used by the app.
+    1.  In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
         1.  `.angular` has files required to build the Angular app.
         1.  `.e2e` has files used to test the app.
         1.  `.node_modules` has the node.js packages that the app uses.
@@ -86,7 +73,7 @@ In the **Explorer** pane of your IDE:
 
 After you have reviewed the files that make up an Angular app project, continue to the next step.
 
-### Step 3 - Create `Hello World`
+## Step 3 - Create `Hello World`
 
 In this step, you update the Angular project files to change the displayed content.
 
@@ -120,7 +107,7 @@ In your IDE:
 In this lesson, you updated a default Angular app to display *Hello world*.
 In the process, you learned about the `ng serve` command to serve your app locally for testing.
 
-If have any trouble with this lesson, review the completed code for it in the <live-example></live-example>.
+If you have any trouble with this lesson, review the completed code for it in the <live-example></live-example>.
 
 ## Next steps
 
@@ -132,3 +119,5 @@ For more information about the topics covered in this lesson, visit:
 
 * [Angular Components](/guide/component-overview)
 * [Creating applications with the Angular CLI](/cli)
+
+  @reviewed 2023-07-10

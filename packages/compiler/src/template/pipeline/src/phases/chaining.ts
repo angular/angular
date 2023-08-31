@@ -9,15 +9,34 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers as R3} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 const CHAINABLE = new Set([
   R3.elementStart,
   R3.elementEnd,
+  R3.element,
   R3.property,
+  R3.hostProperty,
+  R3.syntheticHostProperty,
+  R3.styleProp,
+  R3.attribute,
+  R3.stylePropInterpolate1,
+  R3.stylePropInterpolate2,
+  R3.stylePropInterpolate3,
+  R3.stylePropInterpolate4,
+  R3.stylePropInterpolate5,
+  R3.stylePropInterpolate6,
+  R3.stylePropInterpolate7,
+  R3.stylePropInterpolate8,
+  R3.stylePropInterpolateV,
+  R3.classProp,
+  R3.listener,
   R3.elementContainerStart,
   R3.elementContainerEnd,
   R3.elementContainer,
+  R3.listener,
+  R3.syntheticHostListener,
+  R3.templateCreate,
 ]);
 
 /**
@@ -37,10 +56,10 @@ const CHAINABLE = new Set([
  * elementStart(0, 'div')(1, 'span');
  * ```
  */
-export function phaseChaining(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
-    chainOperationsInList(view.create);
-    chainOperationsInList(view.update);
+export function phaseChaining(job: CompilationJob): void {
+  for (const unit of job.units) {
+    chainOperationsInList(unit.create);
+    chainOperationsInList(unit.update);
   }
 }
 

@@ -1,13 +1,13 @@
 // #docregion, imports
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 // #enddocregion imports
 
 @Directive({
-  selector: '[appHighlight]'
+  standalone: true,
+  selector: '[appHighlight]',
 })
 export class HighlightDirective {
-
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef) {}
 
   // #docregion input
   @Input() appHighlight = '';

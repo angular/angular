@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '@angular/core/test/bundling/util/src/reflect_metadata';
-
 import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
@@ -15,7 +13,6 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 class Todo {
   editing: boolean;
 
-  // TODO(issue/24571): remove '!'.
   private _title!: string;
   get title() {
     return this._title;

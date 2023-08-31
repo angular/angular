@@ -8,12 +8,12 @@
 
 import * as ir from '../../ir';
 
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 import {varsUsedByIrExpression} from './var_counting';
 
-export function phaseAlignPipeVariadicVarOffset(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.update) {
+export function phaseAlignPipeVariadicVarOffset(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.update) {
       ir.visitExpressionsInOp(op, expr => {
         if (!(expr instanceof ir.PipeBindingVariadicExpr)) {
           return expr;

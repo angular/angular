@@ -1,6 +1,10 @@
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
 
+# Do not attempt to de-flake locally.
+# On CI we might set this to `3` to run with deflaking.
+test --flaky_test_attempts=1
+
 ###############################
 # Filesystem interactions     #
 ###############################
@@ -108,9 +112,10 @@ build:remote --define=EXECUTOR=remote
 # Set a higher timeout value, just in case.
 build:remote --remote_timeout=600
 
-# Increase the default number of jobs by 50% because our build has lots of
-# parallelism
-build:remote --jobs=150
+# Bazel detects maximum number of jobs based on host resources.
+# Since we run remotely, we can increase this number significantly.
+common:remote --jobs=200
+
 build:remote --google_default_credentials
 
 # Limit the number of test jobs for on an AIO local deps build. The example tests running
@@ -133,6 +138,12 @@ build:remote --remote_instance_name=projects/internal-200822/instances/primary_i
 build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+# Use HTTP remote cache
+build:remote-cache --remote_cache=https://storage.googleapis.com/angular-team-cache
+build:remote-cache --remote_accept_cached=true
+build:remote-cache --remote_upload_local_results=true
+build:remote-cache --google_default_credentials
 
 # Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
 # even if the rule implementation does not explicitly pass them to the execution requirements.

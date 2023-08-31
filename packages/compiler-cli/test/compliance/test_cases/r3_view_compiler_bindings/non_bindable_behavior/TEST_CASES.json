@@ -13,7 +13,8 @@
             "local_ref_on_host.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not have local refs for nested elements",

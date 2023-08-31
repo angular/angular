@@ -287,9 +287,9 @@ describe('SearchResultsComponent', () => {
     });
   });
 
-  it('should display "Searching ..." while waiting for search results', () => {
+  it('should display "Searching..." while waiting for search results', () => {
     fixture.detectChanges();
-    expect(getText()).toContain('Searching ...');
+    expect(getText()).toContain('Searching...');
   });
 
   it('should not display default links while searching', () => {

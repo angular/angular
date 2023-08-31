@@ -25,7 +25,6 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
   private _rendererCache = new Map<Renderer2, BaseAnimationRenderer>();
   private _cdRecurDepth = 0;
-  private promise: Promise<any> = Promise.resolve(0);
 
   constructor(
       private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
@@ -88,8 +87,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   private _scheduleCountTask() {
-    // always use promise to schedule microtask instead of use Zone
-    this.promise.then(() => {
+    queueMicrotask(() => {
       this._microtaskId++;
     });
   }
@@ -102,7 +100,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     }
 
     if (this._animationCallbacksBuffer.length == 0) {
-      Promise.resolve(null).then(() => {
+      queueMicrotask(() => {
         this._zone.run(() => {
           this._animationCallbacksBuffer.forEach(tuple => {
             const [fn, data] = tuple;
@@ -140,19 +138,26 @@ export class AnimationRendererFactory implements RendererFactory2 {
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
       protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine,
-      private _onDestroy?: () => void) {
-    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode!(n) : null;
-  }
+      private _onDestroy?: () => void) {}
 
   get data() {
     return this.delegate.data;
   }
 
-  destroyNode: ((n: any) => void)|null;
+  destroyNode(node: any): void {
+    this.delegate.destroyNode?.(node);
+  }
 
   destroy(): void {
     this.engine.destroy(this.namespaceId, this.delegate);
-    this.delegate.destroy();
+    this.engine.afterFlushAnimationsDone(() => {
+      // Call the renderer destroy method after the animations has finished as otherwise
+      // styles will be removed too early which will cause an unstyled animation.
+      queueMicrotask(() => {
+        this.delegate.destroy();
+      });
+    });
+
     this._onDestroy?.();
   }
 

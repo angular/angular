@@ -139,6 +139,36 @@ export class Identifiers {
 
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};
 
+  static defer: o.ExternalReference = {name: 'ɵɵdefer', moduleName: CORE};
+  static deferWhen: o.ExternalReference = {name: 'ɵɵdeferWhen', moduleName: CORE};
+  static deferOnIdle: o.ExternalReference = {name: 'ɵɵdeferOnIdle', moduleName: CORE};
+  static deferOnImmediate: o.ExternalReference = {name: 'ɵɵdeferOnImmediate', moduleName: CORE};
+  static deferOnTimer: o.ExternalReference = {name: 'ɵɵdeferOnTimer', moduleName: CORE};
+  static deferOnHover: o.ExternalReference = {name: 'ɵɵdeferOnHover', moduleName: CORE};
+  static deferOnInteraction: o.ExternalReference = {name: 'ɵɵdeferOnInteraction', moduleName: CORE};
+  static deferOnViewport: o.ExternalReference = {name: 'ɵɵdeferOnViewport', moduleName: CORE};
+  static deferPrefetchWhen: o.ExternalReference = {name: 'ɵɵdeferPrefetchWhen', moduleName: CORE};
+  static deferPrefetchOnIdle:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnIdle', moduleName: CORE};
+  static deferPrefetchOnImmediate:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnImmediate', moduleName: CORE};
+  static deferPrefetchOnTimer:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnTimer', moduleName: CORE};
+  static deferPrefetchOnHover:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnHover', moduleName: CORE};
+  static deferPrefetchOnInteraction:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnInteraction', moduleName: CORE};
+  static deferPrefetchOnViewport:
+      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
+
+  static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
+  static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
+  static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
+  static repeaterTrackByIndex:
+      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIndex', moduleName: CORE};
+  static repeaterTrackByIdentity:
+      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIdentity', moduleName: CORE};
+
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 
   static enableBindings: o.ExternalReference = {name: 'ɵɵenableBindings', moduleName: CORE};
@@ -240,6 +270,9 @@ export class Identifiers {
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
+  static getComponentDepsFactory:
+      o.ExternalReference = {name: 'ɵɵgetComponentDepsFactory', moduleName: CORE};
+
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
   static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
 
@@ -306,6 +339,8 @@ export class Identifiers {
   static declareClassMetadata:
       o.ExternalReference = {name: 'ɵɵngDeclareClassMetadata', moduleName: CORE};
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
+  static setClassMetadataAsync:
+      o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};
 
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};

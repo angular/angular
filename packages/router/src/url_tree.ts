@@ -18,7 +18,7 @@ import {equalArraysOrString, shallowEqual} from './utils/collection';
  * for the current router state.
  *
  * @publicApi
- * @see Router.isActive
+ * @see {@link Router#isActive}
  */
 export interface IsActiveMatchOptions {
   /**

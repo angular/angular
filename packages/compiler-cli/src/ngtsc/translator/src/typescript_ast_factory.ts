@@ -103,6 +103,14 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createExpressionStatement = ts.factory.createExpressionStatement;
 
+  createDynamicImport(url: string) {
+    return ts.factory.createCallExpression(
+        ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.Expression,
+        /* type */ undefined,
+        [ts.factory.createStringLiteral(url)],
+    );
+  }
+
   createFunctionDeclaration(functionName: string, parameters: string[], body: ts.Statement):
       ts.Statement {
     if (!ts.isBlock(body)) {
@@ -123,6 +131,18 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
         undefined, undefined, functionName ?? undefined, undefined,
         parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
         undefined, body);
+  }
+
+  createArrowFunctionExpression(parameters: string[], body: ts.Statement|ts.Expression):
+      ts.Expression {
+    if (ts.isStatement(body) && !ts.isBlock(body)) {
+      throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
+    }
+
+    return ts.factory.createArrowFunction(
+        undefined, undefined,
+        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+        undefined, undefined, body);
   }
 
   createIdentifier = ts.factory.createIdentifier;

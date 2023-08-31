@@ -6,6 +6,7 @@
 
 import { ChildrenOutletContexts } from '@angular/router';
 import { Compiler } from '@angular/core';
+import { ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { ExtraOptions } from '@angular/router';
 import * as i0 from '@angular/core';
@@ -26,6 +27,7 @@ import { UrlSerializer } from '@angular/router';
 export class RouterTestingHarness {
     static create(initialUrl?: string): Promise<RouterTestingHarness>;
     detectChanges(): void;
+    readonly fixture: ComponentFixture<unknown>;
     navigateByUrl(url: string): Promise<null | {}>;
     navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
     get routeDebugElement(): DebugElement | null;

@@ -112,12 +112,6 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
-          },
-          "ngxp": {
-            "desc": "Weekly technical-adjacent podcast by Brooke Avery & Erik Slack. Don't just code in Angular, come enjoy the Angular Experience!",
-            "logo": "",
-            "title": "Angular Experience (NgXP)",
-            "url": "https://ngxp.show"
           }
         }
       }
@@ -574,6 +568,11 @@
             "desc": "NGX Cookie Service is an Angular Library that can be used to read, set and delete browser cookies",
             "title": "NGX Cookie Service",
             "url": "https://github.com/stevermeister/ngx-cookie-service"
+          },
+          "flowbite": {
+            "desc": "Open-source UI component library built with the utility-classes from Tailwind CSS and with official support for Angular.",
+            "title": "Flowbite",
+            "url": "https://flowbite.com/docs/getting-started/angular/"
           }
         }
       }
@@ -672,9 +671,9 @@
             "logo": ""
           },
           "angular-projects": {
-            "title": "Angular Projects - Second Edition",
-            "desc": "Build modern web apps by exploring Angular with 10 different projects and cutting-edge technologies",
-            "url": "https://www.amazon.com/dp/1800205260"
+            "title": "Angular Projects - Third Edition",
+            "desc": "Build modern web apps in Angular 16 with 10 different projects and cutting-edge technologies",
+            "url": "https://amazon.com/dp/1803239115"
           },
           "rangle-angular-training-book": {
             "title": "Rangle’s Angular Training Book",

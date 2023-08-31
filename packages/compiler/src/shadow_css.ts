@@ -560,7 +560,7 @@ export class ShadowCss {
       } else if (
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
           rule.selector.startsWith('@document') || rule.selector.startsWith('@layer') ||
-          rule.selector.startsWith('@container')) {
+          rule.selector.startsWith('@container') || rule.selector.startsWith('@scope')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);

@@ -111,6 +111,23 @@ export interface AstFactory<TStatement, TExpression> {
       TExpression;
 
   /**
+   * Create an expression that represents an arrow function
+   * (e.g. `(param1, param2) => body`).
+   *
+   * @param parameters the names of the function's parameters.
+   * @param body an expression or block of statements that are the body of the function.
+   */
+  createArrowFunctionExpression(parameters: string[], body: TExpression|TStatement): TExpression;
+
+  /**
+   * Creates an expression that represents a dynamic import
+   * (e.g. `import('./some/path')`)
+   *
+   * @param url the URL that should by used in the dynamic import
+   */
+  createDynamicImport(url: string): TExpression;
+
+  /**
    * Create an identifier.
    *
    * @param name the name of the identifier.

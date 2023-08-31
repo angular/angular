@@ -22,14 +22,15 @@ import {addToViewTree, createLContainer} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {RComment, RElement, RNode} from '../render3/interfaces/renderer_dom';
+import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
+import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
+import {addLViewToLContainer} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan, assertLessThan, throwError} from '../util/assert';
@@ -50,8 +51,8 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * A view container instance can contain other view containers,
  * creating a [view hierarchy](guide/glossary#view-hierarchy).
  *
- * @see `ComponentRef`
- * @see `EmbeddedViewRef`
+ * @see {@link ComponentRef}
+ * @see {@link EmbeddedViewRef}
  *
  * @publicApi
  */
@@ -349,7 +350,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     // This function supports 2 signatures and we need to handle options correctly for both:
     //   1. When first argument is a Component type. This signature also requires extra
-    //      options to be provided as as object (more ergonomic option).
+    //      options to be provided as object (more ergonomic option).
     //   2. First argument is a Component factory. In this case extra options are represented as
     //      positional arguments. This signature is less ergonomic and will be deprecated.
     if (isComponentFactory) {
@@ -483,17 +484,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     // Logical operation of adding `LView` to `LContainer`
     const adjustedIdx = this._adjustIndex(index);
     const lContainer = this._lContainer;
-    insertView(tView, lView, lContainer, adjustedIdx);
 
-    // Physical operation of adding the DOM nodes.
-    if (!skipDomInsertion) {
-      const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
-      const renderer = lView[RENDERER];
-      const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
-      if (parentRNode !== null) {
-        addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
-      }
-    }
+    addLViewToLContainer(lContainer, lView, adjustedIdx, !skipDomInsertion);
 
     (viewRef as R3ViewRef<any>).attachToViewContainerRef();
     addToArray(getOrCreateViewRefs(lContainer), adjustedIdx, viewRef);

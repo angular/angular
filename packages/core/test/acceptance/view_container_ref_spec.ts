@@ -49,7 +49,7 @@ describe('ViewContainerRef', () => {
     it('should support view queries inside embedded views created in dir constructors', () => {
       const fixture = TestBed.createComponent(ConstructorApp);
       fixture.detectChanges();
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(ElementRef);
       expect(fixture.componentInstance.foo.nativeElement)
           .toEqual(fixture.debugElement.nativeElement.querySelector('span'));
     });
@@ -58,7 +58,7 @@ describe('ViewContainerRef', () => {
        () => {
          const fixture = TestBed.createComponent(ConstructorAppWithQueries);
          fixture.detectChanges();
-         expect(fixture.componentInstance.foo).toBeAnInstanceOf(TemplateRef);
+         expect(fixture.componentInstance.foo).toBeInstanceOf(TemplateRef);
        });
 
     it('should construct proper TNode / DOM tree when embedded views are created in a directive constructor',
@@ -168,7 +168,7 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
 
       expect(cmpRef.instance.fooList.length).toBe(1);
-      expect(cmpRef.instance.fooList.first).toBeAnInstanceOf(ElementRef);
+      expect(cmpRef.instance.fooList.first).toBeInstanceOf(ElementRef);
     });
 
     describe('element namespaces', () => {

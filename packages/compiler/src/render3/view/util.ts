@@ -21,7 +21,7 @@ import {isI18nAttribute} from './i18n/util';
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
  * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
- * bot work in some cases when object keys are mangled by minifier.
+ * not work in some cases when object keys are mangled by a minifier.
  *
  * TODO(FW-1136): this is a temporary solution, we need to come up with a better way of working with
  * inputs that contain potentially unsafe chars.
@@ -48,6 +48,9 @@ export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
 /** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
 export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
+
+/** Special value representing a direct access to a template's context. */
+export const DIRECT_CONTEXT_REFERENCE = '#context';
 
 /**
  * Maximum length of a single instruction chain. Because our output AST uses recursion, we're
@@ -110,6 +113,7 @@ const CHAINABLE_INSTRUCTIONS = new Set([
   R3.textInterpolate7,
   R3.textInterpolate8,
   R3.textInterpolateV,
+  R3.templateCreate,
 ]);
 
 /**

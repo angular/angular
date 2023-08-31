@@ -13,6 +13,7 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {EffectManager} from '../reactivity/effect';
+import type {AfterRenderEventManager} from '../after_render_hooks';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -22,6 +23,7 @@ import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
+import {TDeferBlockDetails} from './defer';
 
 
 
@@ -371,6 +373,9 @@ export interface LViewEnvironment {
 
   /** Container for reactivity system `effect`s. */
   effectManager: EffectManager|null;
+
+  /** Container for after render hooks */
+  afterRenderEventManager: AfterRenderEventManager|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -904,8 +909,9 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
-                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
+export type TData =
+    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
+     ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string|TDeferBlockDetails)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

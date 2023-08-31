@@ -10,16 +10,17 @@ import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../cycles';
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
-import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {DeferredSymbolTracker, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, HostDirectivesResolver, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
+import {CompilationMode} from '../../../transform';
 import {InjectableClassRegistry, NoopReferencesRegistry, ResourceLoader, ResourceLoaderContext} from '../../common';
 import {ComponentDecoratorHandler} from '../src/handler';
 
@@ -40,7 +41,12 @@ export class StubResourceLoader implements ResourceLoader {
   }
 }
 
-function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.CompilerHost) {
+function setup(
+    program: ts.Program, options: ts.CompilerOptions, host: ts.CompilerHost,
+    opts: {compilationMode: CompilationMode, usePoisonedData?: boolean} = {
+      compilationMode: CompilationMode.FULL
+    }) {
+  const {compilationMode, usePoisonedData} = opts;
   const checker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(checker);
   const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
@@ -80,8 +86,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* defaultPreserveWhitespaces */ false,
       /* i18nUseExternalIds */ true,
       /* enableI18nLegacyMessageIdFormat */ false,
-      /* usePoisonedData */ false,
+      !!usePoisonedData,
       /* i18nNormalizeLineEndingsInICUs */ false,
+      /* enabledBlockTypes */ new Set(),
       moduleResolver,
       cycleAnalyzer,
       CycleHandlingStrategy.UseRemoteScoping,
@@ -93,6 +100,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
       hostDirectivesResolver,
+      true,
+      compilationMode,
+      new DeferredSymbolTracker(checker),
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
@@ -533,6 +543,162 @@ runInEachFileSystem(() => {
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
       expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
       expect(meta?.animationTriggerNames?.staticTriggerNames.length).toBe(0);
+    });
+
+    describe('localCompilation', () => {
+      it('should not produce diagnostic for cross-file imports in standalone component', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component} from '@angular/core';
+            import {SomeModule} from './some_where';
+
+            @Component({
+              standalone: true,
+              selector: 'main',
+              template: '<span>Hi!</span>',
+              imports: [SomeModule],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} =
+            setup(program, options, host, {compilationMode: CompilationMode.LOCAL});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toBeUndefined();
+      });
+
+      it('should produce diagnostic for imports in non-standalone component', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component} from '@angular/core';
+            import {SomeModule} from './some_where';
+
+            @Component({
+              selector: 'main',
+              template: '<span>Hi!</span>',
+              imports: [SomeModule],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} =
+            setup(program, options, host, {compilationMode: CompilationMode.LOCAL});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toContain(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.COMPONENT_NOT_STANDALONE),
+          messageText: jasmine.stringContaining(`'imports' is only valid`),
+        }));
+      });
+
+      it('should not produce diagnostic for cross-file schemas in standalone component', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any; export const CUSTOM_ELEMENTS_SCHEMA: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+            import {SomeModule} from './some_where';
+
+            @Component({
+              standalone: true,
+              selector: 'main',
+              template: '<span>Hi!</span>',
+              schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} =
+            setup(program, options, host, {compilationMode: CompilationMode.LOCAL});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+
+        const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toBeUndefined();
+      });
+
+      it('should produce diagnostic for schemas in non-standalone component', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any; export const CUSTOM_ELEMENTS_SCHEMA: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+            import {SomeModule} from './some_where';
+
+            @Component({
+              selector: 'main',
+              template: '<span>Hi!</span>',
+              schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} =
+            setup(program, options, host, {compilationMode: CompilationMode.LOCAL});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+
+        const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toContain(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.COMPONENT_NOT_STANDALONE),
+          messageText: jasmine.stringContaining(`'schemas' is only valid`),
+        }));
+      });
     });
   });
 

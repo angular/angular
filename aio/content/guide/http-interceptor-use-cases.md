@@ -53,7 +53,7 @@ Here is a custom JsonParser that has a special date reviver.
 
 <code-example header="app/http-interceptors/custom-json-interceptor.ts" path="http/src/app/http-interceptors/custom-json-interceptor.ts" region="custom-json-parser"></code-example>
 
-You provide the `CustomParser` along with the `CustomJsonInterceptor`.
+Finally, provide the `CustomParser` along with the `CustomJsonInterceptor` in that same `httpInterceptorProviders` array.
 
 <code-example header="app/http-interceptors/index.ts" path="http/src/app/http-interceptors/index.ts" region="custom-json-interceptor"></code-example>
 

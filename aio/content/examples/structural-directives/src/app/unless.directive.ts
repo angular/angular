@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
 // #docregion no-docs, skeleton
-import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 // #enddocregion skeleton
 /**
@@ -9,7 +9,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 // #enddocregion no-docs
  *
  * If the expression assigned to `appUnless` evaluates to a truthy value
- * then the templated elements are removed removed from the DOM,
+ * then the templated elements are removed from the DOM,
  * the templated elements are (re)inserted into the DOM.
  *
  * <div *appUnless="errorCount" class="success">
@@ -24,7 +24,10 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 // #docregion no-docs
  */
 // #docregion skeleton
-@Directive({ selector: '[appUnless]'})
+@Directive({
+  standalone: true,
+  selector: '[appUnless]',
+})
 export class UnlessDirective {
   // #enddocregion skeleton
   private hasView = false;
@@ -32,7 +35,8 @@ export class UnlessDirective {
   // #docregion ctor
   constructor(
     private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef) { }
+    private viewContainer: ViewContainerRef,
+  ) {}
   // #enddocregion ctor
 
   // #docregion set

@@ -41,7 +41,7 @@ export declare class MyComponent {
     componentOutput: any;
     originalComponentOutput: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "componentInput": { "alias": "componentInput"; "required": false; }; "originalComponentInput": { "alias": "renamedComponentInput"; "required": false; }; }, { "componentOutput": "componentOutput"; "originalComponentOutput": "renamedComponentOutput"; }, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "componentInput": { "alias": "componentInput"; "required": false; }; "originalComponentInput": { "alias": "renamedComponentInput"; "required": false; }; }, { "componentOutput": "componentOutput"; "originalComponentOutput": "renamedComponentOutput"; }, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -92,7 +92,7 @@ export declare class MyDirective {
     directiveOutput: any;
     originalDirectiveOutput: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "directiveInput": { "alias": "directiveInput"; "required": false; }; "originalDirectiveInput": { "alias": "renamedDirectiveInput"; "required": false; }; }, { "directiveOutput": "directiveOutput"; "originalDirectiveOutput": "renamedDirectiveOutput"; }, never, never, false, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "directiveInput": { "alias": "directiveInput"; "required": false; }; "originalDirectiveInput": { "alias": "renamedDirectiveInput"; "required": false; }; }, { "directiveOutput": "directiveOutput"; "originalDirectiveOutput": "renamedDirectiveOutput"; }, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -111,7 +111,7 @@ function toNumber(value) {
 export class MyDirective {
 }
 MyDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-directive]", inputs: { functionDeclarationInput: ["functionDeclarationInput", "functionDeclarationInput", toNumber], inlineFunctionInput: ["inlineFunctionInput", "inlineFunctionInput", (value, _) => value ? 1 : 0] }, ngImport: i0 });
+MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "16.1.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-directive]", inputs: { functionDeclarationInput: ["functionDeclarationInput", "functionDeclarationInput", toNumber], inlineFunctionInput: ["inlineFunctionInput", "inlineFunctionInput", (value, _) => value ? 1 : 0] }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
             type: Directive,
             args: [{ selector: '[my-directive]' }]
@@ -140,7 +140,7 @@ export declare class MyDirective {
     functionDeclarationInput: any;
     inlineFunctionInput: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "functionDeclarationInput": { "alias": "functionDeclarationInput"; "required": false; }; "inlineFunctionInput": { "alias": "inlineFunctionInput"; "required": false; }; }, {}, never, never, false, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "functionDeclarationInput": { "alias": "functionDeclarationInput"; "required": false; }; "inlineFunctionInput": { "alias": "inlineFunctionInput"; "required": false; }; }, {}, never, never, false, never>;
     static ngAcceptInputType_functionDeclarationInput: number | string;
     static ngAcceptInputType_inlineFunctionInput: string | number;
 }

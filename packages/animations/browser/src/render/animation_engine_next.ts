@@ -106,11 +106,17 @@ export class AnimationEngine {
   }
 
   get players(): AnimationPlayer[] {
-    return (this._transitionEngine.players as AnimationPlayer[])
-        .concat(this._timelineEngine.players as AnimationPlayer[]);
+    return [
+      ...this._transitionEngine.players,
+      ...this._timelineEngine.players,
+    ];
   }
 
   whenRenderingDone(): Promise<any> {
     return this._transitionEngine.whenRenderingDone();
+  }
+
+  afterFlushAnimationsDone(cb: VoidFunction): void {
+    this._transitionEngine.afterFlushAnimationsDone(cb);
   }
 }

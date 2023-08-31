@@ -6,7 +6,7 @@
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
     "module": "NodeNext",
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist/out-tsc",
     "rootDir": ".",
     "target": "es5",

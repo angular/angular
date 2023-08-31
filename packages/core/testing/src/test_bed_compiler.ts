@@ -7,11 +7,9 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵclearResolutionOfComponentResourcesQueue, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵdepsTracker as depsTracker, ɵDirectiveDef as DirectiveDef, ɵgenerateStandaloneInDeclarationsError, ɵgetAsyncClassMetadata as getAsyncClassMetadata, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisComponentDefPendingResolution, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵresolveComponentResources, ɵrestoreComponentResolutionQueue, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
-import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
-import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -30,9 +28,11 @@ function isTestingModuleOverride(value: unknown): value is TestingModuleOverride
 function assertNoStandaloneComponents(
     types: Type<any>[], resolver: Resolver<any>, location: string) {
   types.forEach(type => {
-    const component = resolver.resolve(type);
-    if (component && component.standalone) {
-      throw new Error(generateStandaloneInDeclarationsError(type, location));
+    if (!getAsyncClassMetadata(type)) {
+      const component = resolver.resolve(type);
+      if (component && component.standalone) {
+        throw new Error(ɵgenerateStandaloneInDeclarationsError(type, location));
+      }
     }
   });
 }
@@ -142,6 +142,9 @@ export class TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+    if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+      depsTracker.clearScopeCacheFor(ngModule);
+    }
     this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
@@ -229,7 +232,7 @@ export class TestBedCompiler {
       const metadata = this.resolvers.component.resolve(type)! as Component;
       return !!metadata.styleUrls && metadata.styleUrls.length > 0;
     };
-    const overrideStyleUrls = !!def && !isComponentDefPendingResolution(type) && hasStyleUrls();
+    const overrideStyleUrls = !!def && !ɵisComponentDefPendingResolution(type) && hasStyleUrls();
 
     // In Ivy, compiling a component does not require knowing the module providing the
     // component's scope, so overrideTemplateUsingTestingModule can be implemented purely via
@@ -249,8 +252,36 @@ export class TestBedCompiler {
     this.componentToModuleScope.set(type, TestingModuleOverride.OVERRIDE_TEMPLATE);
   }
 
+  private async resolvePendingComponentsWithAsyncMetadata() {
+    if (this.pendingComponents.size === 0) return;
+
+    const promises = [];
+    for (const component of this.pendingComponents) {
+      const asyncMetadataPromise = getAsyncClassMetadata(component);
+      if (asyncMetadataPromise) {
+        promises.push(asyncMetadataPromise);
+      }
+    }
+
+    const resolvedDeps = await Promise.all(promises);
+    this.queueTypesFromModulesArray(resolvedDeps.flat(2));
+  }
+
   async compileComponents(): Promise<void> {
     this.clearComponentResolutionQueue();
+
+    // Wait for all async metadata for components that were
+    // overridden, we need resolved metadata to perform an override
+    // and re-compile a component.
+    await this.resolvePendingComponentsWithAsyncMetadata();
+
+    // Verify that there were no standalone components present in the `declarations` field
+    // during the `TestBed.configureTestingModule` call. We perform this check here in addition
+    // to the logic in the `configureTestingModule` function, since at this point we have
+    // all async metadata resolved.
+    assertNoStandaloneComponents(
+        this.declarations, this.resolvers.component, '"TestBed.configureTestingModule" call');
+
     // Run compilers for all queued types.
     let needsAsyncResources = this.compileTypesSync();
 
@@ -263,7 +294,7 @@ export class TestBedCompiler {
         }
         return Promise.resolve(resourceLoader.get(url));
       };
-      await resolveComponentResources(resolver);
+      await ɵresolveComponentResources(resolver);
     }
   }
 
@@ -346,11 +377,19 @@ export class TestBedCompiler {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
     this.pendingComponents.forEach(declaration => {
-      needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
+      if (getAsyncClassMetadata(declaration)) {
+        throw new Error(
+            `Component '${declaration.name}' has unresolved metadata. ` +
+            `Please call \`await TestBed.compileComponents()\` before running this test.`);
+      }
+
+      needsAsyncResources = needsAsyncResources || ɵisComponentDefPendingResolution(declaration);
+
       const metadata = this.resolvers.component.resolve(declaration);
       if (metadata === null) {
         throw invalidTypeError(declaration.name, 'Component');
       }
+
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });
@@ -388,8 +427,12 @@ export class TestBedCompiler {
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
         affectedModules.forEach(moduleType => {
-          this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
-          (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+          if (!USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+            this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+            (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+          } else {
+            depsTracker.clearScopeCacheFor(moduleType);
+          }
         });
       }
     }
@@ -533,7 +576,7 @@ export class TestBedCompiler {
       // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
       // missing. That might happen in case a class without any Angular decorators extends another
       // class where Component/Directive/Pipe decorator is defined.
-      if (isComponentDefPendingResolution(type) || !type.hasOwnProperty(NG_COMP_DEF)) {
+      if (ɵisComponentDefPendingResolution(type) || !type.hasOwnProperty(NG_COMP_DEF)) {
         this.pendingComponents.add(type);
       }
       this.seenComponents.add(type);
@@ -701,7 +744,7 @@ export class TestBedCompiler {
     if (this.originalComponentResolutionQueue === null) {
       this.originalComponentResolutionQueue = new Map();
     }
-    clearResolutionOfComponentResourcesQueue().forEach(
+    ɵclearResolutionOfComponentResourcesQueue().forEach(
         (value, key) => this.originalComponentResolutionQueue!.set(key, value));
   }
 
@@ -712,7 +755,7 @@ export class TestBedCompiler {
    */
   private restoreComponentResolutionQueue() {
     if (this.originalComponentResolutionQueue !== null) {
-      restoreComponentResolutionQueue(this.originalComponentResolutionQueue);
+      ɵrestoreComponentResolutionQueue(this.originalComponentResolutionQueue);
       this.originalComponentResolutionQueue = null;
     }
   }
@@ -726,6 +769,9 @@ export class TestBedCompiler {
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
+          if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+            depsTracker.clearScopeCacheFor(type);
+          }
           defs.forEach((descriptor, prop) => {
             if (!descriptor) {
               // Delete operations are generally undesirable since they have performance

@@ -13,7 +13,7 @@ import {TestBed} from '@angular/core/testing';
 
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {TNodeType} from '../../src/render3/interfaces/node';
-import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
 
 describe('di', () => {
@@ -142,12 +142,17 @@ describe('di', () => {
       const contentView = createLView(
           null,
           createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
-          {}, LViewFlags.CheckAlways, null, null,
-          {rendererFactory: {} as any, sanitizer: null, effectManager: null}, {} as any, null, null,
-          null);
+          {}, LViewFlags.CheckAlways, null, null, {
+            rendererFactory: {} as any,
+            sanitizer: null,
+            effectManager: null,
+            afterRenderEventManager: null
+          },
+          {} as any, null, null, null);
       enterView(contentView);
       try {
-        const parentTNode = getOrCreateTNode(contentView[TVIEW], 0, TNodeType.Element, null, null);
+        const parentTNode =
+            getOrCreateTNode(contentView[TVIEW], HEADER_OFFSET, TNodeType.Element, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.

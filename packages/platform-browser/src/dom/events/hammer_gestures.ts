@@ -57,7 +57,7 @@ const EVENT_NAMES = {
 
 /**
  * DI token for providing [HammerJS](https://hammerjs.github.io/) support to Angular.
- * @see `HammerGestureConfig`
+ * @see {@link HammerGestureConfig}
  *
  * @ngModule HammerModule
  * @publicApi
@@ -272,7 +272,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
  * HammerJS to detect gesture events.
  *
  * Note that applications still need to include the HammerJS script itself. This module
- * simply sets up the coordination layer between HammerJS and Angular's EventManager.
+ * simply sets up the coordination layer between HammerJS and Angular's `EventManager`.
  *
  * @publicApi
  */

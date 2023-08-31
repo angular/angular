@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 
@@ -187,6 +187,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(element.children);
     this.visitAll(element.outputs);
   }
+
   override visitTemplate(template: TmplAstTemplate) {
     const templateIdentifier = this.elementOrTemplateToIdentifier(template);
 
@@ -200,6 +201,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.children);
     this.visitAll(template.references);
   }
+
   override visitBoundAttribute(attribute: TmplAstBoundAttribute) {
     // If the bound attribute has no value, it cannot have any identifiers in the value expression.
     if (attribute.valueSpan === undefined) {
@@ -233,6 +235,57 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     }
 
     this.identifiers.add(variableIdentifier);
+  }
+
+  override visitDeferredBlock(deferred: TmplAstDeferredBlock) {
+    deferred.visitAll(this);
+  }
+
+  override visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {
+    this.visitAll(block.children);
+  }
+
+  override visitDeferredBlockError(block: TmplAstDeferredBlockError) {
+    this.visitAll(block.children);
+  }
+
+  override visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {
+    this.visitAll(block.children);
+  }
+
+  override visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {
+    if (trigger instanceof TmplAstBoundDeferredTrigger) {
+      this.visitExpression(trigger.value);
+    }
+  }
+
+  override visitSwitchBlock(block: TmplAstSwitchBlock) {
+    this.visitExpression(block.expression);
+    this.visitAll(block.cases);
+  }
+
+  override visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+    block.expression && this.visitExpression(block.expression);
+    this.visitAll(block.children);
+  }
+
+  override visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    this.visitExpression(block.expression);
+    this.visitAll(block.children);
+    block.empty?.visit(this);
+  }
+
+  override visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
+    this.visitAll(block.children);
+  }
+
+  override visitIfBlock(block: TmplAstIfBlock): void {
+    this.visitAll(block.branches);
+  }
+
+  override visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
+    block.expression && this.visitExpression(block.expression);
+    this.visitAll(block.children);
   }
 
   /** Creates an identifier for a template element or template node. */

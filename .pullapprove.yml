@@ -57,8 +57,7 @@
 version: 3
 
 availability:
-  users_unavailable:
-    - atscott
+  users_unavailable: []
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -168,6 +167,7 @@ groups:
         - atscott
         - crisbeto
         - JoostK
+        - dylhunn
 
   # =========================================================
   #  Framework: Migrations
@@ -242,6 +242,7 @@ groups:
           'aio/content/images/guide/dependency-injection-in-action/**/{*,.*}',
           'aio/content/guide/dependency-injection-navtree.md',
           'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/dependency-injection-context.md',
           'aio/content/guide/lightweight-injection-tokens.md',
           'aio/content/guide/displaying-data.md',
           'aio/content/examples/displaying-data/**/{*,.*}',
@@ -310,6 +311,7 @@ groups:
           'aio/content/guide/pipes.md',
           'aio/content/guide/pipes-custom-data-trans.md',
           'aio/content/guide/pipes-overview.md',
+          'aio/content/guide/pipe-precedence.md',
           'aio/content/guide/pipes-transform-data.md',
           'aio/content/guide/pipe-template.md',
           'aio/content/examples/pipes/**/{*,.*}',
@@ -336,7 +338,8 @@ groups:
           'aio/content/images/guide/view-encapsulation/**/{*,.*}',
           'aio/content/special-elements/**/{*,.*}',
           'aio/content/guide/hydration.md',
-          'aio/content/guide/signals.md'
+          'aio/content/guide/signals.md',
+          'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -378,7 +381,6 @@ groups:
         contains_any_globs(files, [
           'packages/common/http/**/{*,.*}',
           'packages/examples/http/**/{*,.*}',
-          'aio/content/guide/http.md',
           'aio/content/guide/understanding-communicating-with-http.md',
           'aio/content/guide/http-configure-http-url-parameters.md',
           'aio/content/guide/http-handle-request-errors.md',
@@ -781,8 +783,9 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
+        - devversion
         - josephperrott
+        - pkozlowski-opensource
 
   # =========================================================
   #  Integration Tests
@@ -918,13 +921,7 @@ groups:
           'aio/content/guide/releases.md',
           'aio/content/guide/updating.md',
           'aio/content/guide/deprecations.md',
-          'aio/content/guide/migration-legacy-message-id.md',
           'aio/content/examples/deprecation-guide/**/{*,.*}',
-          'aio/content/guide/migration-renderer.md',
-          'aio/content/guide/migration-undecorated-classes.md',
-          'aio/content/guide/migration-dynamic-flag.md',
-          'aio/content/guide/migration-injectable.md',
-          'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
@@ -1127,6 +1124,7 @@ groups:
       users:
         - AleksanderBodurri
         - devversion
+        - dgp1130
         - josephperrott
         - mgechev
         - twerske

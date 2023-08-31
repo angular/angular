@@ -249,21 +249,7 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
-  lint:
-    executor: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-
-      - run: yarn -s tslint
-      - run: yarn -s --cwd aio lint
-      - run: yarn -s ng-dev format changed $CI_GIT_BASE_REVISION --check
-      - run: yarn -s ts-circular-deps:check
-      - run: yarn -s ng-dev pullapprove verify
-      - run: yarn -s ng-dev ngbot verify
-      - run: yarn -s ng-dev commit-message validate-range $CI_GIT_BASE_REVISION $CI_GIT_REVISION
-      - run: yarn -s check-tooling-setup
-
+  # TODO: Remove test job after confirmation that the GHA version is stable.
   test:
     executor:
       name: test-browser-executor
@@ -326,48 +312,6 @@ jobs:
           no_output_timeout: 40m
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
-  test_aio:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-
-        # Run all aio tests
-      - run:
-          command: yarn --cwd aio test:ci
-          no_output_timeout: 20m
-
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size
-
-  deploy_aio:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Deploy angular.io to production (if necessary)
-      - run: setPublicVar_CI_STABLE_BRANCH
-      - run: yarn --cwd aio deploy-production
-
-  test_aio_local:
-    executor:
-      name: test-browser-executor
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Run all aio tests (with local Angular packages)
-      - run:
-          command: yarn --cwd aio test-local:ci
-          no_output_timeout: 20m
-
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local
 
   # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
   # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
@@ -457,14 +401,6 @@ jobs:
           command: echo "https://${SNAPSHOT_BUILDS_GITHUB_TOKEN}:@github.com" > ${HOME}/.git_credentials
       - run: ./scripts/ci/publish-build-artifacts.sh
 
-  aio_misc:
-    executor: default-executor
-    steps:
-      - custom_attach_workspace
-      - run:
-          name: Check website provided in contributors.json file
-          command: yarn node aio/scripts/test-external-urls.js
-
   aio_monitoring_stable:
     executor: test-browser-executor
     steps:
@@ -552,114 +488,6 @@ jobs:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop
 
-  test_zonejs:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - install_java
-
-      - run: |
-          yarn bazel build -- \
-            //packages/zone.js/bundles:zone.umd.js \
-            //packages/zone.js:npm_package \
-            //packages/zone.js/test/closure:closure_js \
-            //packages/zone.js:zone_externs
-
-      - run: |
-          mkdir -p packages/zone.js/build/
-          mkdir -p packages/zone.js/build/test/
-          mkdir -p packages/zone.js/test/
-
-          cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
-          cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
-          cp dist/bin/packages/zone.js/zone_externs.js ./packages/zone.js/build/zone_externs.js
-
-        # Install
-      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-        # Run zone.js tools tests
-      - run: yarn --cwd packages/zone.js promisetest
-      - run: yarn --cwd packages/zone.js promisefinallytest
-      - run: yarn --cwd packages/zone.js jest:test
-      - run: yarn --cwd packages/zone.js jest:nodetest
-      - run: yarn --cwd packages/zone.js electrontest
-      - run: yarn --cwd packages/zone.js closuretest
-      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run: yarn --cwd packages/zone.js/test/typings test
-
-  # Windows jobs
-  # Docs: https://circleci.com/docs/2.0/hello-world-windows/
-  test_win:
-    executor: windows-executor
-    steps:
-      - checkout
-
-      # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
-      # Note: This happens immediately after checkout because environment initialization logic
-      # might rely on Node and shouldn't use the older image-provided NodeJS version.
-      - run:
-          name: Install NodeJS version from `.nvmrc`.
-          command: |
-            nvm on
-            nvm install $(cat .nvmrc)
-            nvm use $(cat .nvmrc)
-      - run:
-          name: Debug information for flakiness of Windows job
-          command: |
-            node -v
-            yarn -v
-            which node
-            which yarn
-            echo "Path: $PATH"
-            yarn node -v
-
-      - save_month_to_file
-      - capture_patches_for_cache_key
-      - init_environment
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-
-      # Install project dependencies, and install Bazelisk globally. This is necessary as
-      # Windows might error when `bazel` is invoked from the project node modules. The Bazel
-      # invocation might modify the symlinked project `node_modules` again, causing failures.
-      - yarn_install
-      - run: yarn global add @bazel/bazelisk@${BAZELISK_VERSION}
-
-      - run:
-          name: Build all windows CI targets
-          command: |
-            $(yarn global bin)/bazelisk build //packages/compiler-cli/...
-          no_output_timeout: 15m
-      - run:
-          name: Test all windows CI targets
-          command: |
-            $(yarn global bin)/bazelisk test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
-          no_output_timeout: 15m
-
-      - save_cache:
-          key: *cache_key_win
-          paths:
-            - node_modules
-            - ~/AppData/Local/bazelisk
-
-  test_angular_devtools:
-    executor: test-browser-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run:
-          name: Run unit tests
-          command: yarn devtools:test
-      - run:
-          name: Test production build
-          command: yarn devtools:build:chrome
-
 workflows:
   version: 2
   default_workflow:
@@ -668,9 +496,6 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
       - test:
           requires:
             - setup
@@ -678,15 +503,6 @@ workflows:
           requires:
             - setup
       - legacy-unit-tests-saucelabs:
-          requires:
-            - setup
-      - test_aio:
-          requires:
-            - setup
-      - deploy_aio:
-          requires:
-            - test_aio
-      - test_aio_local:
           requires:
             - setup
       - publish_packages_as_artifacts:
@@ -697,34 +513,14 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - test_zonejs:
-          requires:
-            - setup
-      - test_win:
-          requires:
-            - setup
-      - test_angular_devtools:
-          requires:
-            - setup
 
   monitoring:
     jobs:
       - setup
-      - aio_misc:
-          requires:
-            - setup
-      - aio_monitoring_stable:
-          requires:
-            - setup
-      - aio_monitoring_next:
-          requires:
-            - setup
       - saucelabs:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding

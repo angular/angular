@@ -65,6 +65,25 @@ import {humanizeDom} from './ast_spec_utils';
       expect(parseAndRemoveWS('   \n foo  \t ')).toEqual([[html.Text, ' foo ', 0, [' foo ']]]);
     });
 
+    it('shuld remove whitespace inside of block groups', () => {
+      const markup = '{#if cond}<br>  <br>\t<br>\n<br>{:else}<br>  <br>\t<br>\n<br>{/if}';
+
+      expect(parseAndRemoveWS(markup, {tokenizeBlocks: true})).toEqual([
+        [html.BlockGroup, 0],
+        [html.Block, 'if', 1],
+        [html.BlockParameter, 'cond'],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+        [html.Block, 'else', 1],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+        [html.Element, 'br', 2],
+      ]);
+    });
+
     it('should not replace &nbsp;', () => {
       expect(parseAndRemoveWS('&nbsp;')).toEqual([
         [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']]

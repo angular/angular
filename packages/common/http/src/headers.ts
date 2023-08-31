@@ -45,7 +45,7 @@ export class HttpHeaders {
 
   /**  Constructs a new HTTP header object with the given values.*/
 
-  constructor(headers?: string|{[name: string]: string | number | (string | number)[]}) {
+  constructor(headers?: string|{[name: string]: string | number | (string | number)[]}|Headers) {
     if (!headers) {
       this.headers = new Map<string, string[]>();
     } else if (typeof headers === 'string') {
@@ -66,6 +66,11 @@ export class HttpHeaders {
           }
         });
       };
+    } else if (typeof Headers !== 'undefined' && headers instanceof Headers) {
+      this.headers = new Map<string, string[]>();
+      headers.forEach((values: string, name: string) => {
+        this.setHeaderEntries(name, values);
+      });
     } else {
       this.lazyInit = () => {
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -73,21 +78,7 @@ export class HttpHeaders {
         }
         this.headers = new Map<string, string[]>();
         Object.entries(headers).forEach(([name, values]) => {
-          let headerValues: string[];
-
-          if (typeof values === 'string') {
-            headerValues = [values];
-          } else if (typeof values === 'number') {
-            headerValues = [values.toString()];
-          } else {
-            headerValues = values.map((value) => value.toString());
-          }
-
-          if (headerValues.length > 0) {
-            const key = name.toLowerCase();
-            this.headers.set(key, headerValues);
-            this.maybeSetNormalizedName(name, key);
-          }
+          this.setHeaderEntries(name, values);
         });
       };
     }
@@ -258,6 +249,14 @@ export class HttpHeaders {
     }
   }
 
+  private setHeaderEntries(name: string, values: any) {
+    const headerValues =
+        (Array.isArray(values) ? values : [values]).map((value) => value.toString());
+    const key = name.toLowerCase();
+    this.headers.set(key, headerValues);
+    this.maybeSetNormalizedName(name, key);
+  }
+
   /**
    * @internal
    */
@@ -273,7 +272,7 @@ export class HttpHeaders {
  * must be either strings, numbers or arrays. Throws an error if an invalid
  * header value is present.
  */
-function assertValidHeaders(headers: Record<string, unknown>):
+function assertValidHeaders(headers: Record<string, unknown>|Headers):
     asserts headers is Record<string, string|string[]|number|number[]> {
   for (const [key, value] of Object.entries(headers)) {
     if (!(typeof value === 'string' || typeof value === 'number') && !Array.isArray(value)) {

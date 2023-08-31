@@ -1,7 +1,9 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
+import {NoEncapsulationComponent} from './no-encapsulation.component';
 
 // #docregion
 @Component({
+  standalone: true,
   selector: 'app-emulated-encapsulation',
   template: `
     <h2>Emulated</h2>
@@ -10,5 +12,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
   `,
   styles: ['h2, .emulated-message { color: green; }'],
   encapsulation: ViewEncapsulation.Emulated,
+  imports: [NoEncapsulationComponent],
 })
-export class EmulatedEncapsulationComponent { }
+export class EmulatedEncapsulationComponent {}

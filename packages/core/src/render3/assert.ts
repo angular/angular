@@ -27,10 +27,13 @@ export function assertTNodeForLView(tNode: TNode, lView: LView) {
 
 export function assertTNodeForTView(tNode: TNode, tView: TView) {
   assertTNode(tNode);
-  tNode.hasOwnProperty('tView_') &&
-      assertEqual(
-          (tNode as any as {tView_: TView}).tView_, tView,
-          'This TNode does not belong to this TView.');
+  const tData = tView.data;
+  for (let i = HEADER_OFFSET; i < tData.length; i++) {
+    if (tData[i] === tNode) {
+      return;
+    }
+  }
+  throwError('This TNode does not belong to this TView.');
 }
 
 export function assertTNode(tNode: TNode) {
@@ -108,8 +111,7 @@ export function assertDirectiveDef<T>(obj: any): asserts obj is DirectiveDef<T> 
   }
 }
 
-export function assertIndexInDeclRange(lView: LView, index: number) {
-  const tView = lView[1];
+export function assertIndexInDeclRange(tView: TView, index: number) {
   assertBetween(HEADER_OFFSET, tView.bindingStartIndex, index);
 }
 

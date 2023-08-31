@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpBackend, HttpClientModule} from '@angular/common/http';
-import {NgModule, Provider} from '@angular/core';
+import {HttpBackend} from '@angular/common/http';
+import {Provider} from '@angular/core';
 
 import {HttpTestingController} from './api';
 import {HttpClientTestingBackend} from './backend';

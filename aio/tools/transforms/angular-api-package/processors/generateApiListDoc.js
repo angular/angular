@@ -40,7 +40,8 @@ function getExportInfo(exportDoc) {
     path: exportDoc.path,
     docType: getDocType(exportDoc),
     stability: getStability(exportDoc),
-    securityRisk: !!exportDoc.security
+    securityRisk: !!exportDoc.security,
+    developerPreview: !!exportDoc.developerPreview
   };
 }
 

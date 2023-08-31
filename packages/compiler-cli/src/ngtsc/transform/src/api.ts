@@ -63,28 +63,6 @@ export enum HandlerPrecedence {
 }
 
 /**
- * A set of options which can be passed to a `DecoratorHandler` by a consumer, to tailor the output
- * of compilation beyond the decorators themselves.
- */
-export enum HandlerFlags {
-  /**
-   * No flags set.
-   */
-  NONE = 0x0,
-
-  /**
-   * Indicates that this decorator is fully inherited from its parent at runtime. In addition to
-   * normally inherited aspects such as inputs and queries, full inheritance applies to every aspect
-   * of the component or directive, such as the template function itself.
-   *
-   * Its primary effect is to cause the `CopyDefinitionFeature` to be applied to the definition
-   * being compiled. See that class for more information.
-   */
-  FULL_INHERITANCE = 0x00000001,
-}
-
-
-/**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
  * compiler/transform.
  *
@@ -134,8 +112,7 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
    * builds. Any side effects required for compilation (e.g. registration of metadata) should happen
    * in the `register` phase, which is guaranteed to run even for incremental builds.
    */
-  analyze(node: ClassDeclaration, metadata: Readonly<D>, handlerFlags?: HandlerFlags):
-      AnalysisOutput<A>;
+  analyze(node: ClassDeclaration, metadata: Readonly<D>): AnalysisOutput<A>;
 
   /**
    * React to a change in a resource file by updating the `analysis` or `resolution`, under the
@@ -202,8 +179,8 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    *
-   * If the compilation mode is configured as partial, and an implementation of `compilePartial` is
-   * provided, then this method is not called.
+   * If the compilation mode is configured as other than full but an implementation of the
+   * corresponding method is not provided, then this method is called as a fallback.
    */
   compileFull(
       node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>,
@@ -220,6 +197,13 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
   compilePartial?
       (node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>): CompileResult
       |CompileResult[];
+
+  /**
+   * Generates code based on each individual source file without using its
+   * dependencies (suitable for local dev edit/refresh workflow)
+   */
+  compileLocal(node: ClassDeclaration, analysis: Readonly<A>, constantPool: ConstantPool):
+      CompileResult|CompileResult[];
 }
 
 /**
@@ -264,6 +248,7 @@ export interface CompileResult {
   initializer: Expression|null;
   statements: Statement[];
   type: Type;
+  deferrableImports: Set<ts.ImportDeclaration>|null;
 }
 
 export interface ResolveResult<R> {

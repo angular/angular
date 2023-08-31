@@ -32,17 +32,17 @@ export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 /**
  * The default value for the `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
  */
-const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
+const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether styles
  * of destroyed components should be removed from DOM.
  *
- * By default, the value is set to `false`. This will be changed in the next major version.
+ * By default, the value is set to `true`.
  * @publicApi
  */
 export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
-    new InjectionToken<boolean>('RemoveStylesOnCompDestory', {
+    new InjectionToken<boolean>('RemoveStylesOnCompDestroy', {
       providedIn: 'root',
       factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
     });
@@ -70,7 +70,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       private readonly eventManager: EventManager,
       private readonly sharedStylesHost: SharedStylesHost,
       @Inject(APP_ID) private readonly appId: string,
-      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean,
+      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
       @Inject(DOCUMENT) private readonly doc: Document,
       @Inject(PLATFORM_ID) readonly platformId: Object,
       readonly ngZone: NgZone,
@@ -112,13 +112,13 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const ngZone = this.ngZone;
       const eventManager = this.eventManager;
       const sharedStylesHost = this.sharedStylesHost;
-      const removeStylesOnCompDestory = this.removeStylesOnCompDestory;
+      const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
       const platformIsServer = this.platformIsServer;
 
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
           renderer = new EmulatedEncapsulationDomRenderer2(
-              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory, doc,
+              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestroy, doc,
               ngZone, platformIsServer);
           break;
         case ViewEncapsulation.ShadowDom:
@@ -127,12 +127,11 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
               platformIsServer);
         default:
           renderer = new NoneEncapsulationDomRenderer(
-              eventManager, sharedStylesHost, type, removeStylesOnCompDestory, doc, ngZone,
+              eventManager, sharedStylesHost, type, removeStylesOnCompDestroy, doc, ngZone,
               platformIsServer);
           break;
       }
 
-      renderer.onDestroy = () => rendererByCompId.delete(type.id);
       rendererByCompId.set(type.id, renderer);
     }
 
@@ -397,14 +396,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
-  private rendererUsageCount = 0;
-  onDestroy: VoidFunction|undefined;
 
   constructor(
       eventManager: EventManager,
       private readonly sharedStylesHost: SharedStylesHost,
       component: RendererType2,
-      private removeStylesOnCompDestory: boolean,
+      private removeStylesOnCompDestroy: boolean,
       doc: Document,
       ngZone: NgZone,
       platformIsServer: boolean,
@@ -416,19 +413,14 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
 
   applyStyles(): void {
     this.sharedStylesHost.addStyles(this.styles);
-    this.rendererUsageCount++;
   }
 
   override destroy(): void {
-    if (!this.removeStylesOnCompDestory) {
+    if (!this.removeStylesOnCompDestroy) {
       return;
     }
 
     this.sharedStylesHost.removeStyles(this.styles);
-    this.rendererUsageCount--;
-    if (this.rendererUsageCount === 0) {
-      this.onDestroy?.();
-    }
   }
 }
 
@@ -438,11 +430,11 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
 
   constructor(
       eventManager: EventManager, sharedStylesHost: SharedStylesHost, component: RendererType2,
-      appId: string, removeStylesOnCompDestory: boolean, doc: Document, ngZone: NgZone,
+      appId: string, removeStylesOnCompDestroy: boolean, doc: Document, ngZone: NgZone,
       platformIsServer: boolean) {
     const compId = appId + '-' + component.id;
     super(
-        eventManager, sharedStylesHost, component, removeStylesOnCompDestory, doc, ngZone,
+        eventManager, sharedStylesHost, component, removeStylesOnCompDestroy, doc, ngZone,
         platformIsServer, compId);
     this.contentAttr = shimContentAttribute(compId);
     this.hostAttr = shimHostAttribute(compId);

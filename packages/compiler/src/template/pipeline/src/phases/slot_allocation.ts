@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 
 /**
  * Assign data slots for all operations which implement `ConsumesSlotOpTrait`, and propagate the
@@ -17,7 +17,7 @@ import type {ComponentCompilation} from '../compilation';
  * This phase is also responsible for counting the number of slots used for each view (its `decls`)
  * and propagating that number into the `Template` operations which declare embedded views.
  */
-export function phaseSlotAllocation(cpl: ComponentCompilation): void {
+export function phaseSlotAllocation(job: ComponentCompilationJob): void {
   // Map of all declarations in all views within the component which require an assigned slot index.
   // This map needs to be global (across all views within the component) since it's possible to
   // reference a slot from one view from an expression within another (e.g. local references work
@@ -25,11 +25,11 @@ export function phaseSlotAllocation(cpl: ComponentCompilation): void {
   const slotMap = new Map<ir.XrefId, number>();
 
   // Process all views in the component and assign slot indexes.
-  for (const [_, view] of cpl.views) {
+  for (const unit of job.units) {
     // Slot indices start at 0 for each view (and are not unique between views).
     let slotCount = 0;
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       // Only consider declarations which consume data slots.
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
@@ -48,7 +48,7 @@ export function phaseSlotAllocation(cpl: ComponentCompilation): void {
 
     // Record the total number of slots used on the view itself. This will later be propagated into
     // `ir.TemplateOp`s which declare those views (except for the root view).
-    view.decls = slotCount;
+    unit.decls = slotCount;
   }
 
   // After slot assignment, `slotMap` now contains slot assignments for every declaration in the
@@ -56,12 +56,12 @@ export function phaseSlotAllocation(cpl: ComponentCompilation): void {
   // `UsesSlotIndexExprTrait` and propagate the assigned slot indexes into them.
   // Additionally, this second scan allows us to find `ir.TemplateOp`s which declare views and
   // propagate the number of slots used for each view into the operation which declares it.
-  for (const [_, view] of cpl.views) {
-    for (const op of view.ops()) {
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
       if (op.kind === ir.OpKind.Template) {
         // Record the number of slots used by the view this `ir.TemplateOp` declares in the
         // operation itself, so it can be emitted later.
-        const childView = cpl.views.get(op.xref)!;
+        const childView = job.views.get(op.xref)!;
         op.decls = childView.decls;
       }
 

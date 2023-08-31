@@ -53,7 +53,7 @@ import {afterNextNavigation} from './utils/navigations';
  * );
  * ```
  *
- * @see `RouterFeatures`
+ * @see {@link RouterFeatures}
  *
  * @publicApi
  * @param routes A set of `Route`s to use for the application routing table.
@@ -130,7 +130,7 @@ const routerIsProvidedDevModeCheck = {
  * ```
  *
  * @deprecated If necessary, provide routes using the `ROUTES` `InjectionToken`.
- * @see `ROUTES`
+ * @see {@link ROUTES}
  * @publicApi
  */
 export function provideRoutes(routes: Routes): Provider[] {
@@ -143,8 +143,8 @@ export function provideRoutes(routes: Routes): Provider[] {
 /**
  * A type alias for providers returned by `withInMemoryScrolling` for use with `provideRouter`.
  *
- * @see `withInMemoryScrolling`
- * @see `provideRouter`
+ * @see {@link withInMemoryScrolling}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -167,8 +167,8 @@ export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryS
  * );
  * ```
  *
- * @see `provideRouter`
- * @see `ViewportScroller`
+ * @see {@link provideRouter}
+ * @see {@link ViewportScroller}
  *
  * @publicApi
  * @param options Set of configuration parameters to customize scrolling behavior, see
@@ -244,7 +244,7 @@ const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
  * before the root component gets created. Use if there is a reason to have more control over when
  * the router starts its initial navigation due to some complex initialization logic.
  *
- * @see `ExtraOptions`
+ * @see {@link ExtraOptions}
  */
 const enum InitialNavigation {
   EnabledBlocking,
@@ -260,8 +260,8 @@ const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
  * A type alias for providers returned by `withEnabledBlockingInitialNavigation` for use with
  * `provideRouter`.
  *
- * @see `withEnabledBlockingInitialNavigation`
- * @see `provideRouter`
+ * @see {@link withEnabledBlockingInitialNavigation}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -272,9 +272,9 @@ export type EnabledBlockingInitialNavigationFeature =
  * A type alias for providers returned by `withEnabledBlockingInitialNavigation` or
  * `withDisabledInitialNavigation` functions for use with `provideRouter`.
  *
- * @see `withEnabledBlockingInitialNavigation`
- * @see `withDisabledInitialNavigation`
- * @see `provideRouter`
+ * @see {@link withEnabledBlockingInitialNavigation}
+ * @see {@link withDisabledInitialNavigation}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -301,7 +301,7 @@ export type InitialNavigationFeature =
  * );
  * ```
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @publicApi
  * @returns A set of providers for use with `provideRouter`.
@@ -349,8 +349,8 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
  * A type alias for providers returned by `withDisabledInitialNavigation` for use with
  * `provideRouter`.
  *
- * @see `withDisabledInitialNavigation`
- * @see `provideRouter`
+ * @see {@link withDisabledInitialNavigation}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -377,7 +377,7 @@ export type DisabledInitialNavigationFeature =
  * );
  * ```
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -403,8 +403,8 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 /**
  * A type alias for providers returned by `withDebugTracing` for use with `provideRouter`.
  *
- * @see `withDebugTracing`
- * @see `provideRouter`
+ * @see {@link withDebugTracing}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -428,7 +428,7 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  * );
  * ```
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -465,8 +465,8 @@ const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(
  * A type alias that represents a feature which enables preloading in Router.
  * The type is used to describe the return value of the `withPreloading` function.
  *
- * @see `withPreloading`
- * @see `provideRouter`
+ * @see {@link withPreloading}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -490,7 +490,7 @@ export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeatur
  * );
  * ```
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @param preloadingStrategy A reference to a class that implements a `PreloadingStrategy` that
  *     should be used.
@@ -509,8 +509,8 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 /**
  * A type alias for providers returned by `withRouterConfig` for use with `provideRouter`.
  *
- * @see `withRouterConfig`
- * @see `provideRouter`
+ * @see {@link withRouterConfig}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -536,7 +536,7 @@ export type RouterConfigurationFeature =
  * );
  * ```
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @param options A set of parameters to configure Router, see `RouterConfigOptions` for
  *     additional information.
@@ -554,8 +554,8 @@ export function withRouterConfig(options: RouterConfigOptions): RouterConfigurat
 /**
  * A type alias for providers returned by `withHashLocation` for use with `provideRouter`.
  *
- * @see `withHashLocation`
- * @see `provideRouter`
+ * @see {@link withHashLocation}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -578,8 +578,8 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * );
  * ```
  *
- * @see `provideRouter`
- * @see `HashLocationStrategy`
+ * @see {@link provideRouter}
+ * @see {@link HashLocationStrategy}
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -595,8 +595,8 @@ export function withHashLocation(): RouterConfigurationFeature {
 /**
  * A type alias for providers returned by `withNavigationErrorHandler` for use with `provideRouter`.
  *
- * @see `withNavigationErrorHandler`
- * @see `provideRouter`
+ * @see {@link withNavigationErrorHandler}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -607,7 +607,8 @@ export type NavigationErrorHandlerFeature =
  * Subscribes to the Router's navigation events and calls the given function when a
  * `NavigationError` happens.
  *
- * This function is run inside application's injection context so you can use the `inject` function.
+ * This function is run inside application's [injection context](guide/dependency-injection-context)
+ * so you can use the [`inject`](api/core/inject) function.
  *
  * @usageNotes
  *
@@ -624,9 +625,9 @@ export type NavigationErrorHandlerFeature =
  * );
  * ```
  *
- * @see `NavigationError`
- * @see `inject`
- * @see `EnvironmentInjector#runInContext`
+ * @see {@link NavigationError}
+ * @see {@link core/inject}
+ * @see {@link runInInjectionContext}
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -652,8 +653,8 @@ export function withNavigationErrorHandler(fn: (error: NavigationError) => void)
 /**
  * A type alias for providers returned by `withComponentInputBinding` for use with `provideRouter`.
  *
- * @see `withComponentInputBinding`
- * @see `provideRouter`
+ * @see {@link withComponentInputBinding}
+ * @see {@link provideRouter}
  *
  * @publicApi
  */
@@ -695,7 +696,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
  * documentation on how to use those functions.
  *
- * @see `provideRouter`
+ * @see {@link provideRouter}
  *
  * @publicApi
  */

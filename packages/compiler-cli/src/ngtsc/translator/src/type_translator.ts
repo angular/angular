@@ -158,11 +158,19 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitDynamicImportExpr(ast: o.outputAst.DynamicImportExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   visitNotExpr(ast: o.NotExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
     throw new Error('Method not implemented.');
   }
 

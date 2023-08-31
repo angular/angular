@@ -28,8 +28,10 @@ Failing to do so renders Angular's default protection ineffective.
 
 If your backend service uses different names for the XSRF token cookie or header, use `HttpClientXsrfModule.withOptions()` to override the defaults.
 
-<code-example path="http/src/app/app.module.ts" region="xsrf"></code-example>
+Add it to the `bootstrapApplication()` `providers` array in `main.ts` as follows:
+
+<code-example path="http/src/main.ts" region="xsrf"></code-example>
 
 <a id="testing-requests"></a>
 
-@reviewed 2022-11-14
+@reviewed 2023-08-16

@@ -33,7 +33,13 @@ export const enum TokenType {
   EXPANSION_CASE_EXP_START,
   EXPANSION_CASE_EXP_END,
   EXPANSION_FORM_END,
-  EOF
+  EOF,
+  BLOCK_GROUP_OPEN_START,
+  BLOCK_GROUP_OPEN_END,
+  BLOCK_GROUP_CLOSE,
+  BLOCK_PARAMETER,
+  BLOCK_OPEN_START,
+  BLOCK_OPEN_END,
 }
 
 export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|
@@ -41,7 +47,8 @@ export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagClo
     CommentEndToken|CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|
     AttributeValueTextToken|AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|
     ExpansionCaseValueToken|ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|
-    ExpansionFormEndToken|EndOfFileToken;
+    ExpansionFormEndToken|EndOfFileToken|BlockGroupOpenStartToken|BlockGroupOpenEndToken|
+    BlockGroupCloseToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken;
 
 export type InterpolatedTextToken = TextToken|InterpolationToken|EncodedEntityToken;
 
@@ -168,5 +175,35 @@ export interface ExpansionFormEndToken extends TokenBase {
 
 export interface EndOfFileToken extends TokenBase {
   type: TokenType.EOF;
+  parts: [];
+}
+
+export interface BlockGroupOpenStartToken extends TokenBase {
+  type: TokenType.BLOCK_GROUP_OPEN_START;
+  parts: [name: string];
+}
+
+export interface BlockGroupOpenEndToken extends TokenBase {
+  type: TokenType.BLOCK_GROUP_OPEN_END;
+  parts: [];
+}
+
+export interface BlockGroupCloseToken extends TokenBase {
+  type: TokenType.BLOCK_GROUP_CLOSE;
+  parts: [name: string];
+}
+
+export interface BlockParameterToken extends TokenBase {
+  type: TokenType.BLOCK_PARAMETER;
+  parts: [expression: string];
+}
+
+export interface BlockOpenStartToken extends TokenBase {
+  type: TokenType.BLOCK_OPEN_START;
+  parts: [name: string];
+}
+
+export interface BlockOpenEndToken extends TokenBase {
+  type: TokenType.BLOCK_OPEN_END;
   parts: [];
 }

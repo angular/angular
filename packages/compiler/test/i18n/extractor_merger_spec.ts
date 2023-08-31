@@ -106,6 +106,78 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
     });
 
     describe('blocks', () => {
+      it('should extract from elements inside block groups', () => {
+        expect(extract(
+                   '{#defer}<span i18n="a|b|c">main <span>nested</span></span>' +
+                   '{:loading}<div i18n="d|e|f">loading <span>nested</span></div>' +
+                   '{:placeholder}<strong i18n="g|h|i">placeholder <span>nested</span></strong>' +
+                   '{/defer}'))
+            .toEqual([
+              [
+                ['main ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'a',
+                'b|c', ''
+              ],
+              [
+                ['loading ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'],
+                'd', 'e|f', ''
+              ],
+              [
+                ['placeholder ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'],
+                'g', 'h|i', ''
+              ]
+            ]);
+      });
+
+      it('should extract from i18n comment blocks inside block groups', () => {
+        expect(
+            extract(
+                '{#defer}<!-- i18n: mainMeaning|mainDesc -->main message<!-- /i18n -->' +
+                '{:loading}<!-- i18n: loadingMeaning|loadingDesc -->loading message<!-- /i18n -->' +
+                '{:placeholder}<!-- i18n: placeholderMeaning|placeholderDesc -->placeholder message<!-- /i18n -->' +
+                '{/defer}'))
+            .toEqual([
+              [['main message'], 'mainMeaning', 'mainDesc', ''],
+              [['loading message'], 'loadingMeaning', 'loadingDesc', ''],
+              [['placeholder message'], 'placeholderMeaning', 'placeholderDesc', '']
+            ]);
+      });
+
+      it('should extract ICUs from elements inside block groups', () => {
+        expect(extract(
+                   '{#defer}<div i18n="a|b">{count, plural, =0 {mainText}}</div>' +
+                   '{:loading}<div i18n="c|d">{count, plural, =0 {loadingText}}</div>' +
+                   '{:placeholder}<div i18n="e|f">{count, plural, =0 {placeholderText}}</div>' +
+                   '{/defer}'))
+            .toEqual([
+              [['{count, plural, =0 {[mainText]}}'], 'a', 'b', ''],
+              [['{count, plural, =0 {[loadingText]}}'], 'c', 'd', ''],
+              [['{count, plural, =0 {[placeholderText]}}'], 'e', 'f', '']
+            ]);
+      });
+
+      it('should not extract messages from ICUs directly inside block groups', () => {
+        const expression = '{count, plural, =0 {text}}';
+
+        expect(extract(
+                   `{#defer}${expression}` +
+                   `{:loading}${expression}` +
+                   `{:placeholder}${expression}` +
+                   `{/defer}`))
+            .toEqual([]);
+      });
+
+      it('should handle blocks inside of translated elements', () => {
+        expect(extract('<span i18n="a|b|c">{#if cond}main content{:else}else content{/if}</span>'))
+            .toEqual([[['[[main content], [else content]]'], 'a', 'b|c', '']]);
+      });
+
+      it('should handle blocks inside of translated elements', () => {
+        expect(extract('<span i18n="a|b|c">{#if cond}main content{:else}else content{/if}</span>'))
+            .toEqual([[['[[main content], [else content]]'], 'a', 'b|c', '']]);
+      });
+    });
+
+    describe('i18n comment blocks', () => {
       it('should extract from blocks', () => {
         expect(extract(`<!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
          <!-- i18n: desc2 -->message2<!-- /i18n -->
@@ -351,40 +423,40 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       describe('blocks', () => {
         it('should report nested blocks', () => {
           expect(extractErrors(`<!-- i18n --><!-- i18n --><!-- /i18n --><!-- /i18n -->`)).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report unclosed blocks', () => {
           expect(extractErrors(`<!-- i18n -->`)).toEqual([
-            ['Unclosed block', '<!--'],
+            ['Unclosed block', '<!-- i18n -->'],
           ]);
         });
 
         it('should report translatable blocks in translatable elements', () => {
           expect(extractErrors(`<p i18n><!-- i18n --><!-- /i18n --></p>`)).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report translatable blocks in implicit elements', () => {
           expect(extractErrors(`<p><!-- i18n --><!-- /i18n --></p>`, ['p'])).toEqual([
-            ['Could not start a block inside a translatable section', '<!--'],
-            ['Trying to close an unopened block', '<!--'],
+            ['Could not start a block inside a translatable section', '<!-- i18n -->'],
+            ['Trying to close an unopened block', '<!-- /i18n -->'],
           ]);
         });
 
         it('should report when start and end of a block are not at the same level', () => {
           expect(extractErrors(`<!-- i18n --><p><!-- /i18n --></p>`)).toEqual([
-            ['I18N blocks should not cross element boundaries', '<!--'],
+            ['I18N blocks should not cross element boundaries', '<!-- /i18n -->'],
             ['Unclosed block', '<p><!-- /i18n --></p>'],
           ]);
 
           expect(extractErrors(`<p><!-- i18n --></p><!-- /i18n -->`)).toEqual([
-            ['I18N blocks should not cross element boundaries', '<!--'],
-            ['Unclosed block', '<!--'],
+            ['I18N blocks should not cross element boundaries', '<!-- /i18n -->'],
+            ['Unclosed block', '<!-- /i18n -->'],
           ]);
         });
       });
@@ -422,7 +494,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       });
     });
 
-    describe('blocks', () => {
+    describe('i18n comment blocks', () => {
       it('should console.warn if we use i18n comments', () => {
         // TODO(ocombe): expect a warning message when we have a proper log service
         extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->');
@@ -519,7 +591,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
 function parseHtml(html: string): html.Node[] {
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(
+      html, 'extractor spec', {tokenizeExpansionForms: true, tokenizeBlocks: true});
   if (parseResult.errors.length > 1) {
     throw new Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }

@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy} from '@angular/common';
+import {Location, LocationStrategy, ɵnormalizeQueryParams as normalizeQueryParams} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
-
-import {normalizeQueryParams} from '../../src/location/util';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.

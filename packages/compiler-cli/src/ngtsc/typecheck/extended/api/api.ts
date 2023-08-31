@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../core/api';
@@ -158,6 +158,58 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
     this.visitAst(text.value);
   }
   visitIcu(icu: TmplAstIcu): void {}
+
+
+  visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
+    deferred.visitAll(this);
+  }
+
+  visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {
+    if (trigger instanceof TmplAstBoundDeferredTrigger) {
+      this.visitAst(trigger.value);
+    }
+  }
+
+  visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitDeferredBlockError(block: TmplAstDeferredBlockError): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitSwitchBlock(block: TmplAstSwitchBlock): void {
+    this.visitAst(block.expression);
+    this.visitAllNodes(block.cases);
+  }
+
+  visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
+    block.expression && this.visitAst(block.expression);
+    this.visitAllNodes(block.children);
+  }
+
+  visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    this.visitAst(block.expression);
+    this.visitAllNodes(block.children);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitIfBlock(block: TmplAstIfBlock): void {
+    this.visitAllNodes(block.branches);
+  }
+
+  visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
+    block.expression && this.visitAst(block.expression);
+    this.visitAllNodes(block.children);
+  }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {
     this.diagnostics = [];

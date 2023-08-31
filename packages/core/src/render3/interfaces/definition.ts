@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
@@ -491,7 +491,9 @@ export type DirectiveTypeList =
     (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type DependencyTypeList = (DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>)[];
+export type DependencyType = DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>;
+
+export type DependencyTypeList = Array<DependencyType>;
 
 export type TypeOrFactory<T> = T|(() => T);
 
@@ -515,3 +517,36 @@ export type PipeTypeList =
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+/**
+ * NgModule scope info as provided by AoT compiler
+ *
+ * In full compilation Ivy resolved all the "module with providers" and forward refs the whole array
+ * if at least one element is forward refed. So we end up with type `Type<any>[]|(() =>
+ * Type<any>[])`.
+ *
+ * In local mode the compiler passes the raw info as they are to the runtime functions as it is not
+ * possible to resolve them any further due to limited info at compile time. So we end up with type
+ * `RawScopeInfoFromDecorator[]`.
+ */
+export interface NgModuleScopeInfoFromDecorator {
+  /** List of components, directives, and pipes declared by this module. */
+  declarations?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+
+  /** List of modules or `ModuleWithProviders` or standalone components imported by this module. */
+  imports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+
+  /**
+   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
+   * module.
+   */
+  exports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+}
+
+/**
+ * The array element type passed to:
+ *  - NgModule's annotation imports/exports/declarations fields
+ *  - standalone component annotation imports field
+ */
+export type RawScopeInfoFromDecorator =
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);

@@ -69,7 +69,8 @@
             "temporary_variables.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple property bindings into a single instruction",
@@ -125,7 +126,8 @@
             "chain_synthetic_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple property bindings on an ng-template",

@@ -76,7 +76,8 @@
           ],
           "failureMessage": "Incorrect factory"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple listeners on the same element",
@@ -127,7 +128,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not generate the $event argument if it is not being used in a template",
@@ -209,8 +211,7 @@
               "expected": "event_explicit_access_template.js",
               "generated": "event_explicit_access.js"
             }
-          ],
-          "failureMessage": "Incorrect event listener"
+          ]
         }
       ]
     },
@@ -280,7 +281,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should reference correct context in listener inside embedded view",
@@ -297,7 +299,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

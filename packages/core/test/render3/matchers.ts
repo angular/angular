@@ -180,7 +180,7 @@ export function matchDomElement(
     let actualStr = isDOMElement(_actual) ? `<${_actual.tagName}${toString(_actual.attributes)}>` :
                                             JSON.stringify(_actual);
     let expectedStr = `<${expectedTagName || '*'}${
-        Object.keys(expectedAttrs).map(key => ` ${key}=${JSON.stringify(expectedAttrs[key])}`)}>`;
+        Object.entries(expectedAttrs).map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)}>`;
     return `[${actualStr} != ${expectedStr}]`;
   };
 

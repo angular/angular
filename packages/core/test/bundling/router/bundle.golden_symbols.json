@@ -21,6 +21,9 @@
     "name": "ActivatedRouteSnapshot"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -46,6 +49,9 @@
   },
   {
     "name": "BaseRouteReuseStrategy"
+  },
+  {
+    "name": "BeforeActivateRoutes"
   },
   {
     "name": "BehaviorSubject"
@@ -546,6 +552,9 @@
     "name": "ReactiveNode"
   },
   {
+    "name": "RedirectRequest"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -699,6 +708,9 @@
     "name": "TakeSubscriber"
   },
   {
+    "name": "TakeUntilSubscriber"
+  },
+  {
     "name": "TapSubscriber"
   },
   {
@@ -849,6 +861,9 @@
     "name": "addEmptyPathsToChildrenIfNeeded"
   },
   {
+    "name": "addLViewToLContainer"
+  },
+  {
     "name": "addPropertyAlias"
   },
   {
@@ -925,6 +940,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "collectNativeNodesInLContainer"
   },
   {
     "name": "collectQueryResults"
@@ -1569,7 +1587,7 @@
     "name": "isPromise2"
   },
   {
-    "name": "isRedirectingNavigationCancelingError"
+    "name": "isPublicRouterEvent"
   },
   {
     "name": "isScheduler"
@@ -1762,9 +1780,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "promise"
   },
   {
     "name": "provideZoneChangeDetection"
@@ -1965,7 +1980,7 @@
     "name": "tap"
   },
   {
-    "name": "throwError5"
+    "name": "throwError2"
   },
   {
     "name": "throwIfEmpty"

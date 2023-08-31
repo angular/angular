@@ -8,16 +8,15 @@
 
 import {assertParentView} from './assert';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET, NATIVE} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HOST, LView, T_HOST, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
 import {unwrapRNode} from './util/view_utils';
-
 
 
 export function collectNativeNodes(
@@ -38,30 +37,7 @@ export function collectNativeNodes(
     // ViewContainerRef). When we find a LContainer we need to descend into it to collect root nodes
     // from the views in this container.
     if (isLContainer(lNode)) {
-      for (let i = CONTAINER_HEADER_OFFSET; i < lNode.length; i++) {
-        const lViewInAContainer = lNode[i];
-        const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
-        if (lViewFirstChildTNode !== null) {
-          collectNativeNodes(
-              lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);
-        }
-      }
-
-      // When an LContainer is created, the anchor (comment) node is:
-      // - (1) either reused in case of an ElementContainer (<ng-container>)
-      // - (2) or a new comment node is created
-      // In the first case, the anchor comment node would be added to the final
-      // list by the code above (`result.push(unwrapRNode(lNode))`), but the second
-      // case requires extra handling: the anchor node needs to be added to the
-      // final list manually. See additional information in the `createAnchorNode`
-      // function in the `view_container_ref.ts`.
-      //
-      // In the first case, the same reference would be stored in the `NATIVE`
-      // and `HOST` slots in an LContainer. Otherwise, this is the second case and
-      // we should add an element to the final list.
-      if (lNode[NATIVE] !== lNode[HOST]) {
-        result.push(lNode[NATIVE]);
-      }
+      collectNativeNodesInLContainer(lNode, result);
     }
 
     const tNodeType = tNode.type;
@@ -87,4 +63,34 @@ export function collectNativeNodes(
   }
 
   return result;
+}
+
+/**
+ * Collects all root nodes in all views in a given LContainer.
+ */
+export function collectNativeNodesInLContainer(lContainer: LContainer, result: any[]) {
+  for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+    const lViewInAContainer = lContainer[i];
+    const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
+    if (lViewFirstChildTNode !== null) {
+      collectNativeNodes(lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);
+    }
+  }
+
+  // When an LContainer is created, the anchor (comment) node is:
+  // - (1) either reused in case of an ElementContainer (<ng-container>)
+  // - (2) or a new comment node is created
+  // In the first case, the anchor comment node would be added to the final
+  // list by the code in the `collectNativeNodes` function
+  // (see the `result.push(unwrapRNode(lNode))` line), but the second
+  // case requires extra handling: the anchor node needs to be added to the
+  // final list manually. See additional information in the `createAnchorNode`
+  // function in the `view_container_ref.ts`.
+  //
+  // In the first case, the same reference would be stored in the `NATIVE`
+  // and `HOST` slots in an LContainer. Otherwise, this is the second case and
+  // we should add an element to the final list.
+  if (lContainer[NATIVE] !== lContainer[HOST]) {
+    result.push(lContainer[NATIVE]);
+  }
 }

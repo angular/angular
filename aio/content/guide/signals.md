@@ -65,7 +65,7 @@ const doubleCount: Signal<number> = computed(() => count() * 2);
 
 The `doubleCount` signal depends on `count`. Whenever `count` updates, Angular knows that anything which depends on either `count` or `doubleCount` needs to update as well.
 
-#### Computeds are both lazily evaluated and memoized
+#### Computed signals are both lazily evaluated and memoized
 
 `doubleCount`'s derivation function does not run to calculate its value until the first time `doubleCount` is read. Once calculated, this value is cached, and future reads of `doubleCount` will return the cached value without recalculating.
 
@@ -123,7 +123,7 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
-### Uses for effects
+### Use cases for effects
 
 Effects are rarely needed in most application code, but may be useful in specific circumstances. Here are some examples of situations where an `effect` might be a good solution:
 
@@ -140,7 +140,7 @@ Because of these risks, setting signals is disallowed by default in effects, but
 
 ### Injection context
 
-By default, registering a new effect with the `effect()` function requires an "injection context" (access to the `inject` function). The easiest way to provide this is to call `effect` within a component, directive, or service `constructor`:
+By default, registering a new effect with the `effect()` function requires an [injection context](/guide/dependency-injection-context) (access to the `inject` function). The easiest way to provide this is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
 @Component({...})
@@ -263,3 +263,5 @@ effect((onCleanup) => {
   });
 });
 ```
+
+@reviewed 2023-06-21

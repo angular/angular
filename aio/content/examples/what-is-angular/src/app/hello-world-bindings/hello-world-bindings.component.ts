@@ -1,18 +1,17 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-@Component ({
+@Component({
+  standalone: true,
   selector: 'hello-world-bindings',
-  templateUrl: './hello-world-bindings.component.html'
+  templateUrl: './hello-world-bindings.component.html',
 })
 export class HelloWorldBindingsComponent {
   fontColor = 'blue';
   sayHelloId = 1;
-  canClick = false;
+  canClick = true;
   message = 'Hello, World';
 
-// #docregion method
   sayMessage() {
     alert(this.message);
   }
-// #enddocregion
 }

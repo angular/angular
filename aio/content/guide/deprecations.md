@@ -124,6 +124,13 @@ v16 - v19
 | `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)            | v16           | v18         |
 | `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser), symbols were moved to `@angular/core`                                        | v16           | v18         |
 
+
+### Deprecated features that can be removed in v19 or later
+
+| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
+|:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
+
 ### Deprecated features with no planned removal version
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
@@ -422,15 +429,11 @@ The following strategies are meant to be configured by registering the
 application strategy in DI via the `providers` in the root `NgModule` or
 `bootstrapApplication`:
 * `routeReuseStrategy`
-* `titleStrategy`
 * `urlHandlingStrategy`
 
 The following options are meant to be configured using the options
 available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `onSameUrlNavigation`
-* `paramsInheritanceStrategy`
-* `urlUpdateStrategy`
-* `canceledNavigationResolution`
 * `errorHandler`
 
 The following options are deprecated in entirely:

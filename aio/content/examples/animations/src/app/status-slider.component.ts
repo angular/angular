@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { trigger, transition, state, animate, style, keyframes } from '@angular/animations';
 
 @Component({
+  standalone: true,
   selector: 'app-status-slider',
   templateUrl: 'status-slider.component.html',
   styleUrls: ['status-slider.component.css'],

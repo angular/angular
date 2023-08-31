@@ -194,7 +194,8 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should reserve slots for pure functions in host binding function",
@@ -205,7 +206,8 @@
         {
           "failureMessage": "Incorrect `hostBindings` function."
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should bind to class and style names",
@@ -253,7 +255,8 @@
         {
           "failureMessage": "Incorrect generated template."
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

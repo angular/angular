@@ -12,7 +12,7 @@ import {getDocument} from './render3/interfaces/document';
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") representing a string ID, used
  * primarily for prefixing application attributes and CSS styles when
- * {@link ViewEncapsulation#Emulated ViewEncapsulation.Emulated} is being used.
+ * {@link ViewEncapsulation#Emulated} is being used.
  *
  * The token is needed in cases when multiple applications are bootstrapped on a page
  * (for example, using `bootstrapApplication` calls). In this case, ensure that those applications
@@ -51,7 +51,8 @@ const DEFAULT_APP_ID = 'ng';
  * A function that is executed when a platform is initialized.
  * @publicApi
  */
-export const PLATFORM_INITIALIZER = new InjectionToken<Array<() => void>>('Platform Initializer');
+export const PLATFORM_INITIALIZER =
+    new InjectionToken<ReadonlyArray<() => void>>('Platform Initializer');
 
 /**
  * A token that indicates an opaque platform ID.
@@ -66,6 +67,7 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates the root directory of
  * the application
  * @publicApi
+ * @deprecated
  */
 export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');
 

@@ -404,7 +404,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['alice'])
-            .toBeAnInstanceOf(ChildComp);
+            .toBeInstanceOf(ChildComp);
       });
 
       it('should assign a directive to a ref-', () => {
@@ -414,7 +414,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['localdir'])
-            .toBeAnInstanceOf(ExportDir);
+            .toBeInstanceOf(ExportDir);
       });
 
       it('should assign a directive to a ref when it has multiple exportAs names', () => {
@@ -426,9 +426,9 @@ describe('integration tests', function() {
 
         const fixture = TestBed.createComponent(MyComp);
         expect(fixture.debugElement.children[0].references!['x'])
-            .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+            .toBeInstanceOf(DirectiveWithMultipleExportAsNames);
         expect(fixture.debugElement.children[0].references!['y'])
-            .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+            .toBeInstanceOf(DirectiveWithMultipleExportAsNames);
       });
 
       it('should make the assigned component accessible in property bindings, even if they were declared before the component',
@@ -454,8 +454,8 @@ describe('integration tests', function() {
 
         const alice = pEl.children[0].references!['alice'];
         const bob = pEl.children[1].references!['bob'];
-        expect(alice).toBeAnInstanceOf(ChildComp);
-        expect(bob).toBeAnInstanceOf(ChildComp);
+        expect(alice).toBeInstanceOf(ChildComp);
+        expect(bob).toBeInstanceOf(ChildComp);
         expect(alice).not.toBe(bob);
       });
 
@@ -465,7 +465,7 @@ describe('integration tests', function() {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(ChildComp);
+        expect(fixture.debugElement.children[0].references!['alice']).toBeInstanceOf(ChildComp);
       });
 
       it('should assign the element instance to a user-defined variable', () => {
@@ -496,7 +496,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['superAlice'])
-            .toBeAnInstanceOf(ChildComp);
+            .toBeInstanceOf(ChildComp);
       });
     });
 
@@ -653,7 +653,7 @@ describe('integration tests', function() {
 
       const childComponent =
           fixture.debugElement.children[0].children[0].children[0].references!['child'];
-      expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
+      expect(childComponent.myHost).toBeInstanceOf(SomeDirective);
     });
 
     it('should create a component that injects an @Host through viewcontainer directive', () => {
@@ -675,7 +675,7 @@ describe('integration tests', function() {
       const tc = fixture.debugElement.children[0].children[0].children[0];
 
       const childComponent = tc.references!['child'];
-      expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
+      expect(childComponent.myHost).toBeInstanceOf(SomeDirective);
     });
 
     it('should support events via EventEmitter on regular elements', waitForAsync(() => {
@@ -881,8 +881,7 @@ describe('integration tests', function() {
       @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
       class DirectiveWithHostListener {
         id = 'one';
-        // TODO(issue/24571): remove '!'.
-        receivedArgs!: any[];
+        receivedArgs: any[] = [];
 
         doIt(...args: any[]) {
           this.receivedArgs = args;
@@ -1206,8 +1205,8 @@ describe('integration tests', function() {
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      const comp = fixture.debugElement.children[0].children[0].references!['consuming'];
-      expect(comp.injectable).toBeAnInstanceOf(InjectableService);
+      const comp = fixture.debugElement.children[0].children[0].references['consuming'];
+      expect(comp.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support viewProviders', () => {
@@ -1222,8 +1221,8 @@ describe('integration tests', function() {
       TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
       const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
-      const comp = fixture.debugElement.children[0].references!['consuming'];
-      expect(comp.injectable).toBeAnInstanceOf(InjectableService);
+      const comp = fixture.debugElement.children[0].references['consuming'];
+      expect(comp.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support unbounded lookup', () => {
@@ -1250,8 +1249,8 @@ describe('integration tests', function() {
       });
       const fixture = TestBed.createComponent(MyComp);
 
-      const comp = fixture.debugElement.children[0].children[0].references!['dir'];
-      expect(comp.directive.injectable).toBeAnInstanceOf(InjectableService);
+      const comp = fixture.debugElement.children[0].children[0].references['dir'];
+      expect(comp.directive.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support the event-bus scenario', () => {
@@ -1299,7 +1298,7 @@ describe('integration tests', function() {
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      const providing = fixture.debugElement.children[0].references!['providing'];
+      const providing = fixture.debugElement.children[0].references['providing'];
       expect(providing.created).toBe(false);
 
       fixture.componentInstance.ctxBoolProp = true;
@@ -1453,7 +1452,7 @@ describe('integration tests', function() {
     @Component({selector: 'menu-item', template: ''})
     class DynamicMenuItem {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
-      itemContent!: string;
+      itemContent: string|undefined;
     }
 
     @Component({selector: 'test', template: `<ng-container #menuItemsContainer></ng-container>`})
@@ -2109,14 +2108,12 @@ class MyDir2 {
 
 @Directive({selector: '[title]', inputs: ['title']})
 class DirectiveWithTitle {
-  // TODO(issue/24571): remove '!'.
-  title!: string;
+  title: string|undefined;
 }
 
 @Directive({selector: '[title]', inputs: ['title'], host: {'[title]': 'title'}})
 class DirectiveWithTitleAndHostProperty {
-  // TODO(issue/24571): remove '!'.
-  title!: string;
+  title: string|undefined;
 }
 
 @Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
@@ -2191,7 +2188,6 @@ class PushCmpWithHostEvent {
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
-  // TODO(issue/24571): remove '!'.
   resolve!: (result: any) => void;
   promise: Promise<any>;
 
@@ -2416,8 +2412,7 @@ class DirectiveListeningDomEventNoPrevent {
 
 @Directive({selector: '[id]', inputs: ['id']})
 class IdDir {
-  // TODO(issue/24571): remove '!'.
-  id!: string;
+  id: string|undefined;
 }
 
 @Directive({selector: '[customEvent]'})
@@ -2484,7 +2479,6 @@ class ToolbarViewContainer {
   template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
 })
 class ToolbarComponent {
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(ToolbarPart) query!: QueryList<ToolbarPart>;
   ctxProp: string = 'hello world';
 
@@ -2694,12 +2688,10 @@ class ComponentWithTemplate {
 class DirectiveWithPropDecorators {
   target: any;
 
-  // TODO(issue/24571): remove '!'.
-  @Input('elProp') dirProp!: string;
+  @Input('elProp') dirProp: string|undefined;
   @Output('elEvent') event = new EventEmitter();
 
-  // TODO(issue/24571): remove '!'.
-  @HostBinding('attr.my-attr') myAttr!: string;
+  @HostBinding('attr.my-attr') myAttr: string|undefined;
   @HostListener('click', ['$event.target'])
   onClick(target: any) {
     this.target = target;

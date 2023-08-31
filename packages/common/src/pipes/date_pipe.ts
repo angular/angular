@@ -29,7 +29,7 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_
  * - `timezone`: configures the default timezone. If not provided, the `DatePipe` will
  * use the end-user's local system timezone.
  *
- * @see `DatePipeConfig`
+ * @see {@link DatePipeConfig}
  *
  * @usageNotes
  *
@@ -79,7 +79,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
  * injection token. The value that is passed in as the second parameter takes precedence over
  * the one defined using the injection token.
  *
- * @see `formatDate()`
+ * @see {@link formatDate}
  *
  *
  * @usageNotes
@@ -190,6 +190,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
  * {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
  * {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
  * {{ dateObj | date:'mm:ss' }}       // output is '43:11'
+ * {{ dateObj | date:"MMM dd, yyyy 'at' hh:mm a" }}  // output is 'Jun 15, 2015 at 09:43 PM'
  * ```
  *
  * ### Usage example
@@ -241,7 +242,7 @@ export class DatePipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n-common-locale-id).
    *
-   * @see `DATE_PIPE_DEFAULT_OPTIONS`
+   * @see {@link DATE_PIPE_DEFAULT_OPTIONS}
    *
    * @returns A date string in the desired format.
    */

@@ -9,7 +9,6 @@
 import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 const resolvedPromise = Promise.resolve(null);
 const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'];
@@ -34,7 +33,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
     it('should work with inject()',
        fakeAsync(inject([EventManager], (eventManager: EventManager) => {
-         expect(eventManager).toBeAnInstanceOf(EventManager);
+         expect(eventManager).toBeInstanceOf(EventManager);
        })));
 
     it('should throw on nested calls', () => {

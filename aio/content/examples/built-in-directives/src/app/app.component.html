@@ -83,9 +83,9 @@
 
 
 <br>
-<label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
-<label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
-<label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<label for="canSave">italic: <input id="canSave" type="checkbox" [(ngModel)]="canSave"></label> |
+<label for="isUnchanged">normal: <input id="isUnchanged" type="checkbox" [(ngModel)]="isUnchanged"></label> |
+<label for="isSpecial">xlarge: <input id="isSpecial" type="checkbox" [(ngModel)]="isSpecial"></label>
 <button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
 <br><br>
 <div [ngStyle]="currentStyles">
@@ -215,8 +215,8 @@
 
 <p>Pick your favorite item</p>
 <div>
-  <label *ngFor="let i of items">
-    <div><input type="radio" name="items" [(ngModel)]="currentItem" [value]="i">{{i.name}}
+  <label for="item-{{i}}" *ngFor="let i of items">
+    <div><input id="item-{{i}}"type="radio" name="items" [(ngModel)]="currentItem" [value]="i">{{i.name}}
     </div>
   </label>
 </div>

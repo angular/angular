@@ -251,7 +251,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             ],
             [html.Element, 'span', 1, '<span>x {{ expr }<!---->} y</span>', '<span>', '</span>'],
             [html.Text, 'x {{ expr }', 2, ['x '], ['{{', ' expr }'], [''], 'x {{ expr }'],
-            [html.Comment, '', 2, '<!--'],
+            [html.Comment, '', 2, '<!---->'],
             [html.Text, '} y', 2, ['} y'], '} y'],
             [html.Element, 'div', 1, '<div></div>', '<div>', '</div>'],
           ]);
@@ -759,6 +759,281 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
         });
       });
 
+      describe('blocks', () => {
+        // TODO(crisbeto): temporary utility while blocks are disabled by default.
+        const options = {tokenizeBlocks: true};
+
+        function humanizeBlocks(input: string): any[] {
+          return humanizeDom(parser.parse(input, 'TestComp', options));
+        }
+
+        it('should parse a block group', () => {
+          expect(humanizeBlocks('{#foo a b; c d}hello{/foo}')).toEqual([
+            [html.BlockGroup, 0],
+            [html.Block, 'foo', 1],
+            [html.BlockParameter, 'a b'],
+            [html.BlockParameter, 'c d'],
+            [html.Text, 'hello', 2, ['hello']],
+          ]);
+        });
+
+        it('should parse a block group with an HTML element in the primary block', () => {
+          expect(humanizeBlocks('{#defer}<my-cmp/>{/defer}')).toEqual([
+            [html.BlockGroup, 0],
+            [html.Block, 'defer', 1],
+            [html.Element, 'my-cmp', 2],
+          ]);
+        });
+
+        it('should parse a block group with blocks', () => {
+          expect(humanizeBlocks(
+                     '{#defer when isVisible()}<my-cmp/>' +
+                     '{:loading after 100ms}Loading...' +
+                     '{:placeholder minimum 50ms}Placeholder' +
+                     '{/defer}'))
+              .toEqual([
+                [html.BlockGroup, 0],
+                [html.Block, 'defer', 1],
+                [html.BlockParameter, 'when isVisible()'],
+                [html.Element, 'my-cmp', 2],
+                [html.Block, 'loading', 1],
+                [html.BlockParameter, 'after 100ms'],
+                [html.Text, 'Loading...', 2, ['Loading...']],
+                [html.Block, 'placeholder', 1],
+                [html.BlockParameter, 'minimum 50ms'],
+                [html.Text, 'Placeholder', 2, ['Placeholder']],
+              ]);
+        });
+
+        it('should parse a block group with blocks containing mixed plain text and HTML', () => {
+          expect(humanizeBlocks(
+                     '{#defer when isVisible()}hello<my-cmp/>there' +
+                         '{:loading after 100ms}<p>Loading...</p>' +
+                         '{:placeholder minimum 50ms}P<strong>laceh<i>ol</i>de</strong>r' +
+                         '{/defer}',
+                     ))
+              .toEqual([
+                [html.BlockGroup, 0],
+                [html.Block, 'defer', 1],
+                [html.BlockParameter, 'when isVisible()'],
+                [html.Text, 'hello', 2, ['hello']],
+                [html.Element, 'my-cmp', 2],
+                [html.Text, 'there', 2, ['there']],
+                [html.Block, 'loading', 1],
+                [html.BlockParameter, 'after 100ms'],
+                [html.Element, 'p', 2],
+                [html.Text, 'Loading...', 3, ['Loading...']],
+                [html.Block, 'placeholder', 1],
+                [html.BlockParameter, 'minimum 50ms'],
+                [html.Text, 'P', 2, ['P']],
+                [html.Element, 'strong', 2],
+                [html.Text, 'laceh', 3, ['laceh']],
+                [html.Element, 'i', 3],
+                [html.Text, 'ol', 4, ['ol']],
+                [html.Text, 'de', 3, ['de']],
+                [html.Text, 'r', 2, ['r']],
+              ]);
+        });
+
+        it('should parse nested block groups', () => {
+          // clang-format off
+          const markup = `<root-sibling-one/>` +
+            `{#root}` +
+              `<outer-child-one/>` +
+              `<outer-child-two>` +
+                `{#child}` +
+                  `{:innerChild}` +
+                    `<inner-child-one/>` +
+                    `{#grandchild}` +
+                      `{:innerGrandChild}` +
+                        `<inner-grand-child-one/>` +
+                      `{:innerGrandChild}` +
+                        `<inner-grand-child-two/>` +
+                  `{/grandchild}` +
+                  `{:innerChild}` +
+                  `<inner-child-two/>` +
+                `{/child}` +
+              `</outer-child-two>` +
+              `{:outerChild}` +
+                `<outer-child-three/>` +
+            `{/root} <root-sibling-two/>`;
+          // clang-format on
+
+          expect(humanizeBlocks(markup)).toEqual([
+            [html.Element, 'root-sibling-one', 0],
+            [html.BlockGroup, 0],
+            [html.Block, 'root', 1],
+            [html.Element, 'outer-child-one', 2],
+            [html.Element, 'outer-child-two', 2],
+            [html.BlockGroup, 3],
+            [html.Block, 'child', 4],
+            [html.Block, 'innerChild', 4],
+            [html.Element, 'inner-child-one', 5],
+            [html.BlockGroup, 5],
+            [html.Block, 'grandchild', 6],
+            [html.Block, 'innerGrandChild', 6],
+            [html.Element, 'inner-grand-child-one', 7],
+            [html.Block, 'innerGrandChild', 6],
+            [html.Element, 'inner-grand-child-two', 7],
+            [html.Block, 'innerChild', 4],
+            [html.Element, 'inner-child-two', 5],
+            [html.Block, 'outerChild', 1],
+            [html.Element, 'outer-child-three', 2],
+            [html.Text, ' ', 0, [' ']],
+            [html.Element, 'root-sibling-two', 0],
+          ]);
+        });
+
+        it('should infer namespace through block group boundary', () => {
+          expect(humanizeBlocks('<svg>{#if cond}<circle/>{/if}</svg>')).toEqual([
+            [html.Element, ':svg:svg', 0],
+            [html.BlockGroup, 1],
+            [html.Block, 'if', 2],
+            [html.BlockParameter, 'cond'],
+            [html.Element, ':svg:circle', 3],
+          ]);
+        });
+
+        it('should create an implicit empty block if there is a block at the root', () => {
+          expect(humanizeBlocks(
+                     '{#switch cond}' +
+                     '{:case a}' +
+                     'a case' +
+                     '{:case b}' +
+                     'b case' +
+                     '{:default}' +
+                     'no case' +
+                     '{/switch}'))
+              .toEqual([
+                [html.BlockGroup, 0],
+                [html.Block, 'switch', 1],
+                [html.BlockParameter, 'cond'],
+                [html.Block, 'case', 1],
+                [html.BlockParameter, 'a'],
+                [html.Text, 'a case', 2, ['a case']],
+                [html.Block, 'case', 1],
+                [html.BlockParameter, 'b'],
+                [html.Text, 'b case', 2, ['b case']],
+                [html.Block, 'default', 1],
+                [html.Text, 'no case', 2, ['no case']],
+              ]);
+        });
+
+        it('should parse a block group with empty blocks', () => {
+          expect(humanizeBlocks('{#foo}{:a}{:b}{:c}{/foo}')).toEqual([
+            [html.BlockGroup, 0],
+            [html.Block, 'foo', 1],
+            [html.Block, 'a', 1],
+            [html.Block, 'b', 1],
+            [html.Block, 'c', 1],
+          ]);
+        });
+
+        it('should parse a block group with void elements', () => {
+          expect(humanizeBlocks('{#foo}<br>{:bar}<img>{/foo}')).toEqual([
+            [html.BlockGroup, 0],
+            [html.Block, 'foo', 1],
+            [html.Element, 'br', 2],
+            [html.Block, 'bar', 1],
+            [html.Element, 'img', 2],
+          ]);
+        });
+
+        it('should close void elements used right before a block group', () => {
+          expect(humanizeBlocks('<img>{#foo}hello{/foo}')).toEqual([
+            [html.Element, 'img', 0],
+            [html.BlockGroup, 0],
+            [html.Block, 'foo', 1],
+            [html.Text, 'hello', 2, ['hello']],
+          ]);
+        });
+
+        it('should report an unexpected block close', () => {
+          const errors = parser.parse('hello{/foo}', 'TestComp', options).errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([[
+            'foo', 'Unexpected closing block "foo". The block may have been closed earlier.', '0:5'
+          ]]);
+        });
+
+        it('should report unclosed tags inside of a block group', () => {
+          const errors = parser.parse('{#foo}<strong>hello{/foo}', 'TestComp', options).errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([[
+            'foo',
+            'Unexpected closing block "foo". There is an unclosed "strong" HTML tag named that may have to be closed first.',
+            '0:19'
+          ]]);
+        });
+
+        it('should report block used at the root', () => {
+          const errors = parser.parse('{:foo}hello', 'TestComp', options).errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([
+            ['foo', 'Blocks can only be placed inside of block groups.', '0:0']
+          ]);
+        });
+
+        it('should report block used inside of an HTML element', () => {
+          const errors =
+              parser.parse('{#group}<div>{:foo}hello</div>{/group}', 'TestComp', options).errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([
+            ['foo', 'Blocks can only be placed inside of block groups.', '0:13']
+          ]);
+        });
+
+        it('should report an unexpected closing tag inside a block', () => {
+          const errors =
+              parser.parse('<div>{#if cond}hello</div>{/if}', 'TestComp', options).errors;
+          expect(errors.length).toEqual(2);
+          expect(humanizeErrors(errors)).toEqual([
+            [
+              'div',
+              'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:20'
+            ],
+            [
+              'if', 'Unexpected closing block "if". The block may have been closed earlier.', '0:26'
+            ],
+          ]);
+        });
+
+        it('should store the source locations of block groups and blocks', () => {
+          const markup = '{#defer when isVisible()}<div>hello</div>world' +
+              '{:loading after 100ms}Loading...' +
+              '{:placeholder minimum 50ms}Placeholde<strong>r</strong>' +
+              '{/defer}';
+
+          expect(humanizeDomSourceSpans(parser.parse(markup, 'TestComp', options))).toEqual([
+            [html.BlockGroup, 0, markup, '{#defer when isVisible()}', '{/defer}'],
+            [
+              html.Block, 'defer', 1, '{#defer when isVisible()}<div>hello</div>world',
+              '{#defer when isVisible()}', ''
+            ],
+            [html.BlockParameter, 'when isVisible()', 'when isVisible()'],
+            [html.Element, 'div', 2, '<div>hello</div>', '<div>', '</div>'],
+            [html.Text, 'hello', 3, ['hello'], 'hello'],
+            [html.Text, 'world', 2, ['world'], 'world'],
+            [
+              html.Block, 'loading', 1, '{:loading after 100ms}Loading...',
+              '{:loading after 100ms}', ''
+            ],
+            [html.BlockParameter, 'after 100ms', 'after 100ms'],
+            [html.Text, 'Loading...', 2, ['Loading...'], 'Loading...'],
+            [
+              html.Block, 'placeholder', 1,
+              '{:placeholder minimum 50ms}Placeholde<strong>r</strong>',
+              '{:placeholder minimum 50ms}', ''
+            ],
+            [html.BlockParameter, 'minimum 50ms', 'minimum 50ms'],
+            [html.Text, 'Placeholde', 2, ['Placeholde'], 'Placeholde'],
+            [html.Element, 'strong', 2, '<strong>r</strong>', '<strong>', '</strong>'],
+            [html.Text, 'r', 3, ['r'], 'r'],
+          ]);
+        });
+      });
+
       describe('source spans', () => {
         it('should store the location', () => {
           expect(humanizeDomSourceSpans(parser.parse(
@@ -964,7 +1239,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           const result =
               parser.parse('<div id="foo"><span id="bar">a</span><span>b</span></div>', 'TestComp');
           const accumulator: html.Node[] = [];
-          const visitor = new class {
+          const visitor = new class implements html.Visitor {
             visit(node: html.Node, context: any) {
               accumulator.push(node);
             }
@@ -979,6 +1254,14 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               html.visitAll(this, expansion.cases);
             }
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {}
+            visitBlockGroup(group: html.BlockGroup, context: any) {
+              html.visitAll(this, group.blocks);
+            }
+            visitBlock(block: html.Block, context: any) {
+              html.visitAll(this, block.parameters);
+              html.visitAll(this, block.children);
+            }
+            visitBlockParameter(parameter: html.BlockParameter, context: any) {}
           };
 
           html.visitAll(visitor, result.rootNodes);
@@ -989,7 +1272,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
         });
 
         it('should skip typed visit if visit() returns a truthy value', () => {
-          const visitor = new class {
+          const visitor = new class implements html.Visitor {
             visit(node: html.Node, context: any) {
               return true;
             }
@@ -1009,6 +1292,15 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               throw Error('Unexpected');
             }
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+              throw Error('Unexpected');
+            }
+            visitBlockGroup(group: html.BlockGroup, context: any) {
+              throw Error('Unexpected');
+            }
+            visitBlock(block: html.Block, context: any) {
+              throw Error('Unexpected');
+            }
+            visitBlockParameter(parameter: html.BlockParameter, context: any) {
               throw Error('Unexpected');
             }
           };

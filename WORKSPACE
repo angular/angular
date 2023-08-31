@@ -28,8 +28,8 @@ http_archive(
     patches = [
         "//tools/esm-interop:patches/bazel/nodejs_binary_esm_support.patch",
     ],
-    sha256 = "94070eff79305be05b7699207fbac5d2608054dd53e6109f7d00d923919ff45a",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.2/rules_nodejs-5.8.2.tar.gz"],
+    sha256 = "5dd1e5dea1322174c57d3ca7b899da381d516220793d0adef3ba03b9d23baa8e",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.3/rules_nodejs-5.8.3.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
@@ -67,6 +67,11 @@ nodejs_register_toolchains(
     node_version = "16.14.0",
 )
 
+nodejs_register_toolchains(
+    name = "node18",
+    node_version = "18.10.0",
+)
+
 # Download npm dependencies.
 load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 load("//integration:npm_package_archives.bzl", "npm_package_archives")
@@ -79,7 +84,7 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-e859696da7af56c811b6589f1ae888222d93d797.patch",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-8d4803573edc70b90a1134ffa996303d1dcc18a9.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
@@ -194,10 +199,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "44e325c09a8a97c0b6f918400c10836fa61753c576e77ca74ec682c6ecc518c0",
-    strip_prefix = "rules_sass-236d2fc016738820e8dc6bea483074034c66ec0a",
+    sha256 = "be45350fce6cec8c6bf98238d51ec270b58b1a93ace6acf156ab0b09bbccaaf9",
+    strip_prefix = "rules_sass-ded821e3fc30ec3ceecdc28618b8b5df440a26be",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/236d2fc016738820e8dc6bea483074034c66ec0a.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/ded821e3fc30ec3ceecdc28618b8b5df440a26be.zip",
     ],
 )
 

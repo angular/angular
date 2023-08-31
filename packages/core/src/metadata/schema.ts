@@ -10,7 +10,9 @@
 /**
  * A schema definition associated with an NgModule.
  *
- * @see `@NgModule`, `CUSTOM_ELEMENTS_SCHEMA`, `NO_ERRORS_SCHEMA`
+ * @see {@link NgModule}
+ * @see {@link CUSTOM_ELEMENTS_SCHEMA}
+ * @see {@link NO_ERRORS_SCHEMA}
  *
  * @param name The name of a defined schema.
  *

@@ -27,6 +27,7 @@ import {
   Type,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
+  ɵgetAsyncClassMetadata as getAsyncClassMetadata,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
   ɵRender3ComponentFactory as ComponentFactory,
@@ -35,10 +36,11 @@ import {
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
-  ɵstringify as stringify
-} from '@angular/core';
+  ɵstringify as stringify} from '@angular/core';
 
 /* clang-format on */
+
+
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -108,7 +110,7 @@ export interface TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see EnvironmentInjector#runInContext
+   * @see {@link EnvironmentInjector#runInContext}
    */
   runInInjectionContext<T>(fn: () => T): T;
 
@@ -335,7 +337,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see EnvironmentInjector#runInContext
+   * @see {@link EnvironmentInjector#runInContext}
    */
   static runInInjectionContext<T>(fn: () => T): T {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);
@@ -591,6 +593,12 @@ export class TestBedImpl implements TestBed {
     const testComponentRenderer = this.inject(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
+
+    if (getAsyncClassMetadata(type)) {
+      throw new Error(
+          `Component '${type.name}' has unresolved metadata. ` +
+          `Please call \`await TestBed.compileComponents()\` before running this test.`);
+    }
 
     const componentDef = (type as any).ɵcmp;
 

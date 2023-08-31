@@ -12,6 +12,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -645,6 +648,9 @@
     "name": "collectNativeNodes"
   },
   {
+    "name": "collectNativeNodesInLContainer"
+  },
+  {
     "name": "commitLViewConsumerIfHasProducers"
   },
   {
@@ -786,9 +792,6 @@
     "name": "getComponentLViewByIndex"
   },
   {
-    "name": "getComponentLViewForHydration"
-  },
-  {
     "name": "getCurrentTNode"
   },
   {
@@ -823,6 +826,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getLNodeForHydration"
   },
   {
     "name": "getLView"
@@ -906,6 +912,9 @@
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
+    "name": "hasSkipHydrationAttrOnRElement"
+  },
+  {
     "name": "hostReportError"
   },
   {
@@ -972,9 +981,6 @@
     "name": "isArrayLike"
   },
   {
-    "name": "isBrowser"
-  },
-  {
     "name": "isComponentDef"
   },
   {
@@ -1006,6 +1012,9 @@
   },
   {
     "name": "isObject"
+  },
+  {
+    "name": "isPlatformBrowser"
   },
   {
     "name": "isPlatformServer"
@@ -1149,9 +1158,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "provideZoneChangeDetection"
   },
   {
@@ -1231,6 +1237,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setSegmentHead"
   },
   {
     "name": "setSelectedIndex"

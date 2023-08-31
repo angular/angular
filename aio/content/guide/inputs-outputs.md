@@ -207,10 +207,37 @@ The property `currentItem` and the method `crossOffItem()` are both in the paren
 
 To combine property and event bindings using the banana-in-a-box syntax, `[()]`, see [Two-way Binding](guide/two-way-binding).
 
+## Additional Configurations
+### Configuring the child component input as required field
+
+To make `Input` property as required for a child component while passing values from parent component, first import `Input` and then decorate the property with `@Input({ required: true })`, as in the following example:
+
+<code-example header="src/app/item-details-metadata/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata/item-details-metadata.component.ts" region="use-input-metadata-required"></code-example>
+
+Next, in the parent template add the following: 
+
+<code-example header="src/app/app.component.html" path="inputs-outputs/src/app/app.component.html" region="input-parent-metadata"></code-example>
+
+If required inputs in a child component are not specified in the parent component template will result a compile time error: 
+
+<div class="alert is-helpful">
+NG8008: Required input item from component ItemDetailMetadataComponent must be specified.
+</div>
+
+### Configuring the child component input with transform functions
+
+To transform an `Input` property from string to boolean to a child component while passing values from parent component. first import `booleanAttribute` and then decorate the property with `@Input({ transform: booleanAttribute })`, as in the following example:
+
+<code-example header="src/app/item-details-metadata/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata/item-details-metadata.component.ts" region="use-input-metadata-boolean-transform"></code-example>
+
+<code-example header="src/app/app.component.html" path="inputs-outputs/src/app/app.component.html" region="input-parent-metadata"></code-example>
+
+Similarly, you can use predefined functions from the `angular/core` library to convert string to number as well, see `numberAttribute`.
+
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-20

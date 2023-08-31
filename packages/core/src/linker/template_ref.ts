@@ -8,12 +8,10 @@
 
 import {Injector} from '../di/injector';
 import {DehydratedContainerView} from '../hydration/interfaces';
-import {assertLContainer} from '../render3/assert';
-import {renderView} from '../render3/instructions/render';
-import {createLView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
+import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
+import {createAndRenderEmbeddedLView} from '../render3/view_manipulation';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
 
@@ -33,7 +31,7 @@ import {EmbeddedViewRef} from './view_ref';
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
- * @see `ViewContainerRef`
+ * @see {@link ViewContainerRef}
  * @see [Navigate the Component Tree with DI](guide/dependency-injection-navtree)
  *
  * @publicApi
@@ -42,8 +40,8 @@ export abstract class TemplateRef<C> {
   /**
    * The anchor element in the parent view for this embedded view.
    *
-   * The data-binding and injection contexts of embedded views created from this `TemplateRef`
-   * inherit from the contexts of this location.
+   * The data-binding and [injection contexts](guide/dependency-injection-context) of embedded views
+   * created from this `TemplateRef` inherit from the contexts of this location.
    *
    * Typically new embedded views are attached to the view container of this location, but in
    * advanced use-cases, the view can be attached to a different container while keeping the
@@ -112,7 +110,7 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
   }
 
   override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
-    return this.createEmbeddedViewImpl(context, injector, null);
+    return this.createEmbeddedViewImpl(context, injector);
   }
 
   /**
@@ -120,26 +118,9 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
    */
   override createEmbeddedViewImpl(
       context: T, injector?: Injector,
-      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<T> {
-    // Embedded views follow the change detection strategy of the view they're declared in.
-    const isSignalView = this._declarationLView[FLAGS] & LViewFlags.SignalView;
-    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
-    const embeddedTView = this._declarationTContainer.tView as TView;
-    const embeddedLView = createLView(
-        this._declarationLView, embeddedTView, context, viewFlags, null, embeddedTView.declTNode,
-        null, null, null, injector || null, hydrationInfo || null);
-
-    const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
-    ngDevMode && assertLContainer(declarationLContainer);
-    embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
-
-    const declarationViewLQueries = this._declarationLView[QUERIES];
-    if (declarationViewLQueries !== null) {
-      embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
-    }
-
-    renderView(embeddedTView, embeddedLView, context);
-
+      hydrationInfo?: DehydratedContainerView): EmbeddedViewRef<T> {
+    const embeddedLView = createAndRenderEmbeddedLView(
+        this._declarationLView, this._declarationTContainer, context, {injector, hydrationInfo});
     return new R3_ViewRef<T>(embeddedLView);
   }
 };

@@ -30,6 +30,6 @@ describe('Security E2E Tests', () => {
 
   it('binds trusted resource URLs', async () => {
     const iframe = element(By.className('e2e-iframe-trusted-src'));
-    expect(await iframe.getAttribute('src')).toMatch(/^https:\/\/www.youtube.com\//);
+    expect(await iframe.getAttribute('src')).toMatch(/^https:\/\/www\.youtube\.com\//);
   });
 });

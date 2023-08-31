@@ -15,7 +15,8 @@ import {NOOP_PERF_RECORDER} from '../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence, ResolveResult} from '../src/api';
 
 const fakeSfTypeIdentifier = {
   isShim: () => false,
@@ -26,6 +27,24 @@ runInEachFileSystem(() => {
   describe('TraitCompiler', () => {
     let _: typeof absoluteFrom;
     beforeEach(() => _ = absoluteFrom);
+
+    function setup(
+        programContents: string, handlers: DecoratorHandler<{}|null, unknown, null, unknown>[],
+        compilationMode: CompilationMode, makeDtsSourceFile = false) {
+      const filename = makeDtsSourceFile ? 'test.d.ts' : 'test.ts';
+      const {program} = makeProgram([{
+        name: _('/' + filename),
+        contents: programContents,
+      }]);
+      const checker = program.getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(checker);
+      const compiler = new TraitCompiler(
+          handlers, reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
+          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+      const sourceFile = program.getSourceFile(filename)!;
+
+      return {compiler, sourceFile, program, filename: _('/' + filename)};
+    }
 
     it('should not run decoration handlers against declaration files', () => {
       class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, null, unknown> {
@@ -42,20 +61,16 @@ runInEachFileSystem(() => {
           throw new Error('symbol should not have been called');
         }
         compileFull(): CompileResult {
-          throw new Error('compile should not have been called');
+          throw new Error('compileFull should not have been called');
+        }
+        compileLocal(): CompileResult {
+          throw new Error('compileLocal should not have been called');
         }
       }
+      const contents = `export declare class SomeDirective {}`;
+      const {compiler, sourceFile} =
+          setup(contents, [new FakeDecoratorHandler()], CompilationMode.FULL, true);
 
-      const {program} = makeProgram([{
-        name: _('/lib.d.ts'),
-        contents: `export declare class SomeDirective {}`,
-      }]);
-      const checker = program.getTypeChecker();
-      const reflectionHost = new TypeScriptReflectionHost(checker);
-      const compiler = new TraitCompiler(
-          [new FakeDecoratorHandler()], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD,
-          true, CompilationMode.FULL, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
-      const sourceFile = program.getSourceFile('lib.d.ts')!;
       const analysis = compiler.analyzeSync(sourceFile);
 
       expect(sourceFile.isDeclarationFile).toBe(true);
@@ -63,6 +78,46 @@ runInEachFileSystem(() => {
     });
 
     describe('compilation mode', () => {
+      class LocalDecoratorHandler implements DecoratorHandler<{}, {}, null, unknown> {
+        name = 'LocalDecoratorHandler';
+        precedence = HandlerPrecedence.PRIMARY;
+
+        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+          if (node.name.text !== 'Local') {
+            return undefined;
+          }
+          return {trigger: node, decorator: null, metadata: {}};
+        }
+
+        analyze(): AnalysisOutput<unknown> {
+          return {analysis: {}};
+        }
+
+        symbol(): null {
+          return null;
+        }
+
+        compileFull(): CompileResult {
+          return {
+            name: 'compileFull',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+
+        compileLocal(): CompileResult {
+          return {
+            name: 'compileLocal',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+      }
+
       class PartialDecoratorHandler implements DecoratorHandler<{}, {}, null, unknown> {
         name = 'PartialDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
@@ -87,7 +142,8 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
 
@@ -96,7 +152,18 @@ runInEachFileSystem(() => {
             name: 'compilePartial',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+
+        compileLocal(): CompileResult {
+          return {
+            name: 'compileLocal',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
@@ -125,69 +192,212 @@ runInEachFileSystem(() => {
             name: 'compileFull',
             initializer: o.literal(true),
             statements: [],
-            type: o.BOOL_TYPE
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+
+        compileLocal(): CompileResult {
+          return {
+            name: 'compileLocal',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
           };
         }
       }
 
       it('should run partial compilation when implemented if compilation mode is partial', () => {
-        const {program} = makeProgram([{
-          name: _('/test.ts'),
-          contents: `
-            export class Full {}
-            export class Partial {}
-          `,
-        }]);
-        const checker = program.getTypeChecker();
-        const reflectionHost = new TypeScriptReflectionHost(checker);
-        const compiler = new TraitCompiler(
-            [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
-            NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.PARTIAL,
-            new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
-        const sourceFile = program.getSourceFile('test.ts')!;
+        const contents = `
+          export class Full {}
+          export class Partial {}
+        `;
+        const {compiler, sourceFile, program, filename} = setup(
+            contents, [new PartialDecoratorHandler(), new FullDecoratorHandler()],
+            CompilationMode.PARTIAL);
+
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
 
-        const partialDecl =
-            getDeclaration(program, _('/test.ts'), 'Partial', isNamedClassDeclaration);
+        const partialDecl = getDeclaration(program, filename, 'Partial', isNamedClassDeclaration);
         const partialResult = compiler.compile(partialDecl, new ConstantPool())!;
         expect(partialResult.length).toBe(1);
         expect(partialResult[0].name).toBe('compilePartial');
 
-        const fullDecl = getDeclaration(program, _('/test.ts'), 'Full', isNamedClassDeclaration);
+        const fullDecl = getDeclaration(program, filename, 'Full', isNamedClassDeclaration);
         const fullResult = compiler.compile(fullDecl, new ConstantPool())!;
         expect(fullResult.length).toBe(1);
         expect(fullResult[0].name).toBe('compileFull');
       });
 
-      it('should run full compilation if compilation mode is full', () => {
-        const {program} = makeProgram([{
-          name: _('/test.ts'),
-          contents: `
-            export class Full {}
-            export class Partial {}
-          `,
-        }]);
-        const checker = program.getTypeChecker();
-        const reflectionHost = new TypeScriptReflectionHost(checker);
-        const compiler = new TraitCompiler(
-            [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
-            NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.FULL,
-            new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
-        const sourceFile = program.getSourceFile('test.ts')!;
+      it('should run local compilation when compilation mode is local', () => {
+        const contents = `
+          export class Full {}
+          export class Local {}
+        `;
+        const {compiler, sourceFile, program, filename} = setup(
+            contents, [new LocalDecoratorHandler(), new FullDecoratorHandler()],
+            CompilationMode.LOCAL);
+
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
 
-        const partialDecl =
-            getDeclaration(program, _('/test.ts'), 'Partial', isNamedClassDeclaration);
+        const localDecl = getDeclaration(program, filename, 'Local', isNamedClassDeclaration);
+        const localResult = compiler.compile(localDecl, new ConstantPool())!;
+        expect(localResult.length).toBe(1);
+        expect(localResult[0].name).toBe('compileLocal');
+
+        const fullDecl = getDeclaration(program, filename, 'Full', isNamedClassDeclaration);
+        const fullResult = compiler.compile(fullDecl, new ConstantPool())!;
+        expect(fullResult.length).toBe(1);
+        expect(fullResult[0].name).toBe('compileLocal');
+      });
+
+      it('should run full compilation if compilation mode is full', () => {
+        const contents = `
+          export class Full {}
+          export class Partial {}
+          export class Local {}
+        `;
+        const {compiler, sourceFile, program, filename} = setup(
+            contents,
+            [
+              new LocalDecoratorHandler(), new PartialDecoratorHandler(), new FullDecoratorHandler()
+            ],
+            CompilationMode.FULL);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+
+        const localDecl = getDeclaration(program, filename, 'Local', isNamedClassDeclaration);
+        const localResult = compiler.compile(localDecl, new ConstantPool())!;
+        expect(localResult.length).toBe(1);
+        expect(localResult[0].name).toBe('compileFull');
+
+        const partialDecl = getDeclaration(program, filename, 'Partial', isNamedClassDeclaration);
         const partialResult = compiler.compile(partialDecl, new ConstantPool())!;
         expect(partialResult.length).toBe(1);
         expect(partialResult[0].name).toBe('compileFull');
 
-        const fullDecl = getDeclaration(program, _('/test.ts'), 'Full', isNamedClassDeclaration);
+        const fullDecl = getDeclaration(program, filename, 'Full', isNamedClassDeclaration);
         const fullResult = compiler.compile(fullDecl, new ConstantPool())!;
         expect(fullResult.length).toBe(1);
         expect(fullResult[0].name).toBe('compileFull');
+      });
+    });
+
+    describe('local compilation', () => {
+      class TestDecoratorHandler implements DecoratorHandler<{}, {}, null, unknown> {
+        name = 'TestDecoratorHandler';
+        precedence = HandlerPrecedence.PRIMARY;
+
+        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+          if (node.name.text !== 'Test') {
+            return undefined;
+          }
+          return {trigger: node, decorator: null, metadata: {}};
+        }
+
+        analyze(): AnalysisOutput<unknown> {
+          return {analysis: {}};
+        }
+
+        resolve(): ResolveResult<unknown> {
+          return {};
+        }
+
+        register(): void {}
+
+        extendedTemplateCheck() {
+          return [];
+        }
+
+        updateResources() {}
+
+        symbol(): null {
+          return null;
+        }
+
+        compileFull(): CompileResult {
+          return {
+            name: 'compileFull',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+
+        compileLocal(): CompileResult {
+          return {
+            name: 'compileLocal',
+            initializer: o.literal(true),
+            statements: [],
+            type: o.BOOL_TYPE,
+            deferrableImports: null,
+          };
+        }
+      }
+
+      it('should not run resolve phase', () => {
+        const contents = `
+          export class Test {}
+        `;
+        const handler = new TestDecoratorHandler();
+        spyOn(handler, 'resolve');
+        const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+
+        expect(handler.resolve).not.toHaveBeenCalled();
+      });
+
+      it('should not register', () => {
+        const contents = `
+          export class Test {}
+        `;
+        const handler = new TestDecoratorHandler();
+        spyOn(handler, 'register');
+        const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+
+        expect(handler.register).not.toHaveBeenCalled();
+      });
+
+      it('should not call extendedTemplateCheck', () => {
+        const contents = `
+          export class Test {}
+        `;
+        const handler = new TestDecoratorHandler();
+        spyOn(handler, 'extendedTemplateCheck');
+        const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+        compiler.extendedTemplateCheck(sourceFile, {} as ExtendedTemplateChecker);
+
+        expect(handler.extendedTemplateCheck).not.toHaveBeenCalled();
+      });
+
+      it('should not call updateResources', () => {
+        const contents = `
+          export class Test {}
+        `;
+        const handler = new TestDecoratorHandler();
+        spyOn(handler, 'updateResources');
+        const {compiler, sourceFile, program, filename} =
+            setup(contents, [handler], CompilationMode.LOCAL);
+        const decl = getDeclaration(program, filename, 'Test', isNamedClassDeclaration);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+        compiler.updateResources(decl);
+
+        expect(handler.updateResources).not.toHaveBeenCalled();
       });
     });
   });

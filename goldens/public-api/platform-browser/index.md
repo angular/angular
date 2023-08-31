@@ -93,6 +93,15 @@ export class EventManager {
 }
 
 // @public
+export abstract class EventManagerPlugin {
+    constructor(_doc: any);
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    // (undocumented)
+    manager: EventManager;
+    abstract supports(eventName: string): boolean;
+}
+
+// @public
 export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
 // @public

@@ -52,6 +52,8 @@ export function* getComplianceTests(absTestConfigPath: AbsoluteFsPath): Generato
       expectations: parseExpectations(test.expectations, realTestPath, inputFiles),
       compilerOptions: getConfigOptions(test, 'compilerOptions', realTestPath),
       angularCompilerOptions: getConfigOptions(test, 'angularCompilerOptions', realTestPath),
+      onlyForTemplatePipeline: test.onlyForTemplatePipeline,
+      skipForTemplatePipeline: test.skipForTemplatePipeline,
       focusTest: test.focusTest,
       excludeTest: test.excludeTest,
     };
@@ -243,13 +245,17 @@ export interface ComplianceTest {
   compilationModeFilter: CompilationMode[];
   /** A list of expectations to check for this test case. */
   expectations: Expectation[];
+  /** If set to `true` this test is skipped when testing with use_template_pipeline */
+  skipForTemplatePipeline?: boolean;
+  /** If set to `true`, this test will only execute when the template pipeline is used. */
+  onlyForTemplatePipeline?: boolean;
   /** If set to `true`, then focus on this test (equivalent to jasmine's 'fit()`). */
   focusTest?: boolean;
   /** If set to `true`, then exclude this test (equivalent to jasmine's 'xit()`). */
   excludeTest?: boolean;
 }
 
-export type CompilationMode = 'linked compile'|'full compile';
+export type CompilationMode = 'linked compile'|'full compile'|'local compile';
 
 export interface Expectation {
   /** The message to display if this expectation fails. */
@@ -268,6 +274,8 @@ export interface Expectation {
 export interface ExpectedFile {
   expected: string;
   generated: string;
+  /** Alternate expected file when compiling with the template pipeline. */
+  templatePipelineExpected?: string;
 }
 
 /**
@@ -306,6 +314,8 @@ export interface TestCaseJson {
   };
   compilerOptions?: ConfigOptions;
   angularCompilerOptions?: ConfigOptions;
+  onlyForTemplatePipeline?: boolean;
+  skipForTemplatePipeline?: boolean;
   focusTest?: boolean;
   excludeTest?: boolean;
 }

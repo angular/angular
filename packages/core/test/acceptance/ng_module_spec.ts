@@ -12,7 +12,6 @@ import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructi
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withBody} from '@angular/private/testing';
 
 describe('NgModule', () => {
@@ -972,13 +971,13 @@ describe('NgModule', () => {
 
       // Simple case, just passing NgModule class.
       const ngModuleRef = createNgModule(AppModule);
-      expect(ngModuleRef).toBeAnInstanceOf(NgModuleRef);
+      expect(ngModuleRef).toBeInstanceOf(NgModuleRef);
       expect(ngModuleRef.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef.injector.get(TOKEN_B, null)).toBe(null);
 
       // Both NgModule and parent Injector are present.
       const ngModuleRef2 = createNgModule(ChildModule, ngModuleRef.injector /* parent injector */);
-      expect(ngModuleRef2).toBeAnInstanceOf(NgModuleRef);
+      expect(ngModuleRef2).toBeInstanceOf(NgModuleRef);
       expect(ngModuleRef2.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef2.injector.get(TOKEN_B)).toBe('TokenValueB');
     });
@@ -1022,6 +1021,6 @@ describe('NgModule', () => {
 
        TestBed.configureTestingModule({imports: [MyModule]});
        TestBed.createComponent(TestCmp);
-       expect(componentInstance).toBeAnInstanceOf(TestCmp);
+       expect(componentInstance).toBeInstanceOf(TestCmp);
      });
 });

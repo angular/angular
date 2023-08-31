@@ -21,7 +21,7 @@ import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 
-import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {PendingTrait, Trait, TraitState} from './trait';
 
@@ -132,7 +132,10 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
 
-    const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
+    // Local compilation does not support incremental build.
+    const priorWork = (this.compilationMode !== CompilationMode.LOCAL) ?
+        this.incrementalBuild.priorAnalysisFor(sf) :
+        null;
     if (priorWork !== null) {
       this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
 
@@ -197,7 +200,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   /**
-   * Import a `ClassRecord` from a previous compilation.
+   * Import a `ClassRecord` from a previous compilation (only to be used in global compilation
+   * modes)
    *
    * Traits from the `ClassRecord` have accurate metadata, but the `handler` is from the old program
    * and needs to be updated (matching is done by name). A new pending trait is created and then
@@ -385,8 +389,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   private analyzeTrait(
-      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>,
-      flags?: HandlerFlags): void {
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>): void {
     if (trait.state !== TraitState.Pending) {
       throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
           TraitState[trait.state]} (expected DETECTED)`);
@@ -397,7 +400,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
     let result: AnalysisOutput<unknown>;
     try {
-      result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
+      result = trait.handler.analyze(clazz, trait.detected.metadata);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
         trait.toAnalyzed(null, [err.toDiagnostic()], null);
@@ -408,13 +411,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
-    if (result.analysis !== undefined && trait.handler.register !== undefined) {
+    if (this.compilationMode !== CompilationMode.LOCAL && result.analysis !== undefined &&
+        trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
     trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null, symbol);
   }
 
   resolve(): void {
+    // No resolving needed for local compilation (only analysis and compile will be done in this
+    // mode)
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
+
     const classes = this.classes.keys();
     for (const clazz of classes) {
       const record = this.classes.get(clazz)!;
@@ -425,7 +435,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
             continue;
           case TraitState.Pending:
             throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
-                Object.getPrototypeOf(trait.handler).constructor.name}`);
+                trait.handler.name}`);
           case TraitState.Resolved:
             throw new Error(`Resolving an already resolved trait`);
         }
@@ -495,6 +505,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
   extendedTemplateCheck(sf: ts.SourceFile, extendedTemplateChecker: ExtendedTemplateChecker):
       ts.Diagnostic[] {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return [];
+    }
     const classes = this.fileToClasses.get(sf);
     if (classes === undefined) {
       return [];
@@ -555,7 +568,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   updateResources(clazz: DeclarationNode): void {
-    if (!this.reflector.isClass(clazz) || !this.classes.has(clazz)) {
+    // Local compilation does not support incremental
+    if (this.compilationMode === CompilationMode.LOCAL || !this.reflector.isClass(clazz) ||
+        !this.classes.has(clazz)) {
       return;
     }
     const record = this.classes.get(clazz)!;
@@ -580,23 +595,35 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     let res: CompileResult[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
-          containsErrors(trait.resolveDiagnostics)) {
-        // Cannot compile a trait that is not resolved, or had any errors in its declaration.
-        continue;
-      }
-
-      // `trait.resolution` is non-null asserted here because TypeScript does not recognize that
-      // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
-      // `Readonly` works.
-
       let compileRes: CompileResult|CompileResult[];
-      if (this.compilationMode === CompilationMode.PARTIAL &&
-          trait.handler.compilePartial !== undefined) {
-        compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution!);
+      if (this.compilationMode === CompilationMode.LOCAL) {
+        if (trait.state !== TraitState.Analyzed || trait.analysis === null ||
+            containsErrors(trait.analysisDiagnostics)) {
+          // Cannot compile a trait in local mode that is not analyzed, or had any errors in its
+          // declaration.
+          continue;
+        }
+        // `trait.analysis` is non-null asserted here because TypeScript does not recognize that
+        // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
+        // `Readonly` works.
+        compileRes = trait.handler.compileLocal(clazz, trait.analysis!, constantPool);
       } else {
-        compileRes =
-            trait.handler.compileFull(clazz, trait.analysis, trait.resolution!, constantPool);
+        if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
+            containsErrors(trait.resolveDiagnostics)) {
+          // Cannot compile a trait in global mode that is not resolved, or had any errors in its
+          // declaration.
+          continue;
+        }
+        // `trait.resolution` is non-null asserted below because TypeScript does not recognize that
+        // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
+        // `Readonly` works.
+        if (this.compilationMode === CompilationMode.PARTIAL &&
+            trait.handler.compilePartial !== undefined) {
+          compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution!);
+        } else {
+          compileRes =
+              trait.handler.compileFull(clazz, trait.analysis, trait.resolution!, constantPool);
+        }
       }
 
       const compileMatchRes = compileRes;
@@ -630,7 +657,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     const decorators: ts.Decorator[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.Resolved) {
+      // In global compilation mode skip the non-resolved traits.
+      if (this.compilationMode !== CompilationMode.LOCAL && trait.state !== TraitState.Resolved) {
         continue;
       }
 

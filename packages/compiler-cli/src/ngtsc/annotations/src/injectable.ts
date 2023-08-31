@@ -14,7 +14,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {checkInheritanceOfInjectable, compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference,} from '../common';
 
 export interface InjectableHandlerData {
@@ -33,6 +33,7 @@ export class InjectableDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private includeClassMetadata: boolean, private readonly compilationMode: CompilationMode,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -42,7 +43,7 @@ export class InjectableDecoratorHandler implements
       private errorOnDuplicateProv = true) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
-  readonly name = InjectableDecoratorHandler.name;
+  readonly name = 'InjectableDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -71,8 +72,11 @@ export class InjectableDecoratorHandler implements
       analysis: {
         meta,
         ctorDeps: extractInjectableCtorDeps(
-            node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps),
-        classMetadata: extractClassMetadata(node, this.reflector, this.isCore),
+            node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps,
+            this.compilationMode),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(node, this.reflector, this.isCore) :
+            null,
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
         needsFactory: !decorators ||
@@ -120,6 +124,12 @@ export class InjectableDecoratorHandler implements
         node, analysis);
   }
 
+  compileLocal(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
+    return this.compile(
+        compileNgFactoryDefField, meta => compileInjectable(meta, false), compileClassMetadata,
+        node, analysis);
+  }
+
   private compile(
       compileFactoryFn: CompileFactoryFn,
       compileInjectableFn: (meta: R3InjectableMetadata) => R3CompiledExpression,
@@ -147,8 +157,13 @@ export class InjectableDecoratorHandler implements
     if (ɵprov === undefined) {
       // Only add a new ɵprov if there is not one already
       const res = compileInjectableFn(analysis.meta);
-      results.push(
-          {name: 'ɵprov', initializer: res.expression, statements: res.statements, type: res.type});
+      results.push({
+        name: 'ɵprov',
+        initializer: res.expression,
+        statements: res.statements,
+        type: res.type,
+        deferrableImports: null
+      });
     }
 
     return results;
@@ -243,7 +258,8 @@ function getProviderExpression(
 
 function extractInjectableCtorDeps(
     clazz: ClassDeclaration, meta: R3InjectableMetadata, decorator: Decorator,
-    reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean) {
+    reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean,
+    compilationMode: CompilationMode) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
@@ -261,15 +277,15 @@ function extractInjectableCtorDeps(
     // constructor signature does not work for DI then a factory definition (ɵfac) that throws is
     // generated.
     if (strictCtorDeps && !isAbstractClassDeclaration(clazz)) {
-      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
+      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore, compilationMode);
     } else {
-      ctorDeps =
-          unwrapConstructorDependencies(getConstructorDependencies(clazz, reflector, isCore));
+      ctorDeps = unwrapConstructorDependencies(
+          getConstructorDependencies(clazz, reflector, isCore, compilationMode));
     }
 
     return ctorDeps;
   } else if (decorator.args.length === 1) {
-    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
+    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore, compilationMode);
 
     if (strictCtorDeps && !isAbstractClassDeclaration(clazz) && requiresValidCtor(meta)) {
       // Since use* was not provided for a concrete class, validate the deps according to

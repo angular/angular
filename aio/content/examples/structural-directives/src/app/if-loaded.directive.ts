@@ -1,8 +1,11 @@
-import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import { Loaded, LoadingState } from './loading-state';
+import {Loaded, LoadingState} from './loading-state';
 
-@Directive({ selector: '[appIfLoaded]' })
+@Directive({
+  standalone: true,
+  selector: '[appIfLoaded]',
+})
 export class IfLoadedDirective<T> {
   private isViewCreated = false;
 
@@ -18,12 +21,12 @@ export class IfLoadedDirective<T> {
 
   constructor(
     private readonly viewContainerRef: ViewContainerRef,
-    private readonly templateRef: TemplateRef<unknown>
+    private readonly templateRef: TemplateRef<unknown>,
   ) {}
 
   static ngTemplateGuard_appIfLoaded<T>(
     dir: IfLoadedDirective<T>,
-    state: LoadingState<T>
+    state: LoadingState<T>,
   ): state is Loaded<T> {
     return true;
   }

@@ -13,7 +13,7 @@ import {RuntimeErrorCode} from './errors';
 
 /**
  * The list of features as an enum to uniquely type each `HydrationFeature`.
- * @see HydrationFeature
+ * @see {@link HydrationFeature}
  *
  * @publicApi
  * @developerPreview
@@ -67,8 +67,8 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * waiting for async guards and resolvers) are completed to avoid
  * clearing the DOM on the client too soon, thus causing content flicker.
  *
- * @see `provideRouter`
- * @see `withEnabledBlockingInitialNavigation`
+ * @see {@link provideRouter}
+ * @see {@link withEnabledBlockingInitialNavigation}
  *
  * @publicApi
  * @developerPreview
@@ -148,8 +148,8 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * export class AppModule {}
  * ```
  *
- * @see `withNoDomReuse`
- * @see `withNoHttpTransferCache`
+ * @see {@link withNoDomReuse}
+ * @see {@link withNoHttpTransferCache}
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.
@@ -169,7 +169,6 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
       providers.push(ɵproviders);
     }
   }
-
   return makeEnvironmentProviders([
     (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
     (featuresKind.has(HydrationFeatureKind.NoDomReuseFeature) ? [] : withDomHydration()),

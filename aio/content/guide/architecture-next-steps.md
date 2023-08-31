@@ -33,7 +33,7 @@ Angular provides a framework for single-page applications, where most of the log
 Most applications still need to access a server using the `HttpClient` to access and save data.
 For some platforms and applications, you might also want to use the PWA \(Progressive Web App\) model to improve the user experience.
 
-*   [HTTP](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
+*   [HTTP](guide/understanding-communicating-with-http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
 *   [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering \(SSR\). This allows you to run your Angular application on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
 *   [Service workers and PWA](guide/service-worker-intro): Use a service worker to reduce dependency on the network and significantly improve the user experience.
 *   [Web workers](guide/web-worker): Learn how to run CPU-intensive computations in a background thread.

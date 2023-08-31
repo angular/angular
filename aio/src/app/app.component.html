@@ -11,10 +11,10 @@
 <header>
   <mat-toolbar #appToolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
     <mat-toolbar-row class="notification-container">
-      <aio-notification notificationId="survey-january-2023" expirationDate="2023-02-15" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
-        <a href="https://goo.gle/angular-devsat-q1-2023">
+      <aio-notification notificationId="survey-august-2023" expirationDate="2023-11-02" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
+        <a href="https://goo.gle/angular-devsat-q3-2023">
           <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
-          <span class="message">Help Angular by taking a <b>quick survey</b>!</span>
+          <span class="message">Help Angular by taking a <strong>quick survey</strong>!</span>
           <span class="action-button">Go to survey</span>
         </a>
       </aio-notification>
@@ -31,10 +31,10 @@
       <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event, true)"></aio-search-box>
       <aio-theme-toggle #themeToggle></aio-theme-toggle>
       <div #externalIcons class="toolbar-external-icons-container">
-        <a mat-icon-button href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
+        <a mat-icon-button href="https://twitter.com/angular" title="Twitter" aria-label="Angular on Twitter">
           <mat-icon svgIcon="logos:twitter"></mat-icon>
         </a>
-        <a mat-icon-button href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
+        <a mat-icon-button href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on GitHub">
           <mat-icon svgIcon="logos:github"></mat-icon>
         </a>
         <a mat-icon-button href="https://youtube.com/angular" title="YouTube" aria-label="Angular on YouTube">

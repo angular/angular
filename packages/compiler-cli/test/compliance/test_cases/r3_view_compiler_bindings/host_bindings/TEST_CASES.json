@@ -41,7 +41,8 @@
             "host_bindings_with_pure_functions.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support host attribute bindings",

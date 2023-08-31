@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, Input, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -51,8 +51,8 @@ describe('insert/remove', () => {
 
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('foo');
-       expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(fixture.componentInstance.cmpRef!.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(fixture.componentInstance.cmpRef).toBeInstanceOf(ComponentRef);
+       expect(fixture.componentInstance.cmpRef!.instance).toBeInstanceOf(InjectedComponent);
      }));
 
 
@@ -103,8 +103,8 @@ describe('insert/remove', () => {
 
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
-       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef).toBeInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBe(uniqueValue);
      }));
 
@@ -117,8 +117,8 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
-       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef).toBeInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBeNull();
      }));
 
@@ -295,12 +295,83 @@ describe('insert/remove', () => {
   });
 });
 
+describe('inputs', () => {
+  it('should be binding the component input', () => {
+    const fixture = TestBed.createComponent(TestInputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithInputs;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
+
+    fixture.componentInstance.inputs = {};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
+
+    fixture.componentInstance.inputs = {foo: 'Foo', bar: 'Bar'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: Bar, baz: Baz');
+
+    fixture.componentInstance.inputs = {foo: 'Foo'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: , baz: Baz');
+
+    fixture.componentInstance.inputs = {foo: 'Foo', baz: null};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: , baz: ');
+
+    fixture.componentInstance.inputs = undefined;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: ');
+  });
+
+  it('should be binding the component input (with mutable inputs)', () => {
+    const fixture = TestBed.createComponent(TestInputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithInputs;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
+
+    fixture.componentInstance.inputs = {foo: 'Hello', bar: 'World'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Hello, bar: World, baz: Baz');
+
+    fixture.componentInstance.inputs['bar'] = 'Angular';
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Hello, bar: Angular, baz: Baz');
+
+    delete fixture.componentInstance.inputs['foo'];
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: , bar: Angular, baz: Baz');
+  });
+
+  it('should be binding the component input (with component type change)', () => {
+    const fixture = TestBed.createComponent(TestInputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithInputs;
+    fixture.componentInstance.inputs = {foo: 'Foo', bar: 'Bar'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: Bar, baz: Baz');
+
+    fixture.componentInstance.currentComponent = AnotherComponentWithInputs;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('[ANOTHER] foo: Foo, bar: Bar, baz: Baz');
+  });
+});
+
 const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({selector: 'injected-component', template: 'foo'})
 class InjectedComponent {
   constructor(@Optional() @Inject(TEST_TOKEN) public testToken: any) {}
 }
-
 
 @Component({selector: 'injected-component-again', template: 'bar'})
 class InjectedComponentAgain {
@@ -309,6 +380,7 @@ class InjectedComponentAgain {
 const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
       currentComponent;
       injector: injector;
+      inputs: inputs;
       content: projectables;
       ngModule: ngModule;
       ngModuleFactory: ngModuleFactory;
@@ -317,6 +389,7 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
 class TestComponent {
   currentComponent: Type<unknown>|null = null;
   injector?: Injector;
+  inputs?: Record<string, unknown>;
   projectables?: any[][];
   ngModule?: Type<unknown>;
   ngModuleFactory?: NgModuleFactory<unknown>;
@@ -370,4 +443,37 @@ class Module3InjectedComponent {
   exports: [Module3InjectedComponent]
 })
 export class TestModule3 {
+}
+
+@Component({
+  selector: 'cmp-with-inputs',
+  standalone: true,
+  template: `foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`
+})
+class ComponentWithInputs {
+  @Input() foo?: any;
+  @Input() bar?: any;
+  @Input() baz?: any = 'Baz';
+}
+
+@Component({
+  selector: 'another-cmp-with-inputs',
+  standalone: true,
+  template: `[ANOTHER] foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`
+})
+class AnotherComponentWithInputs {
+  @Input() foo?: any;
+  @Input() bar?: any;
+  @Input() baz?: any = 'Baz';
+}
+
+@Component({
+  selector: 'test-cmp',
+  standalone: true,
+  imports: [NgComponentOutlet],
+  template: `<ng-template *ngComponentOutlet="currentComponent; inputs: inputs;"></ng-template>`
+})
+class TestInputsComponent {
+  currentComponent: Type<unknown>|null = null;
+  inputs?: Record<string, unknown>;
 }

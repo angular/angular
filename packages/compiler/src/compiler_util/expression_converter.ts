@@ -874,6 +874,7 @@ class InterpolationExpression extends o.Expression {
   override isConstant = unsupported;
   override isEquivalent = unsupported;
   override visitExpression = unsupported;
+  override clone = unsupported;
 }
 
 class DefaultLocalResolver implements LocalResolver {

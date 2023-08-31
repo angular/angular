@@ -173,13 +173,10 @@ class LocalsComp {
   },
 })
 class BankAccount {
-  // TODO(issue/24571): remove '!'.
-  @Input() bank!: string;
-  // TODO(issue/24571): remove '!'.
-  @Input('account') id!: string;
+  @Input() bank: string|undefined;
+  @Input('account') id: string|undefined;
 
-  // TODO(issue/24571): remove '!'.
-  normalizedBankName!: string;
+  normalizedBankName: string|undefined;
 }
 
 @Component({
@@ -792,7 +789,7 @@ class TestCmptWithPropInterpolation {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(MyDir);
+      expect(fixture.debugElement.children[0].references['alice']).toBeInstanceOf(MyDir);
     });
 
     it('should allow injecting from the element injector', () => {
@@ -991,7 +988,7 @@ class TestCmptWithPropInterpolation {
         fixture = TestBed.createComponent(TestCmpt);
 
         const debugEl = fixture.debugElement.children[0];
-        expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+        expect(debugEl.componentInstance).toBeInstanceOf(ParentComp);
       });
 
       it('should return component associated with a node if a node is a component host (content projection)',
@@ -1001,7 +998,7 @@ class TestCmptWithPropInterpolation {
            fixture = TestBed.createComponent(TestCmpt);
 
            const debugEl = fixture.debugElement.query(By.directive(ChildComp));
-           expect(debugEl.componentInstance).toBeAnInstanceOf(ChildComp);
+           expect(debugEl.componentInstance).toBeInstanceOf(ChildComp);
          });
 
       it('should return host component instance if a node has no associated component and there is no component projecting this node',
@@ -1010,7 +1007,7 @@ class TestCmptWithPropInterpolation {
            fixture = TestBed.createComponent(TestCmpt);
 
            const debugEl = fixture.debugElement.children[0];
-           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+           expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
          });
 
       it('should return host component instance if a node has no associated component and there is no component projecting this node (nested embedded views)',
@@ -1025,7 +1022,7 @@ class TestCmptWithPropInterpolation {
            fixture.detectChanges();
 
            const debugEl = fixture.debugElement.query(By.directive(MyDir));
-           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+           expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
          });
 
       it('should return component instance that projects a given node if a node has no associated component',
@@ -1035,7 +1032,7 @@ class TestCmptWithPropInterpolation {
            fixture = TestBed.createComponent(TestCmpt);
 
            const debugEl = fixture.debugElement.children[0].children[0].children[0];  // <div>
-           expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+           expect(debugEl.componentInstance).toBeInstanceOf(ParentComp);
          });
     });
 
@@ -1120,7 +1117,7 @@ class TestCmptWithPropInterpolation {
     it('should be an instance of DebugNode', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
-      expect(fixture.debugElement).toBeAnInstanceOf(DebugNode);
+      expect(fixture.debugElement).toBeInstanceOf(DebugNode);
     });
 
     it('should return the same element when queried twice', () => {

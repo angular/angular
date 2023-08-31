@@ -1277,9 +1277,7 @@ describe(`ChangeDetection`, () => {
          @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
          class Comp {
            name = 'Tom';
-           // TODO(issue/24571): remove '!'.
            @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
-           // TODO(issue/24571): remove '!'.
            @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
          }
 
@@ -1321,7 +1319,6 @@ describe(`ChangeDetection`, () => {
             `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
       })
       class OuterComp {
-        // TODO(issue/24571): remove '!'.
         @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
 
         constructor(public cdRef: ChangeDetectorRef) {}
@@ -1336,11 +1333,8 @@ describe(`ChangeDetection`, () => {
             `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
       })
       class InnerComp {
-        // TODO(issue/24571): remove '!'.
         @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
-
-        // TODO(issue/24571): remove '!'.
-        @Input() outerTpl!: TemplateRef<any>;
+        @Input() outerTpl: TemplateRef<any>|undefined;
 
         constructor(public cdRef: ChangeDetectorRef) {}
         log(id: string) {
@@ -1489,8 +1483,7 @@ describe(`ChangeDetection`, () => {
         class MyChild {
           private thrown = LifetimeMethods.None;
 
-          // TODO(issue/24571): remove '!'.
-          @Input() inp!: boolean;
+          @Input() inp: boolean|undefined;
           @Output() outp = new EventEmitter<any>();
 
           constructor() {}
@@ -1795,16 +1788,13 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
                                AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  // TODO(issue/24571): remove '!'.
-  changes!: SimpleChanges;
+  changes: SimpleChanges|undefined;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
-  // TODO(issue/24571): remove '!'.
-  @Input('testDirective') name!: string;
+  @Input('testDirective') name: string = '';
 
-  // TODO(issue/24571): remove '!'.
-  @Input() throwOn!: string;
+  @Input() throwOn: string|undefined;
 
   constructor(public log: DirectiveLog) {}
 
@@ -1888,8 +1878,7 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({selector: '[orderCheck0]'})
 class OrderCheckDirective0 {
-  // TODO(issue/24571): remove '!'.
-  private _name!: string;
+  private _name: string|undefined;
 
   @Input('orderCheck0')
   set name(value: string) {
@@ -1902,8 +1891,7 @@ class OrderCheckDirective0 {
 
 @Directive({selector: '[orderCheck1]'})
 class OrderCheckDirective1 {
-  // TODO(issue/24571): remove '!'.
-  private _name!: string;
+  private _name: string|undefined;
 
   @Input('orderCheck1')
   set name(value: string) {
@@ -1916,8 +1904,7 @@ class OrderCheckDirective1 {
 
 @Directive({selector: '[orderCheck2]'})
 class OrderCheckDirective2 {
-  // TODO(issue/24571): remove '!'.
-  private _name!: string;
+  private _name: string|undefined;
 
   @Input('orderCheck2')
   set name(value: string) {
@@ -1941,13 +1928,10 @@ class TestLocals {
 
 @Component({selector: 'root', template: 'empty'})
 class Person {
-  // TODO(issue/24571): remove '!'.
-  age!: number;
-  // TODO(issue/24571): remove '!'.
-  name!: string;
+  age: number|undefined;
+  name: string|undefined;
   address: Address|null = null;
-  // TODO(issue/24571): remove '!'.
-  phones!: number[];
+  phones: number[]|undefined;
 
   init(name: string, address: Address|null = null) {
     this.name = name;
@@ -2009,19 +1993,8 @@ class TestData {
   b: any;
 }
 
-@Component({selector: 'root', template: 'empty'})
-class TestDataWithGetter {
-  // TODO(issue/24571): remove '!'.
-  public fn!: Function;
-
-  get a() {
-    return this.fn();
-  }
-}
-
 class Holder<T> {
-  // TODO(issue/24571): remove '!'.
-  value!: T;
+  value: T|undefined;
 }
 
 @Component({selector: 'root', template: 'empty'})

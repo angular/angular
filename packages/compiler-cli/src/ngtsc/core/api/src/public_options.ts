@@ -17,7 +17,10 @@ import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
  * @publicApi
  */
 export interface LegacyNgcOptions {
-  /** generate all possible generated files  */
+  /**
+   * generate all possible generated files
+   *  @deprecated This option is not used anymore.
+   */
   allowEmptyCodegenFiles?: boolean;
 
   /**

@@ -10,7 +10,6 @@ NPM_PACKAGE_ARCHIVES = [
     "typescript",
     "rxjs",
     "systemjs",
-    "tsickle",
     "tslib",
     "protractor",
     "terser",

@@ -47,7 +47,7 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
     // Issue #39496
     it('handles a request with callback call wrapped in promise', done => {
       backend.handle(SAMPLE_REQ).subscribe({complete: done});
-      Promise.resolve().then(() => {
+      queueMicrotask(() => {
         runOnlyCallback(home, {data: 'This is a test'});
       });
       document.mockLoad();

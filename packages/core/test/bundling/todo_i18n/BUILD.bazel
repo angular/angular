@@ -10,7 +10,6 @@ ng_module(
     ],
     deps = [
         "//packages/core",
-        "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/localize",
         "//packages/localize/init",
         "//packages/platform-browser",
@@ -24,7 +23,6 @@ app_bundle(
         ":todo_i18n",
         "//packages/common",
         "//packages/core",
-        "//packages/core/test/bundling/util:reflect_metadata",
         "@npm//rxjs",
     ],
 )

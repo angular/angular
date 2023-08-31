@@ -26,13 +26,6 @@ For more information, see the [TypeScript Handbook](https://www.typescriptlang.o
 
 The following options are available for configuring the AOT template compiler.
 
-### `allowEmptyCodegenFiles`
-
-When `true`, create all possible files even if they are empty.
-Default is `false`.
-Used by the Bazel build rules to simplify how Bazel rules track file dependencies.
-Do not use this option outside of the Bazel rules.
-
 ### `annotationsAs`
 
 Modifies how Angular-specific annotations are emitted to improve tree-shaking.
@@ -128,9 +121,9 @@ Use to create flat modules that are packaged similarly to `@angular/core` and `@
 When this option is used, the `package.json` for the library should refer to the created flat module index instead of the library index file.
 
 Produces only one `.metadata.json` file, which contains all the metadata necessary for symbols exported from the library index.
-In the created `.ngfactory.js` files, the flat module index is used to import symbols. Symbols that include both the public API from the library index as well as shrouded internal symbols.
+In the created `.ngfactory.js` files, the flat module index is used to import symbols. Symbols that include both the public API from the library index and shrouded internal symbols.
 
-By default the `.ts` file supplied in the `files` field is assumed to be the library index.
+By default, the `.ts` file supplied in the `files` field is assumed to be the library index.
 If more than one `.ts` file is specified, `libraryIndex` is used to select the file to use.
 If more than one `.ts` file is supplied without a `libraryIndex`, an error is produced.
 

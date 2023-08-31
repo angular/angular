@@ -13,11 +13,12 @@ Angular's `@angular/core/rxjs-interop` package which provides useful utilities t
 The `toSignal` function creates a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
 ```ts
-import { Component } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { interval } from 'rxjs';
+import {Component} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {interval} from 'rxjs';
 
 @Component({
+  standalone: true,
   template: `{{ counter() }}`,
 })
 export class Ticker {
@@ -29,7 +30,7 @@ export class Ticker {
 ```
 
 Like the `async` pipe, `toSignal` subscribes to the Observable immediately, which may trigger side effects. The subscription created by
-`toSignal` automatically unsubscribes from the given Observable upon destruction of the the component in which `toSignal` is called.
+`toSignal` automatically unsubscribes from the given Observable upon destruction of the component in which `toSignal` is called.
 
 ### Initial values
 
@@ -83,7 +84,7 @@ As the `query` signal changes, the `query$` Observable emits the latest query an
 
 ### Injection context
 
-`toObservable` by default needs to run in an injection context, such as during construction of a component or service. If an injection context is not available, an `Injector` can instead be explicitly specified.
+`toObservable` by default needs to run in an [injection context](/guide/dependency-injection-context), such as during construction of a component or service. If an injection context is not available, an `Injector` can instead be explicitly specified.
 
 ### Timing of `toObservable`
 
@@ -93,7 +94,7 @@ Unlike Observables, signals never provide a synchronous notification of changes.
 
 ```ts
 const obs$ = toObservable(mySignal);
-obs$.subscribe(value => console.log(value));
+obs$.subscribe((value) => console.log(value));
 
 mySignal.set(1);
 mySignal.set(2);

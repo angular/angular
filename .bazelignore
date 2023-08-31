@@ -6,7 +6,6 @@
 node_modules
 dist
 aio/node_modules
-aio/content/example-playground
 aio/tools/examples/shared/node_modules
 aio/tools/examples/shared/example-scaffold
 
@@ -37,3 +36,4 @@ integration/typings_test_rxjs7/node_modules
 integration/typings_test_ts49/node_modules
 integration/typings_test_ts50/node_modules
 integration/typings_test_ts51/node_modules
+integration/typings_test_ts52/node_modules

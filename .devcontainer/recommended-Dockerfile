@@ -1,7 +1,7 @@
 # Image metadata and config.
 # Ideally, the Node.js version should match what we use on CI.
 # See `executors > default-executor` in `.circleci/config.yml`.
-FROM cimg/node:16.13-browsers
+FROM cimg/node:16.13-browsers@sha256:6c7a82701665dda03e92d682360fa2e4358e07dab8d1b6a7e48f7d36e3d98117
 
 
 LABEL name="Angular dev environment" \

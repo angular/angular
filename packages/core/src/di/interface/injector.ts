@@ -20,7 +20,7 @@ export const enum DecoratorFlags {
  * Injection flags for DI.
  *
  * @publicApi
- * @deprecated use an options object for `inject` instead.
+ * @deprecated use an options object for [`inject`](api/core/inject) instead.
  */
 export enum InjectFlags {
   // TODO(alxhub): make this 'const' (and remove `InternalInjectFlags` enum) when ngc no longer
@@ -82,7 +82,7 @@ export const enum InternalInjectFlags {
 }
 
 /**
- * Type of the options argument to `inject`.
+ * Type of the options argument to [`inject`](api/core/inject).
  *
  * @publicApi
  */

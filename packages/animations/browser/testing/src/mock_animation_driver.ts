@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
-import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty,} from '@angular/animations/browser';
-
-import {validateWebAnimatableStyleProperty} from '../../src/render/shared';
-import {camelCaseToDashCase} from '../../src/util';
+import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcamelCaseToDashCase, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty, ɵvalidateWebAnimatableStyleProperty} from '@angular/animations/browser';
 
 /**
  * @publicApi
@@ -22,8 +19,8 @@ export class MockAnimationDriver implements AnimationDriver {
   }
 
   validateAnimatableStyleProperty(prop: string): boolean {
-    const cssProp = camelCaseToDashCase(prop);
-    return validateWebAnimatableStyleProperty(cssProp);
+    const cssProp = ɵcamelCaseToDashCase(prop);
+    return ɵvalidateWebAnimatableStyleProperty(cssProp);
   }
 
   matchesElement(_element: any, _selector: string): boolean {
@@ -84,12 +81,12 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     }
   }
 
-  /* @internal */
+  /** @internal */
   onInit(fn: () => any) {
     this._onInitFns.push(fn);
   }
 
-  /* @internal */
+  /** @internal */
   override init() {
     super.init();
     this._onInitFns.forEach(fn => fn());
@@ -111,7 +108,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     this.__finished = true;
   }
 
-  /* @internal */
+  /** @internal */
   triggerMicrotask() {}
 
   override play(): void {

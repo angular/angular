@@ -15,9 +15,10 @@ import {IpcServer} from './ipc';
 import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {
-  recordVideo: false,
+  // TODO: Turn off long-term. Right now this is just for debugging.
+  recordVideo: true,
   recordScreenshots: false,
-  idleTimeout: 90,
+  idleTimeout: 1000,
   // These represent the maximum values supported by Saucelabs.
   // See: https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
   commandTimeout: 600,
@@ -29,6 +30,7 @@ interface RemoteBrowser {
   id: string;
   state: 'claimed'|'free'|'launching';
   driver: WebDriver|null;
+  sessionUrl: string|null;
 }
 
 interface BrowserTest {
@@ -206,7 +208,12 @@ export class SaucelabsDaemon {
     await Promise.all(
         this._browsers.map(async (browser, id) => {
           const browserId = getUniqueId(browser);
-          const launched: RemoteBrowser = {state: 'launching', driver: null, id: browserId};
+          const launched: RemoteBrowser = {
+            state: 'launching',
+            driver: null,
+            sessionUrl: null,
+            id: browserId,
+          };
           const browserDescription = `${this._buildName} - ${browser.browserName} - #${id + 1}`;
 
           const capabilities: any = {
@@ -243,16 +250,17 @@ export class SaucelabsDaemon {
           await driver.manage().setTimeouts({pageLoad: 30000});
 
           const sessionId = (await driver.getSession()).getId();
-          console.info(
-              chalk.yellow(
-                  `Started browser ${browser.browserName} on Saucelabs: ` +
-                      `https://saucelabs.com/tests/${sessionId}`,
-                  ),
-          );
 
           // Mark the browser as available after launch completion.
           launched.state = 'free';
           launched.driver = driver;
+          launched.sessionUrl = `https://saucelabs.com/tests/${sessionId}`;
+
+          console.info(
+              chalk.yellow(
+                  `Started browser ${browser.browserName} on Saucelabs: ${launched.sessionUrl}`,
+                  ),
+          );
 
           // If a test has been scheduled before the browser completed launching, run
           // it now given that the browser is ready now.
@@ -281,6 +289,7 @@ export class SaucelabsDaemon {
 
       try {
         console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
+        console.debug(`  > Instance URL: ${browser.sessionUrl}`);
         await browser.driver!.get(test.pageUrl);
         const pageTitle = await browser.driver!.getTitle();
         console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
