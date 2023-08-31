@@ -42,9 +42,6 @@
     "name": "AnimationRenderer"
   },
   {
-    "name": "AnimationRendererFactory"
-  },
-  {
     "name": "AnimationStyleNormalizer"
   },
   {

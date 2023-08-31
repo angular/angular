@@ -146,6 +146,12 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
+  /**
+   * By default this renderer throws when encountering synthetic properties
+   * This can be disabled for example by the AsyncAnimationRendererFactory
+   */
+  throwOnSyntheticProps = true;
+
   constructor(
       private readonly eventManager: EventManager, private readonly doc: Document,
       private readonly ngZone: NgZone, private readonly platformIsServer: boolean) {}
@@ -273,7 +279,8 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(name, 'property');
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
+        checkNoSyntheticProp(name, 'property');
     el[name] = value;
   }
 
@@ -283,7 +290,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(event, 'listener');
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
+        checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {

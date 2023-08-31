@@ -48,6 +48,7 @@ ng_package(
     deps = [
         ":platform-browser",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",
     ],
 )
