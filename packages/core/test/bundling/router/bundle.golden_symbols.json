@@ -51,9 +51,6 @@
     "name": "BaseRouteReuseStrategy"
   },
   {
-    "name": "BeforeActivateRoutes"
-  },
-  {
     "name": "BehaviorSubject"
   },
   {
@@ -552,9 +549,6 @@
     "name": "ReactiveNode"
   },
   {
-    "name": "RedirectRequest"
-  },
-  {
     "name": "RefCountOperator"
   },
   {
@@ -706,9 +700,6 @@
   },
   {
     "name": "TakeSubscriber"
-  },
-  {
-    "name": "TakeUntilSubscriber"
   },
   {
     "name": "TapSubscriber"
@@ -1590,7 +1581,7 @@
     "name": "isPromise2"
   },
   {
-    "name": "isPublicRouterEvent"
+    "name": "isRedirectingNavigationCancelingError"
   },
   {
     "name": "isScheduler"
