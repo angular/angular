@@ -84,8 +84,8 @@
   <thead><tr><th>
     <div class="with-github-links">
       <h3 {% if method.deprecated %} class="deprecated-api-item"{% endif %}>
-        {%- if method.isCallMember %}<i>call signature</i>
-        {%- elseif method.isNewMember %}<i>construct signature</i>
+        {%- if method.isCallMember %}<em>call signature</em>
+        {%- elseif method.isNewMember %}<em>construct signature</em>
         {%- else %}{$ method.name $}()
         {%- endif -%}
       </h3>
