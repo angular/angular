@@ -4,13 +4,16 @@ import { Component, Host, Optional } from '@angular/core';
 
 import { HeroCacheService } from './hero-cache.service';
 import { LoggerService } from './logger.service';
+import { NgIf } from '@angular/common';
 
 // #docregion component
 @Component({
+  standalone: true,
   selector: 'app-hero-contact',
   template: `
   <div>Phone #: {{phoneNumber}}
-  <span *ngIf="hasLogger">!!!</span></div>`
+  <span *ngIf="hasLogger">!!!</span></div>`,
+  imports: [NgIf]
 })
 export class HeroContactComponent {
 
