@@ -3,18 +3,21 @@
 import { Component, OnInit } from '@angular/core';
 // #docregion added-imports
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { Location, NgIf, UpperCasePipe } from '@angular/common';
 
 // #enddocregion added-imports
 import { Hero } from '../hero';
 // #docregion added-imports
 import { HeroService } from '../hero.service';
+import { FormsModule } from '@angular/forms';
 // #enddocregion added-imports
 
 @Component({
-  selector: 'app-hero-detail',
-  templateUrl: './hero-detail.component.html',
-  styleUrls: [ './hero-detail.component.css' ]
+    selector: 'app-hero-detail',
+    templateUrl: './hero-detail.component.html',
+    styleUrls: ['./hero-detail.component.css'],
+    standalone: true,
+    imports: [NgIf, FormsModule, UpperCasePipe]
 })
 export class HeroDetailComponent implements OnInit {
   hero: Hero | undefined;
