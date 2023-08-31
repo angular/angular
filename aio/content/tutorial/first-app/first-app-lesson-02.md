@@ -107,7 +107,7 @@ In the **Edit** pane of your IDE:
     <code-example header="Replace in src/app/home/home.component.css" path="first-app-lesson-02/src/app/home/home.component.css"></code-example>
 
 1.  Confirm that the app builds without error.
-    You should find the filter query box and button in your app and they should be styled.
+    You should find the filter query box and button in your app, and they should be styled.
     Correct any errors before you continue to the next step.
 
 <section class="lightbox">

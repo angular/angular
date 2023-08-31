@@ -443,7 +443,7 @@ In modern JavaScript, every file is a module \(see the [Modules](https://explori
 Within each file you write an `export` statement to make parts of the module public.
 
 An Angular NgModule is a class with the `@NgModule` decorator &mdash;JavaScript modules don't have to have the `@NgModule` decorator.
-Angular's `NgModule` has `imports` and `exports` and they serve a similar purpose.
+Angular's `NgModule` has `imports` and `exports`, and they serve a similar purpose.
 
 You *import* other NgModules so you can use their exported classes in component templates.
 You *export* this NgModule's classes so they can be imported and used by components of *other* NgModules.
