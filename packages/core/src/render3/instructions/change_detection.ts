@@ -313,15 +313,14 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   }
 
   const tView = lView[TVIEW];
-  if ((lView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty) &&
+  const flags = lView[FLAGS];
+  if ((flags & (LViewFlags.CheckAlways | LViewFlags.Dirty) &&
        mode === ChangeDetectionMode.Global) ||
-      lView[FLAGS] & LViewFlags.RefreshView ||
+      flags & LViewFlags.RefreshView ||
       mode === ChangeDetectionMode.BugToForceRefreshAndIgnoreViewFlags) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
   } else if (lView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
-
-    const tView = lView[TVIEW];
     const components = tView.components;
     if (components !== null) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
