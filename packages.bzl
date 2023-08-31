@@ -93,6 +93,7 @@ DOCS_ENTRYPOINTS = [
     "platform-browser-dynamic",
     "platform-browser-dynamic/testing",
     "platform-browser/animations",
+    "platform-browser/animations/async",
     "platform-browser/testing",
     "platform-server",
     "platform-server/init",
