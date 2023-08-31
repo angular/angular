@@ -34,4 +34,19 @@ The `UploadInterceptor` in `app/http-interceptors/upload-interceptor.ts` interce
 
 </div>
 
+<div class="alert is-helpful">
+
+**With @angular/pwa**: <br />
+If you use Angular PWA Service worker, you need to add the header to tell the service worker to not filter this fetch request.
+
+<code-example format="typescript" language="typescript">
+  const req = new HttpRequest('POST', '/upload/file', file, {
+      reportProgress: true,
+      observe: 'events',
+      headers: new HttpHeaders({ 'ngsw-bypass': 'true' }) 
+  });
+
+</code-example>
+
+</div>
 @reviewed 2023-02-27
