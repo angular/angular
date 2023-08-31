@@ -109,7 +109,11 @@ describe('`restoredState#ɵrouterPageId`', () => {
                 canLoad: ['alwaysFalse']
               }
             ],
-            withRouterConfig({urlUpdateStrategy, canceledNavigationResolution: 'computed'})),
+            withRouterConfig({
+              urlUpdateStrategy,
+              canceledNavigationResolution: 'computed',
+              resolveNavigationPromiseOnError: true,
+            })),
       ]
     });
     const router = TestBed.inject(Router);
@@ -477,10 +481,8 @@ describe('`restoredState#ɵrouterPageId`', () => {
 
          TestBed.inject(ThrowingCanActivateGuard).throw = true;
 
-         expect(() => {
-           location.back();
-           advance(fixture);
-         }).toThrow();
+         location.back();
+         advance(fixture);
          expect(location.path()).toEqual('/second');
          expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
