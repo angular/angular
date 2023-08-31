@@ -130,7 +130,11 @@ You can do this to configure a non-default provider of a service that is shared 
 
 Here is an example of the case where the component router configuration includes a non-default [location strategy](guide/router#location-strategy) by listing its provider in the `providers` list of the `AppModule`.
 
-<code-example header="src/app/app.module.ts (providers)" path="dependency-injection-in-action/src/app/app.module.ts" region="providers"></code-example>
+```
+ providers: [
+  { provide: LocationStrategy, useClass: HashLocationStrategy }
+]
+```
 
 </div>
 
@@ -1008,4 +1012,4 @@ For more information on Angular dependency injection, see the [DI Providers](gui
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-06

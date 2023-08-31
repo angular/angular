@@ -2,9 +2,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { HeroCacheService } from './hero-cache.service';
+import { FormsModule, NgModel } from '@angular/forms';
 
 // #docregion component
 @Component({
+  standalone: true,
   selector: 'app-hero-bio',
   // #docregion template
   template: `
@@ -12,7 +14,8 @@ import { HeroCacheService } from './hero-cache.service';
     <ng-content></ng-content>
     <textarea cols="25" [(ngModel)]="hero.description"></textarea>`,
   // #enddocregion template
-  providers: [HeroCacheService]
+  providers: [HeroCacheService],
+  imports: [FormsModule]
 })
 
 export class HeroBioComponent implements OnInit  {
