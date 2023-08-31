@@ -21,6 +21,10 @@ import {UrlSerializer, UrlTree} from './url_tree';
  *
  * @publicApi
  * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
+ *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
+ *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
+ *
+ * @see RouterConfigOptions
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -110,6 +114,15 @@ export interface RouterConfigOptions {
    * showing an error message with the URL that failed.
    */
   urlUpdateStrategy?: 'deferred'|'eager';
+
+  /**
+   * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed
+   * navigations (for example, when guards are rejected).
+
+   * Otherwise the `Promise` returned by the Router's navigation with be rejected
+   * if an error occurs.
+   */
+  resolveNavigationPromiseOnError?: boolean;
 }
 
 /**
@@ -222,6 +235,10 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
+   *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
+   *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
+   *
+   * @see RouterConfigOptions
    */
   errorHandler?: (error: any) => any;
 

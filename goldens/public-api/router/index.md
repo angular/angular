@@ -733,6 +733,7 @@ export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
+    resolveNavigationPromiseOnError?: boolean;
     urlUpdateStrategy?: 'deferred' | 'eager';
 }
 
