@@ -195,8 +195,8 @@ jobs:
           cache-node-modules: true
           node-module-directories: |
             ./node_modules
-            ./packages/zone.js
-            ./packages/zone.js/test/typings
+            ./packages/zone.js/node_modules
+            ./packages/zone.js/test/typings/node_modules
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@45de46d9ba0e0689b7a846fd31ec9e241807ca71
       - name: Setup Bazel RBE
