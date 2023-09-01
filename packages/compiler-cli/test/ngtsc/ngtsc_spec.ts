@@ -4859,7 +4859,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
+              `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
               `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
     });
 
@@ -9063,13 +9063,13 @@ function allTests(os: string) {
           expect(jsContents)
               .toContain(
                   // ngDevMode check is present
-                  '(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+                  '(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
                   // Main `setClassMetadataAsync` call
                   'i0.ɵsetClassMetadataAsync(TestCmp, ' +
                   // Dependency loading function (note: no local `LocalDep` here)
-                  'function () { return [import("./cmp-a").then(function (m) { return m.CmpA; })]; }, ' +
+                  '() => [import("./cmp-a").then(m => m.CmpA)], ' +
                   // Callback that invokes `setClassMetadata` at the end
-                  'function (CmpA) { i0.ɵsetClassMetadata(TestCmp');
+                  'CmpA => { i0.ɵsetClassMetadata(TestCmp');
         });
 
         it('should *not* generate setClassMetadataAsync for components with `{#defer}` blocks ' +

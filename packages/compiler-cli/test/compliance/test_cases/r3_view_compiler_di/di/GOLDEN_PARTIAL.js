@@ -21,7 +21,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ selector: 'my-component', template: `` }]
-        }], ctorParameters: function () { return [{ type: undefined, decorators: [{
+        }], ctorParameters: () => [{ type: undefined, decorators: [{
                     type: Attribute,
                     args: ['name']
                 }] }, { type: undefined, decorators: [{
@@ -39,7 +39,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     type: Self
                 }, {
                     type: Optional
-                }] }]; } });
+                }] }] });
 export class MyModule {
 }
 MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
@@ -83,7 +83,7 @@ MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.
 MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, decorators: [{
             type: Injectable
-        }], ctorParameters: function () { return [{ type: MyDependency }]; } });
+        }], ctorParameters: () => [{ type: MyDependency }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: injectable_factory.d.ts
@@ -114,9 +114,9 @@ MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.
 MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, decorators: [{
             type: Injectable
-        }], ctorParameters: function () { return [{ type: MyDependency }, { type: MyOptionalDependency, decorators: [{
+        }], ctorParameters: () => [{ type: MyDependency }, { type: MyOptionalDependency, decorators: [{
                     type: Optional
-                }] }]; } });
+                }] }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: ctor_overload.d.ts
@@ -299,7 +299,7 @@ Service.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, decorators: [{
             type: Injectable,
             args: [{ providedIn: forwardRef(() => Mod) }]
-        }], ctorParameters: function () { return [{ type: Dep }]; } });
+        }], ctorParameters: () => [{ type: Dep }] });
 export class Mod {
 }
 Mod.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Mod, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
@@ -354,7 +354,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }, {
             type: Pipe,
             args: [{ name: 'myPipe' }]
-        }], ctorParameters: function () { return [{ type: Service }]; } });
+        }], ctorParameters: () => [{ type: Service }] });
 export class MyOtherPipe {
     constructor(service) { }
     transform(value, ...args) {
@@ -369,7 +369,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{ name: 'myOtherPipe' }]
         }, {
             type: Injectable
-        }], ctorParameters: function () { return [{ type: Service }]; } });
+        }], ctorParameters: () => [{ type: Service }] });
 export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
