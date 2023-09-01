@@ -8,7 +8,7 @@ FooModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [
     { provide: MY_TOKEN, useFactory: …child… => ({ child }), deps: [ChildService] }…
   ]
 });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(FooModule, [{
+(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(FooModule, [{
   type: NgModule,
   args: [{
     providers: [

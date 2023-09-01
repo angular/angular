@@ -48,7 +48,7 @@ IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IfDirective, decorators: [{
             type: Directive,
             args: [{ selector: '[if]' }]
-        }], ctorParameters: function () { return [{ type: i0.TemplateRef }]; } });
+        }], ctorParameters: () => [{ type: i0.TemplateRef }] });
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });

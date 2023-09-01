@@ -4,10 +4,12 @@ AModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule, declaration
 AModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 export { AModule };
 …
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AModule, [{
-  type: NgModule,
-  args: [{ declarations: [A1Component, A2Component], exports: [A1Component, A2Component] }]
-}], null, null); })();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AModule, [{
+    type: NgModule,
+    args: [{ declarations: [A1Component, A2Component], exports: [A1Component, A2Component] }]
+  }], null, null);
+})();
 …
 
 class BModule {}
@@ -16,10 +18,12 @@ BModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule, declaration
 BModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [AModule] });
 export { BModule };
 …
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BModule, [{
-        type: NgModule,
-        args: [{ declarations: [B1Component, B2Component], exports: [AModule] }]
-    }], null, null); })();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BModule, [{
+    type: NgModule,
+    args: [{ declarations: [B1Component, B2Component], exports: [AModule] }]
+  }], null, null);
+})();
 …
 
 class AppModule {}
@@ -28,7 +32,9 @@ AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule, imports
 AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [BModule] });
 export { AppModule };
 …
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
-  type: NgModule,
-  args: [{ imports: [BModule] }]
-}], null, null); })();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
+    type: NgModule,
+    args: [{ imports: [BModule] }]
+  }], null, null);
+})();

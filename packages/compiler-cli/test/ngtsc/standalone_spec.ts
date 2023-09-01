@@ -250,7 +250,7 @@ runInEachFileSystem(() => {
 
         // verify schemas are not included in the generated code
         const jsCodeAoT = jsCode.slice(
-            0, jsCode.indexOf('(function () { (typeof ngDevMode === "undefined" || ngDevMode)'));
+            0, jsCode.indexOf('(() => { (typeof ngDevMode === "undefined" || ngDevMode)'));
         expect(jsCodeAoT).not.toContain('schemas: [NO_ERRORS_SCHEMA]');
       });
 

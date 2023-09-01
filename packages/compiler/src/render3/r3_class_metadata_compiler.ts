@@ -50,7 +50,7 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
     metadata.ctorParameters ?? o.literal(null),
     metadata.propDecorators ?? o.literal(null),
   ]);
-  const iife = o.fn([], [devOnlyGuardedExpression(fnCall).toStmt()]);
+  const iife = o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()]);
   return iife.callFn([]);
 }
 
@@ -60,12 +60,10 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  *
  * Generates a call like this:
  * ```
- * setClassMetadataAsync(type, () => {
- *   return [
- *     import('./cmp-a').then(m => m.CmpA);
- *     import('./cmp-b').then(m => m.CmpB);
- *   ];
- * }, (CmpA, CmpB) => {
+ * setClassMetadataAsync(type, () => [
+ *   import('./cmp-a').then(m => m.CmpA);
+ *   import('./cmp-b').then(m => m.CmpB);
+ * ], (CmpA, CmpB) => {
  *   setClassMetadata(type, decorators, ctorParameters, propParameters);
  * });
  * ```
@@ -83,10 +81,9 @@ export function compileComponentClassMetadata(
   const dynamicImports: o.Expression[] = [];
   const importedSymbols: o.FnParam[] = [];
   for (const [symbolName, importPath] of deferrableTypes) {
-    // e.g. `function(m) { return m.CmpA; }`
-    const innerFn = o.fn(
-        [new o.FnParam('m', o.DYNAMIC_TYPE)],
-        [new o.ReturnStatement(o.variable('m').prop(symbolName))]);
+    // e.g. `(m) => m.CmpA`
+    const innerFn =
+        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
 
     // e.g. `import('./cmp-a').then(...)`
     const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
@@ -95,8 +92,8 @@ export function compileComponentClassMetadata(
     importedSymbols.push(new o.FnParam(symbolName, o.DYNAMIC_TYPE));
   }
 
-  // e.g. `function() { return [ ... ]; }`
-  const dependencyLoadingFn = o.fn([], [new o.ReturnStatement(o.literalArr(dynamicImports))]);
+  // e.g. `() => [ ... ];`
+  const dependencyLoadingFn = o.arrowFn([], o.literalArr(dynamicImports));
 
   // e.g. `setClassMetadata(...)`
   const setClassMetadataCall = o.importExpr(R3.setClassMetadata).callFn([
@@ -106,8 +103,8 @@ export function compileComponentClassMetadata(
     metadata.propDecorators ?? o.literal(null),
   ]);
 
-  // e.g. `function(CmpA) { setClassMetadata(...); }`
-  const setClassMetaWrapper = o.fn(importedSymbols, [setClassMetadataCall.toStmt()]);
+  // e.g. `(CmpA) => setClassMetadata(...)`
+  const setClassMetaWrapper = o.arrowFn(importedSymbols, [setClassMetadataCall.toStmt()]);
 
   // Final `setClassMetadataAsync()` call with all arguments
   const setClassMetaAsync = o.importExpr(R3.setClassMetadataAsync).callFn([
@@ -116,6 +113,6 @@ export function compileComponentClassMetadata(
 
   // Generate an ngDevMode guarded call to `setClassMetadataAsync` with
   // the class identifier and its metadata, so that this call can be tree-shaken.
-  const iife = o.fn([], [devOnlyGuardedExpression(setClassMetaAsync).toStmt()]);
+  const iife = o.arrowFn([], [devOnlyGuardedExpression(setClassMetaAsync).toStmt()]);
   return iife.callFn([]);
 }
