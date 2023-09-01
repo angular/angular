@@ -93,7 +93,7 @@ There are a few more lessons to complete before that happens.
 
 In this lesson, you created an interface that created a new data type for your app.
 This new data type makes it possible for you to specify where `HousingLocation` data is required.
-This new data type also makes it possible for your IDE and the TypeScript compiler can ensure that `HousingLocation` data is used where it's required.
+This new data type also makes your IDE and the TypeScript compiler ensure that `HousingLocation` data is used where it's required.
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
