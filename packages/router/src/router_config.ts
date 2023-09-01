@@ -204,6 +204,16 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
   bindToComponentInputs?: boolean;
 
   /**
+   * When true, enables view transitions in the Router by running the route activation and
+   * deactivation inside of `document.startViewTransition`.
+   *
+   * @see https://developer.chrome.com/docs/web-platform/view-transitions/
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
+   * @experimental
+   */
+  enableViewTransitions?: boolean;
+
+  /**
    * A custom error handler for failed navigations.
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
