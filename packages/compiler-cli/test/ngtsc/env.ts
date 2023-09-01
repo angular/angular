@@ -7,6 +7,7 @@
  */
 
 import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
+import {DocData} from '@angular/compiler-cli/src/ngtsc/docs';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as tsickle from 'tsickle';
 import ts from 'typescript';
@@ -285,6 +286,18 @@ export class NgtscTestEnvironment {
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return (program as NgtscProgram).getIndexedComponents();
+  }
+
+  driveDocs(): Map<string, DocData> {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    const docs = (program as NgtscProgram).getDocs();
+    const docsByFilename = new Map<string, DocData>();
+    for (const [sf, data] of docs) {
+      docsByFilename.set(sf.fileName, data);
+    }
+    return docsByFilename;
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string|null = null): void {

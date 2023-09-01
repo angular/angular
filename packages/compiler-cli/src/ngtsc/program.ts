@@ -15,6 +15,7 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {DocData} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
@@ -333,6 +334,10 @@ export class NgtscProgram implements api.Program {
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     return this.compiler.getIndexedComponents();
+  }
+
+  getDocs(): Map<ts.SourceFile, DocData> {
+    return this.compiler.getDocs();
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {
