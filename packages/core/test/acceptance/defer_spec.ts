@@ -10,7 +10,7 @@ import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Input, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {TestBed} from '@angular/core/testing';
+import {DeferBlockBehavior, TestBed} from '@angular/core/testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -53,7 +53,8 @@ describe('#defer', () => {
   afterEach(() => setEnabledBlockTypes([]));
 
   beforeEach(() => {
-    TestBed.configureTestingModule({providers: COMMON_PROVIDERS});
+    TestBed.configureTestingModule(
+        {providers: COMMON_PROVIDERS, deferBlockBehavior: DeferBlockBehavior.Playthrough});
   });
 
   it('should transition between placeholder, loading and loaded states', async () => {
@@ -243,7 +244,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -567,7 +569,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -651,7 +654,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -731,7 +735,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -799,7 +804,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -883,7 +889,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -967,7 +974,8 @@ describe('#defer', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ]
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
