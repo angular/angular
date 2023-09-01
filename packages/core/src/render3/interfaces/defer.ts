@@ -17,7 +17,7 @@ export type DependencyResolverFn = () => Array<Promise<DependencyType>>;
 /**
  * Describes the state of defer block dependency loading.
  */
-export const enum DeferDependenciesLoadingState {
+export enum DeferDependenciesLoadingState {
   /** Initial state, dependency loading is not yet triggered */
   NOT_STARTED,
 
@@ -100,24 +100,39 @@ export interface TDeferBlockDetails {
 
 /**
  * Describes the current state of this {#defer} block instance.
+ *
+ * @publicApi
+ * @developerPreview
  */
-export const enum DeferBlockInstanceState {
-  /** Initial state, nothing is rendered yet */
-  INITIAL,
-
+export enum DeferBlockState {
   /** The {:placeholder} block content is rendered */
-  PLACEHOLDER,
+  Placeholder = 0,
 
   /** The {:loading} block content is rendered */
-  LOADING,
+  Loading = 1,
 
   /** The main content block content is rendered */
-  COMPLETE,
+  Complete = 2,
 
   /** The {:error} block content is rendered */
-  ERROR
+  Error = 3,
 }
 
+/**
+ * Describes the initial state of this {#defer} block instance.
+ *
+ * Note: this state is internal only and *must* be represented
+ * with a number lower than any value in the `DeferBlockState` enum.
+ */
+export enum DeferBlockInternalState {
+  /** Initial state. Nothing is rendered yet. */
+  Initial = -1,
+}
+
+/**
+ * A slot in the `LDeferBlockDetails` array that contains a number
+ * that represent a current block state that is being rendered.
+ */
 export const DEFER_BLOCK_STATE = 0;
 
 /**
@@ -128,5 +143,30 @@ export const DEFER_BLOCK_STATE = 0;
  * (which would require per-instance state).
  */
 export interface LDeferBlockDetails extends Array<unknown> {
-  [DEFER_BLOCK_STATE]: DeferBlockInstanceState;
+  [DEFER_BLOCK_STATE]: DeferBlockState|DeferBlockInternalState;
+}
+
+/**
+ * Internal structure used for configuration of defer block behavior.
+ * */
+export interface DeferBlockConfig {
+  behavior: DeferBlockBehavior;
+}
+
+/**
+ * Options for configuring defer blocks behavior.
+ * @publicApi
+ * @developerPreview
+ */
+export enum DeferBlockBehavior {
+  /**
+   * Manual triggering mode for defer blocks. Provides control over when defer blocks render
+   * and which state they render. This is the default behavior in test environments.
+   */
+  Manual,
+
+  /**
+   * Playthrough mode for defer blocks. This mode behaves like defer blocks would in a browser.
+   */
+  Playthrough,
 }

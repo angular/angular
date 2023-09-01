@@ -16,7 +16,6 @@ import {
   Directive,
   EnvironmentInjector,
   InjectFlags,
-  InjectionToken,
   InjectOptions,
   Injector,
   NgModule,
@@ -26,6 +25,7 @@ import {
   ProviderToken,
   Type,
   ɵconvertToBitFlags as convertToBitFlags,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadata as getAsyncClassMetadata,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
@@ -199,6 +199,12 @@ export class TestBedImpl implements TestBed {
    * These options take precedence over the environment-level ones.
    */
   private _instanceTeardownOptions: ModuleTeardownOptions|undefined;
+
+  /**
+   * Defer block behavior option that specifies whether defer blocks will be triggered manually
+   * or set to play through.
+   */
+  private _instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
 
   /**
    * "Error on unknown elements" option that has been configured at the `TestBed` instance level.
@@ -474,6 +480,7 @@ export class TestBedImpl implements TestBed {
         this._instanceTeardownOptions = undefined;
         this._instanceErrorOnUnknownElementsOption = undefined;
         this._instanceErrorOnUnknownPropertiesOption = undefined;
+        this._instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
       }
     }
     return this;
@@ -504,6 +511,7 @@ export class TestBedImpl implements TestBed {
     this._instanceTeardownOptions = moduleDef.teardown;
     this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
     this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
+    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DeferBlockBehavior.Manual;
     // Store the current value of the strict mode option,
     // so we can restore it later
     this._previousErrorOnUnknownElementsOption = getUnknownElementStrictMode();
@@ -739,6 +747,10 @@ export class TestBedImpl implements TestBed {
     return this._instanceTeardownOptions?.destroyAfterEach ??
         TestBedImpl._environmentTeardownOptions?.destroyAfterEach ??
         TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
+  }
+
+  getDeferBlockBehavior(): DeferBlockBehavior {
+    return this._instanceDeferBlockBehavior;
   }
 
   tearDownTestingModule() {

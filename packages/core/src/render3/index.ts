@@ -162,6 +162,7 @@ export {
 
   DeferBlockDependencyInterceptor as ɵDeferBlockDependencyInterceptor,
   DEFER_BLOCK_DEPENDENCY_INTERCEPTOR as ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  DEFER_BLOCK_CONFIG as ɵDEFER_BLOCK_CONFIG,
 } from './instructions/all';
 export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
 export {RenderFlags} from './interfaces/definition';

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵFlushableEffectRunner as FlushableEffectRunner} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks} from '@angular/core';
 import {Subscription} from 'rxjs';
+
+import {DeferBlockFixture} from './defer';
 
 
 /**
@@ -51,6 +53,7 @@ export class ComponentFixture<T> {
   private _onMicrotaskEmptySubscription: Subscription|null = null;
   private _onErrorSubscription: Subscription|null = null;
 
+  /** @nodoc */
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
       private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean) {
@@ -179,6 +182,22 @@ export class ComponentFixture<T> {
       });
       return this._promise;
     }
+  }
+
+  /**
+   * Retrieves all defer block fixtures in the component fixture
+   */
+  getDeferBlocks(): Promise<DeferBlockFixture[]> {
+    const deferBlocks: DeferBlockDetails[] = [];
+    const lView = (this.componentRef.hostView as any)['_lView'];
+    getDeferBlocks(lView, deferBlocks);
+
+    const deferBlockFixtures = [];
+    for (const block of deferBlocks) {
+      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+    }
+
+    return Promise.resolve(deferBlockFixtures);
   }
 
 

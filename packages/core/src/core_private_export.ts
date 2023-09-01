@@ -27,6 +27,8 @@ export {ComponentFactory as ɵComponentFactory} from './linker/component_factory
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
+export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks, renderDeferBlockState as ɵrenderDeferBlockState, triggerResourceLoading as ɵtriggerResourceLoading} from './render3/instructions/defer';
+export {DeferBlockBehavior as ɵDeferBlockBehavior, DeferBlockConfig as ɵDeferBlockConfig, DeferBlockState as ɵDeferBlockState} from './render3/interfaces/defer';
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
