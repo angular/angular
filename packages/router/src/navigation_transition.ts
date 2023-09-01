@@ -274,7 +274,6 @@ interface InternalRouterInterface {
   // available in DI.
   errorHandler: (error: any) => any;
   navigated: boolean;
-  urlHandlingStrategy: UrlHandlingStrategy;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload'|'ignore';
 }
@@ -303,6 +302,7 @@ export class NavigationTransitions {
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
+  private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
 
   navigationId = 0;
   get hasRequestedNavigation() {
@@ -347,8 +347,8 @@ export class NavigationTransitions {
       currentUrlTree: initialUrlTree,
       currentRawUrl: initialUrlTree,
       currentBrowserUrl: initialUrlTree,
-      extractedUrl: router.urlHandlingStrategy.extract(initialUrlTree),
-      urlAfterRedirects: router.urlHandlingStrategy.extract(initialUrlTree),
+      extractedUrl: this.urlHandlingStrategy.extract(initialUrlTree),
+      urlAfterRedirects: this.urlHandlingStrategy.extract(initialUrlTree),
       rawUrl: initialUrlTree,
       extras: {},
       resolve: null,
@@ -368,7 +368,7 @@ export class NavigationTransitions {
 
                // Extract URL
                map(t =>
-                       ({...t, extractedUrl: router.urlHandlingStrategy.extract(t.rawUrl)} as
+                       ({...t, extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl)} as
                         NavigationTransition)),
 
                // Using switchMap so we cancel executing navigations when a new one comes in
@@ -417,7 +417,7 @@ export class NavigationTransitions {
                              return EMPTY;
                            }
 
-                           if (router.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) {
+                           if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) {
                              return of(t).pipe(
                                  // Fire NavigationStart event
                                  switchMap(t => {
@@ -458,7 +458,7 @@ export class NavigationTransitions {
                                  }));
                            } else if (
                                urlTransition &&
-                               router.urlHandlingStrategy.shouldProcessUrl(t.currentRawUrl)) {
+                               this.urlHandlingStrategy.shouldProcessUrl(t.currentRawUrl)) {
                              /* When the current URL shouldn't be processed, but the previous one
                               * was, we handle this "error condition" by navigating to the
                               * previously successful URL, but leaving the URL intact.*/

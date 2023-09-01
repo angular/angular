@@ -94,6 +94,7 @@ export class Router {
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
+  private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
 
   /**
    * The private `Subject` type for the public events exposed in the getter. This is used internally
@@ -143,24 +144,6 @@ export class Router {
    * false otherwise.
    */
   navigated: boolean = false;
-
-  /**
-   * A strategy for extracting and merging URLs.
-   * Used for AngularJS to Angular migrations.
-   *
-   * @deprecated Configure using `providers` instead:
-   *   `{provide: UrlHandlingStrategy, useClass: MyStrategy}`.
-   */
-  get urlHandlingStrategy(): UrlHandlingStrategy {
-    return this.stateManager.urlHandlingStrategy;
-  }
-  /**
-   * @deprecated Configure using `providers` instead:
-   *   `{provide: UrlHandlingStrategy, useClass: MyStrategy}`.
-   */
-  set urlHandlingStrategy(value: UrlHandlingStrategy) {
-    this.stateManager.urlHandlingStrategy = value;
-  }
 
   /**
    * A strategy for re-using routes.

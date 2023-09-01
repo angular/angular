@@ -429,7 +429,6 @@ The following strategies are meant to be configured by registering the
 application strategy in DI via the `providers` in the root `NgModule` or
 `bootstrapApplication`:
 * `routeReuseStrategy`
-* `urlHandlingStrategy`
 
 The following options are meant to be configured using the options
 available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
