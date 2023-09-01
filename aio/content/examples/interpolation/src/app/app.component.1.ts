@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-
+import { NgFor } from '@angular/common';
 
 // #docregion var-collision
 @Component({
+  standalone: true,
   template: `
     <div>
       <!-- Hello, Padma -->
@@ -12,9 +13,10 @@ import { Component } from '@angular/core';
         <li *ngFor="let customer of customers">{{ customer.value }}</li>
       </ul>
     </div>
-  `
+  `,
+  imports: [NgFor]
 })
-class AppComponent {
+export class AppComponent {
   customers = [{value: 'Ebony'}, {value: 'Chiho'}];
   customer = 'Padma';
 }

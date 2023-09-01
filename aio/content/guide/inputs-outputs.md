@@ -43,14 +43,14 @@ To use `@Input()`, you must configure the parent and child.
 
 To use the `@Input()` decorator in a child component class, first import `Input` and then decorate the property with `@Input()`, as in the following example.
 
-<code-example header="src/app/item-detail/item-detail.component.ts" path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input"></code-example>
+<code-example header="src/app/item-detail.component.ts" path="inputs-outputs/src/app/item-detail.component.ts" region="use-input"></code-example>
 
 In this case, `@Input()` decorates the property <code class="no-auto-link">item</code>, which has a type of `string`, however, `@Input()` properties can have any type, such as `number`, `string`, `boolean`, or `object`.
 The value for `item` comes from the parent component.
 
 Next, in the child component template, add the following:
 
-<code-example header="src/app/item-detail/item-detail.component.html" path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template"></code-example>
+<code-example header="src/app/item-detail.component.html" path="inputs-outputs/src/app/item-detail.component.html" region="property-in-template"></code-example>
 
 ### Configuring the parent component
 
@@ -121,7 +121,7 @@ The `EventEmitter` then relays the data to the parent component.
 1.  In the component class, decorate a property with `@Output()`.
     The following example `newItemEvent` `@Output()` has a type of `EventEmitter`, which means it's an event.
 
-    <code-example header="src/app/item-output/item-output.component.ts" path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output"></code-example>
+    <code-example header="src/app/item-output.component.ts" path="inputs-outputs/src/app/item-output.component.ts" region="item-output"></code-example>
 
     The different parts of the preceding declaration are as follows:
 
@@ -136,7 +136,7 @@ The `EventEmitter` then relays the data to the parent component.
 
 1.  Create an `addNewItem()` method in the same component class:
 
-    <code-example header="src/app/item-output/item-output.component.ts" path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class"></code-example>
+    <code-example header="src/app/item-output.component.ts" path="inputs-outputs/src/app/item-output.component.ts" region="item-output-class"></code-example>
 
     The `addNewItem()` function uses the `@Output()`, `newItemEvent`, to raise an event with the value the user types into the `<input>`.
 
@@ -146,7 +146,7 @@ The child's template has two controls.
 The first is an HTML `<input>` with a [template reference variable](guide/template-reference-variables), `#newItem`, where the user types in an item name.
 The `value` property of the `#newItem` variable stores what the user types into the `<input>`.
 
-<code-example header="src/app/item-output/item-output.component.html" path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output"></code-example>
+<code-example header="src/app/item-output.component.html" path="inputs-outputs/src/app/item-output.component.html" region="child-output"></code-example>
 
 The second element is a `<button>` with a `click` [event binding](guide/event-binding).
 
@@ -212,7 +212,7 @@ To combine property and event bindings using the banana-in-a-box syntax, `[()]`,
 
 To make `Input` property as required for a child component while passing values from parent component, first import `Input` and then decorate the property with `@Input({ required: true })`, as in the following example:
 
-<code-example header="src/app/item-details-metadata/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata/item-details-metadata.component.ts" region="use-input-metadata-required"></code-example>
+<code-example header="src/app/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata.component.ts" region="use-input-metadata-required"></code-example>
 
 Next, in the parent template add the following: 
 
@@ -228,7 +228,7 @@ NG8008: Required input item from component ItemDetailMetadataComponent must be s
 
 To transform an `Input` property from string to boolean to a child component while passing values from parent component. first import `booleanAttribute` and then decorate the property with `@Input({ transform: booleanAttribute })`, as in the following example:
 
-<code-example header="src/app/item-details-metadata/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata/item-details-metadata.component.ts" region="use-input-metadata-boolean-transform"></code-example>
+<code-example header="src/app/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata.component.ts" region="use-input-metadata-boolean-transform"></code-example>
 
 <code-example header="src/app/app.component.html" path="inputs-outputs/src/app/app.component.html" region="input-parent-metadata"></code-example>
 
@@ -240,4 +240,4 @@ Similarly, you can use predefined functions from the `angular/core` library to c
 
 <!-- end links -->
 
-@reviewed 2023-08-20
+@reviewed 2023-09-01

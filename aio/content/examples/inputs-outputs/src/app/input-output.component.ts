@@ -1,9 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-input-output',
-  templateUrl: './input-output.component.html',
-  styleUrls: ['./input-output.component.css']
+  template: `
+  <p [style.text-decoration]="lineThrough">Item: {{item}}</p>
+  <button type="button" (click)="delete()">Delete item with an Output!</button>
+  `,
 })
 export class InputOutputComponent {
 

@@ -17,6 +17,13 @@ See the <live-example></live-example> for a working example containing the code 
 
 ## Binding to events
 
+
+<div class="alert is-helpful">
+
+For information on binding to properties, see [Event binding](guide/property-binding).
+
+</div>
+
 To bind to an event you use the Angular event binding syntax.
 This syntax consists of a target event name within parentheses to the left of an equal sign, and a quoted template statement to the right.
 
@@ -42,25 +49,6 @@ Create the following example: (Angular checks to see if `myClick` is an event on
 
 If the target event name, `myClick` fails to match an output property of `ClickDirective`, Angular will instead bind to the `myClick` event on the underlying DOM element.
 
-## Binding to passive events
-
-This is an advanced technique that is not necessary for most applications. You may find this useful if you want to optimize frequently occurring events that are causing performance problems.
-
-Angular also supports passive event listeners. For example, use the following steps to make a scroll event passive.
-
-1. Create a file `zone-flags.ts` under `src` directory.
-2. Add the following line into this file.
-   ```typescript
-   (window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
-   ```
-3. In the `src/polyfills.ts` file, before importing zone.js, import the newly created `zone-flags`.
-   ```typescript
-   import './zone-flags';
-   import 'zone.js';  // Included with Angular CLI.
-   ```
-
-After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.
-
 ## Binding to keyboard events
 
 You can bind to keyboard events using Angular's binding syntax. You can specify the key or code that you would like to bind to keyboard events. They `key` and `code` fields are a native part of the browser keyboard event object. By default, event binding assumes you want to use the `key` field on the keyboard event. You can also use the `code` field.
@@ -81,6 +69,28 @@ The `code` field is more specific than the `key` field. The `key` field always r
 
 For more information, visit the full reference for [key](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values) and [code](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) to help build out your event strings.
 
+
+## Binding to passive events
+
+Angular also supports [passive event](https://developer.chrome.com/en/docs/lighthouse/best-practices/uses-passive-event-listeners/) listeners. 
+
+This is an advanced technique that is not necessary for most applications. You may find this useful if you need to optimize handling of frequently occurring events that are causing performance problems.
+
+For example, use the following steps to make a scroll event passive.
+
+1. Create a file `zone-flags.ts` under `src` directory.
+2. Add the following line into this file.
+   ```typescript
+   (window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
+   ```
+3. In the `src/polyfills.ts` file, before importing zone.js, import the newly created `zone-flags`.
+   ```typescript
+   import './zone-flags';
+   import 'zone.js';  // Included with Angular CLI.
+   ```
+
+After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.
+
 ## What's next
 
 * For more information on how event binding works, see [How event binding works](guide/event-binding-concepts).
@@ -88,4 +98,4 @@ For more information, visit the full reference for [key](https://developer.mozil
 * [Text interpolation](guide/interpolation)
 * [Two-way binding](guide/two-way-binding)
 
-@reviewed 2022-05-10
+@reviewed 2023-09-01

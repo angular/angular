@@ -5,9 +5,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-aliasing',
-  templateUrl: './aliasing.component.html',
-  styleUrls: ['./aliasing.component.css'],
+  template: `
+    <p>Save for later item: {{input1}}</p>
+    <button type="button" (click)="saveIt()"> Save for later</button>
+
+    <p>Item for wishlist: {{input2}}</p>
+    <button type="button" (click)="wishForIt()"> Add to wishlist</button>
+  `,
   inputs: ['input1: saveForLaterItem'], // propertyName:alias
   outputs: ['outputEvent1: saveForLaterEvent']
 })
