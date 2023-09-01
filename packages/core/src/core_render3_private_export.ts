@@ -95,6 +95,7 @@ export {
   ɵɵComponentDeclaration,
   ɵɵconditional,
   ɵɵcontentQuery,
+  ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
@@ -174,9 +175,9 @@ export {
   ɵɵresolveWindow,
   ɵɵrestoreView,
 
-  ɵɵrepeater, 
-  ɵɵrepeaterCreate, 
-  ɵɵrepeaterTrackByIdentity, 
+  ɵɵrepeater,
+  ɵɵrepeaterCreate,
+  ɵɵrepeaterTrackByIdentity,
   ɵɵrepeaterTrackByIndex,
 
   ɵɵsetComponentScope,
