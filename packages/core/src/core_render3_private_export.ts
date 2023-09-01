@@ -70,6 +70,7 @@ export {
   store as ɵstore,
   ɵDeferBlockDependencyInterceptor,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  ɵDEFER_BLOCK_CONFIG,
   ɵɵadvance,
   ɵɵattribute,
   ɵɵattributeInterpolate1,
@@ -240,6 +241,9 @@ export {
   ɵgetUnknownPropertyStrictMode,
   ɵsetUnknownPropertyStrictMode
 } from './render3/index';
+export {
+  CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET,
+} from './render3/interfaces/container';
 export {
   LContext as ɵLContext,
 } from './render3/interfaces/context';

@@ -13,11 +13,11 @@ import {assertDefined, assertEqual, throwError} from '../../util/assert';
 import {assertIndexInDeclRange, assertLContainer, assertTNodeForLView} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
-import {LContainer} from '../interfaces/container';
-import {DEFER_BLOCK_STATE, DeferBlockInstanceState, DeferDependenciesLoadingState, DeferredLoadingBlockConfig, DeferredPlaceholderBlockConfig, DependencyResolverFn, LDeferBlockDetails, TDeferBlockDetails} from '../interfaces/defer';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {DEFER_BLOCK_STATE, DeferBlockBehavior, DeferBlockConfig, DeferBlockInternalState, DeferBlockState, DeferDependenciesLoadingState, DeferredLoadingBlockConfig, DeferredPlaceholderBlockConfig, DependencyResolverFn, LDeferBlockDetails, TDeferBlockDetails} from '../interfaces/defer';
 import {DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {TContainerNode, TNode} from '../interfaces/node';
-import {isDestroyed} from '../interfaces/type_checks';
+import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {isPlatformBrowser} from '../util/misc_utils';
@@ -33,6 +33,10 @@ import {ɵɵtemplate} from './template';
  * only placeholder content is rendered (if provided).
  */
 function shouldTriggerDeferBlock(injector: Injector): boolean {
+  const config = injector.get(DEFER_BLOCK_CONFIG, {optional: true});
+  if (config?.behavior === DeferBlockBehavior.Manual) {
+    return false;
+  }
   return isPlatformBrowser(injector);
 }
 
@@ -100,7 +104,7 @@ export function ɵɵdefer(
 
   // Init instance-specific defer details and store it.
   const lDetails = [];
-  lDetails[DEFER_BLOCK_STATE] = DeferBlockInstanceState.INITIAL;
+  lDetails[DEFER_BLOCK_STATE] = DeferBlockInternalState.Initial;
   setLDeferBlockDetails(lView, adjustedIndex, lDetails as LDeferBlockDetails);
 }
 
@@ -111,19 +115,18 @@ export function ɵɵdefer(
 export function ɵɵdeferWhen(rawValue: unknown) {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
-
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
     const value = Boolean(rawValue);  // handle truthy or falsy values
     const tNode = getSelectedTNode();
     const lDetails = getLDeferBlockDetails(lView, tNode);
     const renderedState = lDetails[DEFER_BLOCK_STATE];
-    if (value === false && renderedState === DeferBlockInstanceState.INITIAL) {
+    if (value === false && renderedState === DeferBlockInternalState.Initial) {
       // If nothing is rendered yet, render a placeholder (if defined).
       renderPlaceholder(lView, tNode);
     } else if (
         value === true &&
-        (renderedState === DeferBlockInstanceState.INITIAL ||
-         renderedState === DeferBlockInstanceState.PLACEHOLDER)) {
+        (renderedState === DeferBlockInternalState.Initial ||
+         renderedState === DeferBlockState.Placeholder)) {
       // The `when` condition has changed to `true`, trigger defer block loading
       // if the block is either in initial (nothing is rendered) or a placeholder
       // state.
@@ -147,7 +150,7 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
     const tDetails = getTDeferBlockDetails(tView, tNode);
     if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
       // If loading has not been started yet, trigger it now.
-      triggerResourceLoading(tDetails, tView, lView);
+      triggerPrefetching(tDetails, lView);
     }
   }
 }
@@ -186,7 +189,7 @@ export function ɵɵdeferPrefetchOnIdle() {
     // an underlying LView get destroyed (thus passing `null` as a second argument),
     // because there might be other LViews (that represent embedded views) that
     // depend on resource loading.
-    onIdle(() => triggerResourceLoading(tDetails, tView, lView), null /* LView */);
+    onIdle(() => triggerPrefetching(tDetails, lView), null /* LView */);
   }
 }
 
@@ -332,6 +335,26 @@ function setTDeferBlockDetails(
   tView.data[slotIndex] = deferBlockConfig;
 }
 
+function getTemplateIndexForState(
+    newState: DeferBlockState, hostLView: LView, tNode: TNode): number|null {
+  const tView = hostLView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  switch (newState) {
+    case DeferBlockState.Complete:
+      return tDetails.primaryTmplIndex;
+    case DeferBlockState.Loading:
+      return tDetails.loadingTmplIndex;
+    case DeferBlockState.Error:
+      return tDetails.errorTmplIndex;
+    case DeferBlockState.Placeholder:
+      return tDetails.placeholderTmplIndex;
+    default:
+      ngDevMode && throwError(`Unexpected defer block state: ${newState}`);
+      return null;
+  }
+}
+
 /**
  * Transitions a defer block to the new state. Updates the  necessary
  * data structures and renders corresponding block.
@@ -339,11 +362,9 @@ function setTDeferBlockDetails(
  * @param newState New state that should be applied to the defer block.
  * @param tNode TNode that represents a defer block.
  * @param lContainer Represents an instance of a defer block.
- * @param stateTmplIndex Index of a template that should be rendered.
  */
-function renderDeferBlockState(
-    newState: DeferBlockInstanceState, tNode: TNode, lContainer: LContainer,
-    stateTmplIndex: number|null): void {
+export function renderDeferBlockState(
+    newState: DeferBlockState, tNode: TNode, lContainer: LContainer): void {
   const hostLView = lContainer[PARENT];
 
   // Check if this view is not destroyed. Since the loading process was async,
@@ -357,6 +378,7 @@ function renderDeferBlockState(
 
   ngDevMode && assertDefined(lDetails, 'Expected a defer block state defined');
 
+  const stateTmplIndex = getTemplateIndexForState(newState, hostLView, tNode);
   // Note: we transition to the next state if the previous state was represented
   // with a number that is less than the next state. For example, if the current
   // state is "loading" (represented as `2`), we should not show a placeholder
@@ -372,7 +394,6 @@ function renderDeferBlockState(
     const viewIndex = 0;
 
     removeLViewFromLContainer(lContainer, viewIndex);
-
     const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
     const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
     addLViewToLContainer(
@@ -381,18 +402,29 @@ function renderDeferBlockState(
 }
 
 /**
+ * Trigger prefetching of dependencies for a defer block.
+ *
+ * @param tDetails Static information about this defer block.
+ * @param lView LView of a host view.
+ */
+export function triggerPrefetching(tDetails: TDeferBlockDetails, lView: LView) {
+  if (lView[INJECTOR] && shouldTriggerDeferBlock(lView[INJECTOR]!)) {
+    triggerResourceLoading(tDetails, lView);
+  }
+}
+
+/**
  * Trigger loading of defer block dependencies if the process hasn't started yet.
  *
  * @param tDetails Static information about this defer block.
- * @param tView TView of a host view.
  * @param lView LView of a host view.
  */
-function triggerResourceLoading(tDetails: TDeferBlockDetails, tView: TView, lView: LView) {
+export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LView) {
   const injector = lView[INJECTOR]!;
+  const tView = lView[TVIEW];
 
-  if (!shouldTriggerDeferBlock(injector) ||
-      (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED &&
-       tDetails.loadingState !== DeferDependenciesLoadingState.SCHEDULED)) {
+  if (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED &&
+      tDetails.loadingState !== DeferDependenciesLoadingState.SCHEDULED) {
     // If the loading status is different from initial one, it means that
     // the loading of dependencies is in progress and there is nothing to do
     // in this function. All details can be obtained from the `tDetails` object.
@@ -477,8 +509,7 @@ function renderPlaceholder(lView: LView, tNode: TNode) {
   ngDevMode && assertLContainer(lContainer);
 
   const tDetails = getTDeferBlockDetails(tView, tNode);
-  renderDeferBlockState(
-      DeferBlockInstanceState.PLACEHOLDER, tNode, lContainer, tDetails.placeholderTmplIndex);
+  renderDeferBlockState(DeferBlockState.Placeholder, tNode, lContainer);
 }
 
 /**
@@ -499,12 +530,10 @@ function renderDeferStateAfterResourceLoading(
       ngDevMode && assertDeferredDependenciesLoaded(tDetails);
 
       // Everything is loaded, show the primary block content
-      renderDeferBlockState(
-          DeferBlockInstanceState.COMPLETE, tNode, lContainer, tDetails.primaryTmplIndex);
+      renderDeferBlockState(DeferBlockState.Complete, tNode, lContainer);
 
     } else if (tDetails.loadingState === DeferDependenciesLoadingState.FAILED) {
-      renderDeferBlockState(
-          DeferBlockInstanceState.ERROR, tNode, lContainer, tDetails.errorTmplIndex);
+      renderDeferBlockState(DeferBlockState.Error, tNode, lContainer);
     }
   });
 }
@@ -532,13 +561,12 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
 
   // Condition is triggered, try to render loading state and start downloading.
   // Note: if a block is in a loading, completed or an error state, this call would be a noop.
-  renderDeferBlockState(
-      DeferBlockInstanceState.LOADING, tNode, lContainer, tDetails.loadingTmplIndex);
+  renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:
     case DeferDependenciesLoadingState.SCHEDULED:
-      triggerResourceLoading(tDetails, lView[TVIEW], lView);
+      triggerResourceLoading(tDetails, lView);
 
       // The `loadingState` might have changed to "loading".
       if ((tDetails.loadingState as DeferDependenciesLoadingState) ===
@@ -551,12 +579,10 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
       break;
     case DeferDependenciesLoadingState.COMPLETE:
       ngDevMode && assertDeferredDependenciesLoaded(tDetails);
-      renderDeferBlockState(
-          DeferBlockInstanceState.COMPLETE, tNode, lContainer, tDetails.primaryTmplIndex);
+      renderDeferBlockState(DeferBlockState.Complete, tNode, lContainer);
       break;
     case DeferDependenciesLoadingState.FAILED:
-      renderDeferBlockState(
-          DeferBlockInstanceState.ERROR, tNode, lContainer, tDetails.errorTmplIndex);
+      renderDeferBlockState(DeferBlockState.Error, tNode, lContainer);
       break;
     default:
       if (ngDevMode) {
@@ -605,3 +631,65 @@ export interface DeferBlockDependencyInterceptor {
 export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
     new InjectionToken<DeferBlockDependencyInterceptor>(
         ngDevMode ? 'DEFER_BLOCK_DEPENDENCY_INTERCEPTOR' : '');
+
+/**
+ * Determines if a given value matches the expected structure of a defer block
+ *
+ * We can safely rely on the primaryTmplIndex because every defer block requires
+ * that a primary template exists. All the other template options are optional.
+ */
+function isTDeferBlockDetails(value: unknown): value is TDeferBlockDetails {
+  return (typeof value === 'object') &&
+      (typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number');
+}
+
+/**
+ * Internal token used for configuring defer block behavior.
+ */
+export const DEFER_BLOCK_CONFIG =
+    new InjectionToken<DeferBlockConfig>(ngDevMode ? 'DEFER_BLOCK_CONFIG' : '');
+
+/**
+ * Defer block instance for testing.
+ */
+export interface DeferBlockDetails {
+  lContainer: LContainer;
+  lView: LView;
+  tNode: TNode;
+  tDetails: TDeferBlockDetails;
+}
+
+/**
+ * Retrieves all defer blocks in a given LView.
+ *
+ * @param lView lView with defer blocks
+ * @param deferBlocks defer block aggregator array
+ */
+export function getDeferBlocks(lView: LView, deferBlocks: DeferBlockDetails[]) {
+  const tView = lView[TVIEW];
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    if (isLContainer(lView[i])) {
+      const lContainer = lView[i];
+      // An LContainer may represent an instance of a defer block, in which case
+      // we store it as a result. Otherwise, keep iterating over LContainer views and
+      // look for defer blocks.
+      const isLast = i === tView.bindingStartIndex - 1;
+      if (!isLast) {
+        const tNode = tView.data[i] as TNode;
+        const tDetails = getTDeferBlockDetails(tView, tNode);
+        if (isTDeferBlockDetails(tDetails)) {
+          deferBlocks.push({lContainer, lView, tNode, tDetails});
+          // This LContainer represents a defer block, so we exit
+          // this iteration and don't inspect views in this LContainer.
+          continue;
+        }
+      }
+      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+        getDeferBlocks(lContainer[i] as LView, deferBlocks);
+      }
+    } else if (isLView(lView[i])) {
+      // This is a component, enter the `getDeferBlocks` recursively.
+      getDeferBlocks(lView[i], deferBlocks);
+    }
+  }
+}

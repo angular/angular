@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Injectable, Input} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -18,6 +19,22 @@ class SimpleComp {
   constructor() {
     this.simpleBinding = 'Simple';
   }
+}
+
+@Component({
+  selector: 'deferred-comp',
+  standalone: true,
+  template: `<div>Deferred Component</div>`,
+})
+class DeferredComp {
+}
+
+@Component({
+  selector: 'second-deferred-comp',
+  standalone: true,
+  template: `<div>More Deferred Component</div>`,
+})
+class SecondDeferredComp {
 }
 
 @Component({
@@ -100,6 +117,9 @@ class NestedAsyncTimeoutComp {
 
 {
   describe('ComponentFixture', () => {
+    beforeEach(() => setEnabledBlockTypes(['defer']));
+    afterEach(() => setEnabledBlockTypes([]));
+
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [
@@ -294,6 +314,30 @@ class NestedAsyncTimeoutComp {
            });
          });
        }));
+
+    describe('defer', () => {
+      it('should return all defer blocks in the component', async () => {
+        @Component({
+          selector: 'defer-comp',
+          standalone: true,
+          imports: [DeferredComp, SecondDeferredComp],
+          template: `<div>
+            {#defer on immediate}
+              <DeferredComp />
+            {/defer}
+            {#defer on idle}
+              <SecondDeferredComp />
+            {/defer}
+          </div>`
+        })
+        class DeferComp {
+        }
+
+        const componentFixture = TestBed.createComponent(DeferComp);
+        const deferBlocks = await componentFixture.getDeferBlocks();
+        expect(deferBlocks.length).toBe(2);
+      });
+    });
 
     describe('No NgZone', () => {
       beforeEach(() => {
