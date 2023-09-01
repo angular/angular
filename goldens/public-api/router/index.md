@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="@types/dom-view-transitions" />
+
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { Compiler } from '@angular/core';
@@ -296,6 +298,7 @@ export const enum EventType {
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
+    enableViewTransitions?: boolean;
     // @deprecated
     errorHandler?: (error: any) => any;
     initialNavigation?: InitialNavigation;
@@ -771,7 +774,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1087,6 +1090,9 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+// @public
 export function withComponentInputBinding(): ComponentInputBindingFeature;
 
 // @public
@@ -1112,6 +1118,9 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 
 // @public
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature;
+
+// @public
+export function withViewTransitions(): ViewTransitionsFeature;
 
 // (No @packageDocumentation comment for this package)
 

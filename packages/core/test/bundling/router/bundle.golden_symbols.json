@@ -75,6 +75,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CREATE_VIEW_TRANSITION"
+  },
+  {
     "name": "CSP_NONCE"
   },
   {
