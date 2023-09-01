@@ -44,6 +44,28 @@ function onIdle(callback: () => Promise<void>): Promise<void> {
   });
 }
 
+/**
+ * Emulates a dynamic import promise.
+ *
+ * Note: `setTimeout` is used to make `fixture.whenStable()` function
+ * wait for promise resolution, since `whenStable()` relies on the state
+ * of a macrotask queue.
+ */
+function dynamicImportOf<T>(type: T): Promise<T> {
+  return new Promise<T>(resolve => {
+    setTimeout(() => resolve(type));
+  });
+}
+
+/**
+ * Emulates a failed dynamic import promise.
+ */
+function failedDynamicImport(): Promise<void> {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject());
+  });
+}
+
 // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
 // while running tests in Node.
 const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
@@ -142,6 +164,81 @@ describe('#defer', () => {
     expect(fixture.nativeElement.outerHTML).toContain('<my-lazy-cmp>Hi!</my-lazy-cmp>');
   });
 
+  describe('`on` conditions', () => {
+    it('should support `on immediate` condition', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          {#defer on immediate}
+            <nested-cmp [block]="'primary'" />
+          {:placeholder}
+            Placeholder
+          {:loading}
+            Loading
+          {/defer}
+        `
+      })
+      class RootCmp {
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      // Expecting that no placeholder content would be rendered when
+      // a `{:loading}` block is present.
+      expect(fixture.nativeElement.outerHTML).toContain('Loading');
+
+      // Expecting loading function to be triggered right away.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      await fixture.whenStable();  // loading dependencies of the defer block
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was not invoked again.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Verify primary block content.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML)
+          .toContain(
+              '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>');
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+  });
+
 
   describe('directive matching', () => {
     it('should support directive matching in all blocks', async () => {
@@ -236,8 +333,7 @@ describe('#defer', () => {
 
       const deferDepsInterceptor = {
         intercept() {
-          // Simulate loading failure.
-          return () => [Promise.reject()];
+          return () => [failedDynamicImport()];
         }
       };
 
@@ -561,7 +657,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.resolve(NestedCmp)];
+            return [dynamicImportOf(NestedCmp)];
           };
         }
       };
@@ -646,7 +742,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.reject()];
+            return [failedDynamicImport()];
           };
         }
       };
@@ -727,7 +823,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.resolve(NestedCmp)];
+            return [dynamicImportOf(NestedCmp)];
           };
         }
       };
@@ -796,7 +892,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.resolve(NestedCmp)];
+            return [dynamicImportOf(NestedCmp)];
           };
         }
       };
@@ -881,7 +977,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.resolve(NestedCmp)];
+            return [dynamicImportOf(NestedCmp)];
           };
         }
       };
@@ -966,7 +1062,7 @@ describe('#defer', () => {
         intercept() {
           return () => {
             loadingFnInvokedTimes++;
-            return [Promise.resolve(NestedCmp)];
+            return [dynamicImportOf(NestedCmp)];
           };
         }
       };
@@ -1007,6 +1103,85 @@ describe('#defer', () => {
         // Expect that the loading resources function was not invoked again (counter remains 1).
         expect(loadingFnInvokedTimes).toBe(1);
       });
+    });
+
+    it('should support `prefetch on immediate` condition', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          {#defer when deferCond; prefetch on immediate}
+            <nested-cmp [block]="'primary'" />
+          {:placeholder}
+            Placeholder
+          {/defer}
+        `
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Expecting loading function to be triggered right away.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      await fixture.whenStable();  // prefetching dependencies of the defer block
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered.
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await fixture.whenStable();
+
+      // Verify primary block content.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML)
+          .toContain(
+              '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>');
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
     });
   });
 

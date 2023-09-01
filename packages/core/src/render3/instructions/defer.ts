@@ -158,7 +158,7 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
 }
 
 /**
- * Sets up handlers that represent `on idle` deferred trigger.
+ * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
 export function ɵɵdeferOnIdle() {
@@ -174,7 +174,7 @@ export function ɵɵdeferOnIdle() {
 }
 
 /**
- * Creates runtime data structures for the `prefetch on idle` deferred trigger.
+ * Sets up logic to handle the `prefetch on idle` deferred trigger.
  * @codeGenApi
  */
 export function ɵɵdeferPrefetchOnIdle() {
@@ -202,17 +202,39 @@ export function ɵɵdeferPrefetchOnIdle() {
 }
 
 /**
- * Creates runtime data structures for the `on immediate` deferred trigger.
+ * Sets up logic to handle the `on immediate` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnImmediate() {}  // TODO: implement runtime logic.
+export function ɵɵdeferOnImmediate() {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  // Render placeholder block only if loading template is not present
+  // to avoid content flickering, since it would be immediately replaced
+  // by the loading block.
+  if (tDetails.loadingTmplIndex === null) {
+    renderPlaceholder(lView, tNode);
+  }
+  triggerDeferBlock(lView, tNode);
+}
 
 
 /**
- * Creates runtime data structures for the `prefetch on immediate` deferred trigger.
+ * Sets up logic to handle the `prefetch on immediate` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnImmediate() {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnImmediate() {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    triggerResourceLoading(tDetails, lView);
+  }
+}
 
 /**
  * Creates runtime data structures for the `on timer` deferred trigger.
