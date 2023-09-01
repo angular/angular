@@ -21,6 +21,9 @@ export const enum DeferDependenciesLoadingState {
   /** Initial state, dependency loading is not yet triggered */
   NOT_STARTED,
 
+  /** Dependency loading was scheduled (e.g. `on idle`), but has not started yet */
+  SCHEDULED,
+
   /** Dependency loading is in progress */
   IN_PROGRESS,
 

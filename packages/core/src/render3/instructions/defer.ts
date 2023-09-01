@@ -147,7 +147,7 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
     const tDetails = getTDeferBlockDetails(tView, tNode);
     if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
       // If loading has not been started yet, trigger it now.
-      triggerResourceLoading(tDetails, getPrimaryBlockTNode(tView, tDetails), lView[INJECTOR]!);
+      triggerResourceLoading(tDetails, tView, lView);
     }
   }
 }
@@ -162,27 +162,33 @@ export function ɵɵdeferOnIdle() {
 
   renderPlaceholder(lView, tNode);
 
-  let id: number;
-  const removeIdleCallback = () => _cancelIdleCallback(id);
-  id = _requestIdleCallback(() => {
-         removeIdleCallback();
-         // The idle callback is invoked, we no longer need
-         // to retain a cleanup callback in an LView.
-         removeLViewOnDestroy(lView, removeIdleCallback);
-         triggerDeferBlock(lView, tNode);
-       }) as number;
-
-  // Store a cleanup function on LView, so that we cancel idle
-  // callback in case this LView was destroyed before a callback
-  // was invoked.
-  storeLViewOnDestroy(lView, removeIdleCallback);
+  // Note: we pass an `lView` as a second argument to cancel an `idle`
+  // callback in case an LView got destroyed before an `idle` callback
+  // is invoked.
+  onIdle(() => triggerDeferBlock(lView, tNode), lView);
 }
 
 /**
  * Creates runtime data structures for the `prefetch on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnIdle() {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnIdle() {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    // Set loading to the scheduled state, so that we don't register it again.
+    tDetails.loadingState = DeferDependenciesLoadingState.SCHEDULED;
+
+    // In case of prefetching, we intentionally avoid cancelling prefetching if
+    // an underlying LView get destroyed (thus passing `null` as a second argument),
+    // because there might be other LViews (that represent embedded views) that
+    // depend on resource loading.
+    onIdle(() => triggerResourceLoading(tDetails, tView, lView), null /* LView */);
+  }
+}
 
 /**
  * Creates runtime data structures for the `on immediate` deferred trigger.
@@ -252,6 +258,37 @@ export function ɵɵdeferOnViewport(target?: unknown) {}  // TODO: implement run
 export function ɵɵdeferPrefetchOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
 
 /********** Helper functions **********/
+
+/**
+ * Helper function to schedule a callback to be invoked when a browser becomes idle.
+ *
+ * @param callback A function to be invoked when a browser becomes idle.
+ * @param lView An optional LView that hosts an instance of a defer block. LView is
+ *    used to register a cleanup callback in case that LView got destroyed before
+ *    callback was invoked. In this case, an `idle` callback is never invoked. This is
+ *    helpful for cases when a defer block has scheduled rendering, but an underlying
+ *    LView got destroyed prior to th block rendering.
+ */
+function onIdle(callback: VoidFunction, lView: LView|null) {
+  let id: number;
+  const removeIdleCallback = () => _cancelIdleCallback(id);
+  id = _requestIdleCallback(() => {
+         removeIdleCallback();
+         if (lView !== null) {
+           // The idle callback is invoked, we no longer need
+           // to retain a cleanup callback in an LView.
+           removeLViewOnDestroy(lView, removeIdleCallback);
+         }
+         callback();
+       }) as number;
+
+  if (lView !== null) {
+    // Store a cleanup function on LView, so that we cancel idle
+    // callback in case this LView is destroyed before a callback
+    // is invoked.
+    storeLViewOnDestroy(lView, removeIdleCallback);
+  }
+}
 
 /**
  * Calculates a data slot index for defer block info (either static or
@@ -347,21 +384,22 @@ function renderDeferBlockState(
  * Trigger loading of defer block dependencies if the process hasn't started yet.
  *
  * @param tDetails Static information about this defer block.
- * @param primaryBlockTNode TNode of a primary block template.
- * @param injector Environment injector of the application.
+ * @param tView TView of a host view.
+ * @param lView LView of a host view.
  */
-function triggerResourceLoading(
-    tDetails: TDeferBlockDetails, primaryBlockTNode: TNode, injector: Injector) {
-  const tView = primaryBlockTNode.tView!;
+function triggerResourceLoading(tDetails: TDeferBlockDetails, tView: TView, lView: LView) {
+  const injector = lView[INJECTOR]!;
 
-  if (!shouldTriggerDeferBlock(injector)) return;
-
-  if (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED) {
+  if (!shouldTriggerDeferBlock(injector) ||
+      (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED &&
+       tDetails.loadingState !== DeferDependenciesLoadingState.SCHEDULED)) {
     // If the loading status is different from initial one, it means that
     // the loading of dependencies is in progress and there is nothing to do
     // in this function. All details can be obtained from the `tDetails` object.
     return;
   }
+
+  const primaryBlockTNode = getPrimaryBlockTNode(tView, tDetails);
 
   // Switch from NOT_STARTED -> IN_PROGRESS state.
   tDetails.loadingState = DeferDependenciesLoadingState.IN_PROGRESS;
@@ -417,13 +455,16 @@ function triggerResourceLoading(
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
 
       // Update directive and pipe registries to add newly downloaded dependencies.
+      const primaryBlockTView = primaryBlockTNode.tView!;
       if (directiveDefs.length > 0) {
-        tView.directiveRegistry = tView.directiveRegistry ?
-            [...tView.directiveRegistry, ...directiveDefs] :
+        primaryBlockTView.directiveRegistry = primaryBlockTView.directiveRegistry ?
+            [...primaryBlockTView.directiveRegistry, ...directiveDefs] :
             directiveDefs;
       }
       if (pipeDefs.length > 0) {
-        tView.pipeRegistry = tView.pipeRegistry ? [...tView.pipeRegistry, ...pipeDefs] : pipeDefs;
+        primaryBlockTView.pipeRegistry = primaryBlockTView.pipeRegistry ?
+            [...primaryBlockTView.pipeRegistry, ...pipeDefs] :
+            pipeDefs;
       }
     }
   });
@@ -496,8 +537,8 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:
-      triggerResourceLoading(
-          tDetails, getPrimaryBlockTNode(lView[TVIEW], tDetails), lView[INJECTOR]!);
+    case DeferDependenciesLoadingState.SCHEDULED:
+      triggerResourceLoading(tDetails, lView[TVIEW], lView);
 
       // The `loadingState` might have changed to "loading".
       if ((tDetails.loadingState as DeferDependenciesLoadingState) ===
