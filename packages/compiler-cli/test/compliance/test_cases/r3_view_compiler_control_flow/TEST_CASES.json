@@ -506,6 +506,27 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should not expose for loop variables to the surrounding scope",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_template_variables_scope.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_scope_template.js",
+              "generated": "for_template_variables_scope.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
