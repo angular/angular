@@ -158,7 +158,8 @@ function createComponentDefConsts(): ComponentDefConsts {
 
 class TemplateData {
   constructor(
-      readonly name: string, readonly index: number, private visitor: TemplateDefinitionBuilder) {}
+      readonly name: string, readonly index: number, readonly scope: BindingScope,
+      private visitor: TemplateDefinitionBuilder) {}
 
   getConstCount() {
     return this.visitor.getConstCount();
@@ -958,7 +959,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
-    return new TemplateData(name, index, visitor);
+    return new TemplateData(name, index, visitor._bindingScope, visitor);
   }
 
   private createEmbeddedTemplateFn(
@@ -1428,14 +1429,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Allocate one slot for the repeater metadata. The slots for the primary and empty block
     // are implicitly inferred by the runtime to index + 1 and index + 2.
     const blockIndex = this.allocateDataSlot();
-    const templateVariables = this.createForLoopVariables(block);
-    const primaryData = this.prepareEmbeddedTemplateFn(block.children, '_For', templateVariables);
+    const primaryData = this.prepareEmbeddedTemplateFn(block.children, '_For', [
+      new t.Variable(block.itemName, '$implicit', block.sourceSpan, block.sourceSpan),
+      new t.Variable(
+          getLoopLocalName(block, '$index'), '$index', block.sourceSpan, block.sourceSpan),
+      new t.Variable(
+          getLoopLocalName(block, '$count'), '$count', block.sourceSpan, block.sourceSpan),
+    ]);
     const emptyData = block.empty === null ?
         null :
         this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
     const trackByFn = this.createTrackByFunction(block);
     const value = block.expression.visit(this._valueConverter);
     this.allocateBindingSlots(value);
+
+    this.registerComputedLoopVariables(block, primaryData.scope);
 
     // `repeaterCreate(0, ...)`
     this.creationInstruction(block.sourceSpan, R3.repeaterCreate, () => {
@@ -1462,32 +1470,27 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         () => [o.literal(blockIndex), this.convertPropertyBinding(value)]);
   }
 
-  private createForLoopVariables(block: t.ForLoopBlock): t.Variable[] {
+  private registerComputedLoopVariables(block: t.ForLoopBlock, bindingScope: BindingScope): void {
     const indexLocalName = getLoopLocalName(block, '$index');
     const countLocalName = getLoopLocalName(block, '$count');
+    const level = bindingScope.bindingLevel;
 
-    this._bindingScope.set(
-        this.level, getLoopLocalName(block, '$odd'),
+    bindingScope.set(
+        level, getLoopLocalName(block, '$odd'),
         scope => scope.get(indexLocalName)!.modulo(o.literal(2)).notIdentical(o.literal(0)));
 
-    this._bindingScope.set(
-        this.level, getLoopLocalName(block, '$even'),
+    bindingScope.set(
+        level, getLoopLocalName(block, '$even'),
         scope => scope.get(indexLocalName)!.modulo(o.literal(2)).identical(o.literal(0)));
 
-    this._bindingScope.set(
-        this.level, getLoopLocalName(block, '$first'),
+    bindingScope.set(
+        level, getLoopLocalName(block, '$first'),
         scope => scope.get(indexLocalName)!.identical(o.literal(0)));
 
-    this._bindingScope.set(
-        this.level, getLoopLocalName(block, '$last'),
+    bindingScope.set(
+        level, getLoopLocalName(block, '$last'),
         scope =>
             scope.get(indexLocalName)!.identical(scope.get(countLocalName)!.minus(o.literal(1))));
-
-    return [
-      new t.Variable(block.itemName, '$implicit', block.sourceSpan, block.sourceSpan),
-      new t.Variable(indexLocalName, '$index', block.sourceSpan, block.sourceSpan),
-      new t.Variable(countLocalName, '$count', block.sourceSpan, block.sourceSpan),
-    ];
   }
 
   private createTrackByFunction(block: t.ForLoopBlock): o.Expression {
