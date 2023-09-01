@@ -158,6 +158,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
        'ɵɵrepeaterTrackByIndex': r3.ɵɵrepeaterTrackByIndex,
        'ɵɵrepeaterTrackByIdentity': r3.ɵɵrepeaterTrackByIdentity,
+       'ɵɵcomponentInstance': r3.ɵɵcomponentInstance,
        'ɵɵtext': r3.ɵɵtext,
        'ɵɵtextInterpolate': r3.ɵɵtextInterpolate,
        'ɵɵtextInterpolate1': r3.ɵɵtextInterpolate1,

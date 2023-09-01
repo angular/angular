@@ -168,6 +168,7 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵrepeaterTrackByIndex', moduleName: CORE};
   static repeaterTrackByIdentity:
       o.ExternalReference = {name: 'ɵɵrepeaterTrackByIdentity', moduleName: CORE};
+  static componentInstance: o.ExternalReference = {name: 'ɵɵcomponentInstance', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 
