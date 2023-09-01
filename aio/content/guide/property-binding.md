@@ -18,15 +18,15 @@ See the <live-example></live-example> for a working example containing the code 
 
 Property binding moves a value in one direction, from a component's property into a target element property.
 
-<div class="alert is-helpful">
-
-For more information on listening for events, see [Event binding](guide/event-binding).
-
-</div>
-
 To read a target element property or call one of its methods, see the API reference for [ViewChild](api/core/ViewChild) and [ContentChild](api/core/ContentChild).
 
 ## Binding to a property
+
+<div class="alert is-helpful">
+
+For information on listening for events, see [Event binding](guide/event-binding).
+
+</div>
 
 To bind to an element's property, enclose it in square brackets, `[]`, which identifies the property as a target property.
 
@@ -48,11 +48,9 @@ The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignm
 
 Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
-To assign a string to a property, type the following code:
+To assign a string to a component's property (such as the `childItem` of the `ItemDetailComponent`), you use the same bracket assignment notation:
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
-
-Omitting the brackets renders the string `parentItem`, not the value of `parentItem`.
 
 ## Setting an element property to a component property value
 
@@ -110,4 +108,4 @@ Because the value of the property `isUnchanged` is `true` in the `AppComponent`,
 * [Class & Style Binding](guide/class-binding)
 * [Attribute Binding](guide/attribute-binding)
 
-@reviewed 2022-04-14
+@reviewed 2023-09-01

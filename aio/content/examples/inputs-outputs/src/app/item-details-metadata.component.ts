@@ -6,10 +6,17 @@ import { Component, Input } from '@angular/core'; // First, import Input
 import { booleanAttribute } from '@angular/core'; // First, import booleanAttribute
 // #enddocregion use-input-metadata-boolean-transform
 @Component({
+  standalone: true,
   selector: 'app-item-detail-metadata',
-  templateUrl: './item-details-metadata.component.html'
-})
+  template: `
+  <h2>Child component with @Input() metadata configurations</h2>
 
+  <p>
+    Today's item: {{item}}
+    Item's Availability: {{itemAvailability}}
+  </p>
+  `
+})
 
 export class ItemDetailMetadataComponent {
   // #docregion use-input-metadata-required

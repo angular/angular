@@ -40,7 +40,7 @@ In the following example, the `childItem` property of the `ItemDetailComponent` 
 
 Confirm this expectation by looking in the `ItemDetailComponent` where the `@Input()` type is `string`:
 
-<code-example header="src/app/item-detail/item-detail.component.ts (setting the @Input() type)" path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type"></code-example>
+<code-example header="src/app/item-detail.component.ts (setting the @Input() type)" path="property-binding/src/app/item-detail.component.ts" region="input-type"></code-example>
 
 The `parentItem` in `AppComponent` is a string, which means that the expression, `parentItem` within `[childItem]="parentItem"`, evaluates to a string.
 
@@ -56,7 +56,7 @@ In this example, `ItemListComponent` is a child component of `AppComponent` and 
 
 In the `ItemListComponent` the `@Input()`, `items`, has a type of `Item[]`.
 
-<code-example header="src/app/item-list.component.ts" path="property-binding/src/app/item-list/item-list.component.ts" region="item-input"></code-example>
+<code-example header="src/app/item-list.component.ts" path="property-binding/src/app/item-list.component.ts" region="item-input"></code-example>
 
 Notice that `Item` is an object and it has two properties, an `id` and a `name`.
 
@@ -74,4 +74,4 @@ By supplying an object in the same shape, you meet the expectations of `items` w
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-01
