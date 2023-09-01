@@ -19,7 +19,7 @@ import {TestBed} from '@angular/core/testing';
  * and can not remove dependencies and their imports in the same way as AOT.
  * From JIT perspective, all dependencies inside a defer block remain eager.
  * We need to clear this association to run tests that verify loading and
- * preloading behavior.
+ * prefetching behavior.
  */
 function clearDirectiveDefs(type: Type<unknown>): void {
   const cmpDef = getComponentDef(type);
@@ -27,12 +27,29 @@ function clearDirectiveDefs(type: Type<unknown>): void {
   cmpDef!.directiveDefs = null;
 }
 
+/**
+ * Invoke a callback function when a browser in the idle state.
+ * For Node environment, use `setTimeout` as a shim, similar to
+ * how we handle it in the `deferOnIdle` code at runtime.
+ */
+function onIdle(callback: () => Promise<void>): Promise<void> {
+  // If we are in a browser environment and the `requestIdleCallback` function
+  // is present - use it, otherwise just invoke the callback function.
+  const onIdleFn = typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
+  return new Promise<void>((resolve) => {
+    onIdleFn(() => {
+      callback();
+      resolve();
+    });
+  });
+}
+
 // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
 // while running tests in Node.
 const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
 
 describe('#defer', () => {
-  beforeEach(() => setEnabledBlockTypes(['defer']));
+  beforeEach(() => setEnabledBlockTypes(['defer', 'for']));
   afterEach(() => setEnabledBlockTypes([]));
 
   beforeEach(() => {
@@ -525,7 +542,7 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-         {#defer when deferCond; prefetch when prefetchCond}
+          {#defer when deferCond; prefetch when prefetchCond}
             <nested-cmp [block]="'primary'" />
           {:placeholder}
             Placeholder
@@ -560,6 +577,9 @@ describe('#defer', () => {
 
       expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
 
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
       // Trigger prefetching.
       fixture.componentInstance.prefetchCond = true;
       fixture.detectChanges();
@@ -589,7 +609,7 @@ describe('#defer', () => {
       expect(loadingFnInvokedTimes).toBe(1);
     });
 
-    it('should handle a case when preloading fails', async () => {
+    it('should handle a case when prefetching fails', async () => {
       @Component({
         selector: 'nested-cmp',
         standalone: true,
@@ -604,7 +624,7 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-         {#defer when deferCond; prefetch when prefetchCond}
+          {#defer when deferCond; prefetch when prefetchCond}
             <nested-cmp [block]="'primary'" />
           {:error}
             Loading failed
@@ -641,6 +661,9 @@ describe('#defer', () => {
 
       expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
 
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
       // Trigger prefetching.
       fixture.componentInstance.prefetchCond = true;
       fixture.detectChanges();
@@ -660,7 +683,7 @@ describe('#defer', () => {
 
       await fixture.whenStable();
 
-      // Since preloading failed, expect the `{:error}` state to be rendered.
+      // Since prefetching failed, expect the `{:error}` state to be rendered.
       expect(fixture.nativeElement.outerHTML).toContain('Loading failed');
 
       // Expect that the loading resources function was not invoked again (counter remains 1).
@@ -682,7 +705,7 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-         {#defer when deferCond; prefetch when deferCond}
+          {#defer when deferCond; prefetch when deferCond}
             <nested-cmp [block]="'primary'" />
           {:error}
             Loading failed
@@ -718,6 +741,9 @@ describe('#defer', () => {
 
       expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
 
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
       // Trigger prefetching and loading at the same time.
       fixture.componentInstance.deferCond = true;
       fixture.detectChanges();
@@ -732,6 +758,247 @@ describe('#defer', () => {
 
       // Expect the main content to be rendered.
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary block');
+    });
+
+    it('should support `prefetch on idle` condition', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          {#defer when deferCond; prefetch on idle}
+            <nested-cmp [block]="'primary'" />
+          {:placeholder}
+            Placeholder
+          {/defer}
+        `
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [Promise.resolve(NestedCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ]
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      // Invoke the rest of the test when a browser is in the idle state,
+      // which is also a trigger condition to start defer block loading.
+      await onIdle(async () => {
+        await fixture.whenStable();  // prefetching dependencies of the defer block
+        fixture.detectChanges();
+
+        // Expect that the loading resources function was invoked once.
+        expect(loadingFnInvokedTimes).toBe(1);
+
+        // Expect that placeholder content is still rendered.
+        expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+        // Trigger main content.
+        fixture.componentInstance.deferCond = true;
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        // Verify primary block content.
+        const primaryBlockHTML = fixture.nativeElement.outerHTML;
+        expect(primaryBlockHTML)
+            .toContain(
+                '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>');
+
+        // Expect that the loading resources function was not invoked again (counter remains 1).
+        expect(loadingFnInvokedTimes).toBe(1);
+      });
+    });
+
+    it('should trigger prefetching based on `on idle` only once', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          {#for item of items; track item}
+            {#defer when deferCond; prefetch on idle}
+              <nested-cmp [block]="'primary for \`' + item + '\`'" />
+            {:placeholder}
+              Placeholder \`{{ item }}\`
+            {/defer}
+          {/for}
+        `
+      })
+      class RootCmp {
+        deferCond = false;
+        items = ['a', 'b', 'c'];
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [Promise.resolve(NestedCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ]
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `a`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `b`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `c`');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      // Invoke the rest of the test when a browser is in the idle state,
+      // which is also a trigger condition to start defer block loading.
+      await onIdle(async () => {
+        await fixture.whenStable();  // prefetching dependencies of the defer block
+        fixture.detectChanges();
+
+        // Expect that the loading resources function was invoked once.
+        expect(loadingFnInvokedTimes).toBe(1);
+
+        // Expect that placeholder content is still rendered.
+        expect(fixture.nativeElement.outerHTML).toContain('Placeholder `a`');
+
+        // Trigger main content.
+        fixture.componentInstance.deferCond = true;
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        // Verify primary blocks content.
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `a` block');
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `b` block');
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `c` block');
+
+        // Expect that the loading resources function was not invoked again (counter remains 1).
+        expect(loadingFnInvokedTimes).toBe(1);
+      });
+    });
+
+    it('should trigger fetching based on `on idle` only once', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          {#for item of items; track item}
+            {#defer on idle; prefetch on idle}
+              <nested-cmp [block]="'primary for \`' + item + '\`'" />
+            {:placeholder}
+              Placeholder \`{{ item }}\`
+            {/defer}
+          {/for}
+        `
+      })
+      class RootCmp {
+        items = ['a', 'b', 'c'];
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [Promise.resolve(NestedCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ]
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `a`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `b`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `c`');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      // Invoke the rest of the test when a browser is in the idle state,
+      // which is also a trigger condition to start defer block loading.
+      await onIdle(async () => {
+        await fixture.whenStable();  // prefetching dependencies of the defer block
+        fixture.detectChanges();
+
+        // Expect that the loading resources function was invoked once.
+        expect(loadingFnInvokedTimes).toBe(1);
+
+        // Verify primary blocks content.
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `a` block');
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `b` block');
+        expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `c` block');
+
+        // Expect that the loading resources function was not invoked again (counter remains 1).
+        expect(loadingFnInvokedTimes).toBe(1);
+      });
     });
   });
 });
