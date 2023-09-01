@@ -30,6 +30,7 @@ export * from './attribute';
 export * from './attribute_interpolation';
 export * from './change_detection';
 export * from './class_map_interpolation';
+export * from './component_instance';
 export * from './control_flow';
 export * from './defer';
 export * from './di';

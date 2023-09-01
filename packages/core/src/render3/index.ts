@@ -53,6 +53,8 @@ export {
 
   ɵɵclassProp,
 
+  ɵɵcomponentInstance,
+
   ɵɵdirectiveInject,
 
   ɵɵelement,
@@ -92,9 +94,9 @@ export {
 
   ɵɵreference,
 
-  ɵɵrepeater, 
-  ɵɵrepeaterCreate, 
-  ɵɵrepeaterTrackByIdentity, 
+  ɵɵrepeater,
+  ɵɵrepeaterCreate,
+  ɵɵrepeaterTrackByIdentity,
   ɵɵrepeaterTrackByIndex,
 
   ɵɵstyleMap,
@@ -124,7 +126,7 @@ export {
 
   ɵɵtemplate,
 
-  ɵɵconditional,  
+  ɵɵconditional,
 
   ɵɵdefer,
   ɵɵdeferWhen,
