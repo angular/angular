@@ -1,4 +1,4 @@
-import { browser, element, by, logging } from 'protractor';
+import { browser, element, by, logging, ExpectedConditions as EC } from 'protractor';
 
 describe('Inputs and Outputs', () => {
 
@@ -23,6 +23,10 @@ describe('Inputs and Outputs', () => {
     const addToParentButton = element.all(by.css('button')).get(0);
     const addToListInput = element.all(by.css('input')).get(0);
     const addedItem = element.all(by.css('li')).get(4);
+
+    // Wait for an <li> to be present before sending keys to the input.
+    await browser.wait(EC.presenceOf(element.all(by.css('li')).get(0)), 5000);
+
     await addToListInput.sendKeys('123');
     await addToParentButton.click();
     expect(await addedItem.getText()).toEqual('123');

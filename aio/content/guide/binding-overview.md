@@ -70,9 +70,9 @@ An `ngFor` then lists each `customer` in the `customers` array.
 
 <code-example path="interpolation/src/app/app.component.1.ts" region="var-collision" header="src/app/app.component.ts"></code-example>
 
-The `customer` within the `ngFor` is in the context of an `<ng-template>` and so refers to the `customer` in the `customers` array, in this case Ebony and Chiho.
-This list does not feature Padma because `customer` outside of the `ngFor` is in a different context.
-Conversely, `customer` in the `<h1>` doesn't include Ebony or Chiho because the context for this `customer` is the class and the class value for `customer` is Padma.
+The `customer` within the `ngFor` is in the context of the implicit `<ng-template>` defined by the _ngFor_.  It refers to each `customer` in the `customers` array and displays "Ebony" and "Chiho".  "Padma" is not displayed because that name is not in that array.
+
+On the other hand, the `<h1>` displays "Padma" which is bound to the value of the `customer` property in the component class.
 
 ## Expression best practices
 
@@ -106,4 +106,4 @@ Dependent values should not change during a single turn of the event loop.  If a
 * [Property binding](guide/property-binding)
 * [Event binding](guide/event-binding)
 
-@reviewed 2022-05-12
+@reviewed 2023-09-01
