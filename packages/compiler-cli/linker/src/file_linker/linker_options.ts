@@ -25,6 +25,16 @@ export interface LinkerOptions {
   linkerJitMode: boolean;
 
   /**
+   * List of enabled block types that should be supported when parsing templates of partial
+   * components. This option only exists as we are in the progress of developing block types
+   * support.
+   *
+   * @internal
+   */
+  // TODO(crisbeto): Remove this option.
+  _enabledBlockTypes: string[]|undefined;
+
+  /**
    * How to handle a situation where a partial declaration matches none of the supported
    * partial-linker versions.
    *
@@ -46,4 +56,5 @@ export const DEFAULT_LINKER_OPTIONS: LinkerOptions = {
   sourceMapping: true,
   linkerJitMode: false,
   unknownDeclarationVersionHandling: 'error',
+  _enabledBlockTypes: undefined,
 };

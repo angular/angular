@@ -8,9 +8,7 @@
           "switch"
         ]
       },
-      "inputFiles": [
-        "basic_switch.ts"
-      ],
+      "inputFiles": ["basic_switch.ts"],
       "expectations": [
         {
           "files": [
@@ -30,9 +28,7 @@
           "switch"
         ]
       },
-      "inputFiles": [
-        "switch_without_default.ts"
-      ],
+      "inputFiles": ["switch_without_default.ts"],
       "expectations": [
         {
           "files": [
@@ -53,9 +49,7 @@
           "switch"
         ]
       },
-      "inputFiles": [
-        "nested_switch.ts"
-      ],
+      "inputFiles": ["nested_switch.ts"],
       "expectations": [
         {
           "files": [
@@ -76,9 +70,7 @@
           "switch"
         ]
       },
-      "inputFiles": [
-        "switch_with_pipe.ts"
-      ],
+      "inputFiles": ["switch_with_pipe.ts"],
       "expectations": [
         {
           "files": [
@@ -99,9 +91,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "basic_if.ts"
-      ],
+      "inputFiles": ["basic_if.ts"],
       "expectations": [
         {
           "files": [
@@ -122,9 +112,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "basic_if_else.ts"
-      ],
+      "inputFiles": ["basic_if_else.ts"],
       "expectations": [
         {
           "files": [
@@ -145,9 +133,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "basic_if_else_if.ts"
-      ],
+      "inputFiles": ["basic_if_else_if.ts"],
       "expectations": [
         {
           "files": [
@@ -168,9 +154,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "nested_if.ts"
-      ],
+      "inputFiles": ["nested_if.ts"],
       "expectations": [
         {
           "files": [
@@ -191,9 +175,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "if_with_pipe.ts"
-      ],
+      "inputFiles": ["if_with_pipe.ts"],
       "expectations": [
         {
           "files": [
@@ -214,9 +196,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "if_with_alias.ts"
-      ],
+      "inputFiles": ["if_with_alias.ts"],
       "expectations": [
         {
           "files": [
@@ -237,9 +217,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "if_nested_alias.ts"
-      ],
+      "inputFiles": ["if_nested_alias.ts"],
       "expectations": [
         {
           "files": [
@@ -260,9 +238,7 @@
           "if"
         ]
       },
-      "inputFiles": [
-        "if_nested_alias_listeners.ts"
-      ],
+      "inputFiles": ["if_nested_alias_listeners.ts"],
       "expectations": [
         {
           "files": [

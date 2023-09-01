@@ -46,7 +46,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     PartialLinker<TExpression> {
   constructor(
       private readonly getSourceFile: GetSourceFileFn, private sourceUrl: AbsoluteFsPath,
-      private code: string) {}
+      private enabledBlockTypes: string[]|undefined, private code: string) {}
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
@@ -70,6 +70,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       interpolationConfig: interpolation,
       range: templateInfo.range,
       enableI18nLegacyMessageIdFormat: false,
+      enabledBlockTypes: this.enabledBlockTypes ? new Set(this.enabledBlockTypes) : undefined,
       preserveWhitespaces:
           metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
       // We normalize line endings if the template is was inline.

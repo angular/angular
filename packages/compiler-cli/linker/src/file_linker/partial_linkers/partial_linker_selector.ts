@@ -80,7 +80,8 @@ export function createLinkerMap<TStatement, TExpression>(
     {
       range: LATEST_VERSION_RANGE,
       linker: new PartialComponentLinkerVersion1(
-          createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code)
+          createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
+          environment.options._enabledBlockTypes, code)
     },
   ]);
   linkers.set(ɵɵngDeclareFactory, [

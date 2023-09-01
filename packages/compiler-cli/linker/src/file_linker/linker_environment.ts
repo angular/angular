@@ -9,8 +9,8 @@ import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 import {AstFactory} from '../../../src/ngtsc/translator';
-
 import {AstHost} from '../ast/ast_host';
+
 import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './linker_options';
 import {Translator} from './translator';
 
@@ -33,6 +33,7 @@ export class LinkerEnvironment<TStatement, TExpression> {
       linkerJitMode: options.linkerJitMode ?? DEFAULT_LINKER_OPTIONS.linkerJitMode,
       unknownDeclarationVersionHandling: options.unknownDeclarationVersionHandling ??
           DEFAULT_LINKER_OPTIONS.unknownDeclarationVersionHandling,
+      _enabledBlockTypes: options._enabledBlockTypes ?? DEFAULT_LINKER_OPTIONS._enabledBlockTypes,
     });
   }
 }
