@@ -975,7 +975,7 @@ describe('Integration', () => {
            expect((router as any).browserUrlTree.toString()).toBe('/team/22');
 
            // Force to not process URL changes
-           router.urlHandlingStrategy.shouldProcessUrl = (url: UrlTree) => false;
+           TestBed.inject(UrlHandlingStrategy).shouldProcessUrl = (url: UrlTree) => false;
 
            router.navigateByUrl('/login');
            advance(fixture, 1);
