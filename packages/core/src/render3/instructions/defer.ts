@@ -10,6 +10,7 @@ import {InjectionToken, Injector} from '../../di';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertEqual, throwError} from '../../util/assert';
+import {NgZone} from '../../zone';
 import {assertIndexInDeclRange, assertLContainer, assertTNodeForLView} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
@@ -204,18 +205,45 @@ export function ɵɵdeferOnImmediate() {}  // TODO: implement runtime logic.
 export function ɵɵdeferPrefetchOnImmediate() {}  // TODO: implement runtime logic.
 
 /**
- * Creates runtime data structures for the `on timer` deferred trigger.
+ * Sets up handlers that represent `on timer` deferred trigger.
  * @param delay Amount of time to wait before loading the content.
  * @codeGenApi
  */
-export function ɵɵdeferOnTimer(delay: number) {}  // TODO: implement runtime logic.
+export function ɵɵdeferOnTimer(delay: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+
+  renderPlaceholder(lView, tNode);
+
+  // Note: we pass an `lView` as the last argument to cancel a callback
+  // in case an LView got destroyed before the end of a timeout.
+  onTimer(delay, () => triggerDeferBlock(lView, tNode), getNgZone(lView), lView);
+}
 
 /**
- * Creates runtime data structures for the `prefetch on timer` deferred trigger.
+ * Sets up handlers that represent `prefetch on idle` deferred trigger.
  * @param delay Amount of time to wait before prefetching the content.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnTimer(delay: number) {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnTimer(delay: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    // Set loading to the scheduled state, so that we don't register it again.
+    tDetails.loadingState = DeferDependenciesLoadingState.SCHEDULED;
+
+    // In case of prefetching, we intentionally avoid cancelling prefetching if
+    // an underlying LView get destroyed (thus passing `null` as the last argument),
+    // because there might be other LViews (that represent embedded views) that
+    // depend on resource loading.
+    onTimer(
+        delay, () => triggerResourceLoading(tDetails, tView, lView), getNgZone(lView),
+        null /* LView */);
+  }
+}
 
 /**
  * Creates runtime data structures for the `on hover` deferred trigger.
@@ -259,35 +287,74 @@ export function ɵɵdeferPrefetchOnViewport(target?: unknown) {}  // TODO: imple
 
 /********** Helper functions **********/
 
+/** Retrieves an instance of NgZone using an injector from a given LView. */
+function getNgZone(lView: LView): NgZone {
+  const injector = lView[INJECTOR]!;
+  return injector.get(NgZone);
+}
+
 /**
- * Helper function to schedule a callback to be invoked when a browser becomes idle.
- *
- * @param callback A function to be invoked when a browser becomes idle.
- * @param lView An optional LView that hosts an instance of a defer block. LView is
- *    used to register a cleanup callback in case that LView got destroyed before
- *    callback was invoked. In this case, an `idle` callback is never invoked. This is
- *    helpful for cases when a defer block has scheduled rendering, but an underlying
- *    LView got destroyed prior to th block rendering.
+ * Scheduler function that contains generic logic for `on idle` and `on timer` conditions.
  */
-function onIdle(callback: VoidFunction, lView: LView|null) {
+function scheduler(
+    callback: VoidFunction, schedule: (fn: VoidFunction) => number, cancel: Function,
+    lView: LView|null) {
   let id: number;
-  const removeIdleCallback = () => _cancelIdleCallback(id);
-  id = _requestIdleCallback(() => {
-         removeIdleCallback();
-         if (lView !== null) {
-           // The idle callback is invoked, we no longer need
-           // to retain a cleanup callback in an LView.
-           removeLViewOnDestroy(lView, removeIdleCallback);
-         }
-         callback();
-       }) as number;
+  const cancelCallback = () => cancel(id);
+  id = schedule(() => {
+    cancelCallback();
+    if (lView !== null) {
+      // The idle callback is invoked, we no longer need
+      // to retain a cleanup callback in an LView.
+      removeLViewOnDestroy(lView, cancelCallback);
+    }
+    callback();
+  });
 
   if (lView !== null) {
     // Store a cleanup function on LView, so that we cancel idle
     // callback in case this LView is destroyed before a callback
     // is invoked.
-    storeLViewOnDestroy(lView, removeIdleCallback);
+    storeLViewOnDestroy(lView, cancelCallback);
   }
+}
+
+/**
+ * Schedules a callback to be invoked when a browser becomes idle.
+ *
+ * @param callback A function to be invoked when a browser becomes idle.
+ * @param lView An optional LView that hosts an instance of a defer block. LView is
+ *    used to register a cleanup callback in case that LView got destroyed before
+ *    callback was invoked. This is helpful for cases when a defer block has scheduled
+ *    rendering, but an underlying LView got destroyed prior to the block rendering.
+ */
+function onIdle(callback: VoidFunction, lView: LView|null) {
+  const schedule = (fn: VoidFunction) => _requestIdleCallback(fn);
+  const cancel = _cancelIdleCallback;
+  scheduler(callback, schedule as (fn: VoidFunction) => number, cancel, lView);
+}
+
+/**
+ * Schedule a callback to be invoked after a certain amount of time.
+ *
+ * @param delay A number of ms to wait before invoking a callback function.
+ * @param callback A function to be invoked after a specified amount of time.
+ * @param lView An optional LView that hosts an instance of a defer block. LView is
+ *    used to register a cleanup callback in case that LView got destroyed before
+ *    callback was invoked. This is helpful for cases when a defer block has scheduled
+ *    rendering, but an underlying LView got destroyed prior to the block rendering.
+ */
+function onTimer(delay: number, callback: VoidFunction, ngZone: NgZone, lView: LView|null) {
+  const schedule = (fn: VoidFunction) => {
+    // Note: run the `setTimeout` outside of Angular zone to prevent extra rounds of
+    // change detection, but run the callback in the zone again, since the logic there
+    // might depend on being in a zone.
+    return ngZone.runOutsideAngular(() => {
+      return setTimeout(() => ngZone.run(() => fn()), delay);
+    });
+  };
+  const cancel = clearTimeout;
+  scheduler(callback, schedule as unknown as (fn: VoidFunction) => number, cancel, lView);
 }
 
 /**
