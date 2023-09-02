@@ -74,9 +74,6 @@ export class Router {
   private get rawUrlTree() {
     return this.stateManager.rawUrlTree;
   }
-  private get browserUrlTree() {
-    return this.stateManager.browserUrlTree;
-  }
   private disposed = false;
   private locationSubscription?: SubscriptionLike;
   private isNgZoneEnabled = false;
@@ -621,7 +618,6 @@ export class Router {
       restoredState,
       currentUrlTree: this.currentUrlTree,
       currentRawUrl: this.currentUrlTree,
-      currentBrowserUrl: this.browserUrlTree,
       rawUrl,
       extras,
       resolve,

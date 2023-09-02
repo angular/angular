@@ -959,31 +959,6 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/login');
          })));
 
-      it('should set browserUrlTree with false `shouldProcessUrl`',
-         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-           const fixture = TestBed.createComponent(RootCmp);
-           advance(fixture);
-
-           router.resetConfig([
-             {path: 'team/:id', component: SimpleCmp},
-             {path: 'login', component: AbsoluteSimpleLinkCmp}
-           ]);
-
-           router.navigateByUrl('/team/22');
-           advance(fixture, 1);
-
-           expect((router as any).browserUrlTree.toString()).toBe('/team/22');
-
-           // Force to not process URL changes
-           TestBed.inject(UrlHandlingStrategy).shouldProcessUrl = (url: UrlTree) => false;
-
-           router.navigateByUrl('/login');
-           advance(fixture, 1);
-
-           // Do not change locations
-           expect((router as any).browserUrlTree.toString()).toBe('/team/22');
-         })));
-
       it('should eagerly update URL after redirects are applied',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
            const fixture = TestBed.createComponent(RootCmp);
