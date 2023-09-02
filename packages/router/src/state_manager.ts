@@ -35,9 +35,6 @@ export class StateManager {
    * Represents the activated `UrlTree` that the `Router` is configured to handle (through
    * `UrlHandlingStrategy`). That is, after we find the route config tree that we're going to
    * activate, run guards, and are just about to activate the route, we set the currentUrlTree.
-   *
-   * This should match the `browserUrlTree` when a navigation succeeds. If the
-   * `UrlHandlingStrategy.shouldProcessUrl` is `false`, only the `browserUrlTree` is updated.
    * @internal
    */
   currentUrlTree = new UrlTree();
@@ -70,23 +67,6 @@ export class StateManager {
    */
   rawUrlTree = this.currentUrlTree;
   /**
-   * Meant to represent the part of the browser url that the `Router` is set up to handle (via the
-   * `UrlHandlingStrategy`). This value is updated immediately after the browser url is updated (or
-   * the browser url update is skipped via `skipLocationChange`). With that, note that
-   * `browserUrlTree` _may not_ reflect the actual browser URL for two reasons:
-   *
-   * 1. `UrlHandlingStrategy` only handles part of the URL
-   * 2. `skipLocationChange` does not update the browser url.
-   *
-   * So to reiterate, `browserUrlTree` only represents the Router's internal understanding of the
-   * current route, either before guards with `urlUpdateStrategy === 'eager'` or right before
-   * activation with `'deferred'`.
-   *
-   * This should match the `currentUrlTree` when the navigation succeeds.
-   * @internal
-   */
-  browserUrlTree = this.currentUrlTree;
-  /**
    * The id of the currently active page in the router.
    * Updated to the transition's target id on a successful navigation.
    *
@@ -113,7 +93,6 @@ export class StateManager {
   private createStateMemento() {
     return {
       rawUrlTree: this.rawUrlTree,
-      browserUrlTree: this.browserUrlTree,
       currentUrlTree: this.currentUrlTree,
       routerState: this.routerState,
     };
@@ -122,11 +101,6 @@ export class StateManager {
   handleNavigationEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation) {
     if (e instanceof NavigationStart) {
       this.stateMemento = this.createStateMemento();
-      // If the source of the navigation is from a browser event, the URL is
-      // already updated. We already need to sync the internal state.
-      if (isBrowserTriggeredNavigation(currentTransition.trigger)) {
-        this.browserUrlTree = currentTransition.extractedUrl;
-      }
     } else if (e instanceof NavigationSkipped) {
       this.rawUrlTree = currentTransition.initialUrl;
     } else if (e instanceof RoutesRecognized) {
@@ -136,7 +110,6 @@ export class StateManager {
               currentTransition.finalUrl!, currentTransition.initialUrl);
           this.setBrowserUrl(rawUrl, currentTransition);
         }
-        this.browserUrlTree = currentTransition.finalUrl!;
       }
     } else if (e instanceof BeforeActivateRoutes) {
       this.currentUrlTree = currentTransition.finalUrl!;
@@ -147,7 +120,6 @@ export class StateManager {
         if (!currentTransition.extras.skipLocationChange) {
           this.setBrowserUrl(this.rawUrlTree, currentTransition);
         }
-        this.browserUrlTree = currentTransition.finalUrl!;
       }
     } else if (
         e instanceof NavigationCancel &&
@@ -197,9 +169,6 @@ export class StateManager {
         // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
         // We still need to reset the router state back to what it was when the navigation started.
         this.resetState(navigation);
-        // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
-        // Investigate if this can be done by running TGP.
-        this.browserUrlTree = this.stateMemento.browserUrlTree;
         this.resetUrlToCurrentUrlTree();
       } else {
         // The browser URL and router state was not updated before the navigation cancelled so
