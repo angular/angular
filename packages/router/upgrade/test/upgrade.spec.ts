@@ -125,9 +125,6 @@ describe('setUpLocationSync', () => {
     const callback = $rootScope.$on.calls.argsFor(0)[1];
     callback({}, url + pathname + query + hash, '');
 
-    expect(location.normalize).toHaveBeenCalledTimes(1);
-    expect(location.normalize).toHaveBeenCalledWith(pathname);
-
     expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
     expect(router.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
@@ -147,9 +144,6 @@ describe('setUpLocationSync', () => {
 
     const callback = $rootScope.$on.calls.argsFor(0)[1];
     callback({}, combinedUrl, '');
-
-    expect(location.normalize).toHaveBeenCalledTimes(1);
-    expect(location.normalize).toHaveBeenCalledWith(pathname);
 
     expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
     expect(router.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);

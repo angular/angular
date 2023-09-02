@@ -1512,9 +1512,6 @@
     "name": "isArrayLike"
   },
   {
-    "name": "isBrowserTriggeredNavigation"
-  },
-  {
     "name": "isCommandWithOutlets"
   },
   {
