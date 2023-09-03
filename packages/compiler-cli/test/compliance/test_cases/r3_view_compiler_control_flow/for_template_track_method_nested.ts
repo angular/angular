@@ -4,11 +4,17 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
+      <ng-template>
+        {#for item of items; track trackFn($index, item)}{/for}
+      </ng-template>
     </div>
   `,
 })
 export class MyApp {
   message = 'hello';
   items = [{name: 'one'}, {name: 'two'}, {name: 'three'}];
+
+  trackFn(_index: number, item: any) {
+    return item;
+  }
 }
