@@ -9073,6 +9073,195 @@ function allTests(os: string) {
            });
       });
     });
+
+    // TODO(crisbeto): currently these validations happen when the template is
+    // constructed, because we don't have template type checking support for `for`
+    // blocks. Eventually they should happen as a part of template type checking
+    // instead at which point these tests should be moved.
+    describe('for loop block validations', () => {
+      beforeEach(() => {
+        env.tsconfig({_enabledBlockTypes: ['for', 'if']});
+      });
+
+      it('should not allow usages of loop context variables inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            template: '{#for foo of bar; track $index + $count}{/for}',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('Error: Accessing $count inside of a track expression is not allowed');
+      });
+
+      it('should not allow usages of aliased loop context variables inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                template: '{#for foo of bar; let c = $count; track $index + c}{/for}',
+              })
+              export class TestCmp {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing c inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of local references within the same template inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <input #ref/>
+                {#for foo of bar; track $index + ref.value}{/for}
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing ref inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of local references outside of the template template in the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <input #ref/>
+
+                <ng-template>
+                  {#for foo of bar; track $index + ref.value}{/for}
+                </ng-template>
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing ref inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of parent template variables inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <ng-template let-foo>
+                  {#for foo of bar; track $index + foo.value}{/for}
+                </ng-template>
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing foo inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of parent template for loop variables inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                {#for parent of items; track item}
+                  {#for item of parent.items; track parent}{/for}
+                {/for}
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing parent inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of aliased `if` block variables inside the tracking exprssion',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                {#if expr; as alias}
+                  {#for foo of bar; track $index + alias}{/for}
+                {/if}
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain('Error: Accessing alias inside of a track expression is not allowed');
+         });
+
+      it('should not allow usages of pipes inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component, Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform(value: any) {
+              return value;
+            }
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '{#for foo of bar; track foo | test}{/for}',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('Error: Illegal State: Pipes are not allowed in this context');
+      });
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(

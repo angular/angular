@@ -87,7 +87,7 @@ export interface BuiltinConverterFactory {
   createPipeConverter(name: string, argCount: number): BuiltinConverter;
 }
 
-export function convertPropertyBindingBuiltins(
+function convertPropertyBindingBuiltins(
     converterFactory: BuiltinConverterFactory, ast: cdAst.AST): cdAst.AST {
   return convertBuiltins(converterFactory, ast);
 }
@@ -117,6 +117,32 @@ export function convertPropertyBinding(
   }
 
   return new ConvertPropertyBindingResult(stmts, outputExpr);
+}
+
+/** Converts an AST to a pure function that may have access to the component scope. */
+export function convertPureComponentScopeFunction(
+    ast: cdAst.AST, localResolver: LocalResolver, implicitReceiver: o.Expression,
+    bindingId: string): o.Statement[] {
+  const converted = convertPropertyBindingBuiltins(
+      {
+        createLiteralArrayConverter: () => args => o.literalArr(args),
+        createLiteralMapConverter: keys => values => o.literalMap(keys.map((key, index) => {
+          return ({
+            key: key.key,
+            value: values[index],
+            quoted: key.quoted,
+          });
+        })),
+        createPipeConverter: () => {
+          throw new Error('Illegal State: Pipes are not allowed in this context');
+        }
+      },
+      ast);
+
+  const visitor = new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, false);
+  const statements: o.Statement[] = [];
+  flattenStatements(converted.visit(visitor, _Mode.Statement), statements);
+  return statements;
 }
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -1439,7 +1439,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const emptyData = block.empty === null ?
         null :
         this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
-    const trackByFn = this.createTrackByFunction(block);
+    const {expression: trackByExpression, usesComponentInstance: trackByUsesComponentInstance} =
+        this.createTrackByFunction(block);
     const value = block.expression.visit(this._valueConverter);
     this.allocateBindingSlots(value);
 
@@ -1452,13 +1453,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         o.variable(primaryData.name),
         o.literal(primaryData.getConstCount()),
         o.literal(primaryData.getVarCount()),
-        trackByFn,
+        trackByExpression,
       ];
 
       if (emptyData !== null) {
         params.push(
-            o.variable(emptyData.name), o.literal(emptyData.getConstCount()),
-            o.literal(emptyData.getVarCount()));
+            o.literal(trackByUsesComponentInstance), o.variable(emptyData.name),
+            o.literal(emptyData.getConstCount()), o.literal(emptyData.getVarCount()));
+      } else if (trackByUsesComponentInstance) {
+        // If the tracking function doesn't use the component instance, we can omit the flag.
+        params.push(o.literal(trackByUsesComponentInstance));
       }
 
       return params;
@@ -1493,35 +1497,92 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             scope.get(indexLocalName)!.identical(scope.get(countLocalName)!.minus(o.literal(1))));
   }
 
-  private createTrackByFunction(block: t.ForLoopBlock): o.Expression {
+  private optimizeTrackByFunction(block: t.ForLoopBlock) {
     const ast = block.trackBy.ast;
 
     // Top-level access of `$index` uses the built in `repeaterTrackByIndex`.
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
         ast.name === getLoopLocalName(block, '$index')) {
-      return o.importExpr(R3.repeaterTrackByIndex);
+      return {expression: o.importExpr(R3.repeaterTrackByIndex), usesComponentInstance: false};
     }
 
     // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
         ast.name === block.itemName) {
-      return o.importExpr(R3.repeaterTrackByIdentity);
+      return {expression: o.importExpr(R3.repeaterTrackByIdentity), usesComponentInstance: false};
     }
 
-    // Otherwise transpile to an inline arrow function.
-    if (ast instanceof PropertyRead && ast.receiver instanceof PropertyRead &&
-        ast.receiver.receiver instanceof ImplicitReceiver && ast.receiver.name === block.itemName) {
-      // TODO(crisbeto): support references outside the function scope.
-      const params = [getLoopLocalName(block, '$index'), block.itemName];
-      const scope = this._bindingScope.nestedScope(this.level + 1, new Set(params));
-      const binding =
-          convertPropertyBinding(scope, o.variable(CONTEXT_NAME), block.trackBy, 'trackBy');
-      return o.arrowFn(params.map(param => new o.FnParam(param)), binding.currValExpr);
+    // Top-level calls in the form of `fn($index, item)` can be passed in directly.
+    if (ast instanceof Call && ast.receiver instanceof PropertyRead &&
+        ast.receiver.receiver instanceof ImplicitReceiver && ast.args.length === 2) {
+      const firstIsIndex = ast.args[0] instanceof PropertyRead &&
+          ast.args[0].receiver instanceof ImplicitReceiver &&
+          ast.args[0].name === getLoopLocalName(block, '$index');
+      const secondIsItem = ast.args[1] instanceof PropertyRead &&
+          ast.args[1].receiver instanceof ImplicitReceiver && ast.args[1].name === block.itemName;
+
+      if (firstIsIndex && secondIsItem) {
+        // If we're in the top-level component, we can access directly through `ctx`,
+        // otherwise we have to get a hold of the component through `componentInstance()`.
+        const receiver = this.level === 0 ? o.variable(CONTEXT_NAME) :
+                                            new o.ExternalExpr(R3.componentInstance).callFn([]);
+        return {expression: receiver.prop(ast.receiver.name), usesComponentInstance: false};
+      }
     }
 
-    // TODO(crisbeto): this is a temporary restriction to land the initial implementation of the
-    // `for` blocks. A follow-up PR will introduce more flexibility to the `trackBy` expression.
-    throw new Error('Unsupported track expression');
+    return null;
+  }
+
+  private createTrackByFunction(block: t.ForLoopBlock): {
+    expression: o.Expression,
+    usesComponentInstance: boolean,
+  } {
+    const optimizedFn = this.optimizeTrackByFunction(block);
+
+    // If the tracking function can be optimized, we don't need any further processing.
+    if (optimizedFn !== null) {
+      return optimizedFn;
+    }
+
+    // Referencing these requires access to the context which the tracking function
+    // might not have. `$index` is special because of backwards compatibility.
+    const bannedGlobals = new Set([
+      getLoopLocalName(block, '$count'), getLoopLocalName(block, '$first'),
+      getLoopLocalName(block, '$last'), getLoopLocalName(block, '$even'),
+      getLoopLocalName(block, '$odd')
+    ]);
+    const scope = new TrackByBindingScope(
+        this._bindingScope, {
+          // Alias `$index` and the item name to `$index` and `$item` respectively.
+          // This allows us to reuse pure functions that may have different item names,
+          // but are otherwise identical.
+          [getLoopLocalName(block, '$index')]: '$index',
+          [block.itemName]: '$item',
+        },
+        bannedGlobals);
+    const params = [new o.FnParam('$index'), new o.FnParam('$item')];
+    const stmts = convertPureComponentScopeFunction(
+        block.trackBy.ast, scope, o.variable(CONTEXT_NAME), 'track');
+    const usesComponentInstance = scope.getComponentAccessCount() > 0;
+    let fn: o.ArrowFunctionExpr|o.FunctionExpr;
+
+    if (!usesComponentInstance && stmts.length === 1 && stmts[0] instanceof o.ExpressionStatement) {
+      fn = o.arrowFn(params, stmts[0].expr);
+    } else {
+      // The last statement is returned implicitly.
+      if (stmts.length > 0) {
+        const lastStatement = stmts[stmts.length - 1];
+        if (lastStatement instanceof o.ExpressionStatement) {
+          stmts[stmts.length - 1] = new o.ReturnStatement(lastStatement.expr);
+        }
+      }
+      fn = o.fn(params, stmts);
+    }
+
+    return {
+      expression: this.constantPool.getSharedFunctionReference(fn, '_forTrack'),
+      usesComponentInstance,
+    };
   }
 
   getConstCount() {
@@ -2098,8 +2159,8 @@ export class BindingScope implements LocalResolver {
     return new BindingScope();
   }
 
-  private constructor(
-      public bindingLevel: number = 0, private parent: BindingScope|null = null,
+  protected constructor(
+      public bindingLevel: number = 0, readonly parent: BindingScope|null = null,
       public globals?: Set<string>) {
     if (globals !== undefined) {
       for (const name of globals) {
@@ -2143,6 +2204,11 @@ export class BindingScope implements LocalResolver {
     // - If level > 0, we are in an embedded view. We need to retrieve the name of the
     // local var we used to store the component context, e.g. const $comp$ = x();
     return this.bindingLevel === 0 ? null : this.getComponentProperty(name);
+  }
+
+  /** Checks whether a variable exists locally on the current scope. */
+  hasLocal(name: string): boolean {
+    return this.map.has(name);
   }
 
   /**
@@ -2320,6 +2386,55 @@ export class BindingScope implements LocalResolver {
 
   notifyRestoredViewContextUse(): void {
     this.usesRestoredViewContext = true;
+  }
+}
+
+/** Binding scope of a `track` function inside a `for` loop block. */
+class TrackByBindingScope extends BindingScope {
+  private componentAccessCount = 0;
+
+  constructor(
+      parentScope: BindingScope, private globalAliases: Record<string, string>,
+      private bannedGlobals: Set<string>) {
+    super(parentScope.bindingLevel + 1, parentScope);
+  }
+
+  override get(name: string): o.Expression|null {
+    let current: BindingScope|null = this.parent;
+
+    // Verify that the expression isn't trying to access a variable from a parent scope.
+    while (current) {
+      if (current.hasLocal(name)) {
+        this.forbiddenAccessError(name);
+      }
+      current = current.parent;
+    }
+
+    // If the variable is one of the banned globals, we have to throw.
+    if (this.bannedGlobals.has(name)) {
+      this.forbiddenAccessError(name);
+    }
+
+    // Intercept any aliased globals.
+    if (this.globalAliases[name]) {
+      return o.variable(this.globalAliases[name]);
+    }
+
+    // When the component scope is accessed, we redirect it through `this`.
+    this.componentAccessCount++;
+    return o.variable('this').prop(name);
+  }
+
+  /** Gets the number of times the host component has been accessed through the scope. */
+  getComponentAccessCount(): number {
+    return this.componentAccessCount;
+  }
+
+  private forbiddenAccessError(propertyName: string) {
+    // TODO(crisbeto): this should be done through template type checking once it is available.
+    throw new Error(
+        `Accessing ${propertyName} inside of a track expression is not allowed. ` +
+        `Tracking expressions can only access the item, $index and properties on the containing component.`);
   }
 }
 

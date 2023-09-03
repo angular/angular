@@ -8,7 +8,7 @@
 
 
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
-import {Component, Pipe, PipeTransform, ɵɵdefineComponent, ɵɵrepeater, ɵɵrepeaterCreate, ɵɵtext, ɵɵtextInterpolate} from '@angular/core';
+import {Component, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow', () => {
@@ -245,7 +245,7 @@ describe('control flow', () => {
   });
 
   describe('for', () => {
-    beforeEach(() => setEnabledBlockTypes(['for']));
+    beforeEach(() => setEnabledBlockTypes(['for', 'if']));
     afterEach(() => setEnabledBlockTypes([]));
 
     it('should create, remove and move views corresponding to items in a collection', () => {
@@ -333,55 +333,98 @@ describe('control flow', () => {
       expect(fixture.nativeElement.textContent).toBe('Empty');
     });
 
-    // TODO(crisbeto): rewrite using template once advanced tracking expressions are supported.
     it('should have access to the host context in the track function', () => {
-      function App_ng_template_0_Template(rf: number, ctx: any) {
-        if (rf & 1) {
-          ɵɵtext(0);
-        }
-        if (rf & 2) {
-          ɵɵtextInterpolate(ctx.$implicit);
-        }
-      }
+      let offsetReads = 0;
 
+      @Component({template: '{#for (item of items); track $index + offset}{{item}}{/for}'})
       class TestComponent {
-        offset = 0;
         items = ['a', 'b', 'c'];
 
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          selectors: [['some-cmp']],
-          decls: 2,
-          vars: 1,
-
-          // {#for (item of items); track $index + offset}{{item}}{{item}}{/for}
-          template:
-              function TestComponent_Template(rf: number, ctx: any) {
-                if (rf & 1) {
-                  ɵɵrepeaterCreate(
-                      0, App_ng_template_0_Template, 1, 1, ($index) => $index + ctx.offset);
-                }
-                if (rf & 2) {
-                  ɵɵrepeater(0, ctx.items);
-                }
-              },
-          encapsulation: 2
-        });
-        static ɵfac = function TestComponent_Factory(t: any) {
-          return new (t || TestComponent)();
-        };
+        get offset() {
+          offsetReads++;
+          return 0;
+        }
       }
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('abc');
+      expect(offsetReads).toBeGreaterThan(0);
 
+      const prevReads = offsetReads;
       // explicitly modify the DOM text node to make sure that the list reconciliation algorithm
       // based on tracking indices overrides it.
       fixture.debugElement.childNodes[1].nativeNode.data = 'x';
       fixture.componentInstance.items.shift();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('bc');
+      expect(offsetReads).toBeGreaterThan(prevReads);
     });
+
+    it('should be able to access component properties in the tracking function from a loop at the root of the template',
+       () => {
+         const calls: string[][] = [];
+
+         @Component({
+           template: `{#for (item of items); track trackingFn(item, compProp)}{{item}}{/for}`,
+         })
+         class TestComponent {
+           items = ['one', 'two', 'three'];
+           compProp = 'hello';
+
+           trackingFn(item: string, message: string) {
+             calls.push([item, message]);
+             return item;
+           }
+         }
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(calls).toEqual([
+           ['one', 'hello'],
+           ['two', 'hello'],
+           ['three', 'hello'],
+           ['one', 'hello'],
+           ['two', 'hello'],
+           ['three', 'hello'],
+         ]);
+       });
+
+    it('should be able to access component properties in the tracking function from a nested template',
+       () => {
+         const calls: string[][] = [];
+
+         @Component({
+           template: `
+            {#if true}
+              {#if true}
+                {#if true}
+                  {#for (item of items); track trackingFn(item, compProp)}{{item}}{/for}
+                {/if}
+              {/if}
+            {/if}
+           `,
+         })
+         class TestComponent {
+           items = ['one', 'two', 'three'];
+           compProp = 'hello';
+
+           trackingFn(item: string, message: string) {
+             calls.push([item, message]);
+             return item;
+           }
+         }
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(calls).toEqual([
+           ['one', 'hello'],
+           ['two', 'hello'],
+           ['three', 'hello'],
+           ['one', 'hello'],
+           ['two', 'hello'],
+           ['three', 'hello'],
+         ]);
+       });
   });
 });
