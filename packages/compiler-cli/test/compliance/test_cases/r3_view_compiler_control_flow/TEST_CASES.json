@@ -527,6 +527,111 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should optimize tracking function that calls a method on the component with $index and the item from the root template",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_template_track_method_root.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_root_template.js",
+              "generated": "for_template_track_method_root.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should optimize tracking function that calls a method on the component with $index and the item from a nested template",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_template_track_method_nested.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_nested_template.js",
+              "generated": "for_template_track_method_nested.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should reuse identical pure tracking functions",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_pure_track_reuse.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_pure_track_reuse_template.js",
+              "generated": "for_pure_track_reuse.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should reuse identical impure tracking functions",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_impure_track_reuse.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_impure_track_reuse_template.js",
+              "generated": "for_impure_track_reuse.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should preserve object and array literals inside tracking expressions",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["for"]
+      },
+      "inputFiles": [
+        "for_track_literals.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_literals_template.js",
+              "generated": "for_track_literals.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

@@ -13,7 +13,7 @@ import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
-import {CONTEXT, HEADER_OFFSET, LView, TVIEW, TView} from '../interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW, TView} from '../interfaces/view';
 import {detachView} from '../node_manipulation';
 import {getLView, nextBindingIndex} from '../state';
 import {getTNode} from '../util/view_utils';
@@ -105,15 +105,31 @@ class RepeaterMetadata {
  * - LView[HEADER_OFFSET + index + 2] - optional reference to a template function rendering an empty
  * block
  *
+ * @param index Index at which to store the metadata of the repeater.
+ * @param templateFn Reference to the template of the main repeater block.
+ * @param decls The number of nodes, local refs, and pipes for the main block.
+ * @param vars The number of bindings for the main block.
+ * @param trackByFn Reference to the tracking function.
+ * @param trackByUsesComponentInstance Whether the tracking function has any references to the
+ *  component instance. If it doesn't, we can avoid rebinding it.
+ * @param emptyTemplateFn Reference to the template function of the empty block.
+ * @param emptyDecls The number of nodes, local refs, and pipes for the empty block.
+ * @param emptyVars The number of bindings for the empty block.
+ *
  * @codeGenApi
  */
 export function ɵɵrepeaterCreate(
     index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
-    trackByFn: TrackByFunction<unknown>, emptyTemplateFn?: ComponentTemplate<unknown>,
-    emptyDecls?: number, emptyVars?: number): void {
+    trackByFn: TrackByFunction<unknown>, trackByUsesComponentInstance?: boolean,
+    emptyTemplateFn?: ComponentTemplate<unknown>, emptyDecls?: number, emptyVars?: number): void {
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
-  const metadata = new RepeaterMetadata(hasEmptyBlock, new DefaultIterableDiffer(trackByFn));
+  const boundTrackBy = trackByUsesComponentInstance ?
+      // We only want to bind when necessary, because it produces a
+      // new function. For pure functions it's not necessary.
+      trackByFn.bind(hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT]) :
+      trackByFn;
+  const metadata = new RepeaterMetadata(hasEmptyBlock, new DefaultIterableDiffer(boundTrackBy));
   hostLView[HEADER_OFFSET + index] = metadata;
 
   ɵɵtemplate(index + 1, templateFn, decls, vars);
