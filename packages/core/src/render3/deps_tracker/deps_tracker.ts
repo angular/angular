@@ -10,6 +10,7 @@ import {resolveForwardRef} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
+import {flatten} from '../../util/array_utils';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
@@ -242,7 +243,7 @@ class DepsTracker implements DepsTrackerApi {
       },
     };
 
-    for (const rawImport of rawImports ?? []) {
+    for (const rawImport of flatten(rawImports ?? [])) {
       const imported = resolveForwardRef(rawImport) as Type<any>;
 
       try {
