@@ -552,4 +552,4 @@ export interface NgModuleScopeInfoFromDecorator {
  *  - standalone component annotation imports field
  */
 export type RawScopeInfoFromDecorator =
-    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>)|any[];
