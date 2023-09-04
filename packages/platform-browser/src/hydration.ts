@@ -122,10 +122,21 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
 
 /**
  * Sets up providers necessary to enable hydration functionality for the application.
+ *
  * By default, the function enables the recommended set of features for the optimal
  * performance for most of the applications. You can enable/disable features by
  * passing special functions (from the `HydrationFeatures` set) as arguments to the
- * `provideClientHydration` function.
+ * `provideClientHydration` function. It includes the following features:
+ *
+ * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).
+ * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and
+ * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
+ * [here](/guide/universal#caching-data-when-using-httpclient).
+ *
+ * These functions functions will allow you to disable some of the default features:
+ * * {@link withNoDomReuse} to disable DOM nodes reuse during hydration
+ * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
+ *
  *
  * @usageNotes
  *

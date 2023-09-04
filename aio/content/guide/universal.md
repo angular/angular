@@ -235,6 +235,13 @@ The render function renders the view within the `<app>` tag of the template, cre
 
 Finally, the server returns the rendered page to the client.
 
+### Caching data when using HttpClient
+By default, the [`provideClientHydration()`](api/platform-browser/provideClientHydration) function enables the recommended set of features for the optimal performance for most of the applications. It includes the following features:
+* Reconciling DOM hydration (learn more about it [here](guide/hydration)).
+* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and transferring this cache to the client to avoid extra HTTP requests.
+
+While running on the server, data caching is performed for every `HEAD` and `GET` requests done by the [`HttpClient`](api/common/http/HttpClient). After that this information is serialized and transferred to a browser as a part of the initial HTML sent from the server after server-side rendering. In a browser, [`HttpClient`](api/common/http/HttpClient) checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. HttpClient stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+
 ### Working around the browser APIs
 
 Because a Universal application doesn't execute in the browser, some of the browser APIs and capabilities might be missing on the server.
