@@ -9,6 +9,7 @@
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
 import {NgModule} from '../metadata';
+import {flatten} from '../util/array_utils';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
 
@@ -66,10 +67,12 @@ function convertToTypeArray(values: FullAotScopeInfoFromDecorator|NgModule['decl
     return values;
   }
 
-  if (values.some(isForwardRef)) {
-    return () => values.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
+  const flattenValues = flatten(values);
+
+  if (flattenValues.some(isForwardRef)) {
+    return () => flattenValues.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
   } else {
-    return values.map(maybeUnwrapModuleWithProviders);
+    return flattenValues.map(maybeUnwrapModuleWithProviders);
   }
 }
 
