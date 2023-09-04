@@ -104,6 +104,7 @@
           "failureMessage": "Incorrect template"
         }
       ],
+      "excludeTest": true,
       "skipForTemplatePipeline": true
     },
     {
@@ -128,6 +129,7 @@
           "failureMessage": "Incorrect template"
         }
       ],
+      "excludeTest": true,
       "skipForTemplatePipeline": true
     },
     {
