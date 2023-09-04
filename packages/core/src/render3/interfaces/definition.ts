@@ -9,6 +9,7 @@
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
+import {NgModule} from '../../metadata';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
@@ -522,34 +523,34 @@ export type PipeTypeList =
 export const unusedValueExportToPlacateAjd = 1;
 
 /**
- * NgModule scope info as provided by AoT compiler
+ * Scope info (e.g., imports, exports, etc.) as calculated by AoT compiler in full mode and passed
+ * to downstream tools (e.g., `ɵɵsetNgModuleScope`)
  *
- * In full compilation Ivy resolved all the "module with providers" and forward refs the whole array
- * if at least one element is forward refed. So we end up with type `Type<any>[]|(() =>
- * Type<any>[])`.
+ * In full compilation mode the AoT compiler flatten the nested array and resolves all the "module
+ * with providers" and forward refs the whole array if at least one element is forward refed. We we
+ * ended up with a flat array of Types or a factory thereof.
+ */
+export type FullAotScopeInfoFromDecorator = Type<any>[]|(() => Type<any>[]);
+
+/**
+ * NgModule scope info as provided by AoT compiler in full and local compilation mode.
  *
- * In local mode the compiler passes the raw info as they are to the runtime functions as it is not
- * possible to resolve them any further due to limited info at compile time. So we end up with type
- * `RawScopeInfoFromDecorator[]`.
+ * In full compilation the compiler resolves all the types and so they'll have the type
+ * `FullAotScopeInfoFromDecorator`
+ *
+ * In local mode the compiler passes the raw info from the decorator to the runtime functions, and
+ * so teh type will be the same as defined in the NgModule metadata.
  */
 export interface NgModuleScopeInfoFromDecorator {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+  declarations?: FullAotScopeInfoFromDecorator|NgModule['declarations'];
 
   /** List of modules or `ModuleWithProviders` or standalone components imported by this module. */
-  imports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+  imports?: FullAotScopeInfoFromDecorator|NgModule['imports'];
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+  exports?: FullAotScopeInfoFromDecorator|NgModule['exports'];
 }
-
-/**
- * The array element type passed to:
- *  - NgModule's annotation imports/exports/declarations fields
- *  - standalone component annotation imports field
- */
-export type RawScopeInfoFromDecorator =
-    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);

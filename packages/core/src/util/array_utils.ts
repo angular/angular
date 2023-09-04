@@ -35,12 +35,12 @@ export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => 
 /**
  * Flattens an array.
  */
-export function flatten(list: any[]): any[] {
+export function flatten(list: ReadonlyArray<any>): any[] {
   return list.flat(Number.POSITIVE_INFINITY);
 }
 
-export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
-  input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
+export function deepForEach<T>(input: NestedReadonlyArray<T>, fn: (value: T) => void): void {
+  input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value as T));
 }
 
 export function addToArray(arr: any[], index: number, value: any): void {
@@ -292,3 +292,6 @@ function _arrayIndexOfSorted(array: string[], value: string, shift: number): num
   }
   return ~(end << shift);
 }
+
+/** Represents a nested readonly array with entries of type T. */
+export type NestedReadonlyArray<T> = ReadonlyArray<T>|ReadonlyArray<T|NestedReadonlyArray<T>>;

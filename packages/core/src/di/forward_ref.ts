@@ -87,7 +87,7 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * @see {@link forwardRef}
  * @publicApi
  */
-export function resolveForwardRef<T>(type: T): T {
+export function resolveForwardRef<T>(type: T|(() => T)): T {
   return isForwardRef(type) ? type() : type;
 }
 

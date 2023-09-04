@@ -10,8 +10,8 @@ import {EnvironmentProviders, ModuleWithProviders, Provider} from '../di/interfa
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule} from '../render3/jit/module';
+import {NestedReadonlyArray} from '../util/array_utils';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
-
 
 /**
  * Type of the NgModule decorator / constructor function.
@@ -107,7 +107,7 @@ export interface NgModule {
    * }
    * ```
    */
-  declarations?: Array<Type<any>|any[]>;
+  declarations?: NestedReadonlyArray<Type<any>|(() => Type<any>)>;
 
   /**
    * The set of NgModules whose exported [declarables](guide/glossary#declarable)
@@ -136,7 +136,8 @@ export interface NgModule {
    * ```
    *
    */
-  imports?: Array<Type<any>|ModuleWithProviders<{}>|any[]>;
+  imports?: NestedReadonlyArray<Type<any>|ModuleWithProviders<any>|(() => Type<any>)|
+                                (() => ModuleWithProviders<any>)>;
 
   /**
    * The set of components, directives, and pipes declared in this
@@ -168,12 +169,12 @@ export interface NgModule {
    * }
    * ```
    */
-  exports?: Array<Type<any>|any[]>;
+  exports?: NestedReadonlyArray<Type<any>|(() => Type<any>)>;
 
   /**
    * The set of components that are bootstrapped when this module is bootstrapped.
    */
-  bootstrap?: Array<Type<any>|any[]>;
+  bootstrap?: NestedReadonlyArray<Type<any>|(() => Type<any>)>;
 
   /**
    * The set of schemas that declare elements to be allowed in the NgModule.

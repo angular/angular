@@ -211,7 +211,7 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    imports?: (Type<any> | ReadonlyArray<any>)[];
+    imports?: NestedReadonlyArray<Type<any> | ModuleWithProviders<any> | (() => Type<any>) | (() => ModuleWithProviders<any>)>;
     interpolation?: [string, string];
     // @deprecated
     moduleId?: string;
@@ -999,11 +999,11 @@ export type NgIterable<T> = Array<T> | Iterable<T>;
 
 // @public
 export interface NgModule {
-    bootstrap?: Array<Type<any> | any[]>;
-    declarations?: Array<Type<any> | any[]>;
-    exports?: Array<Type<any> | any[]>;
+    bootstrap?: NestedReadonlyArray<Type<any> | (() => Type<any>)>;
+    declarations?: NestedReadonlyArray<Type<any> | (() => Type<any>)>;
+    exports?: NestedReadonlyArray<Type<any> | (() => Type<any>)>;
     id?: string;
-    imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+    imports?: NestedReadonlyArray<Type<any> | ModuleWithProviders<any> | (() => Type<any>) | (() => ModuleWithProviders<any>)>;
     jit?: true;
     providers?: Array<Provider | EnvironmentProviders>;
     schemas?: Array<SchemaMetadata | any[]>;
@@ -1300,7 +1300,7 @@ export interface RendererType2 {
 }
 
 // @public
-export function resolveForwardRef<T>(type: T): T;
+export function resolveForwardRef<T>(type: T | (() => T)): T;
 
 // @public
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;

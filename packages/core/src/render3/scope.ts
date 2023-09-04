@@ -8,12 +8,13 @@
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
+import {NgModule} from '../metadata';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
 
 import {extractDefListOrFactory, getNgModuleDef} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
-import {ComponentDef, ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from './interfaces/definition';
+import {ComponentDef, ComponentType, FullAotScopeInfoFromDecorator, NgModuleScopeInfoFromDecorator} from './interfaces/definition';
 import {isModuleWithProviders} from './jit/util';
 
 /**
@@ -54,8 +55,13 @@ export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDeco
   });
 }
 
-function convertToTypeArray(values: Type<any>[]|(() => Type<any>[])|
-                            RawScopeInfoFromDecorator[]): Type<any>[]|(() => Type<any>[]) {
+function convertToTypeArray(values: FullAotScopeInfoFromDecorator|NgModule['declarations']|
+                            NgModule['imports']|NgModule['exports']): Type<any>[]|
+    (() => Type<any>[]) {
+  if (typeof values === 'undefined') {
+    return EMPTY_ARRAY;
+  }
+
   if (typeof values === 'function') {
     return values;
   }

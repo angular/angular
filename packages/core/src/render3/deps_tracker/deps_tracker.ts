@@ -9,9 +9,10 @@
 import {resolveForwardRef} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
+import {Component} from '../../metadata';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
-import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
+import {ComponentType, NgModuleScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
@@ -60,7 +61,7 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  getComponentDependencies(type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]):
+  getComponentDependencies(type: ComponentType<any>, rawImports?: Component['imports']):
       ComponentDependencies {
     this.resolveNgModulesDecls();
 
@@ -216,7 +217,7 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  getStandaloneComponentScope(type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]):
+  getStandaloneComponentScope(type: ComponentType<any>, rawImports?: Component['imports']):
       StandaloneComponentScope {
     if (this.standaloneComponentsScopeCache.has(type)) {
       return this.standaloneComponentsScopeCache.get(type)!;
@@ -229,8 +230,7 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   private computeStandaloneComponentScope(
-      type: ComponentType<any>,
-      rawImports?: RawScopeInfoFromDecorator[]): StandaloneComponentScope {
+      type: ComponentType<any>, rawImports?: Component['imports']): StandaloneComponentScope {
     const ans: StandaloneComponentScope = {
       compilation: {
         // Standalone components are always able to self-reference.

@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
+import {Component} from '../../metadata';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
 
@@ -98,13 +99,12 @@ export interface DepsTrackerApi {
    * Returns the scope of standalone component. Mainly to be used by JIT. This method should be
    * called lazily after the initial parsing so that all the forward refs can be resolved.
    *
-   * @param rawImports the imports statement as appears on the component decorate which consists of
+   * @param rawImports the imports statement as appears on the component decorator which consists of
    *     Type as well as forward refs.
    *
    * The scope value here is memoized. To enforce a new calculation bust the cache by using
    * `clearScopeCacheFor` method.
    */
-  getStandaloneComponentScope(
-      type: ComponentType<any>,
-      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
+  getStandaloneComponentScope(type: ComponentType<any>, rawImports: Component['imports']):
+      StandaloneComponentScope;
 }

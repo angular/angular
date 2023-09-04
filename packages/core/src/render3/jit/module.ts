@@ -58,7 +58,7 @@ export function flushModuleScopingQueueAsMuchAsPossible() {
       for (let i = moduleQueue.length - 1; i >= 0; i--) {
         const {moduleType, ngModule} = moduleQueue[i];
 
-        if (ngModule.declarations && ngModule.declarations.every(isResolvedDeclaration)) {
+        if (ngModule.declarations && flatten(ngModule.declarations).every(isResolvedDeclaration)) {
           // dequeue
           moduleQueue.splice(i, 1);
           setScopeOnDeclaredComponents(moduleType, ngModule);
@@ -75,7 +75,7 @@ export function flushModuleScopingQueueAsMuchAsPossible() {
  * an array of declarations, it will recurse to check each declaration in that array
  * (which may also be arrays).
  */
-function isResolvedDeclaration(declaration: any[]|Type<any>): boolean {
+function isResolvedDeclaration(declaration: any[]|Type<any>|(() => Type<any>)): boolean {
   if (Array.isArray(declaration)) {
     return declaration.every(isResolvedDeclaration);
   }
@@ -319,7 +319,7 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
-  function verifyComponentIsPartOfNgModule(type: Type<any>) {
+  function verifyComponentIsPartOfNgModule(type: Type<any>|(() => Type<any>)) {
     type = resolveForwardRef(type);
     const existingModule = ownerNgModule.get(type);
     if (!existingModule && !isStandalone(type)) {
@@ -329,7 +329,7 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
-  function verifyCorrectBootstrapType(type: Type<any>) {
+  function verifyCorrectBootstrapType(type: Type<any>|(() => Type<any>)) {
     type = resolveForwardRef(type);
     if (!getComponentDef(type)) {
       errors.push(`${stringifyForError(type)} cannot be used as an entry component.`);

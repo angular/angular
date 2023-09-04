@@ -7,10 +7,11 @@
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../di/interface/provider';
+import {ModuleWithProviders, Provider} from '../di/interface/provider';
 import {Type} from '../interface/type';
 import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
+import {NestedReadonlyArray} from '../util/array_utils';
 import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 
 import {SchemaMetadata} from './schema';
@@ -655,7 +656,8 @@ export interface Component extends Directive {
    * More information about standalone components, directives, and pipes can be found in [this
    * guide](guide/standalone-components).
    */
-  imports?: (Type<any>|ReadonlyArray<any>)[];
+  imports?: NestedReadonlyArray<Type<any>|ModuleWithProviders<any>|(() => Type<any>)|
+                                (() => ModuleWithProviders<any>)>;
 
   /**
    * The set of schemas that declare elements to be allowed in a standalone component. Elements and
