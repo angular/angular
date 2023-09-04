@@ -1,13 +1,16 @@
-import { AppConfig } from './app-config';
-export { AppConfig } from './app-config';
+import { ApplicationConfig } from '@angular/core';
+import { Logger } from './logger.service';
+import { UserService } from './user.service';
+import { APP_CONFIG, HERO_DI_CONFIG } from './injection.config';
+import { provideProtractorTestingSupport } from '@angular/platform-browser';
 
-// #docregion token
-import { InjectionToken } from '@angular/core';
-
-export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
-// #enddocregion token
-
-export const HERO_DI_CONFIG: AppConfig = {
-  apiEndpoint: 'api.heroes.com',
-  title: 'Dependency Injection'
+const appConfig: ApplicationConfig = {
+    providers: [
+        provideProtractorTestingSupport(),
+        Logger,
+        UserService,
+        { provide: APP_CONFIG, useValue: HERO_DI_CONFIG }
+    ]
 };
+
+export default appConfig;
