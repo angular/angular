@@ -204,15 +204,11 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
   const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
   definitionMap.set('type', meta.type.value);
 
-  // Assign bootstrap definition
-  if (meta.kind === R3NgModuleMetadataKind.Global) {
-    if (meta.bootstrap.length > 0) {
-      definitionMap.set('bootstrap', refsToArray(meta.bootstrap, meta.containsForwardDecls));
-    }
-  } else {
-    if (meta.bootstrapExpression) {
-      definitionMap.set('bootstrap', meta.bootstrapExpression);
-    }
+  // Assign bootstrap definition. In local compilation mode (i.e., for
+  // `R3NgModuleMetadataKind.LOCAL`) we assign the bootstrap field using the runtime
+  // `ɵɵsetNgModuleScope`.
+  if (meta.kind === R3NgModuleMetadataKind.Global && meta.bootstrap.length > 0) {
+    definitionMap.set('bootstrap', refsToArray(meta.bootstrap, meta.containsForwardDecls));
   }
 
   if (meta.selectorScopeMode === R3SelectorScopeMode.Inline) {
@@ -321,8 +317,12 @@ export function createNgModuleType(meta: R3NgModuleMetadata): o.ExpressionType {
  * symbols to become tree-shakeable.
  */
 function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
-  const scopeMap = new DefinitionMap<
-      {declarations: o.Expression, imports: o.Expression, exports: o.Expression}>();
+  const scopeMap = new DefinitionMap<{
+    declarations: o.Expression,
+    imports: o.Expression,
+    exports: o.Expression,
+    bootstrap: o.Expression
+  }>();
 
   if (meta.kind === R3NgModuleMetadataKind.Global) {
     if (meta.declarations.length > 0) {
@@ -352,6 +352,10 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
     if (meta.exportsExpression) {
       scopeMap.set('exports', meta.exportsExpression);
     }
+  }
+
+  if (meta.kind === R3NgModuleMetadataKind.Local && meta.bootstrapExpression) {
+    scopeMap.set('bootstrap', meta.bootstrapExpression);
   }
 
   if (Object.keys(scopeMap.values).length === 0) {

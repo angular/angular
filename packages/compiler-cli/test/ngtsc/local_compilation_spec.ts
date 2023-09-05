@@ -562,5 +562,55 @@ runInEachFileSystem(() => {
            expect(text).toContain('either inline it or move it to a separate file');
          });
     });
+
+    describe('ng module bootstrap def', () => {
+      it('should include the bootstrap definition in ɵɵsetNgModuleScope instead of ɵɵdefineNgModule',
+         () => {
+           env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {App} from './some-where';
+
+        @NgModule({
+          declarations: [App],
+          bootstrap: [App],
+        })
+        export class AppModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵsetNgModuleScope(AppModule, { declarations: [App], bootstrap: [App] }); })();');
+         });
+
+      it('should include no bootstrap definition in ɵɵsetNgModuleScope if the NgModule has no bootstrap field',
+         () => {
+           env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {App} from './some-where';
+
+        @NgModule({
+          declarations: [App],
+        })
+        export class AppModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });');
+           expect(jsContents)
+               .toContain('ɵɵsetNgModuleScope(AppModule, { declarations: [App] }); })();');
+         });
+    });
   });
 });
