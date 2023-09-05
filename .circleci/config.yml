@@ -249,43 +249,6 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
-  # TODO: Remove test job after confirmation that the GHA version is stable.
-  test:
-    executor:
-      name: test-browser-executor
-      # Now that large integration tests are running locally in parallel (they can't run on RBE yet
-      # as they require network access for yarn install), this test is running out of memory
-      # consistently with the xlarge machine.
-      # TODO: switch back to xlarge once integration tests are running on remote-exec
-      resource_class: 2xlarge+
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run:
-          # We need to explicitly specify the --symlink_prefix option because otherwise we would
-          # not be able to easily find the output bin directory when uploading artifacts for size
-          # measurements.
-          command: yarn test:ci
-          no_output_timeout: 20m
-        # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
-        # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
-        # job (see .github/angular-robot.yml). Additionally any artifacts need to be stored with the
-        # following path format: "{projectName}/{context}/{fileName}". This format is necessary
-        # because otherwise the bot is not able to pick up the artifacts from CircleCI. See:
-        # https://github.com/angular/github-robot/blob/master/functions/src/plugins/size.ts#L392-L394
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
-          destination: core/hello_world/bundle
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
-          destination: core/todo/bundle
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
-          destination: core/hello_world/bundle.br
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
-          destination: core/todo/bundle.br
-
   # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
   saucelabs:
     executor:
@@ -455,9 +418,6 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - test:
-          requires:
-            - setup
       - build-npm-packages:
           requires:
             - setup
@@ -467,8 +427,6 @@ workflows:
       - publish_snapshot:
           <<: *only_release_branches
           requires:
-            # Only publish if tests and integration tests pass
-            - test
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
