@@ -254,7 +254,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#4463309193594fc8b23090c89c7f34178320681c":
   version "0.0.0-0109d498b0f6aae418ed4924a5e5c65695f0ac61"
-  uid "4463309193594fc8b23090c89c7f34178320681c"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4463309193594fc8b23090c89c7f34178320681c"
   dependencies:
     "@angular-devkit/build-angular" "16.2.0-next.2"
@@ -386,10 +385,9 @@
     "@material/typography" "15.0.0-canary.b994146f6.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#2c4d983ef0f1f000a8554b3b7fbf7f1061c877d3":
-  version "0.0.0-9931e1a8d1b62fcd2267e89f9993a494856cc1cd"
-  uid "2c4d983ef0f1f000a8554b3b7fbf7f1061c877d3"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2c4d983ef0f1f000a8554b3b7fbf7f1061c877d3"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#09c58eaf121b8e71edbe863c373854c0a221e290":
+  version "0.0.0-f959638f1a866fca0d805013be3312e820b9183e"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#09c58eaf121b8e71edbe863c373854c0a221e290"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -7495,8 +7493,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1":
-  version "2.1.6+git"
-  uid aa8de3486307f57a518b4b0d9e5e16d9fbd998d1
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1"
 
 domutils@^3.0.1:
@@ -14608,7 +14605,6 @@ sass@1.63.6:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz":
   version "0.0.0"
-  uid "9c16682e4c9716734432789884f868212f95f563"
   resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
 saucelabs@7.2.2, saucelabs@^1.5.0, saucelabs@^4.6.3:
