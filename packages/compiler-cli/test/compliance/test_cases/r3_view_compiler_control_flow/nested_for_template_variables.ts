@@ -22,7 +22,7 @@ export class MyApp {
     {name: 'three', subItems: ['sub one', 'sub two', 'sub three']},
   ];
 
-  // TODO(crisbeto): remove this once template type checking is full implemented.
+  // TODO(crisbeto): remove this once template type checking is fully implemented.
   item: any;
   outerCount: any;
   $count: any;

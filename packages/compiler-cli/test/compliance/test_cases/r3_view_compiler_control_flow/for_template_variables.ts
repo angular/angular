@@ -19,7 +19,7 @@ export class MyApp {
   message = 'hello';
   items = [];
 
-  // TODO(crisbeto): remove this once template type checking is full implemented.
+  // TODO(crisbeto): remove this once template type checking is fully implemented.
   item: any;
   $index: any;
   $first: any;

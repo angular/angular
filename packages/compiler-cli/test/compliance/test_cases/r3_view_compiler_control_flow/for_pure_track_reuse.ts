@@ -9,4 +9,8 @@ import {Component} from '@angular/core';
 export class MyApp {
   items = [{name: 'one'}, {name: 'two'}, {name: 'three'}];
   otherItems = [{name: 'four'}, {name: 'five'}, {name: 'six'}];
+
+  // TODO(crisbeto): remove this once template type checking is fully implemented.
+  item: any;
+  otherItem: any;
 }
