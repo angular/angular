@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../interface/type';
+
 import {SchemaMetadata} from './schema';
 
 
@@ -43,7 +44,11 @@ export interface NgModuleDef<T> {
   /** Token representing the module. Used by DI. */
   type: T;
 
-  /** List of components to bootstrap. */
+  /**
+   * List of components to bootstrap.
+   *
+   * @see {NgModuleScopeInfoFromDecorator} This field is only used in global compilation mode. In local compilation mode the bootstrap info is computed and added in runtime.
+   */
   bootstrap: Type<any>[]|(() => Type<any>[]);
 
   /** List of components, directives, and pipes declared by this module. */
