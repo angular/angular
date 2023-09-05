@@ -1,6 +1,4 @@
-function MyApp_Defer_4_DepsFn() {
-  return [LazyDep];
-}
+const MyApp_Defer_4_DepsFn = () => [LazyDep];
 …
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …

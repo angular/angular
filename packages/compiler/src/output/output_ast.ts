@@ -919,6 +919,10 @@ export class ArrowFunctionExpr extends Expression {
         this.params.map(p => p.clone()), Array.isArray(this.body) ? this.body : this.body.clone(),
         this.type, this.sourceSpan);
   }
+
+  toDeclStmt(name: string, modifiers?: StmtModifier): DeclareVarStmt {
+    return new DeclareVarStmt(name, this, INFERRED_TYPE, modifiers, this.sourceSpan);
+  }
 }
 
 

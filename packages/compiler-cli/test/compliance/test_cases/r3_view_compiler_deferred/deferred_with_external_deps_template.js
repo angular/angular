@@ -2,11 +2,7 @@ import {EagerDep} from './deferred_with_external_deps_eager';
 import {LoadingDep} from './deferred_with_external_deps_loading';
 import * as $r3$ from "@angular/core";
 
-function MyApp_Defer_4_DepsFn() {
-  return [import("./deferred_with_external_deps_lazy").then(function (m) {
-    return m.LazyDep;
-  })];
-}
+const MyApp_Defer_4_DepsFn = () => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)];
 
 function MyApp_Defer_2_Template(rf, ctx) {
   if (rf & 1) {
