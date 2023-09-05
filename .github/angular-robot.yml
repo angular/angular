@@ -11,7 +11,7 @@ merge:
   # the status will be added to your pull requests
   status:
     # set to true to disable
-    disabled: false
+    disabled: true
     # the name of the status
     context: 'ci/angular: merge status'
     # text to show when all checks pass
@@ -47,6 +47,7 @@ merge:
 
   # list of checks that will determine if the merge label can be added
   checks:
+    disabled: true
     # require that the PR has reviews from all requested reviewers
     #
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
@@ -79,6 +80,7 @@ merge:
 
 # options for the triage plugin
 triage:
+  disabled: true
   # number of the milestone to apply when the issue has not been triaged yet
   needsTriageMilestone: 83,
   # number of the milestone to apply when the issue is triaged
@@ -112,7 +114,7 @@ triage:
 # options for the triage PR plugin
 triagePR:
   # set to true to disable
-  disabled: false
+  disabled: true
   # number of the milestone to apply when the PR has not been triaged yet
   needsTriageMilestone: 83,
   # number of the milestone to apply when the PR is triaged
@@ -127,6 +129,6 @@ triagePR:
 # options for rerunning CI
 rerunCircleCI:
   # set to true to disable
-  disabled: false
+  disabled: true
   # the label which when added triggers a rerun of the default CircleCI workflow
   triggerRerunLabel: 'action: rerun CI at HEAD'
