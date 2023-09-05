@@ -54,7 +54,7 @@
       "default": "./fesm2015/zone.js"
     },
     "./dist/*": {
-      "default": "./bundles/*"
+      "default": "./bundles/*.umd.js"
     },
     "./testing": {
       "import": "./fesm2015/zone-testing.js",
