@@ -1419,7 +1419,7 @@ describe('type check blocks', () => {
               '"" + ((this).main()); "" + ((this).one()); "" + ((this).two()); "" + ((this).other());');
     });
 
-    it('should generate bindings inside switch block', () => {
+    it('should generate a switch block', () => {
       const TEMPLATE = `
         {#switch expr}
           {:case 1}{{one()}}
@@ -1429,7 +1429,27 @@ describe('type check blocks', () => {
       `;
 
       expect(conditionalTcb(TEMPLATE))
-          .toContain('"" + ((this).one()); "" + ((this).two()); "" + ((this).default());');
+          .toContain(
+              'switch (((this).expr)) { case 1: "" + ((this).one()); break; ' +
+              'case 2: "" + ((this).two()); break; default: "" + ((this).default()); break; }');
+    });
+
+    it('should generate a switch block inside a template', () => {
+      const TEMPLATE = `
+        <ng-template let-expr="exp">
+          {#switch expr()}
+            {:case 'one'}{{one()}}
+            {:case 'two'}{{two()}}
+            {:default}{{default()}}
+          {/switch}
+        </ng-template>
+      `;
+
+      expect(conditionalTcb(TEMPLATE))
+          .toContain(
+              'var _t1: any = null!; { var _t2 = (_t1.exp); switch (_t2()) { ' +
+              'case "one": "" + ((this).one()); break; case "two": "" + ((this).two()); break; ' +
+              'default: "" + ((this).default()); break; } } ');
     });
   });
 

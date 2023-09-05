@@ -2,7 +2,7 @@ import {Component, Pipe} from '@angular/core';
 
 @Pipe({standalone: true, name: 'test'})
 export class TestPipe {
-  tranform(value: unknown) {
+  transform(value: unknown) {
     return value;
   }
 }
