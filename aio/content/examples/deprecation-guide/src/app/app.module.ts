@@ -7,22 +7,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { SubmitButtonComponent } from './submit-button/submit-button.component';
 
-// #docregion lazyload-syntax, lazyload-deprecated-syntax
-const routes: Routes = [{
-    path: 'lazy',
-    // #enddocregion lazyload-deprecated-syntax
-    // The new import() syntax
-    loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
-    // #enddocregion lazyload-syntax
-    /*
-    // #docregion lazyload-deprecated-syntax
-    // The following string syntax for loadChildren is deprecated
-    loadChildren: './lazy/lazy.module#LazyModule',
-    // #enddocregion lazyload-deprecated-syntax
-    */
-    // #docregion lazyload-syntax, lazyload-deprecated-syntax
-  }];
-  // #enddocregion lazyload-syntax, lazyload-deprecated-syntax
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,7 +15,6 @@ const routes: Routes = [{
   // #docregion reactive-form-no-warning
   imports: [
     // #enddocregion reactive-form-no-warning
-    RouterModule.forChild(routes),
     FormsModule,
     BrowserModule,
     // #docregion reactive-form-no-warning
