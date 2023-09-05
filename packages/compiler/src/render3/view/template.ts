@@ -1339,10 +1339,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     for (const deferredDep of deferredDeps) {
       if (deferredDep.isDeferrable) {
-        // Callback function, e.g. `function(m) { return m.MyCmp; }`.
-        const innerFn = o.fn(
-            [new o.FnParam('m', o.DYNAMIC_TYPE)],
-            [new o.ReturnStatement(o.variable('m').prop(deferredDep.symbolName))]);
+        // Callback function, e.g. `m () => m.MyCmp;`.
+        const innerFn = o.arrowFn(
+            [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(deferredDep.symbolName));
 
         // Dynamic import, e.g. `import('./a').then(...)`.
         const importExpr =
@@ -1354,10 +1353,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
-    const depsFnExpr =
-        o.fn([], [new o.ReturnStatement(o.literalArr(dependencyExp))], o.INFERRED_TYPE, null, name);
+    const depsFnExpr = o.arrowFn([], o.literalArr(dependencyExp));
 
-    this.constantPool.statements.push(depsFnExpr.toDeclStmt(name));
+    this.constantPool.statements.push(depsFnExpr.toDeclStmt(name, o.StmtModifier.Final));
 
     return o.variable(name);
   }
