@@ -1,3 +1,0 @@
-exports_files([
-    "package.json",
-])

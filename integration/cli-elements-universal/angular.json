@@ -21,7 +21,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
-              "zone.js/dist/zone"
+              "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "aot": true,
@@ -83,7 +83,7 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": [
-              "zone.js/dist/zone"
+              "zone.js"
             ],
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",

@@ -42,5 +42,41 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
+  },
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "typings": "./zone.d.ts",
+      "require": "./bundles/zone.umd.js",
+      "default": "./fesm2015/zone.js"
+    },
+    "./testing": {
+      "require": "./bundles/zone-testing.umd.js",
+      "default": "./fesm2015/zone-testing.js"
+    },
+    "./node": {
+      "require": "./bundles/zone-node.umd.js",
+      "default": "./fesm2015/zone-node.js"
+    },
+    "./mix": {
+      "require": "./bundles/zone-mix.umd.js",
+      "default": "./fesm2015/zone-mix.js"
+    },
+    "./dist/*.min": {
+      "default": "./bundles/*.umd.min.js"
+    },
+    "./dist/*": {
+      "default": "./bundles/*.umd.js"
+    },
+    "./plugins/*.min": {
+      "require": "./bundles/*.umd.min.js",
+      "default": "./fesm2015/*.min.js"
+    },
+    "./plugins/*": {
+      "require": "./bundles/*.umd.js",
+      "default": "./fesm2015/*.js"
+    }
   }
 }
