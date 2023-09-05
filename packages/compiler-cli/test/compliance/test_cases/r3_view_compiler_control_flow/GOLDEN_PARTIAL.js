@@ -1378,6 +1378,8 @@ export declare class MyApp {
     otherItems: {
         name: string;
     }[];
+    item: any;
+    otherItem: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
@@ -1425,6 +1427,8 @@ export declare class MyApp {
         name: string;
     }[];
     trackFn(item: any, message: string): string;
+    item: any;
+    otherItem: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
@@ -1462,6 +1466,7 @@ import * as i0 from "@angular/core";
 export declare class MyApp {
     items: never[];
     trackFn(obj: any, arr: any[]): null;
+    item: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
