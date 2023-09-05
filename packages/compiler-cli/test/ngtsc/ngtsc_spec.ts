@@ -8793,9 +8793,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
 
         expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
-        expect(jsContents)
-            .toContain(
-                'function TestCmp_Defer_1_DepsFn() { return [import("./cmp-a").then(function (m) { return m.CmpA; }), LocalDep]; }');
+        expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA), LocalDep]');
 
         // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
         // via dynamic imports and an original import can be removed.
@@ -8847,7 +8845,7 @@ function allTests(os: string) {
 
           // The dependency function doesn't have a dynamic import, because `CmpA`
           // was eagerly referenced in component's code, thus regular import can not be removed.
-          expect(jsContents).toContain('function TestCmp_Defer_1_DepsFn() { return [CmpA]; }');
+          expect(jsContents).toContain('() => [CmpA]');
           expect(jsContents).toContain('import { CmpA }');
         });
 
@@ -8904,8 +8902,7 @@ function allTests(os: string) {
           // The dependency function doesn't have a dynamic import, because `CmpA`
           // was eagerly referenced in component's code, thus regular import can not be removed.
           // This also affects `CmpB`, since it was extracted from the same import.
-          expect(jsContents)
-              .toContain('function TestCmp_Defer_1_DepsFn() { return [CmpA, CmpB]; }');
+          expect(jsContents).toContain('() => [CmpA, CmpB]');
           expect(jsContents).toContain('import { CmpA, CmpB }');
         });
 
@@ -8957,9 +8954,9 @@ function allTests(os: string) {
           // referenced elsewhere, so we generate dynamic imports and drop a regular one.
           expect(jsContents)
               .toContain(
-                  'function TestCmp_Defer_1_DepsFn() { return [' +
-                  'import("./cmp-a").then(function (m) { return m.CmpA; }), ' +
-                  'import("./cmp-a").then(function (m) { return m.CmpB; })]; }');
+                  '() => [' +
+                  'import("./cmp-a").then(m => m.CmpA), ' +
+                  'import("./cmp-a").then(m => m.CmpB)]');
           expect(jsContents).not.toContain('import { CmpA, CmpB }');
         });
       });
@@ -9062,7 +9059,7 @@ function allTests(os: string) {
              const jsContents = env.getContents('test.js');
 
              // Dependency function eagerly references `CmpA`.
-             expect(jsContents).toContain('function TestCmp_Defer_1_DepsFn() { return [CmpA]; }');
+             expect(jsContents).toContain('() => [CmpA]');
 
              // The `setClassMetadataAsync` wasn't generated, since there are no deferrable
              // symbols.
