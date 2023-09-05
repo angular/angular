@@ -53,17 +53,12 @@ pkg_npm(
         "CHANGELOG.md",
         "README.md",
         "package.json",
-        "//packages/zone.js/mix:package.json",
-        "//packages/zone.js/node:package.json",
-        "//packages/zone.js/testing:package.json",
     ],
     visibility = ["//visibility:public"],
     deps = [
         ":LICENSE.wrapped",
         ":LICENSE_copy",
         ":zone_externs",
-        "//packages/zone.js/dist:dist_bundle_group",
-        "//packages/zone.js/plugins:plugin_bundle_group",
     ] + [
         "//packages/zone.js/bundles:" + b + "-es5.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
