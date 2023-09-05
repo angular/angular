@@ -8,6 +8,7 @@
 
 import {Component, forwardRef, ɵɵdefineNgModule, ɵɵgetComponentDepsFactory, ɵɵsetNgModuleScope} from '@angular/core';
 import {ComponentType} from '@angular/core/src/render3';
+import {getNgModuleDef} from '@angular/core/src/render3/definition';
 
 describe('component dependencies in local compilation', () => {
   it('should compute correct set of dependencies when importing ng-modules directly', () => {
@@ -223,4 +224,48 @@ describe('component dependencies in local compilation', () => {
 
        expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
      });
+});
+
+describe('component bootstrap info', () => {
+  it('should include the bootstrap info in local compilation mode', () => {
+    @Component({})
+    class MainComponent {
+    }
+
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {declarations: [MainComponent], bootstrap: [MainComponent]});
+    const def = getNgModuleDef(MainModule);
+
+    expect(def?.bootstrap).toEqual([MainComponent]);
+  });
+
+  it('should flatten the bootstrap info in local compilation mode', () => {
+    @Component({})
+    class MainComponent {
+    }
+
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {declarations: [MainComponent], bootstrap: [[[MainComponent]]]});
+    const def = getNgModuleDef(MainModule);
+
+    expect(def?.bootstrap).toEqual([MainComponent]);
+  });
+
+  it('should include the bootstrap info in full compilation mode', () => {
+    @Component({})
+    class MainComponent {
+    }
+
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule, bootstrap: [MainComponent]});
+    }
+    ɵɵsetNgModuleScope(MainModule, {declarations: [MainComponent]});
+    const def = getNgModuleDef(MainModule);
+
+    expect(def?.bootstrap).toEqual([MainComponent]);
+  });
 });

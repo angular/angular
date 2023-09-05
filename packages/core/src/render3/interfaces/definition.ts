@@ -553,4 +553,11 @@ export interface NgModuleScopeInfoFromDecorator {
    * module.
    */
   exports?: FullAotScopeInfoFromDecorator|NgModule['exports'];
+
+  /**
+   * The set of components that are bootstrapped when this module is bootstrapped. This field is
+   * only available in local compilation mode. In full compilation mode bootstrap info is passed
+   * directly to the module def runtime after statically analyzed and resolved.
+   */
+  bootstrap?: NgModule['bootstrap'];
 }
