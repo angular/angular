@@ -344,47 +344,6 @@ jobs:
             - ~/bazel_repository_cache
             - ~/.cache/bazelisk
 
-  # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
-  # build artifacts. This makes it easy to try out changes from a PR build for testing purposes.
-  # More info CircleCI build artifacts: https://circleci.com/docs/2.0/artifacts
-  #
-  # NOTE: Currently, this job only runs for PR builds. See `publish_snapshot` for non-PR builds.
-  publish_packages_as_artifacts:
-    executor: default-executor
-    environment:
-      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
-      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
-      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
-      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
-      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
-      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      # Publish `@angular/*` packages.
-      - run:
-          name: Create artifacts for @angular/* packages
-          command: ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $NG_PACKAGES_DIR $NG_PACKAGES_ARCHIVES_DIR
-      - store_artifacts:
-          path: *ng_packages_archives_dir
-          destination: angular
-      # Publish the `angular-in-memory-web-api` package.
-      - run:
-          name: Create artifacts for the `angular-in-memory-web-api` package
-          # Need to remove the zone.js.tgz before archive
-          command: ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $AIMWA_PACKAGES_DIR $AIMWA_PACKAGES_ARCHIVES_DIR
-      - store_artifacts:
-          path: *aimwa_packages_archives_dir
-          destination: angular-in-memory-web-api
-      # Publish the `zone.js` package.
-      - run:
-          name: Create artifacts for the `zone.js` package
-          # Need to remove the zone.js.tgz before archive
-          command: rm -rf $ZONEJS_PACKAGES_DIR/archive && ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
-      - store_artifacts:
-          path: *zonejs_packages_archives_dir
-          destination: zone.js
-
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
   publish_snapshot:
@@ -505,9 +464,6 @@ workflows:
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
-      - publish_packages_as_artifacts:
-          requires:
-            - build-npm-packages
       - publish_snapshot:
           <<: *only_release_branches
           requires:
