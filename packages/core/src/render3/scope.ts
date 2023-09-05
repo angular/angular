@@ -51,6 +51,11 @@ export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDeco
     ngModuleDef.imports = convertToTypeArray(scope.imports || EMPTY_ARRAY);
     ngModuleDef.exports = convertToTypeArray(scope.exports || EMPTY_ARRAY);
 
+    if (scope.bootstrap) {
+      // This only happens in local compilation mode.
+      ngModuleDef.bootstrap = convertToTypeArray(scope.bootstrap);
+    }
+
     depsTracker.registerNgModule(type, scope);
   });
 }
