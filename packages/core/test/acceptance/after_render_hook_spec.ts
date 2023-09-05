@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderRef, ChangeDetectorRef, Component, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderRef, ChangeDetectorRef, Component, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
@@ -162,7 +162,16 @@ describe('after render hooks', () => {
       });
 
       it('should throw if called recursively', () => {
-        @Component({selector: 'comp'})
+        class RethrowErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            throw error;
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+        })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -247,6 +256,50 @@ describe('after render hooks', () => {
         expect(zoneLog).toEqual([]);
         fixture.detectChanges();
         expect(zoneLog).toEqual([false]);
+      });
+
+      it('should propagate errors to the ErrorHandler', () => {
+        const log: string[] = [];
+
+        class FakeErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            log.push((error as Error).message);
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+        })
+        class Comp {
+          constructor() {
+            afterRender(() => {
+              log.push('pass 1');
+            });
+
+            afterRender(() => {
+              throw new Error('fail 1');
+            });
+
+            afterRender(() => {
+              log.push('pass 2');
+            });
+
+            afterRender(() => {
+              throw new Error('fail 2');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
       });
     });
 
@@ -390,7 +443,16 @@ describe('after render hooks', () => {
       });
 
       it('should throw if called recursively', () => {
-        @Component({selector: 'comp'})
+        class RethrowErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            throw error;
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+        })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -476,6 +538,50 @@ describe('after render hooks', () => {
         expect(zoneLog).toEqual([]);
         fixture.detectChanges();
         expect(zoneLog).toEqual([false]);
+      });
+
+      it('should propagate errors to the ErrorHandler', () => {
+        const log: string[] = [];
+
+        class FakeErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            log.push((error as Error).message);
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+        })
+        class Comp {
+          constructor() {
+            afterNextRender(() => {
+              log.push('pass 1');
+            });
+
+            afterNextRender(() => {
+              throw new Error('fail 1');
+            });
+
+            afterNextRender(() => {
+              log.push('pass 2');
+            });
+
+            afterNextRender(() => {
+              throw new Error('fail 2');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
       });
     });
   });

@@ -8,6 +8,7 @@
 
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
+import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
 import {assertGreaterThan} from '../util/assert';
@@ -92,18 +93,19 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
-  const manager = injector.get(AfterRenderEventManager);
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const handler = manager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
   const ngZone = injector.get(NgZone);
-  const instance = new AfterRenderCallback(() => ngZone.runOutsideAngular(callback));
+  const errorHandler = injector.get(ErrorHandler, null, {optional: true});
+  const instance = new AfterRenderCallback(ngZone, errorHandler, callback);
 
   destroy = () => {
-    handler.unregister(instance);
+    callbackHandler.unregister(instance);
     unregisterFn();
   };
-  handler.register(instance);
+  callbackHandler.register(instance);
   return {destroy};
 }
 
@@ -160,21 +162,22 @@ export function afterNextRender(
 
   let destroy: VoidFunction|undefined;
   const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
-  const manager = injector.get(AfterRenderEventManager);
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const handler = manager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
   const ngZone = injector.get(NgZone);
-  const instance = new AfterRenderCallback(() => {
+  const errorHandler = injector.get(ErrorHandler, null, {optional: true});
+  const instance = new AfterRenderCallback(ngZone, errorHandler, () => {
     destroy?.();
-    ngZone.runOutsideAngular(callback);
+    callback();
   });
 
   destroy = () => {
-    handler.unregister(instance);
+    callbackHandler.unregister(instance);
     unregisterFn();
   };
-  handler.register(instance);
+  callbackHandler.register(instance);
   return {destroy};
 }
 
@@ -182,14 +185,16 @@ export function afterNextRender(
  * A wrapper around a function to be used as an after render callback.
  */
 class AfterRenderCallback {
-  private callback: VoidFunction;
-
-  constructor(callback: VoidFunction) {
-    this.callback = callback;
-  }
+  constructor(
+      private zone: NgZone, private errorHandler: ErrorHandler|null,
+      private callbackFn: VoidFunction) {}
 
   invoke() {
-    this.callback();
+    try {
+      this.zone.runOutsideAngular(this.callbackFn);
+    } catch (err) {
+      this.errorHandler?.handleError(err);
+    }
   }
 }
 
@@ -257,18 +262,16 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
   }
 
   execute(): void {
-    try {
-      this.executingCallbacks = true;
-      for (const callback of this.callbacks) {
-        callback.invoke();
-      }
-    } finally {
-      this.executingCallbacks = false;
-      for (const callback of this.deferredCallbacks) {
-        this.callbacks.add(callback);
-      }
-      this.deferredCallbacks.clear();
+    this.executingCallbacks = true;
+    for (const callback of this.callbacks) {
+      callback.invoke();
     }
+    this.executingCallbacks = false;
+
+    for (const callback of this.deferredCallbacks) {
+      this.callbacks.add(callback);
+    }
+    this.deferredCallbacks.clear();
   }
 
   destroy(): void {
