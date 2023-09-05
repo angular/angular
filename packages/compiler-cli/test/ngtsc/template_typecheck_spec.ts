@@ -3742,8 +3742,6 @@ suppress
         ]);
       });
 
-      // TODO(crisbeto): test to check the bindings of the cases.
-      // TODO(crisbeto): test for type narrowing.
       it('should check bindings inside switch blocks', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -3768,6 +3766,56 @@ suppress
           `Property 'does_not_exist_one' does not exist on type 'Main'.`,
           `Property 'does_not_exist_two' does not exist on type 'Main'.`,
           `Property 'does_not_exist_default' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check expressions of switch blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#switch does_not_exist_main}
+                {:case does_not_exist_case} One
+              {/switch}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_case' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should narrow the type inside switch cases', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#switch expr}
+                {:case 1} One
+                {:default} {{acceptsNumber(expr)}}
+              {/switch}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`
         ]);
       });
     });
