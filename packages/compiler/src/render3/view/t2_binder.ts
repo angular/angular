@@ -119,7 +119,8 @@ class Scope implements Visitor {
       // Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitVariable(v));
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (
-        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof DeferredBlock ||
+        nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
         nodeOrNodes instanceof DeferredBlockLoading) {
       nodeOrNodes.children.forEach(node => node.visit(this));
@@ -180,7 +181,7 @@ class Scope implements Visitor {
   }
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
@@ -546,7 +547,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
-        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof DeferredBlock ||
+        nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
         nodeOrNodes instanceof DeferredBlockLoading) {
       nodeOrNodes.children.forEach(node => node.visit(this));
@@ -644,7 +646,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
     block.expression?.visit(this);
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
