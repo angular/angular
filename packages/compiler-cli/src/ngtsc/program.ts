@@ -15,6 +15,7 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {DocEntry} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
@@ -345,6 +346,15 @@ export class NgtscProgram implements api.Program {
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     return this.compiler.getIndexedComponents();
+  }
+
+  /**
+   * Gets information for the current program that may be used to generate API
+   * reference documentation. This includes Angular-specific information, such
+   * as component inputs and outputs.
+   */
+  getApiDocumentation(): DocEntry[] {
+    return this.compiler.getApiDocumentation();
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {
