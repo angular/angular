@@ -12,6 +12,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {InjectableClassRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
+import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
@@ -654,6 +655,26 @@ export class NgCompiler {
     const context = new IndexingContext();
     compilation.traitCompiler.index(context);
     return generateAnalysis(context);
+  }
+
+  /**
+   * Gets information for the current program that may be used to generate API
+   * reference documentation. This includes Angular-specific information, such
+   * as component inputs and outputs.
+   */
+  getApiDocumentation(): DocEntry[] {
+    const compilation = this.ensureAnalyzed();
+    const checker = this.inputProgram.getTypeChecker();
+    const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
+
+    let entries: DocEntry[] = [];
+    for (const sourceFile of this.inputProgram.getSourceFiles()) {
+      // We don't want to generate docs for `.d.ts` files.
+      if (sourceFile.isDeclarationFile) continue;
+
+      entries.push(...docsExtractor.extract(sourceFile));
+    }
+    return entries;
   }
 
   /**
