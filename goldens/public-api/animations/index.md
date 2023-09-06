@@ -89,7 +89,7 @@ export interface AnimationMetadata {
 }
 
 // @public
-export const enum AnimationMetadataType {
+export enum AnimationMetadataType {
     Animate = 4,
     AnimateChild = 9,
     AnimateRef = 10,

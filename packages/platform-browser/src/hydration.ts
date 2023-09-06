@@ -17,7 +17,7 @@ import {RuntimeErrorCode} from './errors';
  *
  * @publicApi
  */
-export const enum HydrationFeatureKind {
+export enum HydrationFeatureKind {
   NoHttpTransferCache,
   HttpTransferCacheOptions,
 }
