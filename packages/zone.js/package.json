@@ -49,307 +49,34 @@
     },
     ".": {
       "typings": "./zone.d.ts",
-      "import": "./fesm2015/zone.js",
       "require": "./bundles/zone.umd.js",
       "default": "./fesm2015/zone.js"
     },
-    "./dist/*": {
-      "default": "./bundles/*.umd.js"
-    },
     "./testing": {
-      "import": "./fesm2015/zone-testing.js",
       "require": "./bundles/zone-testing.umd.js",
       "default": "./fesm2015/zone-testing.js"
     },
     "./node": {
-      "import": "./fesm2015/zone-node.js",
       "require": "./bundles/zone-node.umd.js",
       "default": "./fesm2015/zone-node.js"
     },
     "./mix": {
-      "import": "./fesm2015/zone-mix.js",
       "require": "./bundles/zone-mix.umd.js",
       "default": "./fesm2015/zone-mix.js"
     },
-    "./plugins/async-test": {
-      "import": "./fesm2015/async-test.js",
-      "require": "./bundles/async-test.umd.js",
-      "default": "./fesm2015/async-test.js"
+    "./dist/*.min": {
+      "default": "./bundles/*.umd.min.js"
     },
-    "./plugins/async-test.min": {
-      "import": "./fesm2015/async-test.min.js",
-      "require": "./bundles/async-test.umd.min.js",
-      "default": "./fesm2015/async-test.min.js"
+    "./dist/*": {
+      "default": "./bundles/*.umd.js"
     },
-    "./plugins/fake-async-test": {
-      "import": "./fesm2015/fake-async-test.js",
-      "require": "./bundles/fake-async-test.umd.js",
-      "default": "./fesm2015/fake-async-test.js"
+    "./plugins/*.min": {
+      "require": "./bundles/*.umd.min.js",
+      "default": "./fesm2015/*.min.js"
     },
-    "./plugins/fake-async-test.min": {
-      "import": "./fesm2015/fake-async-test.min.js",
-      "require": "./bundles/fake-async-test.umd.min.js",
-      "default": "./fesm2015/fake-async-test.min.js"
-    },
-    "./plugins/jasmine-patch": {
-      "import": "./fesm2015/jasmine-patch.js",
-      "require": "./bundles/jasmine-patch.umd.js",
-      "default": "./fesm2015/jasmine-patch.js"
-    },
-    "./plugins/jasmine-patch.min": {
-      "import": "./fesm2015/jasmine-patch.min.js",
-      "require": "./bundles/jasmine-patch.umd.min.js",
-      "default": "./fesm2015/jasmine-patch.min.js"
-    },
-    "./plugins/long-stack-trace-zone": {
-      "import": "./fesm2015/long-stack-trace-zone.js",
-      "require": "./bundles/long-stack-trace-zone.umd.js",
-      "default": "./fesm2015/long-stack-trace-zone.js"
-    },
-    "./plugins/long-stack-trace-zone.min": {
-      "import": "./fesm2015/long-stack-trace-zone.min.js",
-      "require": "./bundles/long-stack-trace-zone.umd.min.js",
-      "default": "./fesm2015/long-stack-trace-zone.min.js"
-    },
-    "./plugins/mocha-patch": {
-      "import": "./fesm2015/mocha-patch.js",
-      "require": "./bundles/mocha-patch.umd.js",
-      "default": "./fesm2015/mocha-patch.js"
-    },
-    "./plugins/mocha-patch.min": {
-      "import": "./fesm2015/mocha-patch.min.js",
-      "require": "./bundles/mocha-patch.umd.min.js",
-      "default": "./fesm2015/mocha-patch.min.js"
-    },
-    "./plugins/proxy": {
-      "import": "./fesm2015/proxy.js",
-      "require": "./bundles/proxy.umd.js",
-      "default": "./fesm2015/proxy.js"
-    },
-    "./plugins/proxy.min": {
-      "import": "./fesm2015/proxy.min.js",
-      "require": "./bundles/proxy.umd.min.js",
-      "default": "./fesm2015/proxy.min.js"
-    },
-    "./plugins/sync-test": {
-      "import": "./fesm2015/sync-test.js",
-      "require": "./bundles/sync-test.umd.js",
-      "default": "./fesm2015/sync-test.js"
-    },
-    "./plugins/sync-test.min": {
-      "import": "./fesm2015/sync-test.min.js",
-      "require": "./bundles/sync-test.umd.min.js",
-      "default": "./fesm2015/sync-test.min.js"
-    },
-    "./plugins/task-tracking": {
-      "import": "./fesm2015/task-tracking.js",
-      "require": "./bundles/task-tracking.umd.js",
-      "default": "./fesm2015/task-tracking.js"
-    },
-    "./plugins/task-tracking.min": {
-      "import": "./fesm2015/task-tracking.min.js",
-      "require": "./bundles/task-tracking.umd.min.js",
-      "default": "./fesm2015/task-tracking.min.js"
-    },
-    "./plugins/webapis-media-query": {
-      "import": "./fesm2015/webapis-media-query.js",
-      "require": "./bundles/webapis-media-query.umd.js",
-      "default": "./fesm2015/webapis-media-query.js"
-    },
-    "./plugins/webapis-media-query.min": {
-      "import": "./fesm2015/webapis-media-query.min.js",
-      "require": "./bundles/webapis-media-query.umd.min.js",
-      "default": "./fesm2015/webapis-media-query.min.js"
-    },
-    "./plugins/webapis-notification": {
-      "import": "./fesm2015/webapis-notification.js",
-      "require": "./bundles/webapis-notification.umd.js",
-      "default": "./fesm2015/webapis-notification.js"
-    },
-    "./plugins/webapis-notification.min": {
-      "import": "./fesm2015/webapis-notification.min.js",
-      "require": "./bundles/webapis-notification.umd.min.js",
-      "default": "./fesm2015/webapis-notification.min.js"
-    },
-    "./plugins/webapis-rtc-peer-connection": {
-      "import": "./fesm2015/webapis-rtc-peer-connection.js",
-      "require": "./bundles/webapis-rtc-peer-connection.umd.js",
-      "default": "./fesm2015/webapis-rtc-peer-connection.js"
-    },
-    "./plugins/webapis-rtc-peer-connection.min": {
-      "import": "./fesm2015/webapis-rtc-peer-connection.min.js",
-      "require": "./bundles/webapis-rtc-peer-connection.umd.min.js",
-      "default": "./fesm2015/webapis-rtc-peer-connection.min.js"
-    },
-    "./plugins/webapis-shadydom": {
-      "import": "./fesm2015/webapis-shadydom.js",
-      "require": "./bundles/webapis-shadydom.umd.js",
-      "default": "./fesm2015/webapis-shadydom.js"
-    },
-    "./plugins/webapis-shadydom.min": {
-      "import": "./fesm2015/webapis-shadydom.min.js",
-      "require": "./bundles/webapis-shadydom.umd.min.js",
-      "default": "./fesm2015/webapis-shadydom.min.js"
-    },
-    "./plugins/wtf": {
-      "import": "./fesm2015/wtf.js",
-      "require": "./bundles/wtf.umd.js",
-      "default": "./fesm2015/wtf.js"
-    },
-    "./plugins/wtf.min": {
-      "import": "./fesm2015/wtf.min.js",
-      "require": "./bundles/wtf.umd.min.js",
-      "default": "./fesm2015/wtf.min.js"
-    },
-    "./plugins/zone-bluebird": {
-      "import": "./fesm2015/zone-bluebird.js",
-      "require": "./bundles/zone-bluebird.umd.js",
-      "default": "./fesm2015/zone-bluebird.js"
-    },
-    "./plugins/zone-bluebird.min": {
-      "import": "./fesm2015/zone-bluebird.min.js",
-      "require": "./bundles/zone-bluebird.umd.min.js",
-      "default": "./fesm2015/zone-bluebird.min.js"
-    },
-    "./plugins/zone-error": {
-      "import": "./fesm2015/zone-error.js",
-      "require": "./bundles/zone-error.umd.js",
-      "default": "./fesm2015/zone-error.js"
-    },
-    "./plugins/zone-error.min": {
-      "import": "./fesm2015/zone-error.min.js",
-      "require": "./bundles/zone-error.umd.min.js",
-      "default": "./fesm2015/zone-error.min.js"
-    },
-    "./plugins/zone-legacy": {
-      "import": "./fesm2015/zone-legacy.js",
-      "require": "./bundles/zone-legacy.umd.js",
-      "default": "./fesm2015/zone-legacy.js"
-    },
-    "./plugins/zone-legacy.min": {
-      "import": "./fesm2015/zone-legacy.min.js",
-      "require": "./bundles/zone-legacy.umd.min.js",
-      "default": "./fesm2015/zone-legacy.min.js"
-    },
-    "./plugins/zone-patch-canvas": {
-      "import": "./fesm2015/zone-patch-canvas.js",
-      "require": "./bundles/zone-patch-canvas.umd.js",
-      "default": "./fesm2015/zone-patch-canvas.js"
-    },
-    "./plugins/zone-patch-canvas.min": {
-      "import": "./fesm2015/zone-patch-canvas.min.js",
-      "require": "./bundles/zone-patch-canvas.umd.min.js",
-      "default": "./fesm2015/zone-patch-canvas.min.js"
-    },
-    "./plugins/zone-patch-cordova": {
-      "import": "./fesm2015/zone-patch-cordova.js",
-      "require": "./bundles/zone-patch-cordova.umd.js",
-      "default": "./fesm2015/zone-patch-cordova.js"
-    },
-    "./plugins/zone-patch-cordova.min": {
-      "import": "./fesm2015/zone-patch-cordova.min.js",
-      "require": "./bundles/zone-patch-cordova.umd.min.js",
-      "default": "./fesm2015/zone-patch-cordova.min.js"
-    },
-    "./plugins/zone-patch-electron": {
-      "import": "./fesm2015/zone-patch-electron.js",
-      "require": "./bundles/zone-patch-electron.umd.js",
-      "default": "./fesm2015/zone-patch-electron.js"
-    },
-    "./plugins/zone-patch-electron.min": {
-      "import": "./fesm2015/zone-patch-electron.min.js",
-      "require": "./bundles/zone-patch-electron.umd.min.js",
-      "default": "./fesm2015/zone-patch-electron.min.js"
-    },
-    "./plugins/zone-patch-fetch": {
-      "import": "./fesm2015/zone-patch-fetch.js",
-      "require": "./bundles/zone-patch-fetch.umd.js",
-      "default": "./fesm2015/zone-patch-fetch.js"
-    },
-    "./plugins/zone-patch-fetch.min": {
-      "import": "./fesm2015/zone-patch-fetch.min.js",
-      "require": "./bundles/zone-patch-fetch.umd.min.js",
-      "default": "./fesm2015/zone-patch-fetch.min.js"
-    },
-    "./plugins/zone-patch-jsonp": {
-      "import": "./fesm2015/zone-patch-jsonp.js",
-      "require": "./bundles/zone-patch-jsonp.umd.js",
-      "default": "./fesm2015/zone-patch-jsonp.js"
-    },
-    "./plugins/zone-patch-jsonp.min": {
-      "import": "./fesm2015/zone-patch-jsonp.min.js",
-      "require": "./bundles/zone-patch-jsonp.umd.min.js",
-      "default": "./fesm2015/zone-patch-jsonp.min.js"
-    },
-    "./plugins/zone-patch-message-port": {
-      "import": "./fesm2015/zone-patch-message-port.js",
-      "require": "./bundles/zone-patch-message-port.umd.js",
-      "default": "./fesm2015/zone-patch-message-port.js"
-    },
-    "./plugins/zone-patch-message-port.min": {
-      "import": "./fesm2015/zone-patch-message-port.min.js",
-      "require": "./bundles/zone-patch-message-port.umd.min.js",
-      "default": "./fesm2015/zone-patch-message-port.min.js"
-    },
-    "./plugins/zone-patch-promise-test": {
-      "import": "./fesm2015/zone-patch-promise-test.js",
-      "require": "./bundles/zone-patch-promise-test.umd.js",
-      "default": "./fesm2015/zone-patch-promise-test.js"
-    },
-    "./plugins/zone-patch-promise-test.min": {
-      "import": "./fesm2015/zone-patch-promise-test.min.js",
-      "require": "./bundles/zone-patch-promise-test.umd.min.js",
-      "default": "./fesm2015/zone-patch-promise-test.min.js"
-    },
-    "./plugins/zone-patch-resize-observer": {
-      "import": "./fesm2015/zone-patch-resize-observer.js",
-      "require": "./bundles/zone-patch-resize-observer.umd.js",
-      "default": "./fesm2015/zone-patch-resize-observer.js"
-    },
-    "./plugins/zone-patch-resize-observer.min": {
-      "import": "./fesm2015/zone-patch-resize-observer.min.js",
-      "require": "./bundles/zone-patch-resize-observer.umd.min.js",
-      "default": "./fesm2015/zone-patch-resize-observer.min.js"
-    },
-    "./plugins/zone-patch-rxjs": {
-      "import": "./fesm2015/zone-patch-rxjs.js",
-      "require": "./bundles/zone-patch-rxjs.umd.js",
-      "default": "./fesm2015/zone-patch-rxjs.js"
-    },
-    "./plugins/zone-patch-rxjs-fake-async": {
-      "import": "./fesm2015/zone-patch-rxjs-fake-async.js",
-      "require": "./bundles/zone-patch-rxjs-fake-async.umd.js",
-      "default": "./fesm2015/zone-patch-rxjs-fake-async.js"
-    },
-    "./plugins/zone-patch-rxjs-fake-async.min": {
-      "import": "./fesm2015/zone-patch-rxjs-fake-async.min.js",
-      "require": "./bundles/zone-patch-rxjs-fake-async.umd.min.js",
-      "default": "./fesm2015/zone-patch-rxjs-fake-async.min.js"
-    },
-    "./plugins/zone-patch-rxjs.min": {
-      "import": "./fesm2015/zone-patch-rxjs.min.js",
-      "require": "./bundles/zone-patch-rxjs.umd.min.js",
-      "default": "./fesm2015/zone-patch-rxjs.min.js"
-    },
-    "./plugins/zone-patch-socket-io": {
-      "import": "./fesm2015/zone-patch-socket-io.js",
-      "require": "./bundles/zone-patch-socket-io.umd.js",
-      "default": "./fesm2015/zone-patch-socket-io.js"
-    },
-    "./plugins/zone-patch-socket-io.min": {
-      "import": "./fesm2015/zone-patch-socket-io.min.js",
-      "require": "./bundles/zone-patch-socket-io.umd.min.js",
-      "default": "./fesm2015/zone-patch-socket-io.min.js"
-    },
-    "./plugins/zone-patch-user-media": {
-      "import": "./fesm2015/zone-patch-user-media.js",
-      "require": "./bundles/zone-patch-user-media.umd.js",
-      "default": "./fesm2015/zone-patch-user-media.js"
-    },
-    "./plugins/zone-patch-user-media.min": {
-      "import": "./fesm2015/zone-patch-user-media.min.js",
-      "require": "./bundles/zone-patch-user-media.umd.min.js",
-      "default": "./fesm2015/zone-patch-user-media.min.js"
+    "./plugins/*": {
+      "require": "./bundles/*.umd.js",
+      "default": "./fesm2015/*.js"
     }
   }
 }
