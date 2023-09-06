@@ -33,7 +33,7 @@ Any time this version of `index.html` is served, the corresponding `bundle.js` m
 For example, assume that the `startApp()` function is renamed to `runApp()` in both files.
 In this scenario, it is not valid to serve the old `index.html`, which calls `startApp()`, along with the new bundle, which defines `runApp()`.
 
-This file integrity is especially important when lazy loading modules.
+This file integrity is especially important when lazy loading.
 A JS bundle might reference many lazy chunks, and the filenames of the lazy chunks are unique to the particular build of the application.
 If a running application at version `X` attempts to load a lazy chunk, but the server has already updated to version `X + 1`, the lazy loading operation fails.
 
@@ -354,4 +354,4 @@ You might also be interested in the following:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-06

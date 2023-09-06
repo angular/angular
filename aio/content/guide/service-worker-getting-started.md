@@ -7,30 +7,31 @@ It then uses an example to show you a service worker in action, demonstrating lo
 
 A basic understanding of the information in [Introduction to Angular service workers](guide/service-worker-intro).
 
+<a id="cli-command"></a>
+
 ## Adding a service worker to your project
 
-To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`.
-It takes care of configuring your application to use service workers by adding the `@angular/service-worker` package along
-with setting up the necessary support files.
+To set up the Angular service worker in your project, run the following CLI command.
 
 <code-example format="shell" language="shell">
 
-ng add @angular/pwa --project &lt;project-name&gt;
+ng add @angular/pwa
 
 </code-example>
 
-The preceding command completes the following actions:
+The CLI configures your application to use service workers with the following actions:
 
 1.  Adds the `@angular/service-worker` package to your project.
 1.  Enables service worker build support in the CLI.
-1.  Imports and registers the service worker in the application module.
+1.  Imports and registers the service worker with the application's root providers.
 1.  Updates the `index.html` file:
     *   Includes a link to add the `manifest.webmanifest` file
     *   Adds a meta tag for `theme-color`
 1.  Installs icon files to support the installed Progressive Web App \(PWA\).
-1.  Creates the service worker configuration file called [`ngsw-config.json`](guide/service-worker-config), which specifies the caching behaviors and other settings.
+1.  Creates the service worker configuration file called [`ngsw-config.json`](guide/service-worker-config), 
+which specifies the caching behaviors and other settings.
 
- Now, build the project:
+Now, build the project:
 
 <code-example format="shell" language="shell">
 
@@ -45,9 +46,36 @@ The CLI project is now set up to use the Angular service worker.
 This section demonstrates a service worker in action,
 using an example application.
 
+<div class="alert is-helpful">
+
+To play along, 
+<live-example downloadOnly>download the example code</live-example>.
+
+Unzip the download, change to that directory, and enter the following commands in a terminal window,
+
+<code-example format="shell" language="shell">
+
+npm install           # install node packages
+ng add @angular/pwa   # setup to use service worker
+ng build              # build the app for production; code is in the /dist folder
+
+</code-example>
+
+The Angular development server (`ng serve`) doesn't support service worker applications.
+The [`http-server package`](https://www.npmjs.com/package/http-server) from npm does.
+You can run it without installing it like this:
+
+<code-example format="shell" language="shell">
+
+npx http-server -p 8080 -c-1 dist/   
+
+</code-example>
+
+</div>
+
 ### Initial load
 
-With the server running, point your browser at `http://localhost:8080`.
+With the server running on port `8080`, point your browser at `http://localhost:8080`.
 Your application should load normally.
 
 <div class="alert is-helpful">
@@ -138,7 +166,7 @@ Make a change to the application, and watch the service worker install the updat
 1.  Close the application tab, but not the window.
     This should also close the Developer Tools.
 
-1.  Shut down `http-server`.
+1.  Shut down `http-server` (Ctrl-c).
 1.  Open `src/app/app.component.html` for editing.
 1.  Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
 1.  Build and run the server again:
@@ -146,7 +174,7 @@ Make a change to the application, and watch the service worker install the updat
     <code-example format="shell" language="shell">
 
     ng build
-    http-server -p 8080 -c-1 dist/&lt;project-name&gt;
+    npx http-server -p 8080 -c-1 dist/
 
     </code-example>
 
@@ -164,11 +192,21 @@ Now look at how the browser and service worker handle the updated application.
     </div>
 
     What went wrong?
-    Nothing, actually.
+    _Nothing, actually!_
+    
     The Angular service worker is doing its job and serving the version of the application that it has **installed**, even though there is an update available.
     In the interest of speed, the service worker doesn't wait to check for updates before it serves the application that it has cached.
 
+    <br>
+
     Look at the `http-server` logs to see the service worker requesting `/ngsw.json`.
+
+    <code-example format="shell" language="shell">
+
+    [2023-09-07T00:37:24.372Z]  "GET /ngsw.json?ngsw-cache-bust=0.9365263935102124" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+
+    </code-example>
+
     This is how the service worker checks for updates.
 
 1.  Refresh the page.
@@ -185,8 +223,8 @@ Now look at how the browser and service worker handle the updated application.
 
 You might also be interested in the following:
 
-*   [App Shell](guide/app-shell)
 *   [Communicating with service workers](guide/service-worker-communications)
+*   [App Shell](guide/app-shell)
 
 <!-- links -->
 
@@ -194,4 +232,4 @@ You might also be interested in the following:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-06
