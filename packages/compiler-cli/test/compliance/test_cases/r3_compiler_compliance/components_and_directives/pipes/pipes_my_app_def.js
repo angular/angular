@@ -1,6 +1,4 @@
-const $c0$ = function ($a0$) {
-  return [$a0$, 1, 2, 3, 4, 5];
-};
+const $c0$ = $a0$ => [$a0$, 1, 2, 3, 4, 5];
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,

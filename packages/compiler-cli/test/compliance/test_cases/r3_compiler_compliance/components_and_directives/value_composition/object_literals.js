@@ -1,4 +1,4 @@
-const $e0_ff$ = function ($v$) { return {"duration": 500, animation: $v$}; };
+const $e0_ff$ = $v$ => ({"duration": 500, animation: $v$});
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
