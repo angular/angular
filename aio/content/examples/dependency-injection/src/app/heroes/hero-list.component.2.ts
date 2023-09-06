@@ -12,6 +12,7 @@ import { HeroService } from './hero.service';
 // #docregion
 
 @Component({
+  standalone: true,
   selector: 'app-hero-list',
   template: `
     <div *ngFor="let hero of heroes">
