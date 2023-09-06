@@ -701,11 +701,6 @@
               "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
             },
             {
-              "url": "guide/app-shell",
-              "title": "App shell",
-              "tooltip": "Render a portion of your app quickly to improve the startup experience."
-            },
-            {
               "url": "guide/service-worker-communications",
               "title": "Service worker communication",
               "tooltip": "Services that enable you to interact with an Angular service worker."
@@ -724,6 +719,11 @@
               "url": "guide/service-worker-config",
               "title": "Service worker configuration",
               "tooltip": "Configuring service worker caching behavior."
+            },
+            {
+              "url": "guide/app-shell",
+              "title": "App shell",
+              "tooltip": "Render a portion of your app quickly to improve the startup experience."
             }
           ]
         },
