@@ -717,6 +717,9 @@ export class Router {
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
     get url(): string;
+    // @deprecated
+    get urlHandlingStrategy(): UrlHandlingStrategy;
+    set urlHandlingStrategy(value: UrlHandlingStrategy);
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
     // (undocumented)
