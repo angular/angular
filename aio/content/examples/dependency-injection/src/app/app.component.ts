@@ -1,9 +1,17 @@
 import { Component, Inject } from '@angular/core';
 
-import { APP_CONFIG, AppConfig } from './app.config';
+import { APP_CONFIG, AppConfig } from './injection.config';
 import { UserService } from './user.service';
+import { HeroesComponent } from './heroes/heroes.component';
+import { HeroesTspComponent } from './heroes/heroes-tsp.component';
+import { ProvidersComponent } from './providers.component';
+import { CarComponent } from './car/car.component';
+import { InjectorComponent } from './injector.component';
+import { TestComponent } from './test.component';
+import { NgIf } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   template:  `
     <h1>{{title}}</h1>
@@ -19,7 +27,16 @@ import { UserService } from './user.service';
     <app-heroes id="unauthorized" *ngIf="!isAuthorized"></app-heroes>
     <app-heroes-tsp id="tspAuthorized" *ngIf="isAuthorized"></app-heroes-tsp>
     <app-providers></app-providers>
-  `
+  `,
+  imports: [
+    HeroesComponent,
+    HeroesTspComponent,
+    ProvidersComponent,
+    CarComponent,
+    InjectorComponent,
+    TestComponent,
+    NgIf
+  ]
 })
 export class AppComponent {
   title: string;
