@@ -370,7 +370,7 @@ function parseConditionalBlockParameters(
   const expression =
       // Expressions for `{:else if}` blocks start at 2 to skip the `if` from the expression.
       parseBlockParameterToBinding(block.parameters[0], bindingParser, isPrimaryIfBlock ? 0 : 2);
-  let expressionAlias: string|null = null;
+  let expressionAlias: t.Variable|null = null;
 
   // Start from 1 since we processed the first parameter already.
   for (let i = 1; i < block.parameters.length; i++) {
@@ -389,7 +389,8 @@ function parseConditionalBlockParameters(
       errors.push(
           new ParseError(param.sourceSpan, 'Conditional can only have one "as" expression'));
     } else {
-      expressionAlias = aliasMatch[1].trim();
+      const name = aliasMatch[1].trim();
+      expressionAlias = new t.Variable(name, name, param.sourceSpan, param.sourceSpan);
     }
   }
 
