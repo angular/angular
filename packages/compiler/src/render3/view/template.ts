@@ -1153,8 +1153,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // If the branch has an alias, it'll be assigned directly to the container's context.
       // We define a variable referring directly to the context so that any nested usages can be
       // rewritten to refer to it.
-      const variables = expressionAlias ?
-          [new t.Variable(expressionAlias, DIRECT_CONTEXT_REFERENCE, sourceSpan, sourceSpan)] :
+      const variables = expressionAlias !== null ?
+          [new t.Variable(
+              expressionAlias.name, DIRECT_CONTEXT_REFERENCE, expressionAlias.sourceSpan,
+              expressionAlias.keySpan)] :
           undefined;
 
       return {
