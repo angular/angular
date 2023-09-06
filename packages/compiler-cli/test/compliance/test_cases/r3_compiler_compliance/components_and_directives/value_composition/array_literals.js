@@ -1,4 +1,4 @@
-const $e0_ff$ = function ($v$) { return ["Nancy", $v$]; };
+const $e0_ff$ = $v$ => ["Nancy", $v$];
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
