@@ -672,7 +672,7 @@ export class NgCompiler {
       // We don't want to generate docs for `.d.ts` files.
       if (sourceFile.isDeclarationFile) continue;
 
-      entries.push(...docsExtractor.extract(sourceFile));
+      entries.push(...docsExtractor.extractAll(sourceFile));
     }
     return entries;
   }
