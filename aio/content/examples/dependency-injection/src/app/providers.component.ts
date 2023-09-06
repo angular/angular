@@ -7,7 +7,7 @@ import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import {
   APP_CONFIG,
   AppConfig,
-  HERO_DI_CONFIG } from './app.config';
+  HERO_DI_CONFIG } from './injection.config';
 
 import { HeroService } from './heroes/hero.service';
 import { heroServiceProvider } from './heroes/hero.service.provider';
@@ -17,10 +17,11 @@ import { UserService } from './user.service';
 const template = '{{log}}';
 
 @Component({
+  standalone: true,
   selector: 'provider-1',
   template,
   // #docregion providers-logger
-  providers: [Logger]
+  providers: [Logger],
   // #enddocregion providers-logger
 })
 export class Provider1Component {
@@ -34,6 +35,7 @@ export class Provider1Component {
 //////////////////////////////////////////
 
 @Component({
+  standalone: true,
   selector: 'provider-3',
   template,
   providers:
@@ -53,6 +55,7 @@ export class Provider3Component {
 export class BetterLogger extends Logger {}
 
 @Component({
+  standalone: true,
   selector: 'provider-4',
   template,
   providers:
@@ -83,6 +86,7 @@ export class EvenBetterLogger extends Logger {
 // #enddocregion EvenBetterLogger
 
 @Component({
+  standalone: true,
   selector: 'provider-5',
   template,
   providers:
@@ -111,6 +115,7 @@ export class OldLogger {
 }
 
 @Component({
+  standalone: true,
   selector: 'provider-6a',
   template,
   providers:
@@ -132,6 +137,7 @@ export class Provider6aComponent {
 }
 
 @Component({
+  standalone: true,
   selector: 'provider-6b',
   template,
   providers:
@@ -163,6 +169,7 @@ export const SilentLogger = {
 };
 
 @Component({
+  standalone: true,
   selector: 'provider-7',
   template,
   providers:
@@ -179,6 +186,7 @@ export class Provider7Component {
 /////////////////
 
 @Component({
+  standalone: true,
   selector: 'provider-8',
   template,
   providers: [heroServiceProvider, Logger, UserService]
@@ -193,6 +201,7 @@ export class Provider8Component {
 /////////////////
 
 @Component({
+  standalone: true,
   selector: 'provider-9',
   template,
   /*
@@ -228,6 +237,7 @@ import { Optional } from '@angular/core';
 const someMessage = 'Hello from the injected logger';
 
 @Component({
+  standalone: true,
   selector: 'provider-10',
   template,
   providers: [{ provide: Logger, useValue: null }]
@@ -248,6 +258,7 @@ export class Provider10Component implements OnInit {
 /////////////////
 
 @Component({
+  standalone: true,
   selector: 'app-providers',
   template: `
   <h2>Provider variations</h2>
@@ -261,6 +272,18 @@ export class Provider10Component implements OnInit {
   <div id="p8"><provider-8></provider-8></div>
   <div id="p9"><provider-9></provider-9></div>
   <div id="p10"><provider-10></provider-10></div>
-  `
+  `,
+  imports: [
+    Provider1Component,
+    Provider3Component,
+    Provider4Component,
+    Provider5Component,
+    Provider6aComponent,
+    Provider6bComponent,
+    Provider7Component,
+    Provider8Component,
+    Provider9Component,
+    Provider10Component
+  ]
 })
 export class ProvidersComponent { }

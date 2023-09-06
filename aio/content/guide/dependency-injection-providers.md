@@ -95,7 +95,7 @@ The `useValue` key lets you associate a fixed value with a DI token. Use this te
 
 Define and use an `InjectionToken` object for choosing a provider token for non-class dependencies. The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
+<code-example path="dependency-injection/src/app/injection.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
 The optional type parameter, `<AppConfig>`, and the token description, `app.config`, specify the token's purpose.
 
@@ -125,4 +125,4 @@ Because there is no interface for Angular to find at runtime, the interface cann
 
 * [Dependency Injection in Action](guide/dependency-injection-in-action)
 
-@reviewed 2022-08-02
+@reviewed 2023-09-06
