@@ -255,7 +255,7 @@ type Event_2 = NavigationStart | NavigationEnd | NavigationCancel | NavigationEr
 export { Event_2 as Event }
 
 // @public
-export const enum EventType {
+export enum EventType {
     // (undocumented)
     ActivationEnd = 14,
     // (undocumented)
@@ -433,7 +433,7 @@ export class NavigationCancel extends RouterEvent {
 }
 
 // @public
-export const enum NavigationCancellationCode {
+export enum NavigationCancellationCode {
     GuardRejected = 3,
     NoDataFromResolver = 2,
     Redirect = 0,
@@ -491,7 +491,7 @@ export class NavigationSkipped extends RouterEvent {
 }
 
 // @public
-export const enum NavigationSkippedCode {
+export enum NavigationSkippedCode {
     IgnoredByUrlHandlingStrategy = 1,
     IgnoredSameUrlNavigation = 0
 }

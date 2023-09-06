@@ -210,6 +210,12 @@
     "name": "HttpResponseBase"
   },
   {
+    "name": "HttpStatusCode"
+  },
+  {
+    "name": "HydrationFeatureKind"
+  },
+  {
     "name": "INJECTOR2"
   },
   {

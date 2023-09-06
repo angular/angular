@@ -252,6 +252,9 @@
     "name": "EventManagerPlugin"
   },
   {
+    "name": "EventType"
+  },
+  {
     "name": "FilterOperator"
   },
   {
@@ -456,6 +459,9 @@
     "name": "NavigationCancel"
   },
   {
+    "name": "NavigationCancellationCode"
+  },
+  {
     "name": "NavigationEnd"
   },
   {
@@ -466,6 +472,9 @@
   },
   {
     "name": "NavigationSkipped"
+  },
+  {
+    "name": "NavigationSkippedCode"
   },
   {
     "name": "NavigationStart"

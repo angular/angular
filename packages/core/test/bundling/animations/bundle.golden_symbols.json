@@ -36,6 +36,9 @@
     "name": "AnimationGroupPlayer"
   },
   {
+    "name": "AnimationMetadataType"
+  },
+  {
     "name": "AnimationRenderer"
   },
   {
@@ -1366,9 +1369,6 @@
   },
   {
     "name": "parseTimelineCommand"
-  },
-  {
-    "name": "parseTransitionExpr"
   },
   {
     "name": "platformBrowser"

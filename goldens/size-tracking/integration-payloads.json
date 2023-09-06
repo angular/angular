@@ -42,7 +42,7 @@
       "main": 221187,
       "polyfills": 33782,
       "node_modules_angular_animations_fesm2022_browser_mjs": 63981,
-      "default-node_modules_angular_animations_fesm2022_animations_mjs": 3828,
+      "default-node_modules_angular_animations_fesm2022_animations_mjs": 4264,
       "src_app_open-close_component_ts": 1321
     }
   },
@@ -56,7 +56,7 @@
   "platform-server/ngmodule/browser": {
     "uncompressed": {
       "runtime": 2688,
-      "main": 249925,
+      "main": 256333,
       "polyfills": 33778
     }
   },
