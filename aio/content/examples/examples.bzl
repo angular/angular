@@ -88,7 +88,7 @@ EXAMPLES = {
     "rx-library": {"stackblitz": True, "zip": True},
     "schematics-for-libraries": {"stackblitz": False, "zip": True},
     "security": {"stackblitz": True, "zip": True},
-    "service-worker-getting-started": {"stackblitz": False, "zip": False},
+    "service-worker-getting-started": {"stackblitz": False, "zip": True},
     "setup": {"stackblitz": False, "zip": False},
     "structural-directives": {"stackblitz": True, "zip": True},
     "styleguide": {"stackblitz": False, "zip": False},
