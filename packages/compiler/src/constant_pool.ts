@@ -222,7 +222,7 @@ export class ConstantPool {
       const parameters =
           resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
       const pureFunctionDeclaration =
-          o.fn(parameters, [new o.ReturnStatement(resultMap(resultExpressions))], o.INFERRED_TYPE);
+          o.arrowFn(parameters, resultMap(resultExpressions), o.INFERRED_TYPE);
       const name = this.freshName();
       this.statements.push(o.variable(name)
                                .set(pureFunctionDeclaration)

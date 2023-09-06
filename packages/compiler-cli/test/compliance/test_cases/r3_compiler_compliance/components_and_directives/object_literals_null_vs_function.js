@@ -1,5 +1,5 @@
-const $c0$ = function () { return { foo: null }; };
-const $c1$ = function (a0) { return { foo: a0 }; };
+const $c0$ = () => ({ foo: null });
+const $c1$ = a0 => ({ foo: a0 });
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
