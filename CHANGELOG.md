@@ -1,3 +1,8 @@
+<a name="16.2.4"></a>
+# 16.2.4 (2023-09-06)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.3"></a>
 # 16.2.3 (2023-08-30)
 ### animations
