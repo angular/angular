@@ -153,7 +153,7 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 }
 
 // @public
-export const enum HydrationFeatureKind {
+export enum HydrationFeatureKind {
     // (undocumented)
     HttpTransferCacheOptions = 1,
     // (undocumented)

@@ -2198,7 +2198,7 @@ export interface HttpSentEvent {
 }
 
 // @public
-export const enum HttpStatusCode {
+export enum HttpStatusCode {
     // (undocumented)
     Accepted = 202,
     // (undocumented)
