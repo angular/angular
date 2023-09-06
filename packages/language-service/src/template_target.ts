@@ -522,6 +522,7 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitIfBlockBranch(block: t.IfBlockBranch) {
     block.expression && this.visitBinding(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAll(block.children);
   }
 

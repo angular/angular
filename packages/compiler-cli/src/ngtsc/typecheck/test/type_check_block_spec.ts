@@ -1395,7 +1395,6 @@ describe('type check blocks', () => {
     });
   });
 
-  // TODO(crisbeto): tests for the bindings of conditionals and context variables.
   describe('conditional blocks', () => {
     // TODO(crisbeto): temporary utility while conditional blocks are disabled by default
     function conditionalTcb(template: string): string {
@@ -1404,19 +1403,30 @@ describe('type check blocks', () => {
           {enabledBlockTypes: new Set(['if', 'switch'])});
     }
 
-    it('should generate bindings inside if block', () => {
+    it('should generate an if block', () => {
       const TEMPLATE = `
-        {#if expr}
+        {#if expr === 0}
           {{main()}}
-          {:else if expr1}{{one()}}
-          {:else if expr2}{{two()}}
+          {:else if expr1 === 1}{{one()}}
+          {:else if expr2 === 2}{{two()}}
           {:else}{{other()}}
         {/if}
       `;
 
       expect(conditionalTcb(TEMPLATE))
           .toContain(
-              '"" + ((this).main()); "" + ((this).one()); "" + ((this).two()); "" + ((this).other());');
+              'if ((((this).expr)) === (0)) { "" + ((this).main()); } ' +
+              'else if ((((this).expr1)) === (1)) { "" + ((this).one()); } ' +
+              'else if ((((this).expr2)) === (2)) { "" + ((this).two()); } ' +
+              'else { "" + ((this).other()); }');
+    });
+
+    it('should generate an if block with an `as` expression', () => {
+      const TEMPLATE = `{#if expr === 1; as alias}{{alias}}{/if}`;
+
+      expect(conditionalTcb(TEMPLATE))
+          .toContain(
+              'if ((((this).expr)) === (1)) { var _t1 = (((this).expr)) === (1); "" + (_t1); }');
     });
 
     it('should generate a switch block', () => {

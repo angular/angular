@@ -304,7 +304,7 @@ export class IfBlock implements Node {
 
 export class IfBlockBranch implements Node {
   constructor(
-      public expression: AST|null, public children: Node[], public expressionAlias: string|null,
+      public expression: AST|null, public children: Node[], public expressionAlias: Variable|null,
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -450,6 +450,7 @@ export class RecursiveVisitor implements Visitor<void> {
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
     visitAll(this, block.children);
+    block.expressionAlias?.visit(this);
   }
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}

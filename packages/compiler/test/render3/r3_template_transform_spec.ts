@@ -123,10 +123,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitIfBlockBranch(block: t.IfBlockBranch): void {
-    const result = ['IfBlockBranch', block.expression === null ? null : unparse(block.expression)];
-    block.expressionAlias !== null && result.push(block.expressionAlias);
-    this.result.push(result);
-    this.visitAll([block.children]);
+    this.result.push(
+        ['IfBlockBranch', block.expression === null ? null : unparse(block.expression)]);
+    const toVisit = [block.children];
+    block.expressionAlias !== null && toVisit.unshift([block.expressionAlias]);
+    this.visitAll(toVisit);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
@@ -1598,7 +1599,8 @@ describe('R3 template transform', () => {
         {/if}
         `).toEqual([
         ['IfBlock'],
-        ['IfBlockBranch', 'cond.expr', 'foo'],
+        ['IfBlockBranch', 'cond.expr'],
+        ['Variable', 'foo', 'foo'],
         ['Text', ' Main case was true! '],
         ['IfBlockBranch', 'other.expr'],
         ['Text', ' Extra case was true! '],

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -216,7 +216,7 @@ class TcbElementOp extends TcbOp {
  *
  * Executing this operation returns a reference to the variable variable (lol).
  */
-class TcbVariableOp extends TcbOp {
+class TcbTemplateVariableOp extends TcbOp {
   constructor(
       private tcb: Context, private scope: Scope, private template: TmplAstTemplate,
       private variable: TmplAstVariable) {
@@ -1151,6 +1151,68 @@ class TcbComponentContextCompletionOp extends TcbOp {
   }
 }
 
+/**
+ * A `TcbOp` which renders a variable defined inside of block syntax (e.g. `{#if expr; as var}`).
+ *
+ * Executing this operation returns the identifier which can be used to refer to the variable.
+ */
+class TcbBlockVariableOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private initializer: ts.Expression,
+      private variable: TmplAstVariable) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    addParseSpanInfo(id, this.variable.keySpan);
+    this.scope.addStatement(tsCreateVariable(id, this.initializer));
+    return id;
+  }
+}
+
+/**
+ * A `TcbOp` which renders an `if` template block as a TypeScript `if` statement.
+ *
+ * Executing this operation returns nothing.
+ */
+class TcbIfOp extends TcbOp {
+  constructor(private tcb: Context, private scope: Scope, private block: TmplAstIfBlock) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): null {
+    const root = this.generateBranch(0);
+    root && this.scope.addStatement(root);
+    return null;
+  }
+
+  private generateBranch(index: number): ts.Statement|undefined {
+    const branch = this.block.branches[index];
+
+    if (!branch) {
+      return undefined;
+    }
+
+    const branchScope = Scope.forNodes(this.tcb, this.scope, branch, null);
+
+    // If the expression is null, it means that it's an `else` statement.
+    return branch.expression === null ?
+        ts.factory.createBlock(branchScope.render()) :
+        ts.factory.createIfStatement(
+            tcbExpression(branch.expression, this.tcb, branchScope),
+            ts.factory.createBlock(branchScope.render()), this.generateBranch(index + 1));
+  }
+}
+
 
 /**
  * A `TcbOp` which renders a `switch` block as a TypeScript `switch` statement.
@@ -1310,12 +1372,13 @@ class Scope {
    * @param tcb the overall context of TCB generation.
    * @param parent the `Scope` of the parent template (if any) or `null` if this is the root
    * `Scope`.
-   * @param templateOrNodes either a `TmplAstTemplate` representing the template for which to
+   * @param blockOrNodes either a `TmplAstTemplate` representing the template for which to
    * calculate the `Scope`, or a list of nodes if no outer template object is available.
    * @param guard an expression that is applied to this scope for type narrowing purposes.
    */
   static forNodes(
-      tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[]),
+      tcb: Context, parent: Scope|null,
+      blockOrNodes: TmplAstTemplate|TmplAstIfBlockBranch|(TmplAstNode[]),
       guard: ts.Expression|null): Scope {
     const scope = new Scope(tcb, parent, guard);
 
@@ -1328,11 +1391,11 @@ class Scope {
 
     // If given an actual `TmplAstTemplate` instance, then process any additional information it
     // has.
-    if (templateOrNodes instanceof TmplAstTemplate) {
+    if (blockOrNodes instanceof TmplAstTemplate) {
       // The template's variable declarations need to be added as `TcbVariableOp`s.
       const varMap = new Map<string, TmplAstVariable>();
 
-      for (const v of templateOrNodes.variables) {
+      for (const v of blockOrNodes.variables) {
         // Validate that variables on the `TmplAstTemplate` are only declared once.
         if (!varMap.has(v.name)) {
           varMap.set(v.name, v);
@@ -1341,12 +1404,24 @@ class Scope {
           tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
         }
 
-        const opIndex = scope.opQueue.push(new TcbVariableOp(tcb, scope, templateOrNodes, v)) - 1;
+        const opIndex =
+            scope.opQueue.push(new TcbTemplateVariableOp(tcb, scope, blockOrNodes, v)) - 1;
         scope.varMap.set(v, opIndex);
       }
-      children = templateOrNodes.children;
+      children = blockOrNodes.children;
+    } else if (blockOrNodes instanceof TmplAstIfBlockBranch) {
+      const {expression, expressionAlias} = blockOrNodes;
+
+      if (expression !== null && expressionAlias !== null) {
+        const op = new TcbBlockVariableOp(
+            tcb, scope, tcbExpression(expression, tcb, scope), expressionAlias);
+        const opIndex = scope.opQueue.push(op) - 1;
+        scope.varMap.set(expressionAlias, opIndex);
+      }
+
+      children = blockOrNodes.children;
     } else {
-      children = templateOrNodes;
+      children = blockOrNodes;
     }
     for (const node of children) {
       scope.appendNode(node);
@@ -1555,10 +1630,7 @@ class Scope {
       node.loading !== null && this.appendChildren(node.loading);
       node.error !== null && this.appendChildren(node.error);
     } else if (node instanceof TmplAstIfBlock) {
-      // TODO(crisbeto): type check the branch expression.
-      for (const branch of node.branches) {
-        this.appendChildren(branch);
-      }
+      this.opQueue.push(new TcbIfOp(this.tcb, this, node));
     } else if (node instanceof TmplAstSwitchBlock) {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {

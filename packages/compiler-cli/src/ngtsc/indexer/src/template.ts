@@ -285,6 +285,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
   override visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
     block.expression && this.visitExpression(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAll(block.children);
   }
 

@@ -14,7 +14,6 @@ import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetB
 import {createCssSelector} from './template';
 import {getAttrsForDirectiveMatching} from './util';
 
-
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
  * returns an object similar to TypeScript's `ts.TypeChecker` that contains knowledge about the
@@ -108,10 +107,9 @@ class Scope implements Visitor {
       // Process the nodes of the template.
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (nodeOrNodes instanceof IfBlockBranch) {
-      // TODO(crisbeto): uncomment this when rebasing #51690.
-      // if (nodeOrNodes.expressionAlias !== null) {
-      //   this.visitVariable(nodeOrNodes.expressionAlias);
-      // }
+      if (nodeOrNodes.expressionAlias !== null) {
+        this.visitVariable(nodeOrNodes.expressionAlias);
+      }
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (nodeOrNodes instanceof ForLoopBlock) {
       // TODO(crisbeto): uncomment this when rebasing #51690.
@@ -435,8 +433,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitIfBlockBranch(block: IfBlockBranch) {
-    // TODO(crisbeto): uncomment this when rebasing #51690.
-    // block.expressionAlias?.visit(this);
+    block.expressionAlias?.visit(this);
     block.children.forEach(node => node.visit(this));
   }
 
@@ -533,10 +530,9 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       // Set the nesting level.
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof IfBlockBranch) {
-      // TODO(crisbeto): uncomment this when rebasing #51690.
-      // if (nodeOrNodes.expressionAlias !== null) {
-      //   this.visitNode(nodeOrNodes.expressionAlias);
-      // }
+      if (nodeOrNodes.expressionAlias !== null) {
+        this.visitNode(nodeOrNodes.expressionAlias);
+      }
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof ForLoopBlock) {

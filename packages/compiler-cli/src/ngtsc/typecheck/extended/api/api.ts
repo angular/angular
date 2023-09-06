@@ -208,6 +208,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
 
   visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
     block.expression && this.visitAst(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAllNodes(block.children);
   }
 

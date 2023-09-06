@@ -195,6 +195,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
 
   visitIfBlockBranch(block: t.IfBlockBranch) {
     block.expression?.visit(this);
+    block.expressionAlias?.visit(this);
     t.visitAll(this, block.children);
   }
 }

@@ -2,7 +2,7 @@ import {Component, Pipe} from '@angular/core';
 
 @Pipe({standalone: true, name: 'test'})
 export class TestPipe {
-  tranform(value: unknown) {
+  transform(value: unknown) {
     return value;
   }
 }
@@ -18,6 +18,8 @@ export class TestPipe {
       {/if}
     </div>
   `,
+  standalone: true,
+  imports: [TestPipe],
 })
 export class MyApp {
   message = 'hello';

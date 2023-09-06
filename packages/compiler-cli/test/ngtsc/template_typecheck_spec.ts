@@ -3708,9 +3708,6 @@ suppress
         env.tsconfig({_enabledBlockTypes: ['if', 'switch']});
       });
 
-      // TODO(crisbeto): test to check the bindings of the branches.
-      // TODO(crisbeto): test for an `if` block with an `as` assignment.
-      // TODO(crisbeto): test for type narrowing.
       it('should check bindings inside if blocks', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -3739,6 +3736,133 @@ suppress
           `Property 'does_not_exist_one' does not exist on type 'Main'.`,
           `Property 'does_not_exist_two' does not exist on type 'Main'.`,
           `Property 'does_not_exist_else' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check bindings of if block expressions', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#if does_not_exist_main}
+                main
+                {:else if does_not_exist_one} one
+                {:else if does_not_exist_two} two
+              {/if}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_one' does not exist on type 'Main'.`,
+          `Property 'does_not_exist_two' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check aliased if block expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`{#if value === 1; as alias}{{acceptsNumber(alias)}}{/if}\`,
+            standalone: true,
+          })
+          export class Main {
+            value = 1;
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should not expose the aliased expression outside of the main block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#if value === 0; as alias}
+                main block
+                {:else} {{alias}}
+              {/if}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            value = 1;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'alias' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should expose alias to nested if blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#if value === 1; as alias}
+                {#if alias}{{acceptsNumber(alias)}}{/if}
+              {/if}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            value = 1;
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should narrow the type inside if blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#if expr === 1}
+                main block
+                {:else} {{acceptsNumber(expr)}}
+              {/if}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
         ]);
       });
 
