@@ -633,6 +633,9 @@
     "name": "_global"
   },
   {
+    "name": "_hasDOMChanged"
+  },
+  {
     "name": "_hasInvalidParent"
   },
   {
@@ -1609,6 +1612,9 @@
   },
   {
     "name": "setDisabledStateDefault"
+  },
+  {
+    "name": "setHasDOMChanged"
   },
   {
     "name": "setIncludeViewProviders"

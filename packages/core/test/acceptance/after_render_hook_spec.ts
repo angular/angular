@@ -7,18 +7,105 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, Directive, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, Renderer2, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
+  /**
+   * By default, `afterRender` only runs if the DOM is modified during change detection.
+   * To simplify tests, `ForceAfterRenderDirective` can be used to ensure `afterRender`
+   * will be called after every change detection cycle.
+   */
+  @Directive({selector: 'force-after-render', standalone: true})
+  class ForceAfterRenderDirective {
+    ngDoCheck() {
+      Renderer2.markAsChanged();
+    }
+  }
+
   describe('browser', () => {
     const COMMON_CONFIGURATION = {
       providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
     };
 
+    describe('common', () => {
+      it('should only run when the UI is changed', () => {
+        @Component({selector: 'comp', template: `{{ run }}`})
+        class Comp {
+          run = 0;
+          afterRenderCount = 0;
+          afterNextRenderCount = 0;
+          injector = inject(Injector);
+
+          constructor() {
+            afterRender(() => {
+              this.afterRenderCount++;
+            });
+          }
+
+          queueAfterNextRender() {
+            return afterNextRender(() => {
+              this.afterNextRenderCount++;
+            }, {injector: this.injector});
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+        const compInstance = fixture.componentInstance;
+
+        // It hasn't run at all
+        expect(compInstance.afterRenderCount).toBe(0);
+        expect(compInstance.afterNextRenderCount).toBe(0);
+
+        // Running change detection the first time
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterNextRenderCount).toBe(0);
+
+        // Running change detection again
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterNextRenderCount).toBe(0);
+
+        // Running change detection after a change
+        compInstance.run++;
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(2);
+        expect(compInstance.afterNextRenderCount).toBe(0);
+
+        // Running change detection again
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(2);
+        expect(compInstance.afterNextRenderCount).toBe(0);
+
+        // Running change detection after queing afterNextRender (first time)
+        compInstance.queueAfterNextRender();
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(3);
+        expect(compInstance.afterNextRenderCount).toBe(1);
+
+        // Running change detection after queing and destroying afterNextRender
+        const afterNextRenderRef = compInstance.queueAfterNextRender();
+        afterNextRenderRef.destroy();
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(3);
+        expect(compInstance.afterNextRenderCount).toBe(1);
+
+        // Running change detection after queing afterNextRender (second time)
+        compInstance.queueAfterNextRender();
+        fixture.detectChanges();
+        expect(compInstance.afterRenderCount).toBe(4);
+        expect(compInstance.afterNextRenderCount).toBe(2);
+      });
+    });
+
     describe('afterRender', () => {
       it('should run with the correct timing', () => {
-        @Component({selector: 'dynamic-comp'})
+        @Component({selector: 'dynamic-comp', hostDirectives: [ForceAfterRenderDirective]})
         class DynamicComp {
           afterRenderCount = 0;
 
@@ -29,7 +116,7 @@ describe('after render hooks', () => {
           }
         }
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           afterRenderCount = 0;
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -43,54 +130,54 @@ describe('after render hooks', () => {
         }
 
         TestBed.configureTestingModule({
-          declarations: [Comp],
+          declarations: [DynamicComp, Comp],
           ...COMMON_CONFIGURATION,
         });
         const fixture = TestBed.createComponent(Comp);
-        const compInstance = fixture.componentInstance;
-        const viewContainerRef = compInstance.viewContainerRef;
+        const compRef = fixture.componentRef;
+        const viewContainerRef = compRef.instance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
 
         // It hasn't run at all
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(0);
+        expect(compRef.instance.afterRenderCount).toBe(0);
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
-        // Running change detection at the compInstance level
-        compInstance.changeDetectorRef.detectChanges();
+        // Running change detection at the compRef level
+        compRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(2);
-        expect(compInstance.afterRenderCount).toBe(2);
+        expect(compRef.instance.afterRenderCount).toBe(2);
 
         // Running change detection at the fixture level (first time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(3);
-        expect(compInstance.afterRenderCount).toBe(3);
+        expect(compRef.instance.afterRenderCount).toBe(3);
 
         // Running change detection at the fixture level (second time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(4);
-        expect(compInstance.afterRenderCount).toBe(4);
+        expect(compRef.instance.afterRenderCount).toBe(4);
 
         // Running change detection at the fixture level (third time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(5);
-        expect(compInstance.afterRenderCount).toBe(5);
+        expect(compRef.instance.afterRenderCount).toBe(5);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(5);
-        expect(compInstance.afterRenderCount).toBe(6);
+        expect(compRef.instance.afterRenderCount).toBe(6);
       });
 
       it('should run all hooks after outer change detection', () => {
         let log: string[] = [];
 
-        @Component({selector: 'child-comp'})
+        @Component({selector: 'child-comp', hostDirectives: [ForceAfterRenderDirective]})
         class ChildComp {
           constructor() {
             afterRender(() => {
@@ -102,6 +189,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -134,7 +222,7 @@ describe('after render hooks', () => {
         let hookRef: AfterRenderRef|null = null;
         let afterRenderCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             hookRef = afterRender(() => {
@@ -170,7 +258,8 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}],
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -187,6 +276,7 @@ describe('after render hooks', () => {
           ...COMMON_CONFIGURATION,
         });
         const fixture = TestBed.createComponent(Comp);
+
         expect(() => fixture.detectChanges())
             .toThrowError(/A new render operation began before the previous operation ended./);
       });
@@ -195,7 +285,7 @@ describe('after render hooks', () => {
         let outerHookCount = 0;
         let innerHookCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           injector = inject(Injector);
 
@@ -238,7 +328,7 @@ describe('after render hooks', () => {
       it('should run outside of the Angular zone', () => {
         const zoneLog: boolean[] = [];
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             afterRender(() => {
@@ -269,7 +359,8 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class Comp {
           constructor() {
@@ -305,11 +396,15 @@ describe('after render hooks', () => {
       it('should run callbacks in the correct phase and order', () => {
         const log: string[] = [];
 
-        @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
+        @Component({
+          selector: 'root',
+          template: `<comp-a></comp-a><comp-b></comp-b>`,
+          hostDirectives: [ForceAfterRenderDirective]
+        })
         class Root {
         }
 
-        @Component({selector: 'comp-a'})
+        @Component({selector: 'comp-a', hostDirectives: [ForceAfterRenderDirective]})
         class CompA {
           constructor() {
             afterRender(() => {
@@ -330,7 +425,7 @@ describe('after render hooks', () => {
           }
         }
 
-        @Component({selector: 'comp-b'})
+        @Component({selector: 'comp-b', hostDirectives: [ForceAfterRenderDirective]})
         class CompB {
           constructor() {
             afterRender(() => {
@@ -368,7 +463,7 @@ describe('after render hooks', () => {
 
     describe('afterNextRender', () => {
       it('should run with the correct timing', () => {
-        @Component({selector: 'dynamic-comp'})
+        @Component({selector: 'dynamic-comp', hostDirectives: [ForceAfterRenderDirective]})
         class DynamicComp {
           afterRenderCount = 0;
 
@@ -379,10 +474,9 @@ describe('after render hooks', () => {
           }
         }
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           afterRenderCount = 0;
-          changeDetectorRef = inject(ChangeDetectorRef);
           viewContainerRef = inject(ViewContainerRef);
 
           constructor() {
@@ -397,50 +491,50 @@ describe('after render hooks', () => {
           ...COMMON_CONFIGURATION,
         });
         const fixture = TestBed.createComponent(Comp);
-        const compInstance = fixture.componentInstance;
-        const viewContainerRef = compInstance.viewContainerRef;
+        const compRef = fixture.componentRef;
+        const viewContainerRef = compRef.instance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
 
         // It hasn't run at all
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(0);
+        expect(compRef.instance.afterRenderCount).toBe(0);
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
-        // Running change detection at the compInstance level
-        compInstance.changeDetectorRef.detectChanges();
+        // Running change detection at the compRef level
+        compRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
         // Running change detection at the fixture level (first time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
         // Running change detection at the fixture level (second time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
         // Running change detection at the fixture level (third time)
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compRef.instance.afterRenderCount).toBe(1);
       });
 
       it('should run all hooks after outer change detection', () => {
         let log: string[] = [];
 
-        @Component({selector: 'child-comp'})
+        @Component({selector: 'child-comp', hostDirectives: [ForceAfterRenderDirective]})
         class ChildComp {
           constructor() {
             afterNextRender(() => {
@@ -452,6 +546,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -484,7 +579,7 @@ describe('after render hooks', () => {
         let hookRef: AfterRenderRef|null = null;
         let afterRenderCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             hookRef = afterNextRender(() => {
@@ -514,7 +609,8 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}],
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -539,7 +635,7 @@ describe('after render hooks', () => {
         let outerHookCount = 0;
         let innerHookCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           injector = inject(Injector);
 
@@ -583,7 +679,7 @@ describe('after render hooks', () => {
       it('should run outside of the Angular zone', () => {
         const zoneLog: boolean[] = [];
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             afterNextRender(() => {
@@ -614,7 +710,8 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
+          hostDirectives: [ForceAfterRenderDirective]
         })
         class Comp {
           constructor() {
@@ -650,11 +747,15 @@ describe('after render hooks', () => {
       it('should run callbacks in the correct phase and order', () => {
         const log: string[] = [];
 
-        @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
+        @Component({
+          selector: 'root',
+          template: `<comp-a></comp-a><comp-b></comp-b>`,
+          hostDirectives: [ForceAfterRenderDirective]
+        })
         class Root {
         }
 
-        @Component({selector: 'comp-a'})
+        @Component({selector: 'comp-a', hostDirectives: [ForceAfterRenderDirective]})
         class CompA {
           constructor() {
             afterNextRender(() => {
@@ -675,7 +776,7 @@ describe('after render hooks', () => {
           }
         }
 
-        @Component({selector: 'comp-b'})
+        @Component({selector: 'comp-b', hostDirectives: [ForceAfterRenderDirective]})
         class CompB {
           constructor() {
             afterNextRender(() => {
@@ -721,7 +822,7 @@ describe('after render hooks', () => {
       it('should not run', () => {
         let afterRenderCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             afterRender(() => {
@@ -744,7 +845,7 @@ describe('after render hooks', () => {
       it('should not run', () => {
         let afterRenderCount = 0;
 
-        @Component({selector: 'comp'})
+        @Component({selector: 'comp', hostDirectives: [ForceAfterRenderDirective]})
         class Comp {
           constructor() {
             afterNextRender(() => {

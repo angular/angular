@@ -1271,6 +1271,7 @@ export abstract class Renderer2 {
     destroyNode: ((node: any) => void) | null;
     abstract insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean): void;
     abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean | void): () => void;
+    static markAsChanged(): void;
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;

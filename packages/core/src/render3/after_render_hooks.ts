@@ -14,6 +14,7 @@ import {DestroyRef} from '../linker/destroy_ref';
 import {assertGreaterThan} from '../util/assert';
 import {NgZone} from '../zone';
 
+import {hasDOMChanged, setHasDOMChanged} from './state';
 import {isPlatformBrowser} from './util/misc_utils';
 
 /**
@@ -182,7 +183,8 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
   const ngZone = injector.get(NgZone);
   const errorHandler = injector.get(ErrorHandler, null, {optional: true});
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
-  const instance = new AfterRenderCallback(ngZone, errorHandler, phase, callback);
+  const instance =
+      new AfterRenderCallback(AfterRenderCallbackFlags.None, ngZone, errorHandler, phase, callback);
 
   destroy = () => {
     callbackHandler.unregister(instance);
@@ -259,10 +261,11 @@ export function afterNextRender(
   const ngZone = injector.get(NgZone);
   const errorHandler = injector.get(ErrorHandler, null, {optional: true});
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
-  const instance = new AfterRenderCallback(ngZone, errorHandler, phase, () => {
-    destroy?.();
-    callback();
-  });
+  const instance = new AfterRenderCallback(
+      AfterRenderCallbackFlags.ForceExecution, ngZone, errorHandler, phase, () => {
+        destroy?.();
+        callback();
+      });
 
   destroy = () => {
     callbackHandler.unregister(instance);
@@ -273,12 +276,37 @@ export function afterNextRender(
 }
 
 /**
+ * Register a callback to be invoked before any future afterRender or afterNextRender
+ * callbacks.
+ *
+ * @internal
+ */
+export function beforeNextAfterRender(injector: Injector, callback: VoidFunction) {
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
+  afterRenderEventManager.preExecuteHooks.push(callback);
+}
+
+const enum AfterRenderCallbackFlags {
+  /**
+   * No flags
+   */
+  None = 0b0000,
+
+  /**
+   * Whether the presence of this callback should force callbacks to be executed
+   * regardless of whether the DOM was updated.
+   */
+  ForceExecution = 0b0001,
+}
+
+/**
  * A wrapper around a function to be used as an after render callback.
  */
 class AfterRenderCallback {
   constructor(
-      private zone: NgZone, private errorHandler: ErrorHandler|null,
-      public readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {}
+      public readonly flags: AfterRenderCallbackFlags, private zone: NgZone,
+      private errorHandler: ErrorHandler|null, public readonly phase: AfterRenderPhase,
+      private callbackFn: VoidFunction) {}
 
   invoke() {
     try {
@@ -313,7 +341,7 @@ interface AfterRenderCallbackHandler {
   /**
    * Execute callbacks.
    */
-  execute(): void;
+  execute(hasDOMChanged: boolean): void;
 
   /**
    * Perform any necessary cleanup.
@@ -335,6 +363,7 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
     [AfterRenderPhase.Read]: new Set<AfterRenderCallback>(),
   };
   private deferredCallbacks = new Set<AfterRenderCallback>();
+  private forcedCallbacks = new Set<AfterRenderCallback>();
 
   validateBegin(): void {
     if (this.executingCallbacks) {
@@ -347,28 +376,47 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
   }
 
   register(callback: AfterRenderCallback): void {
-    // If we're currently running callbacks, new callbacks should be deferred
-    // until the next render operation.
-    const target = this.executingCallbacks ? this.deferredCallbacks : this.buckets[callback.phase];
-    target.add(callback);
+    if (this.executingCallbacks) {
+      // If we're currently running callbacks, new callbacks should be deferred
+      // until the next render operation.
+      this.deferredCallbacks.add(callback);
+    } else {
+      this.registerUnchecked(callback);
+    }
+  }
+
+  registerUnchecked(callback: AfterRenderCallback): void {
+    if ((callback.flags & AfterRenderCallbackFlags.ForceExecution) ===
+        AfterRenderCallbackFlags.ForceExecution) {
+      this.forcedCallbacks.add(callback);
+    }
+    this.buckets[callback.phase].add(callback);
   }
 
   unregister(callback: AfterRenderCallback): void {
     this.buckets[callback.phase].delete(callback);
     this.deferredCallbacks.delete(callback);
+    this.forcedCallbacks.delete(callback);
   }
 
-  execute(): void {
+  execute(hasDOMChanged: boolean): void {
+    if (!hasDOMChanged && this.forcedCallbacks.size === 0) {
+      // Callbacks only run if the DOM has changed or if using e.g. `afterNextRender`.
+      return;
+    }
+
+    this.forcedCallbacks.clear();
     this.executingCallbacks = true;
     for (const bucket of Object.values(this.buckets)) {
       for (const callback of bucket) {
         callback.invoke();
       }
     }
+
     this.executingCallbacks = false;
 
     for (const callback of this.deferredCallbacks) {
-      this.buckets[callback.phase].add(callback);
+      this.registerUnchecked(callback);
     }
     this.deferredCallbacks.clear();
   }
@@ -391,6 +439,9 @@ export class AfterRenderEventManager {
   /* @internal */
   handler: AfterRenderCallbackHandler|null = null;
 
+  /* @internal */
+  preExecuteHooks: VoidFunction[] = [];
+
   /**
    * Mark the beginning of a render operation (i.e. CD cycle).
    * Throws if called while executing callbacks.
@@ -398,6 +449,12 @@ export class AfterRenderEventManager {
   begin() {
     this.handler?.validateBegin();
     this.renderDepth++;
+
+    if (this.renderDepth === 1) {
+      // Reset the hasDOMChanged flag, as we only care if
+      // the DOM changes during this render operation.
+      setHasDOMChanged(false);
+    }
   }
 
   /**
@@ -409,7 +466,11 @@ export class AfterRenderEventManager {
     this.renderDepth--;
 
     if (this.renderDepth === 0) {
-      this.handler?.execute();
+      for (const callback of this.preExecuteHooks) {
+        callback();
+      }
+      this.preExecuteHooks.length = 0;
+      this.handler?.execute(hasDOMChanged());
     }
   }
 

@@ -624,6 +624,9 @@
     "name": "_global"
   },
   {
+    "name": "_hasDOMChanged"
+  },
+  {
     "name": "_icuContainerIterate"
   },
   {
@@ -1585,6 +1588,9 @@
   },
   {
     "name": "setDisabledStateDefault"
+  },
+  {
+    "name": "setHasDOMChanged"
   },
   {
     "name": "setIncludeViewProviders"

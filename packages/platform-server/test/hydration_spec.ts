@@ -4066,9 +4066,8 @@ describe('platform-server hydration integration', () => {
 
         // afterRender should be triggered by:
         //   1.) Bootstrap
-        //   2.) Microtask empty event
-        //   3.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 1]);
+        //   2.) Stabilization + cleanup
+        expect(observedChildCountLog).toEqual([2, 1]);
       });
 
       it('should trigger change detection after cleanup (deferred)', async () => {
@@ -4113,15 +4112,13 @@ describe('platform-server hydration integration', () => {
 
         // afterRender should be triggered by:
         //   1.) Bootstrap
-        //   2.) Microtask empty event
-        expect(observedChildCountLog).toEqual([2, 2]);
+        expect(observedChildCountLog).toEqual([2]);
 
         await whenStable(appRef);
 
         // afterRender should be triggered by:
-        //   3.) Microtask empty event
-        //   4.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 2, 1]);
+        //   2.) Stabilization + cleanup
+        expect(observedChildCountLog).toEqual([2, 1]);
       });
     });
 

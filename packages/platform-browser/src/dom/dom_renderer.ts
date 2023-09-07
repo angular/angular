@@ -181,12 +181,24 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void {
     const targetParent = isTemplateNode(parent) ? parent.content : parent;
+
+    // Check before changing, as newChild could be removed from a Document.
+    if (this.willChangesAffectDOM(targetParent) || this.willChangesAffectDOM(newChild)) {
+      Renderer2.markAsChanged();
+    }
+
     targetParent.appendChild(newChild);
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
       const targetParent = isTemplateNode(parent) ? parent.content : parent;
+
+      // Check before changing, as newChild could be removed from a Document.
+      if (this.willChangesAffectDOM(targetParent) || this.willChangesAffectDOM(newChild)) {
+        Renderer2.markAsChanged();
+      }
+
       targetParent.insertBefore(newChild, refChild);
     }
   }
@@ -194,6 +206,10 @@ class DefaultDomRenderer2 implements Renderer2 {
   removeChild(parent: any, oldChild: any): void {
     if (parent) {
       parent.removeChild(oldChild);
+
+      if (this.willChangesAffectDOM(parent)) {
+        Renderer2.markAsChanged();
+      }
     }
   }
 
@@ -232,6 +248,10 @@ class DefaultDomRenderer2 implements Renderer2 {
     } else {
       el.setAttribute(name, value);
     }
+
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   removeAttribute(el: any, name: string, namespace?: string): void {
@@ -245,14 +265,23 @@ class DefaultDomRenderer2 implements Renderer2 {
     } else {
       el.removeAttribute(name);
     }
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   addClass(el: any, name: string): void {
     el.classList.add(name);
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   removeClass(el: any, name: string): void {
     el.classList.remove(name);
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
@@ -260,6 +289,9 @@ class DefaultDomRenderer2 implements Renderer2 {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
+    }
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
     }
   }
 
@@ -270,15 +302,24 @@ class DefaultDomRenderer2 implements Renderer2 {
     } else {
       el.style[style] = '';
     }
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   setProperty(el: any, name: string, value: any): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(name, 'property');
     el[name] = value;
+    if (this.willChangesAffectDOM(el)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   setValue(node: any, value: string): void {
     node.nodeValue = value;
+    if (this.willChangesAffectDOM(node)) {
+      Renderer2.markAsChanged();
+    }
   }
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
@@ -321,6 +362,23 @@ class DefaultDomRenderer2 implements Renderer2 {
 
       return undefined;
     };
+  }
+
+  private willChangesAffectDOM(el: any): boolean {
+    if (this.platformIsServer) {
+      // Domino's implementation of `isConnected` does an expensive DOM traversal. So instead, we
+      // just always assume we need to mark the DOM as changed. This is fine as Angular doesn't
+      // currently need the value on the server.
+      //
+      // It's probably possible to improve Domino's implementation by using `rooted` instead of a
+      // DOM traversal, however that requires further testing.
+      return true;
+    } else {
+      // Outside of a server, we assume that any changes to an element that is connected to a
+      // Document will require us to mark the DOM as changed. This excludes any orphaned children,
+      // but includes anything rendered to the screen, in an iframe, etc.
+      return el.isConnected === true;
+    }
   }
 }
 

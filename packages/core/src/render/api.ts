@@ -8,7 +8,7 @@
 
 import {isLView} from '../render3/interfaces/type_checks';
 import {RENDERER} from '../render3/interfaces/view';
-import {getCurrentTNode, getLView} from '../render3/state';
+import {getCurrentTNode, getLView, setHasDOMChanged} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
 
 import {RendererStyleFlags2, RendererType2} from './api_flags';
@@ -224,6 +224,20 @@ export abstract class Renderer2 {
   abstract listen(
       target: 'window'|'document'|'body'|any, eventName: string,
       callback: (event: any) => boolean | void): () => void;
+
+  /**
+   * Call whenever the custom renderer callbacks are used to mutate the DOM.
+   *
+   * This method **must** be called by a custom renderer whenever the `Renderer2`
+   * interface mutates the DOM. If you can cheaply determine that the DOM was
+   * **definitely not** mutated by a call, then you may choose not to call it as
+   * a performance optimization.
+   *
+   * @developerPreview
+   */
+  static markAsChanged(): void {
+    setHasDOMChanged(true);
+  }
 
   /**
    * @internal

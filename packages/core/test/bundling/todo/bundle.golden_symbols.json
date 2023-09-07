@@ -375,6 +375,9 @@
     "name": "RefCountSubscriber"
   },
   {
+    "name": "Renderer2"
+  },
+  {
     "name": "RendererFactory2"
   },
   {
@@ -547,6 +550,9 @@
   },
   {
     "name": "_global"
+  },
+  {
+    "name": "_hasDOMChanged"
   },
   {
     "name": "_icuContainerIterate"
@@ -1381,6 +1387,9 @@
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setHasDOMChanged"
   },
   {
     "name": "setIncludeViewProviders"

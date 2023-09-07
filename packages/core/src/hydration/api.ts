@@ -15,6 +15,7 @@ import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironment
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
+import {beforeNextAfterRender} from '../render3/after_render_hooks';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
@@ -186,11 +187,16 @@ export function withDomHydration(): EnvironmentProviders {
             // to ensure that change detection is properly run afterward.
             whenStable(appRef, injector).then(() => {
               NgZone.assertInAngularZone();
-              cleanupDehydratedViews(appRef);
 
-              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-                printHydrationStats(injector);
-              }
+              // Cleanup must run in `beforeNextAfterRender` so that any DOM mutations
+              // will properly trigger afterRender callbacks.
+              beforeNextAfterRender(injector, () => {
+                cleanupDehydratedViews(appRef);
+
+                if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                  printHydrationStats(injector);
+                }
+              });
             });
           };
         }

@@ -804,3 +804,19 @@ export function wasLastNodeCreated(): boolean {
 export function lastNodeWasCreated(flag: boolean): void {
   _wasLastNodeCreated = flag;
 }
+
+let _hasDOMChanged = false;
+
+/**
+ * Retrieves a global flag that indicates whether the DOM has changed.
+ */
+export function hasDOMChanged(): boolean {
+  return _hasDOMChanged;
+}
+
+/**
+ * Sets a global flag to indicate whether the DOM has changed.
+ */
+export function setHasDOMChanged(changed: boolean): void {
+  _hasDOMChanged = changed;
+}
