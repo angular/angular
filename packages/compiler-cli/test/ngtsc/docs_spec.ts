@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, EntryType, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {ClassEntry, DirectiveEntry, EntryType, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -155,6 +155,191 @@ runInEachFileSystem(os => {
       expect(getCountryMember.memberTags).toEqual([MemberTags.static]);
       expect(getBirthdayMember.memberTags).toContain(MemberTags.protected);
       expect(getBirthdayMember.memberTags).toContain(MemberTags.optional);
+    });
+
+    it('should extract standalone directive info', () => {
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+        @Directive({
+          standalone: true,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+        })
+        export class UserProfile { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].entryType).toBe(EntryType.directive);
+
+      const directiveEntry = docs[0] as DirectiveEntry;
+      expect(directiveEntry.isStandalone).toBe(true);
+      expect(directiveEntry.selector).toBe('user-profile');
+      expect(directiveEntry.exportAs).toEqual(['userProfile']);
+    });
+
+    it('should extract standalone component info', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+        @Component({
+          standalone: true,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+          template: '',
+        })
+        export class UserProfile { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].entryType).toBe(EntryType.component);
+
+      const componentEntry = docs[0] as DirectiveEntry;
+      expect(componentEntry.isStandalone).toBe(true);
+      expect(componentEntry.selector).toBe('user-profile');
+      expect(componentEntry.exportAs).toEqual(['userProfile']);
+    });
+
+    it('should extract NgModule directive info', () => {
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+        
+        @NgModule({declarations: [UserProfile]})
+        export class ProfileModule { }
+        
+        @Directive({
+          standalone: false,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+        })
+        export class UserProfile { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(2);
+      expect(docs[1].entryType).toBe(EntryType.directive);
+
+      const directiveEntry = docs[1] as DirectiveEntry;
+      expect(directiveEntry.isStandalone).toBe(false);
+      expect(directiveEntry.selector).toBe('user-profile');
+      expect(directiveEntry.exportAs).toEqual(['userProfile']);
+    });
+
+    it('should extract NgModule component info', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        
+        @NgModule({declarations: [UserProfile]})
+        export class ProfileModule { }
+        
+        @Component({
+          standalone: false,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+          template: '',
+        })
+        export class UserProfile { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(2);
+      expect(docs[1].entryType).toBe(EntryType.component);
+
+      const componentEntry = docs[1] as DirectiveEntry;
+      expect(componentEntry.isStandalone).toBe(false);
+      expect(componentEntry.selector).toBe('user-profile');
+      expect(componentEntry.exportAs).toEqual(['userProfile']);
+    });
+
+    it('should extract input and output info for a directive', () => {
+      env.write('test.ts', `
+        import {Directive, EventEmitter, Input, Output} from '@angular/core';
+        @Directive({
+          standalone: true,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+        })
+        export class UserProfile { 
+          @Input() name: string = '';
+          @Input('first') firstName = '';
+          @Output() saved = new EventEmitter();
+          @Output('onReset') reset = new EventEmitter();
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].entryType).toBe(EntryType.directive);
+
+      const directiveEntry = docs[0] as DirectiveEntry;
+      expect(directiveEntry.members.length).toBe(4);
+
+      const [nameEntry, firstNameEntry, savedEntry, resetEntry, ] = directiveEntry.members;
+
+      expect(nameEntry.memberTags).toEqual([MemberTags.input]);
+      expect((nameEntry as PropertyEntry).inputAlias).toBe('name');
+      expect((nameEntry as PropertyEntry).outputAlias).toBeUndefined();
+
+      expect(firstNameEntry.memberTags).toEqual([MemberTags.input]);
+      expect((firstNameEntry as PropertyEntry).inputAlias).toBe('first');
+      expect((firstNameEntry as PropertyEntry).outputAlias).toBeUndefined();
+
+      expect(savedEntry.memberTags).toEqual([MemberTags.output]);
+      expect((savedEntry as PropertyEntry).outputAlias).toBe('saved');
+      expect((savedEntry as PropertyEntry).inputAlias).toBeUndefined();
+
+      expect(resetEntry.memberTags).toEqual([MemberTags.output]);
+      expect((resetEntry as PropertyEntry).outputAlias).toBe('onReset');
+      expect((resetEntry as PropertyEntry).inputAlias).toBeUndefined();
+    });
+
+    it('should extract input and output info for a component', () => {
+      env.write('test.ts', `
+        import {Component, EventEmitter, Input, Output} from '@angular/core';
+        @Component({
+          standalone: true,
+          selector: 'user-profile',
+          exportAs: 'userProfile',
+          template: '',
+        })
+        export class UserProfile { 
+          @Input() name: string = '';
+          @Input('first') firstName = '';
+          @Output() saved = new EventEmitter();
+          @Output('onReset') reset = new EventEmitter();
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].entryType).toBe(EntryType.component);
+
+      const componentEntry = docs[0] as DirectiveEntry;
+      expect(componentEntry.members.length).toBe(4);
+
+      const [nameEntry, firstNameEntry, savedEntry, resetEntry, ] = componentEntry.members;
+
+      expect(nameEntry.memberTags).toEqual([MemberTags.input]);
+      expect((nameEntry as PropertyEntry).inputAlias).toBe('name');
+      expect((nameEntry as PropertyEntry).outputAlias).toBeUndefined();
+
+      expect(firstNameEntry.memberTags).toEqual([MemberTags.input]);
+      expect((firstNameEntry as PropertyEntry).inputAlias).toBe('first');
+      expect((firstNameEntry as PropertyEntry).outputAlias).toBeUndefined();
+
+      expect(savedEntry.memberTags).toEqual([MemberTags.output]);
+      expect((savedEntry as PropertyEntry).outputAlias).toBe('saved');
+      expect((savedEntry as PropertyEntry).inputAlias).toBeUndefined();
+
+      expect(resetEntry.memberTags).toEqual([MemberTags.output]);
+      expect((resetEntry as PropertyEntry).outputAlias).toBe('onReset');
+      expect((resetEntry as PropertyEntry).inputAlias).toBeUndefined();
     });
   });
 });
