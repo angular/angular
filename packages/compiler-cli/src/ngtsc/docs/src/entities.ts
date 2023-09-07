@@ -48,6 +48,13 @@ export interface ClassEntry extends DocEntry {
   members: MemberEntry[];
 }
 
+/** Documentation entity for an Angular directives and components. */
+export interface DirectiveEntry extends ClassEntry {
+  selector: string;
+  exportAs: string[];
+  isStandalone: boolean;
+}
+
 export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
@@ -64,6 +71,8 @@ export interface MemberEntry {
 export interface PropertyEntry extends MemberEntry {
   getType: string;
   setType: string;
+  inputAlias?: string;
+  outputAlias?: string;
 }
 
 /** Sub-entry for a class method. */
