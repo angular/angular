@@ -3944,10 +3944,13 @@ suppress
       });
     });
 
-    // TODO(crisbeto): tests for the track expression.
     describe('for loop blocks', () => {
       beforeEach(() => {
-        env.tsconfig({_enabledBlockTypes: ['for']});
+        env.tsconfig({
+          // `fullTemplateTypeCheck: true` is necessary so content inside `ng-template` is checked.
+          fullTemplateTypeCheck: true,
+          _enabledBlockTypes: ['for', 'if'],
+        });
       });
 
       it('should check bindings inside of for loop blocks', () => {
@@ -4146,6 +4149,292 @@ suppress
         expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
           `Cannot use variable '$index' as the left-hand side of an assignment expression. Template variables are read-only.`,
         ]);
+      });
+
+      it('should check the track expression of a for loop block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; track does_not_exist}{/for}',
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check the item in the tracking expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; track trackingFn(item)}{/for}',
+          })
+          export class Main {
+            items = [1, 2, 3];
+
+            trackingFn(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should check $index in the tracking expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; track trackingFn($index)}{/for}',
+          })
+          export class Main {
+            items = [];
+
+            trackingFn(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should check an aliased $index in the tracking expression', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; let i = $index; track trackingFn(i)}{/for}',
+          })
+          export class Main {
+            items = [];
+
+            trackingFn(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should not allow usages of loop context variables inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            template: '{#for item of items; track $index + $count}{/for}',
+          })
+          export class TestCmp {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Cannot access '$count' inside of a track expression. Only 'item', '$index' and ` +
+              `properties on the containing component are available to this expression.`,
+        ]);
+      });
+
+      it('should not allow usages of aliased loop context variables inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                template: '{#for item of items; let c = $count; track $index + c}{/for}',
+              })
+              export class TestCmp {
+                items = [];
+              }
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Cannot access 'c' inside of a track expression. Only 'item', '$index' and ` +
+                 `properties on the containing component are available to this expression.`,
+           ]);
+         });
+
+      it('should not allow usages of local references within the same template inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <input #ref/>
+                {#for item of items; track $index + ref.value}{/for}
+              \`,
+            })
+            export class TestCmp {
+              items = [];
+            }
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Cannot access 'ref' inside of a track expression. Only 'item', '$index' and ` +
+                 `properties on the containing component are available to this expression.`,
+           ]);
+         });
+
+      it('should not allow usages of local references outside of the template in the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <input #ref/>
+
+                <ng-template>
+                  {#for item of items; track $index + ref.value}{/for}
+                </ng-template>
+              \`,
+            })
+            export class TestCmp {
+              items = [];
+            }
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Cannot access 'ref' inside of a track expression. Only 'item', '$index' and ` +
+                 `properties on the containing component are available to this expression.`,
+           ]);
+         });
+
+      it('should not allow usages of parent template variables inside the tracking expression',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                <ng-template let-foo>
+                  {#for item of items; track $index + foo.value}{/for}
+                </ng-template>
+              \`,
+            })
+            export class TestCmp {
+              items: {value: number}[] = [];
+            }
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Cannot access 'foo' inside of a track expression. Only 'item', '$index' and ` +
+                 `properties on the containing component are available to this expression.`,
+           ]);
+         });
+
+      it('should not allow usages of parent loop variables inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            template: \`
+              {#for parent of items; track $index}
+                {#for item of parent.items; track parent}{/for}
+              {/for}
+            \`,
+          })
+          export class TestCmp {
+            items: {items: any[]}[] = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Cannot access 'parent' inside of a track expression. Only 'item', '$index' and ` +
+              `properties on the containing component are available to this expression.`,
+        ]);
+      });
+
+      it('should not allow usages of aliased `if` block variables inside the tracking exprssion',
+         () => {
+           env.write('/test.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              template: \`
+                {#if expr; as alias}
+                  {#for item of items; track $index + alias}{/for}
+                {/if}
+              \`,
+            })
+            export class TestCmp {
+              expr = 1;
+              items = [];
+            }
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Cannot access 'alias' inside of a track expression. Only 'item', '$index' and ` +
+                 `properties on the containing component are available to this expression.`,
+           ]);
+         });
+
+      it('should not allow usages of pipes inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component, Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform(value: any) {
+              return value;
+            }
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '{#for item of items; track item | test}{/for}',
+          })
+          export class TestCmp {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('Error: Illegal State: Pipes are not allowed in this context');
       });
     });
   });
