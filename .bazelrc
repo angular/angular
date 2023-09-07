@@ -135,7 +135,7 @@ build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:pla
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
-build:remote --project_id=internal-200822
+build:remote --bes_instance_name=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
