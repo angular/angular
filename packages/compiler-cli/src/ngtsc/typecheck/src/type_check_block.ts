@@ -1294,13 +1294,19 @@ class TcbForOfOp extends TcbOp {
   }
 
   override execute(): null {
-    const innerScope = Scope.forNodes(this.tcb, this.scope, this.block, null);
+    const loopScope = Scope.forNodes(this.tcb, this.scope, this.block, null);
     const initializer = ts.factory.createVariableDeclarationList(
         [ts.factory.createVariableDeclaration(this.block.item.name)], ts.NodeFlags.Const);
-    const expression = tcbExpression(this.block.expression, this.tcb, innerScope);
+    const expression = tcbExpression(this.block.expression, this.tcb, loopScope);
+    const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
+    const trackExpression = trackTranslator.translate(this.block.trackBy);
+    const statements = [
+      ...loopScope.render(),
+      ts.factory.createExpressionStatement(trackExpression),
+    ];
 
     this.scope.addStatement(ts.factory.createForOfStatement(
-        undefined, initializer, expression, ts.factory.createBlock(innerScope.render())));
+        undefined, initializer, expression, ts.factory.createBlock(statements)));
 
     return null;
   }
@@ -1701,7 +1707,6 @@ class Scope {
     } else if (node instanceof TmplAstSwitchBlock) {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {
-      // TODO(crisbeto): type check the tracking function.
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
@@ -2288,6 +2293,27 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
       const event = ts.factory.createIdentifier(EVENT_PARAMETER);
       addParseSpanInfo(event, ast.nameSpan);
       return event;
+    }
+
+    return super.resolve(ast);
+  }
+}
+
+class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
+  constructor(tcb: Context, scope: Scope, private block: TmplAstForLoopBlock) {
+    super(tcb, scope);
+  }
+
+  protected override resolve(ast: AST): ts.Expression|null {
+    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
+      const target = this.tcb.boundTarget.getExpressionTarget(ast);
+
+      // Tracking expressions are only allowed to read the `$index`,
+      // the item and properties off the component instance.
+      if (target !== null && target !== this.block.item &&
+          target !== this.block.contextVariables.$index) {
+        this.tcb.oobRecorder.illegalForLoopTrackAccess(this.tcb.id, this.block, ast);
+      }
     }
 
     return super.resolve(ast);

@@ -1541,21 +1541,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return optimizedFn;
     }
 
-    // Referencing these requires access to the context which the tracking function
-    // might not have. `$index` is special because of backwards compatibility.
-    const bannedGlobals = new Set([
-      block.contextVariables.$count.name, block.contextVariables.$last.name,
-      block.contextVariables.$even.name, block.contextVariables.$odd.name
-    ]);
-    const scope = new TrackByBindingScope(
-        this._bindingScope, {
-          // Alias `$index` and the item name to `$index` and `$item` respectively.
-          // This allows us to reuse pure functions that may have different item names,
-          // but are otherwise identical.
-          [block.contextVariables.$index.name]: '$index',
-          [block.item.name]: '$item',
-        },
-        bannedGlobals);
+    const contextVars = block.contextVariables;
+    const scope = new TrackByBindingScope(this._bindingScope, {
+      // Alias `$index` and the item name to `$index` and `$item` respectively.
+      // This allows us to reuse pure functions that may have different item names,
+      // but are otherwise identical.
+      [contextVars.$index.name]: '$index',
+      [block.item.name]: '$item',
+
+      // Accessing these variables in a tracking function will result in a template diagnostic.
+      // We define them as globals so that their accesses are preserved verbatim instead of being
+      // rewritten to the actual accesses.
+      [contextVars.$count.name]: contextVars.$count.name,
+      [contextVars.$first.name]: contextVars.$first.name,
+      [contextVars.$last.name]: contextVars.$last.name,
+      [contextVars.$even.name]: contextVars.$even.name,
+      [contextVars.$odd.name]: contextVars.$odd.name,
+    });
     const params = [new o.FnParam('$index'), new o.FnParam('$item')];
     const stmts = convertPureComponentScopeFunction(
         block.trackBy.ast, scope, o.variable(CONTEXT_NAME), 'track');
@@ -2390,26 +2392,19 @@ export class BindingScope implements LocalResolver {
 class TrackByBindingScope extends BindingScope {
   private componentAccessCount = 0;
 
-  constructor(
-      parentScope: BindingScope, private globalAliases: Record<string, string>,
-      private bannedGlobals: Set<string>) {
+  constructor(parentScope: BindingScope, private globalAliases: Record<string, string>) {
     super(parentScope.bindingLevel + 1, parentScope);
   }
 
   override get(name: string): o.Expression|null {
     let current: BindingScope|null = this.parent;
 
-    // Verify that the expression isn't trying to access a variable from a parent scope.
+    // Prevent accesses of template variables outside the `for` loop.
     while (current) {
       if (current.hasLocal(name)) {
-        this.forbiddenAccessError(name);
+        return null;
       }
       current = current.parent;
-    }
-
-    // If the variable is one of the banned globals, we have to throw.
-    if (this.bannedGlobals.has(name)) {
-      this.forbiddenAccessError(name);
     }
 
     // Intercept any aliased globals.
@@ -2425,13 +2420,6 @@ class TrackByBindingScope extends BindingScope {
   /** Gets the number of times the host component has been accessed through the scope. */
   getComponentAccessCount(): number {
     return this.componentAccessCount;
-  }
-
-  private forbiddenAccessError(propertyName: string) {
-    // TODO(crisbeto): this should be done through template type checking once it is available.
-    throw new Error(
-        `Accessing ${propertyName} inside of a track expression is not allowed. ` +
-        `Tracking expressions can only access the item, $index and properties on the containing component.`);
   }
 }
 
