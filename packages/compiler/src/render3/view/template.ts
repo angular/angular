@@ -1429,13 +1429,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Allocate one slot for the repeater metadata. The slots for the primary and empty block
     // are implicitly inferred by the runtime to index + 1 and index + 2.
     const blockIndex = this.allocateDataSlot();
-    const primaryData = this.prepareEmbeddedTemplateFn(block.children, '_For', [
-      new t.Variable(block.itemName, '$implicit', block.sourceSpan, block.sourceSpan),
-      new t.Variable(
-          getLoopLocalName(block, '$index'), '$index', block.sourceSpan, block.sourceSpan),
-      new t.Variable(
-          getLoopLocalName(block, '$count'), '$count', block.sourceSpan, block.sourceSpan),
-    ]);
+    const primaryData = this.prepareEmbeddedTemplateFn(
+        block.children, '_For',
+        [block.item, block.contextVariables.$index, block.contextVariables.$count]);
     const emptyData = block.empty === null ?
         null :
         this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
@@ -1475,40 +1471,42 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private registerComputedLoopVariables(block: t.ForLoopBlock, bindingScope: BindingScope): void {
-    const indexLocalName = getLoopLocalName(block, '$index');
-    const countLocalName = getLoopLocalName(block, '$count');
+    const indexLocalName = block.contextVariables.$index.name;
+    const countLocalName = block.contextVariables.$count.name;
     const level = bindingScope.bindingLevel;
 
     bindingScope.set(
-        level, getLoopLocalName(block, '$odd'),
+        level, block.contextVariables.$odd.name,
         scope => scope.get(indexLocalName)!.modulo(o.literal(2)).notIdentical(o.literal(0)));
 
     bindingScope.set(
-        level, getLoopLocalName(block, '$even'),
+        level, block.contextVariables.$even.name,
         scope => scope.get(indexLocalName)!.modulo(o.literal(2)).identical(o.literal(0)));
 
     bindingScope.set(
-        level, getLoopLocalName(block, '$first'),
+        level, block.contextVariables.$first.name,
         scope => scope.get(indexLocalName)!.identical(o.literal(0)));
 
     bindingScope.set(
-        level, getLoopLocalName(block, '$last'),
+        level, block.contextVariables.$last.name,
         scope =>
             scope.get(indexLocalName)!.identical(scope.get(countLocalName)!.minus(o.literal(1))));
   }
 
   private optimizeTrackByFunction(block: t.ForLoopBlock) {
+    const indexLocalName = block.contextVariables.$index.name;
+    const itemName = block.item.name;
     const ast = block.trackBy.ast;
 
     // Top-level access of `$index` uses the built in `repeaterTrackByIndex`.
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
-        ast.name === getLoopLocalName(block, '$index')) {
+        ast.name === indexLocalName) {
       return {expression: o.importExpr(R3.repeaterTrackByIndex), usesComponentInstance: false};
     }
 
     // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
-        ast.name === block.itemName) {
+        ast.name === itemName) {
       return {expression: o.importExpr(R3.repeaterTrackByIdentity), usesComponentInstance: false};
     }
 
@@ -1516,10 +1514,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (ast instanceof Call && ast.receiver instanceof PropertyRead &&
         ast.receiver.receiver instanceof ImplicitReceiver && ast.args.length === 2) {
       const firstIsIndex = ast.args[0] instanceof PropertyRead &&
-          ast.args[0].receiver instanceof ImplicitReceiver &&
-          ast.args[0].name === getLoopLocalName(block, '$index');
+          ast.args[0].receiver instanceof ImplicitReceiver && ast.args[0].name === indexLocalName;
       const secondIsItem = ast.args[1] instanceof PropertyRead &&
-          ast.args[1].receiver instanceof ImplicitReceiver && ast.args[1].name === block.itemName;
+          ast.args[1].receiver instanceof ImplicitReceiver && ast.args[1].name === itemName;
 
       if (firstIsIndex && secondIsItem) {
         // If we're in the top-level component, we can access directly through `ctx`,
@@ -1547,17 +1544,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Referencing these requires access to the context which the tracking function
     // might not have. `$index` is special because of backwards compatibility.
     const bannedGlobals = new Set([
-      getLoopLocalName(block, '$count'), getLoopLocalName(block, '$first'),
-      getLoopLocalName(block, '$last'), getLoopLocalName(block, '$even'),
-      getLoopLocalName(block, '$odd')
+      block.contextVariables.$count.name, block.contextVariables.$last.name,
+      block.contextVariables.$even.name, block.contextVariables.$odd.name
     ]);
     const scope = new TrackByBindingScope(
         this._bindingScope, {
           // Alias `$index` and the item name to `$index` and `$item` respectively.
           // This allows us to reuse pure functions that may have different item names,
           // but are otherwise identical.
-          [getLoopLocalName(block, '$index')]: '$index',
-          [block.itemName]: '$item',
+          [block.contextVariables.$index.name]: '$index',
+          [block.item.name]: '$item',
         },
         bannedGlobals);
     const params = [new o.FnParam('$index'), new o.FnParam('$item')];
@@ -1576,6 +1572,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           stmts[stmts.length - 1] = new o.ReturnStatement(lastStatement.expr);
         }
       }
+      // This has to be a function expression, because `.bind` doesn't work on arrow functions.
       fn = o.fn(params, stmts);
     }
 
@@ -2912,11 +2909,6 @@ function createClosureModeGuard(): o.BinaryOperatorExpr {
   return o.typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
       .notIdentical(o.literal('undefined', o.STRING_TYPE))
       .and(o.variable(NG_I18N_CLOSURE_MODE));
-}
-
-/** Determines the name that a built in loop context variable is available under. */
-function getLoopLocalName(block: t.ForLoopBlock, name: keyof t.ForLoopBlockContext): string {
-  return block.contextVariables?.[name] || name;
 }
 
 /**

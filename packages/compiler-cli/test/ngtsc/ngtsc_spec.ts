@@ -9142,9 +9142,11 @@ function allTests(os: string) {
           @Component({
             selector: 'test-cmp',
             standalone: true,
-            template: '{#for foo of bar; track $index + $count}{/for}',
+            template: '{#for item of items; track $index + $count}{/for}',
           })
-          export class TestCmp {}
+          export class TestCmp {
+            items = [];
+          }
         `);
 
         const diags = env.driveDiagnostics();
@@ -9161,9 +9163,11 @@ function allTests(os: string) {
               @Component({
                 selector: 'test-cmp',
                 standalone: true,
-                template: '{#for foo of bar; let c = $count; track $index + c}{/for}',
+                template: '{#for item of items; let c = $count; track $index + c}{/for}',
               })
-              export class TestCmp {}
+              export class TestCmp {
+                items = [];
+              }
             `);
 
            const diags = env.driveDiagnostics();
@@ -9182,10 +9186,12 @@ function allTests(os: string) {
               standalone: true,
               template: \`
                 <input #ref/>
-                {#for foo of bar; track $index + ref.value}{/for}
+                {#for item of items; track $index + ref.value}{/for}
               \`,
             })
-            export class TestCmp {}
+            export class TestCmp {
+              items = [];
+            }
           `);
 
            const diags = env.driveDiagnostics();
@@ -9206,11 +9212,13 @@ function allTests(os: string) {
                 <input #ref/>
 
                 <ng-template>
-                  {#for foo of bar; track $index + ref.value}{/for}
+                  {#for item of items; track $index + ref.value}{/for}
                 </ng-template>
               \`,
             })
-            export class TestCmp {}
+            export class TestCmp {
+              items = [];
+            }
           `);
 
            const diags = env.driveDiagnostics();
@@ -9229,11 +9237,13 @@ function allTests(os: string) {
               standalone: true,
               template: \`
                 <ng-template let-foo>
-                  {#for foo of bar; track $index + foo.value}{/for}
+                  {#for item of items; track $index + foo.value}{/for}
                 </ng-template>
               \`,
             })
-            export class TestCmp {}
+            export class TestCmp {
+              items: {value: number}[] = [];
+            }
           `);
 
            const diags = env.driveDiagnostics();
@@ -9242,28 +9252,29 @@ function allTests(os: string) {
                .toContain('Error: Accessing foo inside of a track expression is not allowed');
          });
 
-      it('should not allow usages of parent template for loop variables inside the tracking expression',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
+      it('should not allow usages of parent loop variables inside the tracking expression', () => {
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
 
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                {#for parent of items; track item}
-                  {#for item of parent.items; track parent}{/for}
-                {/for}
-              \`,
-            })
-            export class TestCmp {}
-          `);
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            template: \`
+              {#for parent of items; track item}
+                {#for item of parent.items; track parent}{/for}
+              {/for}
+            \`,
+          })
+          export class TestCmp {
+            items: {items: any[]}[] = [];
+          }
+        `);
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing parent inside of a track expression is not allowed');
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('Error: Accessing parent inside of a track expression is not allowed');
+      });
 
       it('should not allow usages of aliased `if` block variables inside the tracking exprssion',
          () => {
@@ -9275,11 +9286,14 @@ function allTests(os: string) {
               standalone: true,
               template: \`
                 {#if expr; as alias}
-                  {#for foo of bar; track $index + alias}{/for}
+                  {#for item of items; track $index + alias}{/for}
                 {/if}
               \`,
             })
-            export class TestCmp {}
+            export class TestCmp {
+              expr = 1;
+              items = [];
+            }
           `);
 
            const diags = env.driveDiagnostics();
@@ -9303,9 +9317,11 @@ function allTests(os: string) {
             selector: 'test-cmp',
             standalone: true,
             imports: [TestPipe],
-            template: '{#for foo of bar; track foo | test}{/for}',
+            template: '{#for item of items; track foo | test}{/for}',
           })
-          export class TestCmp {}
+          export class TestCmp {
+            items = [];
+          }
         `);
 
         const diags = env.driveDiagnostics();

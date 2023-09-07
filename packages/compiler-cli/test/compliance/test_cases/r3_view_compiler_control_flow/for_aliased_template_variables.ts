@@ -18,12 +18,4 @@ import {Component} from '@angular/core';
 export class MyApp {
   message = 'hello';
   items = [];
-
-  // TODO(crisbeto): remove this once template type checking is fully implemented.
-  idx: any;
-  f: any;
-  l: any;
-  ev: any;
-  o: any;
-  co: any;
 }

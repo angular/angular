@@ -507,6 +507,8 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitForLoopBlock(block: t.ForLoopBlock) {
+    block.item.visit(this);
+    this.visitAll(Object.values(block.contextVariables));
     this.visitBinding(block.expression);
     this.visitAll(block.children);
     block.empty?.visit(this);

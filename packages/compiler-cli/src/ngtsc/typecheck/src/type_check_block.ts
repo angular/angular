@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1176,6 +1176,32 @@ class TcbBlockVariableOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which renders a variable that is implicitly available within a block (e.g. `$count`
+ * in a `{#for}` block).
+ *
+ * Executing this operation returns the identifier which can be used to refer to the variable.
+ */
+class TcbBlockImplicitVariableOp extends TcbOp {
+  constructor(
+      private tcb: Context, private scope: Scope, private type: ts.TypeNode,
+      private variable: TmplAstVariable) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    addParseSpanInfo(id, this.variable.keySpan);
+    this.scope.addStatement(tsDeclareVariable(id, this.type));
+    return id;
+  }
+}
+
+
+/**
  * A `TcbOp` which renders an `if` template block as a TypeScript `if` statement.
  *
  * Executing this operation returns nothing.
@@ -1253,6 +1279,32 @@ class TcbSwitchOp extends TcbOp {
   }
 }
 
+/**
+ * A `TcbOp` which renders a `for` block as a TypeScript `for...of` loop.
+ *
+ * Executing this operation returns nothing.
+ */
+class TcbForOfOp extends TcbOp {
+  constructor(private tcb: Context, private scope: Scope, private block: TmplAstForLoopBlock) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): null {
+    const innerScope = Scope.forNodes(this.tcb, this.scope, this.block, null);
+    const initializer = ts.factory.createVariableDeclarationList(
+        [ts.factory.createVariableDeclaration(this.block.item.name)], ts.NodeFlags.Const);
+    const expression = tcbExpression(this.block.expression, this.tcb, innerScope);
+
+    this.scope.addStatement(ts.factory.createForOfStatement(
+        undefined, initializer, expression, ts.factory.createBlock(innerScope.render())));
+
+    return null;
+  }
+}
 
 /**
  * Value used to break a circular reference between `TcbOp`s.
@@ -1378,7 +1430,7 @@ class Scope {
    */
   static forNodes(
       tcb: Context, parent: Scope|null,
-      blockOrNodes: TmplAstTemplate|TmplAstIfBlockBranch|(TmplAstNode[]),
+      blockOrNodes: TmplAstTemplate|TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstNode[],
       guard: ts.Expression|null): Scope {
     const scope = new Scope(tcb, parent, guard);
 
@@ -1403,20 +1455,29 @@ class Scope {
           const firstDecl = varMap.get(v.name)!;
           tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
         }
-
-        const opIndex =
-            scope.opQueue.push(new TcbTemplateVariableOp(tcb, scope, blockOrNodes, v)) - 1;
-        scope.varMap.set(v, opIndex);
+        this.registerVariable(scope, v, new TcbTemplateVariableOp(tcb, scope, blockOrNodes, v));
       }
       children = blockOrNodes.children;
     } else if (blockOrNodes instanceof TmplAstIfBlockBranch) {
       const {expression, expressionAlias} = blockOrNodes;
-
       if (expression !== null && expressionAlias !== null) {
-        const op = new TcbBlockVariableOp(
-            tcb, scope, tcbExpression(expression, tcb, scope), expressionAlias);
-        const opIndex = scope.opQueue.push(op) - 1;
-        scope.varMap.set(expressionAlias, opIndex);
+        this.registerVariable(
+            scope, expressionAlias,
+            new TcbBlockVariableOp(
+                tcb, scope, tcbExpression(expression, tcb, scope), expressionAlias));
+      }
+      children = blockOrNodes.children;
+    } else if (blockOrNodes instanceof TmplAstForLoopBlock) {
+      this.registerVariable(
+          scope, blockOrNodes.item,
+          new TcbBlockVariableOp(
+              tcb, scope, ts.factory.createIdentifier(blockOrNodes.item.name), blockOrNodes.item));
+
+      for (const variable of Object.values(blockOrNodes.contextVariables)) {
+        // Note: currently all context variables are assumed to be number types.
+        const type = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+        this.registerVariable(
+            scope, variable, new TcbBlockImplicitVariableOp(tcb, scope, type, variable));
       }
 
       children = blockOrNodes.children;
@@ -1427,6 +1488,12 @@ class Scope {
       scope.appendNode(node);
     }
     return scope;
+  }
+
+  /** Registers a local variable with a scope. */
+  private static registerVariable(scope: Scope, variable: TmplAstVariable, op: TcbOp): void {
+    const opIndex = scope.opQueue.push(op) - 1;
+    scope.varMap.set(variable, opIndex);
   }
 
   /**
@@ -1634,8 +1701,8 @@ class Scope {
     } else if (node instanceof TmplAstSwitchBlock) {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {
-      // TODO(crisbeto): type check loop expression, context variables and trackBy
-      this.appendChildren(node);
+      // TODO(crisbeto): type check the tracking function.
+      this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
