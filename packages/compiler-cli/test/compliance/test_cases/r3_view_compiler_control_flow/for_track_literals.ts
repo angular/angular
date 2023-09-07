@@ -6,12 +6,9 @@ import {Component} from '@angular/core';
   `,
 })
 export class MyApp {
-  items = [];
+  items: {name: string}[] = [];
 
   trackFn(obj: any, arr: any[]) {
     return null;
   }
-
-  // TODO(crisbeto): remove this once template type checking is fully implemented.
-  item: any;
 }

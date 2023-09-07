@@ -5,7 +5,4 @@ import {Component} from '@angular/core';
 })
 export class MyApp {
   items = [];
-  // TODO(crisbeto): remove this once template type checking is fully implemented.
-  item: any;
-  $odd: any;
 }

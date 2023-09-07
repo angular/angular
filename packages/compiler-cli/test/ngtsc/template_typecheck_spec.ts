@@ -3944,9 +3944,7 @@ suppress
       });
     });
 
-    // TODO(crisbeto): test for the loop expression binding
-    // TODO(crisbeto): test for the track expression.
-    // TODO(crisbeto): test for the context variables ($index, $odd etc).
+    // TODO(crisbeto): tests for the track expression.
     describe('for loop blocks', () => {
       beforeEach(() => {
         env.tsconfig({_enabledBlockTypes: ['for']});
@@ -3963,15 +3961,190 @@ suppress
                 {:empty}{{does_not_exist_empty}}
               {/for}
             \`,
-            standalone: true,
           })
-          export class Main {}
+          export class Main {
+            items = [];
+          }
         `);
 
         const diags = env.driveDiagnostics();
         expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
           `Property 'does_not_exist_main' does not exist on type 'Main'.`,
           `Property 'does_not_exist_empty' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check the expression of a for loop block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of does_not_exist; track item}hello{/for}',
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check the type of the item of a for loop block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; track item}{{acceptsString(item)}}{/for}',
+          })
+          export class Main {
+            items = [1, 2, 3];
+
+            acceptsString(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should check the type of implicit variables for loop block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#for item of items; track item}
+                {{acceptsString($index)}}
+                {{acceptsString($first)}}
+                {{acceptsString($last)}}
+                {{acceptsString($even)}}
+                {{acceptsString($odd)}}
+                {{acceptsString($count)}}
+              {/for}
+            \`,
+          })
+          export class Main {
+            items = [];
+
+            acceptsString(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should check the type of aliased implicit variables for loop block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#for item of items; track item; let i = $index, f = $first, l = $last, e = $even, o = $odd, c = $count}
+                {{acceptsString(i)}}
+                {{acceptsString(f)}}
+                {{acceptsString(l)}}
+                {{acceptsString(e)}}
+                {{acceptsString(o)}}
+                {{acceptsString(c)}}
+              {/for}
+            \`,
+          })
+          export class Main {
+            items = [];
+
+            acceptsString(value: string) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should not expose variables from the main block to the empty block', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#for item of items; track item}
+                Hello
+                {:empty}{{item}} {{$index}}
+              {/for}
+            \`,
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'item' does not exist on type 'Main'. Did you mean 'items'?`,
+          `Property '$index' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should not expose variables under their implicit name if they are aliased', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{#for item of items; track item; let alias = $index}{{$index}} {{$count}}{/for}',
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property '$index' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should not be able to write to loop template variables', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {#for item of items; track item}
+                <button (click)="$index = 1"></button>
+              {/for}
+            \`,
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Cannot use variable '$index' as the left-hand side of an assignment expression. Template variables are read-only.`,
         ]);
       });
     });

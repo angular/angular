@@ -7,11 +7,11 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, IfBlockBranch, Node, Reference, SwitchBlockCase, Template, TextAttribute, Variable} from '../r3_ast';
+import {BoundAttribute, BoundEvent, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, IfBlockBranch, Node, Reference, SwitchBlockCase, Template, TextAttribute, Variable} from '../r3_ast';
 
 /** Node that has a `Scope` associated with it. */
-export type ScopedNode = Template|SwitchBlockCase|IfBlockBranch|ForLoopBlock|DeferredBlock|
-    DeferredBlockError|DeferredBlockLoading|DeferredBlockPlaceholder;
+export type ScopedNode = Template|SwitchBlockCase|IfBlockBranch|ForLoopBlock|ForLoopBlockEmpty|
+    DeferredBlock|DeferredBlockError|DeferredBlockLoading|DeferredBlockPlaceholder;
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> = {

@@ -1463,22 +1463,92 @@ describe('type check blocks', () => {
     });
   });
 
-  // TODO(crisbeto): tests for the for loop expression and context variables
+  // TODO(crisbeto): tests for the tracking function.
   describe('for loop blocks', () => {
     // TODO(crisbeto): temporary utility while for loop blocks are disabled by default
     function loopTcb(template: string): string {
       return tcb(template, undefined, undefined, undefined, {enabledBlockTypes: new Set(['for'])});
     }
 
-    it('should generate bindings inside for loop blocks', () => {
+    it('should generate a for block', () => {
       const TEMPLATE = `
         {#for item of items; track item}
-          {{main()}}
+          {{main(item)}}
           {:empty}{{empty()}}
         {/for}
       `;
 
-      expect(loopTcb(TEMPLATE)).toContain('"" + ((this).main()); "" + ((this).empty());');
+      const result = loopTcb(TEMPLATE);
+      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('"" + ((this).main(_t1))');
+      expect(result).toContain('"" + ((this).empty())');
+    });
+
+    it('should generate a for block with implicit variables', () => {
+      const TEMPLATE = `
+        {#for item of items; track item}
+          {{$index}} {{$first}} {{$last}} {{$even}} {{$odd}} {{$count}}
+        {/for}
+      `;
+
+      const result = loopTcb(TEMPLATE);
+      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('var _t3: number = null!;');
+      expect(result).toContain('var _t4: number = null!;');
+      expect(result).toContain('var _t5: number = null!;');
+      expect(result).toContain('var _t6: number = null!;');
+      expect(result).toContain('var _t7: number = null!;');
+      expect(result).toContain('"" + (_t2) + (_t3) + (_t4) + (_t5) + (_t6) + (_t7)');
+    });
+
+    it('should generate a for block with aliased variables', () => {
+      const TEMPLATE = `
+        {#for item of items; track item; let i = $index, f = $first, l = $last, e = $even, o = $odd, c = $count}
+          {{i}} {{f}} {{l}} {{e}} {{o}} {{c}}
+        {/for}
+      `;
+
+      const result = loopTcb(TEMPLATE);
+      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('var _t3: number = null!;');
+      expect(result).toContain('var _t4: number = null!;');
+      expect(result).toContain('var _t5: number = null!;');
+      expect(result).toContain('var _t6: number = null!;');
+      expect(result).toContain('var _t7: number = null!;');
+      expect(result).toContain('"" + (_t2) + (_t3) + (_t4) + (_t5) + (_t6) + (_t7)');
+    });
+
+    it('should read an implicit variable from the component scope if it is aliased', () => {
+      const TEMPLATE = `
+        {#for item of items; track item; let i = $index} {{$index}} {{i}} {/for}
+      `;
+
+      const result = loopTcb(TEMPLATE);
+      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('"" + (((this).$index)) + (_t2)');
+    });
+
+    it('should read variable from a parent for loop', () => {
+      const TEMPLATE = `
+        {#for item of items; track item; let indexAlias = $index}
+          {{item}} {{indexAlias}}
+
+          {#for inner of item.items; track inner}
+            {{item}} {{indexAlias}} {{inner}} {{$index}}
+          {/for}
+        {/for}
+      `;
+
+      const result = loopTcb(TEMPLATE);
+      expect(result).toContain(
+          'for (const item of ((this).items)) { var _t1 = item; var _t2: number = null!;');
+      expect(result).toContain('"" + (_t1) + (_t2)');
+      expect(result).toContain(
+          'for (const inner of ((_t1).items)) { var _t8 = inner; var _t9: number = null!;');
+      expect(result).toContain('"" + (_t1) + (_t2) + (_t8) + (_t9)');
     });
   });
 });
