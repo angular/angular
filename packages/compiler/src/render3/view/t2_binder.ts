@@ -112,13 +112,12 @@ class Scope implements Visitor {
       }
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (nodeOrNodes instanceof ForLoopBlock) {
-      // TODO(crisbeto): uncomment this when rebasing #51690.
-      // this.visitVariable(nodeOrNodes.item);
-      // Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitVariable(v));
+      this.visitVariable(nodeOrNodes.item);
+      Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitVariable(v));
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (
-        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof DeferredBlock ||
-        nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
+        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
         nodeOrNodes instanceof DeferredBlockLoading) {
       nodeOrNodes.children.forEach(node => node.visit(this));
@@ -188,7 +187,7 @@ class Scope implements Visitor {
   }
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitIfBlock(block: IfBlock) {
@@ -417,9 +416,8 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
-    // TODO(crisbeto): uncomment this when rebasing #51690.
-    // block.item.visit(this);
-    // Object.values(block.contextVariables).forEach(v => v.visit(this));
+    block.item.visit(this);
+    Object.values(block.contextVariables).forEach(v => v.visit(this));
     block.children.forEach(node => node.visit(this));
     block.empty?.visit(this);
   }
@@ -536,15 +534,14 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof ForLoopBlock) {
-      // TODO(crisbeto): uncomment this when rebasing #51690.
-      // this.visitNode(nodeOrNodes.item);
-      // Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitNode(v));
+      this.visitNode(nodeOrNodes.item);
+      Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitNode(v));
       nodeOrNodes.trackBy.visit(this);
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
-        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof DeferredBlock ||
-        nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
+        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
         nodeOrNodes instanceof DeferredBlockLoading) {
       nodeOrNodes.children.forEach(node => node.visit(this));
@@ -652,7 +649,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
   }
 
   visitIfBlock(block: IfBlock) {

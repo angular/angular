@@ -106,9 +106,9 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
     const result: any[] = ['ForLoopBlock', unparse(block.expression), unparse(block.trackBy)];
-    block.contextVariables !== null && result.push(block.contextVariables);
     this.result.push(result);
-    this.visitAll([block.children]);
+    const explicitVariables = Object.values(block.contextVariables).filter(v => v.name !== v.value);
+    this.visitAll([[block.item], explicitVariables, block.children]);
     block.empty?.visit(this);
   }
 
@@ -1407,6 +1407,7 @@ describe('R3 template transform', () => {
         {/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', ' {{ item }} '],
         ['ForLoopBlockEmpty'],
         ['Text', ' There were no items in the list. '],
@@ -1418,6 +1419,7 @@ describe('R3 template transform', () => {
         {#for (item of items.foo.bar); track item.id}{{ item }}{/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', '{{ item }}'],
       ]);
 
@@ -1425,6 +1427,7 @@ describe('R3 template transform', () => {
         {#for (item of items.foo.bar()); track item.id}{{ item }}{/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', '{{ item }}'],
       ]);
 
@@ -1432,6 +1435,7 @@ describe('R3 template transform', () => {
         {#for (   ( (item of items.foo.bar()) )   ); track item.id}{{ item }}{/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar()', 'item.id'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', '{{ item }}'],
       ]);
     });
@@ -1442,10 +1446,14 @@ describe('R3 template transform', () => {
           {{ item }}
         {/for}
       `).toEqual([
-        [
-          'ForLoopBlock', 'items.foo.bar', 'item.id',
-          {'$index': 'idx', '$first': 'f', '$last': 'l', '$even': 'ev', '$odd': 'od', '$count': 'c'}
-        ],
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', 'idx', '$index'],
+        ['Variable', 'f', '$first'],
+        ['Variable', 'c', '$count'],
+        ['Variable', 'l', '$last'],
+        ['Variable', 'ev', '$even'],
+        ['Variable', 'od', '$odd'],
         ['BoundText', ' {{ item }} '],
       ]);
     });
@@ -1463,9 +1471,11 @@ describe('R3 template transform', () => {
         {/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', ' {{ item }} '],
         ['Element', 'div'],
         ['ForLoopBlock', 'item.items', 'subitem.id'],
+        ['Variable', 'subitem', '$implicit'],
         ['Element', 'h1'],
         ['BoundText', '{{ subitem }}'],
         ['ForLoopBlockEmpty'],
@@ -1478,6 +1488,7 @@ describe('R3 template transform', () => {
         {#for item of items.foo.bar; track trackBy(item.id, 123)}{{ item }}{/for}
       `).toEqual([
         ['ForLoopBlock', 'items.foo.bar', 'trackBy(item.id, 123)'],
+        ['Variable', 'item', '$implicit'],
         ['BoundText', '{{ item }}'],
       ]);
     });

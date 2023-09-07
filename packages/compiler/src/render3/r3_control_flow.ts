@@ -30,7 +30,7 @@ const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
 
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
-    new Set(['$index', '$first', '$last', '$even', '$odd', '$count']);
+    new Set<keyof t.ForLoopBlockContext>(['$index', '$first', '$last', '$even', '$odd', '$count']);
 
 /** Creates an `if` loop block from an HTML AST node. */
 export function createIfBlock(
@@ -172,18 +172,18 @@ function parseForLoopParameters(
 
   const [, itemName, rawExpression] = match;
   const result = {
-    itemName,
+    itemName: new t.Variable(
+        itemName, '$implicit', expressionParam.sourceSpan, expressionParam.sourceSpan),
     trackBy: null as ASTWithSource | null,
     expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
-    context: null as t.ForLoopBlockContext | null,
+    context: {} as t.ForLoopBlockContext,
   };
 
   for (const param of secondaryParams) {
     const letMatch = param.expression.match(FOR_LOOP_LET_PATTERN);
 
     if (letMatch !== null) {
-      result.context = result.context || {};
-      parseLetParameter(param.sourceSpan, letMatch[1], result.context, errors);
+      parseLetParameter(param.sourceSpan, letMatch[1], param.sourceSpan, result.context, errors);
       continue;
     }
 
@@ -203,19 +203,28 @@ function parseForLoopParameters(
         new ParseError(param.sourceSpan, `Unrecognized loop paramater "${param.expression}"`));
   }
 
+  // Fill out any variables that haven't been defined explicitly.
+  for (const variableName of ALLOWED_FOR_LOOP_LET_VARIABLES) {
+    if (!result.context.hasOwnProperty(variableName)) {
+      result.context[variableName] =
+          new t.Variable(variableName, variableName, block.startSourceSpan, block.startSourceSpan);
+    }
+  }
+
   return result;
 }
 
 /** Parses the `let` parameter of a `for` loop block. */
 function parseLetParameter(
-    sourceSpan: ParseSourceSpan, expression: string, context: t.ForLoopBlockContext,
-    errors: ParseError[]): void {
+    sourceSpan: ParseSourceSpan, expression: string, span: ParseSourceSpan,
+    context: t.ForLoopBlockContext, errors: ParseError[]): void {
   const parts = expression.split(',');
 
   for (const part of parts) {
     const expressionParts = part.split('=');
     const name = expressionParts.length === 2 ? expressionParts[0].trim() : '';
-    const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '';
+    const variableName = (expressionParts.length === 2 ? expressionParts[1].trim() : '') as
+        keyof t.ForLoopBlockContext;
 
     if (name.length === 0 || variableName.length === 0) {
       errors.push(new ParseError(
@@ -230,7 +239,7 @@ function parseLetParameter(
       errors.push(
           new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`));
     } else {
-      context[variableName as keyof t.ForLoopBlockContext] = name;
+      context[variableName] = new t.Variable(name, variableName, span, span);
     }
   }
 }

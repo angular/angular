@@ -14,8 +14,4 @@ export class MyApp {
   trackFn(item: any, message: string) {
     return message + item.name;
   }
-
-  // TODO(crisbeto): remove this once template type checking is fully implemented.
-  item: any;
-  otherItem: any;
 }
