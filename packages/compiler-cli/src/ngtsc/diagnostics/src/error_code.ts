@@ -261,6 +261,18 @@ export enum ErrorCode {
   MISSING_REQUIRED_INPUTS = 8008,
 
   /**
+   * The tracking expression of a `for` loop block is accessing a variable that is unavailable,
+   * for example:
+   *
+   * ```
+   * <ng-template let-ref>
+   *   {#for item of items; track ref}{/for}
+   * </ng-template>
+   * ```
+   */
+  ILLEGAL_FOR_LOOP_TRACK_ACCESS = 8009,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

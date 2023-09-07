@@ -1550,5 +1550,13 @@ describe('type check blocks', () => {
           'for (const inner of ((_t1).items)) { var _t8 = inner; var _t9: number = null!;');
       expect(result).toContain('"" + (_t1) + (_t2) + (_t8) + (_t9)');
     });
+
+    it('should generate the tracking expression of a for loop', () => {
+      const result = loopTcb(`{#for item of items; track trackingFn($index, item, prop)}{/for}`);
+
+      expect(result).toContain(
+          'for (const item of ((this).items)) { var _t1: number = null!; var _t2 = item;');
+      expect(result).toContain('(this).trackingFn(_t1, _t2, ((this).prop));');
+    });
   });
 });
