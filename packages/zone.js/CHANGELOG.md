@@ -1,3 +1,12 @@
+## [0.13.2](https://github.com/angular/angular/compare/zone.js-0.13.1...zone.js-0.13.2) (2023-09-07)
+
+
+### Bug Fixes
+
+* **zone.js:** add conditional exports to zone.js package ([#51652](https://github.com/angular/angular/issues/51652)) ([4798ec4](https://github.com/angular/angular/commit/4798ec41668d47fd5e1504c61d96d5e56dcff345))
+
+
+
 ## [v0.13.1](https://github.com/angular/angular/compare/zone.js-0.13.0...zone.js-v0.13.1) (2023-06-09)
 
 
