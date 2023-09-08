@@ -94,8 +94,9 @@
         <a href="guide/releases#developer-preview">developer preview</a>
       </label>
       {% endif %}
-      {%- if method.experimental %}
-      <label class="api-status-label experimental" title="This API is experimental">
+      {%- if doc.experimental !== undefined %}
+      <label class="api-status-label experimental">
+        <a href="guide/releases#experimental">experimental</a>
         experimental
       </label>
       {% endif %}
@@ -239,8 +240,11 @@
             <a href="guide/releases#developer-preview">developer preview</a>
           </label>
           {% endif %}
-          {%- if property.experimental %}
-          <label class="api-status-label experimental" title="This API is experimental"> experimental </label>
+          {%- if doc.experimental !== undefined %}
+          <label class="api-status-label experimental">
+            <a href="guide/releases#experimental">experimental</a>
+            experimental
+          </label>
           {% endif %}
           {%- if property.deprecated %}
           <label class="api-status-label deprecated" title="This API is deprecated">Deprecated</label>

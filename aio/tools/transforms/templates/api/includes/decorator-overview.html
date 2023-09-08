@@ -19,8 +19,9 @@
           <a href="guide/releases#developer-preview">developer preview</a>
         </label>
         {% endif %}
-        {%- if option.experimental %}
-        <label class="api-status-label experimental" title="This API is experimental">
+        {%- if doc.experimental !== undefined %}
+        <label class="api-status-label experimental">
+          <a href="guide/releases#experimental">experimental</a>
           experimental
         </label>
         {% endif %}
