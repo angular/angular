@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import ts from 'typescript';
 
-import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader} from '../../metadata';
-import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
+import {MetadataReader} from '../../metadata';
+import {isNamedClassDeclaration} from '../../reflection';
 
-import {extractClass} from './class-extractor';
-import {ClassEntry, DirectiveEntry, DocEntry, EntryType, FunctionEntry, MemberEntry, MemberTags, MemberType, MethodEntry, ParameterEntry, PropertyEntry} from './entities';
+import {extractClass} from './class_extractor';
+import {DocEntry} from './entities';
 
 
 /**
