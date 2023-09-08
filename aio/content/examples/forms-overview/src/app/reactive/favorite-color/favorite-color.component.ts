@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
+  standalone: true,
   selector: 'app-reactive-favorite-color',
   template: `
-    Favorite Color: <input type="text" [formControl]="favoriteColorControl">
-  `
+    Favorite Color: <input type="text" [formControl]="favoriteColorControl" />
+  `,
+  imports: [ReactiveFormsModule],
 })
 export class FavoriteColorComponent {
   favoriteColorControl = new FormControl('');
