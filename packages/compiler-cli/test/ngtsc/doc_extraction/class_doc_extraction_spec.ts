@@ -18,7 +18,7 @@ const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 runInEachFileSystem(os => {
   let env!: NgtscTestEnvironment;
 
-  describe('ngtsc docs extraction', () => {
+  describe('ngtsc class docs extraction', () => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.tsconfig();
@@ -26,22 +26,22 @@ runInEachFileSystem(os => {
 
     it('should extract classes', () => {
       env.write('test.ts', `
-        class UserProfile {}
+        export class UserProfile {}
 
-        class CustomSlider {}
+        export class CustomSlider {}
       `);
 
       const docs: DocEntry[] = env.driveDocsExtraction();
       expect(docs.length).toBe(2);
       expect(docs[0].name).toBe('UserProfile');
-      expect(docs[0].entryType).toBe(EntryType.undecorated_class);
+      expect(docs[0].entryType).toBe(EntryType.UndecoratedClass);
       expect(docs[1].name).toBe('CustomSlider');
-      expect(docs[1].entryType).toBe(EntryType.undecorated_class);
+      expect(docs[1].entryType).toBe(EntryType.UndecoratedClass);
     });
 
     it('should extract class members', () => {
       env.write('test.ts', `
-        class UserProfile {
+        export class UserProfile {
           firstName(): string { return 'Morgan'; }          
           age: number = 25;
         }
@@ -52,19 +52,19 @@ runInEachFileSystem(os => {
       expect(classEntry.members.length).toBe(2);
 
       const methodEntry = classEntry.members[0] as MethodEntry;
-      expect(methodEntry.memberType).toBe(MemberType.method);
+      expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('firstName');
       expect(methodEntry.returnType).toBe('string');
 
       const propertyEntry = classEntry.members[1] as PropertyEntry;
-      expect(propertyEntry.memberType).toBe(MemberType.property);
+      expect(propertyEntry.memberType).toBe(MemberType.Property);
       expect(propertyEntry.name).toBe('age');
       expect(propertyEntry.type).toBe('number');
     });
 
     it('should extract a method with a rest parameter', () => {
       env.write('test.ts', `
-        class UserProfile {            
+        export class UserProfile {            
           getNames(prefix: string, ...ids: string[]): string[] {
             return [];
           }
@@ -87,7 +87,7 @@ runInEachFileSystem(os => {
 
     it('should extract class method params', () => {
       env.write('test.ts', `
-        class UserProfile {
+        export class UserProfile {
           setPhone(num: string, intl: number = 1, area?: string): void {}
         }
       `);
@@ -98,7 +98,7 @@ runInEachFileSystem(os => {
       expect(classEntry.members.length).toBe(1);
 
       const methodEntry = classEntry.members[0] as MethodEntry;
-      expect(methodEntry.memberType).toBe(MemberType.method);
+      expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('setPhone');
       expect(methodEntry.params.length).toBe(3);
 
@@ -118,7 +118,7 @@ runInEachFileSystem(os => {
 
     it('should not extract private class members', () => {
       env.write('test.ts', `
-        class UserProfile {
+        export class UserProfile {
             private ssn: string;
             private getSsn(): string { return ''; }
             private static printSsn(): void { }
@@ -134,7 +134,7 @@ runInEachFileSystem(os => {
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
       env.write('test.ts', `
-        class UserProfile {            
+        export class UserProfile {            
             eyeColor = 'brown';
             protected name: string;
             readonly age = 25;
@@ -171,26 +171,26 @@ runInEachFileSystem(os => {
 
       // Properties
       expect(eyeColorMember.memberTags.length).toBe(0);
-      expect(nameMember.memberTags).toEqual([MemberTags.protected]);
-      expect(ageMember.memberTags).toEqual([MemberTags.readonly]);
-      expect(addressMember.memberTags).toEqual([MemberTags.optional]);
-      expect(countryMember.memberTags).toEqual([MemberTags.static]);
-      expect(birthdayMember.memberTags).toContain(MemberTags.protected);
-      expect(birthdayMember.memberTags).toContain(MemberTags.readonly);
+      expect(nameMember.memberTags).toEqual([MemberTags.Protected]);
+      expect(ageMember.memberTags).toEqual([MemberTags.Readonly]);
+      expect(addressMember.memberTags).toEqual([MemberTags.Optional]);
+      expect(countryMember.memberTags).toEqual([MemberTags.Static]);
+      expect(birthdayMember.memberTags).toContain(MemberTags.Protected);
+      expect(birthdayMember.memberTags).toContain(MemberTags.Readonly);
 
       // Methods
       expect(getEyeColorMember.memberTags.length).toBe(0);
-      expect(getNameMember.memberTags).toEqual([MemberTags.protected]);
-      expect(getAgeMember.memberTags).toEqual([MemberTags.optional]);
-      expect(getCountryMember.memberTags).toEqual([MemberTags.static]);
-      expect(getBirthdayMember.memberTags).toContain(MemberTags.protected);
-      expect(getBirthdayMember.memberTags).toContain(MemberTags.optional);
+      expect(getNameMember.memberTags).toEqual([MemberTags.Protected]);
+      expect(getAgeMember.memberTags).toEqual([MemberTags.Optional]);
+      expect(getCountryMember.memberTags).toEqual([MemberTags.Static]);
+      expect(getBirthdayMember.memberTags).toContain(MemberTags.Protected);
+      expect(getBirthdayMember.memberTags).toContain(MemberTags.Optional);
     });
 
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
       env.write('test.ts', `
-        class UserProfile {            
+        export class UserProfile {            
           get userId(): number { return 123; }
           
           get userName(): string { return 'Morgan'; }
@@ -202,20 +202,20 @@ runInEachFileSystem(os => {
 
       const docs: DocEntry[] = env.driveDocsExtraction();
       const classEntry = docs[0] as ClassEntry;
-      expect(classEntry.entryType).toBe(EntryType.undecorated_class);
+      expect(classEntry.entryType).toBe(EntryType.UndecoratedClass);
 
       expect(classEntry.members.length).toBe(4);
 
       const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter, ] = classEntry.members;
 
       expect(userIdGetter.name).toBe('userId');
-      expect(userIdGetter.memberType).toBe(MemberType.getter);
+      expect(userIdGetter.memberType).toBe(MemberType.Getter);
       expect(userNameGetter.name).toBe('userName');
-      expect(userNameGetter.memberType).toBe(MemberType.getter);
+      expect(userNameGetter.memberType).toBe(MemberType.Getter);
       expect(userNameSetter.name).toBe('userName');
-      expect(userNameSetter.memberType).toBe(MemberType.setter);
+      expect(userNameSetter.memberType).toBe(MemberType.Setter);
       expect(isAdminSetter.name).toBe('isAdmin');
-      expect(isAdminSetter.memberType).toBe(MemberType.setter);
+      expect(isAdminSetter.memberType).toBe(MemberType.Setter);
     });
   });
 });
