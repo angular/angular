@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -13,14 +14,17 @@ import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader} from '../../
 import {ClassDeclaration} from '../../reflection';
 
 import {ClassEntry, DirectiveEntry, EntryType, MemberEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from './entities';
-import {extractFunction} from './function-extractor';
+import {extractResolvedTypeString} from './type_extractor';
+
+/** A class member declaration that is *like* a property (including accessors) */
+type PropertyDeclarationLike = ts.PropertyDeclaration|ts.AccessorDeclaration;
 
 /** Extractor to pull info for API reference documentation for a TypeScript class. */
 class ClassExtractor {
   constructor(
       protected declaration: ClassDeclaration,
       protected reference: Reference,
-      protected checker: ts.TypeChecker,
+      protected typeChecker: ts.TypeChecker,
   ) {}
 
   /** Extract docs info specific to classes. */
@@ -54,35 +58,46 @@ class ClassExtractor {
       return this.extractMethod(memberDeclaration);
     } else if (ts.isPropertyDeclaration(memberDeclaration)) {
       return this.extractClassProperty(memberDeclaration);
+    } else if (ts.isAccessor(memberDeclaration)) {
+      return this.extractGetterSetter(memberDeclaration);
     }
 
-    // We only expect methods and properties. If we encounter something else,
+    // We only expect methods, properties, and accessors. If we encounter something else,
     // return undefined and let the rest of the program filter it out.
     return undefined;
   }
 
   /** Extracts docs for a class method. */
   protected extractMethod(methodDeclaration: ts.MethodDeclaration): MethodEntry {
+    const functionExtractor = new FunctionExtractor(methodDeclaration, this.typeChecker);
     return {
-      ...extractFunction(methodDeclaration),
+      ...functionExtractor.extract(),
       memberType: MemberType.method,
       memberTags: this.getMemberTags(methodDeclaration),
     };
   }
 
   /** Extracts doc info for a property declaration. */
-  protected extractClassProperty(propertyDeclaration: ts.PropertyDeclaration): PropertyEntry {
+  protected extractClassProperty(propertyDeclaration: PropertyDeclarationLike): PropertyEntry {
     return {
       name: propertyDeclaration.name.getText(),
-      getType: 'TODO',
-      setType: 'TODO',
+      type: extractResolvedTypeString(propertyDeclaration, this.typeChecker),
       memberType: MemberType.property,
       memberTags: this.getMemberTags(propertyDeclaration),
     };
   }
 
+  /** Extracts doc info for an accessor member (getter/setter). */
+  protected extractGetterSetter(accessor: ts.AccessorDeclaration): PropertyEntry {
+    return {
+      ...this.extractClassProperty(accessor),
+      memberType: ts.isGetAccessor(accessor) ? MemberType.getter : MemberType.setter,
+    };
+  }
+
   /** Gets the tags for a member (protected, readonly, static, etc.) */
-  protected getMemberTags(member: ts.MethodDeclaration|ts.PropertyDeclaration): MemberTags[] {
+  protected getMemberTags(member: ts.MethodDeclaration|ts.PropertyDeclaration|
+                          ts.AccessorDeclaration): MemberTags[] {
     const tags: MemberTags[] = this.getMemberTagsFromModifiers(member.modifiers ?? []);
 
     if (member.questionToken) {
@@ -124,14 +139,15 @@ class ClassExtractor {
    *  - The member is protected
    */
   private isMemberExcluded(member: ts.ClassElement): boolean {
-    return !member.name || !this.isMethodOrProperty(member) ||
+    return !member.name || !this.isDocumentableMember(member) ||
         !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword);
   }
 
-  /** Gets whether a class member is either a member or a property. */
-  private isMethodOrProperty(member: ts.ClassElement): member is ts.MethodDeclaration
+  /** Gets whether a class member is a method, property, or accessor. */
+  private isDocumentableMember(member: ts.ClassElement): member is ts.MethodDeclaration
       |ts.PropertyDeclaration {
-    return ts.isMethodDeclaration(member) || ts.isPropertyDeclaration(member);
+    return ts.isMethodDeclaration(member) || ts.isPropertyDeclaration(member) ||
+        ts.isAccessor(member);
   }
 }
 
@@ -157,6 +173,7 @@ class DirectiveExtractor extends ClassExtractor {
     };
   }
 
+  /** Extracts docs info for a directive property, including input/output metadata. */
   override extractClassProperty(propertyDeclaration: ts.PropertyDeclaration): PropertyEntry {
     const entry = super.extractClassProperty(propertyDeclaration);
 
