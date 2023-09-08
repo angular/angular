@@ -120,7 +120,7 @@
     {
       "name": "routing",
       "type": "boolean",
-      "description": "Generate a routing module for the initial project."
+      "description": "Enable routing in the initial project."
     },
     {
       "name": "skip-git",
