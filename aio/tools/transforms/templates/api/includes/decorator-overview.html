@@ -19,6 +19,12 @@
           <a href="guide/releases#developer-preview">developer preview</a>
         </label>
         {% endif %}
+        {%- if doc.experimental !== undefined %}
+        <label class="api-status-label experimental">
+          <a href="guide/releases#experimental">experimental</a>
+          experimental
+        </label>
+        {% endif %}
 
         {$ option.shortDescription | marked $}
       </td>
