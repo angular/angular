@@ -191,6 +191,7 @@ module.exports =
             'description',
             'security',
             'deprecated',
+            'experimental',
             'see',
             'usageNotes',
           ];

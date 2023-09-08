@@ -23,6 +23,11 @@
                 preview</a>
             </label>
             {% endif %}
+            {%- if option.experimental %}
+            <label class="api-status-label experimental" title="This API is experimental">
+              experimental
+            </label>
+            {% endif %}
             {$ github.githubLinks(option, versionInfo) $}
           </div>
         </th>
