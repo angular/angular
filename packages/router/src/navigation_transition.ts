@@ -261,7 +261,6 @@ export interface NavigationTransition {
   targetRouterState: RouterState|null;
   guards: Checks;
   guardsResult: boolean|UrlTree|null;
-  viewTransition?: ViewTransition
 }
 
 /**
@@ -306,7 +305,7 @@ export class NavigationTransitions {
   private readonly paramsInheritanceStrategy =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
-  private readonly createTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
+  private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
 
   navigationId = 0;
   get hasRequestedNavigation() {
@@ -614,15 +613,13 @@ export class NavigationTransitions {
                          switchTap(() => this.afterPreactivation()),
 
                          switchMap(() => {
-                           const viewTransitionInfo =
-                               this.createTransition?.(this.environmentInjector);
-                           overallTransitionState.viewTransition = viewTransitionInfo?.transition;
+                           const viewTransitionStarted =
+                               this.createViewTransition?.(this.environmentInjector);
 
                            // If view transitions are enabled, block the navigation until the view
                            // transition callback starts. Otherwise, continue immediately.
-                           return viewTransitionInfo ?
-                               from(viewTransitionInfo.viewTransitionStarted)
-                                   .pipe(map(() => overallTransitionState)) :
+                           return viewTransitionStarted ?
+                               from(viewTransitionStarted).pipe(map(() => overallTransitionState)) :
                                of(overallTransitionState);
                          }),
 
@@ -662,10 +659,6 @@ export class NavigationTransitions {
                              completed = true;
                            }
                          }),
-
-                         switchTap(
-                             () => overallTransitionState.viewTransition?.updateCallbackDone ??
-                                 of(void 0)),
 
                          // There used to be a lot more logic happening directly within the
                          // transition Observable. Some of this logic has been refactored out to

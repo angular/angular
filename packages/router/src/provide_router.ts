@@ -22,7 +22,7 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
-import {CREATE_VIEW_TRANSITION, transitionHelper} from './utils/view_transition';
+import {CREATE_VIEW_TRANSITION, createViewTransition} from './utils/view_transition';
 
 
 /**
@@ -729,7 +729,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @experimental
  */
 export function withViewTransitions(): ViewTransitionsFeature {
-  const providers = [{provide: CREATE_VIEW_TRANSITION, useValue: transitionHelper}];
+  const providers = [{provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition}];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
 }
 

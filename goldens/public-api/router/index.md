@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="@types/dom-view-transitions" />
-
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { Compiler } from '@angular/core';

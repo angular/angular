@@ -534,7 +534,7 @@ describe('bootstrap', () => {
       expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
     });
 
-    fit('should have the correct event order when using view transitions', async () => {
+    it('should have the correct event order when using view transitions', async () => {
       @Component({
         selector: 'component-a',
         template: `a`,
