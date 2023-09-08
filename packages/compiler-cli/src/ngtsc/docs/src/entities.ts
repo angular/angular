@@ -25,6 +25,8 @@ export enum EntryType {
 export enum MemberType {
   property = 'property',
   method = 'method',
+  getter = 'getter',
+  setter = 'setter',
 }
 
 /** Informational tags applicable to class members. */
@@ -69,8 +71,7 @@ export interface MemberEntry {
 
 /** Sub-entry for a class property. */
 export interface PropertyEntry extends MemberEntry {
-  getType: string;
-  setType: string;
+  type: string;
   inputAlias?: string;
   outputAlias?: string;
 }
@@ -84,4 +85,5 @@ export interface ParameterEntry {
   description: string;
   type: string;
   isOptional: boolean;
+  isRestParam: boolean;
 }
