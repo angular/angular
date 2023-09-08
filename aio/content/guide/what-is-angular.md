@@ -353,7 +353,7 @@ In other words, rather than having to define a specific context in which code sh
 
 The Angular CLI is the recommended way to develop Angular applications and can make some tasks trouble-free.
 
-Some examples of commom Angular CLI commands include:
+Some examples of common Angular CLI commands include:
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
