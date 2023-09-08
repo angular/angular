@@ -8,41 +8,47 @@
 
 /** Type of top-level documentation entry. */
 export enum EntryType {
-  block = 'block',
-  component = 'component',
-  decorator = 'decorator',
-  directive = 'directive',
-  element = 'element',
-  enum = 'enum',
-  function = 'function',
-  interface = 'interface',
-  pipe = 'pipe',
-  type_alias = 'type_alias',
-  undecorated_class = 'undecorated_class',
+  Block = 'Block',
+  Component = 'component',
+  Constant = 'constant',
+  Decorator = 'decorator',
+  Directive = 'directive',
+  Element = 'element',
+  Enum = 'enum',
+  Function = 'function',
+  Interface = 'interface',
+  Pipe = 'pipe',
+  TypeAlias = 'type_alias',
+  UndecoratedClass = 'undecorated_class',
 }
 
 /** Types of class members */
 export enum MemberType {
-  property = 'property',
-  method = 'method',
-  getter = 'getter',
-  setter = 'setter',
+  Property = 'property',
+  Method = 'method',
+  Getter = 'getter',
+  Setter = 'setter',
 }
 
 /** Informational tags applicable to class members. */
 export enum MemberTags {
-  static = 'static',
-  readonly = 'readonly',
-  protected = 'protected',
-  optional = 'optional',
-  input = 'input',
-  output = 'output',
+  Static = 'static',
+  Readonly = 'readonly',
+  Protected = 'protected',
+  Optional = 'optional',
+  Input = 'input',
+  Output = 'output',
 }
 
 /** Base type for all documentation entities. */
 export interface DocEntry {
   entryType: EntryType;
   name: string;
+}
+
+/** Documentation entity for a constant. */
+export interface ConstantEntry extends DocEntry {
+  type: string;
 }
 
 /** Documentation entity for a TypeScript class. */

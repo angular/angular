@@ -31,7 +31,7 @@ class ClassExtractor {
   extract(): ClassEntry {
     return {
       name: this.declaration.name!.text,
-      entryType: EntryType.undecorated_class,
+      entryType: EntryType.UndecoratedClass,
       members: this.extractAllClassMembers(this.declaration as ts.ClassDeclaration),
     };
   }
@@ -72,7 +72,7 @@ class ClassExtractor {
     const functionExtractor = new FunctionExtractor(methodDeclaration, this.typeChecker);
     return {
       ...functionExtractor.extract(),
-      memberType: MemberType.method,
+      memberType: MemberType.Method,
       memberTags: this.getMemberTags(methodDeclaration),
     };
   }
@@ -82,7 +82,7 @@ class ClassExtractor {
     return {
       name: propertyDeclaration.name.getText(),
       type: extractResolvedTypeString(propertyDeclaration, this.typeChecker),
-      memberType: MemberType.property,
+      memberType: MemberType.Property,
       memberTags: this.getMemberTags(propertyDeclaration),
     };
   }
@@ -91,7 +91,7 @@ class ClassExtractor {
   protected extractGetterSetter(accessor: ts.AccessorDeclaration): PropertyEntry {
     return {
       ...this.extractClassProperty(accessor),
-      memberType: ts.isGetAccessor(accessor) ? MemberType.getter : MemberType.setter,
+      memberType: ts.isGetAccessor(accessor) ? MemberType.Getter : MemberType.Setter,
     };
   }
 
@@ -101,7 +101,7 @@ class ClassExtractor {
     const tags: MemberTags[] = this.getMemberTagsFromModifiers(member.modifiers ?? []);
 
     if (member.questionToken) {
-      tags.push(MemberTags.optional);
+      tags.push(MemberTags.Optional);
     }
 
     return tags;
@@ -121,11 +121,11 @@ class ClassExtractor {
   private getTagForMemberModifier(mod: ts.ModifierLike): MemberTags|undefined {
     switch (mod.kind) {
       case ts.SyntaxKind.StaticKeyword:
-        return MemberTags.static;
+        return MemberTags.Static;
       case ts.SyntaxKind.ReadonlyKeyword:
-        return MemberTags.readonly;
+        return MemberTags.Readonly;
       case ts.SyntaxKind.ProtectedKeyword:
-        return MemberTags.protected;
+        return MemberTags.Protected;
       default:
         return undefined;
     }
@@ -169,7 +169,7 @@ class DirectiveExtractor extends ClassExtractor {
       isStandalone: this.metadata.isStandalone,
       selector: this.metadata.selector ?? '',
       exportAs: this.metadata.exportAs ?? [],
-      entryType: this.metadata.isComponent ? EntryType.component : EntryType.directive,
+      entryType: this.metadata.isComponent ? EntryType.Component : EntryType.Directive,
     };
   }
 
@@ -179,13 +179,13 @@ class DirectiveExtractor extends ClassExtractor {
 
     const inputMetadata = this.getInputMetadata(propertyDeclaration);
     if (inputMetadata) {
-      entry.memberTags.push(MemberTags.input);
+      entry.memberTags.push(MemberTags.Input);
       entry.inputAlias = inputMetadata.bindingPropertyName;
     }
 
     const outputMetadata = this.getOutputMetadata(propertyDeclaration);
     if (outputMetadata) {
-      entry.memberTags.push(MemberTags.output);
+      entry.memberTags.push(MemberTags.Output);
       entry.outputAlias = outputMetadata.bindingPropertyName;
     }
 

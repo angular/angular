@@ -18,7 +18,7 @@ const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 runInEachFileSystem(os => {
   let env!: NgtscTestEnvironment;
 
-  describe('ngtsc docs extraction', () => {
+  describe('ngtsc directive docs extraction', () => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.tsconfig();
@@ -38,7 +38,7 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(1);
-      expect(docs[0].entryType).toBe(EntryType.directive);
+      expect(docs[0].entryType).toBe(EntryType.Directive);
 
       const directiveEntry = docs[0] as DirectiveEntry;
       expect(directiveEntry.isStandalone).toBe(true);
@@ -61,7 +61,7 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(1);
-      expect(docs[0].entryType).toBe(EntryType.component);
+      expect(docs[0].entryType).toBe(EntryType.Component);
 
       const componentEntry = docs[0] as DirectiveEntry;
       expect(componentEntry.isStandalone).toBe(true);
@@ -87,7 +87,7 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(2);
-      expect(docs[1].entryType).toBe(EntryType.directive);
+      expect(docs[1].entryType).toBe(EntryType.Directive);
 
       const directiveEntry = docs[1] as DirectiveEntry;
       expect(directiveEntry.isStandalone).toBe(false);
@@ -114,7 +114,7 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(2);
-      expect(docs[1].entryType).toBe(EntryType.component);
+      expect(docs[1].entryType).toBe(EntryType.Component);
 
       const componentEntry = docs[1] as DirectiveEntry;
       expect(componentEntry.isStandalone).toBe(false);
@@ -141,26 +141,26 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(1);
-      expect(docs[0].entryType).toBe(EntryType.directive);
+      expect(docs[0].entryType).toBe(EntryType.Directive);
 
       const directiveEntry = docs[0] as DirectiveEntry;
       expect(directiveEntry.members.length).toBe(4);
 
       const [nameEntry, firstNameEntry, savedEntry, resetEntry, ] = directiveEntry.members;
 
-      expect(nameEntry.memberTags).toEqual([MemberTags.input]);
+      expect(nameEntry.memberTags).toEqual([MemberTags.Input]);
       expect((nameEntry as PropertyEntry).inputAlias).toBe('name');
       expect((nameEntry as PropertyEntry).outputAlias).toBeUndefined();
 
-      expect(firstNameEntry.memberTags).toEqual([MemberTags.input]);
+      expect(firstNameEntry.memberTags).toEqual([MemberTags.Input]);
       expect((firstNameEntry as PropertyEntry).inputAlias).toBe('first');
       expect((firstNameEntry as PropertyEntry).outputAlias).toBeUndefined();
 
-      expect(savedEntry.memberTags).toEqual([MemberTags.output]);
+      expect(savedEntry.memberTags).toEqual([MemberTags.Output]);
       expect((savedEntry as PropertyEntry).outputAlias).toBe('saved');
       expect((savedEntry as PropertyEntry).inputAlias).toBeUndefined();
 
-      expect(resetEntry.memberTags).toEqual([MemberTags.output]);
+      expect(resetEntry.memberTags).toEqual([MemberTags.Output]);
       expect((resetEntry as PropertyEntry).outputAlias).toBe('onReset');
       expect((resetEntry as PropertyEntry).inputAlias).toBeUndefined();
     });
@@ -185,26 +185,26 @@ runInEachFileSystem(os => {
       const docs: DocEntry[] = env.driveDocsExtraction();
 
       expect(docs.length).toBe(1);
-      expect(docs[0].entryType).toBe(EntryType.component);
+      expect(docs[0].entryType).toBe(EntryType.Component);
 
       const componentEntry = docs[0] as DirectiveEntry;
       expect(componentEntry.members.length).toBe(4);
 
       const [nameEntry, firstNameEntry, savedEntry, resetEntry, ] = componentEntry.members;
 
-      expect(nameEntry.memberTags).toEqual([MemberTags.input]);
+      expect(nameEntry.memberTags).toEqual([MemberTags.Input]);
       expect((nameEntry as PropertyEntry).inputAlias).toBe('name');
       expect((nameEntry as PropertyEntry).outputAlias).toBeUndefined();
 
-      expect(firstNameEntry.memberTags).toEqual([MemberTags.input]);
+      expect(firstNameEntry.memberTags).toEqual([MemberTags.Input]);
       expect((firstNameEntry as PropertyEntry).inputAlias).toBe('first');
       expect((firstNameEntry as PropertyEntry).outputAlias).toBeUndefined();
 
-      expect(savedEntry.memberTags).toEqual([MemberTags.output]);
+      expect(savedEntry.memberTags).toEqual([MemberTags.Output]);
       expect((savedEntry as PropertyEntry).outputAlias).toBe('saved');
       expect((savedEntry as PropertyEntry).inputAlias).toBeUndefined();
 
-      expect(resetEntry.memberTags).toEqual([MemberTags.output]);
+      expect(resetEntry.memberTags).toEqual([MemberTags.Output]);
       expect((resetEntry as PropertyEntry).outputAlias).toBe('onReset');
       expect((resetEntry as PropertyEntry).inputAlias).toBeUndefined();
     });
@@ -234,20 +234,20 @@ runInEachFileSystem(os => {
 
       const docs: DocEntry[] = env.driveDocsExtraction();
       const classEntry = docs[0] as ClassEntry;
-      expect(classEntry.entryType).toBe(EntryType.component);
+      expect(classEntry.entryType).toBe(EntryType.Component);
 
       expect(classEntry.members.length).toBe(4);
 
       const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter, ] = classEntry.members;
 
       expect(userIdGetter.name).toBe('userId');
-      expect(userIdGetter.memberTags).toContain(MemberTags.input);
+      expect(userIdGetter.memberTags).toContain(MemberTags.Input);
       expect(userNameGetter.name).toBe('userName');
-      expect(userNameGetter.memberTags).toContain(MemberTags.input);
+      expect(userNameGetter.memberTags).toContain(MemberTags.Input);
       expect(userNameSetter.name).toBe('userName');
-      expect(userNameSetter.memberTags).toContain(MemberTags.input);
+      expect(userNameSetter.memberTags).toContain(MemberTags.Input);
       expect(isAdminSetter.name).toBe('isAdmin');
-      expect(isAdminSetter.memberTags).toContain(MemberTags.input);
+      expect(isAdminSetter.memberTags).toContain(MemberTags.Input);
     });
   });
 });
