@@ -132,8 +132,8 @@
         {
           "name": "routing",
           "type": "boolean",
-          "default": false,
-          "description": "Create a routing NgModule."
+          "default": true,
+          "description": "Creates an application with routing enabled."
         },
         {
           "name": "skip-install",
