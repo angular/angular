@@ -65,7 +65,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     // @ts-expect-error overwriting a readonly property
     this.domPlayer = this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : new Map();
-    this.domPlayer.addEventListener('finish', () => this._onFinish());
+    const onFinish = () => this._onFinish();
+    this.domPlayer.addEventListener('finish', onFinish);
+    this.onDestroy(() => {
+      // We must remove the `finish` event listener once an animation has completed all its
+      // iterations. This action is necessary to prevent a memory leak since the listener captures
+      // `this`, creating a closure that prevents `this` from being garbage collected.
+      this.domPlayer.removeEventListener('finish', onFinish);
+    });
   }
 
   private _preparePlayerBeforeStart() {
