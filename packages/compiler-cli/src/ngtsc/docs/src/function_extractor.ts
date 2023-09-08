@@ -31,7 +31,7 @@ export class FunctionExtractor {
       // already before getting to this point if it was anonymous.
       name: this.declaration.name!.getText(),
       returnType,
-      entryType: EntryType.function,
+      entryType: EntryType.Function,
     };
   }
 
