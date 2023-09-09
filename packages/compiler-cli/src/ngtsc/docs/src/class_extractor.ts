@@ -7,6 +7,7 @@
  */
 
 import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -22,7 +23,7 @@ type PropertyDeclarationLike = ts.PropertyDeclaration|ts.AccessorDeclaration;
 /** Extractor to pull info for API reference documentation for a TypeScript class. */
 class ClassExtractor {
   constructor(
-      protected declaration: ClassDeclaration,
+      protected declaration: ClassDeclaration&ts.ClassDeclaration,
       protected reference: Reference,
       protected typeChecker: ts.TypeChecker,
   ) {}
@@ -32,7 +33,10 @@ class ClassExtractor {
     return {
       name: this.declaration.name!.text,
       entryType: EntryType.UndecoratedClass,
-      members: this.extractAllClassMembers(this.declaration as ts.ClassDeclaration),
+      members: this.extractAllClassMembers(this.declaration),
+      description: extractJsDocDescription(this.declaration),
+      jsdocTags: extractJsDocTags(this.declaration),
+      rawComment: extractRawJsDoc(this.declaration),
     };
   }
 
@@ -84,6 +88,8 @@ class ClassExtractor {
       type: extractResolvedTypeString(propertyDeclaration, this.typeChecker),
       memberType: MemberType.Property,
       memberTags: this.getMemberTags(propertyDeclaration),
+      description: extractJsDocDescription(propertyDeclaration),
+      jsdocTags: extractJsDocTags(propertyDeclaration),
     };
   }
 
@@ -154,7 +160,7 @@ class ClassExtractor {
 /** Extractor to pull info for API reference documentation for an Angular directive. */
 class DirectiveExtractor extends ClassExtractor {
   constructor(
-      declaration: ClassDeclaration,
+      declaration: ClassDeclaration&ts.ClassDeclaration,
       reference: Reference,
       protected metadata: DirectiveMeta,
       checker: ts.TypeChecker,
@@ -207,7 +213,7 @@ class DirectiveExtractor extends ClassExtractor {
 
 /** Extracts documentation info for a class, potentially including Angular-specific info.  */
 export function extractClass(
-    classDeclaration: ClassDeclaration, metadataReader: MetadataReader,
+    classDeclaration: ClassDeclaration&ts.ClassDeclaration, metadataReader: MetadataReader,
     typeChecker: ts.TypeChecker): ClassEntry {
   const ref = new Reference(classDeclaration);
   const metadata = metadataReader.getDirectiveMetadata(ref);

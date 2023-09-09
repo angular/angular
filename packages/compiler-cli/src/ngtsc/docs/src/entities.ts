@@ -40,10 +40,18 @@ export enum MemberTags {
   Output = 'output',
 }
 
+export interface JsDocTagEntry {
+  name: string;
+  comment: string;
+}
+
 /** Base type for all documentation entities. */
 export interface DocEntry {
   entryType: EntryType;
   name: string;
+  description: string;
+  rawComment: string;
+  jsdocTags: JsDocTagEntry[];
 }
 
 /** Documentation entity for a constant. */
@@ -73,6 +81,8 @@ export interface MemberEntry {
   name: string;
   memberType: MemberType;
   memberTags: MemberTags[];
+  description: string;
+  jsdocTags: JsDocTagEntry[];
 }
 
 /** Sub-entry for a class property. */
