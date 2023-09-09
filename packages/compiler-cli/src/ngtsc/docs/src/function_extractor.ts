@@ -7,6 +7,7 @@
  */
 
 import {EntryType, FunctionEntry, ParameterEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
 import ts from 'typescript';
 
 import {extractResolvedTypeString} from './type_extractor';
@@ -32,13 +33,16 @@ export class FunctionExtractor {
       name: this.declaration.name!.getText(),
       returnType,
       entryType: EntryType.Function,
+      description: extractJsDocDescription(this.declaration),
+      jsdocTags: extractJsDocTags(this.declaration),
+      rawComment: extractRawJsDoc(this.declaration),
     };
   }
 
   private extractAllParams(params: ts.NodeArray<ts.ParameterDeclaration>): ParameterEntry[] {
     return params.map(param => ({
                         name: param.name.getText(),
-                        description: 'TODO',
+                        description: extractJsDocDescription(param),
                         type: extractResolvedTypeString(param, this.typeChecker),
                         isOptional: !!(param.questionToken || param.initializer),
                         isRestParam: !!param.dotDotDotToken,
