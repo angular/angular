@@ -38,7 +38,7 @@ runInEachFileSystem(os => {
       expect(constantEntry.type).toBe('string');
     });
 
-    it('should extract mutliple constant declarations in a single statement', () => {
+    it('should extract multiple constant declarations in a single statement', () => {
       env.write('test.ts', `
         export const PI = 3.14, VERSION = '16.0.0';
       `);
