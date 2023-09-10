@@ -117,6 +117,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
     // (undocumented)
+    RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
+    // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,

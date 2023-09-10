@@ -85,7 +85,10 @@ class DepsTracker implements DepsTrackerApi {
       };
     } else {
       if (!this.ownerNgModule.has(type)) {
-        return {dependencies: []};
+        throw new RuntimeError(
+            RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
+            `Orphan component found! Trying to render the component ${
+                type.name} without first loading the NgModule that declares it. Make sure that you import the component's NgModule in the NgModule or the standalone component in which you are trying to render this component. Also make sure the way the app is bundled and served always includes the component's NgModule before the component.`);
       }
 
       const scope = this.getNgModuleScope(this.ownerNgModule.get(type)!);
