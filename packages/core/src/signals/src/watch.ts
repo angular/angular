@@ -83,7 +83,7 @@ interface WatchNode extends ReactiveNode {
   ref: Watch;
 }
 
-const WATCH_NODE = {
+const WATCH_NODE: Partial<WatchNode> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   consumerAllowSignalWrites: false,
