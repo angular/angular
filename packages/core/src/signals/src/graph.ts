@@ -10,6 +10,8 @@
 // global `ngDevMode` type is defined.
 import '../../util/ng_dev_mode';
 
+import {assertLessThan} from '../../util/assert';
+
 type Version = number&{__brand: 'Version'};
 
 /**
@@ -297,11 +299,8 @@ export function consumerAfterComputation(
   }
 
   // Truncate the producer tracking arrays.
-  for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
-    node.producerNode.pop();
-    node.producerLastReadVersion.pop();
-    node.producerIndexOfThis.pop();
-  }
+  node.producerNode.length = node.producerLastReadVersion.length = node.producerIndexOfThis.length =
+      node.nextProducerIndex;
 }
 
 /**
@@ -382,6 +381,9 @@ function producerAddLiveConsumer(
 function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): void {
   assertProducerNode(node);
   assertConsumerNode(node);
+
+  typeof ngDevMode !== 'undefined' && ngDevMode &&
+      assertLessThan(idx, node.liveConsumerNode.length, 'Consumer out of bounds');
 
   if (node.liveConsumerNode.length === 1) {
     // When removing the last live consumer, we will no longer be live. We need to remove
