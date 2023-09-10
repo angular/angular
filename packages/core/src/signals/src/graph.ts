@@ -26,7 +26,7 @@ export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|nul
   return prev;
 }
 
-export const REACTIVE_NODE = {
+export const REACTIVE_NODE: ReactiveNode = {
   version: 0 as Version,
   dirty: false,
   producerNode: undefined,
