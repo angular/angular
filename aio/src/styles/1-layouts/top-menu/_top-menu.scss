@@ -77,11 +77,6 @@ mat-toolbar.app-toolbar {
     margin: 0 16px 0 0;
     padding: 8px 0;
 
-    &:focus {
-      // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-      outline-offset: 4px;
-    }
-
     @media screen and (max-width: $hideTopMenuWidth) {
       padding: 4px 0;
     }

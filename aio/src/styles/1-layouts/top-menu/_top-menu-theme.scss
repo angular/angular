@@ -34,14 +34,6 @@
       }
     }
 
-    // HOME NAV-LINK
-    .nav-link.home {
-      &:focus {
-        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid constants.$focus-outline-ondark;
-      }
-    }
-
     // TOP MENU
     aio-top-menu {
       ul {
