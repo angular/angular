@@ -60,12 +60,14 @@ describe('computed', () => {
 
   it('should evaluate computed only when subscribing', () => {
     const name = signal('John');
+    const age = signal(25);
     const show = signal(true);
 
     let computeCount = 0;
-    const displayName = computed(() => `${show() ? name() : 'anonymous'}:${++computeCount}`);
+    const displayName =
+        computed(() => `${show() ? `${name()} aged ${age()}` : 'anonymous'}:${++computeCount}`);
 
-    expect(displayName()).toEqual('John:1');
+    expect(displayName()).toEqual('John aged 25:1');
 
     show.set(false);
     expect(displayName()).toEqual('anonymous:2');
