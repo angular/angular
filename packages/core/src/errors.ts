@@ -113,6 +113,7 @@ export const enum RuntimeErrorCode {
 
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
+  RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
 }
 
 

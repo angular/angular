@@ -948,14 +948,13 @@ describe('runtime dependency tracker', () => {
            ]));
          });
 
-      it('should return empty deps if component has no registered module', () => {
+      it('should throw orphan component error if component has no registered module', () => {
         @Component({})
         class MainComponent {
         }
 
-        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
-
-        expect(ans.dependencies).toEqual([]);
+        expect(() => depsTracker.getComponentDependencies(MainComponent as ComponentType<any>))
+            .toThrowError(/Orphan component found! Trying to render the component MainComponent/);
       });
 
       it('should return empty deps if the compilation scope of the declaring module is corrupted',
