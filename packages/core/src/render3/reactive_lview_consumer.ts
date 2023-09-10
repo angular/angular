@@ -57,7 +57,7 @@ export function commitLViewConsumerIfHasProducers(
   currentConsumer = createLViewConsumer();
 }
 
-const REACTIVE_LVIEW_CONSUMER_NODE = {
+const REACTIVE_LVIEW_CONSUMER_NODE: ReactiveLViewConsumer = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
