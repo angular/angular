@@ -176,6 +176,19 @@ describe('redirects', () => {
         });
   });
 
+  it('should throw an error on infinite absolute redirect', () => {
+    recognize(
+        TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader), null,
+        [{path: '**', redirectTo: '/404'}], tree('/'), new DefaultUrlSerializer())
+        .subscribe({
+          next: () => fail('expected infinite redirect error'),
+          error: e => {
+            expect((e as Error).message).toMatch(/infinite redirect/);
+          }
+        });
+  });
+
+
   it('should support absolute redirects', () => {
     checkRedirect(
         [
@@ -1216,8 +1229,9 @@ describe('redirects', () => {
     it('should work when using absolute redirects (wildcard)', () => {
       checkRedirect(
           [
-            {path: '**', redirectTo: '/b(aux:c)'}, {path: 'b', component: ComponentB},
-            {path: 'c', component: ComponentC, outlet: 'aux'}
+            {path: 'b', component: ComponentB},
+            {path: 'c', component: ComponentC, outlet: 'aux'},
+            {path: '**', redirectTo: '/b(aux:c)'},
           ],
           'a/1', (t: UrlTree) => {
             expectTreeToBe(t, '/b(aux:c)');

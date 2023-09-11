@@ -10,7 +10,7 @@ import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angula
 import {from, Observable, of} from 'rxjs';
 import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
-import {absoluteRedirect, AbsoluteRedirect, ApplyRedirects, canLoadFails, noMatch, NoMatch} from './apply_redirects';
+import {AbsoluteRedirect, ApplyRedirects, canLoadFails, noMatch, NoMatch} from './apply_redirects';
 import {createUrlTreeFromSnapshot} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Data, LoadedRouterConfig, ResolveData, Route, Routes} from './models';
@@ -44,9 +44,12 @@ export function recognize(
       .recognize();
 }
 
+const MAX_ALLOWED_REDIRECTS = 31;
+
 export class Recognizer {
-  allowRedirects = true;
   private applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  private absoluteRedirectCount = 0;
+  allowRedirects = true;
 
   constructor(
       private injector: EnvironmentInjector, private configLoader: RouterConfigLoader,
@@ -86,13 +89,11 @@ export class Recognizer {
   }
 
 
-  private match(root: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
-    const expanded$ = this.processSegmentGroup(this.injector, this.config, root, PRIMARY_OUTLET);
+  private match(rootSegmentGroup: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
+    const expanded$ =
+        this.processSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     return expanded$.pipe(catchError((e: any) => {
       if (e instanceof AbsoluteRedirect) {
-        // After an absolute redirect we do not apply any more redirects!
-        // If this implementation changes, update the documentation note in `redirectTo`.
-        this.allowRedirects = false;
         this.urlTree = e.urlTree;
         return this.match(e.urlTree.root);
       }
@@ -216,7 +217,7 @@ export class Recognizer {
       return this.matchSegmentAgainstRoute(injector, rawSegment, route, segments, outlet);
     }
 
-    if (allowRedirects && this.allowRedirects) {
+    if (this.allowRedirects && allowRedirects) {
       return this.expandSegmentAgainstRouteUsingRedirect(
           injector, rawSegment, routes, route, segments, outlet);
     }
@@ -237,6 +238,22 @@ export class Recognizer {
                               match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
+    // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
+    // size exceeded in production
+    if (route.redirectTo!.startsWith('/')) {
+      this.absoluteRedirectCount++;
+      if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
+        if (ngDevMode) {
+          throw new RuntimeError(
+              RuntimeErrorCode.INFINITE_REDIRECT,
+              `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${
+                  route.redirectTo}'.\n` +
+                  `This is currently a dev mode only error but will become a` +
+                  ` call stack size exceeded error in production in a future major version.`);
+        }
+        this.allowRedirects = false;
+      }
+    }
     const newTree = this.applyRedirects.applyRedirectCommands(
         consumedSegments, route.redirectTo!, positionalParamSegments);
 
