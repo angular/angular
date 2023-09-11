@@ -3696,6 +3696,25 @@ describe('styling', () => {
     expect(logs).toEqual([]);
   });
 
+  it('should support `styles` as a string', () => {
+    if (!isBrowser) {
+      return;
+    }
+
+    @Component({
+      template: `<span>Hello</span>`,
+      styles: `span {font-size: 10px}`,
+    })
+    class Cmp {
+    }
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span') as HTMLElement;
+    expect(getComputedStyle(span).getPropertyValue('font-size')).toBe('10px');
+  });
+
   describe('regression', () => {
     it('should support sanitizer value in the [style] bindings', () => {
       @Component({template: `<div [style]="style"></div>`})

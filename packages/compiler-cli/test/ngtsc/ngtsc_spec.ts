@@ -7436,6 +7436,61 @@ function allTests(os: string) {
                 // Large string should be called from function definition.
                 '_c0()]');
       });
+
+      it('should process `styles` as a string', () => {
+        env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          styles: 'h2 {width: 10px}'
+        })
+        export class TestCmp {}
+      `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should process `styleUrl`', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('styleUrl');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should produce a diagnostic if both `styleUrls` and `styleUrl` are defined', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            styleUrls: ['dir/styles.css'],
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('@Component cannot define both `styleUrl` and `styleUrls`');
+      });
     });
 
     describe('empty resources', () => {

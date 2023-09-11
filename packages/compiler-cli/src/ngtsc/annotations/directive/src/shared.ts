@@ -470,7 +470,8 @@ export function parseDirectiveStyles(
     return null;
   }
 
-  const value = evaluator.evaluate(expression);
+  const evaluated = evaluator.evaluate(expression);
+  const value = typeof evaluated === 'string' ? [evaluated] : evaluated;
 
   // Create specific error if any string is imported from external file in local compilation mode
   if (compilationMode === CompilationMode.LOCAL && Array.isArray(value)) {
@@ -481,7 +482,7 @@ export function parseDirectiveStyles(
         const chain: ts.DiagnosticMessageChain = {
           messageText: `Unknown identifier used as styles string: ${
               entry.node
-                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using'styleUrls')`,
+                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using 'styleUrl')`,
           category: ts.DiagnosticCategory.Error,
           code: 0,
         };
@@ -495,7 +496,8 @@ export function parseDirectiveStyles(
 
   if (!isStringArrayOrDie(value, 'styles', expression)) {
     throw createValueHasWrongTypeError(
-        expression, value, `Failed to resolve @Directive.styles to a string array`);
+        expression, value,
+        `Failed to resolve @Component.styles to a string or an array of strings`);
   }
 
   return value;

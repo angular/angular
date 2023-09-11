@@ -574,8 +574,13 @@ export interface Component extends Directive {
   template?: string;
 
   /**
-   * One or more relative paths or absolute URLs for files containing CSS stylesheets to use
+   * One relative paths or an absolute URL for files containing CSS stylesheet to use
    * in this component.
+   */
+  styleUrl?: string;
+
+  /**
+   * Relative paths or absolute URLs for files containing CSS stylesheets to use in this component.
    */
   styleUrls?: string[];
 
@@ -583,7 +588,7 @@ export interface Component extends Directive {
    * One or more inline CSS stylesheets to use
    * in this component.
    */
-  styles?: string[];
+  styles?: string|string[];
 
   /**
    * One or more animation `trigger()` calls, containing
