@@ -1216,8 +1216,9 @@ describe('redirects', () => {
     it('should work when using absolute redirects (wildcard)', () => {
       checkRedirect(
           [
-            {path: '**', redirectTo: '/b(aux:c)'}, {path: 'b', component: ComponentB},
-            {path: 'c', component: ComponentC, outlet: 'aux'}
+            {path: 'b', component: ComponentB},
+            {path: 'c', component: ComponentC, outlet: 'aux'},
+            {path: '**', redirectTo: '/b(aux:c)'},
           ],
           'a/1', (t: UrlTree) => {
             expectTreeToBe(t, '/b(aux:c)');

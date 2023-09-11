@@ -10,7 +10,7 @@ import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angula
 import {from, Observable, of} from 'rxjs';
 import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
-import {absoluteRedirect, AbsoluteRedirect, ApplyRedirects, canLoadFails, noMatch, NoMatch} from './apply_redirects';
+import {AbsoluteRedirect, ApplyRedirects, canLoadFails, noMatch, NoMatch} from './apply_redirects';
 import {createUrlTreeFromSnapshot} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Data, LoadedRouterConfig, ResolveData, Route, Routes} from './models';
@@ -44,8 +44,10 @@ export function recognize(
       .recognize();
 }
 
+let currentRedirectCount = 0;
+const MAX_ALLOWED_REDIRECTS = 100;
+
 export class Recognizer {
-  allowRedirects = true;
   private applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
 
   constructor(
@@ -62,6 +64,7 @@ export class Recognizer {
   }
 
   recognize(): Observable<{state: RouterStateSnapshot, tree: UrlTree}> {
+    ngDevMode && (currentRedirectCount = 0);
     const rootSegmentGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
 
     return this.match(rootSegmentGroup).pipe(map(children => {
@@ -86,13 +89,19 @@ export class Recognizer {
   }
 
 
-  private match(root: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
-    const expanded$ = this.processSegmentGroup(this.injector, this.config, root, PRIMARY_OUTLET);
+  private match(rootSegmentGroup: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
+    if (ngDevMode) {
+      currentRedirectCount++;
+      if (currentRedirectCount > MAX_ALLOWED_REDIRECTS) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INFINITE_REDIRECT,
+            `Detected possible infinite redirect when navigating to ${this.urlTree}`);
+      }
+    }
+    const expanded$ =
+        this.processSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     return expanded$.pipe(catchError((e: any) => {
       if (e instanceof AbsoluteRedirect) {
-        // After an absolute redirect we do not apply any more redirects!
-        // If this implementation changes, update the documentation note in `redirectTo`.
-        this.allowRedirects = false;
         this.urlTree = e.urlTree;
         return this.match(e.urlTree.root);
       }
@@ -216,7 +225,7 @@ export class Recognizer {
       return this.matchSegmentAgainstRoute(injector, rawSegment, route, segments, outlet);
     }
 
-    if (allowRedirects && this.allowRedirects) {
+    if (allowRedirects) {
       return this.expandSegmentAgainstRouteUsingRedirect(
           injector, rawSegment, routes, route, segments, outlet);
     }
