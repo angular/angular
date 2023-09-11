@@ -153,7 +153,7 @@ describe('renderer factory lifecycle', () => {
       TestBed.createComponent(AnimComp);
 
       const data = lastCapturedType!.data;
-      expect(data.animation).toEqual([]);
+      expect(data['animation']).toEqual([]);
     });
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {

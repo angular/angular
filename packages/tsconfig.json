@@ -13,6 +13,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,

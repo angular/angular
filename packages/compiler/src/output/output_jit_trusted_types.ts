@@ -63,13 +63,14 @@ let policy: TrustedTypePolicy|null|undefined;
  */
 function getPolicy(): TrustedTypePolicy|null {
   if (policy === undefined) {
+    const trustedTypes = global['trustedTypes'] as TrustedTypePolicyFactory | undefined;
     policy = null;
-    if (global.trustedTypes) {
+
+    if (trustedTypes) {
       try {
-        policy =
-            (global.trustedTypes as TrustedTypePolicyFactory).createPolicy('angular#unsafe-jit', {
-              createScript: (s: string) => s,
-            });
+        policy = trustedTypes.createPolicy('angular#unsafe-jit', {
+          createScript: (s: string) => s,
+        });
       } catch {
         // trustedTypes.createPolicy throws if called with a name that is
         // already registered, even in report-only mode. Until the API changes,
@@ -100,7 +101,7 @@ function trustedScriptFromString(script: string): TrustedScript|string {
  * vulnerabilities.
  */
 export function newTrustedFunctionForJIT(...args: string[]): Function {
-  if (!global.trustedTypes) {
+  if (!global['trustedTypes']) {
     // In environments that don't support Trusted Types, fall back to the most
     // straightforward implementation:
     return new Function(...args);

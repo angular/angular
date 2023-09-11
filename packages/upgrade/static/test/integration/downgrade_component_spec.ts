@@ -197,11 +197,11 @@ withEachNg1Version(() => {
            ngOnChanges(changes: SimpleChanges) {
              switch (this.ngOnChangesCount++) {
                case 0:
-                 expect(changes.model.currentValue).toBe('world');
+                 expect(changes['model'].currentValue).toBe('world');
                  this.modelChange.emit('newC');
                  break;
                case 1:
-                 expect(changes.model.currentValue).toBe('newC');
+                 expect(changes['model'].currentValue).toBe('newC');
                  break;
                default:
                  throw new Error('Called too many times! ' + JSON.stringify(changes));
@@ -253,8 +253,8 @@ withEachNg1Version(() => {
          const ng1Module = angular.module_('ng1', [])
                                .directive('ng2', downgradeComponent({component: Ng2Component}))
                                .run(($rootScope: angular.IRootScopeService) => {
-                                 $rootScope.value1 = 0;
-                                 $rootScope.value2 = 0;
+                                 $rootScope['value1'] = 0;
+                                 $rootScope['value2'] = 0;
                                });
 
          const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
@@ -285,7 +285,7 @@ withEachNg1Version(() => {
            expect(element.textContent).toBe('4 | 5');
 
            // Digest should propagate changes that happened before the digest
-           $rootScope.value1 = 6;
+           $rootScope['value1'] = 6;
            expect(element.textContent).toBe('4 | 5');
 
            $rootScope.$digest();
@@ -319,8 +319,8 @@ withEachNg1Version(() => {
                  .directive(
                      'ng2', downgradeComponent({component: Ng2Component, propagateDigest: false}))
                  .run(($rootScope: angular.IRootScopeService) => {
-                   $rootScope.value1 = 0;
-                   $rootScope.value2 = 0;
+                   $rootScope['value1'] = 0;
+                   $rootScope['value2'] = 0;
                  });
 
          const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
@@ -351,7 +351,7 @@ withEachNg1Version(() => {
            expect(element.textContent).toBe('4 | 5');
 
            // Digest should invoke CD, if input has changed before the digest
-           $rootScope.value1 = 6;
+           $rootScope['value1'] = 6;
            $rootScope.$digest();
            expect(element.textContent).toBe('6 | 5');
          });
@@ -359,8 +359,6 @@ withEachNg1Version(() => {
 
     it('should still run normal Angular change-detection regardless of `propagateDigest`',
        fakeAsync(() => {
-         let ng2Component: Ng2Component;
-
          @Component({selector: 'ng2', template: '{{ value }}'})
          class Ng2Component {
            value = 'foo';

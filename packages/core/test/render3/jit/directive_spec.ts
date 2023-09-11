@@ -111,8 +111,8 @@ describe('jit directive helper functions', () => {
       class SubDirective extends SuperDirective {}
       setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
 
-      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeTruthy();
-      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+      expect(directiveMetadata(SuperDirective, {}).propMetadata['handleClick']).toBeTruthy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata['handleClick']).toBeFalsy();
     });
 
     it('should not inherit propMetadata from grand super class', () => {
@@ -128,9 +128,9 @@ describe('jit directive helper functions', () => {
 
       setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
 
-      expect(directiveMetadata(SuperSuperDirective, {}).propMetadata.handleClick).toBeTruthy();
-      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeFalsy();
-      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+      expect(directiveMetadata(SuperSuperDirective, {}).propMetadata['handleClick']).toBeTruthy();
+      expect(directiveMetadata(SuperDirective, {}).propMetadata['handleClick']).toBeFalsy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata['handleClick']).toBeFalsy();
     });
 
     it('should not inherit propMetadata from super class when sub class has its own propMetadata',
@@ -148,12 +148,12 @@ describe('jit directive helper functions', () => {
          const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
          const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
 
-         expect(superPropMetadata.handleClick).toBeTruthy();
-         expect(superPropMetadata.someInput).toBeTruthy();
+         expect(superPropMetadata['handleClick']).toBeTruthy();
+         expect(superPropMetadata['someInput']).toBeTruthy();
 
-         expect(subPropMetadata.handleClick).toBeFalsy();
-         expect(subPropMetadata.someInput).toBeFalsy();
-         expect(subPropMetadata.someOtherInput).toBeTruthy();
+         expect(subPropMetadata['handleClick']).toBeFalsy();
+         expect(subPropMetadata['someInput']).toBeFalsy();
+         expect(subPropMetadata['someOtherInput']).toBeTruthy();
        });
   });
 });

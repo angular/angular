@@ -584,6 +584,7 @@ export class ComponentDecoratorHandler implements
         file: analysis.template.file,
       },
     });
+    return null;
   }
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):

@@ -59,7 +59,7 @@ describe('perform_compile', () => {
   it(`should return undefined when debug is not defined in "angularCompilerOptions"`, () => {
     writeSomeConfigs();
     const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
-    expect(options.debug).toBeUndefined();
+    expect(options['debug']).toBeUndefined();
   });
 
   it(`should return 'debug: false' when debug is disabled in "angularCompilerOptions"`, () => {
@@ -74,7 +74,7 @@ describe('perform_compile', () => {
     });
 
     const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
-    expect(options.debug).toBeFalse();
+    expect(options['debug']).toBeFalse();
   });
 
   it('should override options defined in tsconfig with those defined in `existingOptions`', () => {

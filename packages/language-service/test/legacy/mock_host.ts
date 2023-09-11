@@ -31,7 +31,7 @@ const logger: ts.server.Logger = {
       },
 };
 
-export const TEST_SRCDIR = process.env.TEST_SRCDIR!;
+export const TEST_SRCDIR = process.env['TEST_SRCDIR']!;
 export const PROJECT_DIR =
     join(TEST_SRCDIR, 'angular', 'packages', 'language-service', 'test', 'legacy', 'project');
 export const TSCONFIG = join(PROJECT_DIR, 'tsconfig.json');

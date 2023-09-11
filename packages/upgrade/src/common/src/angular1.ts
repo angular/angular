@@ -60,6 +60,7 @@ export interface IRootScopeService {
   $$childTail: IScope;
   $$childHead: IScope;
   $$nextSibling: IScope;
+  $$phase: any;
   [key: string]: any;
 }
 export interface IScope extends IRootScopeService {}

@@ -7100,7 +7100,7 @@ class SimpleCmp {
 
 @Component({selector: 'collect-params-cmp', template: `collect-params`})
 class CollectParamsCmp {
-  private params: Params = [];
+  private params: Params[] = [];
   private urls: UrlSegment[][] = [];
 
   constructor(public route: ActivatedRoute) {
@@ -7229,7 +7229,7 @@ class OutletInNgIf {
 class DummyLinkWithParentCmp {
   protected exact: boolean;
   constructor(route: ActivatedRoute) {
-    this.exact = (route.snapshot.params).exact === 'true';
+    this.exact = route.snapshot.params['exact'] === 'true';
   }
 }
 

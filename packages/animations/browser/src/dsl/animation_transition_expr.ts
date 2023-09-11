@@ -50,6 +50,7 @@ function parseInnerTransitionStr(
   if (separator[0] == '<' && !isFullAnyStateExpr) {
     expressions.push(makeLambdaFromStates(toState, fromState));
   }
+  return;
 }
 
 function parseAnimationAlias(alias: string, errors: Error[]): string|TransitionMatcherFn {

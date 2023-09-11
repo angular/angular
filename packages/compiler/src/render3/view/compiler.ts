@@ -577,11 +577,11 @@ function createHostBindingsFunction(
     // actually already handle these special attributes internally. Therefore, we just drop them
     // into the attributes map.
     if (hostBindingsMetadata.specialAttributes.styleAttr) {
-      hostBindingsMetadata.attributes.style =
+      hostBindingsMetadata.attributes['style'] =
           o.literal(hostBindingsMetadata.specialAttributes.styleAttr);
     }
     if (hostBindingsMetadata.specialAttributes.classAttr) {
-      hostBindingsMetadata.attributes.class =
+      hostBindingsMetadata.attributes['class'] =
           o.literal(hostBindingsMetadata.specialAttributes.classAttr);
     }
 

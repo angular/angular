@@ -830,17 +830,17 @@ class TestCmptWithPropInterpolation {
 
         const debugElement = fixture.debugElement;
 
-        expect(debugElement.properties.className).toBe('class-one class-two');
+        expect(debugElement.properties['className']).toBe('class-one class-two');
 
         fixture.componentInstance.hostClasses = 'class-three';
         fixture.detectChanges();
 
-        expect(debugElement.properties.className).toBe('class-three');
+        expect(debugElement.properties['className']).toBe('class-three');
 
         fixture.componentInstance.hostClasses = '';
         fixture.detectChanges();
 
-        expect(debugElement.properties.className).toBeFalsy();
+        expect(debugElement.properties['className']).toBeFalsy();
       });
 
       it('should preserve the type of the property values', () => {
@@ -848,9 +848,9 @@ class TestCmptWithPropInterpolation {
         fixture.detectChanges();
 
         const button = fixture.debugElement.query(By.css('button'));
-        expect(button.properties.disabled).toEqual(true);
-        expect(button.properties.tabIndex).toEqual(1337);
-        expect(button.properties.title).toEqual('hello');
+        expect(button.properties['disabled']).toEqual(true);
+        expect(button.properties['tabIndex']).toEqual(1337);
+        expect(button.properties['title']).toEqual('hello');
       });
 
       it('should include interpolated properties in the properties map', () => {
@@ -860,16 +860,16 @@ class TestCmptWithPropInterpolation {
         const buttons = fixture.debugElement.children;
 
         expect(buttons.length).toBe(10);
-        expect(buttons[0].properties.title).toBe('0');
-        expect(buttons[1].properties.title).toBe('a1b');
-        expect(buttons[2].properties.title).toBe('a1b2c');
-        expect(buttons[3].properties.title).toBe('a1b2c3d');
-        expect(buttons[4].properties.title).toBe('a1b2c3d4e');
-        expect(buttons[5].properties.title).toBe('a1b2c3d4e5f');
-        expect(buttons[6].properties.title).toBe('a1b2c3d4e5f6g');
-        expect(buttons[7].properties.title).toBe('a1b2c3d4e5f6g7h');
-        expect(buttons[8].properties.title).toBe('a1b2c3d4e5f6g7h8i');
-        expect(buttons[9].properties.title).toBe('a1b2c3d4e5f6g7h8i9j');
+        expect(buttons[0].properties['title']).toBe('0');
+        expect(buttons[1].properties['title']).toBe('a1b');
+        expect(buttons[2].properties['title']).toBe('a1b2c');
+        expect(buttons[3].properties['title']).toBe('a1b2c3d');
+        expect(buttons[4].properties['title']).toBe('a1b2c3d4e');
+        expect(buttons[5].properties['title']).toBe('a1b2c3d4e5f');
+        expect(buttons[6].properties['title']).toBe('a1b2c3d4e5f6g');
+        expect(buttons[7].properties['title']).toBe('a1b2c3d4e5f6g7h');
+        expect(buttons[8].properties['title']).toBe('a1b2c3d4e5f6g7h8i');
+        expect(buttons[9].properties['title']).toBe('a1b2c3d4e5f6g7h8i9j');
       });
 
       it('should not include directive-shadowed properties in the properties map', () => {
@@ -880,7 +880,7 @@ class TestCmptWithPropInterpolation {
         fixture.detectChanges();
 
         const button = fixture.debugElement.query(By.css('button'));
-        expect(button.properties.title).not.toEqual('goes to input');
+        expect(button.properties['title']).not.toEqual('goes to input');
       });
 
       it('should return native properties from DOM element even if no binding present', () => {
@@ -889,7 +889,7 @@ class TestCmptWithPropInterpolation {
         fixture.detectChanges();
         const button = fixture.debugElement.query(By.css('button'));
         fixture.componentInstance.renderer.setProperty(button.nativeElement, 'title', 'myTitle');
-        expect(button.properties.title).toBe('myTitle');
+        expect(button.properties['title']).toBe('myTitle');
       });
 
       it('should not include patched properties (starting with __) and on* properties', () => {
@@ -915,7 +915,7 @@ class TestCmptWithPropInterpolation {
         const host = fixture.debugElement;
         const button = fixture.debugElement.query(By.css('button'));
 
-        expect(button.properties.title).toEqual('myTitle');
+        expect(button.properties['title']).toEqual('myTitle');
       });
     });
 
@@ -1187,10 +1187,10 @@ class TestCmptWithPropInterpolation {
       const element = fixture.debugElement.children[0];
 
       // Assert that the camel-case attribute is correct.
-      expect(element.attributes.svgIcon).toBe('test');
+      expect(element.attributes['svgIcon']).toBe('test');
 
       // Make sure that we somehow didn't preserve the native lower-cased value.
-      expect(element.attributes.svgicon).toBeFalsy();
+      expect(element.attributes['svgicon']).toBeFalsy();
     });
 
 
@@ -1222,7 +1222,7 @@ class TestCmptWithPropInterpolation {
 
       fixture.componentInstance.renderer.setAttribute(div.nativeElement, 'foo', 'bar');
 
-      expect(div.attributes.foo).toBe('bar');
+      expect(div.attributes['foo']).toBe('bar');
     });
 
     it('should clear event listeners when node is destroyed', () => {

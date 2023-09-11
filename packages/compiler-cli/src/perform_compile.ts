@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem} from '../src/ngtsc/file_system';
 
 import {NgCompilerOptions} from './ngtsc/core/api';
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
@@ -131,10 +131,10 @@ export function readConfiguration(
             config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
 
     let emitFlags = api.EmitFlags.Default;
-    if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
+    if (!(options['skipMetadataEmit'] || options['flatModuleOutFile'])) {
       emitFlags |= api.EmitFlags.Metadata;
     }
-    if (options.skipTemplateCodegen) {
+    if (options['skipTemplateCodegen']) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
     return {project: projectFile, rootNames, projectReferences, options, errors, emitFlags};

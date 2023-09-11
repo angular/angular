@@ -607,7 +607,7 @@ describe('New URL Parsing', () => {
       $location.path('/foo').hash('abcd').state({a: 2}).search('bar', 'baz');
       expect($location.path()).toEqual('/foo');
       expect($location.state()).toEqual({a: 2});
-      expect($location.search() && $location.search().bar).toBe('baz');
+      expect($location.search() && $location.search()['bar']).toBe('baz');
       expect($location.hash()).toEqual('abcd');
     });
 

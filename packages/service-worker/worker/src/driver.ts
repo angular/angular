@@ -640,7 +640,6 @@ export class Driver implements Debuggable, UpdateSource {
         await this.scheduleInitialization(this.versions.get(hash)!);
       } catch (err) {
         this.debugger.log(err as Error, `initialize: schedule init of ${hash}`);
-        return false;
       }
     }));
   }
