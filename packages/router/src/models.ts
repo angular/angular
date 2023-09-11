@@ -519,7 +519,6 @@ export interface Route {
    * A URL to redirect to when the path matches.
    *
    * Absolute if the URL begins with a slash (/), otherwise relative to the path URL.
-   * Note that no further redirects are evaluated after an absolute redirect.
    *
    * When not present, router does not redirect.
    */
