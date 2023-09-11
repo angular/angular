@@ -299,8 +299,16 @@ export function consumerAfterComputation(
   }
 
   // Truncate the producer tracking arrays.
-  node.producerNode.length = node.producerLastReadVersion.length = node.producerIndexOfThis.length =
-      node.nextProducerIndex;
+  // Note: `nrOfProducers` has to be captured before entering the loop, as the number of producers
+  // decreases in each iteration.
+  // Perf note: this is essentially truncating the length to `node.nextProducerIndex`, but
+  // benchmarking has shown that individual pop operations are faster.
+  const nrOfProducers = node.producerNode.length;
+  for (let i = node.nextProducerIndex; i < nrOfProducers; i++) {
+    node.producerNode.pop();
+    node.producerLastReadVersion.pop();
+    node.producerIndexOfThis.pop();
+  }
 }
 
 /**
