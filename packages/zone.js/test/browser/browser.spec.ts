@@ -431,12 +431,11 @@ describe('Zone', function() {
             }
 
             function isPropertiesPatched(obj: any, properties: string[]|null, prototype?: any) {
-              if (!properties) {
-                return [];
-              }
-              for (let i = 0; i < properties.length; i++) {
-                if (!isPropertyPatched(obj, 'on' + properties[i], prototype)) {
-                  fail(`${properties[i]} is not patched on ${obj}`);
+              if (properties) {
+                for (let i = 0; i < properties.length; i++) {
+                  if (!isPropertyPatched(obj, 'on' + properties[i], prototype)) {
+                    fail(`${properties[i]} is not patched on ${obj}`);
+                  }
                 }
               }
             }

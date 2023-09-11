@@ -44,6 +44,7 @@ export function phaseAlignPipeVariadicVarOffset(job: CompilationJob): void {
 
         // Put the PureFunction vars following the PipeBindingVariadic vars.
         expr.args.varOffset = expr.varOffset + varsUsedByIrExpression(expr);
+        return undefined;
       });
     }
   }

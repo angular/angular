@@ -1835,8 +1835,8 @@ describe('runtime i18n', () => {
 
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
-      expect(fixture.debugElement.children[0].children[0].references.ref.test).toBe('Set');
-      expect(fixture.debugElement.children[1].children[0].references.ref.test).toBe('Set');
+      expect(fixture.debugElement.children[0].children[0].references['ref'].test).toBe('Set');
+      expect(fixture.debugElement.children[1].children[0].references['ref'].test).toBe('Set');
     });
 
     it('with complex expressions', () => {
@@ -2483,7 +2483,7 @@ describe('runtime i18n', () => {
             </ng-template>
           </div-query>
         `);
-      const q = fixture.debugElement.children[0].references.q;
+      const q = fixture.debugElement.children[0].references['q'];
       expect(q.query.length).toEqual(0);
 
       // Create embedded view

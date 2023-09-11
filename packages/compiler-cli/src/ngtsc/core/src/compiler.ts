@@ -321,8 +321,8 @@ export class NgCompiler {
       private livePerfRecorder: ActivePerfRecorder,
   ) {
     this.enableTemplateTypeChecker =
-        enableTemplateTypeChecker || (options._enableTemplateTypeChecker ?? false);
-    this.enabledBlockTypes = new Set(options._enabledBlockTypes ?? []);
+        enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
+    this.enabledBlockTypes = new Set(options['_enabledBlockTypes'] ?? []);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -922,7 +922,7 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.adapter.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
+    if (this.adapter.unifiedModulesHost === null || !this.options['_useHostForImportGeneration']) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -1045,8 +1045,8 @@ export class NgCompiler {
         CycleHandlingStrategy.Error;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
-    const supportJitMode = this.options.supportJitMode ?? true;
-    const supportTestBed = this.options.supportTestBed ?? true;
+    const supportJitMode = this.options['supportJitMode'] ?? true;
+    const supportTestBed = this.options['supportTestBed'] ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to

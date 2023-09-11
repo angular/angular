@@ -115,8 +115,8 @@ withEachNg1Version(() => {
                                .directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}))
                                .directive('ng2', downgradeComponent({component: Ng2Component}))
                                .run(($rootScope: angular.IRootScopeService) => {
-                                 $rootScope.l = l;
-                                 $rootScope.reset = () => log.length = 0;
+                                 $rootScope['l'] = l;
+                                 $rootScope['reset'] = () => log.length = 0;
                                });
 
          const element =

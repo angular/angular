@@ -161,6 +161,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementAttributeCompletion()) {
       return this.getElementAttributeCompletionDetails(entryName);
     }
+    return undefined;
   }
 
   /**
@@ -598,6 +599,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
           isNewIdentifierLocation: true,
         };
       }
+      return undefined;
     }
   }
 

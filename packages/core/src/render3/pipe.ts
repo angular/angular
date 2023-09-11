@@ -105,6 +105,7 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|unde
   if (ngDevMode) {
     throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, getPipeNotFoundErrorMessage(name));
   }
+  return;
 }
 
 /**

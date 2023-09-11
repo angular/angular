@@ -1537,7 +1537,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             });
 
             constructor() {
-              this._subscription = this.form.controls.name.valueChanges.subscribe(value => {
+              this._subscription = this.form.controls['name'].valueChanges.subscribe(value => {
                 if (!value) {
                   this.form.removeControl('surname');
                 }
@@ -3065,20 +3065,20 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('5');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = 2;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 2});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.max = 1;
             fixture.detectChanges();
 
             expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: 1, actual: 2}});
 
             fixture.componentInstance.min = 0;
             fixture.componentInstance.max = 0;
@@ -3086,13 +3086,13 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(input.getAttribute('min')).toEqual('0');
             expect(input.getAttribute('max')).toEqual('0');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 0, actual: 2}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: 0, actual: 2}});
 
             input.value = 0;
             dispatchEvent(input, 'input');
             fixture.detectChanges();
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
           });
 
           it('should validate max for float number', () => {
@@ -3109,26 +3109,26 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(input.getAttribute('max')).toEqual('10.35');
             expect(input.value).toEqual('10.25');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = 10.15;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 10.15});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.max = 10.05;
             fixture.detectChanges();
 
             expect(input.getAttribute('max')).toEqual('10.05');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 10.05, actual: 10.15}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: 10.05, actual: 10.15}});
 
             input.value = 10.01;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 10.01});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
           });
 
           it('should apply max validation when control value is defined as a string', () => {
@@ -3143,19 +3143,19 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('5');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = '2';
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 2});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.max = 1;
             fixture.detectChanges();
             expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: 1, actual: 2}});
           });
 
           it('should validate min', () => {
@@ -3170,19 +3170,19 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('5');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = 2;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 2});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.min = 5;
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: 5, actual: 2}});
 
             fixture.componentInstance.min = 0;
             input.value = -5;
@@ -3190,13 +3190,13 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('0');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 0, actual: -5}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: 0, actual: -5}});
 
             input.value = 0;
             dispatchEvent(input, 'input');
             fixture.detectChanges();
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
           });
 
           it('should validate min for float number', () => {
@@ -3215,25 +3215,25 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(input.getAttribute('max')).toEqual('10.5');
             expect(input.value).toEqual('10.25');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = 10.35;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 10.35});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.min = 10.40;
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('10.4');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 10.40, actual: 10.35}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: 10.40, actual: 10.35}});
 
             input.value = 10.45;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 10.45});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
           });
 
           it('should apply min validation when control value is defined as a string', () => {
@@ -3248,19 +3248,19 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('5');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = '2';
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 2});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             fixture.componentInstance.min = 5;
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: 5, actual: 2}});
           });
 
           it('should run min/max validation for empty values', () => {
@@ -3278,7 +3278,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
             expect(minValidateFnSpy).toHaveBeenCalled();
             expect(maxValidateFnSpy).toHaveBeenCalled();
           });
@@ -3300,24 +3300,24 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('5');
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = 2;  // inside [1, 10] range
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 2});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = -2;  // outside [1, 10] range
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: -2});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 1, actual: -2}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: 1, actual: -2}});
 
             input.value = 20;  // outside [1, 10] range
             dispatchEvent(input, 'input');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 10, actual: 20}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: 10, actual: 20}});
           });
 
           it('should run min/max validation for negative values', () => {
@@ -3334,25 +3334,25 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('-30');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: -20, actual: -30}});
+            expect(form.controls['pin'].errors).toEqual({min: {min: -20, actual: -30}});
 
             input.value = -15;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: -15});
             expect(form.valid).toBeTruthy();
-            expect(form.controls.pin.errors).toBeNull();
+            expect(form.controls['pin'].errors).toBeNull();
 
             input.value = -5;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: -5});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: -5}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: -10, actual: -5}});
 
             input.value = 0;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 0});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: 0}});
+            expect(form.controls['pin'].errors).toEqual({max: {max: -10, actual: 0}});
           });
         });
 
@@ -3647,7 +3647,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         // The 'one' input is initially disabled in the view with [attr.disabled].
         // The model thinks it is enabled. This inconsistent state was retained for backwards
         // compatibility. (See `RadioControlValueAccessor` for details.)
-        expect(oneInput.attributes.disabled).toBe('true');
+        expect(oneInput.attributes['disabled']).toBe('true');
         expect(choice.disabled).toBe(false);
 
         // Flipping the attribute back and forth does not change the model
@@ -3655,17 +3655,17 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         // becomes the source of truth.
         oneInput.nativeElement.setAttribute('disabled', 'false');
         fixture.detectChanges();
-        expect(oneInput.attributes.disabled).toBe('false');
+        expect(oneInput.attributes['disabled']).toBe('false');
         expect(choice.disabled).toBe(false);
 
         oneInput.nativeElement.setAttribute('disabled', 'true');
         fixture.detectChanges();
-        expect(oneInput.attributes.disabled).toBe('true');
+        expect(oneInput.attributes['disabled']).toBe('true');
         expect(choice.disabled).toBe(false);
 
         oneInput.nativeElement.setAttribute('disabled', 'false');
         fixture.detectChanges();
-        expect(oneInput.attributes.disabled).toBe('false');
+        expect(oneInput.attributes['disabled']).toBe('false');
         expect(choice.disabled).toBe(false);
       });
     });

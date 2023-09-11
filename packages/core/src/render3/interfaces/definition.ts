@@ -321,7 +321,10 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Defines arbitrary developer-defined data to be stored on a renderer instance.
    * This is useful for renderers that delegate to other renderers.
    */
-  readonly data: {[kind: string]: any};
+  readonly data: {
+    [kind: string]: any,
+    animation?: any[],
+  };
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;

@@ -486,8 +486,9 @@ describe('FormGroup', () => {
          () => {
            const logEvent = () => logger.push('valueChanges event');
 
-           const [formArrayControl1, formArrayControl2] = (g2.controls.array as FormArray).controls;
-           const formGroupControl = (g2.controls.group as FormGroup).controls.one;
+           const [formArrayControl1, formArrayControl2] =
+               (g2.controls['array'] as FormArray).controls;
+           const formGroupControl = (g2.controls['group'] as FormGroup).controls['one'];
 
            formArrayControl1.valueChanges.subscribe(logEvent);
            formArrayControl2.valueChanges.subscribe(logEvent);

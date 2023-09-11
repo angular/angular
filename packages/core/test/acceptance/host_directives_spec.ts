@@ -474,7 +474,7 @@ describe('host directives', () => {
         abstract name: string;
 
         ngOnChanges(changes: SimpleChanges) {
-          logs.push(`${this.name} - ${changes.someInput.currentValue}`);
+          logs.push(`${this.name} - ${changes['someInput'].currentValue}`);
         }
       }
 
@@ -1837,7 +1837,7 @@ describe('host directives', () => {
            @Input('colorAlias') color?: string;
 
            ngOnChanges(changes: SimpleChanges) {
-             logs.push(changes.color.currentValue);
+             logs.push(changes['color'].currentValue);
            }
          }
 

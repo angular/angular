@@ -10,6 +10,8 @@
     "noImplicitAny": true,
     "noImplicitOverride": true,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "esModuleInterop": true,
     "strict": true,
     "strictPropertyInitialization": true,

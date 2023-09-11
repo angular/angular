@@ -248,7 +248,7 @@ class _TreeBuilder {
       if (parent instanceof html.BlockGroup) {
         this.errors.push(TreeError.create(
             null, startSpan, 'Text cannot be placed directly inside of a block group.'));
-        return null;
+        return;
       }
 
       if (parent != null && parent.children.length === 0 &&

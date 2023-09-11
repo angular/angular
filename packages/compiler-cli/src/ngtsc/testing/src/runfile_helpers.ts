@@ -20,10 +20,10 @@ import * as path from 'path';
 export function getAngularPackagesFromRunfiles() {
   // Path to the Bazel runfiles manifest if present. This file is present if runfiles are
   // not symlinked into the runfiles directory.
-  const runfilesManifestPath = process.env.RUNFILES_MANIFEST_FILE;
+  const runfilesManifestPath = process.env['RUNFILES_MANIFEST_FILE'];
 
   if (!runfilesManifestPath) {
-    const packageRunfilesDir = path.join(process.env.RUNFILES!, 'angular/packages');
+    const packageRunfilesDir = path.join(process.env['RUNFILES']!, 'angular/packages');
 
     return fs.readdirSync(packageRunfilesDir)
         .map(name => ({name, pkgPath: path.join(packageRunfilesDir, name, 'npm_package/')}))

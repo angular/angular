@@ -599,8 +599,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const divElement = fixture.debugElement.query(By.css('div'));
-    expect(divElement.properties.id).toEqual('one');
-    expect(divElement.properties.title).toEqual('some title');
+    expect(divElement.properties['id']).toEqual('one');
+    expect(divElement.properties['title']).toEqual('some title');
   });
 
   it('should give the ability to access interpolated properties on a node', () => {
@@ -608,8 +608,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const paragraphEl = fixture.debugElement.query(By.css('p'));
-    expect(paragraphEl.properties.title).toEqual('( some label - some title )');
-    expect(paragraphEl.properties.id).toEqual('[ some label ] [ some title ]');
+    expect(paragraphEl.properties['title']).toEqual('( some label - some title )');
+    expect(paragraphEl.properties['id']).toEqual('[ some label ] [ some title ]');
   });
 
   it('should give access to the node injector', () => {
@@ -647,7 +647,7 @@ describe('TestBed', () => {
     const withRefsCmp = TestBed.createComponent(WithRefsCmp);
     const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'));
     // assert that a native element is referenced by a local ref
-    expect(firstDivDebugEl.references.firstDiv.tagName.toLowerCase()).toBe('div');
+    expect(firstDivDebugEl.references['firstDiv'].tagName.toLowerCase()).toBe('div');
   });
 
   it('should give the ability to query by directive', () => {

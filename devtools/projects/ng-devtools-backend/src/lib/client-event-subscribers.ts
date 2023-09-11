@@ -129,6 +129,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
     }
   }
   messageBus.emit('nestedProperties', [position, {props: serializeDirectiveState(data)}, propPath]);
+  return;
 };
 
 //

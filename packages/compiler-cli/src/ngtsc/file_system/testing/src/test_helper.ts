@@ -39,7 +39,7 @@ const FS_WINDOWS = 'Windows';
 const FS_ALL = [FS_OS_X, FS_WINDOWS, FS_UNIX, FS_NATIVE];
 
 function runInEachFileSystemFn(callback: (os: string) => void) {
-  const isOnCi = !!(process.env.CI || process.env.CIRCLECI || process.env.GITHUB_ACTION);
+  const isOnCi = !!(process.env['CI'] || process.env['CIRCLECI'] || process.env['GITHUB_ACTION']);
 
   // At the time of writing, running the compiler tests on the CI on Windows is flaky and it
   // appears to be related to mocking out the file system. Since we're running the mocked file

@@ -90,7 +90,7 @@ function parseOptions(str: string): Options {
   }
 
   // Validate `original_code`.
-  const original = obj?.original_code;
+  const original = obj?.['original_code'];
   if (typeof original !== 'undefined' && typeof original !== 'object') {
     throw new Error(
         `Expected an i18n options object with \`original_code\`, as a nested object, but got ${
