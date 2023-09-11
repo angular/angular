@@ -84,10 +84,9 @@ export function readMapType<T>(
       return;
     }
     const value = valueTransform(member.type);
-    if (value === null) {
-      return null;
+    if (value !== null) {
+      obj[member.name.text] = value;
     }
-    obj[member.name.text] = value;
   });
   return obj;
 }

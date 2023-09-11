@@ -2954,7 +2954,7 @@ describe('styling', () => {
     dirInstance.setStyles();
 
     const div = fixture.debugElement.children[0];
-    expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
+    expect(div.styles['transform']).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
     expect(div.classes['my-class']).toBe(true);
   });
 
@@ -2984,15 +2984,15 @@ describe('styling', () => {
 
     // camel case
     dirInstance.renderer.setStyle(nativeEl, 'backgroundColor', 'red');
-    expect(div.styles.backgroundColor).toBe('red');
+    expect(div.styles['backgroundColor']).toBe('red');
     dirInstance.renderer.removeStyle(nativeEl, 'backgroundColor');
-    expect(div.styles.backgroundColor).toBe('');
+    expect(div.styles['backgroundColor']).toBe('');
 
     // kebab case
     dirInstance.renderer.setStyle(nativeEl, 'background-color', 'red');
-    expect(div.styles.backgroundColor).toBe('red');
+    expect(div.styles['backgroundColor']).toBe('red');
     dirInstance.renderer.removeStyle(nativeEl, 'background-color');
-    expect(div.styles.backgroundColor).toBe('');
+    expect(div.styles['backgroundColor']).toBe('');
   });
 
   it('should not set classes when falsy value is passed while a sanitizer is present', () => {

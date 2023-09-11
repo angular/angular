@@ -170,8 +170,8 @@ describe('effects', () => {
       @Input() in : string|undefined;
 
       ngOnChanges(changes: SimpleChanges): void {
-        if (changes.in) {
-          this.inSignal.set(changes.in.currentValue);
+        if (changes['in']) {
+          this.inSignal.set(changes['in'].currentValue);
         }
       }
     }

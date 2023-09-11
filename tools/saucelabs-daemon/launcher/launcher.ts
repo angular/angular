@@ -30,7 +30,7 @@ export function SaucelabsLauncher(
   const browserDisplayName = args.browserName +
       (args.browserVersion ? ' ' + args.browserVersion : '') +
       (args.platformName ? ' (' + args.platformName + ')' : '');
-  const testSuiteDescription = process.env.TEST_TARGET ?? '<unknown>';
+  const testSuiteDescription = process.env['TEST_TARGET'] ?? '<unknown>';
 
   let daemonConnection: Socket|null = null;
 

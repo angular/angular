@@ -37,6 +37,8 @@ export class QuickInfoBuilder {
     if (this.parent !== null && isDollarAny(this.parent) && this.parent.receiver === this.node) {
       return createDollarAnyQuickInfo(this.parent);
     }
+
+    return undefined;
   }
 
   private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo|undefined {

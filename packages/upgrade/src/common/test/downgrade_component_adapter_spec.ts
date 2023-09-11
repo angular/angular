@@ -120,6 +120,7 @@ withEachNg1Version(() => {
         $id = 'mockScope';
         $parent!: angular.IScope;
         $root!: angular.IScope;
+        $$phase: any;
       }
 
       function getAdaptor(): DowngradeComponentAdapter {

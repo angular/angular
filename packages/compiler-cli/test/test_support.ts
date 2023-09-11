@@ -15,7 +15,7 @@ import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
 import {getAngularPackagesFromRunfiles, resolveFromRunfiles} from '../src/ngtsc/testing';
 
 // TEST_TMPDIR is always set by Bazel.
-const tmpdir = process.env.TEST_TMPDIR!;
+const tmpdir = process.env['TEST_TMPDIR']!;
 
 export function makeTempDir(): string {
   let dir: string;

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Directive, HostBinding, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Directive, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {EventEmitter} from '@angular/core/src/event_emitter';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
@@ -494,8 +493,8 @@ describe('discovery utils deprecated', () => {
       const divEl = fixture.nativeElement.querySelector('div')!;
       const localRefs = getLocalRefs(divEl);
 
-      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
-      expect(localRefs.dirRef.constructor).toBe(MyDir);
+      expect(localRefs['elRef'].tagName.toLowerCase()).toBe('div');
+      expect(localRefs['dirRef'].constructor).toBe(MyDir);
     });
 
     it('should return a map of local refs for an element with styling context', () => {
@@ -511,7 +510,7 @@ describe('discovery utils deprecated', () => {
       const divEl = fixture.nativeElement.querySelector('div')!;
       const localRefs = getLocalRefs(divEl);
 
-      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
+      expect(localRefs['elRef'].tagName.toLowerCase()).toBe('div');
     });
   });
 });

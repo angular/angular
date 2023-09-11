@@ -569,11 +569,11 @@ withEachNg1Version(() => {
              ngOnChanges(changes: SimpleChanges) {
                switch (this.ngOnChangesCount++) {
                  case 0:
-                   expect(changes.model.currentValue).toBe('world');
+                   expect(changes['model'].currentValue).toBe('world');
                    this.modelChange.emit('newC');
                    break;
                  case 1:
-                   expect(changes.model.currentValue).toBe('newC');
+                   expect(changes['model'].currentValue).toBe('newC');
                    break;
                  default:
                    throw new Error('Called too many times! ' + JSON.stringify(changes));

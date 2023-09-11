@@ -35,7 +35,7 @@ class PermissionsService {
 
 const canActivateTeam: CanActivateFn =
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
+      return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
     };
 // #enddocregion
 
@@ -55,7 +55,7 @@ bootstrapApplication(App, {
 // #docregion CanActivateChildFn
 const canActivateChildExample: CanActivateChildFn =
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
+      return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
     };
 
 bootstrapApplication(App, {

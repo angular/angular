@@ -128,13 +128,13 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
       };
       const type = getTypeForPlaceholder(placeholderName);
       if (type !== null) {
-        attrs.type = type;
+        attrs['type'] = type;
       }
       if (text !== undefined) {
-        attrs.dispStart = text;
+        attrs['dispStart'] = text;
       }
       if (closingText !== undefined) {
-        attrs.dispEnd = closingText;
+        attrs['dispEnd'] = closingText;
       }
       xml.startTag('pc', attrs);
     } else if (placeholderName.startsWith('CLOSE_')) {
@@ -146,10 +146,10 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
       };
       const type = getTypeForPlaceholder(placeholderName);
       if (type !== null) {
-        attrs.type = type;
+        attrs['type'] = type;
       }
       if (text !== undefined) {
-        attrs.disp = text;
+        attrs['disp'] = text;
       }
       if (associatedMessageId !== undefined) {
         attrs['subFlows'] = associatedMessageId;
