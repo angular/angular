@@ -230,7 +230,7 @@ export class TestBedCompiler {
     const def = (type as any)[NG_COMP_DEF];
     const hasStyleUrls = (): boolean => {
       const metadata = this.resolvers.component.resolve(type)! as Component;
-      return !!metadata.styleUrls && metadata.styleUrls.length > 0;
+      return !!metadata.styleUrl || !!metadata.styleUrls?.length;
     };
     const overrideStyleUrls = !!def && !ɵisComponentDefPendingResolution(type) && hasStyleUrls();
 
@@ -241,7 +241,8 @@ export class TestBedCompiler {
     // resolution). In order to avoid this, we preemptively set styleUrls to an empty array,
     // preserve current styles available on Component def and restore styles back once compilation
     // is complete.
-    const override = overrideStyleUrls ? {template, styles: [], styleUrls: []} : {template};
+    const override =
+        overrideStyleUrls ? {template, styles: [], styleUrls: [], styleUrl: undefined} : {template};
     this.overrideComponent(type, {set: override});
 
     if (overrideStyleUrls && def.styles && def.styles.length > 0) {
