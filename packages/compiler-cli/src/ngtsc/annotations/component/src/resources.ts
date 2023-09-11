@@ -452,7 +452,8 @@ export function transformDecoratorResources(
 
   // If no external resources are referenced, preserve the original decorator
   // for the best source map experience when the decorator is emitted in TS.
-  if (!component.has('templateUrl') && !component.has('styleUrls') && !component.has('styles')) {
+  if (!component.has('templateUrl') && !component.has('styleUrls') && !component.has('styleUrl') &&
+      !component.has('styles')) {
     return dec;
   }
 
@@ -464,9 +465,10 @@ export function transformDecoratorResources(
     metadata.set('template', ts.factory.createStringLiteral(template.content));
   }
 
-  if (metadata.has('styleUrls') || metadata.has('styles')) {
+  if (metadata.has('styleUrls') || metadata.has('styleUrl') || metadata.has('styles')) {
     metadata.delete('styles');
     metadata.delete('styleUrls');
+    metadata.delete('styleUrl');
 
     if (styles.length > 0) {
       const styleNodes = styles.reduce((result, style) => {
@@ -496,11 +498,35 @@ export function extractComponentStyleUrls(
     evaluator: PartialEvaluator,
     component: Map<string, ts.Expression>,
     ): StyleUrlMeta[] {
-  if (!component.has('styleUrls')) {
-    return [];
+  const styleUrlsExpr = component.get('styleUrls');
+  const styleUrlExpr = component.get('styleUrl');
+
+  if (styleUrlsExpr !== undefined && styleUrlExpr !== undefined) {
+    throw new FatalDiagnosticError(
+        ErrorCode.COMPONENT_INVALID_STYLE_URLS, styleUrlExpr,
+        '@Component cannot define both `styleUrl` and `styleUrls`. ' +
+            'Use `styleUrl` if the component has one stylesheet, or `styleUrls` if it has multiple');
   }
 
-  return extractStyleUrlsFromExpression(evaluator, component.get('styleUrls')!);
+  if (styleUrlsExpr !== undefined) {
+    return extractStyleUrlsFromExpression(evaluator, component.get('styleUrls')!);
+  }
+
+  if (styleUrlExpr !== undefined) {
+    const styleUrl = evaluator.evaluate(styleUrlExpr);
+
+    if (typeof styleUrl !== 'string') {
+      throw createValueHasWrongTypeError(styleUrlExpr, styleUrl, 'styleUrl must be a string');
+    }
+
+    return [{
+      url: styleUrl,
+      source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
+      nodeForError: styleUrlExpr,
+    }];
+  }
+
+  return [];
 }
 
 function extractStyleUrlsFromExpression(
@@ -543,40 +569,61 @@ function extractStyleUrlsFromExpression(
 
   return styleUrls;
 }
+
 export function extractStyleResources(
     resourceLoader: ResourceLoader, component: Map<string, ts.Expression>,
     containingFile: string): ReadonlySet<Resource> {
   const styles = new Set<Resource>();
   function stringLiteralElements(array: ts.ArrayLiteralExpression): ts.StringLiteralLike[] {
-    return array.elements.filter(
-        (e: ts.Expression): e is ts.StringLiteralLike => ts.isStringLiteralLike(e));
+    return array.elements.filter((e): e is ts.StringLiteralLike => ts.isStringLiteralLike(e));
   }
 
-  // If styleUrls is a literal array, process each resource url individually and
-  // register ones that are string literals.
+  // If styleUrls is a literal array, process each resource url individually and register ones that
+  // are string literals. If `styleUrl` is specified, register a single stylesheet. Note that
+  // `styleUrl` and `styleUrls` are mutually-exclusive. This is validated in
+  // `extractComponentStyleUrls`.
+  const styleUrlExpr = component.get('styleUrl');
   const styleUrlsExpr = component.get('styleUrls');
   if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
     for (const expression of stringLiteralElements(styleUrlsExpr)) {
-      try {
-        const resourceUrl = resourceLoader.resolve(expression.text, containingFile);
-        styles.add({path: absoluteFrom(resourceUrl), expression});
-      } catch {
-        // Errors in style resource extraction do not need to be handled here. We will produce
-        // diagnostics for each one that fails in the analysis, after we evaluate the
-        // `styleUrls` expression to determine _all_ style resources, not just the string
-        // literals.
+      const resource = stringLiteralUrlToResource(resourceLoader, expression, containingFile);
+      if (resource !== null) {
+        styles.add(resource);
       }
+    }
+  } else if (styleUrlExpr !== undefined && ts.isStringLiteralLike(styleUrlExpr)) {
+    const resource = stringLiteralUrlToResource(resourceLoader, styleUrlExpr, containingFile);
+    if (resource !== null) {
+      styles.add(resource);
     }
   }
 
   const stylesExpr = component.get('styles');
-  if (stylesExpr !== undefined && ts.isArrayLiteralExpression(stylesExpr)) {
-    for (const expression of stringLiteralElements(stylesExpr)) {
-      styles.add({path: null, expression});
+  if (stylesExpr !== undefined) {
+    if (ts.isArrayLiteralExpression(stylesExpr)) {
+      for (const expression of stringLiteralElements(stylesExpr)) {
+        styles.add({path: null, expression});
+      }
+    } else if (ts.isStringLiteralLike(stylesExpr)) {
+      styles.add({path: null, expression: stylesExpr});
     }
   }
 
   return styles;
+}
+
+function stringLiteralUrlToResource(
+    resourceLoader: ResourceLoader, expression: ts.StringLiteralLike,
+    containingFile: string): Resource|null {
+  try {
+    const resourceUrl = resourceLoader.resolve(expression.text, containingFile);
+    return {path: absoluteFrom(resourceUrl), expression};
+  } catch {
+    // Errors in style resource extraction do not need to be handled here. We will produce
+    // diagnostics for each one that fails in the analysis, after we evaluate the `styleUrls`
+    // expression to determine _all_ style resources, not just the string literals.
+    return null;
+  }
 }
 
 export function _extractTemplateStyleUrls(template: ParsedTemplateWithSource): StyleUrlMeta[] {

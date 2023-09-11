@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../interface/type';
+
 import {Component} from './directives';
 
 
@@ -65,19 +66,34 @@ export function resolveComponentResources(
         component.template = template;
       }));
     }
-    const styleUrls = component.styleUrls;
-    const styles = component.styles || (component.styles = []);
-    const styleOffset = component.styles.length;
-    styleUrls && styleUrls.forEach((styleUrl, index) => {
-      styles.push('');  // pre-allocate array.
-      promises.push(cachedResourceResolve(styleUrl).then((style) => {
-        styles[styleOffset + index] = style;
-        styleUrls.splice(styleUrls.indexOf(styleUrl), 1);
-        if (styleUrls.length == 0) {
-          component.styleUrls = undefined;
-        }
+    const styles =
+        typeof component.styles === 'string' ? [component.styles] : (component.styles || []);
+    component.styles = styles;
+
+    if (component.styleUrl && component.styleUrls?.length) {
+      throw new Error(
+          '@Component cannot define both `styleUrl` and `styleUrls`. ' +
+          'Use `styleUrl` if the component has one stylesheet, or `styleUrls` if it has multiple');
+    } else if (component.styleUrls?.length) {
+      const styleOffset = component.styles.length;
+      const styleUrls = component.styleUrls;
+      component.styleUrls.forEach((styleUrl, index) => {
+        styles.push('');  // pre-allocate array.
+        promises.push(cachedResourceResolve(styleUrl).then((style) => {
+          styles[styleOffset + index] = style;
+          styleUrls.splice(styleUrls.indexOf(styleUrl), 1);
+          if (styleUrls.length == 0) {
+            component.styleUrls = undefined;
+          }
+        }));
+      });
+    } else if (component.styleUrl) {
+      promises.push(cachedResourceResolve(component.styleUrl).then((style) => {
+        styles.push(style);
+        component.styleUrl = undefined;
       }));
-    });
+    }
+
     const fullyResolved = Promise.all(promises).then(() => componentDefResolved(type));
     componentResolved.push(fullyResolved);
   });
@@ -104,7 +120,7 @@ export function isComponentDefPendingResolution(type: Type<any>): boolean {
 export function componentNeedsResolution(component: Component): boolean {
   return !!(
       (component.templateUrl && !component.hasOwnProperty('template')) ||
-      component.styleUrls && component.styleUrls.length);
+      (component.styleUrls && component.styleUrls.length) || component.styleUrl);
 }
 export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Component> {
   const old = componentResourceResolutionQueue;

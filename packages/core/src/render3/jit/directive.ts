@@ -82,6 +82,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           if (metadata.styleUrls && metadata.styleUrls.length) {
             error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
           }
+          if (metadata.styleUrl) {
+            error.push(` - styleUrl: ${metadata.styleUrl}`);
+          }
           error.push(`Did you run and wait for 'resolveComponentResources()'?`);
           throw new Error(error.join('\n'));
         }
@@ -114,7 +117,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
           preserveWhitespaces,
-          styles: metadata.styles || EMPTY_ARRAY,
+          styles: typeof metadata.styles === 'string' ? [metadata.styles] :
+                                                        (metadata.styles || EMPTY_ARRAY),
           animations: metadata.animations,
           // JIT components are always compiled against an empty set of `declarations`. Instead, the
           // `directiveDefs` and `pipeDefs` are updated at a later point:
