@@ -608,10 +608,11 @@ function isInAngularContext(program: ts.Program, fileName: string, position: num
     return false;
   }
 
-  const asgn = getPropertyAssignmentFromValue(node, 'template') ??
+  const assignment = getPropertyAssignmentFromValue(node, 'template') ??
       getPropertyAssignmentFromValue(node, 'templateUrl') ??
-      getPropertyAssignmentFromValue(node.parent, 'styleUrls');
-  return asgn !== null && getClassDeclFromDecoratorProp(asgn) !== null;
+      getPropertyAssignmentFromValue(node.parent, 'styleUrls') ??
+      getPropertyAssignmentFromValue(node, 'styleUrl');
+  return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
 }
 
 function findTightestNodeAtPosition(program: ts.Program, fileName: string, position: number) {
