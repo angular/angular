@@ -1,23 +1,22 @@
 // #docplaster
-import {Component, DebugElement, NO_ERRORS_SCHEMA} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {provideRouter, Router, RouterLink} from '@angular/router';
+import { Component, DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { provideRouter, Router, RouterLink } from '@angular/router';
 
-import {AppComponent} from './app.component';
+import { AppComponent } from './app.component';
+import { appConfig } from './app.config';
+import { UserService } from './model';
 
 // #docregion component-stubs
-@Component({selector: 'app-banner', template: ''})
-class BannerStubComponent {
-}
+@Component({ standalone: true, selector: 'app-banner', template: '' })
+class BannerStubComponent {}
 
-@Component({selector: 'router-outlet', template: ''})
-class RouterOutletStubComponent {
-}
+@Component({ standalone: true, selector: 'router-outlet', template: '' })
+class RouterOutletStubComponent {}
 
-@Component({selector: 'app-welcome', template: ''})
-class WelcomeStubComponent {
-}
+@Component({ standalone: true, selector: 'app-welcome', template: '' })
+class WelcomeStubComponent {}
 // #enddocregion component-stubs
 
 let comp: AppComponent;
@@ -26,19 +25,24 @@ let fixture: ComponentFixture<AppComponent>;
 describe('AppComponent & TestModule', () => {
   beforeEach(waitForAsync(() => {
     // #docregion testbed-stubs
-    TestBed
-        .configureTestingModule({
-          imports: [RouterLink],
-          providers: [provideRouter([])],
-          declarations:
-              [AppComponent, BannerStubComponent, RouterOutletStubComponent, WelcomeStubComponent]
-        })
-        // #enddocregion testbed-stubs
-        .compileComponents()
-        .then(() => {
-          fixture = TestBed.createComponent(AppComponent);
-          comp = fixture.componentInstance;
-        });
+    TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [
+          AppComponent,
+          BannerStubComponent,
+          RouterLink,
+          RouterOutletStubComponent,
+          WelcomeStubComponent,
+        ],
+        providers: [provideRouter([]), UserService],
+      }),
+    )
+      // #enddocregion testbed-stubs
+      .compileComponents()
+      .then(() => {
+        fixture = TestBed.createComponent(AppComponent);
+        comp = fixture.componentInstance;
+      });
   }));
   tests();
 });
@@ -47,58 +51,26 @@ describe('AppComponent & TestModule', () => {
 describe('AppComponent & NO_ERRORS_SCHEMA', () => {
   beforeEach(waitForAsync(() => {
     // #docregion no-errors-schema, mixed-setup
-    TestBed
-        .configureTestingModule({
-          declarations: [
-            AppComponent,
-            // #enddocregion no-errors-schema
-            BannerStubComponent,
-            // #docregion no-errors-schema
-          ],
-          providers: [provideRouter([])],
-          imports: [RouterLink],
-          schemas: [NO_ERRORS_SCHEMA]
-        })
-        // #enddocregion no-errors-schema, mixed-setup
-        .compileComponents()
-        .then(() => {
-          fixture = TestBed.createComponent(AppComponent);
-          comp = fixture.componentInstance;
-        });
+    TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [
+          AppComponent,
+          // #enddocregion no-errors-schema
+          BannerStubComponent,
+          // #docregion no-errors-schema
+          RouterLink,
+        ],
+        providers: [provideRouter([]), UserService],
+        schemas: [NO_ERRORS_SCHEMA],
+      }),
+    )
+      // #enddocregion no-errors-schema, mixed-setup
+      .compileComponents()
+      .then(() => {
+        fixture = TestBed.createComponent(AppComponent);
+        comp = fixture.componentInstance;
+      });
   }));
-  tests();
-});
-
-//////// Testing w/ real root module //////
-import {AppModule} from './app.module';
-import {AppRoutingModule} from './app-routing.module';
-
-describe('AppComponent & AppModule', () => {
-  beforeEach(waitForAsync(() => {
-    TestBed
-        .configureTestingModule({
-          imports: [AppModule],
-        })
-
-        // Get rid of app's Router configuration otherwise many failures.
-        // Doing so removes Router declarations; add the Router stubs
-        .overrideModule(AppModule, {
-          remove: {imports: [AppRoutingModule]},
-          add: {
-            declarations: [RouterOutletStubComponent],
-            imports: [RouterLink],
-            providers: [provideRouter([])],
-          }
-        })
-
-        .compileComponents()
-
-        .then(() => {
-          fixture = TestBed.createComponent(AppComponent);
-          comp = fixture.componentInstance;
-        });
-  }));
-
   tests();
 });
 
@@ -108,14 +80,14 @@ function tests() {
 
   // #docregion test-setup
   beforeEach(() => {
-    fixture.detectChanges();  // trigger initial data binding
+    fixture.detectChanges(); // trigger initial data binding
 
     // find DebugElements with an attached RouterLinkStubDirective
     linkDes = fixture.debugElement.queryAll(By.directive(RouterLink));
 
     // get attached link directive instances
     // using each DebugElement's injector
-    routerLinks = linkDes.map(de => de.injector.get(RouterLink));
+    routerLinks = linkDes.map((de) => de.injector.get(RouterLink));
   });
   // #enddocregion test-setup
 
@@ -132,14 +104,14 @@ function tests() {
   });
 
   it('can click Heroes link in template', fakeAsync(() => {
-       const heroesLinkDe = linkDes[1];  // heroes link DebugElement
+    const heroesLinkDe = linkDes[1]; // heroes link DebugElement
 
-       TestBed.inject(Router).resetConfig([{path: '**', children: []}]);
-       heroesLinkDe.triggerEventHandler('click', {button: 0});
-       tick();
-       fixture.detectChanges();
+    TestBed.inject(Router).resetConfig([{ path: '**', children: [] }]);
+    heroesLinkDe.triggerEventHandler('click', { button: 0 });
+    tick();
+    fixture.detectChanges();
 
-       expect(TestBed.inject(Router).url).toBe('/heroes');
-     }));
+    expect(TestBed.inject(Router).url).toBe('/heroes');
+  }));
   // #enddocregion tests
 }

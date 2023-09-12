@@ -1,5 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync
-} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -10,9 +9,9 @@ import { addMatchers } from '../../testing';
 import { HeroService } from '../model/hero.service';
 import { getTestHeroes, TestHeroService } from '../model/testing/test-hero.service';
 
-import { HeroModule } from './hero.module';
 import { HeroListComponent } from './hero-list.component';
 import { HighlightDirective } from '../shared/highlight.directive';
+import { appConfig } from '../app.config';
 
 const HEROES = getTestHeroes();
 
@@ -27,16 +26,16 @@ describe('HeroListComponent', () => {
     addMatchers();
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-    TestBed
-        .configureTestingModule({
-          imports: [HeroModule],
-          providers: [
-            {provide: HeroService, useClass: TestHeroService},
-            {provide: Router, useValue: routerSpy}
-          ]
-        })
-        .compileComponents()
-        .then(createComponent);
+    TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        providers: [
+          { provide: HeroService, useClass: TestHeroService },
+          { provide: Router, useValue: routerSpy },
+        ],
+      }),
+    )
+      .compileComponents()
+      .then(createComponent);
   }));
 
   it('should display heroes', () => {
@@ -46,47 +45,37 @@ describe('HeroListComponent', () => {
   it('1st hero should match 1st test hero', () => {
     const expectedHero = HEROES[0];
     const actualHero = page.heroRows[0].textContent;
-    expect(actualHero)
-      .withContext('hero.id')
-      .toContain(expectedHero.id.toString());
-    expect(actualHero)
-      .withContext('hero.name')
-      .toContain(expectedHero.name);
+    expect(actualHero).withContext('hero.id').toContain(expectedHero.id.toString());
+    expect(actualHero).withContext('hero.name').toContain(expectedHero.name);
   });
 
   it('should select hero on click', fakeAsync(() => {
-       const expectedHero = HEROES[1];
-       const btn = page.heroRows[1].querySelector('button');
+    const expectedHero = HEROES[1];
+    const btn = page.heroRows[1].querySelector('button');
 
-       btn!.dispatchEvent(new Event('click'));
-       tick();
-       // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
-       expect(comp.selectedHero).toEqual(expectedHero);
-     }));
+    btn!.dispatchEvent(new Event('click'));
+    tick();
+    // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
+    expect(comp.selectedHero).toEqual(expectedHero);
+  }));
 
   it('should navigate to selected hero detail on click', fakeAsync(() => {
-       const expectedHero = HEROES[1];
-       const btn = page.heroRows[1].querySelector('button');
+    const expectedHero = HEROES[1];
+    const btn = page.heroRows[1].querySelector('button');
 
-       btn!.dispatchEvent(new Event('click'));
-       tick();
+    btn!.dispatchEvent(new Event('click'));
+    tick();
 
-       // should have navigated
-       expect(page.navSpy.calls.any())
-        .withContext('navigate called')
-        .toBe(true);
+    // should have navigated
+    expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
 
-       // composed hero detail will be URL like 'heroes/42'
-       // expect link array with the route path and hero id
-       // first argument to router.navigate is link array
-       const navArgs = page.navSpy.calls.first().args[0];
-       expect(navArgs[0])
-        .withContext('nav to heroes detail URL')
-        .toContain('heroes');
-       expect(navArgs[1])
-        .withContext('expected hero.id')
-        .toBe(expectedHero.id);
-     }));
+    // composed hero detail will be URL like 'heroes/42'
+    // expect link array with the route path and hero id
+    // first argument to router.navigate is link array
+    const navArgs = page.navSpy.calls.first().args[0];
+    expect(navArgs[0]).withContext('nav to heroes detail URL').toContain('heroes');
+    expect(navArgs[1]).withContext('expected hero.id').toBe(expectedHero.id);
+  }));
 
   it('should find `HighlightDirective` with `By.directive', () => {
     // #docregion by
@@ -103,9 +92,7 @@ describe('HeroListComponent', () => {
 
     // different browsers report color values differently
     const isExpectedColor = bgColor === 'gold' || bgColor === 'rgb(255, 215, 0)';
-    expect(isExpectedColor)
-      .withContext('backgroundColor')
-      .toBe(true);
+    expect(isExpectedColor).withContext('backgroundColor').toBe(true);
   });
 
   it("the `HighlightDirective` is among the element's providers", () => {

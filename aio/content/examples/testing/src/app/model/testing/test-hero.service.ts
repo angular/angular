@@ -20,7 +20,6 @@ import { getTestHeroes } from './test-heroes';
  * implements only as much of HeroService as is actually consumed by the app
  */
 export class TestHeroService extends HeroService {
-
   constructor() {
     // This is a fake testing service that won't be making HTTP
     // requests so we can pass in `null` as the HTTP client.
@@ -39,26 +38,26 @@ export class TestHeroService extends HeroService {
   }
 
   override getHeroes(): Observable<Hero[]> {
-    return this.lastResult = asyncData(this.heroes);
+    return (this.lastResult = asyncData(this.heroes));
   }
 
   override getHero(id: number | string): Observable<Hero> {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
-    const hero = this.heroes.find(h => h.id === id);
+    const hero = this.heroes.find((h) => h.id === id);
     this.lastResult = asyncData(hero);
     return this.lastResult;
   }
 
   override updateHero(hero: Hero): Observable<Hero> {
-    return this.lastResult = this.getHero(hero.id).pipe(
-      map(h => {
+    return (this.lastResult = this.getHero(hero.id).pipe(
+      map((h) => {
         if (h) {
           return Object.assign(h, hero);
         }
         throw new Error(`Hero ${hero.id} not found`);
-      })
-    );
+      }),
+    ));
   }
 }

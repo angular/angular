@@ -16,7 +16,7 @@ describe('TitleCasePipe', () => {
   });
 
   // ... more tests ...
-// #enddocregion excerpt
+  // #enddocregion excerpt
   it('leaves "Abc Def" unchanged', () => {
     expect(pipe.transform('Abc Def')).toBe('Abc Def');
   });
@@ -28,6 +28,6 @@ describe('TitleCasePipe', () => {
   it('transforms "   abc   def" to "   Abc   Def" (preserves spaces) ', () => {
     expect(pipe.transform('   abc   def')).toBe('   Abc   Def');
   });
-// #docregion excerpt
+  // #docregion excerpt
 });
 // #enddocregion excerpt

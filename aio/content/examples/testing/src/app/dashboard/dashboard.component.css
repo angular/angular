@@ -1,8 +1,10 @@
 [class*='col-'] {
   float: left;
 }
-*, *::after, *::before {
-	box-sizing: border-box;
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
 }
 h3 {
   text-align: center;
@@ -28,7 +30,7 @@ h3 {
   padding-right: 20px;
 }
 @media (max-width: 1024px) {
-	.grid {
-	  margin: 0;
-	}
+  .grid {
+    margin: 0;
+  }
 }
