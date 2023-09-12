@@ -94,7 +94,7 @@ The rest of the articles in this section specifically address the Angular implem
 
 For more information about service workers in general, see [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers).
 
-For more information about browser support, see the [browser support](https://developers.google.com/web/fundamentals/primers/service-workers/#browser_support) section of [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers), Jake Archibald's [Is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready), and [Can I Use](https://caniuse.com/serviceworkers).
+For more information about browser support, see [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker)'s [Browser Compatibility](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker#browser_compatibility) section of [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker), Jake Archibald's [Is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready), and [Can I Use](https://caniuse.com/serviceworkers).
 
 For additional recommendations and examples, see:
 
