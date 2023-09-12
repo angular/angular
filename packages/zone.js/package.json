@@ -48,7 +48,7 @@
       "default": "./package.json"
     },
     ".": {
-      "typings": "./zone.d.ts",
+      "types": "./zone.d.ts",
       "require": "./bundles/zone.umd.js",
       "default": "./fesm2015/zone.js"
     },
