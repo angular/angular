@@ -532,6 +532,30 @@ describe('definitions', () => {
       expect(def.textSpan).toEqual({start: 0, length: 0});
     });
 
+    it('should be able to find a stylesheet from a style url', () => {
+      const {position, text} = service.overwrite(APP_COMPONENT, `
+        import {Component} from '@angular/core';
+	      @Component({
+	        template: 'empty',
+	        styleUrl: './te¦st.css'
+	      })
+	      export class AppComponent {}`);
+      const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
+
+
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result!;
+
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
+          .toEqual('./test.css');
+
+      expect(definitions).toBeDefined();
+      expect(definitions!.length).toBe(1);
+      const [def] = definitions!;
+      expect(def.fileName).toContain('/app/test.css');
+      expect(def.textSpan).toEqual({start: 0, length: 0});
+    });
+
     xit('should be able to find a resource url with malformed component meta', () => {
       const {position, text} = service.overwrite(APP_COMPONENT, `
         import {Component} from '@angular/core';
