@@ -11,10 +11,10 @@ import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angul
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader} from '../../metadata';
+import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassEntry, DirectiveEntry, EntryType, MemberEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from './entities';
+import {ClassEntry, DirectiveEntry, EntryType, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
 import {extractResolvedTypeString} from './type_extractor';
 
 /** A class member declaration that is *like* a property (including accessors) */
@@ -211,15 +211,69 @@ class DirectiveExtractor extends ClassExtractor {
   }
 }
 
+/** Extractor to pull info for API reference documentation for an Angular pipe. */
+class PipeExtractor extends ClassExtractor {
+  constructor(
+      declaration: ClassDeclaration&ts.ClassDeclaration,
+      reference: Reference,
+      private metadata: PipeMeta,
+      typeChecker: ts.TypeChecker,
+  ) {
+    super(declaration, reference, typeChecker);
+  }
+
+  override extract(): PipeEntry {
+    return {
+      ...super.extract(),
+      pipeName: this.metadata.name,
+      entryType: EntryType.Pipe,
+      isStandalone: this.metadata.isStandalone,
+    };
+  }
+}
+
+/** Extractor to pull info for API reference documentation for an Angular pipe. */
+class NgModuleExtractor extends ClassExtractor {
+  constructor(
+      declaration: ClassDeclaration&ts.ClassDeclaration,
+      reference: Reference,
+      private metadata: NgModuleMeta,
+      typeChecker: ts.TypeChecker,
+  ) {
+    super(declaration, reference, typeChecker);
+  }
+
+  override extract(): ClassEntry {
+    return {
+      ...super.extract(),
+      entryType: EntryType.NgModule,
+    };
+  }
+}
+
 /** Extracts documentation info for a class, potentially including Angular-specific info.  */
 export function extractClass(
-    classDeclaration: ClassDeclaration&ts.ClassDeclaration, metadataReader: MetadataReader,
-    typeChecker: ts.TypeChecker): ClassEntry {
+    classDeclaration: ClassDeclaration&ts.ClassDeclaration,
+    metadataReader: MetadataReader,
+    typeChecker: ts.TypeChecker,
+    ): ClassEntry {
   const ref = new Reference(classDeclaration);
-  const metadata = metadataReader.getDirectiveMetadata(ref);
-  const extractor = metadata ?
-      new DirectiveExtractor(classDeclaration, ref, metadata, typeChecker) :
-      new ClassExtractor(classDeclaration, ref, typeChecker);
+
+  let extractor: ClassExtractor;
+
+  let directiveMetadata = metadataReader.getDirectiveMetadata(ref);
+  let pipeMetadata = metadataReader.getPipeMetadata(ref);
+  let ngModuleMetadata = metadataReader.getNgModuleMetadata(ref);
+
+  if (directiveMetadata) {
+    extractor = new DirectiveExtractor(classDeclaration, ref, directiveMetadata, typeChecker);
+  } else if (pipeMetadata) {
+    extractor = new PipeExtractor(classDeclaration, ref, pipeMetadata, typeChecker);
+  } else if (ngModuleMetadata) {
+    extractor = new NgModuleExtractor(classDeclaration, ref, ngModuleMetadata, typeChecker);
+  } else {
+    extractor = new ClassExtractor(classDeclaration, ref, typeChecker);
+  }
 
   return extractor.extract();
 }

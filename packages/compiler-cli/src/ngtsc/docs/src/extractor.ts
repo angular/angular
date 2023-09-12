@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {extractEnum} from '@angular/compiler-cli/src/ngtsc/docs/src/enum_extractor';
 import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
 import ts from 'typescript';
 
@@ -50,6 +51,10 @@ export class DocsExtractor {
             entries.push(extractConstant(declaration, this.typeChecker));
           }
         });
+      }
+
+      if (ts.isEnumDeclaration(statement)) {
+        entries.push(extractEnum(statement, this.typeChecker));
       }
     }
 

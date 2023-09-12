@@ -17,6 +17,7 @@ export enum EntryType {
   Enum = 'enum',
   Function = 'function',
   Interface = 'interface',
+  NgModule = 'ng_module',
   Pipe = 'pipe',
   TypeAlias = 'type_alias',
   UndecoratedClass = 'undecorated_class',
@@ -28,6 +29,7 @@ export enum MemberType {
   Method = 'method',
   Getter = 'getter',
   Setter = 'setter',
+  EnumItem = 'enum_item',
 }
 
 /** Informational tags applicable to class members. */
@@ -64,6 +66,11 @@ export interface ClassEntry extends DocEntry {
   members: MemberEntry[];
 }
 
+/** Documentation entity for a TypeScript enum. */
+export interface EnumEntry extends DocEntry {
+  members: EnumMemberEntry[];
+}
+
 /** Documentation entity for an Angular directives and components. */
 export interface DirectiveEntry extends ClassEntry {
   selector: string;
@@ -71,18 +78,30 @@ export interface DirectiveEntry extends ClassEntry {
   isStandalone: boolean;
 }
 
+export interface PipeEntry extends ClassEntry {
+  pipeName: string;
+  isStandalone: boolean;
+  // TODO: add `isPure`.
+}
+
 export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
 }
 
-/** Sub-entry for a single class member. */
+/** Sub-entry for a single class or enum member. */
 export interface MemberEntry {
   name: string;
   memberType: MemberType;
   memberTags: MemberTags[];
   description: string;
   jsdocTags: JsDocTagEntry[];
+}
+
+/** Sub-entry for an enum member. */
+export interface EnumMemberEntry extends MemberEntry {
+  type: string;
+  value: string;
 }
 
 /** Sub-entry for a class property. */

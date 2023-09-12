@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ConstantEntry, EntryType, FunctionEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {ClassEntry, FunctionEntry, MethodEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -247,6 +247,46 @@ runInEachFileSystem(os => {
       const [dataEntry, timingEntry] = functionEntry.params;
       expect(dataEntry.description).toBe('The data to save.');
       expect(timingEntry.description).toBe('Long description\nwith multiple lines.');
+    });
+
+    it('should extract class member descriptions', () => {
+      env.write('test.ts', `
+        export class UserProfile {
+          /** A user identifier. */
+          userId: number = 0;
+
+          /** Name of the user */
+          get name(): string { return ''; }
+
+          /** Name of the user */
+          set name(value: string) { }
+
+          /**
+           * Save the user.
+           * @param config Setting for saving.
+           * @returns Whether it succeeded
+           */
+          save(config: object): boolean { return false; }
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction();
+      expect(docs.length).toBe(1);
+      const classEntry = docs[0] as ClassEntry;
+
+      expect(classEntry.members.length).toBe(4);
+      const [userIdEntry, nameGetterEntry, nameSetterEntry, ] = classEntry.members;
+
+      expect(userIdEntry.description).toBe('A user identifier.');
+      expect(nameGetterEntry.description).toBe('Name of the user');
+      expect(nameSetterEntry.description).toBe('Name of the user');
+
+      const saveEntry = classEntry.members[3] as MethodEntry;
+      expect(saveEntry.description).toBe('Save the user.');
+
+      expect(saveEntry.params[0].description).toBe('Setting for saving.');
+      expect(saveEntry.jsdocTags.length).toBe(2);
+      expect(saveEntry.jsdocTags[1]).toEqual({name: 'returns', comment: 'Whether it succeeded'});
     });
   });
 });
