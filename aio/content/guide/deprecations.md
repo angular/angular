@@ -436,7 +436,6 @@ available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `errorHandler`
 
 The following options are deprecated in entirely:
-* `malformedUriErrorHandler` - URI parsing errors should be handled in the `UrlSerializer` instead.
 * `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
 <a id="router-can-load"></a>
