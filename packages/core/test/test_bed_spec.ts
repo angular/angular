@@ -2336,3 +2336,30 @@ describe('TestBed module `errorOnUnknownProperties`', () => {
     expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(false);
   });
 });
+
+describe('TestBed module `errorOnImagePerformance`', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should not throw based on the default behavior', () => {
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnImagePerformance()).toBe(false);
+  });
+
+  it('should not throw if the option is omitted', () => {
+    TestBed.configureTestingModule({});
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnImagePerformance()).toBe(false);
+  });
+
+  it('should be able to configure the option', () => {
+    TestBed.configureTestingModule({errorOnImagePerformance: true});
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnImagePerformance()).toBe(true);
+  });
+
+  it('should reset the option back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({errorOnImagePerformance: true});
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnImagePerformance()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnImagePerformance()).toBe(false);
+  });
+});

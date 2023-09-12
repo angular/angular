@@ -126,3 +126,15 @@ export const ENABLED_SSR_FEATURES = new InjectionToken<Set<string>>(
       providedIn: 'root',
       factory: () => new Set(),
     });
+
+/**
+ * Internal token to allow image-related errors to be downgraded in component testing scenarios.
+ *
+ * Note: the token is in `core` because it's used to pass data from test configuration to
+ * the NgOptimizedImage directive (in the common package).
+ */
+export const ERROR_ON_IMAGE_PERFORMANCE =
+    new InjectionToken<boolean>('ERROR_ON_IMAGE_PERFORMANCE', {
+      providedIn: 'root',
+      factory: () => false,
+    });

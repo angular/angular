@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
+import {inject, Injectable, OnDestroy, ɵERROR_ON_IMAGE_PERFORMANCE as ERROR_ON_IMAGE_PERFORMANCE, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -39,6 +39,8 @@ export class LCPImageObserver implements OnDestroy {
 
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
+
+  private errorOnImagePerformance = inject(ERROR_ON_IMAGE_PERFORMANCE);
 
   constructor() {
     assertDevMode('LCP checker');
@@ -74,7 +76,11 @@ export class LCPImageObserver implements OnDestroy {
       if (!img) return;
       if (!img.priority && !img.alreadyWarnedPriority) {
         img.alreadyWarnedPriority = true;
-        logMissingPriorityWarning(imgSrc);
+        if (this.errorOnImagePerformance) {
+          console.error(formatLazyLCPWarningText(imgSrc));
+        } else {
+          console.warn(formatLazyLCPWarningText(imgSrc));
+        }
       }
       if (img.modified && !img.alreadyWarnedModified) {
         img.alreadyWarnedModified = true;
@@ -118,16 +124,6 @@ export class LCPImageObserver implements OnDestroy {
   }
 }
 
-function logMissingPriorityWarning(ngSrc: string) {
-  const directiveDetails = imgDirectiveDetails(ngSrc);
-  console.warn(formatRuntimeError(
-      RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
-      `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
-          `element but was not marked "priority". This image should be marked ` +
-          `"priority" in order to prioritize its loading. ` +
-          `To fix this, add the "priority" attribute.`));
-}
-
 function logModifiedWarning(ngSrc: string) {
   const directiveDetails = imgDirectiveDetails(ngSrc);
   console.warn(formatRuntimeError(
@@ -136,4 +132,14 @@ function logModifiedWarning(ngSrc: string) {
           `element and has had its "ngSrc" attribute modified. This can cause ` +
           `slower loading performance. It is recommended not to modify the "ngSrc" ` +
           `property on any image which could be the LCP element.`));
+}
+
+function formatLazyLCPWarningText(ngSrc: string) {
+  const directiveDetails = imgDirectiveDetails(ngSrc);
+  return formatRuntimeError(
+      RuntimeErrorCode.LCP_IMG_NGSRC_MODIFIED,
+      `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
+          `element and has had its "ngSrc" attribute modified. This can cause ` +
+          `slower loading performance. It is recommended not to modify the "ngSrc" ` +
+          `property on any image which could be the LCP element.`);
 }

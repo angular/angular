@@ -61,7 +61,12 @@ export interface TestModuleMetadata {
    * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
-
+  /**
+   * Whether errors should be thrown based on image misconfiguration, such as lazy-loading.
+   * the LCP element. Defaults to `true`, where and error is thrown.
+   * If set to `false`, a warning is logged instead.
+   */
+  errorOnImagePerformance?: boolean;
   /**
    * Whether defer blocks should behave with manual triggering or play through normally.
    * Defaults to `manual`.
@@ -91,6 +96,12 @@ export interface TestEnvironmentOptions {
    * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
+  /**
+   * Whether errors should be thrown based on image misconfiguration, such as lazy-loading.
+   * the LCP element. Defaults to `true`, where and error is thrown.
+   * If set to `false`, a warning is logged instead.
+   */
+  errorOnImagePerformance?: boolean;
 }
 
 /**

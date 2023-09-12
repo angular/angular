@@ -16,6 +16,7 @@ import {
   Directive,
   EnvironmentInjector,
   InjectFlags,
+  InjectionToken,
   InjectOptions,
   Injector,
   NgModule,
@@ -217,6 +218,11 @@ export class TestBedImpl implements TestBed {
    * This option takes precedence over the environment-level one.
    */
   private _instanceErrorOnUnknownPropertiesOption: boolean|undefined;
+
+  /**
+   * "Error on image performance" option that has been configured at the `TestBed` instance level.
+   */
+  private _instanceErrorOnImagePerformanceOption: boolean|undefined;
 
   /**
    * Stores the previous "Error on unknown elements" option value,
@@ -480,6 +486,7 @@ export class TestBedImpl implements TestBed {
         this._instanceTeardownOptions = undefined;
         this._instanceErrorOnUnknownElementsOption = undefined;
         this._instanceErrorOnUnknownPropertiesOption = undefined;
+        this._instanceErrorOnImagePerformanceOption = undefined;
         this._instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
       }
     }
@@ -511,6 +518,8 @@ export class TestBedImpl implements TestBed {
     this._instanceTeardownOptions = moduleDef.teardown;
     this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
     this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
+    this._instanceErrorOnImagePerformanceOption =
+        moduleDef.errorOnImagePerformance !== undefined ? moduleDef.errorOnImagePerformance : false;
     this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DeferBlockBehavior.Manual;
     // Store the current value of the strict mode option,
     // so we can restore it later
@@ -518,7 +527,7 @@ export class TestBedImpl implements TestBed {
     setUnknownElementStrictMode(this.shouldThrowErrorOnUnknownElements());
     this._previousErrorOnUnknownPropertiesOption = getUnknownPropertyStrictMode();
     setUnknownPropertyStrictMode(this.shouldThrowErrorOnUnknownProperties());
-    this.compiler.configureTestingModule(moduleDef);
+    this.compiler.configureTestingModule(moduleDef, this._instanceErrorOnImagePerformanceOption);
     return this;
   }
 
@@ -741,6 +750,12 @@ export class TestBedImpl implements TestBed {
     return this._instanceErrorOnUnknownPropertiesOption ??
         TestBedImpl._environmentErrorOnUnknownPropertiesOption ??
         THROW_ON_UNKNOWN_PROPERTIES_DEFAULT;
+  }
+
+  shouldThrowErrorOnImagePerformance(): boolean {
+    // Check if a configuration has been provided to log an error when an image performance error is
+    // encountered
+    return this._instanceErrorOnImagePerformanceOption ?? false;
   }
 
   shouldTearDownTestingModule(): boolean {
