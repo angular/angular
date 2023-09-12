@@ -395,28 +395,8 @@ export class NavigationTransitions {
                            };
                          }),
                          switchMap(t => {
-                           // TODO(atscott): The serializer should really be used instead of
-                           // `UrlTree.toString()`. Custom serializers are often written to handle
-                           // things better than the default one (objects, for example will be
-                           // [Object object] with the custom serializer and be "the same" when they
-                           // aren't).
-
-                           // We're navigating to somewhere that is not what the Router is
-                           // currently set to.
-                           const updatingInternalState =
-                               t.extractedUrl.toString() !== t.currentUrlTree.toString();
-
-                           // We're updating the browser URL to something new (navigation is going
-                           // to somewhere not displayed in the URL bar and we will update the URL
-                           // bar if navigation succeeds)
-                           const extractedBrowserUrl = this.urlHandlingStrategy.extract(
-                               this.urlSerializer.parse(this.location.path(true)));
-                           const updatingBrowserUrl =
-                               extractedBrowserUrl.toString() !== t.extractedUrl.toString() &&
-                               !t.extras.skipLocationChange;
-
-                           const urlTransition =
-                               !router.navigated || updatingBrowserUrl || updatingInternalState;
+                           const urlTransition = !router.navigated ||
+                               this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
 
                            const onSameUrlNavigation =
                                t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
@@ -751,6 +731,36 @@ export class NavigationTransitions {
         new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
     this.events.next(navCancel);
     t.resolve(false);
+  }
+
+  /**
+   * @returns Whether we're navigating to somewhere that is not what the Router is
+   * currently set to.
+   */
+  private isUpdatingInternalState() {
+    // TODO(atscott): The serializer should likely be used instead of
+    // `UrlTree.toString()`. Custom serializers are often written to handle
+    // things better than the default one (objects, for example will be
+    // [Object object] with the custom serializer and be "the same" when they
+    // aren't).
+    // (Same for isUpdatedBrowserUrl)
+    return this.currentTransition?.extractedUrl.toString() !==
+        this.currentTransition?.currentUrlTree.toString();
+  }
+
+  /**
+   * @returns Whether we're updating the browser URL to something new (navigation is going
+   * to somewhere not displayed in the URL bar and we will update the URL
+   * bar if navigation succeeds).
+   */
+  private isUpdatedBrowserUrl() {
+    // The extracted URL is the part of the URL that this application cares about. `extract` may
+    // return only part of the browser URL and that part may have not changed even if some other
+    // portion of the URL did.
+    const extractedBrowserUrl =
+        this.urlHandlingStrategy.extract(this.urlSerializer.parse(this.location.path(true)));
+    return extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
+        !this.currentTransition?.extras.skipLocationChange;
   }
 }
 
