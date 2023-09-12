@@ -32,11 +32,6 @@ function defaultErrorHandler(error: any): never {
   throw error;
 }
 
-function defaultMalformedUriErrorHandler(
-    error: URIError, urlSerializer: UrlSerializer, url: string): UrlTree {
-  return urlSerializer.parse('/');
-}
-
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
@@ -127,17 +122,6 @@ export class Router {
    * @see {@link withNavigationErrorHandler}
    */
   errorHandler: (error: any) => any = this.options.errorHandler || defaultErrorHandler;
-
-  /**
-   * A handler for errors thrown by `Router.parseUrl(url)`
-   * when `url` contains an invalid character.
-   * The most common case is a `%` sign
-   * that's not encoded and is not part of a percent encoded sequence.
-   *
-   * @see {@link RouterModule}
-   */
-  private malformedUriErrorHandler =
-      this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
 
   /**
    * True if at least one navigation event has occurred,
@@ -550,13 +534,11 @@ export class Router {
 
   /** Parses a string into a `UrlTree` */
   parseUrl(url: string): UrlTree {
-    let urlTree: UrlTree;
     try {
-      urlTree = this.urlSerializer.parse(url);
-    } catch (e) {
-      urlTree = this.malformedUriErrorHandler(e as URIError, this.urlSerializer, url);
+      return this.urlSerializer.parse(url);
+    } catch {
+      return this.urlSerializer.parse('/');
     }
-    return urlTree;
   }
 
   /**
