@@ -89,7 +89,10 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile --network-timeout 100000
       - name: Test all windows CI targets
-        run: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
+        # Skip the simulated file system tests on Windows, because they tend to be flaky.
+        # Note that we need to pass `NG_SKIP_SIMULATED_FS` using `--test_env`, because the
+        # environment variable doesn't get picked up in Bazel when specified through `env` in GHA.
+        run: bazel test --test_tag_filters="-browser:chromium-local" --test_env=NG_SKIP_SIMULATED_FS=true //packages/compiler-cli/...
 
   test:
     runs-on: ubuntu-latest-4core
