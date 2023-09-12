@@ -64,12 +64,6 @@
       "require": "./bundles/zone-mix.umd.js",
       "default": "./fesm2015/zone-mix.js"
     },
-    "./dist/*.min": {
-      "default": "./bundles/*.umd.min.js"
-    },
-    "./dist/*": {
-      "default": "./bundles/*.umd.js"
-    },
     "./plugins/*.min": {
       "require": "./bundles/*.umd.min.js",
       "default": "./fesm2015/*.min.js"
@@ -77,6 +71,24 @@
     "./plugins/*": {
       "require": "./bundles/*.umd.js",
       "default": "./fesm2015/*.js"
+    },
+    "./fesm2015/*.js": {
+      "default": "./fesm2015/*.js"
+    },
+    "./fesm2015/*": {
+      "default": "./fesm2015/*.js"
+    },
+    "./bundles/*.js": {
+      "default": "./bundles/*.js"
+    },
+    "./bundles/*": {
+      "default": "./bundles/*.js"
+    },
+    "./dist/*.min": {
+      "default": "./bundles/*.umd.min.js"
+    },
+    "./dist/*": {
+      "default": "./bundles/*.umd.js"
     }
   }
 }
