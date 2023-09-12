@@ -300,8 +300,6 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
     // @deprecated
     errorHandler?: (error: any) => any;
     initialNavigation?: InitialNavigation;
-    // @deprecated
-    malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
     useHash?: boolean;

@@ -1086,9 +1086,6 @@
     "name": "defaultIfEmpty"
   },
   {
-    "name": "defaultMalformedUriErrorHandler"
-  },
-  {
     "name": "defaultUrlMatcher"
   },
   {
