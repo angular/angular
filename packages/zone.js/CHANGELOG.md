@@ -1,3 +1,13 @@
+## [0.13.3](https://github.com/angular/angular/compare/zone.js-0.13.2...zone.js-0.13.3) (2023-09-12)
+
+
+### Bug Fixes
+
+* **zone.js:** rename `typings` conditional export to `types` ([#51737](https://github.com/angular/angular/issues/51737)) ([74755c4](https://github.com/angular/angular/commit/74755c4b5e6d4d62d2c81f35e6152bb8649fbb5c))
+* **zone.js:** temporary allow deep imports ([#51737](https://github.com/angular/angular/issues/51737)) ([e86d6db](https://github.com/angular/angular/commit/e86d6dba27997cb2cad13c43ac5e94eeb7a67725))
+
+
+
 ## [0.13.2](https://github.com/angular/angular/compare/zone.js-0.13.1...zone.js-0.13.2) (2023-09-07)
 
 
