@@ -175,4 +175,4 @@ The Angular `By` class has three static methods for common predicates:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-07

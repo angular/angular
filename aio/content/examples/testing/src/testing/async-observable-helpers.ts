@@ -1,15 +1,15 @@
 /*
-* Mock async observables that return asynchronously.
-* The observable either emits once and completes or errors.
-*
-* Must call `tick()` when test with `fakeAsync()`.
-*
-* THE FOLLOWING DON'T WORK
-* Using `of().delay()` triggers TestBed errors;
-* see https://github.com/angular/angular/issues/10127 .
-*
-* Using `asap` scheduler - as in `of(value, asap)` - doesn't work either.
-*/
+ * Mock async observables that return asynchronously.
+ * The observable either emits once and completes or errors.
+ *
+ * Must call `tick()` when test with `fakeAsync()`.
+ *
+ * THE FOLLOWING DON'T WORK
+ * Using `of().delay()` triggers TestBed errors;
+ * see https://github.com/angular/angular/issues/10127 .
+ *
+ * Using `asap` scheduler - as in `of(value, asap)` - doesn't work either.
+ */
 import { defer } from 'rxjs';
 
 // #docregion async-data

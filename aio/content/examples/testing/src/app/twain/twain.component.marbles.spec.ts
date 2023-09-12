@@ -8,7 +8,6 @@ import { cold, getTestScheduler } from 'jasmine-marbles';
 import { TwainService } from './twain.service';
 import { TwainComponent } from './twain.component';
 
-
 describe('TwainComponent (marbles)', () => {
   let component: TwainComponent;
   let fixture: ComponentFixture<TwainComponent>;
@@ -29,10 +28,8 @@ describe('TwainComponent (marbles)', () => {
     getQuoteSpy = twainService.getQuote;
 
     TestBed.configureTestingModule({
-      declarations: [ TwainComponent ],
-      providers:    [
-        { provide: TwainService, useValue: twainService }
-      ]
+      imports: [TwainComponent],
+      providers: [{ provide: TwainService, useValue: twainService }],
     });
 
     fixture = TestBed.createComponent(TwainComponent);
@@ -48,12 +45,10 @@ describe('TwainComponent (marbles)', () => {
     // #docregion test-quote-marbles
     const q$ = cold('---x|', { x: testQuote });
     // #enddocregion test-quote-marbles
-    getQuoteSpy.and.returnValue( q$ );
+    getQuoteSpy.and.returnValue(q$);
 
     fixture.detectChanges(); // ngOnInit()
-    expect(quoteEl.textContent)
-      .withContext('should show placeholder')
-      .toBe('...');
+    expect(quoteEl.textContent).withContext('should show placeholder').toBe('...');
 
     // #docregion test-scheduler-flush
     getTestScheduler().flush(); // flush the observables
@@ -61,12 +56,8 @@ describe('TwainComponent (marbles)', () => {
 
     fixture.detectChanges(); // update view
 
-    expect(quoteEl.textContent)
-      .withContext('should show quote')
-      .toBe(testQuote);
-    expect(errorMessage())
-      .withContext('should not show error')
-      .toBeNull();
+    expect(quoteEl.textContent).withContext('should show quote').toBe(testQuote);
+    expect(errorMessage()).withContext('should not show error').toBeNull();
   });
   // #enddocregion get-quote-test
 
@@ -77,23 +68,19 @@ describe('TwainComponent (marbles)', () => {
     // #docregion error-marbles
     const q$ = cold('---#|', null, new Error('TwainService test failure'));
     // #enddocregion error-marbles
-    getQuoteSpy.and.returnValue( q$ );
+    getQuoteSpy.and.returnValue(q$);
 
     fixture.detectChanges(); // ngOnInit()
-    expect(quoteEl.textContent)
-      .withContext('should show placeholder')
-      .toBe('...');
+    expect(quoteEl.textContent).withContext('should show placeholder').toBe('...');
 
     getTestScheduler().flush(); // flush the observables
-    tick();                     // component shows error after a setTimeout()
-    fixture.detectChanges();    // update error message
+    tick(); // component shows error after a setTimeout()
+    fixture.detectChanges(); // update error message
 
     expect(errorMessage())
       .withContext('should display error')
       .toMatch(/test failure/);
-    expect(quoteEl.textContent)
-      .withContext('should show placeholder')
-      .toBe('...');
+    expect(quoteEl.textContent).withContext('should show placeholder').toBe('...');
   }));
   // #enddocregion error-test
 });
