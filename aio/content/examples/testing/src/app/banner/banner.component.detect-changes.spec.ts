@@ -15,10 +15,8 @@ describe('BannerComponent (AutoChangeDetect)', () => {
   beforeEach(() => {
     // #docregion auto-detect
     TestBed.configureTestingModule({
-      declarations: [ BannerComponent ],
-      providers: [
-        { provide: ComponentFixtureAutoDetect, useValue: true }
-      ]
+      imports: [BannerComponent],
+      providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
     });
     // #enddocregion auto-detect
     fixture = TestBed.createComponent(BannerComponent);

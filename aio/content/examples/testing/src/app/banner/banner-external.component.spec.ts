@@ -12,7 +12,7 @@ describe('BannerComponent (external files)', () => {
     // #docregion setup-may-fail
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [ BannerComponent ],
+        imports: [BannerComponent],
       }); // missing call to compileComponents()
       fixture = TestBed.createComponent(BannerComponent);
     });
@@ -27,8 +27,8 @@ describe('BannerComponent (external files)', () => {
     // #docregion async-before-each
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [ BannerComponent ],
-      }).compileComponents();  // compile template and css
+        imports: [BannerComponent],
+      }).compileComponents(); // compile template and css
     });
     // #enddocregion async-before-each
 
@@ -36,7 +36,7 @@ describe('BannerComponent (external files)', () => {
     // #docregion sync-before-each
     beforeEach(() => {
       fixture = TestBed.createComponent(BannerComponent);
-      component = fixture.componentInstance;  // BannerComponent test instance
+      component = fixture.componentInstance; // BannerComponent test instance
       h1 = fixture.nativeElement.querySelector('h1');
     });
     // #enddocregion sync-before-each
@@ -48,7 +48,7 @@ describe('BannerComponent (external files)', () => {
     // #docregion one-before-each
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [ BannerComponent ],
+        imports: [BannerComponent],
       }).compileComponents();
       fixture = TestBed.createComponent(BannerComponent);
       component = fixture.componentInstance;

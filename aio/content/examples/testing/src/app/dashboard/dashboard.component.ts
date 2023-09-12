@@ -1,24 +1,32 @@
 // #docregion
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
-import {Hero} from '../model/hero';
-import {HeroService} from '../model/hero.service';
+import { Hero } from '../model/hero';
+import { HeroService } from '../model/hero.service';
+import { sharedImports } from '../shared/shared';
+
+import { DashboardHeroComponent } from './dashboard-hero.component';
 
 @Component({
+  standalone: true,
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  imports: [DashboardHeroComponent, sharedImports],
 })
 export class DashboardComponent implements OnInit {
   heroes: Hero[] = [];
 
   // #docregion ctor
-  constructor(private router: Router, private heroService: HeroService) {}
+  constructor(
+    private router: Router,
+    private heroService: HeroService,
+  ) {}
   // #enddocregion ctor
 
   ngOnInit() {
-    this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes.slice(1, 5));
+    this.heroService.getHeroes().subscribe((heroes) => (this.heroes = heroes.slice(1, 5)));
   }
 
   // #docregion goto-detail

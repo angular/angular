@@ -12,7 +12,7 @@ describe('BannerComponent (inline template)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ BannerComponent ],
+      imports: [BannerComponent],
     });
     fixture = TestBed.createComponent(BannerComponent);
     component = fixture.componentInstance; // BannerComponent test instance
