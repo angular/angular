@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, SchemaMetadata, ɵDeferBlockBehavior as DeferBlockBehavior} from '@angular/core';
+import {EnvironmentProviders, InjectionToken, ModuleWithProviders, Provider, SchemaMetadata, Type, ɵDeferBlockBehavior as DeferBlockBehavior} from '@angular/core';
 
 
 /** Whether test modules should be torn down by default. */
@@ -42,9 +42,9 @@ export const ComponentFixtureNoNgZone = new InjectionToken<boolean>('ComponentFi
  * @publicApi
  */
 export interface TestModuleMetadata {
-  providers?: any[];
-  declarations?: any[];
-  imports?: any[];
+  providers?: Array<Provider|EnvironmentProviders>;
+  declarations?: Array<Type<any>|any[]>;
+  imports?: Array<Type<any>|ModuleWithProviders<any>>;
   schemas?: Array<SchemaMetadata|any[]>;
   teardown?: ModuleTeardownOptions;
   /**

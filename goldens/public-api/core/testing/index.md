@@ -12,13 +12,16 @@ import { ɵDeferBlockBehavior as DeferBlockBehavior } from '@angular/core';
 import { ɵDeferBlockState as DeferBlockState } from '@angular/core';
 import { Directive } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import { InjectFlags } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { InjectOptions } from '@angular/core';
+import { ModuleWithProviders } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { Pipe } from '@angular/core';
 import { PlatformRef } from '@angular/core';
+import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
 import { SchemaMetadata } from '@angular/core';
 import { Type } from '@angular/core';
@@ -210,14 +213,14 @@ export interface TestEnvironmentOptions {
 // @public (undocumented)
 export interface TestModuleMetadata {
     // (undocumented)
-    declarations?: any[];
+    declarations?: Array<Type<any> | any[]>;
     deferBlockBehavior?: DeferBlockBehavior;
     errorOnUnknownElements?: boolean;
     errorOnUnknownProperties?: boolean;
     // (undocumented)
-    imports?: any[];
+    imports?: Array<Type<any> | ModuleWithProviders<any>>;
     // (undocumented)
-    providers?: any[];
+    providers?: Array<Provider | EnvironmentProviders>;
     // (undocumented)
     schemas?: Array<SchemaMetadata | any[]>;
     // (undocumented)

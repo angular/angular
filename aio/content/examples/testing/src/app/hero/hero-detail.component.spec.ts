@@ -243,7 +243,7 @@ function sharedModuleSetup() {
   beforeEach(async () => {
     await TestBed.configureTestingModule(
       Object.assign({}, appConfig, {
-        imports: [HeroDetailComponent, sharedImports],
+        imports: [HeroDetailComponent, ...sharedImports],
         providers: [
           provideRouter([{ path: 'heroes/:id', component: HeroDetailComponent }]),
           provideHttpClient(),

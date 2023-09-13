@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵclearResolutionOfComponentResourcesQueue, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG, ɵDeferBlockBehavior as DeferBlockBehavior, ɵdepsTracker as depsTracker, ɵDirectiveDef as DirectiveDef, ɵgenerateStandaloneInDeclarationsError, ɵgetAsyncClassMetadata as getAsyncClassMetadata, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisComponentDefPendingResolution, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵresolveComponentResources, ɵrestoreComponentResolutionQueue, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, EnvironmentProviders, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵclearResolutionOfComponentResourcesQueue, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG, ɵDeferBlockBehavior as DeferBlockBehavior, ɵdepsTracker as depsTracker, ɵDirectiveDef as DirectiveDef, ɵgenerateStandaloneInDeclarationsError, ɵgetAsyncClassMetadata as getAsyncClassMetadata, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisComponentDefPendingResolution, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵresolveComponentResources, ɵrestoreComponentResolutionQueue, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
 
@@ -26,7 +26,7 @@ function isTestingModuleOverride(value: unknown): value is TestingModuleOverride
 }
 
 function assertNoStandaloneComponents(
-    types: Type<any>[], resolver: Resolver<any>, location: string) {
+    types: (Type<any>)[], resolver: Resolver<any>, location: string) {
   types.forEach(type => {
     if (!getAsyncClassMetadata(type)) {
       const component = resolver.resolve(type);
@@ -56,8 +56,8 @@ export class TestBedCompiler {
 
   // Testing module configuration
   private declarations: Type<any>[] = [];
-  private imports: Type<any>[] = [];
-  private providers: Provider[] = [];
+  private imports: (Type<any>|ModuleWithProviders<any>)[] = [];
+  private providers: (Provider|EnvironmentProviders)[] = [];
   private schemas: any[] = [];
 
   // Queues of components/directives/pipes that should be recompiled.
@@ -122,10 +122,10 @@ export class TestBedCompiler {
     if (moduleDef.declarations !== undefined) {
       // Verify that there are no standalone components
       assertNoStandaloneComponents(
-          moduleDef.declarations, this.resolvers.component,
+          moduleDef.declarations as Type<any>[], this.resolvers.component,
           '"TestBed.configureTestingModule" call');
       this.queueTypeArray(moduleDef.declarations, TestingModuleOverride.DECLARATION);
-      this.declarations.push(...moduleDef.declarations);
+      this.declarations.push(...moduleDef.declarations as Type<any>[]);
     }
 
     // Enqueue any compilation tasks for imported modules.
