@@ -26,6 +26,7 @@ jobs:
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1befe6d24fd5cab818e7f8bada40ab364781b8a8
         with:
           cache-node-modules: true
+          # Checking out the pull request commit is intended here as we need to run the changed code tests.
           ref: ${{ github.sha }}
       - name: Install node modules
         run: yarn install --frozen-lockfile
