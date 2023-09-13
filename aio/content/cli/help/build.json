@@ -21,21 +21,20 @@
       "description": "Build using Ahead of Time compilation."
     },
     {
+      "name": "app-shell",
+      "type": "boolean",
+      "default": false,
+      "description": "Generates an application shell during build time."
+    },
+    {
       "name": "base-href",
       "type": "string",
       "description": "Base url for the application being built."
     },
     {
-      "name": "build-optimizer",
-      "type": "boolean",
-      "default": true,
-      "description": "Enables advanced build optimizations when using the 'aot' option."
-    },
-    {
-      "name": "common-chunk",
-      "type": "boolean",
-      "default": true,
-      "description": "Generate a seperate bundle containing code used across multiple bundles."
+      "name": "browser",
+      "type": "string",
+      "description": "The full path for the browser entry point to the application, relative to the current workspace."
     },
     {
       "name": "configuration",
@@ -63,10 +62,9 @@
       "description": "Delete the output path before building."
     },
     {
-      "name": "deploy-url",
-      "type": "string",
-      "deprecated": "Use \"baseHref\" option, \"APP_BASE_HREF\" DI token or a combination of both instead. For more information, see https://angular.io/guide/deployment#the-deploy-url.",
-      "description": "URL where files will be deployed."
+      "name": "external-dependencies",
+      "type": "array",
+      "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
     },
     {
       "name": "extract-licenses",
@@ -124,22 +122,6 @@
       "description": "Translate the bundles in one or more locales."
     },
     {
-      "name": "main",
-      "type": "string",
-      "description": "The full path for the main entry point to the app, relative to the current workspace."
-    },
-    {
-      "name": "named-chunks",
-      "type": "boolean",
-      "default": false,
-      "description": "Use file name for lazy loaded chunks."
-    },
-    {
-      "name": "ngsw-config-path",
-      "type": "string",
-      "description": "Path to ngsw-config.json."
-    },
-    {
       "name": "optimization",
       "type": "boolean",
       "default": true,
@@ -169,8 +151,14 @@
     },
     {
       "name": "polyfills",
-      "type": "string",
-      "description": "Polyfills to be included in the build."
+      "type": "array",
+      "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'."
+    },
+    {
+      "name": "prerender",
+      "type": "boolean",
+      "default": false,
+      "description": "Prerender (SSG) pages of your application during build time."
     },
     {
       "name": "preserve-symlinks",
@@ -190,15 +178,14 @@
       "positional": 0
     },
     {
-      "name": "resources-output-path",
+      "name": "server",
       "type": "string",
-      "description": "The path where style resources will be placed, relative to outputPath."
+      "description": "The full path for the server entry point to the application, relative to the current workspace."
     },
     {
       "name": "service-worker",
-      "type": "boolean",
-      "default": false,
-      "description": "Generates a service worker config for production builds."
+      "type": "string",
+      "description": "Generates a service worker configuration."
     },
     {
       "name": "source-map",
@@ -207,10 +194,16 @@
       "description": "Output source maps for scripts and styles. For more information, see https://angular.io/guide/workspace-config#source-map-configuration."
     },
     {
+      "name": "ssr",
+      "type": "boolean",
+      "default": false,
+      "description": "Server side render (SSR) pages of your application during runtime."
+    },
+    {
       "name": "stats-json",
       "type": "boolean",
       "default": false,
-      "description": "Generates a 'stats.json' file which can be analyzed using tools such as 'webpack-bundle-analyzer'."
+      "description": "Generates a 'stats.json' file which can be analyzed with https://esbuild.github.io/analyze/."
     },
     {
       "name": "subresource-integrity",
@@ -222,12 +215,6 @@
       "name": "ts-config",
       "type": "string",
       "description": "The full path for the TypeScript configuration file, relative to the current workspace."
-    },
-    {
-      "name": "vendor-chunk",
-      "type": "boolean",
-      "default": false,
-      "description": "Generate a seperate bundle containing only vendor libraries. This option should only be used for development to reduce the incremental compilation time."
     },
     {
       "name": "verbose",
