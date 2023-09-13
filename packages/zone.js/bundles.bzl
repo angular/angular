@@ -103,11 +103,4 @@ BUNDLES_ENTRY_POINTS = {
     "zone-testing": {
         "entrypoint": _DIR + "testing/zone-testing",
     },
-    "zone-testing-bundle": {
-        "es5": _DIR + "browser/rollup-test-main",
-        "es2015": _DIR + "browser/rollup-test-main",
-    },
-    "zone-testing-node-bundle": {
-        "entrypoint": _DIR + "node/rollup-test-main",
-    },
 }
