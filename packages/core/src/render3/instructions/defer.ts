@@ -7,6 +7,7 @@
  */
 
 import {InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
+import {inject} from '../../di/injector_compatibility';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
@@ -41,15 +42,6 @@ function shouldTriggerDeferBlock(injector: Injector): boolean {
   }
   return isPlatformBrowser(injector);
 }
-
-/**
- * Shims for the `requestIdleCallback` and `cancelIdleCallback` functions for environments
- * where those functions are not available (e.g. Node.js).
- */
-const _requestIdleCallback =
-    typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
-const _cancelIdleCallback =
-    typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
 
 /**
  * Creates runtime data structures for defer blocks.
@@ -166,11 +158,7 @@ export function ɵɵdeferOnIdle() {
   const tNode = getCurrentTNode()!;
 
   renderPlaceholder(lView, tNode);
-
-  // Note: we pass an `lView` as a second argument to cancel an `idle`
-  // callback in case an LView got destroyed before an `idle` callback
-  // is invoked.
-  onIdle(() => triggerDeferBlock(lView, tNode), lView);
+  onIdle(() => triggerDeferBlock(lView, tNode), lView, true /* withLViewCleanup */);
 }
 
 /**
@@ -195,7 +183,8 @@ export function ɵɵdeferPrefetchOnIdle() {
       // an underlying LView get destroyed (thus passing `null` as a second argument),
       // because there might be other LViews (that represent embedded views) that
       // depend on resource loading.
-      const cleanupFn = onIdle(() => triggerPrefetching(tDetails, lView), null /* LView */);
+      const prefetch = () => triggerPrefetching(tDetails, lView);
+      const cleanupFn = onIdle(prefetch, lView, false /* withLViewCleanup */);
       registerTDetailsCleanup(injector, tDetails, key, cleanupFn);
     }
   }
@@ -473,32 +462,33 @@ function registerDomTrigger(
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
  *
  * @param callback A function to be invoked when a browser becomes idle.
- * @param lView An optional LView that hosts an instance of a defer block. LView is
- *    used to register a cleanup callback in case that LView got destroyed before
- *    callback was invoked. In this case, an `idle` callback is never invoked. This is
- *    helpful for cases when a defer block has scheduled rendering, but an underlying
- *    LView got destroyed prior to th block rendering.
+ * @param lView LView that hosts an instance of a defer block.
+ * @param withLViewCleanup A flag that indicates whether a scheduled callback
+ *           should be cancelled in case an LView is destroyed before a callback
+ *           was invoked.
  */
-function onIdle(callback: VoidFunction, lView: LView|null): VoidFunction {
-  let id: number;
-  const removeIdleCallback = () => _cancelIdleCallback(id);
-  id = _requestIdleCallback(() => {
-         removeIdleCallback();
-         if (lView !== null) {
-           // The idle callback is invoked, we no longer need
-           // to retain a cleanup callback in an LView.
-           removeLViewOnDestroy(lView, removeIdleCallback);
-         }
-         callback();
-       }) as number;
+function onIdle(callback: VoidFunction, lView: LView, withLViewCleanup: boolean) {
+  const injector = lView[INJECTOR]!;
+  const scheduler = injector.get(OnIdleScheduler);
+  const cleanupFn = () => scheduler.remove(callback);
+  const wrappedCallback =
+      withLViewCleanup ? wrapWithLViewCleanup(callback, lView, cleanupFn) : callback;
+  scheduler.add(wrappedCallback);
+  return cleanupFn;
+}
 
-  if (lView !== null) {
-    // Store a cleanup function on LView, so that we cancel idle
-    // callback in case this LView is destroyed before a callback
-    // is invoked.
-    storeLViewOnDestroy(lView, removeIdleCallback);
-  }
-  return removeIdleCallback;
+/**
+ * Wraps a given callback into a logic that registers a cleanup function
+ * in the LView cleanup slot, to be invoked when an LView is destroyed.
+ */
+function wrapWithLViewCleanup(
+    callback: VoidFunction, lView: LView, cleanup: VoidFunction): VoidFunction {
+  const wrappedCallback = () => {
+    callback();
+    removeLViewOnDestroy(lView, cleanup);
+  };
+  storeLViewOnDestroy(lView, cleanup);
+  return wrappedCallback;
 }
 
 /**
@@ -969,5 +959,97 @@ class DeferBlockCleanupManager {
     token: DeferBlockCleanupManager,
     providedIn: 'root',
     factory: () => new DeferBlockCleanupManager(),
+  });
+}
+
+/**
+ * Use shims for the `requestIdleCallback` and `cancelIdleCallback` functions for
+ * environments where those functions are not available (e.g. Node.js and Safari).
+ *
+ * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
+ * overridden/mocked in test environment and picked up by the runtime code.
+ */
+const _requestIdleCallback = () =>
+    typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
+const _cancelIdleCallback = () =>
+    typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
+
+/**
+ * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
+ * to avoid calling `requestIdleCallback` for each defer block (e.g. if
+ * defer blocks are defined inside a for loop).
+ */
+class OnIdleScheduler {
+  // Indicates whether current callbacks are being invoked.
+  executingCallbacks = false;
+
+  // Currently scheduled idle callback id.
+  idleId: number|null = null;
+
+  // Set of callbacks to be invoked next.
+  current = new Set<VoidFunction>();
+
+  // Set of callbacks collected while invoking current set of callbacks.
+  // Those callbacks are scheduled for the next idle period.
+  deferred = new Set<VoidFunction>();
+
+  requestIdleCallback = _requestIdleCallback().bind(globalThis);
+  cancelIdleCallback = _cancelIdleCallback().bind(globalThis);
+
+  add(callback: VoidFunction) {
+    const target = this.executingCallbacks ? this.deferred : this.current;
+    target.add(callback);
+    if (this.idleId === null) {
+      this.scheduleIdleCallback();
+    }
+  }
+
+  remove(callback: VoidFunction) {
+    this.current.delete(callback);
+    this.deferred.delete(callback);
+  }
+
+  private scheduleIdleCallback() {
+    const callback = () => {
+      this.cancelIdleCallback(this.idleId!);
+      this.idleId = null;
+
+      this.executingCallbacks = true;
+
+      for (const callback of this.current) {
+        callback();
+      }
+      this.current.clear();
+
+      this.executingCallbacks = false;
+
+      // If there are any callbacks added during an invocation
+      // of the current ones - make them "current" and schedule
+      // a new idle callback.
+      if (this.deferred.size > 0) {
+        for (const callback of this.deferred) {
+          this.current.add(callback);
+        }
+        this.deferred.clear();
+        this.scheduleIdleCallback();
+      }
+    };
+    this.idleId = this.requestIdleCallback(callback) as number;
+  }
+
+  ngOnDestroy() {
+    if (this.idleId !== null) {
+      this.cancelIdleCallback(this.idleId);
+      this.idleId = null;
+    }
+    this.current.clear();
+    this.deferred.clear();
+  }
+
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: OnIdleScheduler,
+    providedIn: 'root',
+    factory: () => new OnIdleScheduler(),
   });
 }
