@@ -14,19 +14,13 @@ const EXTRACT_GENERATED_TRANSLATIONS_REGEXP =
  */
 export function verifyPlaceholdersIntegrity(output: string): boolean {
   const translations = extractTranslations(output);
-
-  // TODO: this check is currently broken. The return value of the `forEach` below isn't taken
-  // into account at all, because returning in a `forEach` won't propagate out.
-  translations.forEach(([msg, args]) => {
+  for (const [msg, args] of translations) {
     const bodyPhs = extractPlaceholdersFromMsg(msg);
     const argsPhs = extractPlaceholdersFromArgs(args);
     if (bodyPhs.size !== argsPhs.size || diff(bodyPhs, argsPhs).size) {
       return false;
     }
-
-    return true;
-  });
-
+  }
   return true;
 }
 
@@ -76,14 +70,14 @@ function extractPlaceholdersFromMsg(msg: string): Set<string> {
  * @param args The body of an object literal containing placeholder info.
  */
 function extractPlaceholdersFromArgs(args: string): Set<string> {
-  const regex = /\s+"(.+?)":\s*".*?"/g;
+  const regex = /\s+"(.+?)":\s/g;
   return extract(args, regex, ([, placeholders]) => placeholders);
 }
 
 function extract<T>(
     from: string, regex: RegExp, transformFn: (match: string[], state: Set<T>) => T): Set<T> {
   const result = new Set<T>();
-  let item;
+  let item: RegExpExecArray|null;
   while ((item = regex.exec(from)) !== null) {
     result.add(transformFn(item, result));
   }
