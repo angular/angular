@@ -214,9 +214,9 @@ export class HostBindingCompilationJob extends CompilationJob {
 
   override kind = CompilationJobKind.Host;
 
-  readonly fnSuffix: string = 'HostBindings';
+  override readonly fnSuffix: string = 'HostBindings';
 
-  readonly root: HostBindingCompilationUnit;
+  override readonly root: HostBindingCompilationUnit;
 
   override get units(): Iterable<HostBindingCompilationUnit> {
     return [this.root];
