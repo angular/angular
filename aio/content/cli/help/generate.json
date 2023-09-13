@@ -50,33 +50,9 @@
       "shortDescription": "Generates an application shell for running a server-side version of an app.",
       "options": [
         {
-          "name": "main",
-          "type": "string",
-          "default": "main.server.ts",
-          "description": "The name of the main entry-point file."
-        },
-        {
           "name": "project",
           "type": "string",
           "description": "The name of the related client app."
-        },
-        {
-          "name": "root-module-class-name",
-          "type": "string",
-          "default": "AppServerModule",
-          "description": "The name of the root module class."
-        },
-        {
-          "name": "root-module-file-name",
-          "type": "string",
-          "default": "app.module.server.ts",
-          "description": "The name of the root module file"
-        },
-        {
-          "name": "route",
-          "type": "string",
-          "default": "shell",
-          "description": "Route path used to produce the application shell."
         }
       ],
       "aliases": [],
