@@ -13,7 +13,7 @@ import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
 import {DestroyRef} from '../../linker/destroy_ref';
-import {isInNotificationPhase, watch, Watch, WatchCleanupFn, WatchCleanupRegisterFn} from '../../signals';
+import {watch, Watch, WatchCleanupRegisterFn} from '../../signals';
 
 
 /**
@@ -168,7 +168,6 @@ export class ZoneAwareMicrotaskScheduler implements EffectScheduler {
  * available/requested.
  */
 class EffectHandle implements EffectRef, SchedulableEffect {
-  private alive = true;
   unregisterOnDestroy: (() => void)|undefined;
   protected watcher: Watch;
 
@@ -183,14 +182,6 @@ class EffectHandle implements EffectRef, SchedulableEffect {
   }
 
   private runEffect(onCleanup: WatchCleanupRegisterFn): void {
-    if (!this.alive) {
-      // Running a destroyed effect is a no-op.
-      return;
-    }
-    if (ngDevMode && isInNotificationPhase()) {
-      throw new Error(`Schedulers cannot synchronously execute effects while scheduling.`);
-    }
-
     try {
       this.effectFn(onCleanup);
     } catch (err) {
@@ -203,10 +194,6 @@ class EffectHandle implements EffectRef, SchedulableEffect {
   }
 
   private schedule(): void {
-    if (!this.alive) {
-      return;
-    }
-
     this.scheduler.scheduleEffect(this);
   }
 
@@ -215,9 +202,7 @@ class EffectHandle implements EffectRef, SchedulableEffect {
   }
 
   destroy(): void {
-    this.alive = false;
-
-    this.watcher.cleanup();
+    this.watcher.destroy();
     this.unregisterOnDestroy?.();
 
     // Note: if the effect is currently scheduled, it's not un-scheduled, and so the scheduler will
