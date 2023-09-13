@@ -297,12 +297,9 @@ export function consumerAfterComputation(
   }
 
   // Truncate the producer tracking arrays.
-  // Note: `nrOfProducers` has to be captured before entering the loop, as the number of producers
-  // decreases in each iteration.
   // Perf note: this is essentially truncating the length to `node.nextProducerIndex`, but
   // benchmarking has shown that individual pop operations are faster.
-  const nrOfProducers = node.producerNode.length;
-  for (let i = node.nextProducerIndex; i < nrOfProducers; i++) {
+  while (node.producerNode.length > node.nextProducerIndex) {
     node.producerNode.pop();
     node.producerLastReadVersion.pop();
     node.producerIndexOfThis.pop();
@@ -389,7 +386,8 @@ function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): voi
   assertConsumerNode(node);
 
   if (typeof ngDevMode !== 'undefined' && ngDevMode && idx >= node.liveConsumerNode.length) {
-    throw new Error('Consumer out of bounds');
+    throw new Error(`Assertion error: active consumer index ${idx} is out of bounds of ${
+        node.liveConsumerNode.length} consumers)`);
   }
 
   if (node.liveConsumerNode.length === 1) {
