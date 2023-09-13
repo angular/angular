@@ -71,24 +71,6 @@
     "./plugins/*": {
       "require": "./bundles/*.umd.js",
       "default": "./fesm2015/*.js"
-    },
-    "./fesm2015/*.js": {
-      "default": "./fesm2015/*.js"
-    },
-    "./fesm2015/*": {
-      "default": "./fesm2015/*.js"
-    },
-    "./bundles/*.js": {
-      "default": "./bundles/*.js"
-    },
-    "./bundles/*": {
-      "default": "./bundles/*.js"
-    },
-    "./dist/*.min": {
-      "default": "./bundles/*.umd.min.js"
-    },
-    "./dist/*": {
-      "default": "./bundles/*.umd.js"
     }
   }
 }
