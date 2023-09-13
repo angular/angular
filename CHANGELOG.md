@@ -1,3 +1,16 @@
+<a name="17.0.0-next.4"></a>
+# 17.0.0-next.4 (2023-09-13)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59387ee476](https://github.com/angular/angular/commit/59387ee476dff1a893a01fe5cbee3c95b93c0cdb) | feat | support styles and styleUrl as strings ([#51715](https://github.com/angular/angular/pull/51715)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73e4bf2ed2](https://github.com/angular/angular/commit/73e4bf2ed2471faf44a49b591e19a390d5867449) | feat | Add feature to support the View Transitions API ([#51314](https://github.com/angular/angular/pull/51314)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.5"></a>
 # 16.2.5 (2023-09-13)
 
