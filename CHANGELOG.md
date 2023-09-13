@@ -1,3 +1,8 @@
+<a name="16.2.5"></a>
+# 16.2.5 (2023-09-13)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.3"></a>
 # 17.0.0-next.3 (2023-09-06)
 ## Breaking Changes
