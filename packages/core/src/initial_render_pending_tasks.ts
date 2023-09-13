@@ -36,7 +36,9 @@ export class InitialRenderPendingTasks implements OnDestroy {
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
     if (this.pendingTasks.size === 0) {
-      this.hasPendingTasks.next(false);
+      queueMicrotask(() => {
+        this.hasPendingTasks.next(false);
+      });
     }
   }
 
