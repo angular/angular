@@ -44,11 +44,12 @@ export function recognize(
       .recognize();
 }
 
-let currentRedirectCount = 0;
-const MAX_ALLOWED_REDIRECTS = 100;
+const MAX_ALLOWED_REDIRECTS = 31;
 
 export class Recognizer {
   private applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  private absoluteRedirectCount = 0;
+  allowRedirects = true;
 
   constructor(
       private injector: EnvironmentInjector, private configLoader: RouterConfigLoader,
@@ -64,7 +65,6 @@ export class Recognizer {
   }
 
   recognize(): Observable<{state: RouterStateSnapshot, tree: UrlTree}> {
-    ngDevMode && (currentRedirectCount = 0);
     const rootSegmentGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
 
     return this.match(rootSegmentGroup).pipe(map(children => {
@@ -90,14 +90,6 @@ export class Recognizer {
 
 
   private match(rootSegmentGroup: UrlSegmentGroup): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
-    if (ngDevMode) {
-      currentRedirectCount++;
-      if (currentRedirectCount > MAX_ALLOWED_REDIRECTS) {
-        throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_REDIRECT,
-            `Detected possible infinite redirect when navigating to ${this.urlTree}`);
-      }
-    }
     const expanded$ =
         this.processSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     return expanded$.pipe(catchError((e: any) => {
@@ -225,7 +217,7 @@ export class Recognizer {
       return this.matchSegmentAgainstRoute(injector, rawSegment, route, segments, outlet);
     }
 
-    if (allowRedirects) {
+    if (this.allowRedirects && allowRedirects) {
       return this.expandSegmentAgainstRouteUsingRedirect(
           injector, rawSegment, routes, route, segments, outlet);
     }
@@ -246,6 +238,22 @@ export class Recognizer {
                               match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
+    // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
+    // size exceeded in production
+    if (route.redirectTo!.startsWith('/')) {
+      this.absoluteRedirectCount++;
+      if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
+        if (ngDevMode) {
+          throw new RuntimeError(
+              RuntimeErrorCode.INFINITE_REDIRECT,
+              `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${
+                  route.redirectTo}'.\n` +
+                  `This is currently a dev mode only error but will become a` +
+                  ` call stack size exceeded error in production in a future major version.`);
+        }
+        this.allowRedirects = false;
+      }
+    }
     const newTree = this.applyRedirects.applyRedirectCommands(
         consumedSegments, route.redirectTo!, positionalParamSegments);
 
