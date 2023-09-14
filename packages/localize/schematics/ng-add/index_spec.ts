@@ -45,6 +45,13 @@ describe('ng-add schematic', () => {
         'demo': {
           root: '',
           architect: {
+            application: {
+              builder: '@angular-devkit/build-angular:application',
+              options: {
+                browser: './main.ts',
+                tsConfig: './tsconfig.application.json',
+              },
+            },
             build: {
               builder: '@angular-devkit/build-angular:browser',
               options: {
@@ -126,6 +133,22 @@ describe('ng-add schematic', () => {
        expect(types).toHaveSize(2);
      });
 
+  it(`should add '@angular/localize' in 'types' tsconfigs referenced in application builder`,
+     async () => {
+       const tsConfig = JSON.stringify({
+         compilerOptions: {
+           types: ['node'],
+         },
+       });
+
+       host.create('tsconfig.application.json', tsConfig);
+
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+       const {compilerOptions} = host.readJson('tsconfig.application.json') as TsConfig;
+       const types = compilerOptions?.types;
+       expect(types).toContain('@angular/localize');
+       expect(types).toHaveSize(2);
+     });
 
   it(`should add '@angular/localize' in 'types' tsconfigs referenced in karma builder`,
      async () => {
