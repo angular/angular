@@ -100,5 +100,11 @@
         border-right: 1px solid constants.$white;
       }
     }
+
+    .text-version-informative {
+      @media screen and (max-width: 480px) {
+        display: none;
+      }
+    }
   }
 }

@@ -29,6 +29,9 @@
       </a>
       <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes.TopBar"></aio-top-menu>
       <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event, true)"></aio-search-box>
+      <p class="text-version-informative">
+        v{{versionInfo?.major}}
+      </p>
       <aio-theme-toggle #themeToggle></aio-theme-toggle>
       <div #externalIcons class="toolbar-external-icons-container">
         <a mat-icon-button href="https://twitter.com/angular" title="Twitter" aria-label="Angular on Twitter">
