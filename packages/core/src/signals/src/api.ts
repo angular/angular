@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReactiveNode} from './graph';
-
 /**
  * Symbol used to tell `Signal`s apart from other functions.
  *
  * This can be used to auto-unwrap signals in various cases, or to auto-wrap non-signal values.
  */
-export const SIGNAL = Symbol('SIGNAL');
+export const SIGNAL = /* @__PURE__ */ Symbol('SIGNAL');
 
 /**
  * A reactive value which notifies consumers of any changes.
