@@ -57,7 +57,7 @@ describe('CodeTabsComponent', () => {
   });
 
   it('should create the right number of tabs with the right labels and classes', () => {
-    const matTabs = fixture.nativeElement.querySelectorAll('.mat-tab-label');
+    const matTabs = fixture.nativeElement.querySelectorAll('.mdc-tab__text-label');
     expect(matTabs.length).toBe(2);
 
     expect(matTabs[0].textContent.trim()).toBe('header-A');

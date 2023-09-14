@@ -2,7 +2,7 @@ import { browser, by } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('cookies popup', () => {
-  const getButton = (idx: number) => page.cookiesPopup.all(by.css('.actions .mat-button')).get(idx);
+  const getButton = (idx: number) => page.cookiesPopup.all(by.css('.actions [mat-button]')).get(idx);
   let page: SitePage;
 
   beforeEach(async () => {

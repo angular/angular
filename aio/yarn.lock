@@ -439,10 +439,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@^16.2.4":
-  version "16.2.4"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-16.2.4.tgz#8325c79799910190c02c5874cac9061246728604"
-  integrity sha512-TIZ/0MKObn5YU9n/VReghJJKqgkqyzrWVNEJ8UgOP6MV5o+kAbqLSmlDJEyjLIwJF0vPnJ3UP6qbEOfEi1OLaA==
+"@angular/material@17.0.0-next.3":
+  version "17.0.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-17.0.0-next.3.tgz#9c872bf85b9b3ed7b67242fd809dff9b545ea8b9"
+  integrity sha512-V7IB9lXM/Gd1NkmsBuIb+YiOvQShVmH3cUQpcOjkG4zt1Mfcwyg2y+eRGqmdh2nWr4zUZ06WQxoNkqouzNJZcA==
   dependencies:
     "@material/animation" "15.0.0-canary.bc9ae6c9c.0"
     "@material/auto-init" "15.0.0-canary.bc9ae6c9c.0"
