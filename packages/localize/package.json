@@ -34,7 +34,7 @@
     "./fesm2022/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.22.5",
+    "@babel/core": "7.22.19",
     "fast-glob": "3.3.1",
     "yargs": "^17.2.1"
   },
