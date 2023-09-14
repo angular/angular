@@ -87,6 +87,14 @@ To create a new Angular app, perform these steps in a command-line tool on your 
 
         </code-example>
 
+        Or If you are using PowerShell, run this.
+
+        <code-example format="shell" language="shell">
+
+        npm init "@angular" myApp
+
+        </code-example>
+
         When prompted to make a choice, press **Enter** to accept the default option.
         This creates a new Angular app in the `myApp` directory.
 
