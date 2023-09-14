@@ -38,7 +38,7 @@ jobs:
 
       - uses: ./.github/actions/yarn-install
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@f245bb8cf1942e3fb147febae2dc31dcb84fd5fa
         with:
           bazelrc: ./.bazelrc.user
 
