@@ -53,21 +53,21 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
  * A dedicated symbol used before a computed value has been calculated for the first time.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const UNSET: any = Symbol('UNSET');
+const UNSET: any = /* @__PURE__ */ Symbol('UNSET');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * is in progress. Used to detect cycles in computation chains.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const COMPUTING: any = Symbol('COMPUTING');
+const COMPUTING: any = /* @__PURE__ */ Symbol('COMPUTING');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * failed. The thrown error is cached until the computation gets dirty again.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const ERRORED: any = Symbol('ERRORED');
+const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
 
 /**
  * A computation, which derives a value from a declarative reactive expression.

@@ -22,7 +22,7 @@ export const PRIMARY_OUTLET = 'primary';
  * static string or `Route.resolve` if anything else. This allows us to reuse the existing route
  * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
  */
-export const RouteTitleKey = Symbol('RouteTitle');
+export const RouteTitleKey = /* @__PURE__ */ Symbol('RouteTitle');
 
 /**
  * A collection of matrix and query URL parameters.
