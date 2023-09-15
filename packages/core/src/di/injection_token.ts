@@ -72,17 +72,12 @@ export class InjectionToken<T> {
    *                it should but does not need to be unique
    * @param options Options for the token's usage, as described above
    */
-  constructor(protected _desc: string, options?: {
-    providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T
-  }) {
+  constructor(
+      protected _desc: string,
+      options?: {providedIn?: Type<any>|'root'|'platform'|'any'|null; factory: () => T;},
+  ) {
     this.ɵprov = undefined;
-    if (typeof options == 'number') {
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          assertLessThan(options, 0, 'Only negative numbers are supported here');
-      // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
-      // See `InjectorMarkers`
-      (this as any).__NG_ELEMENT_ID__ = options;
-    } else if (options !== undefined) {
+    if (options !== undefined) {
       this.ɵprov = ɵɵdefineInjectable({
         token: this,
         providedIn: options.providedIn || 'root',
@@ -91,18 +86,7 @@ export class InjectionToken<T> {
     }
   }
 
-  /**
-   * @internal
-   */
-  get multi(): InjectionToken<Array<T>> {
-    return this as InjectionToken<Array<T>>;
-  }
-
   toString(): string {
     return `InjectionToken ${this._desc}`;
   }
-}
-
-export interface InjectableDefToken<T> extends InjectionToken<T> {
-  ɵprov: unknown;
 }
