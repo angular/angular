@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
+import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
 import {assertGreaterThan} from '../util/assert';
 import {NgZone} from '../zone';
 
