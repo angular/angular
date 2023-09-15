@@ -36,8 +36,9 @@
       "preserveWhitespaces": true,
       // #enddocregion angular-compiler-options-app
       "sourceMap": true,
-      "declaration": false
+      "declaration": false,
       // #docregion angular-compiler-options-app
+      "disableTypeScriptVersionCheck": true
     }
   }
   // #enddocregion angular-compiler-options-app
