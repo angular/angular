@@ -6228,10 +6228,10 @@ css-select@^5.1.0:
     domutils "^3.0.1"
     nth-check "^2.0.1"
 
-css-selector-parser@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/css-selector-parser/-/css-selector-parser-1.4.1.tgz#03f9cb8a81c3e5ab2c51684557d5aaf6d2569759"
-  integrity sha512-HYPSb7y/Z7BNDCOrakL4raGO2zltZkbeXyAd6Tg9obzix6QhzxCotdBl6VT0Dv4vZfJGVz3WL/xaEI9Ly3ul0g==
+css-selector-parser@^2.0.0:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/css-selector-parser/-/css-selector-parser-2.3.2.tgz#99215b06573073f202521422bdb4f881338a33b2"
+  integrity sha512-JjnG6/pdLJh3iqipq7kteNVtbIczsU2A1cNxb+VAiniSuNmrB/NI3us4rSCfArvlwRXYly+jZhUUfEoInSH9Qg==
 
 css-what@^6.1.0:
   version "6.1.0"
