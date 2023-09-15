@@ -21,7 +21,7 @@ import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
 import {computed} from '../reactivity/computed';
 import {InputSignalNode} from '../reactivity/input_signal';
-import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {getCurrentTNode, getLView, getTView, nextBindingIndex} from '../state';
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByTNode} from '../util/view_utils';
 
@@ -96,7 +96,7 @@ export function ɵɵpropertyCreate<T>(
       // Some binding targets were zone-based, so we need an update instruction to process them.
       (tView.virtualUpdate ??= []).push({
         slot: expressionSlot,
-        instruction: () => propertyUpdateInput(propName, expressionSlot, zoneTargets!),
+        instruction: () => propertyUpdateInput(tNode.index, propName, expressionSlot, zoneTargets!),
       });
     } else {
       // The only target(s) were signal-based, so no update path is needed.
@@ -138,13 +138,14 @@ export function propertyUpdateDom(
 }
 
 export function propertyUpdateInput(
-    propName: string, expressionSlot: number, targets: PropertyAliasValue): void {
+    nodeIndex: number, propName: string, expressionSlot: number,
+    targets: PropertyAliasValue): void {
   const lView = getLView();
   const expr = lView[expressionSlot];
   const value = expr();
 
-  const tNode = getSelectedTNode();
   const tView = getTView();
+  const tNode = tView.data[nodeIndex] as TNode;
 
   ngDevMode && assertDefined(tNode.inputs, `Expected tNode to have inputs`);
 

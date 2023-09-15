@@ -322,7 +322,33 @@ describe('Signal component inputs', () => {
   });
 
   describe('to zone-based targets', () => {
-    it('works', () => {});
+    it('should work if there are preceding elements and no `advance` call', () => {
+      @Directive({
+        selector: '[dirZone]',
+        standalone: true,
+        signals: false,
+      })
+      class DirZone {
+        @Input() works = false;
+      }
+
+      @Component({
+        signals: true,
+        template: `
+          <div></div>
+          <div dirZone [works]="true"></div>`,
+        imports: [DirZone],
+        standalone: true,
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const dirZoneInstance = fixture.debugElement.children[1].injector.get(DirZone);
+      expect(dirZoneInstance.works).toBe(true);
+    });
   });
 
   describe('to a mix of zone-based and signal-based targets', () => {
