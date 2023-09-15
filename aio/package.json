@@ -127,7 +127,7 @@
     "ignore": "^5.1.8",
     "image-size": "^1.0.0",
     "jasmine": "~4.6.0",
-    "jasmine-core": "~4.6.0",
+    "jasmine-core": "~5.1.0",
     "jasmine-spec-reporter": "~7.0.0",
     "jsdom": "^22.0.0",
     "json-schema-traverse": "^1.0.0",
