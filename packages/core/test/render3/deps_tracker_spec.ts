@@ -76,45 +76,46 @@ describe('runtime dependency tracker', () => {
         });
       });
 
-      it('should include the exported scope of an exported module in the exported scope', () => {
-        @Directive({})
-        class Directive1 {
-        }
+      it('should include the exported scope of an exported module in the exported scope and compilation scope',
+         () => {
+           @Directive({})
+           class Directive1 {
+           }
 
-        @Pipe({name: 'pipe1'})
-        class Pipe1 {
-        }
+           @Pipe({name: 'pipe1'})
+           class Pipe1 {
+           }
 
-        @Component({})
-        class Component1 {
-        }
+           @Component({})
+           class Component1 {
+           }
 
-        @NgModule({
-          exports: [Directive1, Pipe1, Component1],
-        })
-        class SubModule {
-        }
+           @NgModule({
+             exports: [Directive1, Pipe1, Component1],
+           })
+           class SubModule {
+           }
 
-        @NgModule({
-          exports: [SubModule],
-        })
-        class MainModule {
-        }
+           @NgModule({
+             exports: [SubModule],
+           })
+           class MainModule {
+           }
 
-        const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
+           const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
-        expect(ans.exported).toEqual({
-          pipes: new Set([Pipe1]),
-          directives: new Set([Directive1, Component1]),
-        });
+           expect(ans.exported).toEqual({
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
+           });
 
-        expect(ans.compilation).toEqual({
-          pipes: new Set(),
-          directives: new Set(),
-        });
-      });
+           expect(ans.compilation).toEqual({
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
+           });
+         });
 
-      it('should combine the directly exported elements with the exported scope of exported module',
+      it('should combine the directly exported elements with the exported scope of exported module in both exported and compilation scopes',
          () => {
            @Directive({})
            class Directive1 {
@@ -139,7 +140,7 @@ describe('runtime dependency tracker', () => {
            }
 
            @NgModule({
-             exports: [SubModule, MainComponent, Directive1, Pipe1, Component1],
+             exports: [SubModule, MainComponent],
            })
            class MainModule {
            }
@@ -152,8 +153,8 @@ describe('runtime dependency tracker', () => {
            });
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
            });
          });
     });
@@ -620,7 +621,7 @@ describe('runtime dependency tracker', () => {
            });
          });
 
-      it('should include the exported scope of an exported forward ref module in the exported scope when compiling in JIT mode',
+      it('should include the exported scope of an exported forward ref module in the exported and compilation scope when compiling in JIT mode',
          () => {
            @NgModule({exports: [forwardRef(() => SubModule)]})
            class MainModule {
@@ -645,8 +646,8 @@ describe('runtime dependency tracker', () => {
            const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Component1, Directive1]),
            });
            expect(ans.exported).toEqual({
              pipes: new Set([Pipe1]),
@@ -654,7 +655,7 @@ describe('runtime dependency tracker', () => {
            });
          });
 
-      it('should include the exported scope of an exported forward ref module in the exported scope when compiling in AOT mode',
+      it('should include the exported scope of an exported forward ref module in the exported and compilation scopes when compiling in AOT mode',
          () => {
            class MainModule {}
            (MainModule as NgModuleType).ɵmod = createNgModuleDef({exports: () => ([SubModule])});
@@ -678,8 +679,8 @@ describe('runtime dependency tracker', () => {
            const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Component1, Directive1]),
            });
            expect(ans.exported).toEqual({
              pipes: new Set([Pipe1]),
