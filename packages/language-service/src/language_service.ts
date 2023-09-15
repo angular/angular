@@ -610,6 +610,8 @@ function isInAngularContext(program: ts.Program, fileName: string, position: num
 
   const assignment = getPropertyAssignmentFromValue(node, 'template') ??
       getPropertyAssignmentFromValue(node, 'templateUrl') ??
+      // `node.parent` is used because the string is a child of an array element and we want to get
+      // the property name
       getPropertyAssignmentFromValue(node.parent, 'styleUrls') ??
       getPropertyAssignmentFromValue(node, 'styleUrl');
   return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
