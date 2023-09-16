@@ -44,16 +44,16 @@ export class NgtscTestEnvironment {
   /**
    * Set up a new testing environment.
    */
-  static setup(files?: Folder, workingDir: AbsoluteFsPath = absoluteFrom('/')):
-      NgtscTestEnvironment {
+  static setup(files: Folder = {}, workingDir?: AbsoluteFsPath): NgtscTestEnvironment {
     const fs = getFileSystem();
-    if (files !== undefined && fs instanceof MockFileSystem) {
+    if (fs instanceof MockFileSystem) {
       fs.init(files);
     }
 
     const host = new AugmentedCompilerHost(fs);
     setWrapHostForTest(makeWrapHost(host));
 
+    workingDir = workingDir ?? absoluteFrom('/');
     const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
     fs.chdir(workingDir);
 
