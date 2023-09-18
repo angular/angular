@@ -468,10 +468,7 @@ export class ComponentDecoratorHandler implements
           viewProviders: wrappedViewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
-          rawImports: (rawImports !== null && ts.isArrayLiteralExpression(rawImports) &&
-                       rawImports.elements.length > 0) ?
-              new WrappedNodeExpr(rawImports) :
-              undefined,
+          rawImports: rawImports !== null ? new WrappedNodeExpr(rawImports) : undefined,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata ?
