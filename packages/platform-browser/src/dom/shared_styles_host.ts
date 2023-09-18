@@ -17,7 +17,7 @@ export class SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
   private readonly styleRef = new Map < string /** Style string */, {
     elements: HTMLStyleElement[];
-    usage: number
+    usage: number;
   }
   > ();
   private readonly hostNodes = new Set<Node>();
@@ -28,7 +28,8 @@ export class SharedStylesHost implements OnDestroy {
       @Inject(DOCUMENT) private readonly doc: Document,
       @Inject(APP_ID) private readonly appId: string,
       @Inject(CSP_NONCE) @Optional() private nonce?: string|null,
-      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
+      @Inject(PLATFORM_ID) readonly platformId: object = {},
+  ) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.platformIsServer = isPlatformServer(platformId);
     this.resetHostNodes();
@@ -44,14 +45,18 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  removeStyles(styles: string[]): void {
+  disableStyles(styles: string[]): void {
     for (const style of styles) {
       const usageCount = this.changeUsageCount(style, -1);
 
-      if (usageCount <= 0) {
-        this.onStyleRemoved(style);
+      if (usageCount === 0) {
+        this.visitStyleElement(style, disableStylesheet);
       }
     }
+  }
+
+  visitStyleElement(style: string, callback: (node: HTMLStyleElement) => void): void {
+    this.styleRef.get(style)?.elements?.forEach(callback);
   }
 
   ngOnDestroy(): void {
@@ -62,7 +67,8 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     for (const style of this.getAllStyles()) {
-      this.onStyleRemoved(style);
+      this.visitStyleElement(style, (node) => node.remove());
+      this.styleRef.delete(style);
     }
 
     this.resetHostNodes();
@@ -90,12 +96,6 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  private onStyleRemoved(style: string): void {
-    const styleRef = this.styleRef;
-    styleRef.get(style)?.elements?.forEach((node) => node.remove());
-    styleRef.delete(style);
-  }
-
   private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
     const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
         `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`);
@@ -119,13 +119,14 @@ export class SharedStylesHost implements OnDestroy {
     const map = this.styleRef;
     if (map.has(style)) {
       const styleRefValue = map.get(style)!;
-      styleRefValue.usage += delta;
+      styleRefValue.usage = nonNegativeNumber(styleRefValue.usage + delta);
 
       return styleRefValue.usage;
     }
 
-    map.set(style, {usage: delta, elements: []});
-    return delta;
+    const usage = nonNegativeNumber(delta);
+    map.set(style, {usage, elements: []});
+    return usage;
   }
 
   private getStyleElement(host: Node, style: string): HTMLStyleElement {
@@ -166,9 +167,15 @@ export class SharedStylesHost implements OnDestroy {
     host.appendChild(styleEl);
 
     const styleRef = this.styleRef;
-    const styleElRef = styleRef.get(style)?.elements;
-    if (styleElRef) {
-      styleElRef.push(styleEl);
+    const styleResult = styleRef.get(style);
+    if (styleResult) {
+      if (styleResult.usage === 0) {
+        disableStylesheet(styleEl);
+      } else {
+        enableStylesheet(styleEl);
+      }
+
+      styleResult.elements.push(styleEl);
     } else {
       styleRef.set(style, {elements: [styleEl], usage: 1});
     }
@@ -180,4 +187,28 @@ export class SharedStylesHost implements OnDestroy {
     // Re-add the head element back since this is the default host.
     hostNodes.add(this.doc.head);
   }
+}
+
+/**
+ * When a component that has styles is destroyed, we disable stylesheets
+ * instead of removing them to avoid performance issues related to style
+ * recalculation in a browser.
+ */
+function disableStylesheet(node: HTMLStyleElement): void {
+  node.disabled = true;
+}
+
+/**
+ * Enables a stylesheet in a browser, see the `disableStylesheet` function
+ * docs for additional info.
+ */
+function enableStylesheet(node: HTMLStyleElement): void {
+  node.disabled = false;
+}
+
+/**
+ * When the value is a negative a value of `0` is returned.
+ */
+function nonNegativeNumber(value: number): number {
+  return value < 0 ? 0 : value;
 }
