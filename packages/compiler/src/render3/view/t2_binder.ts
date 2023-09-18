@@ -10,7 +10,7 @@ import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, Recursi
 import {SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, Icu, IfBlock, IfBlockBranch, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
-import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
+import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
 import {getAttrsForDirectiveMatching} from './util';
 
@@ -37,9 +37,8 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     // scopes in the template and makes them available for later use.
     const scope = Scope.apply(target.template);
 
-
     // Use the `Scope` to extract the entities present at every level of the template.
-    const templateEntities = extractTemplateEntities(scope);
+    const scopedNodeEntities = extractScopedNodeEntities(scope);
 
     // Next, perform directive matching on the template using the `DirectiveBinder`. This returns:
     //   - directives: Map of nodes (elements & ng-templates) to the directives on them.
@@ -54,7 +53,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         TemplateBinder.applyWithScope(target.template, scope);
     return new R3BoundTarget(
         target, directives, eagerDirectives, bindings, references, expressions, symbols,
-        nestingLevel, templateEntities, usedPipes, eagerPipes, deferBlocks);
+        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks);
   }
 }
 
@@ -72,11 +71,17 @@ class Scope implements Visitor {
   readonly namedEntities = new Map<string, Reference|Variable>();
 
   /**
-   * Child `Scope`s for immediately nested `Template`s.
+   * Child `Scope`s for immediately nested `ScopedNode`s.
    */
-  readonly childScopes = new Map<Template, Scope>();
+  readonly childScopes = new Map<ScopedNode, Scope>();
 
-  private constructor(readonly parentScope: Scope|null, readonly template: Template|null) {}
+  /** Whether this scope is deferred or if any of its ancestors are deferred. */
+  readonly isDeferred: boolean;
+
+  private constructor(readonly parentScope: Scope|null, readonly rootNode: ScopedNode|null) {
+    this.isDeferred =
+        parentScope !== null && parentScope.isDeferred ? true : rootNode instanceof DeferredBlock;
+  }
 
   static newRootScope(): Scope {
     return new Scope(null, null);
@@ -93,18 +98,34 @@ class Scope implements Visitor {
   }
 
   /**
-   * Internal method to process the template and populate the `Scope`.
+   * Internal method to process the scoped node and populate the `Scope`.
    */
-  private ingest(template: Template|Node[]): void {
-    if (template instanceof Template) {
+  private ingest(nodeOrNodes: ScopedNode|Node[]): void {
+    if (nodeOrNodes instanceof Template) {
       // Variables on an <ng-template> are defined in the inner scope.
-      template.variables.forEach(node => this.visitVariable(node));
+      nodeOrNodes.variables.forEach(node => this.visitVariable(node));
 
       // Process the nodes of the template.
-      template.children.forEach(node => node.visit(this));
+      nodeOrNodes.children.forEach(node => node.visit(this));
+    } else if (nodeOrNodes instanceof IfBlockBranch) {
+      // TODO(crisbeto): uncomment this when rebasing #51690.
+      // if (nodeOrNodes.expressionAlias !== null) {
+      //   this.visitVariable(nodeOrNodes.expressionAlias);
+      // }
+      nodeOrNodes.children.forEach(node => node.visit(this));
+    } else if (nodeOrNodes instanceof ForLoopBlock) {
+      // TODO(crisbeto): uncomment this when rebasing #51690.
+      // this.visitVariable(nodeOrNodes.item);
+      // Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitVariable(v));
+      nodeOrNodes.children.forEach(node => node.visit(this));
+    } else if (
+        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof DeferredBlockPlaceholder ||
+        nodeOrNodes instanceof DeferredBlockLoading) {
+      nodeOrNodes.children.forEach(node => node.visit(this));
     } else {
       // No overarching `Template` instance, so process the nodes directly.
-      template.forEach(node => node.visit(this));
+      nodeOrNodes.forEach(node => node.visit(this));
     }
   }
 
@@ -122,9 +143,7 @@ class Scope implements Visitor {
     template.references.forEach(node => this.visitReference(node));
 
     // Next, create an inner scope and process the template within it.
-    const scope = new Scope(this, template);
-    scope.ingest(template);
-    this.childScopes.set(template, scope);
+    this.ingestScopedNode(template);
   }
 
   visitVariable(variable: Variable) {
@@ -138,22 +157,22 @@ class Scope implements Visitor {
   }
 
   visitDeferredBlock(deferred: DeferredBlock) {
-    deferred.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(deferred);
     deferred.placeholder?.visit(this);
     deferred.loading?.visit(this);
     deferred.error?.visit(this);
   }
 
   visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitDeferredBlockError(block: DeferredBlockError) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitSwitchBlock(block: SwitchBlock) {
@@ -165,7 +184,7 @@ class Scope implements Visitor {
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
     block.empty?.visit(this);
   }
 
@@ -178,7 +197,7 @@ class Scope implements Visitor {
   }
 
   visitIfBlockBranch(block: IfBlockBranch) {
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   // Unused visitors.
@@ -217,16 +236,22 @@ class Scope implements Visitor {
   }
 
   /**
-   * Get the child scope for a `Template`.
+   * Get the child scope for a `ScopedNode`.
    *
    * This should always be defined.
    */
-  getChildScope(template: Template): Scope {
-    const res = this.childScopes.get(template);
+  getChildScope(node: ScopedNode): Scope {
+    const res = this.childScopes.get(node);
     if (res === undefined) {
-      throw new Error(`Assertion error: child scope for ${template} not found`);
+      throw new Error(`Assertion error: child scope for ${node} not found`);
     }
     return res;
+  }
+
+  private ingestScopedNode(node: ScopedNode) {
+    const scope = new Scope(this, node);
+    scope.ingest(node);
+    this.childScopes.set(node, scope);
   }
 }
 
@@ -239,7 +264,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   // Indicates whether we are visiting elements within a {#defer} block
   private isInDeferBlock = false;
 
-  constructor(
+  private constructor(
       private matcher: SelectorMatcher<DirectiveT[]>,
       private directives: Map<Element|Template, DirectiveT[]>,
       private eagerDirectives: DirectiveT[],
@@ -393,6 +418,9 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
+    // TODO(crisbeto): uncomment this when rebasing #51690.
+    // block.item.visit(this);
+    // Object.values(block.contextVariables).forEach(v => v.visit(this));
     block.children.forEach(node => node.visit(this));
     block.empty?.visit(this);
   }
@@ -406,6 +434,8 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitIfBlockBranch(block: IfBlockBranch) {
+    // TODO(crisbeto): uncomment this when rebasing #51690.
+    // block.expressionAlias?.visit(this);
     block.children.forEach(node => node.visit(this));
   }
 
@@ -435,15 +465,12 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private visitNode: (node: Node) => void;
 
-  // Indicates whether we are visiting elements within a {#defer} block
-  private isInDeferBlock = false;
-
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
-      private symbols: Map<Reference|Variable, Template>, private usedPipes: Set<string>,
+      private symbols: Map<Reference|Variable, ScopedNode>, private usedPipes: Set<string>,
       private eagerPipes: Set<string>, private deferBlocks: Set<DeferredBlock>,
-      private nestingLevel: Map<Template, number>, private scope: Scope,
-      private template: Template|null, private level: number) {
+      private nestingLevel: Map<ScopedNode, number>, private scope: Scope,
+      private rootNode: ScopedNode|null, private level: number) {
     super();
 
     // Save a bit of processing time by constructing this closure in advance.
@@ -476,14 +503,14 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   static applyWithScope(nodes: Node[], scope: Scope): {
     expressions: Map<AST, Reference|Variable>,
     symbols: Map<Variable|Reference, Template>,
-    nestingLevel: Map<Template, number>,
+    nestingLevel: Map<ScopedNode, number>,
     usedPipes: Set<string>,
     eagerPipes: Set<string>,
     deferBlocks: Set<DeferredBlock>,
   } {
     const expressions = new Map<AST, Reference|Variable>();
     const symbols = new Map<Variable|Reference, Template>();
-    const nestingLevel = new Map<Template, number>();
+    const nestingLevel = new Map<ScopedNode, number>();
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
     const template = nodes instanceof Template ? nodes : null;
@@ -495,18 +522,38 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     return {expressions, symbols, nestingLevel, usedPipes, eagerPipes, deferBlocks};
   }
 
-  private ingest(template: Template|Node[]): void {
-    if (template instanceof Template) {
+  private ingest(nodeOrNodes: ScopedNode|Node[]): void {
+    if (nodeOrNodes instanceof Template) {
       // For <ng-template>s, process only variables and child nodes. Inputs, outputs, templateAttrs,
       // and references were all processed in the scope of the containing template.
-      template.variables.forEach(this.visitNode);
-      template.children.forEach(this.visitNode);
+      nodeOrNodes.variables.forEach(this.visitNode);
+      nodeOrNodes.children.forEach(this.visitNode);
 
       // Set the nesting level.
-      this.nestingLevel.set(template, this.level);
+      this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof IfBlockBranch) {
+      // TODO(crisbeto): uncomment this when rebasing #51690.
+      // if (nodeOrNodes.expressionAlias !== null) {
+      //   this.visitNode(nodeOrNodes.expressionAlias);
+      // }
+      nodeOrNodes.children.forEach(this.visitNode);
+      this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof ForLoopBlock) {
+      // TODO(crisbeto): uncomment this when rebasing #51690.
+      // this.visitNode(nodeOrNodes.item);
+      // Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitNode(v));
+      nodeOrNodes.trackBy.visit(this);
+      nodeOrNodes.children.forEach(this.visitNode);
+      this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (
+        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof DeferredBlockPlaceholder ||
+        nodeOrNodes instanceof DeferredBlockLoading) {
+      nodeOrNodes.children.forEach(node => node.visit(this));
+      this.nestingLevel.set(nodeOrNodes, this.level);
     } else {
       // Visit each node from the top-level template.
-      template.forEach(this.visitNode);
+      nodeOrNodes.forEach(this.visitNode);
     }
   }
 
@@ -515,6 +562,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     element.inputs.forEach(this.visitNode);
     element.outputs.forEach(this.visitNode);
     element.children.forEach(this.visitNode);
+    element.references.forEach(this.visitNode);
   }
 
   visitTemplate(template: Template) {
@@ -522,29 +570,23 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
     template.templateAttrs.forEach(this.visitNode);
-
-    // References are also evaluated in the outer context.
     template.references.forEach(this.visitNode);
 
-    // Next, recurse into the template using its scope, and bumping the nesting level up by one.
-    const childScope = this.scope.getChildScope(template);
-    const binder = new TemplateBinder(
-        this.bindings, this.symbols, this.usedPipes, this.eagerPipes, this.deferBlocks,
-        this.nestingLevel, childScope, template, this.level + 1);
-    binder.ingest(template);
+    // Next, recurse into the template.
+    this.ingestScopedNode(template);
   }
 
   visitVariable(variable: Variable) {
     // Register the `Variable` as a symbol in the current `Template`.
-    if (this.template !== null) {
-      this.symbols.set(variable, this.template);
+    if (this.rootNode !== null) {
+      this.symbols.set(variable, this.rootNode);
     }
   }
 
   visitReference(reference: Reference) {
     // Register the `Reference` as a symbol in the current `Template`.
-    if (this.template !== null) {
-      this.symbols.set(reference, this.template);
+    if (this.rootNode !== null) {
+      this.symbols.set(reference, this.rootNode);
     }
   }
 
@@ -570,11 +612,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitDeferredBlock(deferred: DeferredBlock) {
     this.deferBlocks.add(deferred);
-
-    const wasInDeferBlock = this.isInDeferBlock;
-    this.isInDeferBlock = true;
-    deferred.children.forEach(this.visitNode);
-    this.isInDeferBlock = wasInDeferBlock;
+    this.ingestScopedNode(deferred);
 
     deferred.placeholder && this.visitNode(deferred.placeholder);
     deferred.loading && this.visitNode(deferred.loading);
@@ -588,15 +626,15 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
   }
 
   visitDeferredBlockError(block: DeferredBlockError) {
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading) {
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
   }
 
   visitSwitchBlock(block: SwitchBlock) {
@@ -611,7 +649,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitForLoopBlock(block: ForLoopBlock) {
     block.expression.visit(this);
-    block.children.forEach(this.visitNode);
+    this.ingestScopedNode(block);
     block.empty?.visit(this);
   }
 
@@ -625,7 +663,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   visitIfBlockBranch(block: IfBlockBranch) {
     block.expression?.visit(this);
-    block.children.forEach(node => node.visit(this));
+    this.ingestScopedNode(block);
   }
 
   visitBoundText(text: BoundText) {
@@ -633,7 +671,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
   override visitPipe(ast: BindingPipe, context: any): any {
     this.usedPipes.add(ast.name);
-    if (!this.isInDeferBlock) {
+    if (!this.scope.isDeferred) {
       this.eagerPipes.add(ast.name);
     }
     return super.visitPipe(ast, context);
@@ -643,22 +681,29 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   // or references in the current scope.
 
   override visitPropertyRead(ast: PropertyRead, context: any): any {
-    this.maybeMap(context, ast, ast.name);
+    this.maybeMap(ast, ast.name);
     return super.visitPropertyRead(ast, context);
   }
 
   override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
-    this.maybeMap(context, ast, ast.name);
+    this.maybeMap(ast, ast.name);
     return super.visitSafePropertyRead(ast, context);
   }
 
   override visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    this.maybeMap(context, ast, ast.name);
+    this.maybeMap(ast, ast.name);
     return super.visitPropertyWrite(ast, context);
   }
 
-  private maybeMap(scope: Scope, ast: PropertyRead|SafePropertyRead|PropertyWrite, name: string):
-      void {
+  private ingestScopedNode(node: ScopedNode) {
+    const childScope = this.scope.getChildScope(node);
+    const binder = new TemplateBinder(
+        this.bindings, this.symbols, this.usedPipes, this.eagerPipes, this.deferBlocks,
+        this.nestingLevel, childScope, node, this.level + 1);
+    binder.ingest(node);
+  }
+
+  private maybeMap(ast: PropertyRead|SafePropertyRead|PropertyWrite, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
     if (!(ast.receiver instanceof ImplicitReceiver)) {
@@ -689,21 +734,20 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
               {directive: DirectiveT, node: Element|Template}|Element|Template>,
       private exprTargets: Map<AST, Reference|Variable>,
       private symbols: Map<Reference|Variable, Template>,
-      private nestingLevel: Map<Template, number>,
-      private templateEntities: Map<Template|null, ReadonlySet<Reference|Variable>>,
+      private nestingLevel: Map<ScopedNode, number>,
+      private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
       private usedPipes: Set<string>, private eagerPipes: Set<string>,
       private deferredBlocks: Set<DeferredBlock>) {}
 
-  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable> {
-    return this.templateEntities.get(template) ?? new Set();
+  getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
+    return this.scopedNodeEntities.get(node) ?? new Set();
   }
 
   getDirectivesOfNode(node: Element|Template): DirectiveT[]|null {
     return this.directives.get(node) || null;
   }
 
-  getReferenceTarget(ref: Reference): {directive: DirectiveT, node: Element|Template}|Element
-      |Template|null {
+  getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT>|null {
     return this.references.get(ref) || null;
   }
 
@@ -716,12 +760,12 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     return this.exprTargets.get(expr) || null;
   }
 
-  getTemplateOfSymbol(symbol: Reference|Variable): Template|null {
+  getDefinitionNodeOfSymbol(symbol: Reference|Variable): ScopedNode|null {
     return this.symbols.get(symbol) || null;
   }
 
-  getNestingLevel(template: Template): number {
-    return this.nestingLevel.get(template) || 0;
+  getNestingLevel(node: ScopedNode): number {
+    return this.nestingLevel.get(node) || 0;
   }
 
   getUsedDirectives(): DirectiveT[] {
@@ -748,25 +792,26 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 }
 
-function extractTemplateEntities(rootScope: Scope): Map<Template|null, Set<Reference|Variable>> {
-  const entityMap = new Map<Template|null, Map<string, Reference|Variable>>();
+function extractScopedNodeEntities(rootScope: Scope):
+    Map<ScopedNode|null, Set<Reference|Variable>> {
+  const entityMap = new Map<ScopedNode|null, Map<string, Reference|Variable>>();
 
   function extractScopeEntities(scope: Scope): Map<string, Reference|Variable> {
-    if (entityMap.has(scope.template)) {
-      return entityMap.get(scope.template)!;
+    if (entityMap.has(scope.rootNode)) {
+      return entityMap.get(scope.rootNode)!;
     }
 
     const currentEntities = scope.namedEntities;
 
-    let templateEntities: Map<string, Reference|Variable>;
+    let entities: Map<string, Reference|Variable>;
     if (scope.parentScope !== null) {
-      templateEntities = new Map([...extractScopeEntities(scope.parentScope), ...currentEntities]);
+      entities = new Map([...extractScopeEntities(scope.parentScope), ...currentEntities]);
     } else {
-      templateEntities = new Map(currentEntities);
+      entities = new Map(currentEntities);
     }
 
-    entityMap.set(scope.template, templateEntities);
-    return templateEntities;
+    entityMap.set(scope.rootNode, entities);
+    return entities;
   }
 
   const scopesToProcess: Scope[] = [rootScope];
@@ -778,7 +823,7 @@ function extractTemplateEntities(rootScope: Scope): Map<Template|null, Set<Refer
     extractScopeEntities(scope);
   }
 
-  const templateEntities = new Map<Template|null, Set<Reference|Variable>>();
+  const templateEntities = new Map<ScopedNode|null, Set<Reference|Variable>>();
   for (const [template, entities] of entityMap) {
     templateEntities.set(template, new Set(entities.values()));
   }
