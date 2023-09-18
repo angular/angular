@@ -7,8 +7,17 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, DeferredBlock, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
+import {BoundAttribute, BoundEvent, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, IfBlockBranch, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
 
+/** Node that has a `Scope` associated with it. */
+export type ScopedNode = Template|IfBlockBranch|ForLoopBlock|DeferredBlock|DeferredBlockError|
+    DeferredBlockLoading|DeferredBlockPlaceholder;
+
+/** Possible values that a reference can be resolved to. */
+export type ReferenceTarget<DirectiveT> = {
+  directive: DirectiveT,
+  node: Element|Template
+}|Element|Template;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -127,8 +136,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
    * a directive on a particular node.
    */
-  getReferenceTarget(ref: Reference): {directive: DirectiveT, node: Element|Template}|Element
-      |Template|null;
+  getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT>|null;
 
   /**
    * For a given binding, get the entity to which the binding is being made.
@@ -150,27 +158,26 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   getExpressionTarget(expr: AST): Reference|Variable|null;
 
   /**
-   * Given a particular `Reference` or `Variable`, get the `Template` which created it.
+   * Given a particular `Reference` or `Variable`, get the `ScopedNode` which created it.
    *
-   * All `Variable`s are defined on templates, so this will always return a value for a `Variable`
-   * from the `Target`. For `Reference`s this only returns a value if the `Reference` points to a
-   * `Template`. Returns `null` otherwise.
+   * All `Variable`s are defined on node, so this will always return a value for a `Variable`
+   * from the `Target`. Returns `null` otherwise.
    */
-  getTemplateOfSymbol(symbol: Reference|Variable): Template|null;
+  getDefinitionNodeOfSymbol(symbol: Reference|Variable): ScopedNode|null;
 
   /**
-   * Get the nesting level of a particular `Template`.
+   * Get the nesting level of a particular `ScopedNode`.
    *
-   * This starts at 1 for top-level `Template`s within the `Target` and increases for `Template`s
+   * This starts at 1 for top-level nodes within the `Target` and increases for nodes
    * nested at deeper levels.
    */
-  getNestingLevel(template: Template): number;
+  getNestingLevel(node: ScopedNode): number;
 
   /**
-   * Get all `Reference`s and `Variables` visible within the given `Template` (or at the top level,
-   * if `null` is passed).
+   * Get all `Reference`s and `Variables` visible within the given `ScopedNode` (or at the top
+   * level, if `null` is passed).
    */
-  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
+  getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable>;
 
   /**
    * Get a list of all the directives used by the target,
