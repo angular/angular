@@ -44,14 +44,20 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  removeStyles(styles: string[]): void {
+  disableStyles(styles: string[]): void {
     for (const style of styles) {
       const usageCount = this.changeUsageCount(style, -1);
 
       if (usageCount <= 0) {
-        this.onStyleRemoved(style);
+        this.visitStyleElement(style, (node) => {
+          node.disabled = true;
+        });
       }
     }
+  }
+
+  visitStyleElement(style: string, callback: (node: HTMLStyleElement) => void): void {
+    this.styleRef.get(style)?.elements?.forEach(callback);
   }
 
   ngOnDestroy(): void {
@@ -62,7 +68,10 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     for (const style of this.getAllStyles()) {
-      this.onStyleRemoved(style);
+      this.visitStyleElement(style, (node) => {
+        node.remove();
+      });
+      this.styleRef.delete(style);
     }
 
     this.resetHostNodes();
@@ -90,12 +99,6 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  private onStyleRemoved(style: string): void {
-    const styleRef = this.styleRef;
-    styleRef.get(style)?.elements?.forEach((node) => node.remove());
-    styleRef.delete(style);
-  }
-
   private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
     const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
         `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`);
@@ -119,13 +122,14 @@ export class SharedStylesHost implements OnDestroy {
     const map = this.styleRef;
     if (map.has(style)) {
       const styleRefValue = map.get(style)!;
-      styleRefValue.usage += delta;
+      styleRefValue.usage = Math.max(0, styleRefValue.usage + delta);
 
       return styleRefValue.usage;
     }
 
-    map.set(style, {usage: delta, elements: []});
-    return delta;
+    const usage = Math.max(0, delta);
+    map.set(style, {usage, elements: []});
+    return usage;
   }
 
   private getStyleElement(host: Node, style: string): HTMLStyleElement {
@@ -163,6 +167,8 @@ export class SharedStylesHost implements OnDestroy {
   private addStyleToHost(host: Node, style: string): void {
     const styleEl = this.getStyleElement(host, style);
 
+    // Enable the stylesheet
+    styleEl.disabled = false;
     host.appendChild(styleEl);
 
     const styleRef = this.styleRef;
