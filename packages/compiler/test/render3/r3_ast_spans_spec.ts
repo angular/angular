@@ -609,7 +609,8 @@ describe('R3 AST source spans', () => {
 
   describe('deferred blocks', () => {
     it('is correct for deferred blocks', () => {
-      const html = '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+      const html =
+          '{#defer when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
           'interaction(button), viewport(container); prefetch on immediate; ' +
           'prefetch when isDataLoaded()}' +
           '<calendar-cmp [date]="current"/>' +
@@ -624,19 +625,19 @@ describe('R3 AST source spans', () => {
       expectFromHtml(html, ['defer']).toEqual([
         [
           'DeferredBlock',
-          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          '{#defer when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
               'interaction(button), viewport(container); prefetch on immediate; ' +
               'prefetch when isDataLoaded()}<calendar-cmp [date]="current"/>' +
               '{:loading minimum 1s; after 100ms}Loading...' +
               '{:placeholder minimum 500}Placeholder content!' +
               '{:error}Loading failed :({/defer}',
-          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          '{#defer when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
               'interaction(button), viewport(container); prefetch on immediate; ' +
               'prefetch when isDataLoaded()}',
           '{/defer}'
         ],
         ['BoundDeferredTrigger', 'when isVisible() && foo'],
-        ['HoverDeferredTrigger', 'hover'],
+        ['HoverDeferredTrigger', 'hover(button)'],
         ['TimerDeferredTrigger', 'timer(10s)'],
         ['IdleDeferredTrigger', 'idle'],
         ['ImmediateDeferredTrigger', 'immediate'],

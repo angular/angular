@@ -293,11 +293,11 @@ function createTimerTrigger(parameters: string[], sourceSpan: ParseSourceSpan) {
 
 function createInteractionTrigger(
     parameters: string[], sourceSpan: ParseSourceSpan): t.InteractionDeferredTrigger {
-  if (parameters.length > 1) {
-    throw new Error(`"${OnTriggerType.INTERACTION}" trigger can only have zero or one parameters`);
+  if (parameters.length !== 1) {
+    throw new Error(`"${OnTriggerType.INTERACTION}" trigger must have exactly one parameter`);
   }
 
-  return new t.InteractionDeferredTrigger(parameters[0] ?? null, sourceSpan);
+  return new t.InteractionDeferredTrigger(parameters[0], sourceSpan);
 }
 
 function createImmediateTrigger(
@@ -311,11 +311,11 @@ function createImmediateTrigger(
 
 function createHoverTrigger(
     parameters: string[], sourceSpan: ParseSourceSpan): t.HoverDeferredTrigger {
-  if (parameters.length > 0) {
-    throw new Error(`"${OnTriggerType.HOVER}" trigger cannot have parameters`);
+  if (parameters.length !== 1) {
+    throw new Error(`"${OnTriggerType.HOVER}" trigger must have exactly one parameter`);
   }
 
-  return new t.HoverDeferredTrigger(sourceSpan);
+  return new t.HoverDeferredTrigger(parameters[0], sourceSpan);
 }
 
 function createViewportTrigger(

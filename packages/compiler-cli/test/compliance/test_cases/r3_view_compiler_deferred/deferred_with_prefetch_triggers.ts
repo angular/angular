@@ -4,7 +4,7 @@ import {Component} from '@angular/core';
   template: `
     {{message}}
     {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
-      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
+      prefetch on immediate, hover(button); prefetch on interaction(button); prefetch on viewport(button)}
     {{message}}
     {:placeholder}<button #button>Click me</button>
   {/defer}

@@ -135,7 +135,7 @@ class R3AstHumanizer implements t.Visitor<void> {
     } else if (trigger instanceof t.ImmediateDeferredTrigger) {
       this.result.push(['ImmediateDeferredTrigger']);
     } else if (trigger instanceof t.HoverDeferredTrigger) {
-      this.result.push(['HoverDeferredTrigger']);
+      this.result.push(['HoverDeferredTrigger', trigger.reference]);
     } else if (trigger instanceof t.IdleDeferredTrigger) {
       this.result.push(['IdleDeferredTrigger']);
     } else if (trigger instanceof t.TimerDeferredTrigger) {
@@ -829,9 +829,9 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a hover trigger', () => {
-      expectDeferred('{#defer on hover}hello{/defer}').toEqual([
+      expectDeferred('{#defer on hover(button)}hello{/defer}').toEqual([
         ['DeferredBlock'],
-        ['HoverDeferredTrigger'],
+        ['HoverDeferredTrigger', 'button'],
         ['Text', 'hello'],
       ]);
     });
@@ -902,13 +902,13 @@ describe('R3 template transform', () => {
 
     it('should parse a deferred block with prefetch triggers', () => {
       const html =
-          '{#defer on idle; prefetch on viewport(button), hover; prefetch when shouldPrefetch()}hello{/defer}';
+          '{#defer on idle; prefetch on viewport(button), hover(button); prefetch when shouldPrefetch()}hello{/defer}';
 
       expectDeferred(html).toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
-        ['HoverDeferredTrigger'],
+        ['HoverDeferredTrigger', 'button'],
         ['BoundDeferredTrigger', 'shouldPrefetch()'],
         ['Text', 'hello'],
       ]);
@@ -916,13 +916,13 @@ describe('R3 template transform', () => {
 
     it('should allow arbitrary number of spaces after the `prefetch` keyword', () => {
       const html =
-          '{#defer on idle; prefetch         on viewport(button), hover; prefetch    when shouldPrefetch()}hello{/defer}';
+          '{#defer on idle; prefetch         on viewport(button), hover(button); prefetch    when shouldPrefetch()}hello{/defer}';
 
       expectDeferred(html).toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
-        ['HoverDeferredTrigger'],
+        ['HoverDeferredTrigger', 'button'],
         ['BoundDeferredTrigger', 'shouldPrefetch()'],
         ['Text', 'hello'],
       ]);
@@ -930,7 +930,7 @@ describe('R3 template transform', () => {
 
     it('should parse a complete example', () => {
       expectDeferred(
-          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+          '{#defer when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
           'interaction(button), viewport(container); prefetch on immediate; ' +
           'prefetch when isDataLoaded()}' +
           '<calendar-cmp [date]="current"/>' +
@@ -944,7 +944,7 @@ describe('R3 template transform', () => {
           .toEqual([
             ['DeferredBlock'],
             ['BoundDeferredTrigger', 'isVisible() && foo'],
-            ['HoverDeferredTrigger'],
+            ['HoverDeferredTrigger', 'button'],
             ['TimerDeferredTrigger', 10000],
             ['IdleDeferredTrigger'],
             ['ImmediateDeferredTrigger'],
@@ -1115,7 +1115,7 @@ describe('R3 template transform', () => {
 
       it('should report if `interaction` trigger has more than one parameter', () => {
         expectDeferredError('{#defer on interaction(a, b)}hello{/defer}')
-            .toThrowError(/"interaction" trigger can only have zero or one parameters/);
+            .toThrowError(/"interaction" trigger must have exactly one parameter/);
       });
 
       it('should report if parameters are passed to `immediate` trigger', () => {
@@ -1123,9 +1123,9 @@ describe('R3 template transform', () => {
             .toThrowError(/"immediate" trigger cannot have parameters/);
       });
 
-      it('should report if parameters are passed to `hover` trigger', () => {
-        expectDeferredError('{#defer on hover(1)}hello{/defer}')
-            .toThrowError(/"hover" trigger cannot have parameters/);
+      it('should report if no parameters are passed to `hover` trigger', () => {
+        expectDeferredError('{#defer on hover}hello{/defer}')
+            .toThrowError(/"hover" trigger must have exactly one parameter/);
       });
 
       it('should report if `viewport` trigger has more than one parameter', () => {
