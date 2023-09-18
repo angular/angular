@@ -95,48 +95,53 @@ interface ComputedNode<T> extends ReactiveNode {
   equal: ValueEqualityFn<T>;
 }
 
-const COMPUTED_NODE = {
-  ...REACTIVE_NODE,
-  value: UNSET,
-  dirty: true,
-  error: null,
-  equal: defaultEquals,
+// Note: Using an IIFE here to ensure that the spread assignment is not considered
+// a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
+// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
+const COMPUTED_NODE = /* @__PURE__ */ (() => {
+  return {
+    ...REACTIVE_NODE,
+    value: UNSET,
+    dirty: true,
+    error: null,
+    equal: defaultEquals,
 
-  producerMustRecompute(node: ComputedNode<unknown>): boolean {
-    // Force a recomputation if there's no current value, or if the current value is in the process
-    // of being calculated (which should throw an error).
-    return node.value === UNSET || node.value === COMPUTING;
-  },
+    producerMustRecompute(node: ComputedNode<unknown>): boolean {
+      // Force a recomputation if there's no current value, or if the current value is in the
+      // process of being calculated (which should throw an error).
+      return node.value === UNSET || node.value === COMPUTING;
+    },
 
-  producerRecomputeValue(node: ComputedNode<unknown>): void {
-    if (node.value === COMPUTING) {
-      // Our computation somehow led to a cyclic read of itself.
-      throw new Error('Detected cycle in computations.');
-    }
+    producerRecomputeValue(node: ComputedNode<unknown>): void {
+      if (node.value === COMPUTING) {
+        // Our computation somehow led to a cyclic read of itself.
+        throw new Error('Detected cycle in computations.');
+      }
 
-    const oldValue = node.value;
-    node.value = COMPUTING;
+      const oldValue = node.value;
+      node.value = COMPUTING;
 
-    const prevConsumer = consumerBeforeComputation(node);
-    let newValue: unknown;
-    try {
-      newValue = node.computation();
-    } catch (err) {
-      newValue = ERRORED;
-      node.error = err;
-    } finally {
-      consumerAfterComputation(node, prevConsumer);
-    }
+      const prevConsumer = consumerBeforeComputation(node);
+      let newValue: unknown;
+      try {
+        newValue = node.computation();
+      } catch (err) {
+        newValue = ERRORED;
+        node.error = err;
+      } finally {
+        consumerAfterComputation(node, prevConsumer);
+      }
 
-    if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
-        node.equal(oldValue, newValue)) {
-      // No change to `valueVersion` - old and new values are
-      // semantically equivalent.
-      node.value = oldValue;
-      return;
-    }
+      if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
+          node.equal(oldValue, newValue)) {
+        // No change to `valueVersion` - old and new values are
+        // semantically equivalent.
+        node.value = oldValue;
+        return;
+      }
 
-    node.value = newValue;
-    node.version++;
-  },
-};
+      node.value = newValue;
+      node.version++;
+    },
+  };
+})();
