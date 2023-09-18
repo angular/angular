@@ -135,7 +135,11 @@ export class IdleDeferredTrigger extends DeferredTrigger {}
 
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
 
-export class HoverDeferredTrigger extends DeferredTrigger {}
+export class HoverDeferredTrigger extends DeferredTrigger {
+  constructor(public reference: string, sourceSpan: ParseSourceSpan) {
+    super(sourceSpan);
+  }
+}
 
 export class TimerDeferredTrigger extends DeferredTrigger {
   constructor(public delay: number, sourceSpan: ParseSourceSpan) {
@@ -144,7 +148,7 @@ export class TimerDeferredTrigger extends DeferredTrigger {
 }
 
 export class InteractionDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
+  constructor(public reference: string, sourceSpan: ParseSourceSpan) {
     super(sourceSpan);
   }
 }

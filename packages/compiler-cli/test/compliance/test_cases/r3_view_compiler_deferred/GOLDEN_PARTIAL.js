@@ -371,7 +371,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
+    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover(button);
       on interaction(button); on viewport(button)}
     {{message}}
     {:placeholder}<button #button>Click me</button>
@@ -382,7 +382,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {{message}}
-    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
+    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover(button);
       on interaction(button); on viewport(button)}
     {{message}}
     {:placeholder}<button #button>Click me</button>
@@ -421,7 +421,7 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {{message}}
     {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
-      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
+      prefetch on immediate, hover(button); prefetch on interaction(button); prefetch on viewport(button)}
     {{message}}
     {:placeholder}<button #button>Click me</button>
   {/defer}
@@ -432,7 +432,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     {{message}}
     {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
-      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
+      prefetch on immediate, hover(button); prefetch on interaction(button); prefetch on viewport(button)}
     {{message}}
     {:placeholder}<button #button>Click me</button>
   {/defer}
