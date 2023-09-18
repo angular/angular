@@ -14,6 +14,7 @@ import {type CompilationJob, ComponentCompilationJob} from '../compilation';
  */
 export function phaseI18nConstCollection(job: ComponentCompilationJob): void {
   // Serialize the extracted messages into the const array.
+  // TODO: Use `Map` instead of object.
   const messageConstIndices: {[id: ir.XrefId]: ir.ConstIndex} = {};
   for (const unit of job.units) {
     for (const op of unit.create) {
