@@ -98,6 +98,10 @@ export class RouterConfigLoader {
 /**
  * Executes a `route.loadChildren` callback and converts the result to an array of child routes and
  * an injector if that callback returned a module.
+ *
+ * This function is used for the route discovery during prerendering
+ * in @angular-devkit/build-angular. If there are any updates to the contract here, it will require
+ * an update to the extractor.
  */
 export function loadChildren(
     route: Route, compiler: Compiler, parentInjector: Injector,
