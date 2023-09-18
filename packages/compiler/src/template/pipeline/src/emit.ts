@@ -56,6 +56,7 @@ import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseI18nConstCollection} from './phases/i18n_const_collection';
+import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -69,6 +70,7 @@ type Phase = {
 };
 
 const phases: Phase[] = [
+  {kind: Kind.Tmpl, fn: phaseRemoveContentSelectors},
   {kind: Kind.Tmpl, fn: phaseGenerateI18nBlocks},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
   {kind: Kind.Host, fn: phaseHostStylePropertyParsing},

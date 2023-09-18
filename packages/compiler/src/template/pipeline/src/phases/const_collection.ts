@@ -107,12 +107,11 @@ class ElementAttributes {
     }
     this.known.add(name);
     if (name === 'ngProjectAs') {
-      // TODO: Perhaps we should consider ingesting raw attribute strings instead of expressions, in
-      // order to avoid this messy unboxing?
-      if (value === null || !(value instanceof o.LiteralExpr)) {
+      if (value === null || !(value instanceof o.LiteralExpr) || (value.value == null) ||
+          (typeof value.value?.toString() !== 'string')) {
         throw Error('ngProjectAs must have a string literal value');
       }
-      this.projectAs = value.value as string;
+      this.projectAs = value.value.toString();
       // TODO: TemplateDefinitionBuilder allows `ngProjectAs` to also be assigned as a literal
       // attribute. Is this sane?
     }
