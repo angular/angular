@@ -701,6 +701,7 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([]),
            directives: new Set([MainComponent]),
+           ngModules: new Set([]),
          });
        });
 
@@ -726,6 +727,7 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([Pipe1]),
            directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([]),
          });
        });
 
@@ -751,6 +753,7 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([Pipe1]),
            directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([]),
          });
        });
 
@@ -767,7 +770,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation.isPoisoned).toBeTrue();
     });
 
-    it('should include the exported scope of an imported module in the compilation scope', () => {
+    it('should include the imported module and its exported scope in the compilation scope', () => {
       @Directive({})
       class Directive1 {
       }
@@ -799,10 +802,11 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([SubSubModule]),
       });
     });
 
-    it('should include the exported scope of an imported module in the compilation scope - case of nested array imports',
+    it('should include the imported module and its exported scope in the compilation scope - case of nested array imports',
        () => {
          @Directive({})
          class Directive1 {
@@ -835,6 +839,7 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([Pipe1]),
            directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([SubSubModule]),
          });
        });
 
@@ -878,6 +883,7 @@ describe('runtime dependency tracker', () => {
         pipes: new Set([Pipe1, SubModulePipe]),
         directives: new Set(
             [MainComponent, Component1, Directive1, SubModuleComponent, SubModuleDirective]),
+        ngModules: new Set([SubModule]),
       });
     });
 
@@ -922,6 +928,7 @@ describe('runtime dependency tracker', () => {
            pipes: new Set([Pipe1, SubModulePipe]),
            directives: new Set(
                [MainComponent, Component1, Directive1, SubModuleComponent, SubModuleDirective]),
+           ngModules: new Set([SubModule]),
          });
        });
 
@@ -946,6 +953,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
 
       ans = depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, []);
@@ -953,6 +961,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
     });
 
@@ -979,6 +988,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
 
       depsTracker.clearScopeCacheFor(MainComponent as ComponentType<any>);
@@ -987,6 +997,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([]),
         directives: new Set([MainComponent]),
+        ngModules: new Set([]),
       });
     });
   });
@@ -1172,7 +1183,7 @@ describe('runtime dependency tracker', () => {
         expect(ans.dependencies).toEqual([]);
       });
 
-      it('should include the exported scope of imported module', () => {
+      it('should include the imported module and its exported scope', () => {
         @Component({})
         class Component1 {
         }
@@ -1199,11 +1210,15 @@ describe('runtime dependency tracker', () => {
             depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [SubModule]);
 
         expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
-          MainComponent, Component1, Directive1, Pipe1
+          MainComponent,
+          Component1,
+          Directive1,
+          Pipe1,
+          SubModule,
         ]));
       });
 
-      it('should include the exported scope of imported forward ref module', () => {
+      it('should include the imported forward ref module and its exported scope', () => {
         @Component({})
         class Component1 {
         }
@@ -1230,7 +1245,7 @@ describe('runtime dependency tracker', () => {
             MainComponent as ComponentType<any>, [forwardRef(() => SubModule)]);
 
         expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
-          MainComponent, Component1, Directive1, Pipe1
+          MainComponent, Component1, Directive1, Pipe1, SubModule
         ]));
       });
 

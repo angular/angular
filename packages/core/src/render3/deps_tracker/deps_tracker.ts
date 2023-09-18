@@ -82,6 +82,7 @@ class DepsTracker implements DepsTrackerApi {
         dependencies: [
           ...scope.compilation.directives,
           ...scope.compilation.pipes,
+          ...scope.compilation.ngModules,
         ]
       };
     } else {
@@ -246,6 +247,7 @@ class DepsTracker implements DepsTrackerApi {
         // Standalone components are always able to self-reference.
         directives: new Set([type]),
         pipes: new Set(),
+        ngModules: new Set(),
       },
     };
 
@@ -261,6 +263,7 @@ class DepsTracker implements DepsTrackerApi {
       }
 
       if (isNgModule(imported)) {
+        ans.compilation.ngModules.add(imported);
         const importedScope = this.getNgModuleScope(imported);
 
         // Short-circuit if an imported NgModule has corrupted exported scope.
