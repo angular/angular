@@ -8,6 +8,7 @@
 
 /// <reference types="@types/dom-view-transitions" />
 
+import {DOCUMENT} from '@angular/common';
 import {afterNextRender, InjectionToken, Injector, NgZone} from '@angular/core';
 
 export const CREATE_VIEW_TRANSITION =
@@ -22,6 +23,7 @@ export const CREATE_VIEW_TRANSITION =
 export function createViewTransition(injector: Injector): Promise<void> {
   // Create promises outside the Angular zone to avoid causing extra change detections
   return injector.get(NgZone).runOutsideAngular(() => {
+    const document = injector.get(DOCUMENT);
     if (!document.startViewTransition) {
       return Promise.resolve();
     }
