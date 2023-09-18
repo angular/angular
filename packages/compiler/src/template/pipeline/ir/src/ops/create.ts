@@ -174,6 +174,7 @@ export interface TemplateOp extends ElementOpBase {
 
   /**
    * Whether or not this template was automatically created for built-in control flow.
+   * TODO: Should control flow use a different op type, to avoid this flag?
    */
   controlFlow: boolean;
 }
