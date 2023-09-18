@@ -117,7 +117,7 @@ describe('t2 binding', () => {
       return fail('Expected item to point to a Variable');
     }
     expect(itemTarget.value).toBe('$implicit');
-    const itemTemplate = res.getTemplateOfSymbol(itemTarget);
+    const itemTemplate = res.getDefinitionNodeOfSymbol(itemTarget);
     expect(itemTemplate).not.toBeNull();
     expect(res.getNestingLevel(itemTemplate!)).toBe(1);
   });
