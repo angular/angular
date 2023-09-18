@@ -62,7 +62,7 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({})');
       });
 
-      it('should include raw module imports (including forward refs) in the injector def imports',
+      it('should include raw module imports array elements (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -90,7 +90,36 @@ runInEachFileSystem(() => {
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)] })');
          });
 
-      it('should include raw module exports (including forward refs) in the injector def imports',
+      it('should include non-array raw module imports as it is in the injector def imports', () => {
+        env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {SubModule1} from './some-where';
+        import {SubModule2} from './another-where';
+
+        const NG_IMPORTS = [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)];
+
+        @NgModule({})
+        class LocalModule1 {}
+
+        @NgModule({
+          imports: NG_IMPORTS,
+        })
+        export class MainModule {
+        }
+
+        @NgModule({})
+        class LocalModule2 {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_IMPORTS] })');
+      });
+
+      it('should include raw module exports array elements (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -118,7 +147,37 @@ runInEachFileSystem(() => {
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)] })');
          });
 
-      it('should combine raw module imports and exports (including forward refs) in the injector def imports',
+      it('should include non-array raw module exports (including forward refs) in the injector def imports',
+         () => {
+           env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {SubModule1} from './some-where';
+        import {SubModule2} from './another-where';
+
+        const NG_EXPORTS = [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)];
+
+        @NgModule({})
+        class LocalModule1 {}
+
+        @NgModule({
+          exports: NG_EXPORTS,
+        })
+        export class MainModule {
+        }
+
+        @NgModule({})
+        class LocalModule2 {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_EXPORTS] })');
+         });
+
+      it('should concat raw module imports and exports arrays (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -139,6 +198,29 @@ runInEachFileSystem(() => {
            expect(jsContents)
                .toContain(
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), SubModule3, forwardRef(() => SubModule4)] })');
+         });
+
+      it('should combines non-array raw module imports and exports (including forward refs) in the injector def imports',
+         () => {
+           env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {NG_IMPORTS} from './some-where';
+        import {NG_EXPORTS} from './another-where';
+
+        @NgModule({
+          imports: NG_IMPORTS,
+          exports: NG_EXPORTS,
+        })
+        export class MainModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_IMPORTS, NG_EXPORTS] })');
          });
     });
 
