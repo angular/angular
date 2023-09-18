@@ -3874,10 +3874,10 @@
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
   integrity sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==
 
-"@types/jasmine@~4.3.0":
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-4.3.5.tgz#05c6b401c041b8a4f3303c3a58c9580aac2b898c"
-  integrity sha512-9YHUdvuNDDRJYXZwHqSsO72Ok0vmqoJbNn73ttyITQp/VA60SarnZ+MPLD37rJAhVoKp+9BWOvJP5tHIRfZylQ==
+"@types/jasmine@~4.3.6":
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-4.3.6.tgz#d9855fa9f808138488784610f888046bb9a59aff"
+  integrity sha512-3N0FpQTeiWjm+Oo1WUYWguUS7E6JLceiGTriFrG8k5PU7zRLJCzLcWURU3wjMbZGS//a2/LgjsnO3QxIlwxt9g==
 
 "@types/json-schema@*", "@types/json-schema@^7.0.6", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.12"
@@ -8197,7 +8197,7 @@ glob@^10.2.2, glob@^10.2.5:
     minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
     path-scurry "^1.10.1"
 
-glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.0.6, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6, glob@^7.1.7:
+glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.0.6, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.7:
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.2.3.tgz#b8df0fb802bbfa8e89bd1d938b4e16578ed44f2b"
   integrity sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==
@@ -9610,7 +9610,7 @@ jake@^10.8.5:
     filelist "^1.0.4"
     minimatch "^3.1.2"
 
-jasmine-core@^4.1.0, jasmine-core@^4.6.0, jasmine-core@~4.6.0:
+jasmine-core@^4.1.0, jasmine-core@~4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-4.6.0.tgz#6884fc3d5b66bf293e422751eed6d6da217c38f5"
   integrity sha512-O236+gd0ZXS8YAjFx8xKaJ94/erqUliEkJTDedyE7iHvv4ZVqi+q+8acJxu05/WJDKm512EUNn809In37nWlAQ==
@@ -9619,6 +9619,11 @@ jasmine-core@~2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
   integrity sha512-SNkOkS+/jMZvLhuSx1fjhcNWUC/KG6oVyFUGkSBEr9n1axSNduWU8GlI7suaHXr4yxjet6KjrUZxUTE5WzzWwQ==
+
+jasmine-core@~5.1.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-5.1.1.tgz#38b6ccfbe60aa2a863cf441751d9639b5a571edc"
+  integrity sha512-UrzO3fL7nnxlQXlvTynNAenL+21oUQRlzqQFsA2U11ryb4+NLOCOePZ70PTojEaUKhiFugh7dG0Q+I58xlPdWg==
 
 jasmine-reporters@~2.5.0:
   version "2.5.2"
@@ -9644,13 +9649,13 @@ jasmine@2.8.0:
     glob "^7.0.6"
     jasmine-core "~2.8.0"
 
-jasmine@~4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-4.6.0.tgz#2ecde288da25815c67897bb9b9b91f6709880ce1"
-  integrity sha512-iq7HQ5M8ydNUspjd9vbFW9Lu+6lQ1QLDIqjl0WysEllF5EJZy8XaUyNlhCJVwOx2YFzqTtARWbS56F/f0PzRFw==
+jasmine@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-5.1.0.tgz#a3218fd425ff35aec12f3dc6cf70d8cebbf0042a"
+  integrity sha512-prmJlC1dbLhti4nE4XAPDWmfJesYO15sjGXVp7Cs7Ym5I9Xtwa/hUHxxJXjnpfLO72+ySttA0Ztf8g/RiVnUKw==
   dependencies:
-    glob "^7.1.6"
-    jasmine-core "^4.6.0"
+    glob "^10.2.2"
+    jasmine-core "~5.1.0"
 
 jasminewd2@^2.1.0:
   version "2.2.0"
