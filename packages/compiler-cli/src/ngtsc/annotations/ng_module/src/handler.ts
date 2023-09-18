@@ -445,12 +445,22 @@ export class NgModuleDecoratorHandler implements
     };
 
     if (this.compilationMode === CompilationMode.LOCAL) {
-      if (rawImports !== null && ts.isArrayLiteralExpression(rawImports) && rawImports.elements) {
-        injectorMetadata.imports.push(...rawImports.elements.map(n => new WrappedNodeExpr(n)));
-      }
+      // Adding NgModule's raw imports/exports to the injector's imports field in local compilation
+      // mode.
+      for (const exp of [rawImports, rawExports]) {
+        if (exp === null) {
+          continue;
+        }
 
-      if (rawExports !== null && ts.isArrayLiteralExpression(rawExports) && rawExports.elements) {
-        injectorMetadata.imports.push(...rawExports.elements.map(n => new WrappedNodeExpr(n)));
+        if (ts.isArrayLiteralExpression(exp)) {
+          // If array expression then add it entry-by-entry to the injector imports
+          if (exp.elements) {
+            injectorMetadata.imports.push(...exp.elements.map(n => new WrappedNodeExpr(n)));
+          }
+        } else {
+          // if not array expression then add it as is to the injector's imports field.
+          injectorMetadata.imports.push(new WrappedNodeExpr(exp));
+        }
       }
     }
 
