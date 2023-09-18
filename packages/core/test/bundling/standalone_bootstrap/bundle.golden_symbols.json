@@ -600,6 +600,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "disableStylesheet"
+  },
+  {
     "name": "empty"
   },
   {
@@ -928,6 +931,9 @@
   },
   {
     "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
+    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
