@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -74,7 +74,7 @@ export class LCPImageObserver implements OnDestroy {
       if (!img) return;
       if (!img.priority && !img.alreadyWarnedPriority) {
         img.alreadyWarnedPriority = true;
-        throwMissingPriorityError(imgSrc);
+        logMissingPriorityWarning(imgSrc);
       }
       if (img.modified && !img.alreadyWarnedModified) {
         img.alreadyWarnedModified = true;
@@ -118,14 +118,14 @@ export class LCPImageObserver implements OnDestroy {
   }
 }
 
-function throwMissingPriorityError(ngSrc: string) {
+function logMissingPriorityWarning(ngSrc: string) {
   const directiveDetails = imgDirectiveDetails(ngSrc);
-  throw new RuntimeError(
+  console.warn(formatRuntimeError(
       RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
-      `${directiveDetails} this image is the Largest Contentful Paint (LCP) element ` +
-          `but was not marked "priority". This can have a strong negative impact ` +
-          `on the LCP score of the entire application. This error can be fixed by ` +
-          `adding the 'priority' attribute to all images which are possibly the LCP element.`);
+      `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
+          `element but was not marked "priority". This image should be marked ` +
+          `"priority" in order to prioritize its loading. ` +
+          `To fix this, add the "priority" attribute.`));
 }
 
 function logModifiedWarning(ngSrc: string) {
