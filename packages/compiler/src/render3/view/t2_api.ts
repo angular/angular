@@ -207,4 +207,11 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Get a list of all {#defer} blocks used by the target.
    */
   getDeferBlocks(): DeferredBlock[];
+
+  /**
+   * Gets the element that a specific deferred block trigger is targeting.
+   * @param block Block that the trigger belongs to.
+   * @param trigger Trigger whose target is being looked up.
+   */
+  getDeferredTriggerTarget(block: DeferredTrigger, trigger: DeferredTrigger): Element|null;
 }

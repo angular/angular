@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, Icu, IfBlock, IfBlockBranch, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -789,6 +789,79 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
 
   getDeferBlocks(): DeferredBlock[] {
     return Array.from(this.deferredBlocks);
+  }
+
+
+  getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null {
+    // Only triggers that refer to DOM nodes can be resolved.
+    if (!(trigger instanceof InteractionDeferredTrigger) &&
+        !(trigger instanceof ViewportDeferredTrigger) &&
+        !(trigger instanceof HoverDeferredTrigger)) {
+      return null;
+    }
+
+    const name = trigger.reference;
+
+    // TODO(crisbeto): account for `viewport` trigger without a `reference`.
+    if (name === null) {
+      return null;
+    }
+
+    const outsideRef = this.findEntityInScope(block, name);
+
+    // First try to resolve the target in the scope of the main deferred block. Note that we
+    // skip triggers defined inside the main block itself, because they might not exist yet.
+    if (outsideRef instanceof Reference && this.getDefinitionNodeOfSymbol(outsideRef) !== block) {
+      const target = this.getReferenceTarget(outsideRef);
+
+      if (target !== null) {
+        return this.referenceTargetToElement(target);
+      }
+    }
+
+    // If the trigger couldn't be found in the main block, check the
+    // placeholder  block which is shown before the main block has loaded.
+    if (block.placeholder !== null) {
+      const refInPlaceholder = this.findEntityInScope(block.placeholder, name);
+      const targetInPlaceholder =
+          refInPlaceholder instanceof Reference ? this.getReferenceTarget(refInPlaceholder) : null;
+
+      if (targetInPlaceholder !== null) {
+        return this.referenceTargetToElement(targetInPlaceholder);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Finds an entity with a specific name in a scope.
+   * @param rootNode Root node of the scope.
+   * @param name Name of the entity.
+   */
+  private findEntityInScope(rootNode: ScopedNode, name: string): Reference|Variable|null {
+    const entities = this.getEntitiesInScope(rootNode);
+
+    for (const entitity of entities) {
+      if (entitity.name === name) {
+        return entitity;
+      }
+    }
+
+    return null;
+  }
+
+  /** Coerces a `ReferenceTarget` to an `Element`, if possible. */
+  private referenceTargetToElement(target: ReferenceTarget<DirectiveT>): Element|null {
+    if (target instanceof Element) {
+      return target;
+    }
+
+    if (target instanceof Template) {
+      return null;
+    }
+
+    return this.referenceTargetToElement(target.node);
   }
 }
 
