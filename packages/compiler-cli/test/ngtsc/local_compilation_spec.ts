@@ -276,7 +276,33 @@ runInEachFileSystem(() => {
                    'dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [SomeThing, forwardRef(() => SomeThing2)])');
          });
 
-      it('should not generate ɵɵgetComponentDepsFactory for standalone component with empty imports',
+      it('should generate ɵɵgetComponentDepsFactory with raw non-array imports as second param for component def dependencies - for standalone component with non-empty imports',
+         () => {
+           env.write('test.ts', `
+          import {Component, forwardRef} from '@angular/core';
+          import {SomeThing} from 'some-where';
+          import {SomeThing2} from 'some-where2';
+
+          const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
+          
+          @Component({
+            standalone: true,
+            imports: NG_IMPORTS,
+            selector: 'test-main',
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, NG_IMPORTS)');
+         });
+
+      it('should generate ɵɵgetComponentDepsFactory with empty array as secon d arg for standalone component with empty imports',
          () => {
            env.write('test.ts', `
       import {Component} from '@angular/core';
@@ -295,7 +321,7 @@ runInEachFileSystem(() => {
            const jsContents = env.getContents('test.js');
 
            expect(jsContents)
-               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent)');
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [])');
          });
 
       it('should not generate ɵɵgetComponentDepsFactory for standalone component with no imports',
