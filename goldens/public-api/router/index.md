@@ -1116,7 +1116,7 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature;
 
 // @public
-export function withViewTransitions(): ViewTransitionsFeature;
+export function withViewTransitions(options?: ViewTransitionsFeatureOptions): ViewTransitionsFeature;
 
 // (No @packageDocumentation comment for this package)
 
