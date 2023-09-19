@@ -26,6 +26,7 @@ import {ErrorHandler} from './error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
+import {ImagePerformanceWarning} from './image_performance_warning';
 import {InitialRenderPendingTasks} from './initial_render_pending_tasks';
 import {Type} from './interface/type';
 import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
@@ -284,6 +285,10 @@ export function internalCreateApplication(config: {
           const appRef = envInjector.get(ApplicationRef);
           if (rootComponent !== undefined) {
             appRef.bootstrap(rootComponent);
+          }
+          if (typeof ngDevMode === 'undefined' || ngDevMode) {
+            const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
+            imagePerformanceService.start();
           }
           return appRef;
         });

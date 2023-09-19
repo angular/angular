@@ -8,6 +8,8 @@ ng_module(
         "e2e/basic/basic.ts",
         "e2e/fill-mode/fill-mode.ts",
         "e2e/image-distortion/image-distortion.ts",
+        "e2e/image-perf-warnings-lazy/image-perf-warnings-lazy.ts",
+        "e2e/image-perf-warnings-oversized/image-perf-warnings-oversized.ts",
         "e2e/lcp-check/lcp-check.ts",
         "e2e/oversized-image/oversized-image.ts",
         "e2e/preconnect-check/preconnect-check.ts",

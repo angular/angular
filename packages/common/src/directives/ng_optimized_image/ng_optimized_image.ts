@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
@@ -85,32 +85,6 @@ const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 
 /** Info about built-in loaders we can test for. */
 export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
-
-/**
- * A configuration object for the NgOptimizedImage directive. Contains:
- * - breakpoints: An array of integer breakpoints used to generate
- *      srcsets for responsive images.
- *
- * Learn more about the responsive image configuration in [the NgOptimizedImage
- * guide](guide/image-directive).
- * @publicApi
- */
-export type ImageConfig = {
-  breakpoints?: number[]
-};
-
-const defaultConfig: ImageConfig = {
-  breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-};
-
-/**
- * Injection token that configures the image optimized image functionality.
- *
- * @see {@link NgOptimizedImage}
- * @publicApi
- */
-export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
-    'ImageConfig', {providedIn: 'root', factory: () => defaultConfig});
 
 /**
  * Directive that improves image loading performance by enforcing best practices.
@@ -565,7 +539,7 @@ function processConfig(config: ImageConfig): ImageConfig {
   if (config.breakpoints) {
     sortedBreakpoints.breakpoints = config.breakpoints.sort((a, b) => a - b);
   }
-  return Object.assign({}, defaultConfig, config, sortedBreakpoints);
+  return Object.assign({}, IMAGE_CONFIG_DEFAULTS, config, sortedBreakpoints);
 }
 
 /***** Assert functions *****/

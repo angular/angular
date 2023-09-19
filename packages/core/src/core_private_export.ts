@@ -7,7 +7,7 @@
  */
 
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS, internalCreateApplication as ɵinternalCreateApplication, whenStable as ɵwhenStable} from './application_ref';
-export {ENABLED_SSR_FEATURES as ɵENABLED_SSR_FEATURES} from './application_tokens';
+export {ENABLED_SSR_FEATURES as ɵENABLED_SSR_FEATURES, IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application_tokens';
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {Console as ɵConsole} from './console';
 export {convertToBitFlags as ɵconvertToBitFlags, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';

@@ -126,3 +126,41 @@ export const ENABLED_SSR_FEATURES = new InjectionToken<Set<string>>(
       providedIn: 'root',
       factory: () => new Set(),
     });
+
+
+/**
+ * A configuration object for the image-related options. Contains:
+ * - breakpoints: An array of integer breakpoints used to generate
+ *      srcsets for responsive images.
+ * - disableImageSizeWarning: A boolean value. Setting this to true will
+ *      disable console warnings about oversized images.
+ * - disableImageLazyLoadWarning: A boolean value. Setting this to true will
+ *      disable console warnings about LCP images configured with `loading="lazy"`.
+ * Learn more about the responsive image configuration in [the NgOptimizedImage
+ * guide](guide/image-directive).
+ * Learn more about image warning options in [the related error page](errors/NG0913).
+ * @publicApi
+ */
+export type ImageConfig = {
+  breakpoints?: number[],
+  disableImageSizeWarning?: boolean,
+  disableImageLazyLoadWarning?: boolean,
+};
+
+export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
+  breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  disableImageSizeWarning: false,
+  disableImageLazyLoadWarning: false,
+};
+
+/**
+ * Injection token that configures the image optimized image functionality.
+ * See {@link ImageConfig} for additional information about parameters that
+ * can be used.
+ *
+ * @see {@link NgOptimizedImage}
+ * @see {@link ImageConfig}
+ * @publicApi
+ */
+export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
+    'ImageConfig', {providedIn: 'root', factory: () => IMAGE_CONFIG_DEFAULTS});

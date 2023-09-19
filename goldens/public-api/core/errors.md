@@ -53,6 +53,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_STABLE_TIMEDOUT = -506,
     // (undocumented)
+    IMAGE_PERFORMANCE_WARNING = -913,
+    // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
