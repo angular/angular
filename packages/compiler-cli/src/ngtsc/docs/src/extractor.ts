@@ -11,7 +11,7 @@ import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/functi
 import ts from 'typescript';
 
 import {MetadataReader} from '../../metadata';
-import {isNamedClassDeclaration} from '../../reflection';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 
 import {extractClass} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
@@ -26,44 +26,55 @@ export class DocsExtractor {
   constructor(private typeChecker: ts.TypeChecker, private metadataReader: MetadataReader) {}
 
   /**
-   * Gets the set of all documentable entries from a source file.
+   * Gets the set of all documentable entries from a source file, including
+   * declarations that are re-exported from this file as an entry-point.
+   *
    * @param sourceFile The file from which to extract documentable entries.
    */
   extractAll(sourceFile: ts.SourceFile): DocEntry[] {
     const entries: DocEntry[] = [];
 
-    for (const statement of sourceFile.statements) {
-      if (!this.isExported(statement)) continue;
+    // Use the reflection host to get all the exported declarations from this
+    // source file entry point.
+    const reflector = new TypeScriptReflectionHost(this.typeChecker);
+    const exportedDeclarationMap = reflector.getExportsOfModule(sourceFile);
+
+    // Sort the declaration nodes into declaration position because their order is lost in
+    // reading from the export map. This is primarily useful for testing and debugging.
+    const exportedDeclarations =
+        Array.from(exportedDeclarationMap?.entries() ?? [])
+            .map(([exportName, declaration]) => [exportName, declaration.node] as const)
+            .sort(([a, declarationA], [b, declarationB]) => declarationA.pos - declarationB.pos);
+
+    for (const [exportName, node] of exportedDeclarations) {
+      let entry: DocEntry|undefined = undefined;
 
       // Ignore anonymous classes.
-      if (isNamedClassDeclaration(statement)) {
-        entries.push(extractClass(statement, this.metadataReader, this.typeChecker));
+      if (isNamedClassDeclaration(node)) {
+        entry = extractClass(node, this.metadataReader, this.typeChecker);
       }
 
-      if (ts.isFunctionDeclaration(statement)) {
-        const functionExtractor = new FunctionExtractor(statement, this.typeChecker);
-        entries.push(functionExtractor.extract());
+      if (ts.isFunctionDeclaration(node)) {
+        const functionExtractor = new FunctionExtractor(node, this.typeChecker);
+        entry = functionExtractor.extract();
       }
 
-      if (ts.isVariableStatement(statement)) {
-        statement.declarationList.forEachChild(declaration => {
-          if (ts.isVariableDeclaration(declaration) && !isSyntheticAngularConstant(declaration)) {
-            entries.push(extractConstant(declaration, this.typeChecker));
-          }
-        });
+      if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
+        entry = extractConstant(node, this.typeChecker);
       }
 
-      if (ts.isEnumDeclaration(statement)) {
-        entries.push(extractEnum(statement, this.typeChecker));
+      if (ts.isEnumDeclaration(node)) {
+        entry = extractEnum(node, this.typeChecker);
+      }
+
+      // The exported name of an API may be different from its declaration name, so
+      // use the declaration name.
+      if (entry) {
+        entry.name = exportName;
+        entries.push(entry);
       }
     }
 
     return entries;
-  }
-
-  /** Gets whether the given AST node has an `export` modifier. */
-  private isExported(node: ts.Node): boolean {
-    return ts.canHaveModifiers(node) &&
-        (ts.getModifiers(node) ?? []).some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
   }
 }

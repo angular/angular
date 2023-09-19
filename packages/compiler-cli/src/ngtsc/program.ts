@@ -352,9 +352,12 @@ export class NgtscProgram implements api.Program {
    * Gets information for the current program that may be used to generate API
    * reference documentation. This includes Angular-specific information, such
    * as component inputs and outputs.
+   *
+   * @param entryPoint Path to the entry point for the package for which API
+   *     docs should be extracted.
    */
-  getApiDocumentation(): DocEntry[] {
-    return this.compiler.getApiDocumentation();
+  getApiDocumentation(entryPoint: string): DocEntry[] {
+    return this.compiler.getApiDocumentation(entryPoint);
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {

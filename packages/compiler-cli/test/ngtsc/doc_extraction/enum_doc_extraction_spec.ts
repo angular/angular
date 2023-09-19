@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, DirectiveEntry, EntryType, EnumEntry, MemberTags, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {EntryType, EnumEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,7 +25,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract enum info without explicit values', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese,
@@ -35,7 +35,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Enum);
@@ -56,7 +56,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract enum info with explicit values', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese = 0,
@@ -66,7 +66,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Enum);

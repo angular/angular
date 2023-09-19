@@ -25,7 +25,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc from all types of top-level statement', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         /** This is a constant. */
         export const PI = 3.14;
         
@@ -36,7 +36,7 @@ runInEachFileSystem(os => {
         export function save() { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(3);
 
       const [piEntry, userProfileEntry, saveEntry] = docs;
@@ -46,7 +46,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract raw comment blocks', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         /** This is a constant. */
         export const PI = 3.14;
 
@@ -66,7 +66,7 @@ runInEachFileSystem(os => {
         export function save() { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(3);
 
       const [piEntry, userProfileEntry, saveEntry] = docs;
@@ -87,12 +87,12 @@ runInEachFileSystem(os => {
     });
 
     it('should extract a description from a single-line jsdoc', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /** Framework version. */
         export const VERSION = '16';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Framework version.');
@@ -100,7 +100,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract a description from a multi-line jsdoc', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * This is a really long description that needs
          * to wrap over multiple lines. 
@@ -108,7 +108,7 @@ runInEachFileSystem(os => {
         export const LONG_VERSION = '16.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description)
@@ -117,7 +117,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with an empty tag', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * Unsupported version.
          * @deprecated
@@ -125,7 +125,7 @@ runInEachFileSystem(os => {
         export const OLD_VERSION = '1.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Unsupported version.');
@@ -134,7 +134,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with a single-line tag', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * Unsupported version.
          * @deprecated Use the newer one.
@@ -142,7 +142,7 @@ runInEachFileSystem(os => {
         export const OLD_VERSION = '1.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Unsupported version.');
@@ -151,7 +151,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with a multi-line tags', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * Unsupported version.
          * @deprecated Use the newer one.
@@ -162,7 +162,7 @@ runInEachFileSystem(os => {
         export const OLD_VERSION = '1.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Unsupported version.');
@@ -180,7 +180,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with custom tags', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * Unsupported version.
          * @ancient Use the newer one.
@@ -189,7 +189,7 @@ runInEachFileSystem(os => {
         export const OLD_VERSION = '1.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Unsupported version.');
@@ -203,7 +203,7 @@ runInEachFileSystem(os => {
     it('should extract a @see jsdoc tag', () => {
       // "@see" has special behavior with links, so we have tests
       // specifically for this tag.
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Component} from '@angular/core';
         
         /**
@@ -213,7 +213,7 @@ runInEachFileSystem(os => {
         export const NEW_VERSION = '99.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Future version.');
@@ -228,7 +228,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract function parameter descriptions', () => {
-      env.write('test.ts', `        
+      env.write('index.ts', `        
         /**
          * Save some data.
          * @param data The data to save.
@@ -238,7 +238,7 @@ runInEachFileSystem(os => {
         export function save(data: object, timing: number): void { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       const functionEntry = docs[0] as FunctionEntry;
@@ -250,7 +250,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract class member descriptions', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {
           /** A user identifier. */
           userId: number = 0;
@@ -270,7 +270,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
       const classEntry = docs[0] as ClassEntry;
 
