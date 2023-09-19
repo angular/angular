@@ -26,12 +26,6 @@ export interface WritableSignal<T> extends Signal<T> {
   update(updateFn: (value: T) => T): void;
 
   /**
-   * Update the current value by mutating it in-place, and
-   * notify any dependents.
-   */
-  mutate(mutatorFn: (value: T) => void): void;
-
-  /**
    * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
    * but can't be changed using set, update or mutate methods. The readonly signals do _not_ have
    * any built-in mechanism that would prevent deep-mutation of their value.
@@ -61,7 +55,6 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
 
   signalFn.set = (newValue: T) => signalSetFn(node, newValue);
   signalFn.update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
-  signalFn.mutate = (mutateFn: (value: T) => void) => signalMutateFn(node, mutateFn);
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
 
   return signalFn as WritableSignal<T>;
