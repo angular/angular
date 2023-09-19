@@ -12,6 +12,14 @@ import {ComponentType, DependencyTypeList, RawScopeInfoFromDecorator} from './in
 export function ɵɵgetComponentDepsFactory(
     type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]): () => DependencyTypeList {
   return () => {
-    return depsTracker.getComponentDependencies(type, rawImports).dependencies;
+    try {
+      return depsTracker.getComponentDependencies(type, rawImports).dependencies;
+    } catch (e) {
+      console.error(
+          `Computing dependencies in local compilation mode for the component "${
+              type.name}" failed with the exception:`,
+          e);
+      throw e;
+    }
   };
 }
