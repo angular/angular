@@ -214,7 +214,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('When `REMOVE_STYLES_ON_COMPONENT_DESTROY` is `true` or default.', () => {
-      it('should not disable styles for components with encapsulation emulated', async () => {
+      it('should disable styles for components with encapsulation emulated', async () => {
         const fixture = TestBed.createComponent(SomeAppForCleanUp);
         const compInstance = fixture.componentInstance;
         compInstance.showEmulatedComponents = true;
@@ -235,7 +235,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         // Verify style is not disabled in DOM
         const styles = await getStyles(fixture, '.emulated');
         expect(styles?.length).toBe(1);
-        expect(styles?.[0].nativeElement.disabled).toBeFalse();
+        expect(styles?.[0].nativeElement.disabled).toBeTrue();
       });
 
       it('should disable styles for components with encapsulation none', async () => {
