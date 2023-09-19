@@ -25,13 +25,13 @@ runInEachFileSystem(os => {
     });
 
     it('should extract classes', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {}
 
         export class CustomSlider {}
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
       expect(docs[0].name).toBe('UserProfile');
       expect(docs[0].entryType).toBe(EntryType.UndecoratedClass);
@@ -40,14 +40,14 @@ runInEachFileSystem(os => {
     });
 
     it('should extract class members', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {
           firstName(): string { return 'Morgan'; }          
           age: number = 25;
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.members.length).toBe(2);
 
@@ -63,7 +63,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract a method with a rest parameter', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {            
           getNames(prefix: string, ...ids: string[]): string[] {
             return [];
@@ -71,7 +71,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       const methodEntry = classEntry.members[0] as MethodEntry;
       const [prefixParamEntry, idsParamEntry, ] = methodEntry.params;
@@ -86,13 +86,13 @@ runInEachFileSystem(os => {
     });
 
     it('should extract class method params', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {
           setPhone(num: string, intl: number = 1, area?: string): void {}
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.members.length).toBe(1);
@@ -117,7 +117,7 @@ runInEachFileSystem(os => {
     });
 
     it('should not extract private class members', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {
             private ssn: string;
             private getSsn(): string { return ''; }
@@ -125,7 +125,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.members.length).toBe(0);
@@ -133,7 +133,7 @@ runInEachFileSystem(os => {
 
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {            
             eyeColor = 'brown';
             protected name: string;
@@ -150,7 +150,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.members.length).toBe(11);
@@ -189,7 +189,7 @@ runInEachFileSystem(os => {
 
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
-      env.write('test.ts', `
+      env.write('index.ts', `
         export class UserProfile {            
           get userId(): number { return 123; }
           
@@ -200,7 +200,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.entryType).toBe(EntryType.UndecoratedClass);
 

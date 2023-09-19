@@ -287,11 +287,11 @@ export class NgtscTestEnvironment {
     return (program as NgtscProgram).getIndexedComponents();
   }
 
-  driveDocsExtraction(): DocEntry[] {
+  driveDocsExtraction(entryPoint: string): DocEntry[] {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getApiDocumentation();
+    return (program as NgtscProgram).getApiDocumentation(entryPoint);
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string|null = null): void {

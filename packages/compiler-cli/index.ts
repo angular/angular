@@ -36,4 +36,7 @@ export {OptimizeFor} from './src/ngtsc/typecheck/api';
 export {ConsoleLogger, Logger, LogLevel} from './src/ngtsc/logging';
 export {NodeJSFileSystem} from './src/ngtsc/file_system';
 
+// Export documentation entities for Angular-internal API doc generation.
+export * from './src/ngtsc/docs/src/entities';
+
 setFileSystem(new NodeJSFileSystem());

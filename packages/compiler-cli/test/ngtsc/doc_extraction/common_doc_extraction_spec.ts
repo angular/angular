@@ -7,7 +7,6 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, EntryType, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,13 +24,13 @@ runInEachFileSystem(os => {
     });
 
     it('should not extract unexported statements', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         class UserProfile {}
         function getUser() { }
         const name = '';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(0);
     });
   });

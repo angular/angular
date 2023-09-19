@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, DirectiveEntry, EntryType, MemberTags, PipeEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {EntryType, PipeEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,7 +25,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract standalone pipe info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Pipe} from '@angular/core';
         @Pipe({
           standalone: true,
@@ -36,7 +36,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Pipe);
@@ -48,7 +48,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule pipe info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Pipe, NgModule} from '@angular/core';
         @Pipe({name: 'shorten'})
         export class ShortenPipe {
@@ -59,7 +59,7 @@ runInEachFileSystem(os => {
         export class PipeModule { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(2);
       expect(docs[0].entryType).toBe(EntryType.Pipe);

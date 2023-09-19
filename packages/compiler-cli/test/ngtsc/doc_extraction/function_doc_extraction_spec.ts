@@ -25,11 +25,11 @@ runInEachFileSystem(os => {
     });
 
     it('should extract functions', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export function getInjector() { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       const functionEntry = docs[0] as FunctionEntry;
@@ -40,13 +40,13 @@ runInEachFileSystem(os => {
     });
 
     it('should extract function with parameters', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export function go(num: string, intl = 1, area?: string): boolean {
           return false;
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       const functionEntry = docs[0] as FunctionEntry;
@@ -70,13 +70,13 @@ runInEachFileSystem(os => {
     });
 
     it('should extract a function with a rest parameter', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export function getNames(prefix: string, ...ids: string[]): string[] {
           return [];
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const functionEntry = docs[0] as FunctionEntry;
       const [prefixParamEntry, idsParamEntry] = functionEntry.params;
 
