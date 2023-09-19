@@ -1164,6 +1164,7 @@ groups:
           'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
+          'tools/npm-patches/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
           'tools/saucelabs/**/{*,.*}',
           'tools/saucelabs-daemon/**/{*,.*}',
