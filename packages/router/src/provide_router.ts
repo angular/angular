@@ -22,7 +22,7 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
-import {CREATE_VIEW_TRANSITION, createViewTransition} from './utils/view_transition';
+import {CREATE_VIEW_TRANSITION, createViewTransition, VIEW_TRANSITION_OPTIONS, ViewTransitionsFeatureOptions} from './utils/view_transition';
 
 
 /**
@@ -728,8 +728,15 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
  * @experimental
  */
-export function withViewTransitions(): ViewTransitionsFeature {
-  const providers = [{provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition}];
+export function withViewTransitions(options?: ViewTransitionsFeatureOptions):
+    ViewTransitionsFeature {
+  const providers = [
+    {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
+    {
+      provide: VIEW_TRANSITION_OPTIONS,
+      useValue: {skipNextTransition: !!options?.skipInitialTransition}
+    },
+  ];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
 }
 
