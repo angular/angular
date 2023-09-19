@@ -6,7 +6,7 @@
   "author": "Angular",
   "license": "MIT",
   "scripts": {
-    "postinstall": "node tools/cli-patches/patch.js && patch-package --patch-dir ./tools/npm-patches/",
+    "postinstall": "node tools/cli-patches/patch.js && patch-package --patch-dir ../tools/npm-patches/",
     "prebuild": "yarn setup",
     "build": "bazel build //aio:build",
     "build-prod": "yarn build --config=release",
