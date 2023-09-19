@@ -13,6 +13,23 @@ import {afterNextRender, InjectionToken, Injector, NgZone} from '@angular/core';
 
 export const CREATE_VIEW_TRANSITION =
     new InjectionToken<typeof createViewTransition>(ngDevMode ? 'view transition helper' : '');
+export const VIEW_TRANSITION_OPTIONS =
+    new InjectionToken<{skipNextTransition: boolean}>(ngDevMode ? 'view transition options' : '');
+
+/**
+ * Options to configure the View Transitions integration in the Router.
+ *
+ * @experimental
+ * @publicApi
+ * @see withViewTransitions
+ */
+export interface ViewTransitionsFeatureOptions {
+  /**
+   * Skips the very first call to `startViewTransition`. This can be useful for disabling the
+   * animation during the application's initial loading phase.
+   */
+  skipInitialTransition?: boolean;
+}
 
 /**
  * A helper function for using browser view transitions. This function skips the call to
@@ -21,10 +38,12 @@ export const CREATE_VIEW_TRANSITION =
  * @returns A Promise that resolves when the view transition callback begins.
  */
 export function createViewTransition(injector: Injector): Promise<void> {
+  const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
+  const document = injector.get(DOCUMENT);
   // Create promises outside the Angular zone to avoid causing extra change detections
   return injector.get(NgZone).runOutsideAngular(() => {
-    const document = injector.get(DOCUMENT);
-    if (!document.startViewTransition) {
+    if (!document.startViewTransition || transitionOptions.skipNextTransition) {
+      transitionOptions.skipNextTransition = false;
       return Promise.resolve();
     }
 

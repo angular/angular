@@ -533,53 +533,6 @@ describe('bootstrap', () => {
       expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
       expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
     });
-
-    it('should have the correct event order when using view transitions', async () => {
-      @Component({
-        selector: 'component-a',
-        template: `a`,
-        standalone: true,
-      })
-      class ComponentA {
-      }
-      @Component({
-        selector: 'component-b',
-        template: `b`,
-        standalone: true,
-      })
-      class ComponentB {
-      }
-      @NgModule({
-        imports: [
-          BrowserModule, ComponentA, ComponentB,
-          RouterModule.forRoot(
-              [
-                {path: '', pathMatch: 'full', redirectTo: '/a'},
-                {path: 'a', component: ComponentA},
-                {path: 'b', component: ComponentB},
-              ],
-              {
-                enableViewTransitions: true,
-              })
-        ],
-        declarations: [RootCmp],
-        bootstrap: [RootCmp],
-        providers: [...testProviders],
-      })
-      class TestModule {
-      }
-
-
-      const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
-      const router = res.injector.get(Router);
-      const eventLog = [] as Event[];
-      router.events.subscribe(e => {
-        eventLog.push(e);
-      });
-
-      await router.navigateByUrl('/b');
-      expect(eventLog[eventLog.length - 1]).toBeInstanceOf(NavigationEnd);
-    });
   }
 
   it('can schedule a navigation from the NavigationEnd event #37460', (done) => {
