@@ -111,6 +111,7 @@ export const enum RuntimeErrorCode {
   UNSAFE_IFRAME_ATTRS = -910,
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
+  IMAGE_PERFORMANCE_WARNING = -913,
 
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
