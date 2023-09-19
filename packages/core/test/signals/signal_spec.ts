@@ -24,18 +24,6 @@ describe('signals', () => {
     expect(counter()).toEqual(1);
   });
 
-  it('should have mutate function for mutable, out of bound updates', () => {
-    const state = signal<string[]>(['a']);
-    const derived = computed(() => state().join(':'));
-
-    expect(derived()).toEqual('a');
-
-    state.mutate((s) => {
-      s.push('b');
-    });
-    expect(derived()).toEqual('a:b');
-  });
-
   it('should not update signal when new value is equal to the previous one', () => {
     const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     expect(state()).toEqual('aaa');
@@ -72,31 +60,32 @@ describe('signals', () => {
     expect(upper()).toEqual('D');
   });
 
-  it('should consider objects as non-equal with the default equality function', () => {
-    let stateValue: unknown = {};
-    const state = signal(stateValue);
-    let computeCount = 0;
-    const derived = computed(() => `${typeof state()}:${++computeCount}`);
-    expect(derived()).toEqual('object:1');
+  it('should consider objects as equal based on their identity with the default equality function',
+     () => {
+       let stateValue: unknown = {};
+       const state = signal(stateValue);
+       let computeCount = 0;
+       const derived = computed(() => `${typeof state()}:${++computeCount}`);
+       expect(derived()).toEqual('object:1');
 
-    // reset signal value to the same object instance, expect change notification
-    state.set(stateValue);
-    expect(derived()).toEqual('object:2');
+       // reset signal value to the same object instance, expect NO change notification
+       state.set(stateValue);
+       expect(derived()).toEqual('object:1');
 
-    // reset signal value to a different object instance, expect change notification
-    stateValue = {};
-    state.set(stateValue);
-    expect(derived()).toEqual('object:3');
+       // reset signal value to a different object instance, expect change notification
+       stateValue = {};
+       state.set(stateValue);
+       expect(derived()).toEqual('object:2');
 
-    // reset signal value to a different object type, expect change notification
-    stateValue = [];
-    state.set(stateValue);
-    expect(derived()).toEqual('object:4');
+       // reset signal value to a different object type, expect change notification
+       stateValue = [];
+       state.set(stateValue);
+       expect(derived()).toEqual('object:3');
 
-    // reset signal value to the same array instance, expect change notification
-    state.set(stateValue);
-    expect(derived()).toEqual('object:5');
-  });
+       // reset signal value to the same array instance, expect NO change notification
+       state.set(stateValue);
+       expect(derived()).toEqual('object:3');
+     });
 
   it('should allow converting writable signals to their readonly counterpart', () => {
     const counter = signal(0);
@@ -106,8 +95,6 @@ describe('signals', () => {
     expect(readOnlyCounter.set).toBeUndefined();
     // @ts-expect-error
     expect(readOnlyCounter.update).toBeUndefined();
-    // @ts-expect-error
-    expect(readOnlyCounter.mutate).toBeUndefined();
 
     const double = computed(() => readOnlyCounter() * 2);
     expect(double()).toBe(0);
@@ -139,13 +126,6 @@ describe('signals', () => {
       const counter = signal(0);
 
       counter.update(c => c + 2);
-      expect(log).toBe(1);
-    });
-
-    it('should call the post-signal-set fn when invoking .mutate()', () => {
-      const counter = signal(0);
-
-      counter.mutate(() => {});
       expect(log).toBe(1);
     });
 
