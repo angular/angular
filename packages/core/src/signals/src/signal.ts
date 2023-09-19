@@ -36,12 +36,6 @@ export interface WritableSignal<T> extends Signal<T> {
   update(updateFn: (value: T) => T): void;
 
   /**
-   * Update the current value by mutating it in-place, and
-   * notify any dependents.
-   */
-  mutate(mutatorFn: (value: T) => void): void;
-
-  /**
    * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
    * but can't be changed using set, update or mutate methods. The readonly signals do _not_ have
    * any built-in mechanism that would prevent deep-mutation of their value.
@@ -79,7 +73,6 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
 
   signalFn.set = signalSetFn;
   signalFn.update = signalUpdateFn;
-  signalFn.mutate = signalMutateFn;
   signalFn.asReadonly = signalAsReadonlyFn;
   (signalFn as any)[SIGNAL] = node;
 
@@ -133,21 +126,7 @@ function signalSetFn<T>(this: SignalFn<T>, newValue: T) {
 }
 
 function signalUpdateFn<T>(this: SignalFn<T>, updater: (value: T) => T): void {
-  if (!producerUpdatesAllowed()) {
-    throwInvalidWriteToSignalError();
-  }
-
   signalSetFn.call(this as any, updater(this[SIGNAL].value) as any);
-}
-
-function signalMutateFn<T>(this: SignalFn<T>, mutator: (value: T) => void): void {
-  const node = this[SIGNAL];
-  if (!producerUpdatesAllowed()) {
-    throwInvalidWriteToSignalError();
-  }
-  // Mutate bypasses equality checks as it's by definition changing the value.
-  mutator(node.value);
-  signalValueChanged(node);
 }
 
 function signalAsReadonlyFn<T>(this: SignalFn<T>) {
