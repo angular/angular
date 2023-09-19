@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, DirectiveEntry, EntryType, MemberTags, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {ClassEntry, EntryType} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,7 +25,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Directive, NgModule} from '@angular/core';
 
         @Directive({selector: 'some-tag'})
@@ -35,7 +35,7 @@ runInEachFileSystem(os => {
         export class SomeNgModule { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(2);
       expect(docs[1].entryType).toBe(EntryType.NgModule);

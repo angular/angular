@@ -661,20 +661,26 @@ export class NgCompiler {
    * Gets information for the current program that may be used to generate API
    * reference documentation. This includes Angular-specific information, such
    * as component inputs and outputs.
+   *
+   * @param entryPoint Path to the entry point for the package for which API
+   *     docs should be extracted.
    */
-  getApiDocumentation(): DocEntry[] {
+  getApiDocumentation(entryPoint: string): DocEntry[] {
     const compilation = this.ensureAnalyzed();
     const checker = this.inputProgram.getTypeChecker();
     const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
 
-    let entries: DocEntry[] = [];
-    for (const sourceFile of this.inputProgram.getSourceFiles()) {
-      // We don't want to generate docs for `.d.ts` files.
-      if (sourceFile.isDeclarationFile) continue;
+    const entryPointSourceFile = this.inputProgram.getSourceFiles().find(sourceFile => {
+      // TODO: this will need to be more specific than `.includes`, but the exact path comparison
+      //     will be easier to figure out when the pipeline is running end-to-end.
+      return sourceFile.fileName.includes(entryPoint);
+    });
 
-      entries.push(...docsExtractor.extractAll(sourceFile));
+    if (!entryPointSourceFile) {
+      throw new Error(`Entry point "${entryPoint}" not found in program sources.`);
     }
-    return entries;
+
+    return docsExtractor.extractAll(entryPointSourceFile);
   }
 
   /**

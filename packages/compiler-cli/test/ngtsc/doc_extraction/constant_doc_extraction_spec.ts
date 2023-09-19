@@ -25,11 +25,11 @@ runInEachFileSystem(os => {
     });
 
     it('should extract constants', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export const VERSION = '16.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       const constantEntry = docs[0] as ConstantEntry;
@@ -39,11 +39,11 @@ runInEachFileSystem(os => {
     });
 
     it('should extract multiple constant declarations in a single statement', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         export const PI = 3.14, VERSION = '16.0.0';
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
 
       const [pi, version] = docs as ConstantEntry[];
@@ -58,13 +58,13 @@ runInEachFileSystem(os => {
     });
 
     it('should extract non-primitive constants', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {InjectionToken} from '@angular/core';
         export const SOME_TOKEN = new InjectionToken('something');
         export const TYPED_TOKEN = new InjectionToken<string>();
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
 
       const [someToken, typedToken] = docs as ConstantEntry[];

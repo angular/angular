@@ -25,7 +25,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract standalone directive info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Directive} from '@angular/core';
         @Directive({
           standalone: true,
@@ -35,7 +35,7 @@ runInEachFileSystem(os => {
         export class UserProfile { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Directive);
@@ -47,7 +47,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract standalone component info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Component} from '@angular/core';
         @Component({
           standalone: true,
@@ -58,7 +58,7 @@ runInEachFileSystem(os => {
         export class UserProfile { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Component);
@@ -70,7 +70,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule directive info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Directive, NgModule} from '@angular/core';
         
         @NgModule({declarations: [UserProfile]})
@@ -84,7 +84,7 @@ runInEachFileSystem(os => {
         export class UserProfile { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(2);
       expect(docs[1].entryType).toBe(EntryType.Directive);
@@ -96,7 +96,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule component info', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Component, NgModule} from '@angular/core';
         
         @NgModule({declarations: [UserProfile]})
@@ -111,7 +111,7 @@ runInEachFileSystem(os => {
         export class UserProfile { }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(2);
       expect(docs[1].entryType).toBe(EntryType.Component);
@@ -123,7 +123,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract input and output info for a directive', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Directive, EventEmitter, Input, Output} from '@angular/core';
         @Directive({
           standalone: true,
@@ -138,7 +138,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Directive);
@@ -166,7 +166,7 @@ runInEachFileSystem(os => {
     });
 
     it('should extract input and output info for a component', () => {
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
           standalone: true,
@@ -182,7 +182,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
       expect(docs.length).toBe(1);
       expect(docs[0].entryType).toBe(EntryType.Component);
@@ -211,7 +211,7 @@ runInEachFileSystem(os => {
 
     it('should extract getters and setters as inputs', () => {
       // Test getter-only, a getter + setter, and setter-only.
-      env.write('test.ts', `
+      env.write('index.ts', `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
           standalone: true,
@@ -232,7 +232,7 @@ runInEachFileSystem(os => {
         }
       `);
 
-      const docs: DocEntry[] = env.driveDocsExtraction();
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       expect(classEntry.entryType).toBe(EntryType.Component);
 
