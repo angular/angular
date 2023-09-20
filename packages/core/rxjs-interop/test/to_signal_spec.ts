@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DestroyRef, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
+import {computed, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {BehaviorSubject, ReplaySubject, Subject} from 'rxjs';
 
@@ -107,6 +107,19 @@ describe('toSignal()', () => {
 
     // The signal should have the last value observed before the observable completed.
     expect(counter()).toBe(1);
+  });
+
+  it('should allow toSignal creation in a reactive context - issue 51027', () => {
+    const counter$ = new BehaviorSubject(1);
+
+    const injector = Injector.create([]);
+
+    const doubleCounter = computed(() => {
+      const counter = toSignal(counter$, {requireSync: true, injector});
+      return counter() * 2;
+    });
+
+    expect(doubleCounter()).toBe(2);
   });
 
   describe('with no initial value', () => {
