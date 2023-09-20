@@ -11,5 +11,5 @@
  * @description
  * Entry point for all animation APIs of the animation browser package.
  */
-export {AnimationDriver} from './render/animation_driver';
+export {AnimationDriver, NoopAnimationDriver} from './render/animation_driver';
 export * from './private_export';
