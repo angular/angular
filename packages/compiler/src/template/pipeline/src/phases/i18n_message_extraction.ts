@@ -33,7 +33,8 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart && op.i18n instanceof i18n.Message) {
+      if ((op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n) &&
+          op.i18n instanceof i18n.Message) {
         // Sort the params map to match the ordering in TemplateDefinitionBuilder.
         const params = Object.fromEntries(Object.entries(getParams(op)).sort());
 
@@ -134,7 +135,7 @@ function i18nGenerateClosureVar(
 /**
  * Gets the placeholder values for an i18n block.
  */
-function getParams(op: ir.I18nStartOp): {[placeholder: string]: o.Expression} {
+function getParams(op: ir.I18nStartOp|ir.I18nOp): {[placeholder: string]: o.Expression} {
   const params = op.tagNameParams;
   for (const placeholder in (op.i18n as i18n.Message).placeholders) {
     if (params[placeholder] === undefined) {
