@@ -33,7 +33,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
-import {DeferBlockTemplateDependency} from './api';
+import {R3DeferBlockMetadata} from './api';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -243,7 +243,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private templateIndex: number|null, private templateName: string|null,
       private _namespace: o.ExternalReference, relativeContextFilePath: string,
       private i18nUseExternalIds: boolean,
-      private deferBlocks: Map<t.DeferredBlock, DeferBlockTemplateDependency[]>,
+      private deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
@@ -1281,6 +1281,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
     const {loading, placeholder, error, triggers, prefetchTriggers} = deferred;
+    const metadata = this.deferBlocks.get(deferred);
+
+    if (!metadata) {
+      throw new Error('Could not resolve `defer` block metadata. Block may need to be analyzed.');
+    }
+
     const primaryTemplateIndex =
         this.createEmbeddedTemplateFn(null, deferred.children, '_Defer', deferred.sourceSpan);
     const loadingIndex = loading ?
@@ -1313,7 +1319,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         deferred.sourceSpan, R3.defer, trimTrailingNulls([
           o.literal(deferredIndex),
           o.literal(primaryTemplateIndex),
-          this.createDeferredDepsFunction(depsFnName, deferred),
+          this.createDeferredDepsFunction(depsFnName, metadata),
           o.literal(loadingIndex),
           o.literal(placeholderIndex),
           o.literal(errorIndex),
@@ -1321,25 +1327,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
         ]));
 
-    this.createDeferTriggerInstructions(deferredIndex, triggers, false);
-    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, true);
+    this.createDeferTriggerInstructions(deferredIndex, triggers, metadata, false);
+    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, metadata, true);
 
     // Allocate an extra data slot right after a defer block slot to store
     // instance-specific state of that defer block at runtime.
     this.allocateDataSlot();
   }
 
-  private createDeferredDepsFunction(name: string, deferred: t.DeferredBlock) {
-    const deferredDeps = this.deferBlocks.get(deferred);
-
-    if (!deferredDeps || deferredDeps.length === 0) {
+  private createDeferredDepsFunction(name: string, metadata: R3DeferBlockMetadata) {
+    if (metadata.deps.length === 0) {
       return o.TYPED_NULL_EXPR;
     }
 
     // This defer block has deps for which we need to generate dynamic imports.
     const dependencyExp: o.Expression[] = [];
 
-    for (const deferredDep of deferredDeps) {
+    for (const deferredDep of metadata.deps) {
       if (deferredDep.isDeferrable) {
         // Callback function, e.g. `m () => m.MyCmp;`.
         const innerFn = o.arrowFn(
@@ -1363,7 +1367,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private createDeferTriggerInstructions(
-      deferredIndex: number, triggers: t.DeferredBlockTriggers, prefetch: boolean) {
+      deferredIndex: number, triggers: t.DeferredBlockTriggers, metadata: R3DeferBlockMetadata,
+      prefetch: boolean) {
     const {when, idle, immediate, timer, hover, interaction, viewport} = triggers;
 
     // `deferWhen(ctx.someValue)`
