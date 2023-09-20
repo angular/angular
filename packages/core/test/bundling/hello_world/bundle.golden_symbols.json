@@ -39,6 +39,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -64,6 +67,9 @@
   },
   {
     "name": "DOCUMENT2"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"
@@ -229,6 +235,9 @@
   },
   {
     "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "NoopNgZone"
   },
   {
     "name": "NullInjector"

@@ -90,6 +90,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -151,6 +154,9 @@
   },
   {
     "name": "DefaultValueAccessor"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"
@@ -390,6 +396,9 @@
     "name": "NgForOf"
   },
   {
+    "name": "NgForOfContext"
+  },
+  {
     "name": "NgModuleFactory"
   },
   {
@@ -418,6 +427,9 @@
   },
   {
     "name": "NoneEncapsulationDomRenderer"
+  },
+  {
+    "name": "NoopNgZone"
   },
   {
     "name": "NullInjector"
@@ -607,6 +619,9 @@
   },
   {
     "name": "_DOM"
+  },
+  {
+    "name": "_DuplicateItemRecordList"
   },
   {
     "name": "_DuplicateMap"
