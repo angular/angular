@@ -129,6 +129,7 @@ v16 - v19
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
 |:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/animations` | `AnimationDriver.NOOP` | v17 | v19 |
 | `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
 
 ### Deprecated features with no planned removal version
@@ -149,6 +150,14 @@ This section contains a complete list all deprecated APIs, with details to help 
 In the [API reference section](api) of this site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [Status: deprecated](api?status=deprecated).
 
 </div>
+
+<a id="animations"></a>
+
+### &commat;angular/animations
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Details |
+|:---                                                                                           |:---                                                 |:---                   |:---     |
+| [AnimationDriver.NOOP](api/animations/browser/AnimationDriver#NOOP) | `NoopAnimationDriver` | v17 | Create a new  `NoopAnimationDriver` directly instead of calling `AnimationDriver.NOOP`
 
 <a id="common"></a>
 
