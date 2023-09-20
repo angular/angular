@@ -21,7 +21,7 @@ import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {isPlatformBrowser} from '../util/misc_utils';
-import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy} from '../util/view_utils';
+import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
 import {ɵɵtemplate} from './template';
@@ -33,7 +33,7 @@ import {ɵɵtemplate} from './template';
  * only placeholder content is rendered (if provided).
  */
 function shouldTriggerDeferBlock(injector: Injector): boolean {
-  const config = injector.get(DEFER_BLOCK_CONFIG, {optional: true});
+  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
   if (config?.behavior === DeferBlockBehavior.Manual) {
     return false;
   }
@@ -240,17 +240,21 @@ export function ɵɵdeferPrefetchOnHover() {}  // TODO: implement runtime logic.
 
 /**
  * Creates runtime data structures for the `on interaction` deferred trigger.
- * @param target Optional element on which to listen for hover events.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnInteraction(target?: unknown) {}  // TODO: implement runtime logic.
+export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: number) {
+}  // TODO: implement runtime logic.
 
 /**
  * Creates runtime data structures for the `prefetch on interaction` deferred trigger.
- * @param target Optional element on which to listen for hover events.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnInteraction(target?: unknown) {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes?: number) {
+}  // TODO: implement runtime logic.
 
 /**
  * Creates runtime data structures for the `on viewport` deferred trigger.

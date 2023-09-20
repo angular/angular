@@ -7,7 +7,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferOnImmediate();
     $r3$.ɵɵdeferOnTimer(1337);
     $r3$.ɵɵdeferOnHover();
-    $r3$.ɵɵdeferOnInteraction("button");
+    $r3$.ɵɵdeferOnInteraction(0, -1);
     $r3$.ɵɵdeferOnViewport("button");
   }
   if (rf & 2) {

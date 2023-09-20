@@ -192,6 +192,69 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger in the same view",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_interaction_same_view_trigger.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_same_view_trigger_template.js",
+              "generated": "deferred_interaction_same_view_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger in a parent view",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_interaction_parent_view_trigger.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_parent_view_trigger_template.js",
+              "generated": "deferred_interaction_parent_view_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger inside the placeholder",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_interaction_placeholder_trigger.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_placeholder_trigger_template.js",
+              "generated": "deferred_interaction_placeholder_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
