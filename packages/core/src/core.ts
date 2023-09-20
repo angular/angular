@@ -44,6 +44,7 @@ export {AfterRenderRef, AfterRenderOptions, AfterRenderPhase, afterRender, after
 export {ApplicationConfig, mergeApplicationConfig} from './application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
+export * from './private_export';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
