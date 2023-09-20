@@ -167,7 +167,16 @@ describe('computed', () => {
     expect(watchCount).toEqual(2);
   });
 
-  it('should disallow writing to signals within computeds', () => {
+  it('should allow signal creation within computed', () => {
+    const doubleCounter = computed(() => {
+      const counter = signal(1);
+      return counter() * 2;
+    });
+
+    expect(doubleCounter()).toBe(2);
+  });
+
+  it('should disallow writing to signals within computed', () => {
     const source = signal(0);
     const illegal = computed(() => {
       source.set(1);
