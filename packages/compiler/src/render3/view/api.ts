@@ -292,8 +292,12 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
 
   /**
    * Strategy used for detecting changes in the component.
+   *
+   * In global compilation mode the value is ChangeDetectionStrategy if available as it is
+   * statically resolved during analysis phase. Whereas in local compilation mode the value is the
+   * expression as appears in the decorator.
    */
-  changeDetection?: ChangeDetectionStrategy;
+  changeDetection: ChangeDetectionStrategy|o.Expression|null;
 
   /**
    * The imports expression as appears on the component decorate for standalone component. This

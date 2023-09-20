@@ -185,8 +185,6 @@ export function compileComponentFromMetadata(
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
 
-  const changeDetection = meta.changeDetection;
-
   // Template compilation is currently conditional as we're in the process of rewriting it.
   if (!USE_TEMPLATE_PIPELINE) {
     // This is the main path currently used in compilation, which compiles the template with the
@@ -313,9 +311,17 @@ export function compileComponentFromMetadata(
         'data', o.literalMap([{key: 'animation', value: meta.animations, quoted: false}]));
   }
 
-  // Only set the change detection flag if it's defined and it's not the default.
-  if (changeDetection != null && changeDetection !== core.ChangeDetectionStrategy.Default) {
-    definitionMap.set('changeDetection', o.literal(changeDetection));
+  // Setting change detection flag
+  if (meta.changeDetection !== null) {
+    if (typeof meta.changeDetection === 'number' &&
+        meta.changeDetection !== core.ChangeDetectionStrategy.Default) {
+      // changeDetection is resolved during analysis. Only set it if not the default.
+      definitionMap.set('changeDetection', o.literal(meta.changeDetection));
+    } else if (typeof meta.changeDetection === 'object') {
+      // changeDetection is not resolved during analysis (e.g., we are in local compilation mode).
+      // So place it as is.
+      definitionMap.set('changeDetection', meta.changeDetection);
+    }
   }
 
   const expression =
