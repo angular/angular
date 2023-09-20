@@ -174,7 +174,7 @@ export const enum DeclarationListEmitMode {
 /**
  * Describes a dependency used within a `{#defer}` block.
  */
-export interface DeferBlockTemplateDependency {
+export interface R3DeferBlockTemplateDependency {
   /**
    * Reference to a dependency.
    */
@@ -194,6 +194,17 @@ export interface DeferBlockTemplateDependency {
    * Import path where this dependency is located.
    */
   importPath: string|null;
+}
+
+/**
+ * Information necessary to compile a `defer` block.
+ */
+export interface R3DeferBlockMetadata {
+  /** Dependencies used within the block. */
+  deps: R3DeferBlockTemplateDependency[];
+
+  /** Mapping between triggers and the DOM nodes they refer to. */
+  triggerElements: Map<t.DeferredTrigger, t.Element|null>;
 }
 
 /**
@@ -227,9 +238,9 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   deferrableDeclToImportDecl: Map<o.Expression, o.Expression>;
 
   /**
-   * Map of {#defer} blocks -> their corresponding dependencies.
+   * Map of {#defer} blocks -> their corresponding metadata.
    */
-  deferBlocks: Map<t.DeferredBlock, Array<DeferBlockTemplateDependency>>;
+  deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>;
 
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
