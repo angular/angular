@@ -35,7 +35,7 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart && op.i18n instanceof i18n.Message) {
         // Sort the params map to match the ordering in TemplateDefinitionBuilder.
-        const params = Object.fromEntries(Object.entries(op.tagNameParams).sort());
+        const params = Object.fromEntries(Object.entries(getParams(op)).sort());
 
         const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
         // Closure Compiler requires const names to start with `MSG_` but disallows any other const
@@ -129,4 +129,19 @@ function i18nGenerateClosureVar(
     name = pool.uniqueName(prefix);
   }
   return o.variable(name);
+}
+
+/**
+ * Gets the placeholder values for an i18n block.
+ */
+function getParams(op: ir.I18nStartOp): {[placeholder: string]: o.Expression} {
+  const params = op.tagNameParams;
+  for (const placeholder in (op.i18n as i18n.Message).placeholders) {
+    if (params[placeholder] === undefined) {
+      // throw Error(`Missing value for i18n placeholder: ${placeholder}`);
+      //  TODO: temporary - revert
+      params[placeholder] = o.literal(undefined);
+    }
+  }
+  return params;
 }
