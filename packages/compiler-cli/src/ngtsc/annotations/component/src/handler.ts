@@ -235,8 +235,14 @@ export class ComponentDecoratorHandler implements
     const encapsulation: number =
         resolveEnumValue(this.evaluator, component, 'encapsulation', 'ViewEncapsulation') ??
         ViewEncapsulation.Emulated;
-    const changeDetection: number|null =
-        resolveEnumValue(this.evaluator, component, 'changeDetection', 'ChangeDetectionStrategy');
+
+    let changeDetection: number|Expression|null = null;
+    if (this.compilationMode !== CompilationMode.LOCAL) {
+      changeDetection =
+          resolveEnumValue(this.evaluator, component, 'changeDetection', 'ChangeDetectionStrategy');
+    } else if (component.has('changeDetection')) {
+      changeDetection = new WrappedNodeExpr(component.get('changeDetection')!);
+    }
 
     let animations: Expression|null = null;
     let animationTriggerNames: AnimationTriggerNames|null = null;
@@ -459,6 +465,7 @@ export class ComponentDecoratorHandler implements
             ngContentSelectors: template.ngContentSelectors,
           },
           encapsulation,
+          changeDetection,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles,
 
@@ -494,9 +501,7 @@ export class ComponentDecoratorHandler implements
       },
       diagnostics,
     };
-    if (changeDetection !== null) {
-      output.analysis!.meta.changeDetection = changeDetection;
-    }
+
     return output;
   }
 
