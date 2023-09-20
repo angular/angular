@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
@@ -32,6 +33,38 @@ export function resolveEnumValue(
     }
   }
   return resolved;
+}
+
+/**
+ * Resolves a EncapsulationEnum expression locally on best effort without having to calculate the
+ * reference. This suites local compilation mode where each file is compiled individually.
+ *
+ * The static analysis is still needed in local compilation mode since the value of this enum will
+ * be used later to decide the generated code for styles.
+ */
+export function resolveEncapsulationEnumValueLocally(expr?: ts.Expression): number|null {
+  if (!expr) {
+    return null;
+  }
+
+  const exprText = expr.getText().trim();
+
+  for (const key in ViewEncapsulation) {
+    if (!Number.isNaN(Number(key))) {
+      continue;
+    }
+
+    const suffix = `ViewEncapsulation.${key}`;
+
+    // Check whether the enum is imported by name or used by import namespace (e.g.,
+    // core.ViewEncapsulation.None)
+    if (exprText === suffix || exprText.endsWith(`.${suffix}`)) {
+      const ans = Number(ViewEncapsulation[key]);
+      return ans;
+    }
+  }
+
+  return null;
 }
 
 /** Determines if the result of an evaluation is a string array. */
