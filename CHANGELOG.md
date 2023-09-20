@@ -1,3 +1,12 @@
+<a name="16.2.6"></a>
+# 16.2.6 (2023-09-20)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82712f80df](https://github.com/angular/angular/commit/82712f80dfc6aed2baf8d8f80c3552a6707c88ff) | fix | ensure a consumer drops all its stale producers ([#51722](https://github.com/angular/angular/pull/51722)) ([#51772](https://github.com/angular/angular/pull/51772)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.5"></a>
 # 16.2.5 (2023-09-13)
 
