@@ -82,7 +82,11 @@ export function createComponentDefinitionMap(
   definitionMap.set('viewProviders', meta.viewProviders);
   definitionMap.set('animations', meta.animations);
 
-  if (meta.changeDetection !== undefined) {
+  if (meta.changeDetection !== null) {
+    if (typeof meta.changeDetection === 'object') {
+      throw new Error('Impossible state! Change detection flag is not resolved!');
+    }
+
     definitionMap.set(
         'changeDetection',
         o.importExpr(R3.ChangeDetectionStrategy)

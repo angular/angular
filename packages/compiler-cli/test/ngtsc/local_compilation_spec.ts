@@ -345,6 +345,27 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('component fields', () => {
+      it('should place the changeDetection as it is into the component def', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {SomeWeirdThing} from 'some-where';
+          
+          @Component({
+            changeDetection: SomeWeirdThing,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('changeDetection: SomeWeirdThing');
+      });
+    });
+
     describe('constructor injection', () => {
       it('should include injector types with all possible import/injection styles into component factory',
          () => {
