@@ -9,7 +9,7 @@
 import './util/ng_jit_mode';
 
 import {Observable, of, Subscription} from 'rxjs';
-import {distinctUntilChanged, share, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
@@ -1300,4 +1300,26 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
                                                       [],
     zoneProviders,
   ]);
+}
+
+let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
+/**
+ * Returns a Promise that resolves when the application becomes stable after this method is called
+ * the first time.
+ */
+export function whenStable(applicationRef: ApplicationRef): Promise<void> {
+  whenStableStore ??= new WeakMap();
+  const cachedWhenStable = whenStableStore.get(applicationRef);
+  if (cachedWhenStable) {
+    return cachedWhenStable;
+  }
+
+  const whenStablePromise =
+      applicationRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => void 0);
+  whenStableStore.set(applicationRef, whenStablePromise);
+
+  // Be a good citizen and clean the store `onDestroy` even though we are using `WeakMap`.
+  applicationRef.onDestroy(() => whenStableStore?.delete(applicationRef));
+
+  return whenStablePromise;
 }
