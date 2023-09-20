@@ -1,3 +1,73 @@
+<a name="17.0.0-next.5"></a>
+# 17.0.0-next.5 (2023-09-20)
+## Breaking Changes
+### 
+- Node.js v16 support has been removed and the minimum support version has been bumped to 18.13.0.
+  
+  Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
+### common
+- 
+### core
+- Angular now required `zone.js` version `~0.14.0`
+- Versions of TypeScript older than 5.2 are no longer supported.
+### router
+- `malformedUriErrorHandler` is no longer available in
+  the `RouterModule.forRoot` options. URL parsing errors should instead be
+  handled in the `UrlSerializer.parse` method.
+### zone.js
+- Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
+  
+  The proper way to import `zone.js` and `zone.js/testing` is:
+  ```js
+  import 'zone.js';
+  import 'zone.js/testing';
+  ```
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59aa0634f4](https://github.com/angular/angular/commit/59aa0634f4d4694203f2a69c40017fe5a3962514) | build | remove support for Node.js v16 ([#51755](https://github.com/angular/angular/pull/51755)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe2fd7e1a8](https://github.com/angular/angular/commit/fe2fd7e1a898a4525c219065a6d0908988dfd7e2) | feat | make the warning for lazy-loaded lcp image an error ([#51748](https://github.com/angular/angular/pull/51748)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f6d9a73ab](https://github.com/angular/angular/commit/7f6d9a73ab8b658d0d8148080dfefb2550bee6b4) | feat | expand class api doc extraction ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [c7daf7ea16](https://github.com/angular/angular/commit/c7daf7ea1692391f7cac8f794ed777887a2764af) | feat | extract directive docs info ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [e0b1bb33d7](https://github.com/angular/angular/commit/e0b1bb33d77babe881f77f52cb1b71e345f5696b) | feat | extract doc info for JsDoc ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [b9c70158ab](https://github.com/angular/angular/commit/b9c70158abecd81a5af512c8b4da685851cf159f) | feat | extract docs for accessors, rest params, and types ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [a24ae994a0](https://github.com/angular/angular/commit/a24ae994a0470fdac09a69937fd0580cff6c6d68) | feat | extract docs for top level functions and consts ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [2e41488296](https://github.com/angular/angular/commit/2e41488296879685b19dfba8d78037690347bda3) | feat | extract docs info for enums, pipes, and NgModules ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [34495b3533](https://github.com/angular/angular/commit/34495b35337892ab209d9955ff7fe2897a0c5d41) | feat | extract docs via exports ([#51828](https://github.com/angular/angular/pull/51828)) |
+| [7e82df45c5](https://github.com/angular/angular/commit/7e82df45c5bb72ec3dafaa07dc1eaa5d463b006c) | feat | initial skeleton for API doc extraction ([#51733](https://github.com/angular/angular/pull/51733)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b66330329](https://github.com/angular/angular/commit/5b66330329fd066a7c347f040a330b4c7f2a0a2b) | fix | allow non-array imports for standalone component in local compilation mode ([#51819](https://github.com/angular/angular/pull/51819)) |
+| [19c3dc18d3](https://github.com/angular/angular/commit/19c3dc18d3c0cfd83efec2c8f81b40860d570346) | fix | fix NgModule injector def in local compilation mode when imports/exports are non-array expressions ([#51819](https://github.com/angular/angular/pull/51819)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [81b67aa987](https://github.com/angular/angular/commit/81b67aa98767078aebae22150d3441372772c28f) | feat | add support for zone.js 0.14.0 ([#51774](https://github.com/angular/angular/pull/51774)) |
+| [e23aaa7d75](https://github.com/angular/angular/commit/e23aaa7d75efdd52be4dd7ca9267bc60d36059c2) | feat | drop support for older TypeScript versions ([#51792](https://github.com/angular/angular/pull/51792)) |
+| [5ead7d412d](https://github.com/angular/angular/commit/5ead7d412d847c85176a321e58d12dcdfc0dab67) | fix | ensure a consumer drops all its stale producers ([#51722](https://github.com/angular/angular/pull/51722)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2416a284f](https://github.com/angular/angular/commit/e2416a284ff086752c809689ef74588f02e5f0e4) | feat | Enable go to definition of styleUrl ([#51746](https://github.com/angular/angular/pull/51746)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a20a44c64](https://github.com/angular/angular/commit/5a20a44c64066e47894ca3cbe26327766ca89a42) | fix | ng-add schematics for application builder ([#51777](https://github.com/angular/angular/pull/51777)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0b3e6a41d0](https://github.com/angular/angular/commit/0b3e6a41d025997d2947125d875ac26ecd1b86d9) | fix | Remove malformedUriErrorHandler from `ExtraOptions` ([#51745](https://github.com/angular/angular/pull/51745)) |
+| [c03baed854](https://github.com/angular/angular/commit/c03baed8547c2c1da576307c708d2682dfdf3742) | fix | use DOCUMENT token instead of document directly in view transitions ([#51814](https://github.com/angular/angular/pull/51814)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.6"></a>
 # 16.2.6 (2023-09-20)
 ### core
