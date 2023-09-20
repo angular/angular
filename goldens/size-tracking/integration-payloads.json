@@ -35,6 +35,13 @@
       "polyfills": 33782
     }
   },
+  "animations-async": {
+    "uncompressed": {
+      "runtime": 2755,
+      "main": 221187,
+      "polyfills": 33782
+    }
+  },
   "platform-server/standalone/browser": {
     "uncompressed": {
       "runtime": 2694,
