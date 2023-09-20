@@ -4,6 +4,9 @@
 
 ```ts
 
+import { AnimationPlayer } from '@angular/animations';
+import * as i0 from '@angular/core';
+
 // @public (undocumented)
 export abstract class AnimationDriver {
     // (undocumented)
@@ -15,7 +18,7 @@ export abstract class AnimationDriver {
     abstract getParentElement(element: unknown): unknown;
     // @deprecated (undocumented)
     abstract matchesElement(element: any, selector: string): boolean;
-    // (undocumented)
+    // @deprecated (undocumented)
     static NOOP: AnimationDriver;
     // (undocumented)
     abstract query(element: any, selector: string, multi: boolean): any[];
@@ -23,6 +26,28 @@ export abstract class AnimationDriver {
     abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
     // (undocumented)
     abstract validateStyleProperty(prop: string): boolean;
+}
+
+// @public
+export class NoopAnimationDriver implements AnimationDriver {
+    // (undocumented)
+    animate(element: any, keyframes: Array<Map<string, string | number>>, duration: number, delay: number, easing: string, previousPlayers?: any[], scrubberAccessRequested?: boolean): AnimationPlayer;
+    // (undocumented)
+    computeStyle(element: any, prop: string, defaultValue?: string): string;
+    // (undocumented)
+    containsElement(elm1: any, elm2: any): boolean;
+    // (undocumented)
+    getParentElement(element: unknown): unknown;
+    // @deprecated (undocumented)
+    matchesElement(_element: any, _selector: string): boolean;
+    // (undocumented)
+    query(element: any, selector: string, multi: boolean): any[];
+    // (undocumented)
+    validateStyleProperty(prop: string): boolean;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoopAnimationDriver, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoopAnimationDriver>;
 }
 
 // (No @packageDocumentation comment for this package)
