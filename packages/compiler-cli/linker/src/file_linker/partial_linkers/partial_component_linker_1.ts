@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TemplateDependencyKind, R3TemplateDependencyMetadata, ViewEncapsulation} from '@angular/compiler';
+import {BoundTarget, ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TargetBinder, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -81,6 +81,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
           templateSource.expression, `Errors found in the template:\n${errors}`);
     }
 
+    const binder = new R3TargetBinder(new SelectorMatcher());
+    const boundTarget = binder.bind({template: template.nodes});
     let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
     const extractDeclarationTypeExpr =
@@ -169,9 +171,9 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       declarationListEmitMode,
       styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) :
                                       [],
+      deferBlocks: this.createR3DeferredMetadata(boundTarget),
 
-      // Defer blocks are not yet supported in partial compilation.
-      deferBlocks: new Map(),
+      // Defer blocks are not yet fully supported in partial compilation.
       deferrableDeclToImportDecl: new Map(),
 
       encapsulation: metaObj.has('encapsulation') ?
@@ -250,6 +252,34 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       range: {startPos: startPos + 1, endPos: endPos - 1, startLine, startCol: startCol + 1},
       isEscaped: true,
     };
+  }
+
+  private createR3DeferredMetadata(boundTarget: BoundTarget<any>):
+      Map<TmplAstDeferredBlock, R3DeferBlockMetadata> {
+    const deferredBlocks = boundTarget.getDeferBlocks();
+    const meta = new Map<TmplAstDeferredBlock, R3DeferBlockMetadata>();
+
+    for (const block of deferredBlocks) {
+      const triggerElements = new Map<TmplAstDeferredTrigger, TmplAstElement>();
+
+      this.resolveDeferTriggers(block, block.triggers, boundTarget, triggerElements);
+      this.resolveDeferTriggers(block, block.prefetchTriggers, boundTarget, triggerElements);
+
+      // TODO: leaving `deps` empty for now, to be implemented as one of the next steps.
+      meta.set(block, {deps: [], triggerElements});
+    }
+
+    return meta;
+  }
+
+  private resolveDeferTriggers(
+      block: TmplAstDeferredBlock, triggers: TmplAstDeferredBlockTriggers,
+      boundTarget: BoundTarget<any>,
+      triggerElements: Map<TmplAstDeferredTrigger, TmplAstElement|null>): void {
+    Object.keys(triggers).forEach(key => {
+      const trigger = triggers[key as keyof TmplAstDeferredBlockTriggers]!;
+      triggerElements.set(trigger, boundTarget.getDeferredTriggerTarget(block, trigger));
+    });
   }
 }
 
