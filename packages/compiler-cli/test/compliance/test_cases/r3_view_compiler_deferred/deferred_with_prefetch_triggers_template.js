@@ -8,7 +8,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferPrefetchOnImmediate();
     $r3$.ɵɵdeferPrefetchOnTimer(1337);
     $r3$.ɵɵdeferPrefetchOnHover();
-    $r3$.ɵɵdeferPrefetchOnInteraction("button");
+    $r3$.ɵɵdeferPrefetchOnInteraction(0, -1);
     $r3$.ɵɵdeferPrefetchOnViewport("button");
   }
   if (rf & 2) {
