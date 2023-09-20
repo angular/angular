@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵwhenStable as whenStable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {first, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 
 import {HttpHeaders} from './headers';
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
@@ -167,7 +167,7 @@ export function withHttpTransferCache(): Provider[] {
         const cacheState = inject(CACHE_STATE);
 
         return () => {
-          appRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => {
+          whenStable(appRef).then(() => {
             cacheState.isCacheActive = false;
           });
         };

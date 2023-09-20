@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
-import {first} from 'rxjs/operators';
+import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
@@ -69,7 +68,7 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
   const environmentInjector = applicationRef.injector;
 
   // Block until application is stable.
-  await applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
+  await whenStable(applicationRef);
 
   const platformState = platformRef.injector.get(PlatformState);
   if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {

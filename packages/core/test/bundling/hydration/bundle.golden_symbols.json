@@ -1320,6 +1320,12 @@
     "name": "walkProviderTree"
   },
   {
+    "name": "whenStable"
+  },
+  {
+    "name": "whenStableStore"
+  },
+  {
     "name": "writeDirectClass"
   },
   {

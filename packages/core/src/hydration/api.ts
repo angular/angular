@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {first} from 'rxjs/operators';
-
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application_ref';
 import {ENABLED_SSR_FEATURES} from '../application_tokens';
 import {Console} from '../console';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
@@ -85,8 +83,8 @@ function printHydrationStats(injector: Injector) {
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
-function whenStable(appRef: ApplicationRef, injector: Injector): Promise<void> {
-  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
+  const whenStablePromise = whenStable(appRef);
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);
@@ -99,10 +97,10 @@ function whenStable(appRef: ApplicationRef, injector: Injector): Promise<void> {
       return setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
     });
 
-    isStablePromise.finally(() => clearTimeout(timeoutId));
+    whenStablePromise.finally(() => clearTimeout(timeoutId));
   }
 
-  return isStablePromise.then(() => {});
+  return whenStablePromise;
 }
 
 /**
@@ -184,7 +182,7 @@ export function withDomHydration(): EnvironmentProviders {
             //
             // Note: the cleanup task *MUST* be scheduled within the Angular zone
             // to ensure that change detection is properly run afterward.
-            whenStable(appRef, injector).then(() => {
+            whenStableWithTimeout(appRef, injector).then(() => {
               NgZone.assertInAngularZone();
               cleanupDehydratedViews(appRef);
 
