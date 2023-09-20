@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {BoundTarget, R3TargetBinder, SelectorMatcher} from './compiler';
 import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, InputTransformFunction, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
@@ -25,9 +23,12 @@ import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compile
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+import type {BoundTarget} from './render3/view/t2_api';
+import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {SelectorMatcher} from './selector';
 
 let enabledBlockTypes: Set<string>|undefined;
 
