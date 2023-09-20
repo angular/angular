@@ -364,6 +364,106 @@ runInEachFileSystem(() => {
 
         expect(jsContents).toContain('changeDetection: SomeWeirdThing');
       });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with no styles',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.Emulated,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // If there is no style, don't generate css selectors on elements by setting
+           // encapsulation to none (=2)
+           expect(jsContents).toContain('encapsulation: 2');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with styles',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.Emulated,
+            styles: ['color: blue'],
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // encapsulation is set only for non-default value
+           expect(jsContents).not.toContain('encapsulation: 0');
+           expect(jsContents).toContain('styles: ["color: blue"]');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.ShadowDom',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.ShadowDom,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toContain('encapsulation: 3');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.None',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.None,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toContain('encapsulation: 2');
+         });
+
+      it('should default encapsulation to Emulated', () => {
+        env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // If there is no style, don't generate css selectors on elements by setting encapsulation
+        // to none (=2)
+        expect(jsContents).toContain('encapsulation: 2');
+      });
     });
 
     describe('constructor injection', () => {
