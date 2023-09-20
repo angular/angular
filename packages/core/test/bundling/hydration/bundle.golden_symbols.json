@@ -1323,7 +1323,7 @@
     "name": "whenStable"
   },
   {
-    "name": "whenStableMap"
+    "name": "whenStableStore"
   },
   {
     "name": "writeDirectClass"
