@@ -15,10 +15,19 @@
     "name": "AbsoluteRedirect"
   },
   {
+    "name": "ActivateRoutes"
+  },
+  {
     "name": "ActivatedRoute"
   },
   {
     "name": "ActivatedRouteSnapshot"
+  },
+  {
+    "name": "ActivationEnd"
+  },
+  {
+    "name": "ActivationStart"
   },
   {
     "name": "AfterRenderEventManager"
@@ -31,6 +40,9 @@
   },
   {
     "name": "ApplicationRef"
+  },
+  {
+    "name": "ApplyRedirects"
   },
   {
     "name": "ArgumentOutOfRangeError"
@@ -90,10 +102,19 @@
     "name": "CatchSubscriber"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
     "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "ChildActivationEnd"
+  },
+  {
+    "name": "ChildActivationStart"
   },
   {
     "name": "ChildrenOutletContexts"
@@ -166,6 +187,9 @@
   },
   {
     "name": "DefaultUrlSerializer"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"
@@ -336,6 +360,9 @@
     "name": "MapSubscriber"
   },
   {
+    "name": "MapToOperator"
+  },
+  {
     "name": "MapToSubscriber"
   },
   {
@@ -343,6 +370,9 @@
   },
   {
     "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "ModuleWithComponentFactories"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -486,6 +516,9 @@
     "name": "OuterSubscriber"
   },
   {
+    "name": "OutletContext"
+  },
+  {
     "name": "OutletInjector"
   },
   {
@@ -502,6 +535,9 @@
   },
   {
     "name": "PRIMARY_OUTLET"
+  },
+  {
+    "name": "ParamsAsMap"
   },
   {
     "name": "PathLocationStrategy"
@@ -552,6 +588,9 @@
     "name": "ROUTES"
   },
   {
+    "name": "Recognizer"
+  },
+  {
     "name": "RedirectRequest"
   },
   {
@@ -577,6 +616,12 @@
   },
   {
     "name": "RootViewRef"
+  },
+  {
+    "name": "RouteConfigLoadEnd"
+  },
+  {
+    "name": "RouteConfigLoadStart"
   },
   {
     "name": "RouteReuseStrategy"
@@ -633,6 +678,9 @@
     "name": "Sanitizer"
   },
   {
+    "name": "ScanOperator"
+  },
+  {
     "name": "ScanSubscriber"
   },
   {
@@ -687,6 +735,9 @@
     "name": "TQueries_"
   },
   {
+    "name": "TQueryMetadata_"
+  },
+  {
     "name": "TQuery_"
   },
   {
@@ -706,6 +757,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeUntilOperator"
   },
   {
     "name": "TakeUntilSubscriber"
@@ -1809,9 +1863,6 @@
     "name": "provideZoneChangeDetection"
   },
   {
-    "name": "recognize2"
-  },
-  {
     "name": "redirectIfUrlTree"
   },
   {
@@ -1852,9 +1903,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"
