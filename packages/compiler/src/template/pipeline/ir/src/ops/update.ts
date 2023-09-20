@@ -22,7 +22,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -510,6 +510,39 @@ export function createConditionalOp(
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+  };
+}
+
+export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                          DependsOnSlotContextOpTrait {
+  kind: OpKind.I18nExpression;
+
+  /**
+   * The i18n block that this expression belongs to.
+   */
+  target: XrefId;
+
+  /**
+   * The expression value.
+   */
+  expression: o.Expression;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create an i18n expression op.
+ */
+export function createI18nExpressionOp(
+    target: XrefId, expression: o.Expression, sourceSpan: ParseSourceSpan): I18nExpressionOp {
+  return {
+    kind: OpKind.I18nExpression,
+    target,
+    expression,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_VARS,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
   };
 }

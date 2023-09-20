@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
-import {ConsumesVarsTrait, TRAIT_USES_SLOT_INDEX, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -816,6 +816,9 @@ export function transformExpressionsInOp(
       }
       op.sanitizer =
           op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
+      break;
+    case OpKind.I18nExpression:
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.InterpolateText:
       transformExpressionsInInterpolation(op.interpolation, transform, flags);

@@ -9,6 +9,7 @@
 import {ConstantPool} from '../../../constant_pool';
 import {SecurityContext} from '../../../core';
 import * as e from '../../../expression_parser/ast';
+import * as i18n from '../../../i18n/i18n_ast';
 import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
@@ -16,7 +17,7 @@ import * as t from '../../../render3/r3_ast';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
-import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit, HostBindingCompilationUnit} from './compilation';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
 import {BINARY_OPERATORS, namespaceForKey} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
@@ -150,7 +151,15 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   ingestReferences(startOp, element);
   ingestNodes(unit, element.children);
 
-  unit.create.push(ir.createElementEndOp(id, element.endSourceSpan));
+  const endOp = ir.createElementEndOp(id, element.endSourceSpan);
+  unit.create.push(endOp);
+
+  // If there is an i18n message associated with this element, insert  i18n start and end ops.
+  if (element.i18n instanceof i18n.Message) {
+    const i18nBlockId = unit.job.allocateXrefId();
+    ir.OpList.insertAfter<ir.CreateOp>(ir.createI18nStartOp(i18nBlockId, element.i18n), startOp);
+    ir.OpList.insertBefore<ir.CreateOp>(ir.createI18nEndOp(i18nBlockId), endOp);
+  }
 }
 
 /**
@@ -178,6 +187,13 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
 
   for (const {name, value} of tmpl.variables) {
     childView.contextVariables.set(name, value);
+  }
+
+  // If there is an i18n message associated with this template, insert  i18n start and end ops.
+  if (tmpl.i18n) {
+    const id = unit.job.allocateXrefId();
+    ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
+    ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
   }
 }
 

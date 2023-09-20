@@ -10,7 +10,7 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import {CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit, CompilationJob} from './compilation';
+import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
@@ -22,9 +22,10 @@ import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseGenerateI18nBlocks} from './phases/generate_i18n_blocks';
+import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
+import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
 import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
 import {phaseLocalRefs} from './phases/local_refs';
@@ -35,10 +36,11 @@ import {phaseNgContainer} from './phases/ng_container';
 import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseNonbindable} from './phases/nonbindable';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
+import {phaseOrdering} from './phases/ordering';
 import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
+import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phaseOrdering} from './phases/ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -54,9 +56,6 @@ import {phaseStyleBindingSpecialization} from './phases/style_binding_specializa
 import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
-import {phaseI18nConstCollection} from './phases/i18n_const_collection';
-import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -71,7 +70,6 @@ type Phase = {
 
 const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseRemoveContentSelectors},
-  {kind: Kind.Tmpl, fn: phaseGenerateI18nBlocks},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
   {kind: Kind.Host, fn: phaseHostStylePropertyParsing},
   {kind: Kind.Tmpl, fn: phaseNamespace},
