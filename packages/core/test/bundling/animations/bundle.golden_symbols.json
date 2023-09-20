@@ -45,6 +45,12 @@
     "name": "AnimationRenderer"
   },
   {
+    "name": "AnimationRendererFactory"
+  },
+  {
+    "name": "AnimationStateStyles"
+  },
+  {
     "name": "AnimationStyleNormalizer"
   },
   {
@@ -55,6 +61,12 @@
   },
   {
     "name": "AnimationTransitionFactory"
+  },
+  {
+    "name": "AnimationTransitionNamespace"
+  },
+  {
+    "name": "AnimationTrigger"
   },
   {
     "name": "AnimationsComponent"
@@ -129,6 +141,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -181,6 +196,9 @@
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"
@@ -417,6 +435,9 @@
     "name": "NoopAnimationPlayer"
   },
   {
+    "name": "NoopNgZone"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -567,7 +588,13 @@
     "name": "TestabilityRegistry"
   },
   {
+    "name": "TimelineAnimationEngine"
+  },
+  {
     "name": "TimelineBuilder"
+  },
+  {
+    "name": "TransitionAnimationEngine"
   },
   {
     "name": "TransitionAnimationPlayer"
@@ -586,6 +613,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "WebAnimationsDriver"
   },
   {
     "name": "WebAnimationsPlayer"

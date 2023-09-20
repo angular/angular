@@ -51,6 +51,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -88,6 +91,9 @@
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"

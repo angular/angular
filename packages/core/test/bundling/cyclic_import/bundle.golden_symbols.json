@@ -63,6 +63,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -106,6 +109,9 @@
   },
   {
     "name": "DepComponent"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
   },
   {
     "name": "DistinctUntilChangedSubscriber"
@@ -310,6 +316,9 @@
   },
   {
     "name": "NoneEncapsulationDomRenderer"
+  },
+  {
+    "name": "NoopNgZone"
   },
   {
     "name": "NullInjector"
