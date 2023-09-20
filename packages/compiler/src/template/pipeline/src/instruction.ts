@@ -203,8 +203,8 @@ export function i18nStart(slot: number, constIndex: number): ir.CreateOp {
   return call(Identifiers.i18nStart, [o.literal(slot), o.literal(constIndex)], null);
 }
 
-export function i18n(slot: number): ir.CreateOp {
-  return call(Identifiers.i18n, [o.literal(slot)], null);
+export function i18n(slot: number, constIndex: number): ir.CreateOp {
+  return call(Identifiers.i18n, [o.literal(slot), o.literal(constIndex)], null);
 }
 
 export function i18nEnd(): ir.CreateOp {
