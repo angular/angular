@@ -63,6 +63,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -114,7 +117,13 @@
     "name": "DefaultIfEmptySubscriber"
   },
   {
+    "name": "DistinctUntilChangedOperator"
+  },
+  {
     "name": "DistinctUntilChangedSubscriber"
+  },
+  {
+    "name": "DoOperator"
   },
   {
     "name": "DomAdapter"
