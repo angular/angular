@@ -303,6 +303,9 @@ export function textInterpolate(
   return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
+export function i18nExp(expr: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.i18nExp, [expr], sourceSpan);
+}
 
 export function propertyInterpolate(
     name: string, strings: string[], expressions: o.Expression[], sanitizer: o.Expression|null,

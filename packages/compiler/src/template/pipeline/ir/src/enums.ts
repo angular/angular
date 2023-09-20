@@ -184,6 +184,11 @@ export enum OpKind {
    * The end of an i18n block.
    */
   I18nEnd,
+
+  /**
+   * An expression in an i18n message.
+   */
+  I18nExpression,
 }
 
 /**
