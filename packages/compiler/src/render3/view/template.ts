@@ -1403,43 +1403,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           [o.literal(timer.delay)]);
     }
 
-    // `deferOnHover()`
+    // `deferOnHover(index, walkUpTimes)`
     if (hover) {
-      this.creationInstruction(
-          hover.sourceSpan, prefetch ? R3.deferPrefetchOnHover : R3.deferOnHover);
+      this.domNodeBasedTrigger(
+          'hover', hover, metadata, prefetch ? R3.deferPrefetchOnHover : R3.deferOnHover);
     }
 
-    // TODO: `deferOnInteraction(index, walkUpTimes)`
+    // `deferOnInteraction(index, walkUpTimes)`
     if (interaction) {
-      const instructionRef = prefetch ? R3.deferPrefetchOnInteraction : R3.deferOnInteraction;
-      const triggerEl = metadata.triggerElements.get(interaction);
-
-      // Don't generate anything if a trigger cannot be resolved.
-      // We'll have template diagnostics to surface these to users.
-      if (triggerEl) {
-        this.creationInstruction(interaction.sourceSpan, instructionRef, () => {
-          const location = this.elementLocations.get(triggerEl);
-
-          if (!location) {
-            throw new Error(
-                `Could not determine location of reference passed into ` +
-                `'interaction' trigger. Template may not have been fully analyzed.`);
-          }
-
-          // A negative depth means that the trigger is inside the placeholder.
-          // Cap it at -1 since we only care whether or not it's negative.
-          const depth = Math.max(this.level - location.level, -1);
-          const params = [o.literal(location.index)];
-
-          // The most common case should be a trigger within the view so we can omit a depth of
-          // zero. For triggers in parent views and in the placeholder we need to pass it in.
-          if (depth !== 0) {
-            params.push(o.literal(depth));
-          }
-
-          return params;
-        });
-      }
+      this.domNodeBasedTrigger(
+          'interaction', interaction, metadata,
+          prefetch ? R3.deferPrefetchOnInteraction : R3.deferOnInteraction);
     }
 
     // TODO(crisbeto): currently the reference is passed as a string.
@@ -1450,6 +1424,41 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           viewport.sourceSpan, prefetch ? R3.deferPrefetchOnViewport : R3.deferOnViewport,
           [o.literal(viewport.reference)]);
     }
+  }
+
+  private domNodeBasedTrigger(
+      name: string, trigger: t.InteractionDeferredTrigger|t.HoverDeferredTrigger,
+      metadata: R3DeferBlockMetadata, instructionRef: o.ExternalReference) {
+    const triggerEl = metadata.triggerElements.get(trigger);
+
+    // Don't generate anything if a trigger cannot be resolved.
+    // We'll have template diagnostics to surface these to users.
+    if (!triggerEl) {
+      return;
+    }
+
+    this.creationInstruction(trigger.sourceSpan, instructionRef, () => {
+      const location = this.elementLocations.get(triggerEl);
+
+      if (!location) {
+        throw new Error(
+            `Could not determine location of reference passed into ` +
+            `'${name}' trigger. Template may not have been fully analyzed.`);
+      }
+
+      // A negative depth means that the trigger is inside the placeholder.
+      // Cap it at -1 since we only care whether or not it's negative.
+      const depth = Math.max(this.level - location.level, -1);
+      const params = [o.literal(location.index)];
+
+      // The most common case should be a trigger within the view so we can omit a depth of
+      // zero. For triggers in parent views and in the placeholder we need to pass it in.
+      if (depth !== 0) {
+        params.push(o.literal(depth));
+      }
+
+      return params;
+    });
   }
 
   private allocateDataSlot() {
