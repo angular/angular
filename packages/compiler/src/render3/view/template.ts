@@ -1416,18 +1416,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           prefetch ? R3.deferPrefetchOnInteraction : R3.deferOnInteraction);
     }
 
-    // TODO(crisbeto): currently the reference is passed as a string.
-    // Update this once we figure out how we should refer to the target.
-    // `deferOnViewport(target)`
+    // `deferOnViewport(index, walkUpTimes)`
     if (viewport) {
-      this.creationInstruction(
-          viewport.sourceSpan, prefetch ? R3.deferPrefetchOnViewport : R3.deferOnViewport,
-          [o.literal(viewport.reference)]);
+      this.domNodeBasedTrigger(
+          'viewport', viewport, metadata,
+          prefetch ? R3.deferPrefetchOnViewport : R3.deferOnViewport);
     }
   }
 
   private domNodeBasedTrigger(
-      name: string, trigger: t.InteractionDeferredTrigger|t.HoverDeferredTrigger,
+      name: string,
+      trigger: t.InteractionDeferredTrigger|t.HoverDeferredTrigger|t.ViewportDeferredTrigger,
       metadata: R3DeferBlockMetadata, instructionRef: o.ExternalReference) {
     const triggerEl = metadata.triggerElements.get(trigger);
 

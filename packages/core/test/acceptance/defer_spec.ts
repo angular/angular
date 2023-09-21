@@ -1691,4 +1691,362 @@ describe('#defer', () => {
          expect(loadingFnInvokedTimes).toBe(1);
        }));
   });
+
+  describe('viewport triggers', () => {
+    let activeObservers: MockIntersectionObserver[] = [];
+    let nativeIntersectionObserver: typeof IntersectionObserver;
+
+    beforeEach(() => {
+      nativeIntersectionObserver = globalThis.IntersectionObserver;
+      globalThis.IntersectionObserver = MockIntersectionObserver;
+    });
+
+    afterEach(() => {
+      globalThis.IntersectionObserver = nativeIntersectionObserver;
+      activeObservers = [];
+    });
+
+    /**
+     * Mocked out implementation of the native IntersectionObserver API. We need to
+     * mock it out for tests, because it's unsupported in Domino and we can't trigger
+     * it reliably in the browser.
+     */
+    class MockIntersectionObserver implements IntersectionObserver {
+      root = null;
+      rootMargin = null!;
+      thresholds = null!;
+
+      observedElements = new Set<Element>();
+      private elementsInView = new Set<Element>();
+
+      constructor(private callback: IntersectionObserverCallback) {
+        activeObservers.push(this);
+      }
+
+      static invokeCallbacksForElement(element: Element, isInView: boolean) {
+        for (const observer of activeObservers) {
+          const elements = observer.elementsInView;
+          const wasInView = elements.has(element);
+
+          if (isInView) {
+            elements.add(element);
+          } else {
+            elements.delete(element);
+          }
+
+          observer.invokeCallback();
+
+          if (wasInView) {
+            elements.add(element);
+          } else {
+            elements.delete(element);
+          }
+        }
+      }
+
+      private invokeCallback() {
+        for (const el of this.observedElements) {
+          this.callback(
+              [{
+                target: el,
+                isIntersecting: this.elementsInView.has(el),
+
+                // Unsupported properties.
+                boundingClientRect: null!,
+                intersectionRatio: null!,
+                intersectionRect: null!,
+                rootBounds: null,
+                time: null!,
+              }],
+              this);
+        }
+      }
+
+      observe(element: Element) {
+        this.observedElements.add(element);
+        // Native observers fire their callback as soon as an
+        // element is observed so we try to mimic it here.
+        this.invokeCallback();
+      }
+
+      unobserve(element: Element) {
+        this.observedElements.delete(element);
+      }
+
+      disconnect() {
+        this.observedElements.clear();
+        this.elementsInView.clear();
+      }
+
+      takeRecords(): IntersectionObserverEntry[] {
+        throw new Error('Not supported');
+      }
+    }
+
+    it('should load the deferred content when the trigger is in the viewport', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+              {#defer on viewport(trigger)}
+                Main content
+                {:placeholder} Placeholder
+              {/defer}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should not load the content if the trigger is not in the view yet', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on viewport(trigger)}
+               Main content
+               {:placeholder} Placeholder
+             {/defer}
+
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, false);
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         MockIntersectionObserver.invokeCallbacksForElement(button, false);
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should support multiple deferred blocks with the same trigger', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            {#defer on viewport(trigger)}
+              Main content 1
+              {:placeholder}Placeholder 1
+            {/defer}
+
+            {#defer on viewport(trigger)}
+              Main content 2
+              {:placeholder}Placeholder 2
+            {/defer}
+
+            <button #trigger></button>
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content 1  Main content 2');
+       }));
+
+    it('should stop observing the trigger when the deferred block is loaded', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            {#defer on viewport(trigger)}Main content{/defer}
+            <button #trigger></button>
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(1);
+         expect(activeObservers[0].observedElements.has(button)).toBe(true);
+
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(0);
+       }));
+
+    it('should stop observing the trigger when the trigger is destroyed', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+           {#if renderBlock}
+             {#defer on viewport(trigger)}Main content{/defer}
+             <button #trigger></button>
+           {/if}
+         `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(1);
+         expect(activeObservers[0].observedElements.has(button)).toBe(true);
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(0);
+       }));
+
+    it('should stop observing the trigger when the deferred block is destroyed', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             {#if renderBlock}
+               {#defer on viewport(trigger)}Main content{/defer}
+             {/if}
+
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(1);
+         expect(activeObservers[0].observedElements.has(button)).toBe(true);
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(activeObservers.length).toBe(1);
+         expect(activeObservers[0].observedElements.size).toBe(0);
+       }));
+
+    it('should disconnect the intersection observer once all deferred blocks have been loaded',
+       fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            <button #triggerOne></button>
+            {#defer on viewport(triggerOne)}One{/defer}
+
+            <button #triggerTwo></button>
+            {#defer on viewport(triggerTwo)}Two{/defer}
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(activeObservers.length).toBe(1);
+
+         const buttons = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('button'));
+         const observer = activeObservers[0];
+         const disconnectSpy = spyOn(observer, 'disconnect').and.callThrough();
+
+         expect(Array.from(observer.observedElements)).toEqual(buttons);
+
+         MockIntersectionObserver.invokeCallbacksForElement(buttons[0], true);
+         fixture.detectChanges();
+
+         expect(disconnectSpy).not.toHaveBeenCalled();
+         expect(Array.from(observer.observedElements)).toEqual([buttons[1]]);
+
+         MockIntersectionObserver.invokeCallbacksForElement(buttons[1], true);
+         fixture.detectChanges();
+
+         expect(disconnectSpy).toHaveBeenCalled();
+         expect(observer.observedElements.size).toBe(0);
+       }));
+
+    it('should prefetch resources when the trigger comes into the viewport', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+             {#defer when isLoaded; prefetch on viewport(trigger)}Main content{/defer}
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
+  });
 });
