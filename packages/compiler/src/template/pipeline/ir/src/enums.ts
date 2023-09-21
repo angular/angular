@@ -189,6 +189,11 @@ export enum OpKind {
    * An expression in an i18n message.
    */
   I18nExpression,
+
+  /**
+   * An instruction that applies a set of i18n expressions.
+   */
+  I18nApply,
 }
 
 /**

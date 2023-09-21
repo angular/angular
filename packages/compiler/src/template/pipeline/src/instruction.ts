@@ -307,6 +307,10 @@ export function i18nExp(expr: o.Expression, sourceSpan: ParseSourceSpan|null): i
   return call(Identifiers.i18nExp, [expr], sourceSpan);
 }
 
+export function i18nApply(slot: number, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.i18nApply, [o.literal(slot)], sourceSpan);
+}
+
 export function propertyInterpolate(
     name: string, strings: string[], expressions: o.Expression[], sanitizer: o.Expression|null,
     sourceSpan: ParseSourceSpan): ir.UpdateOp {

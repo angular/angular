@@ -879,6 +879,7 @@ export function transformExpressionsInOp(
     case OpKind.Pipe:
     case OpKind.Advance:
     case OpKind.Namespace:
+    case OpKind.I18nApply:
       // These operations contain no expressions.
       break;
     default:
