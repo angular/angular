@@ -18,7 +18,7 @@
  *
  * @publicApi
  */
-export function booleanAttribute(value: unknown): boolean {
+export function booleanAttribute(value: string|boolean|null|undefined): boolean {
   return typeof value === 'boolean' ? value : (value != null && value !== 'false');
 }
 
@@ -35,7 +35,7 @@ export function booleanAttribute(value: unknown): boolean {
  *
  * @publicApi
  */
-export function numberAttribute(value: unknown, fallbackValue = NaN): number {
+export function numberAttribute(value: string|number|null|undefined, fallbackValue = NaN): number {
   // parseFloat(value) handles most of the cases we're interested in (it treats null, empty string,
   // and other non-number values as NaN, where Number just uses 0) but it considers the string
   // '123hello' to be a valid number. Therefore we also check if Number(value) is NaN.

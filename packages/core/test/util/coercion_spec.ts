@@ -21,10 +21,6 @@ describe('coercion functions', () => {
       expect(booleanAttribute('')).toBe(true);
     });
 
-    it('should coerce zero to true', () => {
-      expect(booleanAttribute(0)).toBe(true);
-    });
-
     it('should coerce the string "false" to false', () => {
       expect(booleanAttribute('false')).toBe(false);
     });
@@ -44,14 +40,6 @@ describe('coercion functions', () => {
     it('should coerce an arbitrary string to true', () => {
       expect(booleanAttribute('pink')).toBe(true);
     });
-
-    it('should coerce an object to true', () => {
-      expect(booleanAttribute({})).toBe(true);
-    });
-
-    it('should coerce an array to true', () => {
-      expect(booleanAttribute([])).toBe(true);
-    });
   });
 
   describe('numberAttribute', () => {
@@ -63,16 +51,6 @@ describe('coercion functions', () => {
     it('should coerce null to the default value', () => {
       expect(numberAttribute(null)).toBeNaN();
       expect(numberAttribute(null, 111)).toBe(111);
-    });
-
-    it('should coerce true to the default value', () => {
-      expect(numberAttribute(true)).toBeNaN();
-      expect(numberAttribute(true, 111)).toBe(111);
-    });
-
-    it('should coerce false to the default value', () => {
-      expect(numberAttribute(false)).toBeNaN();
-      expect(numberAttribute(false, 111)).toBe(111);
     });
 
     it('should coerce the empty string to the default value', () => {
@@ -118,16 +96,6 @@ describe('coercion functions', () => {
     it('should coerce the number -123.456 to -123.456', () => {
       expect(numberAttribute(-123.456)).toBe(-123.456);
       expect(numberAttribute(-123.456, 111)).toBe(-123.456);
-    });
-
-    it('should coerce an object to the default value', () => {
-      expect(numberAttribute({})).toBeNaN();
-      expect(numberAttribute({}, 111)).toBe(111);
-    });
-
-    it('should coerce an array to the default value', () => {
-      expect(numberAttribute([])).toBeNaN();
-      expect(numberAttribute([], 111)).toBe(111);
     });
   });
 });

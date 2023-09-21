@@ -781,11 +781,11 @@ class RouterLink implements OnChanges, OnDestroy {
     fragment?: string;
     href: string | null;
     // (undocumented)
-    static ngAcceptInputType_preserveFragment: unknown;
+    static ngAcceptInputType_preserveFragment: string | boolean | null | undefined;
     // (undocumented)
-    static ngAcceptInputType_replaceUrl: unknown;
+    static ngAcceptInputType_replaceUrl: string | boolean | null | undefined;
     // (undocumented)
-    static ngAcceptInputType_skipLocationChange: unknown;
+    static ngAcceptInputType_skipLocationChange: string | boolean | null | undefined;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)

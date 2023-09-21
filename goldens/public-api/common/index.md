@@ -611,17 +611,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     };
     loading?: 'lazy' | 'eager' | 'auto';
     // (undocumented)
-    static ngAcceptInputType_disableOptimizedSrcset: unknown;
+    static ngAcceptInputType_disableOptimizedSrcset: string | boolean | null | undefined;
     // (undocumented)
-    static ngAcceptInputType_fill: unknown;
+    static ngAcceptInputType_fill: string | boolean | null | undefined;
     // (undocumented)
-    static ngAcceptInputType_height: unknown;
+    static ngAcceptInputType_height: string | number | null | undefined;
     // (undocumented)
     static ngAcceptInputType_ngSrc: string | i1_2.SafeValue;
     // (undocumented)
-    static ngAcceptInputType_priority: unknown;
+    static ngAcceptInputType_priority: string | boolean | null | undefined;
     // (undocumented)
-    static ngAcceptInputType_width: unknown;
+    static ngAcceptInputType_width: string | number | null | undefined;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)

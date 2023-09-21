@@ -147,7 +147,7 @@ export interface AttributeDecorator {
 }
 
 // @public
-export function booleanAttribute(value: unknown): boolean;
+export function booleanAttribute(value: string | boolean | null | undefined): boolean;
 
 // @public
 export interface BootstrapOptions {
@@ -1090,7 +1090,7 @@ export interface NgZoneOptions {
 export const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 // @public
-export function numberAttribute(value: unknown, fallbackValue?: number): number;
+export function numberAttribute(value: string | number | null | undefined, fallbackValue?: number): number;
 
 // @public
 export interface OnChanges {
