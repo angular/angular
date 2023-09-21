@@ -25,7 +25,7 @@ import {isPlatformBrowser} from '../util/misc_utils';
 import {getConstant, getNativeByIndex, getTNode, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
-import {onInteraction} from './defer_events';
+import {onHover, onInteraction} from './defer_events';
 import {ɵɵtemplate} from './template';
 
 /**
@@ -230,15 +230,37 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {}  // TODO: implement r
 
 /**
  * Creates runtime data structures for the `on hover` deferred trigger.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnHover() {}  // TODO: implement runtime logic.
+export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+
+  renderPlaceholder(lView, tNode);
+  registerDomTrigger(
+      lView, tNode, triggerIndex, walkUpTimes, onHover, () => triggerDeferBlock(lView, tNode));
+}
 
 /**
  * Creates runtime data structures for the `prefetch on hover` deferred trigger.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnHover() {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    registerDomTrigger(
+        lView, tNode, triggerIndex, walkUpTimes, onHover,
+        () => triggerPrefetching(tDetails, lView));
+  }
+}
 
 /**
  * Creates runtime data structures for the `on interaction` deferred trigger.

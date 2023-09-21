@@ -1476,4 +1476,219 @@ describe('#defer', () => {
          expect(loadingFnInvokedTimes).toBe(1);
        }));
   });
+
+  describe('hover triggers', () => {
+    it('should load the deferred content when the trigger is hovered', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+              {#defer on hover(trigger)}
+                Main content
+                {:placeholder} Placeholder
+              {/defer}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should support multiple deferred blocks with the same hover trigger', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on hover(trigger)}
+               Main content 1
+               {:placeholder}Placeholder 1
+             {/defer}
+
+             {#defer on hover(trigger)}
+               Main content 2
+               {:placeholder}Placeholder 2
+             {/defer}
+
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content 1  Main content 2');
+       }));
+
+    it('should unbind the trigger events when the deferred block is loaded', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on hover(trigger)}Main content{/defer}
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+
+         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should unbind the trigger events when the trigger is destroyed', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+            {#if renderBlock}
+              {#defer on hover(trigger)}Main content{/defer}
+              <button #trigger></button>
+            {/if}
+          `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should unbind the trigger events when the deferred block is destroyed', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+              {#if renderBlock}
+                {#defer on hover(trigger)}Main content{/defer}
+              {/if}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should prefetch resources on hover', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+              {#defer when isLoaded; prefetch on hover(trigger)}Main content{/defer}
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
+  });
 });

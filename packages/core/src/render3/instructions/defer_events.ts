@@ -12,6 +12,9 @@ const eventListenerOptions: AddEventListenerOptions = {
   capture: true
 };
 
+/** Keeps track of the currently-registered `on hover` triggers. */
+const hoverTriggers = new WeakMap<Element, DeferEventEntry>();
+
 /** Keeps track of the currently-registered `on interaction` triggers. */
 const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 
@@ -70,6 +73,34 @@ export function onInteraction(trigger: Element, callback: VoidFunction) {
       for (const name of interactionEventNames) {
         trigger.removeEventListener(name, listener, eventListenerOptions);
       }
+    }
+  };
+}
+
+/**
+ * Registers a hover trigger.
+ * @param trigger Element that is the trigger.
+ * @param callback Callback to be invoked when the trigger is hovered over.
+ */
+export function onHover(trigger: Element, callback: VoidFunction): VoidFunction {
+  let entry = hoverTriggers.get(trigger);
+
+  // If this is the first entry for this element, add the listener.
+  if (!entry) {
+    entry = new DeferEventEntry();
+    trigger.addEventListener('mouseenter', entry.listener, eventListenerOptions);
+    hoverTriggers.set(trigger, entry);
+  }
+
+  entry.callbacks.add(callback);
+
+  return () => {
+    const {callbacks, listener} = entry!;
+    callbacks.delete(callback);
+
+    if (callbacks.size === 0) {
+      trigger.removeEventListener('mouseenter', listener, eventListenerOptions);
+      hoverTriggers.delete(trigger);
     }
   };
 }
