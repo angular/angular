@@ -9,7 +9,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferPrefetchOnTimer(1337);
     $r3$.ɵɵdeferPrefetchOnHover(0, -1);
     $r3$.ɵɵdeferPrefetchOnInteraction(0, -1);
-    $r3$.ɵɵdeferPrefetchOnViewport("button");
+    $r3$.ɵɵdeferPrefetchOnViewport(0, -1);
   }
   if (rf & 2) {
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
