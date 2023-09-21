@@ -31,7 +31,7 @@ The following example defines an error handler in the previously defined ConfigS
 <code-example header="app/config/config.service.ts (handleError)" path="http/src/app/config/config.service.ts" region="handleError"></code-example>
 
 The handler returns an RxJS `ErrorObservable` with a user-friendly error message.
-The following code updates the `getConfig()` method, using a [pipe](guide/pipes-overview 'Pipes guide') to send all observables returned by the `HttpClient.get()` call to the error handler.
+The following code updates the `getConfig()` method, using a [pipe](guide/rx-library#operators 'RxJS Operators') to send all observables returned by the `HttpClient.get()` call to the error handler.
 
 <code-example header="app/config/config.service.ts (getConfig v.3 with error handler)" path="http/src/app/config/config.service.ts" region="getConfig_3"></code-example>
 
