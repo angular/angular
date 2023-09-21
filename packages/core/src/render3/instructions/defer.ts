@@ -25,7 +25,7 @@ import {isPlatformBrowser} from '../util/misc_utils';
 import {getConstant, getNativeByIndex, getTNode, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
-import {onHover, onInteraction} from './defer_events';
+import {onHover, onInteraction, onViewport} from './defer_events';
 import {ɵɵtemplate} from './template';
 
 /**
@@ -299,17 +299,37 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
 
 /**
  * Creates runtime data structures for the `on viewport` deferred trigger.
- * @param target Optional element on which to listen for hover events.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
+export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+
+  renderPlaceholder(lView, tNode);
+  registerDomTrigger(
+      lView, tNode, triggerIndex, walkUpTimes, onViewport, () => triggerDeferBlock(lView, tNode));
+}
 
 /**
  * Creates runtime data structures for the `prefetch on viewport` deferred trigger.
- * @param target Optional element on which to listen for hover events.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
+export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: number) {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    registerDomTrigger(
+        lView, tNode, triggerIndex, walkUpTimes, onViewport,
+        () => triggerPrefetching(tDetails, lView));
+  }
+}
 
 /********** Helper functions **********/
 
