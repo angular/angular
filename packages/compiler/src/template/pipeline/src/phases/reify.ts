@@ -216,6 +216,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.I18nExpression:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
         break;
+      case ir.OpKind.I18nApply:
+        ir.OpList.replace(op, ng.i18nApply(op.slot!, op.sourceSpan));
+        break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(
             op,

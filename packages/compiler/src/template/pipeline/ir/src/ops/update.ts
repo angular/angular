@@ -22,7 +22,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -514,6 +514,9 @@ export function createConditionalOp(
   };
 }
 
+/**
+ * An op that represents an expression in an i18n message.
+ */
 export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
                                           DependsOnSlotContextOpTrait {
   kind: OpKind.I18nExpression;
@@ -544,5 +547,37 @@ export function createI18nExpressionOp(
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+  };
+}
+
+/**
+ * An op that represents applying a set of i18n expressions.
+ */
+export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
+  kind: OpKind.I18nApply;
+
+  /**
+   * The i18n block to which expressions are applied.
+   */
+  target: XrefId;
+
+  /**
+   * The slot of the target, to be populated during slot allocation.
+   */
+  slot: number|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Creates an op to apply i18n expression ops.
+ */
+export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
+  return {
+    kind: OpKind.I18nApply,
+    target,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
   };
 }

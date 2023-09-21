@@ -50,6 +50,9 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
             ops.push(
                 ir.createI18nExpressionOp(i18nBlockId, expr, expr.sourceSpan ?? op.sourceSpan));
           }
+          if (ops.length > 0) {
+            ops.push(ir.createI18nApplyOp(i18nBlockId, op.sourceSpan));
+          }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
       }
