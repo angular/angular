@@ -6,7 +6,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferOnIdle();
     $r3$.ɵɵdeferOnImmediate();
     $r3$.ɵɵdeferOnTimer(1337);
-    $r3$.ɵɵdeferOnHover();
+    $r3$.ɵɵdeferOnHover(0, -1);
     $r3$.ɵɵdeferOnInteraction(0, -1);
     $r3$.ɵɵdeferOnViewport("button");
   }
