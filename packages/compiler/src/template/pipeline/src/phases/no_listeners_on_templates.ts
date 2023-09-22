@@ -10,10 +10,6 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
-/**
- * Transforms special-case bindings with 'style' or 'class' in their names. Must run before the
- * main binding specialization pass.
- */
 export function phaseNoListenersOnTemplates(job: CompilationJob): void {
   for (const unit of job.units) {
     let inTemplate = false;

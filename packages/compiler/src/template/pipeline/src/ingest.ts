@@ -24,6 +24,7 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
  * representation.
+ * TODO: Refactor more of the ingestion code into phases.
  */
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
@@ -68,10 +69,10 @@ export function ingestHostProperty(
   let expression: o.Expression|ir.Interpolation;
   const ast = property.expression.ast;
   if (ast instanceof e.Interpolation) {
-    expression =
-        new ir.Interpolation(ast.strings, ast.expressions.map(expr => convertAst(expr, job)));
+    expression = new ir.Interpolation(
+        ast.strings, ast.expressions.map(expr => convertAst(expr, job, property.sourceSpan)));
   } else {
-    expression = convertAst(ast, job);
+    expression = convertAst(ast, job, property.sourceSpan);
   }
   let bindingKind = ir.BindingKind.Property;
   // TODO: this should really be handled in the parser.
@@ -98,11 +99,11 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const eventBinding =
-      ir.createListenerOp(job.root.xref, event.name, null, event.targetOrPhase, true);
+  const eventBinding = ir.createListenerOp(
+      job.root.xref, event.name, null, event.targetOrPhase, true, event.sourceSpan);
   // TODO: Can this be a chain?
-  eventBinding.handlerOps.push(
-      ir.createStatementOp(new o.ReturnStatement(convertAst(event.handler.ast, job))));
+  eventBinding.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(
+      convertAst(event.handler.ast, job, event.sourceSpan), event.handlerSpan)));
   job.root.create.push(eventBinding);
 }
 
@@ -215,10 +216,14 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
 
   const textXref = unit.job.allocateXrefId();
   unit.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
+  // TemplateDefinitionBuilder does not generate source maps for sub-expressions inside an
+  // interpolation. We copy that behavior in compatibility mode.
+  // TODO: is it actually correct to generate these extra maps in modern mode?
+  const baseSourceSpan = unit.job.compatibility ? null : text.sourceSpan;
   unit.update.push(ir.createInterpolateTextOp(
       textXref,
       new ir.Interpolation(
-          value.strings, value.expressions.map(expr => convertAst(expr, unit.job))),
+          value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan))),
       text.sourceSpan));
 }
 
@@ -233,12 +238,14 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     if (!firstXref) firstXref = cView.xref;
     unit.create.push(
         ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, undefined, null!));
-    const caseExpr = switchCase.expression ? convertAst(switchCase.expression, unit.job) : null;
+    const caseExpr = switchCase.expression ?
+        convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
+        null;
     conditions.push([cView.xref, caseExpr]);
     ingestNodes(cView, switchCase.children);
   }
-  const conditional =
-      ir.createConditionalOp(firstXref!, convertAst(switchBlock.expression, unit.job), null!);
+  const conditional = ir.createConditionalOp(
+      firstXref!, convertAst(switchBlock.expression, unit.job, switchBlock.startSourceSpan), null!);
   conditional.conditions = conditions;
   unit.update.push(conditional);
 }
@@ -246,80 +253,100 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
 /**
  * Convert a template AST expression into an output AST expression.
  */
-function convertAst(ast: e.AST, job: CompilationJob): o.Expression {
+function convertAst(
+    ast: e.AST, job: CompilationJob, baseSourceSpan: ParseSourceSpan|null): o.Expression {
   if (ast instanceof e.ASTWithSource) {
-    return convertAst(ast.ast, job);
+    return convertAst(ast.ast, job, baseSourceSpan);
   } else if (ast instanceof e.PropertyRead) {
     if (ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver)) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
-      return new o.ReadPropExpr(convertAst(ast.receiver, job), ast.name);
+      return new o.ReadPropExpr(
+          convertAst(ast.receiver, job, baseSourceSpan), ast.name, null,
+          convertSourceSpan(ast.span, baseSourceSpan));
     }
   } else if (ast instanceof e.PropertyWrite) {
-    return new o.WritePropExpr(convertAst(ast.receiver, job), ast.name, convertAst(ast.value, job));
+    return new o.WritePropExpr(
+        convertAst(ast.receiver, job, baseSourceSpan), ast.name,
+        convertAst(ast.value, job, baseSourceSpan), undefined,
+        convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.KeyedWrite) {
     return new o.WriteKeyExpr(
-        convertAst(ast.receiver, job),
-        convertAst(ast.key, job),
-        convertAst(ast.value, job),
-    );
+        convertAst(ast.receiver, job, baseSourceSpan), convertAst(ast.key, job, baseSourceSpan),
+        convertAst(ast.value, job, baseSourceSpan), undefined,
+        convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.Call) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       throw new Error(`Unexpected ImplicitReceiver`);
     } else {
       return new o.InvokeFunctionExpr(
-          convertAst(ast.receiver, job), ast.args.map(arg => convertAst(arg, job)));
+          convertAst(ast.receiver, job, baseSourceSpan),
+          ast.args.map(arg => convertAst(arg, job, baseSourceSpan)), undefined,
+          convertSourceSpan(ast.span, baseSourceSpan));
     }
   } else if (ast instanceof e.LiteralPrimitive) {
-    return o.literal(ast.value);
+    return o.literal(ast.value, undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.Binary) {
     const operator = BINARY_OPERATORS.get(ast.operation);
     if (operator === undefined) {
       throw new Error(`AssertionError: unknown binary operator ${ast.operation}`);
     }
     return new o.BinaryOperatorExpr(
-        operator, convertAst(ast.left, job), convertAst(ast.right, job));
+        operator, convertAst(ast.left, job, baseSourceSpan),
+        convertAst(ast.right, job, baseSourceSpan), undefined,
+        convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.ThisReceiver) {
+    // TODO: should context expressions have source maps?
     return new ir.ContextExpr(job.root.xref);
   } else if (ast instanceof e.KeyedRead) {
-    return new o.ReadKeyExpr(convertAst(ast.receiver, job), convertAst(ast.key, job));
+    return new o.ReadKeyExpr(
+        convertAst(ast.receiver, job, baseSourceSpan), convertAst(ast.key, job, baseSourceSpan),
+        undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.Chain) {
     throw new Error(`AssertionError: Chain in unknown context`);
   } else if (ast instanceof e.LiteralMap) {
     const entries = ast.keys.map((key, idx) => {
       const value = ast.values[idx];
-      return new o.LiteralMapEntry(key.key, convertAst(value, job), key.quoted);
+      // TODO: should literals have source maps, or do we just map the whole surrounding expression?
+      return new o.LiteralMapEntry(key.key, convertAst(value, job, baseSourceSpan), key.quoted);
     });
-    return new o.LiteralMapExpr(entries);
+    return new o.LiteralMapExpr(entries, undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.LiteralArray) {
-    return new o.LiteralArrayExpr(ast.expressions.map(expr => convertAst(expr, job)));
+    // TODO: should literals have source maps, or do we just map the whole surrounding expression?
+    return new o.LiteralArrayExpr(
+        ast.expressions.map(expr => convertAst(expr, job, baseSourceSpan)));
   } else if (ast instanceof e.Conditional) {
     return new o.ConditionalExpr(
-        convertAst(ast.condition, job),
-        convertAst(ast.trueExp, job),
-        convertAst(ast.falseExp, job),
-    );
+        convertAst(ast.condition, job, baseSourceSpan),
+        convertAst(ast.trueExp, job, baseSourceSpan), convertAst(ast.falseExp, job, baseSourceSpan),
+        undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.NonNullAssert) {
     // A non-null assertion shouldn't impact generated instructions, so we can just drop it.
-    return convertAst(ast.expression, job);
+    return convertAst(ast.expression, job, baseSourceSpan);
   } else if (ast instanceof e.BindingPipe) {
+    // TODO: pipes should probably have source maps; figure out details.
     return new ir.PipeBindingExpr(
         job.allocateXrefId(),
         ast.name,
         [
-          convertAst(ast.exp, job),
-          ...ast.args.map(arg => convertAst(arg, job)),
+          convertAst(ast.exp, job, baseSourceSpan),
+          ...ast.args.map(arg => convertAst(arg, job, baseSourceSpan)),
         ],
     );
   } else if (ast instanceof e.SafeKeyedRead) {
-    return new ir.SafeKeyedReadExpr(convertAst(ast.receiver, job), convertAst(ast.key, job));
+    return new ir.SafeKeyedReadExpr(
+        convertAst(ast.receiver, job, baseSourceSpan), convertAst(ast.key, job, baseSourceSpan),
+        convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.SafePropertyRead) {
-    return new ir.SafePropertyReadExpr(convertAst(ast.receiver, job), ast.name);
+    // TODO: source span
+    return new ir.SafePropertyReadExpr(convertAst(ast.receiver, job, baseSourceSpan), ast.name);
   } else if (ast instanceof e.SafeCall) {
+    // TODO: source span
     return new ir.SafeInvokeFunctionExpr(
-        convertAst(ast.receiver, job), ast.args.map(a => convertAst(a, job)));
+        convertAst(ast.receiver, job, baseSourceSpan),
+        ast.args.map(a => convertAst(a, job, baseSourceSpan)));
   } else if (ast instanceof e.EmptyExpr) {
-    return new ir.EmptyExpr();
+    return new ir.EmptyExpr(convertSourceSpan(ast.span, baseSourceSpan));
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
@@ -367,34 +394,37 @@ function ingestBindings(
         throw Error('Animation listener should have a phase');
       }
     }
-    listenerOp = ir.createListenerOp(op.xref, output.name, op.tag, output.phase, false);
+    listenerOp =
+        ir.createListenerOp(op.xref, output.name, op.tag, output.phase, false, output.sourceSpan);
 
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?
-    let inputExprs: e.AST[];
+    let handlerExprs: e.AST[];
     let handler: e.AST = output.handler;
     if (handler instanceof e.ASTWithSource) {
       handler = handler.ast;
     }
 
     if (handler instanceof e.Chain) {
-      inputExprs = handler.expressions;
+      handlerExprs = handler.expressions;
     } else {
-      inputExprs = [handler];
+      handlerExprs = [handler];
     }
 
-    if (inputExprs.length === 0) {
+    if (handlerExprs.length === 0) {
       throw new Error('Expected listener to have non-empty expression list.');
     }
 
-    const expressions = inputExprs.map(expr => convertAst(expr, unit.job));
+    const expressions = handlerExprs.map(expr => convertAst(expr, unit.job, output.handlerSpan));
     const returnExpr = expressions.pop()!;
 
     for (const expr of expressions) {
-      const stmtOp = ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(expr));
+      const stmtOp =
+          ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(expr, expr.sourceSpan));
       listenerOp.handlerOps.push(stmtOp);
     }
-    listenerOp.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr)));
+    listenerOp.handlerOps.push(
+        ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
     unit.create.push(listenerOp);
   }
 }
@@ -416,11 +446,13 @@ function ingestBinding(
   }
 
   let expression: o.Expression|ir.Interpolation;
+  // TODO: We could easily generate source maps for subexpressions in these cases, but
+  // TemplateDefinitionBuilder does not. Should we do so?
   if (value instanceof e.Interpolation) {
     expression = new ir.Interpolation(
-        value.strings, value.expressions.map(expr => convertAst(expr, view.job)));
+        value.strings, value.expressions.map(expr => convertAst(expr, view.job, null)));
   } else if (value instanceof e.AST) {
-    expression = convertAst(value, view.job);
+    expression = convertAst(value, view.job, null);
   } else {
     expression = value;
   }
@@ -452,4 +484,26 @@ function assertIsArray<T>(value: any): asserts value is Array<T> {
   if (!Array.isArray(value)) {
     throw new Error(`AssertionError: expected an array`);
   }
+}
+
+/**
+ * Creates an absolute `ParseSourceSpan` from the relative `ParseSpan`.
+ *
+ * `ParseSpan` objects are relative to the start of the expression.
+ * This method converts these to full `ParseSourceSpan` objects that
+ * show where the span is within the overall source file.
+ *
+ * @param span the relative span to convert.
+ * @param baseSourceSpan a span corresponding to the base of the expression tree.
+ * @returns a `ParseSourceSpan` for the given span or null if no `baseSourceSpan` was provided.
+ */
+function convertSourceSpan(
+    span: e.ParseSpan, baseSourceSpan: ParseSourceSpan|null): ParseSourceSpan|null {
+  if (baseSourceSpan === null) {
+    return null;
+  }
+  const start = baseSourceSpan.start.moveBy(span.start);
+  const end = baseSourceSpan.start.moveBy(span.end);
+  const fullStart = baseSourceSpan.fullStart.moveBy(span.start);
+  return new ParseSourceSpan(start, end, fullStart);
 }

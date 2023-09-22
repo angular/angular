@@ -114,8 +114,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         const reified = op.hostListener && op.isAnimationListener ?
-            ng.syntheticHostListener(op.name, listenerFn) :
-            ng.listener(op.name, listenerFn);
+            ng.syntheticHostListener(op.name, listenerFn, op.sourceSpan) :
+            ng.listener(op.name, listenerFn, op.sourceSpan);
         ir.OpList.replace(op, reified);
         break;
       case ir.OpKind.Variable:
@@ -184,28 +184,33 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(
               op,
               ng.stylePropInterpolate(
-                  op.name, op.expression.strings, op.expression.expressions, op.unit));
+                  op.name, op.expression.strings, op.expression.expressions, op.unit,
+                  op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         }
         break;
       case ir.OpKind.ClassProp:
-        ir.OpList.replace(op, ng.classProp(op.name, op.expression));
+        ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleMap:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
-              op, ng.styleMapInterpolate(op.expression.strings, op.expression.expressions));
+              op,
+              ng.styleMapInterpolate(
+                  op.expression.strings, op.expression.expressions, op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.styleMap(op.expression));
+          ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         }
         break;
       case ir.OpKind.ClassMap:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
-              op, ng.classMapInterpolate(op.expression.strings, op.expression.expressions));
+              op,
+              ng.classMapInterpolate(
+                  op.expression.strings, op.expression.expressions, op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.classMap(op.expression));
+          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         }
         break;
       case ir.OpKind.InterpolateText:
@@ -219,7 +224,8 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(
               op,
               ng.attributeInterpolate(
-                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer));
+                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer,
+                  op.sourceSpan));
         } else {
           ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
         }
@@ -229,9 +235,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           throw new Error('not yet handled');
         } else {
           if (op.isAnimationTrigger) {
-            ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression));
+            ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
-            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression, op.sourceSpan));
           }
         }
         break;
