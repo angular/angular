@@ -136,12 +136,10 @@ function i18nGenerateClosureVar(
  * Gets the placeholder values for an i18n block.
  */
 function getParams(op: ir.I18nStartOp|ir.I18nOp): {[placeholder: string]: o.Expression} {
-  const params = op.tagNameParams;
+  const params = op.params;
   for (const placeholder in (op.i18n as i18n.Message).placeholders) {
     if (params[placeholder] === undefined) {
-      // throw Error(`Missing value for i18n placeholder: ${placeholder}`);
-      //  TODO: temporary - revert
-      params[placeholder] = o.literal(undefined);
+      throw Error(`Missing value for i18n placeholder: ${placeholder}`);
     }
   }
   return params;

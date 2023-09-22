@@ -857,9 +857,9 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.I18nStart:
-      for (const placeholder in op.tagNameParams) {
-        op.tagNameParams[placeholder] =
-            transformExpressionsInExpression(op.tagNameParams[placeholder], transform, flags);
+      for (const placeholder in op.params) {
+        op.params[placeholder] =
+            transformExpressionsInExpression(op.params[placeholder], transform, flags);
       }
       break;
     case OpKind.Projection:
