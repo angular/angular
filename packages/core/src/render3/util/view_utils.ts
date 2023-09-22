@@ -7,13 +7,13 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
+import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DESCENDANT_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {DECLARATION_VIEW, DESCENDANT_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -185,6 +185,24 @@ export function clearViewRefreshFlag(lView: LView) {
     updateViewsToRefresh(lView, -1);
   }
 }
+
+/**
+ * Walks up the LView hierarchy.
+ * @param nestingLevel Number of times to walk up in hierarchy.
+ * @param currentView View from which to start the lookup.
+ */
+export function walkUpViews(nestingLevel: number, currentView: LView): LView {
+  while (nestingLevel > 0) {
+    ngDevMode &&
+        assertDefined(
+            currentView[DECLARATION_VIEW],
+            'Declaration view should be defined if nesting level is greater than 0.');
+    currentView = currentView[DECLARATION_VIEW]!;
+    nestingLevel--;
+  }
+  return currentView;
+}
+
 
 /**
  * Updates the `DESCENDANT_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the
