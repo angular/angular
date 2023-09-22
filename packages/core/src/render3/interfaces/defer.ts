@@ -15,14 +15,23 @@ import type {DependencyType} from './definition';
 export type DependencyResolverFn = () => Array<Promise<DependencyType>>;
 
 /**
+ * Enumerates all `on` triggers of a defer block.
+ */
+export const enum DeferBlockTriggers {
+  OnIdle,
+  OnTimer,
+  OnImmediate,
+  OnHover,
+  OnInteraction,
+  OnViewport,
+}
+
+/**
  * Describes the state of defer block dependency loading.
  */
 export enum DeferDependenciesLoadingState {
   /** Initial state, dependency loading is not yet triggered */
   NOT_STARTED,
-
-  /** Dependency loading was scheduled (e.g. `on idle`), but has not started yet */
-  SCHEDULED,
 
   /** Dependency loading is in progress */
   IN_PROGRESS,
