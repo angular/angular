@@ -51,7 +51,10 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
                 ir.createI18nExpressionOp(i18nBlockId, expr, expr.sourceSpan ?? op.sourceSpan));
           }
           if (ops.length > 0) {
-            ops.push(ir.createI18nApplyOp(i18nBlockId, op.sourceSpan));
+            if (!op.i18n) {
+              throw Error('Text interpolation under i18n should have i18n metadata.');
+            }
+            ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18n, op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
