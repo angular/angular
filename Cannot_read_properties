@@ -1,0 +1,15 @@
+<h3>Cannot read properties of undefined (reading 'kind') </h3>
+Cannot read properties of undefined (reading 'kind') 
+This error was display when i was trying to generate angualr material component <b>Shematic</b>.
+This error it's due because some dependency lack on your work directory.
+To solve it's clean and rebuild your dependency.
+follow this step:
+step 1 delete your node_modules folder
+$ rm -rf node_modules
+or on Windows:
+$ rmdir /s node_modules
+step 2 clean cash
+npm cache clean --force
+step 3 install new node_module folde
+npm install
+Fore more information <a href="https://poe.com/s/vfOCTm7luLRhpcDX5crT">vheck here<a>
