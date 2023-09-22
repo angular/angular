@@ -534,8 +534,9 @@ export class SafePropertyReadExpr extends ExpressionBase {
 export class SafeKeyedReadExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafeKeyedRead;
 
-  constructor(public receiver: o.Expression, public index: o.Expression) {
-    super();
+  constructor(
+      public receiver: o.Expression, public index: o.Expression, sourceSpan: ParseSourceSpan|null) {
+    super(sourceSpan);
   }
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
@@ -558,7 +559,7 @@ export class SafeKeyedReadExpr extends ExpressionBase {
   }
 
   override clone(): SafeKeyedReadExpr {
-    return new SafeKeyedReadExpr(this.receiver.clone(), this.index.clone());
+    return new SafeKeyedReadExpr(this.receiver.clone(), this.index.clone(), this.sourceSpan);
   }
 }
 

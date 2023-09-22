@@ -92,24 +92,26 @@ export function enableBindings(): ir.CreateOp {
   return call(Identifiers.enableBindings, [], null);
 }
 
-export function listener(name: string, handlerFn: o.Expression): ir.CreateOp {
+export function listener(
+    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
   return call(
       Identifiers.listener,
       [
         o.literal(name),
         handlerFn,
       ],
-      null);
+      sourceSpan);
 }
 
-export function syntheticHostListener(name: string, handlerFn: o.Expression): ir.CreateOp {
+export function syntheticHostListener(
+    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
   return call(
       Identifiers.syntheticHostListener,
       [
         o.literal(name),
         handlerFn,
       ],
-      null);
+      sourceSpan);
 }
 
 export function pipe(slot: number, name: string): ir.CreateOp {
@@ -228,24 +230,27 @@ export function attribute(
   return call(Identifiers.attribute, args, null);
 }
 
-export function styleProp(name: string, expression: o.Expression, unit: string|null): ir.UpdateOp {
+export function styleProp(
+    name: string, expression: o.Expression, unit: string|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const args = [o.literal(name), expression];
   if (unit !== null) {
     args.push(o.literal(unit));
   }
-  return call(Identifiers.styleProp, args, null);
+  return call(Identifiers.styleProp, args, sourceSpan);
 }
 
-export function classProp(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.classProp, [o.literal(name), expression], null);
+export function classProp(
+    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  return call(Identifiers.classProp, [o.literal(name), expression], sourceSpan);
 }
 
-export function styleMap(expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.styleMap, [expression], null);
+export function styleMap(expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  return call(Identifiers.styleMap, [expression], sourceSpan);
 }
 
-export function classMap(expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.classMap, [expression], null);
+export function classMap(expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  return call(Identifiers.classMap, [expression], sourceSpan);
 }
 
 const PIPE_BINDINGS: o.ExternalReference[] = [
@@ -313,8 +318,8 @@ export function propertyInterpolate(
 }
 
 export function attributeInterpolate(
-    name: string, strings: string[], expressions: o.Expression[],
-    sanitizer: o.Expression|null): ir.UpdateOp {
+    name: string, strings: string[], expressions: o.Expression[], sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
   const extraArgs = [];
   if (sanitizer !== null) {
@@ -322,11 +327,12 @@ export function attributeInterpolate(
   }
 
   return callVariadicInstruction(
-      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, null);
+      ATTRIBUTE_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, sourceSpan);
 }
 
 export function stylePropInterpolate(
-    name: string, strings: string[], expressions: o.Expression[], unit: string|null): ir.UpdateOp {
+    name: string, strings: string[], expressions: o.Expression[], unit: string|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
   const extraArgs: o.Expression[] = [];
   if (unit !== null) {
@@ -334,27 +340,33 @@ export function stylePropInterpolate(
   }
 
   return callVariadicInstruction(
-      STYLE_PROP_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, null);
+      STYLE_PROP_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs, sourceSpan);
 }
 
-export function styleMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+export function styleMapInterpolate(
+    strings: string[], expressions: o.Expression[], sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], null);
+  return callVariadicInstruction(
+      STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
-export function classMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+export function classMapInterpolate(
+    strings: string[], expressions: o.Expression[], sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], null);
+  return callVariadicInstruction(
+      CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
-export function hostProperty(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.hostProperty, [o.literal(name), expression], null);
+export function hostProperty(
+    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.hostProperty, [o.literal(name), expression], sourceSpan);
 }
 
-export function syntheticHostProperty(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.syntheticHostProperty, [o.literal(name), expression], null);
+export function syntheticHostProperty(
+    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.syntheticHostProperty, [o.literal(name), expression], sourceSpan);
 }
 
 export function pureFunction(
