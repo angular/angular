@@ -35,7 +35,7 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
     for (const op of unit.create) {
       if ((op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n)) {
         // Sort the params map to match the ordering in TemplateDefinitionBuilder.
-        const params = Object.fromEntries(Object.entries(getParams(op)).sort());
+        const params = new Map([...op.params.entries()].sort());
 
         const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
         // Closure Compiler requires const names to start with `MSG_` but disallows any other const
@@ -80,15 +80,17 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
  */
 function getTranslationDeclStmts(
     message: i18n.Message, variable: o.ReadVarExpr, closureVar: o.ReadVarExpr,
-    params: {[name: string]: o.Expression} = {},
+    params: Map<string, o.Expression>,
     transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
+  const paramsObject = Object.fromEntries(params);
   const statements: o.Statement[] = [
     declareI18nVariable(variable),
     o.ifStmt(
         createClosureModeGuard(),
-        createGoogleGetMsgStatements(variable, message, closureVar, params),
+        createGoogleGetMsgStatements(variable, message, closureVar, paramsObject),
         createLocalizeStatements(
-            variable, message, formatI18nPlaceholderNamesInMap(params, /* useCamelCase */ false))),
+            variable, message,
+            formatI18nPlaceholderNamesInMap(paramsObject, /* useCamelCase */ false))),
   ];
 
   if (transformFn) {
@@ -129,17 +131,4 @@ function i18nGenerateClosureVar(
     name = pool.uniqueName(prefix);
   }
   return o.variable(name);
-}
-
-/**
- * Gets the placeholder values for an i18n block.
- */
-function getParams(op: ir.I18nStartOp|ir.I18nOp): {[placeholder: string]: o.Expression} {
-  const params = op.params;
-  for (const placeholder in op.message.placeholders) {
-    if (params[placeholder] === undefined) {
-      throw Error(`Missing value for i18n placeholder: ${placeholder}`);
-    }
-  }
-  return params;
 }

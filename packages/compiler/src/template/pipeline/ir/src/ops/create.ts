@@ -600,7 +600,7 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   /**
    * Map of values to use for named placeholders in the i18n message.
    */
-  params: {[placeholder: string]: o.Expression};
+  params: Map<string, o.Expression>;
 
   /**
    * The index in the consts array where the message i18n message is stored.
@@ -630,7 +630,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message): I18nStar
     kind: OpKind.I18nStart,
     xref,
     message,
-    params: {},
+    params: new Map(),
     messageIndex: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
