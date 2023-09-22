@@ -856,10 +856,10 @@ export function transformExpressionsInOp(
         transformExpressionsInStatement(statement, transform, flags);
       }
       break;
+    case OpKind.I18n:
     case OpKind.I18nStart:
-      for (const placeholder in op.params) {
-        op.params[placeholder] =
-            transformExpressionsInExpression(op.params[placeholder], transform, flags);
+      for (const [placeholder, expression] of op.params) {
+        op.params.set(placeholder, transformExpressionsInExpression(expression, transform, flags));
       }
       break;
     case OpKind.Projection:
@@ -867,7 +867,6 @@ export function transformExpressionsInOp(
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
-    case OpKind.I18n:
     case OpKind.I18nEnd:
     case OpKind.Container:
     case OpKind.ContainerStart:

@@ -76,13 +76,13 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
 
     // Add the start tags in the order we encountered them, to match TemplateDefinitionBuilder.
     for (const {op, placeholder, value} of startTags) {
-      op.params[placeholder] = value;
+      op.params.set(placeholder, value);
     }
     // Add the close tags in reverse order that we encountered the start tags, to match
     // TemplateDefinitionBuilder.
     for (let i = closeTags.length - 1; i >= 0; i--) {
       const {op, placeholder, value} = closeTags[i];
-      op.params[placeholder] = value;
+      op.params.set(placeholder, value);
     }
 
     // Fill in values for each of the expression placeholders applied in i18nApply operations.
@@ -95,8 +95,17 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
           if (!i18nOp) {
             throw Error('Cannot find corresponding i18nStart for i18nApply');
           }
-          i18nOp.params[placeholder.name] = o.literal(`${ESCAPE}${index++}${ESCAPE}`);
+          i18nOp.params.set(placeholder.name, o.literal(`${ESCAPE}${index++}${ESCAPE}`));
           i18nBlockPlaceholderIndices.set(op.target, index);
+        }
+      }
+    }
+
+    // Verify that all placeholders have been resolved.
+    for (const op of i18nOps.values()) {
+      for (const placeholder in op.message.placeholders) {
+        if (!op.params.has(placeholder)) {
+          throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
         }
       }
     }
