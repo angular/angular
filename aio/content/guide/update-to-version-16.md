@@ -79,7 +79,7 @@ You can now mark component and directive inputs as _required_:
 
 ```typescript
 export class ColorPicker {
-  @Input({ required: true }) defaultColor: string;
+  @Input({ required: true }) defaultColor!: string;
 }
 ```
 
