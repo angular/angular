@@ -97,11 +97,6 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   nonBindable: boolean;
 
-  /**
-   * The i18n metadata associated with this element.
-   */
-  i18n?: i18n.I18nMeta;
-
   sourceSpan: ParseSourceSpan;
 }
 
@@ -124,13 +119,18 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
  */
 export interface ElementStartOp extends ElementOpBase {
   kind: OpKind.ElementStart;
+
+  /**
+   * The i18n placeholder data associated with this element.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder;
 }
 
 /**
  * Create an `ElementStartOp`.
  */
 export function createElementStartOp(
-    tag: string, xref: XrefId, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
+    tag: string, xref: XrefId, namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|undefined,
     sourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
@@ -140,7 +140,7 @@ export function createElementStartOp(
     localRefs: [],
     nonBindable: false,
     namespace,
-    i18n,
+    i18nPlaceholder,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -152,6 +152,11 @@ export function createElementStartOp(
  */
 export interface ElementOp extends ElementOpBase {
   kind: OpKind.Element;
+
+  /**
+   * The i18n placeholder data associated with this element.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder;
 }
 
 /**
@@ -184,7 +189,7 @@ export interface TemplateOp extends ElementOpBase {
  */
 export function createTemplateOp(
     xref: XrefId, tag: string, namespace: Namespace, controlFlow: boolean,
-    i18n: i18n.I18nMeta|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
+    sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
@@ -196,7 +201,6 @@ export function createTemplateOp(
     localRefs: [],
     nonBindable: false,
     namespace,
-    i18n,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -492,7 +496,6 @@ export function createProjectionOp(xref: XrefId, selector: string): ProjectionOp
     attributes: null,
     localRefs: [],
     nonBindable: false,
-    i18n: undefined,    // TODO
     sourceSpan: null!,  // TODO
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
@@ -592,7 +595,7 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   /**
    * The i18n metadata associated with this op.
    */
-  i18n: i18n.I18nMeta;
+  message: i18n.Message;
 
   /**
    * Map of values to use for named placeholders in the i18n message.
@@ -622,11 +625,11 @@ export interface I18nStartOp extends I18nOpBase {
 /**
  * Create an `I18nStartOp`.
  */
-export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartOp {
+export function createI18nStartOp(xref: XrefId, message: i18n.Message): I18nStartOp {
   return {
     kind: OpKind.I18nStart,
     xref,
-    i18n,
+    message,
     params: {},
     messageIndex: null,
     ...NEW_OP,

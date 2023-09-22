@@ -135,6 +135,11 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
 function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
+  if (element.i18n !== undefined &&
+      !(element.i18n instanceof i18n.Message || element.i18n instanceof i18n.TagPlaceholder)) {
+    throw Error(`Unhandled i18n metadata type for element: ${element.i18n.constructor.name}`);
+  }
+
   const staticAttributes: Record<string, string> = {};
   for (const attr of element.attributes) {
     staticAttributes[attr.name] = attr.value;
@@ -144,7 +149,9 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   const [namespaceKey, elementName] = splitNsName(element.name);
 
   const startOp = ir.createElementStartOp(
-      elementName, id, namespaceForKey(namespaceKey), element.i18n, element.startSourceSpan);
+      elementName, id, namespaceForKey(namespaceKey),
+      element.i18n instanceof i18n.TagPlaceholder ? element.i18n : undefined,
+      element.startSourceSpan);
   unit.create.push(startOp);
 
   ingestBindings(unit, startOp, element);
@@ -154,7 +161,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   const endOp = ir.createElementEndOp(id, element.endSourceSpan);
   unit.create.push(endOp);
 
-  // If there is an i18n message associated with this element, insert  i18n start and end ops.
+  // If there is an i18n message associated with this element, insert i18n start and end ops.
   if (element.i18n instanceof i18n.Message) {
     const i18nBlockId = unit.job.allocateXrefId();
     ir.OpList.insertAfter<ir.CreateOp>(ir.createI18nStartOp(i18nBlockId, element.i18n), startOp);
@@ -166,8 +173,11 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
 function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
-  const childView = unit.job.allocateView(unit.xref);
+  if (tmpl.i18n !== undefined && !(tmpl.i18n instanceof i18n.Message)) {
+    throw Error(`Unhandled i18n metadata type for template: ${tmpl.i18n.constructor.name}`);
+  }
 
+  const childView = unit.job.allocateView(unit.xref);
 
   let tagNameWithoutNamespace = tmpl.tagName;
   let namespacePrefix: string|null = '';
@@ -178,7 +188,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   // TODO: validate the fallback tag name here.
   const tplOp = ir.createTemplateOp(
       childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
-      false, tmpl.i18n, tmpl.startSourceSpan);
+      false, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -189,8 +199,8 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
     childView.contextVariables.set(name, value);
   }
 
-  // If there is an i18n message associated with this template, insert  i18n start and end ops.
-  if (tmpl.i18n) {
+  // If there is an i18n message associated with this template, insert i18n start and end ops.
+  if (tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
     ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
@@ -229,6 +239,15 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
     throw new Error(
         `AssertionError: expected Interpolation for BoundText node, got ${value.constructor.name}`);
   }
+  if (text.i18n !== undefined && !(text.i18n instanceof i18n.Container)) {
+    throw Error(
+        `Unhandled i18n metadata type for text interpolation: ${text.i18n.constructor.name}`);
+  }
+
+  const i18nPlaceholders = text.i18n instanceof i18n.Container ?
+      text.i18n.children.filter(
+          (node): node is i18n.Placeholder => node instanceof i18n.Placeholder) :
+      [];
 
   const textXref = unit.job.allocateXrefId();
   unit.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
@@ -240,7 +259,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
       textXref,
       new ir.Interpolation(
           value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan))),
-      text.i18n, text.sourceSpan));
+      i18nPlaceholders, text.sourceSpan));
 }
 
 /**
@@ -252,8 +271,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
     if (!firstXref) firstXref = cView.xref;
-    unit.create.push(
-        ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, undefined, null!));
+    unit.create.push(ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, null!));
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
