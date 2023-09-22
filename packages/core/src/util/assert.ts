@@ -112,6 +112,12 @@ export function assertDomNode(node: any): asserts node is Node {
   }
 }
 
+export function assertElement(node: any): asserts node is Element {
+  if (!(node instanceof Element)) {
+    throwError(`The provided value must be an element but got ${stringify(node)}`);
+  }
+}
+
 export function assertIndexInRange(arr: any[], index: number) {
   assertDefined(arr, 'Array must be defined.');
   const maxLen = arr.length;

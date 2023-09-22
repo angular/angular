@@ -10,7 +10,7 @@ import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Input, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {DeferBlockBehavior, TestBed} from '@angular/core/testing';
+import {DeferBlockBehavior, fakeAsync, flush, TestBed} from '@angular/core/testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -49,7 +49,7 @@ function onIdle(callback: () => Promise<void>): Promise<void> {
 const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
 
 describe('#defer', () => {
-  beforeEach(() => setEnabledBlockTypes(['defer', 'for']));
+  beforeEach(() => setEnabledBlockTypes(['defer', 'for', 'if']));
   afterEach(() => setEnabledBlockTypes([]));
 
   beforeEach(() => {
@@ -1008,5 +1008,472 @@ describe('#defer', () => {
         expect(loadingFnInvokedTimes).toBe(1);
       });
     });
+  });
+
+  // Note: these cases specifically use `on interaction`, however
+  // the resolution logic is the same for all triggers.
+  describe('trigger resolution', () => {
+    it('should resolve a trigger is outside the defer block', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            {#defer on interaction(trigger)}
+              Main content
+              {:placeholder} Placeholder
+            {/defer}
+
+            <div>
+              <div>
+                <div>
+                  <button #trigger></button>
+                </div>
+            </div>
+          </div>
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger on a component outside the defer block', fakeAsync(() => {
+         @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+         class SomeComp {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [SomeComp],
+           template: `
+            {#defer on interaction(trigger)}
+              Main content
+              {:placeholder} Placeholder
+            {/defer}
+
+            <div>
+              <div>
+                <div>
+                  <some-comp #trigger/>
+                </div>
+              </div>
+            </div>
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger that is on a parent element', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            <button #trigger>
+              <div>
+                <div>
+                {#defer on interaction(trigger)}
+                  Main content
+                  {:placeholder} Placeholder
+                {/defer}
+                </div>
+              </div>
+            </button>
+          `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger that is inside a parent embedded view', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            {#if cond}
+              <button #trigger></button>
+
+              {#if cond}
+                {#if cond}
+                {#defer on interaction(trigger)}
+                  Main content
+                  {:placeholder} Placeholder
+                {/defer}
+                {/if}
+              {/if}
+            {/if}
+          `
+         })
+         class MyCmp {
+           cond = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger that is on a component in a parent embedded view',
+       fakeAsync(() => {
+         @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+         class SomeComp {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [SomeComp],
+           template: `
+              {#if cond}
+                <some-comp #trigger/>
+
+                {#if cond}
+                  {#if cond}
+                  {#defer on interaction(trigger)}
+                    Main content
+                    {:placeholder} Placeholder
+                  {/defer}
+                  {/if}
+                {/if}
+              {/if}
+            `
+         })
+         class MyCmp {
+           cond = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger that is inside the placeholder', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+              {#defer on interaction(trigger)}
+                Main content
+                {:placeholder} Placeholder <div><div><div><button #trigger></button></div></div></div>
+              {/defer}
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should resolve a trigger that is a component inside the placeholder', fakeAsync(() => {
+         @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+         class SomeComp {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [SomeComp],
+           template: `
+              {#defer on interaction(trigger)}
+                Main content
+                {:placeholder} Placeholder <div><div><div><some-comp #trigger/></div></div></div>
+              {/defer}
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+  });
+
+  describe('interaction triggers', () => {
+    it('should load the deferred content when the trigger is clicked', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+              {#defer on interaction(trigger)}
+                Main content
+                {:placeholder} Placeholder
+              {/defer}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should load the deferred content when the trigger receives a keyboard event',
+       fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+              {#defer on interaction(trigger)}
+                Main content
+                {:placeholder} Placeholder
+              {/defer}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('keydown'));
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should load the deferred content if a child of the trigger is clicked', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on interaction(trigger)}
+               Main content
+               {:placeholder} Placeholder
+             {/defer}
+
+             <div #trigger>
+               <div>
+                <button></button>
+               </div>
+             </div>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should support multiple deferred blocks with the same trigger', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on interaction(trigger)}
+               Main content 1
+               {:placeholder}Placeholder 1
+             {/defer}
+
+             {#defer on interaction(trigger)}
+               Main content 2
+               {:placeholder}Placeholder 2
+             {/defer}
+
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content 1  Main content 2');
+       }));
+
+    it('should unbind the trigger events when the deferred block is loaded', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             {#defer on interaction(trigger)}Main content{/defer}
+             <button #trigger></button>
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         button.click();
+         fixture.detectChanges();
+         flush();
+
+         expect(spy).toHaveBeenCalledTimes(2);
+         expect(spy).toHaveBeenCalledWith('click', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should unbind the trigger events when the trigger is destroyed', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+            {#if renderBlock}
+              {#defer on interaction(trigger)}Main content{/defer}
+              <button #trigger></button>
+            {/if}
+          `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(spy).toHaveBeenCalledTimes(2);
+         expect(spy).toHaveBeenCalledWith('click', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should unbind the trigger events when the deferred block is destroyed', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+              {#if renderBlock}
+                {#defer on interaction(trigger)}Main content{/defer}
+              {/if}
+
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+           renderBlock = true;
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         const button = fixture.nativeElement.querySelector('button');
+         const spy = spyOn(button, 'removeEventListener');
+
+         fixture.componentInstance.renderBlock = false;
+         fixture.detectChanges();
+
+         expect(spy).toHaveBeenCalledTimes(2);
+         expect(spy).toHaveBeenCalledWith('click', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should prefetch resources on interaction', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+              {#defer when isLoaded; prefetch on interaction(trigger)}Main content{/defer}
+              <button #trigger></button>
+            `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
   });
 });

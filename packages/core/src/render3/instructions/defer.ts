@@ -9,8 +9,9 @@
 import {InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
-import {assertDefined, assertEqual, throwError} from '../../util/assert';
-import {assertIndexInDeclRange, assertLContainer, assertTNodeForLView} from '../assert';
+import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
+import {afterRender} from '../after_render_hooks';
+import {assertIndexInDeclRange, assertLContainer, assertLView, assertTNodeForLView} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
@@ -18,12 +19,13 @@ import {DEFER_BLOCK_STATE, DeferBlockBehavior, DeferBlockConfig, DeferBlockInter
 import {DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {TContainerNode, TNode} from '../interfaces/node';
 import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
-import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, INJECTOR, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {isPlatformBrowser} from '../util/misc_utils';
-import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../util/view_utils';
+import {getConstant, getNativeByIndex, getTNode, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
+import {onInteraction} from './defer_events';
 import {ɵɵtemplate} from './template';
 
 /**
@@ -245,7 +247,14 @@ export function ɵɵdeferPrefetchOnHover() {}  // TODO: implement runtime logic.
  * @codeGenApi
  */
 export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: number) {
-}  // TODO: implement runtime logic.
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+
+  renderPlaceholder(lView, tNode);
+  registerDomTrigger(
+      lView, tNode, triggerIndex, walkUpTimes, onInteraction,
+      () => triggerDeferBlock(lView, tNode));
+}
 
 /**
  * Creates runtime data structures for the `prefetch on interaction` deferred trigger.
@@ -254,7 +263,17 @@ export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: numbe
  * @codeGenApi
  */
 export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes?: number) {
-}  // TODO: implement runtime logic.
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tView = lView[TVIEW];
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+
+  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+    registerDomTrigger(
+        lView, tNode, triggerIndex, walkUpTimes, onInteraction,
+        () => triggerPrefetching(tDetails, lView));
+  }
+}
 
 /**
  * Creates runtime data structures for the `on viewport` deferred trigger.
@@ -271,6 +290,120 @@ export function ɵɵdeferOnViewport(target?: unknown) {}  // TODO: implement run
 export function ɵɵdeferPrefetchOnViewport(target?: unknown) {}  // TODO: implement runtime logic.
 
 /********** Helper functions **********/
+
+/**
+ * Helper function to get the LView in which a deferred block's trigger is rendered.
+ * @param deferredHostLView LView in which the deferred block is defined.
+ * @param deferredTNode TNode defining the deferred block.
+ * @param walkUpTimes Number of times to go up in the view hierarchy to find the trigger's view.
+ *   A negative value means that the trigger is inside the block's placeholder, while an undefined
+ *   value means that the trigger is in the same LView as the deferred block.
+ */
+function getTriggerLView(
+    deferredHostLView: LView, deferredTNode: TNode, walkUpTimes: number|undefined): LView|null {
+  // The trigger is in the same view, we don't need to traverse.
+  if (walkUpTimes == null) {
+    return deferredHostLView;
+  }
+
+  // A positive value or zero means that the trigger is in a parent view.
+  if (walkUpTimes >= 0) {
+    return walkUpViews(walkUpTimes, deferredHostLView);
+  }
+
+  // If the value is negative, it means that the trigger is inside the placeholder.
+  const deferredContainer = deferredHostLView[deferredTNode.index];
+  ngDevMode && assertLContainer(deferredContainer);
+  const triggerLView = deferredContainer[CONTAINER_HEADER_OFFSET] ?? null;
+
+  // We need to null check, because the placeholder might not have been rendered yet.
+  if (ngDevMode && triggerLView !== null) {
+    const lDetails = getLDeferBlockDetails(deferredHostLView, deferredTNode);
+    const renderedState = lDetails[DEFER_BLOCK_STATE];
+    assertEqual(
+        renderedState, DeferBlockState.Placeholder,
+        'Expected a placeholder to be rendered in this defer block.');
+    assertLView(triggerLView);
+  }
+
+  return triggerLView;
+}
+
+/**
+ * Gets the element that a deferred block's trigger is pointing to.
+ * @param triggerLView LView in which the trigger is defined.
+ * @param triggerIndex Index at which the trigger element should've been rendered.
+ */
+function getTriggerElement(triggerLView: LView, triggerIndex: number): Element {
+  const element = getNativeByIndex(HEADER_OFFSET + triggerIndex, triggerLView);
+  ngDevMode && assertElement(element);
+  return element as Element;
+}
+
+/**
+ * Registers a DOM-node based trigger.
+ * @param initialLView LView in which the defer block is rendered.
+ * @param tNode TNode representing the defer block.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to go up/down in the view hierarchy to find the trigger.
+ * @param registerFn Function that will register the DOM events.
+ * @param callback Callback to be invoked when the trigger receives the event that should render
+ *     the deferred block.
+ */
+function registerDomTrigger(
+    initialLView: LView, tNode: TNode, triggerIndex: number, walkUpTimes: number|undefined,
+    registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
+    callback: VoidFunction) {
+  const injector = initialLView[INJECTOR]!;
+
+  // Assumption: the `afterRender` reference should be destroyed
+  // automatically so we don't need to keep track of it.
+  const afterRenderRef = afterRender(() => {
+    const lDetails = getLDeferBlockDetails(initialLView, tNode);
+    const renderedState = lDetails[DEFER_BLOCK_STATE];
+
+    // If the block was loaded before the trigger was resolved, we don't need to do anything.
+    if (renderedState !== DeferBlockInternalState.Initial &&
+        renderedState !== DeferBlockState.Placeholder) {
+      afterRenderRef.destroy();
+      return;
+    }
+
+    const triggerLView = getTriggerLView(initialLView, tNode, walkUpTimes);
+
+    // Keep polling until we resolve the trigger's LView.
+    // `afterRender` should stop automatically if the view is destroyed.
+    if (!triggerLView) {
+      return;
+    }
+
+    // It's possible that the trigger's view was destroyed before we resolved the trigger element.
+    if (triggerLView[FLAGS] & LViewFlags.Destroyed) {
+      afterRenderRef.destroy();
+      return;
+    }
+
+    // TODO: add integration with `DeferBlockCleanupManager`.
+    const element = getTriggerElement(triggerLView, triggerIndex);
+    const cleanup = registerFn(element, () => {
+      callback();
+      removeLViewOnDestroy(triggerLView, cleanup);
+      if (initialLView !== triggerLView) {
+        removeLViewOnDestroy(initialLView, cleanup);
+      }
+      cleanup();
+    }, injector);
+
+    afterRenderRef.destroy();
+    storeLViewOnDestroy(triggerLView, cleanup);
+
+    // Since the trigger and deferred block might be in different
+    // views, we have to register the callback in both locations.
+    if (initialLView !== triggerLView) {
+      storeLViewOnDestroy(initialLView, cleanup);
+    }
+  }, {injector});
+}
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.

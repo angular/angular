@@ -14,7 +14,7 @@ import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {getTNode} from './util/view_utils';
+import {getTNode, walkUpViews} from './util/view_utils';
 
 
 /**
@@ -697,18 +697,6 @@ export function nextContextImpl<T = any>(level: number): T {
   const contextLView = instructionState.lFrame.contextLView =
       walkUpViews(level, instructionState.lFrame.contextLView!);
   return contextLView[CONTEXT] as unknown as T;
-}
-
-function walkUpViews(nestingLevel: number, currentView: LView): LView {
-  while (nestingLevel > 0) {
-    ngDevMode &&
-        assertDefined(
-            currentView[DECLARATION_VIEW],
-            'Declaration view should be defined if nesting level is greater than 0.');
-    currentView = currentView[DECLARATION_VIEW]!;
-    nestingLevel--;
-  }
-  return currentView;
 }
 
 /**
