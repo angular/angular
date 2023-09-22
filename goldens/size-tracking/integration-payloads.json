@@ -30,16 +30,20 @@
   },
   "animations": {
     "uncompressed": {
-      "runtime": 898,
-      "main": 164757,
-      "polyfills": 33782
+      "runtime": 2694,
+      "main": 284463,
+      "polyfills": 33809,
+      "src_app_open-close_component_ts": 1321
     }
   },
   "animations-async": {
     "uncompressed": {
-      "runtime": 2755,
+      "runtime": 2906,
       "main": 221187,
-      "polyfills": 33782
+      "polyfills": 33782,
+      "node_modules_angular_animations_fesm2022_browser_mjs": 63981,
+      "default-node_modules_angular_animations_fesm2022_animations_mjs": 3828,
+      "src_app_open-close_component_ts": 1321
     }
   },
   "platform-server/standalone/browser": {

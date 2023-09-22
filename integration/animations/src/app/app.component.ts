@@ -1,21 +1,10 @@
 import {Component} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
-
-@Component({
-  selector: 'app-animations',
-  template: `
-    <div [@myAnimation]="exp"></div>
-    `,
-  animations:
-      [trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])]
-})
-export class AnimationsComponent {
-  exp: any = false;
-}
-
+import {RouterModule} from '@angular/router';
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  template: `<router-outlet/>`,
+  imports: [RouterModule],
+  standalone: true,
 })
 export class AppComponent {
 }
