@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES,} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {first, tap} from 'rxjs/operators';
 
@@ -24,22 +24,29 @@ interface TransferHttpResponse {
   responseType?: HttpRequest<unknown>['responseType'];
 }
 
-const CACHE_STATE = new InjectionToken<{isCacheActive: boolean}>(
-    ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_STATE' : '');
+interface CacheOptions {
+  isCacheActive: boolean, exclude?: (req: HttpRequest<unknown>) => boolean,
+}
+
+const CACHE_OPTIONS =
+    new InjectionToken<CacheOptions>(ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '');
 
 /**
  * A list of allowed HTTP methods to cache.
  */
-const ALLOWED_METHODS = ['GET', 'HEAD'];
+export const ALLOWED_METHODS = ['GET', 'HEAD'];
 
 export function transferCacheInterceptorFn(
     req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  const {isCacheActive} = inject(CACHE_STATE);
+  const {isCacheActive, exclude} = inject(CACHE_OPTIONS);
+  const skipCacheForRequest = exclude?.(req) === true || req.excludeFromHttpTransfer === true ||
+      !ALLOWED_METHODS.includes(req.method)
 
   // Stop using the cache if the application has stabilized, indicating initial rendering
   // is complete.
-  if (!isCacheActive || !ALLOWED_METHODS.includes(req.method)) {
-    // Cache is no longer active or method is not HEAD or GET.
+  if (!isCacheActive || skipCacheForRequest) {
+    // Cache is no longer active or method is not HEAD or GET
+    // or we explicitly want to skip the cache for this particular request
     // Pass the request through.
     return next(req);
   }
@@ -144,27 +151,28 @@ function generateHash(value: string): string {
  * load time.
  *
  */
-export function withHttpTransferCache(): Provider[] {
+export function withHttpTransferCache(
+    cacheOptions?: {exclude?: (req: HttpRequest<unknown>) => boolean;}): Provider[] {
   return [
     {
-      provide: CACHE_STATE,
-      useFactory: () => {
+      provide: CACHE_OPTIONS,
+      useFactory: (): CacheOptions => {
         inject(ENABLED_SSR_FEATURES).add('httpcache');
-        return {isCacheActive: true};
+        return {isCacheActive: true, exclude: cacheOptions?.exclude};
       }
     },
     {
       provide: HTTP_ROOT_INTERCEPTOR_FNS,
       useValue: transferCacheInterceptorFn,
       multi: true,
-      deps: [TransferState, CACHE_STATE]
+      deps: [TransferState, CACHE_OPTIONS]
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
       multi: true,
       useFactory: () => {
         const appRef = inject(ApplicationRef);
-        const cacheState = inject(CACHE_STATE);
+        const cacheState = inject(CACHE_OPTIONS);
 
         return () => {
           appRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => {

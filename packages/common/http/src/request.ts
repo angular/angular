@@ -23,6 +23,7 @@ interface HttpRequestInit {
   params?: HttpParams;
   responseType?: 'arraybuffer'|'blob'|'json'|'text';
   withCredentials?: boolean;
+  excludeFromHttpTransfer?: boolean,
 }
 
 /**
@@ -154,6 +155,13 @@ export class HttpRequest<T> {
    */
   readonly urlWithParams: string;
 
+  /**
+   * Exclude the request from the [Http Transfer
+   * Cache](/guide/universal#caching-data-when-using-httpclient)
+   */
+  readonly excludeFromHttpTransfer?: boolean
+
+
   constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
     headers?: HttpHeaders,
     context?: HttpContext,
@@ -161,6 +169,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    excludeFromHttpTransfer?: boolean,
   });
   constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
     headers?: HttpHeaders,
@@ -169,6 +178,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    excludeFromHttpTransfer?: boolean,
   });
   constructor(method: string, url: string, body: T|null, init?: {
     headers?: HttpHeaders,
@@ -177,6 +187,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    excludeFromHttpTransfer?: boolean,
   });
   constructor(
       method: string, readonly url: string, third?: T|{
@@ -186,6 +197,7 @@ export class HttpRequest<T> {
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
+        excludeFromHttpTransfer?: boolean,
       }|null,
       fourth?: {
         headers?: HttpHeaders,
@@ -194,6 +206,7 @@ export class HttpRequest<T> {
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
+        excludeFromHttpTransfer?: boolean,
       }) {
     this.method = method.toUpperCase();
     // Next, need to figure out which argument holds the HttpRequestInit
@@ -233,6 +246,10 @@ export class HttpRequest<T> {
 
       if (!!options.params) {
         this.params = options.params;
+      }
+
+      if (!!options.excludeFromHttpTransfer) {
+        this.excludeFromHttpTransfer = options.excludeFromHttpTransfer;
       }
     }
 

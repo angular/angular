@@ -14,20 +14,25 @@ import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
-import {provideClientHydration, withNoHttpTransferCache} from '../public_api';
+import {provideClientHydration, withHttpTransferCacheOptions} from '../public_api';
 
 describe('provideClientHydration', () => {
   @Component({selector: 'test-hydrate-app', template: ''})
   class SomeComponent {
   }
 
-  function makeRequestAndExpectOne(url: string, body: string): void {
-    TestBed.inject(HttpClient).get(url).subscribe();
+  function makeRequestAndExpectOne(
+      url: string, body: string, options?: {excludeFromHttpTransfer: boolean}): void {
+    TestBed.inject(HttpClient)
+        .get(url, {excludeFromHttpTransfer: options?.excludeFromHttpTransfer})
+        .subscribe();
     TestBed.inject(HttpTestingController).expectOne(url).flush(body);
   }
 
-  function makeRequestAndExpectNone(url: string): void {
-    TestBed.inject(HttpClient).get(url).subscribe();
+  function makeRequestAndExpectNone(url: string, options?: {excludeFromHttpTransfer: true}): void {
+    TestBed.inject(HttpClient)
+        .get(url, {excludeFromHttpTransfer: options?.excludeFromHttpTransfer})
+        .subscribe();
     TestBed.inject(HttpTestingController).expectNone(url);
   }
 
@@ -63,7 +68,7 @@ describe('provideClientHydration', () => {
     });
   });
 
-  describe('withNoHttpTransferCache', () => {
+  describe('withHttpTransferCacheOptions', () => {
     beforeEach(withBody(
         `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
           TestBed.resetTestingModule();
@@ -73,7 +78,7 @@ describe('provideClientHydration', () => {
             providers: [
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
-              provideClientHydration(withNoHttpTransferCache()),
+              provideClientHydration(withHttpTransferCacheOptions({disable: true})),
               provideHttpClient(),
               provideHttpClientTesting(),
             ],
@@ -83,10 +88,39 @@ describe('provideClientHydration', () => {
           appRef.bootstrap(SomeComponent);
         }));
 
-    it(`should not cached HTTP calls`, () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
+    it(`should not cache HTTP calls with excludeFromHttpTransfer:true`, () => {
+      makeRequestAndExpectOne(
+          '/test-1',
+          'foo',
+      );
       // Do the same call, this time should pass through as cache is disabled.
       makeRequestAndExpectOne('/test-1', 'foo');
+    });
+
+    it('should not cache HTTP calls with excludeFromHttpTransfer', () => {
+      withBody(
+          `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+            TestBed.resetTestingModule();
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                provideClientHydration(withHttpTransferCacheOptions({disable: true})),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+
+            makeRequestAndExpectOne('/test-1', 'foo', {excludeFromHttpTransfer: true});
+
+            // Do the same call, this time should pass through as cache is disabled.
+            makeRequestAndExpectOne('/test-1', 'foo')
+          });
     });
   });
 });

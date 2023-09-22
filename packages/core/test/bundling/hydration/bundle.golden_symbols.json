@@ -45,7 +45,7 @@
     "name": "BrowserXhr"
   },
   {
-    "name": "CACHE_STATE"
+    "name": "CACHE_OPTIONS"
   },
   {
     "name": "CIRCULAR"
