@@ -595,9 +595,9 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   i18n: i18n.I18nMeta;
 
   /**
-   * Map of values to use for tag name placeholders in the i18n message.
+   * Map of values to use for named placeholders in the i18n message.
    */
-  tagNameParams: {[placeholder: string]: o.Expression};
+  params: {[placeholder: string]: o.Expression};
 
   /**
    * The index in the consts array where the message i18n message is stored.
@@ -627,7 +627,7 @@ export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartO
     kind: OpKind.I18nStart,
     xref,
     i18n,
-    tagNameParams: {},
+    params: {},
     messageIndex: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,

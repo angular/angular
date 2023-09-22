@@ -28,8 +28,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "focusTest": true
+      ]
     },
     {
       "description": "should be able to act as child elements inside i18n block",

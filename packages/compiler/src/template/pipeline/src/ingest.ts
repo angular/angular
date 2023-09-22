@@ -240,7 +240,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
       textXref,
       new ir.Interpolation(
           value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan))),
-      text.sourceSpan));
+      text.i18n, text.sourceSpan));
 }
 
 /**

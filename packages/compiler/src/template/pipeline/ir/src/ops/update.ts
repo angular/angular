@@ -7,6 +7,7 @@
  */
 
 import {SecurityContext} from '../../../../../core';
+import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
@@ -39,7 +40,15 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
    */
   target: XrefId;
 
+  /**
+   * The interpolated value.
+   */
   interpolation: Interpolation;
+
+  /**
+   * The i18n metadata associated with this interpolation.
+   */
+  i18n?: i18n.I18nMeta;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -48,11 +57,13 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, sourceSpan: ParseSourceSpan): InterpolateTextOp {
+    xref: XrefId, interpolation: Interpolation, i18n: i18n.I18nMeta|undefined,
+    sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
     interpolation,
+    i18n,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -566,16 +577,23 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
    */
   slot: number|null;
 
+  /**
+   * The i18n metadata associated with this operation.
+   */
+  i18n: i18n.I18nMeta;
+
   sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Creates an op to apply i18n expression ops.
  */
-export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
+export function createI18nApplyOp(
+    target: XrefId, i18n: i18n.I18nMeta, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     target,
+    i18n,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
