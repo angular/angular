@@ -46,9 +46,9 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
   interpolation: Interpolation;
 
   /**
-   * The i18n metadata associated with this interpolation.
+   * The i18n placeholders associated with this interpolation.
    */
-  i18n?: i18n.I18nMeta;
+  i18nPlaceholders: i18n.Placeholder[];
 
   sourceSpan: ParseSourceSpan;
 }
@@ -57,13 +57,13 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, i18n: i18n.I18nMeta|undefined,
+    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: i18n.Placeholder[],
     sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
     interpolation,
-    i18n,
+    i18nPlaceholders,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -578,9 +578,9 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
   slot: number|null;
 
   /**
-   * The i18n metadata associated with this operation.
+   * The i18n placeholders associated with this operation.
    */
-  i18n: i18n.I18nMeta;
+  i18nPlaceholders: i18n.Placeholder[];
 
   sourceSpan: ParseSourceSpan;
 }
@@ -589,11 +589,12 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
  * Creates an op to apply i18n expression ops.
  */
 export function createI18nApplyOp(
-    target: XrefId, i18n: i18n.I18nMeta, sourceSpan: ParseSourceSpan): I18nApplyOp {
+    target: XrefId, i18nPlaceholders: i18n.Placeholder[],
+    sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     target,
-    i18n,
+    i18nPlaceholders,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
