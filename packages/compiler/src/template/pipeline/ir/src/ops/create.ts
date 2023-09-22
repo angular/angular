@@ -382,6 +382,8 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
    * The animation phase of the listener.
    */
   animationPhase: string|null;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
@@ -389,7 +391,7 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
  */
 export function createListenerOp(
     target: XrefId, name: string, tag: string|null, animationPhase: string|null,
-    hostListener: boolean): ListenerOp {
+    hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
   return {
     kind: OpKind.Listener,
     target,
@@ -401,6 +403,7 @@ export function createListenerOp(
     consumesDollarEvent: false,
     isAnimationListener: animationPhase !== null,
     animationPhase: animationPhase,
+    sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
   };
