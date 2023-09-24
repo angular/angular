@@ -245,7 +245,7 @@ export class OpList<OpT extends Op<OpT>> {
     // Replace `oldOp` with the chain `first` -> `last`.
     if (oldPrev !== null) {
       oldPrev.next = first;
-      first.prev = oldOp.prev;
+      first.prev = oldPrev;
     }
 
     if (oldNext !== null) {
