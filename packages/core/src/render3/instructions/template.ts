@@ -9,6 +9,7 @@ import {validateMatchingNode, validateNodeExists} from '../../hydration/error_ha
 import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {calcSerializedContainerSize, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
 import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -23,6 +24,12 @@ import {getLView, getTView, isInSkipHydrationBlock, lastNodeWasCreated, setCurre
 import {getConstant} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+
+// Special symbol that is used as a tag name in the `template` instruction in case
+// an underlying LContainer is used by the runtime code to render different branches.
+// This is needed to indicate that this particular LContainer needs to be hydrated
+// (if an application uses SSR).
+const BUILT_IN_CONTROL_FLOW_CONTAINER = '@';
 
 function templateFirstCreatePass(
     index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
@@ -92,7 +99,24 @@ export function ɵɵtemplate(
   }
   attachPatchData(comment, lView);
 
-  addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
+  const lContainer = createLContainer(comment, lView, comment, tNode);
+  lView[adjustedIndex] = lContainer;
+  addToViewTree(lView, lContainer);
+
+  // Since there is no creation mode instruction for `if` and `for`, we annotate
+  // a `template` instruction, which creates an LContainer that is later used by
+  // the runtime code to render different branches. This is needed to indicate
+  // that this particular LContainer needs to be hydrated (if an application uses
+  // SSR). To avoid introducing an extra flag and consuming an extra argument,
+  // we use a special symbol in the tag name.
+  //
+  // NOTE: this check will be refactored once we split the `template` instruction logic
+  // into a `block` and `container` instructions and start generating them for control
+  // flow instead. In this case, when we call `container` from the `template` function,
+  // we'll just pass a flag to skip hydration.
+  if (tagName === BUILT_IN_CONTROL_FLOW_CONTAINER) {
+    populateDehydratedViewsInContainer(lContainer);
+  }
 
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(tView, lView, tNode);

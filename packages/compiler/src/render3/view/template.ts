@@ -59,6 +59,12 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
 
 export const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
 
+// Special symbol that is used as a tag name in the `template` instruction in case
+// an underlying LContainer is used by the runtime code to render different branches.
+// This is needed to indicate that this particular LContainer needs to be hydrated
+// (if an application uses SSR).
+const BUILT_IN_CONTROL_FLOW_CONTAINER = '@';
+
 //  if (rf & flags) { .. }
 export function renderFlagCheckIfStmt(
     flags: core.RenderFlags, statements: o.Statement[]): o.IfStmt {
@@ -1144,29 +1150,42 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are
     // used inside the branch expressions.
-    const branchData = block.branches.map(({expression, expressionAlias, children, sourceSpan}) => {
-      let processedExpression: AST|null = null;
+    const branchData =
+        block.branches.map(({expression, expressionAlias, children, sourceSpan}, index) => {
+          let processedExpression: AST|null = null;
 
-      if (expression !== null) {
-        processedExpression = expression.visit(this._valueConverter);
-        this.allocateBindingSlots(processedExpression);
-      }
+          if (expression !== null) {
+            processedExpression = expression.visit(this._valueConverter);
+            this.allocateBindingSlots(processedExpression);
+          }
 
-      // If the branch has an alias, it'll be assigned directly to the container's context.
-      // We define a variable referring directly to the context so that any nested usages can be
-      // rewritten to refer to it.
-      const variables = expressionAlias !== null ?
-          [new t.Variable(
-              expressionAlias.name, DIRECT_CONTEXT_REFERENCE, expressionAlias.sourceSpan,
-              expressionAlias.keySpan)] :
-          undefined;
+          // If the branch has an alias, it'll be assigned directly to the container's context.
+          // We define a variable referring directly to the context so that any nested usages can be
+          // rewritten to refer to it.
+          const variables = expressionAlias !== null ?
+              [new t.Variable(
+                  expressionAlias.name, DIRECT_CONTEXT_REFERENCE, expressionAlias.sourceSpan,
+                  expressionAlias.keySpan)] :
+              undefined;
 
-      return {
-        index: this.createEmbeddedTemplateFn(null, children, '_Conditional', sourceSpan, variables),
-        expression: processedExpression,
-        alias: expressionAlias
-      };
-    });
+          // Since there is no creation mode instruction for {#if}, we need to annotate
+          // a template instruction, which creates an LContainer that is later used by
+          // the runtime code to render different branches. This is needed to indicate
+          // that this particular LContainer needs to be hydrated (if an application uses
+          // SSR). To avoid introducing an extra flag and consuming an extra argument,
+          // use a special symbol in the tag name.
+          //
+          // NOTE: this code will be removed once we split the `template` instruction logic
+          // into a `block` and `container` instructions and start generating them for control
+          // flow instead.
+          const tagName = index === 0 ? BUILT_IN_CONTROL_FLOW_CONTAINER : null;
+          return {
+            index: this.createEmbeddedTemplateFn(
+                tagName, children, '_Conditional', sourceSpan, variables),
+            expression: processedExpression,
+            alias: expressionAlias
+          };
+        });
 
     // Use the index of the first block as the index for the entire container.
     const containerIndex = branchData[0].index;
@@ -1228,9 +1247,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are used.
-    const caseData = block.cases.map(currentCase => {
+    const caseData = block.cases.map((currentCase, caseIndex) => {
+      // Since there is no creation mode instruction for {#switch}, we need to annotate
+      // a template instruction, which creates an LContainer that is later used by
+      // the runtime code to render different branches. This is needed to indicate
+      // that this particular LContainer needs to be hydrated (if an application uses
+      // SSR). To avoid introducing an extra flag and consuming an extra argument,
+      // use a special symbol in the tag name.
+      //
+      // NOTE: this code will be removed once we split the `template` instruction logic
+      // into a `block` and `container` instructions and start generating them for control
+      // flow instead.
+      const tagName = caseIndex === 0 ? BUILT_IN_CONTROL_FLOW_CONTAINER : null;
       const index = this.createEmbeddedTemplateFn(
-          null, currentCase.children, '_Case', currentCase.sourceSpan);
+          tagName, currentCase.children, '_Case', currentCase.sourceSpan);
       let expression: AST|null = null;
 
       if (currentCase.expression !== null) {
