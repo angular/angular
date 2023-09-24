@@ -128,7 +128,17 @@ export abstract class AssetGroup {
 
       // Look for a cached response. If one exists, it can be used to resolve the fetch
       // operation.
-      const cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+      let cachedResponse: Response|undefined;
+      try {
+        // Safari 16.4/17 is known to sometimes throw an unexpected internal error on cache access
+        // This try/catch is here as a workaround to prevent a failure of the handleFetch
+        // as the Driver falls back to safeFetch on critical errors.
+        // See #50378
+        cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+      } catch (error) {
+        throw new SwCriticalError(`Cache is throwing while looking for a match: ${error}`);
+      }
+
       if (cachedResponse !== undefined) {
         // A response has already been cached (which presumably matches the hash for this
         // resource). Check whether it's safe to serve this resource from cache.
