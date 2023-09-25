@@ -8,14 +8,14 @@
 
 import {PercentPipe} from '@angular/common';
 import {inject} from '@angular/core';
-import {ClassProvider, Component, Directive, Inject, Injectable, InjectFlags, InjectionToken, Injector, NgModule, NgModuleRef, ViewChild} from '@angular/core/src/core';
+import {afterRender, ClassProvider, Component, Directive, ElementRef, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, NgModule, NgModuleRef, ProviderToken, ViewChild} from '@angular/core/src/core';
 import {NullInjector} from '@angular/core/src/di/null_injector';
 import {isClassProvider, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider} from '@angular/core/src/di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '@angular/core/src/di/r3_injector';
 import {setupFrameworkInjectorProfiler} from '@angular/core/src/render3/debug/framework_injector_profiler';
-import {getInjectorProfilerContext, InjectedService, InjectedServiceEvent, InjectorCreatedInstanceEvent, InjectorProfilerEvent, InjectorProfilerEventType, ProviderConfiguredEvent, ProviderRecord, setInjectorProfiler} from '@angular/core/src/render3/debug/injector_profiler';
+import {getInjectorProfilerContext, InjectedServiceEvent, InjectorCreatedInstanceEvent, InjectorProfilerEvent, InjectorProfilerEventType, ProviderConfiguredEvent, setInjectorProfiler} from '@angular/core/src/render3/debug/injector_profiler';
 import {getNodeInjectorLView, NodeInjector} from '@angular/core/src/render3/di';
-import {getDependenciesFromInjectable, getInjectorProviders, getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
+import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders, getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing/src/test_bed';
 import {BrowserModule} from '@angular/platform-browser';
@@ -208,6 +208,114 @@ describe('setProfiler', () => {
 
     expect(((myServiceProviderConfiguredEvent!.providerRecord)?.provider as ClassProvider).multi)
         .toBeTrue();
+  });
+});
+
+describe('getInjectorMetadata', () => {
+  it('should be able to determine injector type and name', fakeAsync(() => {
+       class MyServiceA {}
+       @NgModule({providers: [MyServiceA]})
+       class ModuleA {
+       }
+
+       class MyServiceB {}
+       @NgModule({providers: [MyServiceB]})
+       class ModuleB {
+       }
+
+       @Component({
+         selector: 'lazy-comp',
+         template: `lazy component`,
+         standalone: true,
+         imports: [ModuleB]
+       })
+       class LazyComponent {
+         lazyComponentNodeInjector = inject(Injector);
+         elementRef = inject(ElementRef);
+
+         constructor() {
+           afterRender(() => afterLazyComponentRendered(this));
+         }
+       }
+
+       @Component({
+         standalone: true,
+         imports: [RouterOutlet, ModuleA],
+         template: `<router-outlet/>`,
+       })
+       class MyStandaloneComponent {
+         @ViewChild(RouterOutlet, {read: ElementRef}) routerOutlet: ElementRef|undefined;
+         elementRef = inject(ElementRef);
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterModule.forRoot([{
+           path: 'lazy',
+           loadComponent: () => LazyComponent,
+         }])]
+       });
+
+       const root = TestBed.createComponent(MyStandaloneComponent);
+       TestBed.inject(Router).navigateByUrl('/lazy');
+       tick();
+       root.detectChanges();
+
+       function afterLazyComponentRendered(lazyComponent: LazyComponent) {
+         const {lazyComponentNodeInjector} = lazyComponent;
+         const myStandaloneComponent =
+             lazyComponentNodeInjector.get(MyStandaloneComponent, null, {skipSelf: true})!;
+         expect(myStandaloneComponent).toBeInstanceOf(MyStandaloneComponent);
+         expect(myStandaloneComponent.routerOutlet).toBeInstanceOf(ElementRef);
+
+         const injectorPath = getInjectorResolutionPath(lazyComponentNodeInjector);
+         const injectorMetadata = injectorPath.map(injector => getInjectorMetadata(injector));
+
+         expect(injectorMetadata[0]).toBeDefined();
+         expect(injectorMetadata[1]).toBeDefined();
+         expect(injectorMetadata[2]).toBeDefined();
+         expect(injectorMetadata[3]).toBeDefined();
+         expect(injectorMetadata[4]).toBeDefined();
+         expect(injectorMetadata[5]).toBeDefined();
+         expect(injectorMetadata[6]).toBeDefined();
+         expect(injectorMetadata[7]).toBeDefined();
+
+         expect(injectorMetadata[0]!.source).toBe(lazyComponent.elementRef.nativeElement);
+         expect(injectorMetadata[1]!.source)
+             .toBe(myStandaloneComponent.routerOutlet!.nativeElement);
+         expect(injectorMetadata[2]!.source).toBe(myStandaloneComponent.elementRef.nativeElement);
+         expect(injectorMetadata[3]!.source).toBe('Standalone[LazyComponent]');
+         expect(injectorMetadata[4]!.source).toBe('Standalone[MyStandaloneComponent]');
+         expect(injectorMetadata[5]!.source).toBe('DynamicTestModule');
+         expect(injectorMetadata[6]!.source).toBe('Platform: core');
+         expect(injectorMetadata[7]!.source).toBeNull();
+
+         expect(injectorMetadata[0]!.type).toBe('element');
+         expect(injectorMetadata[1]!.type).toBe('element');
+         expect(injectorMetadata[2]!.type).toBe('element');
+         expect(injectorMetadata[3]!.type).toBe('environment');
+         expect(injectorMetadata[4]!.type).toBe('environment');
+         expect(injectorMetadata[5]!.type).toBe('environment');
+         expect(injectorMetadata[6]!.type).toBe('environment');
+         expect(injectorMetadata[7]!.type).toBe('null');
+       }
+     }));
+
+  it('should return null for injectors it does not recognize', () => {
+    class MockInjector extends Injector {
+      override get(): void {
+        throw new Error('Method not implemented.');
+      }
+    }
+    const mockInjector = new MockInjector();
+    expect(getInjectorMetadata(mockInjector)).toBeNull();
+  });
+
+  it('should return null as the source for an R3Injector with no source.', () => {
+    const emptyR3Injector = new R3Injector([], new NullInjector(), null, new Set());
+    const r3InjectorMetadata = getInjectorMetadata(emptyR3Injector);
+    expect(r3InjectorMetadata).toBeDefined();
+    expect(r3InjectorMetadata!.source).toBeNull();
+    expect(r3InjectorMetadata!.type).toBe('environment');
   });
 });
 

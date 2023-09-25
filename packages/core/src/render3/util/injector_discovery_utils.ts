@@ -16,7 +16,7 @@ import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
-import {throwError} from '../../util/assert';
+import {assertDefined, throwError} from '../../util/assert';
 import type {ChainedInjector} from '../component_ref';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
@@ -24,9 +24,11 @@ import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
-import {INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {HOST, INJECTOR, LView, TVIEW} from '../interfaces/view';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
+import {assertTNodeForLView} from '../assert';
+import {RElement} from '../interfaces/renderer_dom';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -388,6 +390,43 @@ export function getInjectorProviders(injector: Injector): ProviderRecord[] {
   }
 
   throwError('getInjectorProviders only supports NodeInjector and EnvironmentInjector');
+}
+
+/**
+ *
+ * Given an injector, this function will return
+ * an object containing the type and source of the injector.
+ *
+ * |              | type        | source                                                      |
+ * |--------------|-------------|-------------------------------------------------------------|
+ * | NodeInjector | element     | DOM element that created this injector                      |
+ * | R3Injector   | environment | `injector.source`                                           |
+ * | NullInjector | null        | null                                                        |
+ *
+ * @param injector the Injector to get metadata for
+ * @returns an object containing the type and source of the given injector. If the injector metadata
+ *     cannot be determined, returns null.
+ */
+export function getInjectorMetadata(injector: Injector):
+    {type: string; source: RElement | string | null}|null {
+  if (injector instanceof NodeInjector) {
+    const lView = getNodeInjectorLView(injector);
+    const tNode = getNodeInjectorTNode(injector)!;
+    assertTNodeForLView(tNode, lView);
+    assertDefined(lView[tNode.index][HOST], 'Could not find node in element view.');
+
+    return {type: 'element', source: lView[tNode.index][HOST]};
+  }
+
+  if (injector instanceof R3Injector) {
+    return {type: 'environment', source: injector.source ?? null};
+  }
+
+  if (injector instanceof NullInjector) {
+    return {type: 'null', source: null};
+  }
+
+  return null;
 }
 
 export function getInjectorResolutionPath(injector: Injector): Injector[] {
