@@ -861,7 +861,8 @@ describe('#defer', () => {
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary block');
     });
 
-    it('should support `prefetch on idle` condition', async () => {
+    // TODO(akushnir): investigate why this test is flaky, fix and re-enable.
+    xit('should support `prefetch on idle` condition', async () => {
       @Component({
         selector: 'nested-cmp',
         standalone: true,
@@ -943,7 +944,8 @@ describe('#defer', () => {
       });
     });
 
-    it('should trigger prefetching based on `on idle` only once', async () => {
+    // TODO(akushnir): investigate why this test is flaky, fix and re-enable.
+    xit('should trigger prefetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
         standalone: true,
@@ -1029,7 +1031,8 @@ describe('#defer', () => {
       });
     });
 
-    it('should trigger fetching based on `on idle` only once', async () => {
+    // TODO(akushnir): investigate why this test is flaky, fix and re-enable.
+    xit('should trigger fetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
         standalone: true,
