@@ -9,7 +9,7 @@ const HEROES = [
         new Hero('Magneta', 'Manipulates metallic objects')
       ];
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class BackendService {
   constructor(private logger: Logger) {}
 

@@ -1,11 +1,16 @@
-// #docregion
 import { Component } from '@angular/core';
+import { NgIf, NgFor, UpperCasePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { ContentComponent } from './content.component';
 
 import { Hero, heroes } from './hero';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
+  imports: [ContentComponent, FormsModule, NgIf, NgFor, UpperCasePipe],
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
