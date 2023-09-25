@@ -4,9 +4,11 @@ import { Hero } from './hero';
 import { BackendService } from './backend.service';
 import { Logger } from './logger.service';
 
-@Injectable()
+// #docregion provide
+@Injectable({providedIn: 'root'})
 // #docregion class
 export class HeroService {
+// #enddocregion provide
   private heroes: Hero[] = [];
 
   constructor(

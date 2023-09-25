@@ -36,7 +36,6 @@ EXAMPLES = {
     "dependency-injection": {"stackblitz": True, "zip": True},
     "dependency-injection-in-action": {"stackblitz": True, "zip": True},
     "deprecation-guide": {"stackblitz": True, "zip": True},
-    "displaying-data": {"stackblitz": True, "zip": True},
     "docs-style-guide": {"stackblitz": True, "zip": True},
     "dynamic-component-loader": {"stackblitz": True, "zip": True},
     "dynamic-form": {"stackblitz": True, "zip": True},

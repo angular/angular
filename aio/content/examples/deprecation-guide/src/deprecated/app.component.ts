@@ -1,15 +1,11 @@
 // #docplaster
 import { Component, ContentChild, Input, OnInit, TemplateRef } from '@angular/core';
-import { NgFor } from '@angular/common';
 import {
-  FormsModule,
   FormControl,
 } from '@angular/forms';
 @Component({
-  standalone: true,
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  imports: [ FormsModule, NgFor ]
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   title = 'example';
@@ -19,25 +15,25 @@ export class AppComponent implements OnInit {
     'repeat-value'
   ];
 
-  // #docregion template-with-input
+  /*
+  // #docregion template-with-input-deprecated
+  @Input() @ContentChild(TemplateRef) tpldeprecated !: TemplateRef<any>;
+  // #enddocregion template-with-input-deprecated
+  */
+
   @Input() tpl !: TemplateRef<any>;
   @ContentChild(TemplateRef) inlineTemplate !: TemplateRef<any>;
-  // #enddocregion template-with-input
 
   ngOnInit() {
-    // #docregion template-driven-form-example
+    // #docregion deprecated-example
 
     this.value = 'some value';
 
-    // #enddocregion template-driven-form-example
+    // #enddocregion deprecated-example
     this.setValue();
   }
 
   setValue(): void {
-    // #docregion reactive-form-example
-
     this.control.setValue('some value');
-
-    // #enddocregion reactive-form-example
   }
 }

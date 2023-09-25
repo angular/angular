@@ -10,7 +10,6 @@ about the features and tools that can help you develop and deliver Angular appli
 ## Application architecture
 
 *   The **Main Concepts** section located in the table of contents contains several topics that explain how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
-*   The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 *   The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page application.
 *   The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 
@@ -70,4 +69,4 @@ For some platforms and applications, you might also want to use the PWA \(Progre
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-25
