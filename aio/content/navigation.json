@@ -1124,11 +1124,6 @@
                   "tooltip": "Basic building blocks of Angular applications."
                 },
                 {
-                  "url": "guide/architecture-modules",
-                  "title": "Intro to modules",
-                  "tooltip": "About NgModules."
-                },
-                {
                   "url": "guide/architecture-components",
                   "title": "Intro to components",
                   "tooltip": "About Components, Templates, and Views."
@@ -1137,11 +1132,6 @@
                   "url": "guide/architecture-services",
                   "title": "Intro to services and DI",
                   "tooltip": "About services and dependency injection."
-                },
-                {
-                  "url": "guide/architecture-next-steps",
-                  "title": "Next steps",
-                  "tooltip": "Beyond the basics."
                 },
                 {
                   "url": "guide/binding-syntax",
@@ -1157,6 +1147,11 @@
                   "url": "guide/template-reference-variables",
                   "title": "Template variables",
                   "tooltip": "Introductory guide to referring to DOM elements within a template."
+                },
+                {
+                  "url": "guide/architecture-next-steps",
+                  "title": "Next steps",
+                  "tooltip": "Beyond the basics."
                 }
               ]
             },
