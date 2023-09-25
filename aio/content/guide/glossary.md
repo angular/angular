@@ -702,7 +702,7 @@ You can also use the `schematics` command to add a new schematic to an existing 
 ## scoped package
 
 A way to group related [npm packages][AioGuideNpmPackages].
-NgModules are delivered within scoped packages whose names begin with the Angular *scope name* `@angular`.
+Angular objects are delivered from npm packages whose names begin with the Angular *scope name* `@angular`.
 For example, `@angular/core`, `@angular/common`, `@angular/forms`, and `@angular/router`.
 
 Import a scoped package in the same way that you import a normal package.

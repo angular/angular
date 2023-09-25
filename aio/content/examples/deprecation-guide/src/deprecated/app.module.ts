@@ -2,10 +2,27 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from '../app/app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { SubmitButtonComponent } from './submit-button/submit-button.component';
+import { SubmitButtonComponent } from '../app/submit-button.component';
+
+// #docregion lazyload-syntax, lazyload-deprecated-syntax
+const routes: Routes = [{
+    path: 'lazy',
+    // #enddocregion lazyload-deprecated-syntax
+    // The new import() syntax
+    loadChildren: () => import('../app/lazy/lazy.module').then(m => m.LazyModule)
+    // #enddocregion lazyload-syntax
+    /*
+    // #docregion lazyload-deprecated-syntax
+    // The following string syntax for loadChildren is deprecated
+    loadChildren: './lazy/lazy.module#LazyModule',
+    // #enddocregion lazyload-deprecated-syntax
+    */
+    // #docregion lazyload-syntax, lazyload-deprecated-syntax
+  }];
+  // #enddocregion lazyload-syntax, lazyload-deprecated-syntax
 
 @NgModule({
   declarations: [

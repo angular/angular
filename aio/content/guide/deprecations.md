@@ -324,9 +324,9 @@ Support for using the `ngModel` input property and `ngModelChange` event with re
 
 Now deprecated:
 
-<code-example path="deprecation-guide/src/app/app.component.html" region="deprecated-example"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="deprecated-example"></code-example>
 
-<code-example path="deprecation-guide/src/app/app.component.ts" region="deprecated-example"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.ts" region="deprecated-example"></code-example>
 
 This support was deprecated for several reasons.
 First, developers found this pattern confusing.
@@ -338,13 +338,14 @@ Setting the value in the template violates the template-agnostic principles behi
 
 To update your code before support is removed, decide whether to stick with reactive form directives \(and get/set values using reactive forms patterns\) or switch to template-driven directives.
 
-**After** \(choice 1 - use reactive forms\):
+**After** \(choice 1 - with reactive forms\):
 
-<code-example path="deprecation-guide/src/app/app.component.html" region="reactive-form-example"></code-example>
+<!-- Standalone Reactive Forms are not ready as of 2023-09-25; move example to deprecated -->
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="reactive-form-example"></code-example>
 
 <code-example path="deprecation-guide/src/app/app.component.ts" region="reactive-form-example"></code-example>
 
-**After** \(choice 2 - use template-driven forms\):
+**After** \(choice 2 - with template-driven forms\):
 
 <code-example path="deprecation-guide/src/app/app.component.html" region="template-driven-form-example"></code-example>
 
@@ -353,7 +354,7 @@ To update your code before support is removed, decide whether to stick with reac
 By default, when you use this pattern, you get a deprecation warning once in dev mode.
 You can choose to silence this warning by configuring `ReactiveFormsModule` at import time:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" region="reactive-form-no-warning"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" region="reactive-form-no-warning"></code-example>
 
 Alternatively, you can choose to surface a separate warning for each instance of this pattern with a configuration value of `"always"`.
 This may help to track down where in the code the pattern is being used as the code is being updated.
@@ -422,16 +423,18 @@ They should all be configured using other methods, all of which have been
 documented.
 
 The following strategies are meant to be configured by registering the
-application strategy in DI via the `providers` in the root `NgModule` or
-`bootstrapApplication`:
+application strategy in DI via the `providers` in the configuration of `boostrapApplication()` for a "Standalone" app or 
+in the root `app.module` of an NgModule app:
 * `routeReuseStrategy`
 
-The following options are meant to be configured using the options
-available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
+The following options are meant to be configured using the options object
+of `withRouterConfig()` passed to `provideRouter` for a "Standalone" app or
+passed to `RouterModule.forRoot()` in the root `app.module` of an NgModule app:
 * `onSameUrlNavigation`
 * `errorHandler`
 
-The following options are deprecated in entirely:
+The following options are deprecated entirely:
+* `malformedUriErrorHandler` - URI parsing errors should be handled in the `UrlSerializer` instead.
 * `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
 <a id="router-can-load"></a>
@@ -443,6 +446,51 @@ in the lifecycle of a navigation. A `CanMatch` guard which returns false will pr
 matched at all and also prevent loading the children of the `Route`. `CanMatch` guards can accomplish the same
 goals as `CanLoad` but with the addition of allowing the navigation to match other routes when they reject
 (such as a wildcard route). There is no need to have both types of guards in the API surface.
+
+<a id="loadChildren"></a>
+
+### `loadChildren` string syntax (NgModule)
+
+<div class="alert is-critical">
+
+This deprecation notice applies only to lazy loading of [NgModules](guide/ngmodules).
+
+["Standalone"](guide/standalone-components) applications do not reference modules. 
+They can lazy load a component with `loadComponent` 
+or an array of child routes with `loadChildren` as 
+[discussed here](guide/standalone-components#routing-and-lazy-loading). 
+
+</div>
+
+When Angular first introduced lazy routes, there wasn't browser support for dynamically loading additional JavaScript.
+Angular created its own scheme using the syntax `loadChildren: './lazy/lazy.module#LazyModule'` and built tooling to support it.
+Now that ECMAScript dynamic import is supported in many browsers, Angular is moving toward this new syntax.
+
+In version 8, the string syntax for the [`loadChildren`](api/router/LoadChildren) route specification was deprecated, in favor of new syntax that uses `import()` syntax.
+
+**Before**:
+
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="lazyload-deprecated-syntax"></code-example>
+
+**After**:
+
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="lazyload-syntax"></code-example>
+
+<div class="alert is-helpful">
+
+**Version 8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically.
+Prior to version 7, the `import()` syntax only works in JIT mode \(with view engine\).
+
+</div>
+
+<div class="alert is-helpful">
+
+**Declaration syntax**: <br />
+It's important to follow the route declaration syntax `loadChildren: () => import('...').then(m => m.ModuleName)` to allow `ngc` to discover the lazy-loaded module and the associated `NgModule`.
+You can find the complete list of allowed syntax constructs [here](https://github.com/angular/angular-cli/blob/a491b09800b493fe01301387fa9a025f7c7d4808/packages/ngtools/webpack/src/transformers/import_factory.ts#L104-L113).
+These restrictions will be relaxed with the release of Ivy since it'll no longer use `NgFactories`.
+
+</div>
 
 <a id="reflect-metadata"></a>
 
@@ -469,7 +517,7 @@ See the [dedicated migration guide for static queries](guide/static-query-migrat
 
 The following pattern is deprecated:
 
-<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="template-with-input-deprecated"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.ts" language="typescript" region="template-with-input-deprecated"></code-example>
 
 Rather than using this pattern, separate the two decorators into their own
 properties and add fallback logic as in the following example:
@@ -483,7 +531,7 @@ properties and add fallback logic as in the following example:
 In the following example, the two-way binding means that `optionName`
 should be written when the `valueChange` event fires.
 
-<code-example path="deprecation-guide/src/app/app.component.1.html" region="two-way-template-deprecated"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="two-way-template-deprecated"></code-example>
 
 However, in practice, Angular ignores two-way bindings to template variables.
 Starting in version 8, attempting to write to template variables is deprecated.
@@ -537,29 +585,11 @@ For example:
 
 **Before**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersNonGeneric"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="ModuleWithProvidersNonGeneric"></code-example>
 
 **After**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersGeneric"></code-example>
-
-<!--
-
-### Internet Explorer 11
-
-Angular support for Microsoft's Internet Explorer 11 \(IE11\) is deprecated and will be removed in Angular v13.
-Ending IE11 support allows Angular to take advantage of web platform APIs present only in evergreen browsers, resulting in better APIs for developers and more capabilities for application users.
-An additional motivation behind this removal is the drop in global usage of IE11 to just ~1% \(as of March 2021\).
-For full rationale and discussion behind this deprecation, see [RFC: Internet Explorer 11 support deprecation and removal](https://github.com/angular/angular/issues/41840).
-
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-IE11 will be supported in Angular v12 LTS releases through November 2022.
-
-</div>
-
--->
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="ModuleWithProvidersGeneric"></code-example>
 
 <a id="input-setter-coercion"></a>
 
@@ -575,11 +605,11 @@ This means that input coercion fields are no longer needed, as their effects can
 
 For example, the following directive:
 
-<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButtonNarrow"></code-example>
+<code-example path="deprecation-guide/src/app/submit-button.component.ts" language="typescript" region="submitButtonNarrow"></code-example>
 
 can be refactored as follows:
 
-<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButton"></code-example>
+<code-example path="deprecation-guide/src/app/submit-button.component.ts" language="typescript" region="submitButton"></code-example>
 
 <a id="full-template-type-check"></a>
 
@@ -711,4 +741,4 @@ If you rely on the behavior that the same object instance should cause change de
 
 <!-- end links -->
 
-@reviewed 2023-05-03
+@reviewed 2023-09-26

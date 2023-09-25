@@ -1,12 +1,11 @@
-// #docplaster ...
+// #docplaster
 import { Component, Input } from '@angular/core';
 // #docregion submitButton, submitButtonNarrow
 @Component({
-  // #enddocregion submitButton, submitButtonNarrow
-// #docplaster
+// #enddocregion submitButton, submitButtonNarrow
+  standalone: true,
   selector: 'app-submit-button',
-  templateUrl: './submit-button.component.html',
-  styleUrls: ['./submit-button.component.css']
+  template: `<p>submit-button works!</p> `
   // #docregion submitButton, submitButtonNarrow
 })
 export class SubmitButtonComponent {
@@ -24,9 +23,9 @@ export class SubmitButtonComponent {
 }
 // #enddocregion submitButton
 @Component({
+  standalone: true,
   selector: 'app-submit-button-valid',
-  templateUrl: './submit-button.component.html',
-  styleUrls: ['./submit-button.component.css']
+  template: `<p>submit-button works!</p>`
 })
 export class SubmitButtonValidComponent {
 
