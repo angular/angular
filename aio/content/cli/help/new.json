@@ -149,7 +149,7 @@
     {
       "name": "standalone",
       "type": "boolean",
-      "default": false,
+      "default": true,
       "description": "Creates an application based upon the standalone API, without NgModules."
     },
     {
