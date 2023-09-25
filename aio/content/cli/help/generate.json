@@ -135,7 +135,7 @@
         {
           "name": "standalone",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Creates an application based upon the standalone API, without NgModules."
         },
         {
@@ -315,7 +315,7 @@
         {
           "name": "standalone",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Whether the generated component is standalone."
         },
         {
@@ -444,7 +444,7 @@
         {
           "name": "standalone",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Whether the generated directive is standalone."
         }
       ],
@@ -665,7 +665,7 @@
         {
           "name": "standalone",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Creates a library based upon the standalone API, without NgModules."
         }
       ],
@@ -782,7 +782,7 @@
         {
           "name": "standalone",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Whether the generated pipe is standalone."
         }
       ],
