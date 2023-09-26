@@ -4,7 +4,9 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
+      @for (item of items; track item.name[0].toUpperCase()) {
+        {{item.name}}
+      }
     </div>
   `,
 })

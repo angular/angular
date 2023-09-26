@@ -4,7 +4,7 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#defer}Deferred content{/defer}
+      @defer {Deferred content}
       <p>Content after defer block</p>
     </div>
   `,

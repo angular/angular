@@ -8834,10 +8834,10 @@ function allTests(os: string) {
             standalone: true,
             imports: [CmpA, LocalDep],
             template: \`
-              {#defer}
+              @defer {
                 <cmp-a />
                 <local-dep />
-              {/defer}
+              }
             \`,
           })
           export class TestCmp {}
@@ -8878,9 +8878,9 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {
@@ -8933,10 +8933,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, CmpB],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <cmp-b />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {
@@ -8990,10 +8990,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, CmpB],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <cmp-b />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {}
@@ -9005,7 +9005,7 @@ function allTests(os: string) {
 
           expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
 
-          // Both `CmpA` and `CmpB` were used inside the `{#defer}` and were not
+          // Both `CmpA` and `CmpB` were used inside the defer block and were not
           // referenced elsewhere, so we generate dynamic imports and drop a regular one.
           expect(jsContents)
               .toContain(
@@ -9017,7 +9017,7 @@ function allTests(os: string) {
       });
 
       describe('setClassMetadataAsync', () => {
-        it('should generate setClassMetadataAsync for components with `{#defer}` blocks', () => {
+        it('should generate setClassMetadataAsync for components with defer blocks', () => {
           env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import {Component} from '@angular/core';
@@ -9046,10 +9046,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, LocalDep],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <local-dep />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {}
@@ -9072,7 +9072,7 @@ function allTests(os: string) {
                   'CmpA => { i0.ɵsetClassMetadata(TestCmp');
         });
 
-        it('should *not* generate setClassMetadataAsync for components with `{#defer}` blocks ' +
+        it('should *not* generate setClassMetadataAsync for components with defer blocks ' +
                'when dependencies are eagerly referenced as well',
            () => {
              env.tsconfig({_enabledBlockTypes: ['defer']});
@@ -9096,9 +9096,9 @@ function allTests(os: string) {
                 standalone: true,
                 imports: [CmpA],
                 template: \`
-                  {#defer}
+                  @defer {
                     <cmp-a />
-                  {/defer}
+                  }
                 \`,
               })
               export class TestCmp {

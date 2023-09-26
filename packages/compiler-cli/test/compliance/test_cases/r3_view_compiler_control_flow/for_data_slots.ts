@@ -5,7 +5,11 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <ng-template/>
-    {#for item of items; track item}{{item}}{:empty}Empty{/for}
+    @for (item of items; track item) {
+      {{item}}
+    } @empty {
+      Empty
+    }
     <ng-template/>
   `,
 })

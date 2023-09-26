@@ -223,7 +223,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
 }
 
 /**
- * Ingest a `{#switch}` block into the given `ViewCompilation`.
+ * Ingest a `@switch` block into the given `ViewCompilation`.
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
   let firstXref: ir.XrefId|null = null;

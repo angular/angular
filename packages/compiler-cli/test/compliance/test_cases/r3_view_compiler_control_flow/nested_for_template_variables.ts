@@ -4,13 +4,13 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track item; let outerCount = $count}
+      @for (item of items; track item; let outerCount = $count) {
         {{item.name}}
-        {#for subitem of item.subItems; track subitem}
+        @for (subitem of item.subItems; track subitem) {
           Outer: {{outerCount}}
           Inner: {{$count}}
-        {/for}
-      {/for}
+        }
+      }
     </div>
   `,
 })

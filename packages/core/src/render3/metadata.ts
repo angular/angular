@@ -33,7 +33,7 @@ export function getAsyncClassMetadata(type: Type<unknown>): Promise<Array<Type<u
 
 /**
  * Handles the process of applying metadata info to a component class in case
- * component template had `{#defer}` blocks (thus some dependencies became deferrable).
+ * component template had defer blocks (thus some dependencies became deferrable).
  *
  * @param type Component class where metadata should be added
  * @param dependencyLoaderFn Function that loads dependencies

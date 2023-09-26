@@ -23,7 +23,7 @@ const FOR_LOOP_TRACK_PATTERN = /^track\s+(.*)/;
 const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
 
 /** Pattern used to identify an `else if` block. */
-const ELSE_IF_PATTERN = /^if\s/;
+const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 
 /** Pattern used to identify a `let` parameter. */
 const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
@@ -32,34 +32,56 @@ const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
     new Set<keyof t.ForLoopBlockContext>(['$index', '$first', '$last', '$even', '$odd', '$count']);
 
+/**
+ * Predicate function that determines if a block with
+ * a specific name cam be connected to a `for` block.
+ */
+export function isConnectedForLoopBlock(name: string): boolean {
+  return name === 'empty';
+}
+
+/**
+ * Predicate function that determines if a block with
+ * a specific name cam be connected to an `if` block.
+ */
+export function isConnectedIfLoopBlock(name: string): boolean {
+  return name === 'else' || ELSE_IF_PATTERN.test(name);
+}
+
 /** Creates an `if` loop block from an HTML AST node. */
 export function createIfBlock(
-    ast: html.BlockGroup, visitor: html.Visitor,
+    ast: html.Block, connectedBlocks: html.Block[], visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.IfBlock|null, errors: ParseError[]} {
-  const errors: ParseError[] = validateIfBlock(ast);
+  const errors: ParseError[] = validateIfConnectedBlocks(connectedBlocks);
   const branches: t.IfBlockBranch[] = [];
 
   if (errors.length > 0) {
     return {node: null, errors};
   }
 
-  // Assumes that the structure is valid since we validated it above.
-  for (const block of ast.blocks) {
-    const children = html.visitAll(visitor, block.children);
+  const mainBlockParams = parseConditionalBlockParameters(ast, errors, bindingParser);
 
-    // `{:else}` block.
-    if (block.name === 'else' && block.parameters.length === 0) {
+  if (mainBlockParams !== null) {
+    branches.push(new t.IfBlockBranch(
+        mainBlockParams.expression, html.visitAll(visitor, ast.children, ast.children),
+        mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan));
+  }
+
+  // Assumes that the structure is valid since we validated it above.
+  for (const block of connectedBlocks) {
+    const children = html.visitAll(visitor, block.children, block.children);
+
+    if (ELSE_IF_PATTERN.test(block.name)) {
+      const params = parseConditionalBlockParameters(block, errors, bindingParser);
+
+      if (params !== null) {
+        branches.push(new t.IfBlockBranch(
+            params.expression, children, params.expressionAlias, block.sourceSpan,
+            block.startSourceSpan));
+      }
+    } else if (block.name === 'else') {
       branches.push(
           new t.IfBlockBranch(null, children, null, block.sourceSpan, block.startSourceSpan));
-      continue;
-    }
-
-    const params = parseConditionalBlockParameters(block, errors, bindingParser);
-
-    if (params !== null) {
-      branches.push(new t.IfBlockBranch(
-          params.expression, children, params.expressionAlias, block.sourceSpan,
-          block.startSourceSpan));
     }
   }
 
@@ -71,37 +93,37 @@ export function createIfBlock(
 
 /** Creates a `for` loop block from an HTML AST node. */
 export function createForLoop(
-    ast: html.BlockGroup, visitor: html.Visitor,
+    ast: html.Block, connectedBlocks: html.Block[], visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.ForLoopBlock|null, errors: ParseError[]} {
-  const [primaryBlock, ...secondaryBlocks] = ast.blocks;
   const errors: ParseError[] = [];
-  const params = parseForLoopParameters(primaryBlock, errors, bindingParser);
+  const params = parseForLoopParameters(ast, errors, bindingParser);
   let node: t.ForLoopBlock|null = null;
   let empty: t.ForLoopBlockEmpty|null = null;
 
-  for (const block of secondaryBlocks) {
+  for (const block of connectedBlocks) {
     if (block.name === 'empty') {
       if (empty !== null) {
-        errors.push(new ParseError(block.sourceSpan, 'For loop can only have one "empty" block'));
+        errors.push(new ParseError(block.sourceSpan, '@for loop can only have one @empty block'));
       } else if (block.parameters.length > 0) {
-        errors.push(new ParseError(block.sourceSpan, 'Empty block cannot have parameters'));
+        errors.push(new ParseError(block.sourceSpan, '@empty block cannot have parameters'));
       } else {
         empty = new t.ForLoopBlockEmpty(
-            html.visitAll(visitor, block.children), block.sourceSpan, block.startSourceSpan);
+            html.visitAll(visitor, block.children, block.children), block.sourceSpan,
+            block.startSourceSpan);
       }
     } else {
-      errors.push(new ParseError(block.sourceSpan, `Unrecognized loop block "${block.name}"`));
+      errors.push(new ParseError(block.sourceSpan, `Unrecognized @for loop block "${block.name}"`));
     }
   }
 
   if (params !== null) {
     if (params.trackBy === null) {
-      errors.push(new ParseError(ast.sourceSpan, 'For loop must have a "track" expression'));
+      errors.push(new ParseError(ast.sourceSpan, '@for loop must have a "track" expression'));
     } else {
       node = new t.ForLoopBlock(
           params.itemName, params.expression, params.trackBy, params.context,
-          html.visitAll(visitor, primaryBlock.children), empty, ast.sourceSpan, ast.startSourceSpan,
-          ast.endSourceSpan);
+          html.visitAll(visitor, ast.children, ast.children), empty, ast.sourceSpan,
+          ast.startSourceSpan, ast.endSourceSpan);
     }
   }
 
@@ -110,27 +132,30 @@ export function createForLoop(
 
 /** Creates a switch block from an HTML AST node. */
 export function createSwitchBlock(
-    ast: html.BlockGroup, visitor: html.Visitor,
+    ast: html.Block, visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.SwitchBlock|null, errors: ParseError[]} {
-  const [primaryBlock, ...secondaryBlocks] = ast.blocks;
   const errors = validateSwitchBlock(ast);
 
   if (errors.length > 0) {
     return {node: null, errors};
   }
 
-  const primaryExpression = parseBlockParameterToBinding(primaryBlock.parameters[0], bindingParser);
+  const primaryExpression = parseBlockParameterToBinding(ast.parameters[0], bindingParser);
   const cases: t.SwitchBlockCase[] = [];
   let defaultCase: t.SwitchBlockCase|null = null;
 
   // Here we assume that all the blocks are valid given that we validated them above.
-  for (const block of secondaryBlocks) {
-    const expression = block.name === 'case' ?
-        parseBlockParameterToBinding(block.parameters[0], bindingParser) :
+  for (const node of ast.children) {
+    if (!(node instanceof html.Block)) {
+      continue;
+    }
+
+    const expression = node.name === 'case' ?
+        parseBlockParameterToBinding(node.parameters[0], bindingParser) :
         null;
     const ast = new t.SwitchBlockCase(
-        expression, html.visitAll(visitor, block.children), block.sourceSpan,
-        block.startSourceSpan);
+        expression, html.visitAll(visitor, node.children, node.children), node.sourceSpan,
+        node.startSourceSpan);
 
     if (expression === null) {
       defaultCase = ast;
@@ -155,7 +180,7 @@ export function createSwitchBlock(
 function parseForLoopParameters(
     block: html.Block, errors: ParseError[], bindingParser: BindingParser) {
   if (block.parameters.length === 0) {
-    errors.push(new ParseError(block.sourceSpan, 'For loop does not have an expression'));
+    errors.push(new ParseError(block.sourceSpan, '@for loop does not have an expression'));
     return null;
   }
 
@@ -166,7 +191,7 @@ function parseForLoopParameters(
   if (!match || match[2].trim().length === 0) {
     errors.push(new ParseError(
         expressionParam.sourceSpan,
-        'Cannot parse expression. For loop expression must match the pattern "<identifier> of <expression>"'));
+        'Cannot parse expression. @for loop expression must match the pattern "<identifier> of <expression>"'));
     return null;
   }
 
@@ -192,7 +217,7 @@ function parseForLoopParameters(
     if (trackMatch !== null) {
       if (result.trackBy !== null) {
         errors.push(
-            new ParseError(param.sourceSpan, 'For loop can only have one "track" expression'));
+            new ParseError(param.sourceSpan, '@for loop can only have one "track" expression'));
       } else {
         result.trackBy = parseBlockParameterToBinding(param, bindingParser, trackMatch[1]);
       }
@@ -200,7 +225,7 @@ function parseForLoopParameters(
     }
 
     errors.push(
-        new ParseError(param.sourceSpan, `Unrecognized loop paramater "${param.expression}"`));
+        new ParseError(param.sourceSpan, `Unrecognized @for loop paramater "${param.expression}"`));
   }
 
   // Fill out any variables that haven't been defined explicitly.
@@ -229,7 +254,7 @@ function parseLetParameter(
     if (name.length === 0 || variableName.length === 0) {
       errors.push(new ParseError(
           sourceSpan,
-          `Invalid for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"`));
+          `Invalid @for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"`));
     } else if (!ALLOWED_FOR_LOOP_LET_VARIABLES.has(variableName)) {
       errors.push(new ParseError(
           sourceSpan,
@@ -244,39 +269,30 @@ function parseLetParameter(
   }
 }
 
-/** Checks that the shape of a `if` block is valid. Returns an array of errors. */
-function validateIfBlock(ast: html.BlockGroup): ParseError[] {
+/**
+ * Checks that the shape of the blocks connected to an
+ * `@if` block is correct. Returns an array of errors.
+ */
+function validateIfConnectedBlocks(connectedBlocks: html.Block[]): ParseError[] {
   const errors: ParseError[] = [];
   let hasElse = false;
 
-  for (let i = 0; i < ast.blocks.length; i++) {
-    const block = ast.blocks[i];
+  for (let i = 0; i < connectedBlocks.length; i++) {
+    const block = connectedBlocks[i];
 
-    // Conditional blocks only allow `if`, `else if` and `else` blocks.
-    if ((block.name !== 'if' || i > 0) && block.name !== 'else') {
-      errors.push(
-          new ParseError(block.sourceSpan, `Unrecognized conditional block "${block.name}"`));
-      continue;
-    }
-
-    if (block.name === 'if') {
-      continue;
-    }
-
-    if (block.parameters.length === 0) {
+    if (block.name === 'else') {
       if (hasElse) {
-        errors.push(new ParseError(block.sourceSpan, 'Conditional can only have one "else" block'));
-      } else if (ast.blocks.length > 1 && i < ast.blocks.length - 1) {
+        errors.push(new ParseError(block.sourceSpan, 'Conditional can only have one @else block'));
+      } else if (connectedBlocks.length > 1 && i < connectedBlocks.length - 1) {
         errors.push(
-            new ParseError(block.sourceSpan, 'Else block must be last inside the conditional'));
+            new ParseError(block.sourceSpan, '@else block must be last inside the conditional'));
+      } else if (block.parameters.length > 0) {
+        errors.push(new ParseError(block.sourceSpan, '@else block cannot have parameters'));
       }
       hasElse = true;
-
-      // `else if` is an edge case, because it has a space after the block name
-      // which means that the `if` is captured as a part of the parameters.
-    } else if (
-        block.parameters.length > 0 && !ELSE_IF_PATTERN.test(block.parameters[0].expression)) {
-      errors.push(new ParseError(block.sourceSpan, 'Else block cannot have parameters'));
+    } else if (!ELSE_IF_PATTERN.test(block.name)) {
+      errors.push(
+          new ParseError(block.sourceSpan, `Unrecognized conditional block @${block.name}`));
     }
   }
 
@@ -284,56 +300,42 @@ function validateIfBlock(ast: html.BlockGroup): ParseError[] {
 }
 
 /** Checks that the shape of a `switch` block is valid. Returns an array of errors. */
-function validateSwitchBlock(ast: html.BlockGroup): ParseError[] {
-  const [primaryBlock, ...secondaryBlocks] = ast.blocks;
+function validateSwitchBlock(ast: html.Block): ParseError[] {
   const errors: ParseError[] = [];
   let hasDefault = false;
-  const hasPrimary = primaryBlock.children.length > 0 && primaryBlock.children.some(child => {
-    // The main block might have empty text nodes if `preserveWhitespaces` is enabled.
-    // Allow them since they might be used for code formatting.
-    return !(child instanceof html.Text) || child.value.trim().length > 0;
-  });
 
-  if (hasPrimary) {
-    errors.push(new ParseError(
-        primaryBlock.sourceSpan, 'Switch block can only contain "case" and "default" blocks'));
+  if (ast.parameters.length !== 1) {
+    errors.push(new ParseError(ast.sourceSpan, '@switch block must have exactly one parameter'));
+    return errors;
   }
 
-  if (primaryBlock.parameters.length !== 1) {
-    errors.push(
-        new ParseError(primaryBlock.sourceSpan, 'Switch block must have exactly one parameter'));
-  }
+  for (const node of ast.children) {
+    // Skip over empty text nodes inside the switch block since they can be used for formatting.
+    if (node instanceof html.Text && node.value.trim().length === 0) {
+      continue;
+    }
 
-  for (const block of secondaryBlocks) {
-    if (block.name === 'case') {
-      if (block.parameters.length !== 1) {
-        errors.push(new ParseError(block.sourceSpan, 'Case block must have exactly one parameter'));
-      }
-    } else if (block.name === 'default') {
+    if (!(node instanceof html.Block) || (node.name !== 'case' && node.name !== 'default')) {
+      errors.push(new ParseError(
+          node.sourceSpan, '@switch block can only contain @case and @default blocks'));
+      continue;
+    }
+
+    if (node.name === 'default') {
       if (hasDefault) {
         errors.push(
-            new ParseError(block.sourceSpan, 'Switch block can only have one "default" block'));
-      } else if (block.parameters.length > 0) {
-        errors.push(new ParseError(block.sourceSpan, 'Default block cannot have parameters'));
+            new ParseError(node.sourceSpan, '@switch block can only have one @default block'));
+      } else if (node.parameters.length > 0) {
+        errors.push(new ParseError(node.sourceSpan, '@default block cannot have parameters'));
       }
       hasDefault = true;
-    } else {
-      errors.push(new ParseError(
-          block.sourceSpan, 'Switch block can only contain "case" and "default" blocks'));
+    } else if (node.name === 'case' && node.parameters.length !== 1) {
+      errors.push(new ParseError(node.sourceSpan, '@case block must have exactly one parameter'));
     }
   }
 
   return errors;
 }
-
-/**
- * Parses a block parameter into a binding AST.
- * @param ast Block parameter that should be parsed.
- * @param bindingParser Parser that the expression should be parsed with.
- * @param start Index from which to start the parsing. Defaults to 0.
- */
-function parseBlockParameterToBinding(
-    ast: html.BlockParameter, bindingParser: BindingParser, start?: number): ASTWithSource;
 
 /**
  * Parses a block parameter into a binding AST.
@@ -342,18 +344,11 @@ function parseBlockParameterToBinding(
  * @param part Specific part of the expression that should be parsed.
  */
 function parseBlockParameterToBinding(
-    ast: html.BlockParameter, bindingParser: BindingParser, part: string): ASTWithSource;
-
-function parseBlockParameterToBinding(
-    ast: html.BlockParameter, bindingParser: BindingParser,
-    part: string|number = 0): ASTWithSource {
+    ast: html.BlockParameter, bindingParser: BindingParser, part?: string): ASTWithSource {
   let start: number;
   let end: number;
 
-  if (typeof part === 'number') {
-    start = part;
-    end = ast.expression.length;
-  } else {
+  if (typeof part === 'string') {
     // Note: `lastIndexOf` here should be enough to know the start index of the expression,
     // because we know that it'll be at the end of the param. Ideally we could use the `d`
     // flag when matching via regex and get the index from `match.indices`, but it's unclear
@@ -361,6 +356,9 @@ function parseBlockParameterToBinding(
     // https://github.com/tc39/proposal-regexp-match-indices
     start = Math.max(0, ast.expression.lastIndexOf(part));
     end = start + part.length;
+  } else {
+    start = 0;
+    end = ast.expression.length;
   }
 
   return bindingParser.parseBinding(
@@ -375,10 +373,7 @@ function parseConditionalBlockParameters(
     return null;
   }
 
-  const isPrimaryIfBlock = block.name === 'if';
-  const expression =
-      // Expressions for `{:else if}` blocks start at 2 to skip the `if` from the expression.
-      parseBlockParameterToBinding(block.parameters[0], bindingParser, isPrimaryIfBlock ? 0 : 2);
+  const expression = parseBlockParameterToBinding(block.parameters[0], bindingParser);
   let expressionAlias: t.Variable|null = null;
 
   // Start from 1 since we processed the first parameter already.
@@ -391,9 +386,9 @@ function parseConditionalBlockParameters(
     if (aliasMatch === null) {
       errors.push(new ParseError(
           param.sourceSpan, `Unrecognized conditional paramater "${param.expression}"`));
-    } else if (!isPrimaryIfBlock) {
+    } else if (block.name !== 'if') {
       errors.push(new ParseError(
-          param.sourceSpan, '"as" expression is only allowed on the primary "if" block'));
+          param.sourceSpan, '"as" expression is only allowed on the primary @if block'));
     } else if (expressionAlias !== null) {
       errors.push(
           new ParseError(param.sourceSpan, 'Conditional can only have one "as" expression'));

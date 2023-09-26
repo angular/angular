@@ -689,7 +689,7 @@ export class ComponentDecoratorHandler implements
       }
 
       // Register all Directives and Pipes used at the top level (outside
-      // of any `{#defer}` blocks), which would be eagerly referenced.
+      // of any defer blocks), which would be eagerly referenced.
       const eagerlyUsed = new Set<ClassDeclaration>();
       for (const dir of bound.getEagerlyUsedDirectives()) {
         eagerlyUsed.add(dir.ref.node);
@@ -702,7 +702,7 @@ export class ComponentDecoratorHandler implements
       }
 
       // Set of Directives and Pipes used across the entire template,
-      // including all `{#defer}` blocks.
+      // including all defer blocks.
       const wholeTemplateUsed = new Set<ClassDeclaration>(eagerlyUsed);
       for (const bound of deferBlocks.values()) {
         for (const dir of bound.getEagerlyUsedDirectives()) {
@@ -790,7 +790,7 @@ export class ComponentDecoratorHandler implements
                                         decl => decl.kind === R3TemplateDependencyKind.NgModule ||
                                             eagerlyUsed.has(decl.ref.node));
 
-      // Process information related to `{#defer}` blocks
+      // Process information related to defer blocks
       this.resolveDeferBlocks(deferBlocks, declarations, data, analysis, eagerlyUsed, bound);
 
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
@@ -1213,7 +1213,7 @@ export class ComponentDecoratorHandler implements
 
         if (eagerlyUsedDecls.has(decl.node)) {
           // Can't defer-load symbols that are eagerly referenced as a dependency
-          // in a template outside of a `{#defer}` block.
+          // in a template outside of a defer block.
           continue;
         }
 

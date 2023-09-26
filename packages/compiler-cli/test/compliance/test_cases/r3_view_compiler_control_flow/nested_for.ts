@@ -4,10 +4,12 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         {{item.name}}
-        {#for subitem of item.subItems; track $index}{{subitem}} from {{item.name}}{/for}
-      {/for}
+        @for (subitem of item.subItems; track $index) {
+          {{subitem}} from {{item.name}}
+        }
+      }
     </div>
   `,
 })
