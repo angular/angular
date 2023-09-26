@@ -2903,6 +2903,10 @@ export function getTranslationDeclStmts(
     message: i18n.Message, variable: o.ReadVarExpr, closureVar: o.ReadVarExpr,
     params: {[name: string]: o.Expression} = {},
     transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
+  // Sort the map entries in the compiled output. This makes it easy to acheive identical output in
+  // the template pipeline compiler.
+  params = Object.fromEntries(Object.entries(params).sort());
+
   const statements: o.Statement[] = [
     declareI18nVariable(variable),
     o.ifStmt(

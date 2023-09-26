@@ -18,7 +18,7 @@ function MyComponent_div_2_Template(rf, ctx) {
 decls: 3,
 vars: 1,
 consts: function() {
-  __i18nMsg__(' Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagDiv', String.raw`\uFFFD#3\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`]], {original_code: {'interpolation': '{{ valueA }}', 'startTagDiv': '<div>', 'interpolation_1': '{{ valueB | uppercase }}', 'closeTagDiv': '</div>'}}, {})
+  __i18nMsg__(' Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}', [['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['startTagDiv', String.raw`\uFFFD#3\uFFFD`]], {original_code: {'closeTagDiv': '</div>', 'interpolation': '{{ valueA }}', 'interpolation_1': '{{ valueB | uppercase }}', 'startTagDiv': '<div>'}}, {})
   return [
     [__AttributeMarker.Template__, "ngIf"],
     $i18n_0$
