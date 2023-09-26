@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import yargs from 'yargs';
-import {bold, yellow, GitClient, green, Log} from '@angular/ng-dev';
-import inquirer from 'inquirer';
-import {exec} from './utils.mjs';
-import {ResolvedTarget, findBenchmarkTargets, getTestlogPath, resolveTarget} from './targets.mjs';
-import {collectBenchmarkResults} from './results.mjs';
 import {setOutput} from '@actions/core';
+import {GitClient, Log, bold, green, yellow} from '@angular/ng-dev';
+import inquirer from 'inquirer';
+import yargs from 'yargs';
+import {collectBenchmarkResults} from './results.mjs';
+import {ResolvedTarget, findBenchmarkTargets, getTestlogPath, resolveTarget} from './targets.mjs';
+import {exec} from './utils.mjs';
 
 const benchmarkTestFlags = [
   '--cache_test_results=no',
@@ -135,7 +135,7 @@ async function runBenchmarkTarget(bazelTarget: ResolvedTarget): Promise<void> {
  */
 async function runCompare(bazelTargetRaw: string | undefined, compareRef: string): Promise<void> {
   const git = await GitClient.get();
-  const initialRef = git.getCurrentBranchOrRevision();
+  const currentRef = git.getCurrentBranchOrRevision();
 
   if (git.hasUncommittedChanges()) {
     Log.warn(bold('You have uncommitted changes.'));
@@ -173,7 +173,7 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
     await exec('yarn');
     await runBenchmarkTarget(bazelTarget);
   } finally {
-    restoreWorkingStage(git, initialRef);
+    restoreWorkingStage(git, currentRef);
   }
 
   // Re-install dependencies for `HEAD`.
@@ -191,10 +191,10 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
   Log.info('\n\n\n');
   Log.info(bold(green('Results!')));
 
-  Log.info(bold(yellow('Comparison results')), '\n');
+  Log.info(bold(yellow(`Comparison reference (${compareRef}) results:`)), '\n');
   Log.info(comparisonResults.summaryConsoleText);
 
-  Log.info(bold(yellow('Working stage results')), '\n');
+  Log.info(bold(yellow(`Working stage (${currentRef}) results:`)), '\n');
   Log.info(workingDirResults.summaryConsoleText);
 }
 
