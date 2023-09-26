@@ -67,8 +67,8 @@ let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl =
  */
 function findMatchingDehydratedViewImpl(
     lContainer: LContainer, template: string|null): DehydratedContainerView|null {
-  const views = lContainer[DEHYDRATED_VIEWS] ?? [];
-  if (!template || views.length === 0) {
+  const views = lContainer[DEHYDRATED_VIEWS];
+  if (!template || views === null || views.length === 0) {
     return null;
   }
   const view = views[0];
