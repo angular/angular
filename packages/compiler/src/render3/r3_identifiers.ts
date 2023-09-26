@@ -342,7 +342,7 @@ export class Identifiers {
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
   static setClassMetadataAsync:
       o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};
-
+  static setClassDebugInfo: o.ExternalReference = {name: 'ɵsetClassDebugInfo', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};
