@@ -6,16 +6,16 @@ consts: function() {
      * @suppress {msgDescriptions}
      */
     const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
-      "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
-      "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
+      "closeTagXhtmlDiv": "\uFFFD/#3\uFFFD",
       "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD",
-      "closeTagXhtmlDiv": "\uFFFD/#3\uFFFD"
+      "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
+      "startTagXhtmlSpan": "\uFFFD#4\uFFFD"
     }, {
       original_code: {
-        "startTagXhtmlDiv": "<xhtml:div xmlns=\"http://www.w3.org/1999/xhtml\">",
-        "startTagXhtmlSpan": "<span>",
+        "closeTagXhtmlDiv": "</xhtml:div>",
         "closeTagXhtmlSpan": "</span>",
-        "closeTagXhtmlDiv": "</xhtml:div>"
+        "startTagXhtmlDiv": "<xhtml:div xmlns=\"http://www.w3.org/1999/xhtml\">",
+        "startTagXhtmlSpan": "<span>"
       }
     });
     $I18N_0$ = $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$;

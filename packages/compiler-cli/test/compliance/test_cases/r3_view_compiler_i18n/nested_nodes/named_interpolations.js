@@ -8,12 +8,12 @@ consts: function() {
        * @suppress {msgDescriptions}
        */
       const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
-        "phA": "\uFFFD0\uFFFD",
-        "phB": "\uFFFD1\uFFFD"
+        "phB": "\uFFFD1\uFFFD",
+        "phA": "\uFFFD0\uFFFD"
       }, {
         original_code: {
-          "phA": "{{ valueA // i18n(ph=\"PH_A\") }}",
-          "phB": "{{ valueB // i18n(ph=\"PH B\") }}"
+          "phB": "{{ valueB // i18n(ph=\"PH B\") }}",
+          "phA": "{{ valueA // i18n(ph=\"PH_A\") }}"
         }
       });
       $I18N_0$ = $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$;

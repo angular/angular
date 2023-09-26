@@ -34,7 +34,9 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart && op.i18n instanceof i18n.Message) {
-        const params = op.tagNameParams;
+        // Sort the params map to match the ordering in TemplateDefinitionBuilder.
+        const params = Object.fromEntries(Object.entries(op.tagNameParams).sort());
+
         const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
         // Closure Compiler requires const names to start with `MSG_` but disallows any other const
         // to start with `MSG_`. We define a variable starting with `MSG_` just for the
