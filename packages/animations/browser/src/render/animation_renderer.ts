@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationTriggerMetadata} from '@angular/animations';
-import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+
+import {AnimationEngine} from './animation_engine_next';
 
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
