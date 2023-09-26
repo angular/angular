@@ -11,6 +11,6 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵadvance(1);
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance(2);
-    $r3$.ɵɵconditional(3, (MyApp_contFlowTmp = $r3$.ɵɵpipeBind1(2, 4, ctx.value())) === 0 ? 3 : MyApp_contFlowTmp === 1 ? 4 : 5);
+    $r3$.ɵɵconditional(3, (MyApp_contFlowTmp = $r3$.ɵɵpipeBind1(2, 2, ctx.value())) === 0 ? 3 : MyApp_contFlowTmp === 1 ? 4 : 5);
   }
 }

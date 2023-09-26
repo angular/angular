@@ -1141,16 +1141,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitIfBlock(block: t.IfBlock): void {
+    // Allocate one slot for the result of the expression.
+    this.allocateBindingSlots(null);
+
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are
     // used inside the branch expressions.
     const branchData = block.branches.map(({expression, expressionAlias, children, sourceSpan}) => {
-      let processedExpression: AST|null = null;
-
-      if (expression !== null) {
-        processedExpression = expression.visit(this._valueConverter);
-        this.allocateBindingSlots(processedExpression);
-      }
+      const processedExpression =
+          expression === null ? null : expression.visit(this._valueConverter);
 
       // If the branch has an alias, it'll be assigned directly to the container's context.
       // We define a variable referring directly to the context so that any nested usages can be
@@ -1222,23 +1221,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitSwitchBlock(block: t.SwitchBlock): void {
-    // Allocate slots for the primary block expression.
     const blockExpression = block.expression.visit(this._valueConverter);
-    this.allocateBindingSlots(blockExpression);
+    this.allocateBindingSlots(null);  // Allocate a slot for the primary block expression.
 
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are used.
     const caseData = block.cases.map(currentCase => {
-      const index = this.createEmbeddedTemplateFn(
-          null, currentCase.children, '_Case', currentCase.sourceSpan);
-      let expression: AST|null = null;
-
-      if (currentCase.expression !== null) {
-        expression = currentCase.expression.visit(this._valueConverter);
-        this.allocateBindingSlots(expression);
-      }
-
-      return {index, expression};
+      return {
+        index: this.createEmbeddedTemplateFn(
+            null, currentCase.children, '_Case', currentCase.sourceSpan),
+        expression: currentCase.expression === null ?
+            null :
+            currentCase.expression.visit(this._valueConverter)
+      };
     });
 
     // Use the index of the first block as the index for the entire container.
