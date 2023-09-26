@@ -46,12 +46,14 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
 
           const i18nBlockId = textNodes.get(op.target)!;
           const ops: ir.UpdateOp[] = [];
-          for (const expr of op.interpolation.expressions) {
-            ops.push(
-                ir.createI18nExpressionOp(i18nBlockId, expr, expr.sourceSpan ?? op.sourceSpan));
+          for (let i = 0; i < op.interpolation.expressions.length; i++) {
+            const expr = op.interpolation.expressions[i];
+            const placeholder = op.i18nPlaceholders[i];
+            ops.push(ir.createI18nExpressionOp(
+                i18nBlockId, expr, placeholder, expr.sourceSpan ?? op.sourceSpan));
           }
           if (ops.length > 0) {
-            ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18nPlaceholders, op.sourceSpan));
+            // ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18nPlaceholders, op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
