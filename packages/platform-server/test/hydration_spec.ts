@@ -17,7 +17,7 @@ import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration, withNoDomReuse} from '@angular/platform-browser';
+import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 
 import {provideServerRendering} from '../public_api';
@@ -270,13 +270,13 @@ describe('platform-server hydration integration', () => {
      */
     async function ssr(
         component: Type<unknown>, doc?: string, envProviders?: Provider[],
-        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = [],
+        hydrationOptions: Parameters<typeof provideClientHydration> = [],
         enableHydration = true): Promise<string> {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
         provideServerRendering(),
-        (enableHydration ? provideClientHydration(...hydrationFeatures) : []),
+        (enableHydration ? provideClientHydration(...hydrationOptions) : []),
       ];
 
       const bootstrap = () => bootstrapApplication(component, {providers});
@@ -297,7 +297,7 @@ describe('platform-server hydration integration', () => {
      */
     async function hydrate(
         html: string, component: Type<unknown>, envProviders?: Provider[],
-        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<ApplicationRef> {
+        hydrationOptions: Parameters<typeof provideClientHydration> = []): Promise<ApplicationRef> {
       // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
       const container = convertHtmlToDom(html, doc);
       Array.from(container.childNodes).forEach(node => doc.body.appendChild(node));
@@ -311,7 +311,7 @@ describe('platform-server hydration integration', () => {
       const providers = [
         ...(envProviders ?? []),
         {provide: DOCUMENT, useFactory: _document, deps: []},
-        provideClientHydration(...hydrationFeatures),
+        provideClientHydration(...hydrationOptions),
       ];
 
       return bootstrapApplication(component, {providers});
@@ -332,7 +332,7 @@ describe('platform-server hydration integration', () => {
         }
 
         const html =
-            await ssr(SimpleComponent, undefined, [withDebugConsole()], [withNoDomReuse()]);
+            await ssr(SimpleComponent, undefined, [withDebugConsole()], [{domReuse: false}]);
         const ssrContents = getAppContents(html);
 
         // There should be no `ngh` annotations.
@@ -341,7 +341,7 @@ describe('platform-server hydration integration', () => {
         resetTViewsFor(SimpleComponent);
 
         const appRef =
-            await hydrate(html, SimpleComponent, [withDebugConsole()], [withNoDomReuse()]);
+            await hydrate(html, SimpleComponent, [withDebugConsole()], [{domReuse: false}]);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 

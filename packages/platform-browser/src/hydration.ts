@@ -6,92 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵwithHttpTransferCache as withHttpTransferCache} from '@angular/common/http';
+import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
-/**
- * The list of features as an enum to uniquely type each `HydrationFeature`.
- * @see {@link HydrationFeature}
- *
- * @publicApi
- * @developerPreview
- */
-export const enum HydrationFeatureKind {
-  NoDomReuseFeature,
-  NoHttpTransferCache
-}
-
-/**
- * Helper type to represent a Hydration feature.
- *
- * @publicApi
- * @developerPreview
- */
-export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
-  ɵkind: FeatureKind;
-  ɵproviders: Provider[];
-}
-
-/**
- * Helper function to create an object that represents a Hydration feature.
- */
-function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
-    kind: FeatureKind, providers: Provider[] = []): HydrationFeature<FeatureKind> {
-  return {ɵkind: kind, ɵproviders: providers};
-}
-
-/**
- * Disables DOM nodes reuse during hydration. Effectively makes
- * Angular re-render an application from scratch on the client.
- *
- * When this option is enabled, make sure that the initial navigation
- * option is configured for the Router as `enabledBlocking` by using the
- * `withEnabledBlockingInitialNavigation` in the `provideRouter` call:
- *
- * ```
- * bootstrapApplication(RootComponent, {
- *   providers: [
- *     provideRouter(
- *       // ... other features ...
- *       withEnabledBlockingInitialNavigation()
- *     ),
- *     provideClientHydration(withNoDomReuse())
- *   ]
- * });
- * ```
- *
- * This would ensure that the application is rerendered after all async
- * operations in the Router (such as lazy-loading of components,
- * waiting for async guards and resolvers) are completed to avoid
- * clearing the DOM on the client too soon, thus causing content flicker.
- *
- * @see {@link provideRouter}
- * @see {@link withEnabledBlockingInitialNavigation}
- *
- * @publicApi
- * @developerPreview
- */
-export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature> {
-  // This feature has no providers and acts as a flag that turns off
-  // non-destructive hydration (which otherwise is turned on by default).
-  return hydrationFeature(HydrationFeatureKind.NoDomReuseFeature);
-}
-
-/**
- * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
- * server and other one on the browser.
- *
- * @publicApi
- * @developerPreview
- */
-export function withNoHttpTransferCache():
-    HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
-  // This feature has no providers and acts as a flag that turns off
-  // HTTP transfer cache (which otherwise is turned on by default).
-  return hydrationFeature(HydrationFeatureKind.NoHttpTransferCache);
-}
 
 /**
  * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
@@ -133,10 +52,6 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
  * [here](/guide/universal#caching-data-when-using-httpclient).
  *
- * These functions functions will allow you to disable some of the default features:
- * * {@link withNoDomReuse} to disable DOM nodes reuse during hydration
- * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
- *
  *
  * @usageNotes
  *
@@ -159,31 +74,33 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * export class AppModule {}
  * ```
  *
- * @see {@link withNoDomReuse}
- * @see {@link withNoHttpTransferCache}
  *
- * @param features Optional features to configure additional router behaviors.
+ * The function accepts a configuration object as the first argument. The configuration object
+ * may contain the following fields:
+ *  - `domReuse` - a boolean value (`true` by default) that controls whether Angular should match
+ * DOM nodes during hydration.
+ *  - `httpTransferCache` - either a boolean to enable/disable transferring cache for eligible
+ * requests performed using `HttpClient`, or an object, which allows to configure cache parameters,
+ * such as which headers should be included (no headers are included by default).
+ *
+ * Setting the `domReuse` to `false` is discouraged, because it disables DOM nodes reuse during
+ * hydration. Effectively makes
+ *
  * @returns A set of providers to enable hydration.
  *
  * @publicApi
  * @developerPreview
  */
-export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]):
-    EnvironmentProviders {
-  const providers: Provider[] = [];
-  const featuresKind = new Set<HydrationFeatureKind>();
-
-  for (const {ɵproviders, ɵkind} of features) {
-    featuresKind.add(ɵkind);
-
-    if (ɵproviders.length) {
-      providers.push(ɵproviders);
-    }
-  }
+export function provideClientHydration(options?: {
+  domReuse?: boolean,
+  httpTransferCache?: boolean|HttpTransferCacheOptions,
+}): EnvironmentProviders {
   return makeEnvironmentProviders([
     (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
-    (featuresKind.has(HydrationFeatureKind.NoDomReuseFeature) ? [] : withDomHydration()),
-    (featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) ? [] : withHttpTransferCache()),
-    providers,
+    options?.domReuse === false ? [] : withDomHydration(),
+    (options?.httpTransferCache === false ?
+         [] :
+         ɵwithHttpTransferCache(
+             typeof options?.httpTransferCache === 'object' ? options.httpTransferCache : {})),
   ]);
 }
