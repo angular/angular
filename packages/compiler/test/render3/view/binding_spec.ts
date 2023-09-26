@@ -264,8 +264,8 @@ describe('t2 binding', () => {
     it('should extract top-level defer blocks', () => {
       const template = parseTemplate(
           `
-            {#defer}<cmp-a />{/defer}
-            {#defer}<cmp-b />{/defer}
+            @defer {<cmp-a />}
+            @defer {<cmp-b />}
             <cmp-c />
           `,
           '', templateOptions);
@@ -278,19 +278,27 @@ describe('t2 binding', () => {
     it('should extract nested defer blocks and associated pipes', () => {
       const template = parseTemplate(
           `
-            {#defer}
+            @defer {
               {{ name | pipeA }}
-              {#defer}{{ name | pipeB }}{/defer}
-            {:loading}
-              {#defer}{{ name | pipeC }}{/defer}
+              @defer {
+                {{ name | pipeB }}
+              }
+            } @loading {
+              @defer {
+                {{ name | pipeC }}
+              }
               {{ name | loading }}
-            {:placeholder}
-              {#defer}{{ name | pipeD }}{/defer}
+            } @placeholder {
+              @defer {
+                {{ name | pipeD }}
+              }
               {{ name | placeholder }}
-            {:error}
-              {#defer}{{ name | pipeE }}{/defer}
+            } @error {
+              @defer {
+                {{ name | pipeE }}
+              }
               {{ name | error }}
-            {/defer}
+            }
             {{ name | pipeF }}
           `,
           '', templateOptions);
@@ -301,10 +309,10 @@ describe('t2 binding', () => {
       expect(deferBlocks.length).toBe(5);
 
       // Record all pipes used within :placeholder, :loading and :error sub-blocks,
-      // also record pipes used outside of any {#defer} blocks.
+      // also record pipes used outside of any defer blocks.
       expect(bound.getEagerlyUsedPipes()).toEqual(['placeholder', 'loading', 'error', 'pipeF']);
 
-      // Record *all* pipes from the template, including the ones from {#defer} blocks.
+      // Record *all* pipes from the template, including the ones from defer blocks.
       expect(bound.getUsedPipes()).toEqual([
         'pipeA', 'pipeB', 'pipeD', 'placeholder', 'pipeC', 'loading', 'pipeE', 'error', 'pipeF'
       ]);
@@ -313,11 +321,13 @@ describe('t2 binding', () => {
     it('should identify pipes used after a nested defer block as being lazy', () => {
       const template = parseTemplate(
           `
-          {#defer}
+          @defer {
             {{ name | pipeA }}
-            {#defer}{{ name | pipeB }}{/defer}
+            @defer {
+              {{ name | pipeB }}
+            }
             {{ name | pipeC }}
-          {/defer}
+          }
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -330,19 +340,27 @@ describe('t2 binding', () => {
     it('should extract nested defer blocks and associated directives', () => {
       const template = parseTemplate(
           `
-            {#defer}
+            @defer {
               <img *a />
-              {#defer}<img *b />{/defer}
-            {:loading}
-              {#defer}<img *c />{/defer}
+              @defer {
+                <img *b />
+              }
+            } @loading {
+              @defer {
+                <img *c />
+              }
               <img *loading />
-            {:placeholder}
-              {#defer}<img *d />{/defer}
+            } @placeholder {
+              @defer {
+                <img *d />
+              }
               <img *placeholder />
-            {:error}
-              {#defer}<img *e />{/defer}
+            } @error {
+              @defer {
+                <img *e />
+              }
               <img *error />
-            {/defer}
+            }
             <img *f />
           `,
           '', templateOptions);
@@ -352,15 +370,15 @@ describe('t2 binding', () => {
 
       expect(deferBlocks.length).toBe(5);
 
-      // Record all directives used within :placeholder, :loading and :error sub-blocks,
-      // also record directives used outside of any {#defer} blocks.
+      // Record all directives used within placeholder, loading and error sub-blocks,
+      // also record directives used outside of any defer blocks.
       const eagerDirs = bound.getEagerlyUsedDirectives();
       expect(eagerDirs.length).toBe(4);
       expect(eagerDirs.map(dir => dir.name)).toEqual([
         'DirPlaceholder', 'DirLoading', 'DirError', 'DirF'
       ]);
 
-      // Record *all* directives from the template, including the ones from {#defer} blocks.
+      // Record *all* directives from the template, including the ones from defer blocks.
       const allDirs = bound.getUsedDirectives();
       expect(allDirs.length).toBe(9);
       expect(allDirs.map(dir => dir.name)).toEqual([
@@ -371,11 +389,11 @@ describe('t2 binding', () => {
     it('should identify directives used after a nested defer block as being lazy', () => {
       const template = parseTemplate(
           `
-          {#defer}
+          @defer {
             <img *a />
-            {#defer}<img *b />{/defer}
+            @defer {<img *b />}
             <img *c />
-          {/defer}
+          }
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -391,7 +409,7 @@ describe('t2 binding', () => {
       const template = parseTemplate(
           `
           <div #trigger>
-            {#defer on viewport(trigger)}{/defer}
+            @defer (on viewport(trigger)) {}
           </div>
           `,
           '', templateOptions);
@@ -406,7 +424,7 @@ describe('t2 binding', () => {
       const template = parseTemplate(
           `
             <div>
-              {#defer on viewport(trigger)}{/defer}
+              @defer (on viewport(trigger)) {}
             </div>
 
             <div>
@@ -431,7 +449,7 @@ describe('t2 binding', () => {
 
               <div *ngFor="let child of item.children">
                 <div *ngFor="let grandchild of child.children">
-                  {#defer on viewport(trigger)}{/defer}
+                  @defer (on viewport(trigger)) {}
                 </div>
               </div>
             </div>
@@ -447,10 +465,11 @@ describe('t2 binding', () => {
     it('should identify a trigger element inside the placeholder', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}
+            @defer (on viewport(trigger)) {
               main
-              {:placeholder} <button #trigger></button>
-            {/defer}
+            } @placeholder {
+              <button #trigger></button>
+            }
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -463,7 +482,7 @@ describe('t2 binding', () => {
     it('should not identify a trigger inside the main content block', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}<button #trigger></button>{/defer}
+            @defer (on viewport(trigger)) {<button #trigger></button>}
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -476,7 +495,7 @@ describe('t2 binding', () => {
     it('should identify a trigger element on a component', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}{/defer}
+            @defer (on viewport(trigger)) {}
 
             <comp #trigger/>
           `,
@@ -491,7 +510,7 @@ describe('t2 binding', () => {
     it('should identify a trigger element on a directive', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}{/defer}
+            @defer (on viewport(trigger)) {}
 
             <button dir #trigger="dir"></button>
           `,
@@ -510,7 +529,7 @@ describe('t2 binding', () => {
               <button #trigger></button>
             </div>
 
-            {#defer on viewport(trigger)}{/defer}
+            @defer (on viewport(trigger)) {}
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -523,11 +542,11 @@ describe('t2 binding', () => {
     it('should not identify a trigger element in an embedded view inside the placeholder', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}
+            @defer (on viewport(trigger)) {
               main
-              {:placeholder}
-                <div *ngIf="cond"><button #trigger></button></div>
-            {/defer}
+            } @placeholder {
+              <div *ngIf="cond"><button #trigger></button></div>
+            }
           `,
           '', templateOptions);
       const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -541,11 +560,13 @@ describe('t2 binding', () => {
        () => {
          const template = parseTemplate(
              `
-                {#defer on viewport(trigger)}
+                @defer (on viewport(trigger)) {
                   main
-                  {:placeholder}
-                    {#defer}<button #trigger></button>{/defer}
-                {/defer}
+                } @placeholder {
+                  @defer {
+                    <button #trigger></button>
+                  }
+                }
               `,
              '', templateOptions);
          const binder = new R3TargetBinder(makeSelectorMatcher());
@@ -558,7 +579,7 @@ describe('t2 binding', () => {
     it('should not identify a trigger element on a template', () => {
       const template = parseTemplate(
           `
-            {#defer on viewport(trigger)}{/defer}
+            @defer (on viewport(trigger)) {}
 
             <ng-template #trigger></ng-template>
           `,

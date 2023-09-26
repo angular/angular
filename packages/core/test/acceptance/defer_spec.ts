@@ -93,15 +93,15 @@ describe('#defer', () => {
       selector: 'simple-app',
       imports: [MyLazyCmp],
       template: `
-        {#defer when isVisible}
+        @defer (when isVisible) {
           <my-lazy-cmp />
-        {:loading}
+        } @loading {
           Loading...
-        {:placeholder}
+        } @placeholder {
           Placeholder!
-        {:error}
+        } @error {
           Failed to load dependencies :(
-        {/defer}
+        }
       `
     })
     class MyCmp {
@@ -140,9 +140,9 @@ describe('#defer', () => {
       imports: [MyLazyCmp],
       template: `
         <p>Text outside of a defer block</p>
-        {#defer when isVisible}
+        @defer (when isVisible) {
           <my-lazy-cmp />
-        {/defer}
+        }
       `
     })
     class MyCmp {
@@ -180,13 +180,13 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer on immediate}
+          @defer (on immediate) {
             <nested-cmp [block]="'primary'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {:loading}
+          } @loading {
             Loading
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -216,7 +216,7 @@ describe('#defer', () => {
       fixture.detectChanges();
 
       // Expecting that no placeholder content would be rendered when
-      // a `{:loading}` block is present.
+      // a loading block is present.
       expect(fixture.nativeElement.outerHTML).toContain('Loading');
 
       // Expecting loading function to be triggered right away.
@@ -256,18 +256,18 @@ describe('#defer', () => {
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
-        {#defer when isVisible}
+        @defer (when isVisible) {
           <nested-cmp [block]="'primary'" />
-        {:loading}
+        } @loading {
           Loading...
           <nested-cmp [block]="'loading'" />
-        {:placeholder}
+        } @placeholder {
           Placeholder!
           <nested-cmp [block]="'placeholder'" />
-        {:error}
+        } @error {
           Failed to load dependencies :(
           <nested-cmp [block]="'error'" />
-        {/defer}
+        }
       `
       })
       class MyCmp {
@@ -314,16 +314,16 @@ describe('#defer', () => {
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
-            {#defer when isVisible}
-              <nested-cmp [block]="'primary'" />
-            {:loading}
-              Loading...
-            {:placeholder}
-              Placeholder!
-            {:error}
-              Failed to load dependencies :(
-              <nested-cmp [block]="'error'" />
-            {/defer}
+          @defer (when isVisible) {
+            <nested-cmp [block]="'primary'" />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder!
+          } @error {
+            Failed to load dependencies :(
+            <nested-cmp [block]="'error'" />
+          }
           `
       })
       class MyCmp {
@@ -385,18 +385,18 @@ describe('#defer', () => {
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
-          {#defer when isVisible}
+          @defer (when isVisible) {
             <nested-cmp [block]="'primary'" />
-          {:loading}
+          } @loading {
             Loading...
             <nested-cmp [block]="'loading'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder!
             <nested-cmp [block]="'placeholder'" />
-          {:error}
+          } @error {
             Failed to load dependencies :(
             <nested-cmp [block]="'error'" />
-          {/defer}
+          }
         `
       })
       class MyCmp {
@@ -467,19 +467,19 @@ describe('#defer', () => {
         selector: 'my-app',
         imports: [NestedCmp],
         template: `
-          {#defer when isVisible}
+          @defer (when isVisible) {
             <nested-cmp [block]="'primary'" />
             <ng-content />
-          {:loading}
+          } @loading {
             Loading...
             <nested-cmp [block]="'loading'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder!
             <nested-cmp [block]="'placeholder'" />
-          {:error}
+          } @error {
             Failed to load dependencies :(
             <nested-cmp [block]="'error'" />
-          {/defer}
+          }
         `
       })
       class MyCmp {
@@ -495,11 +495,11 @@ describe('#defer', () => {
             Projected content.
             <b>Including tags</b>
             <cmp-a />
-            {#defer when isInViewport}
+            @defer (when isInViewport) {
               <cmp-b />
-            {:placeholder}
+            } @placeholder {
               Projected defer block placeholder.
-            {/defer}
+            }
           </my-app>
         `
       })
@@ -572,16 +572,17 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp, CmpA],
         template: `
-         {#defer when isVisible}
+          @defer (when isVisible) {
             <nested-cmp [block]="'primary'" />
-            {#defer when isInViewport}
+
+            @defer (when isInViewport) {
               <cmp-a />
-            {:placeholder}
+            } @placeholder {
               Nested defer block placeholder.
-            {/defer}
-          {:placeholder}
+            }
+          } @placeholder {
             <nested-cmp [block]="'placeholder'" />
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -640,11 +641,11 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer when deferCond; prefetch when prefetchCond}
+          @defer (when deferCond; prefetch when prefetchCond) {
             <nested-cmp [block]="'primary'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -723,13 +724,13 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer when deferCond; prefetch when prefetchCond}
+          @defer (when deferCond; prefetch when prefetchCond) {
             <nested-cmp [block]="'primary'" />
-          {:error}
+          } @error {
             Loading failed
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -783,7 +784,7 @@ describe('#defer', () => {
 
       await fixture.whenStable();
 
-      // Since prefetching failed, expect the `{:error}` state to be rendered.
+      // Since prefetching failed, expect the error block to be rendered.
       expect(fixture.nativeElement.outerHTML).toContain('Loading failed');
 
       // Expect that the loading resources function was not invoked again (counter remains 1).
@@ -805,13 +806,13 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer when deferCond; prefetch when deferCond}
+          @defer (when deferCond; prefetch when deferCond) {
             <nested-cmp [block]="'primary'" />
-          {:error}
+          } @error {
             Loading failed
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -877,11 +878,11 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer when deferCond; prefetch on idle}
+          @defer (when deferCond; prefetch on idle) {
             <nested-cmp [block]="'primary'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -960,13 +961,13 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#for item of items; track item}
-            {#defer when deferCond; prefetch on idle}
+          @for (item of items; track item) {
+            @defer (when deferCond; prefetch on idle) {
               <nested-cmp [block]="'primary for \`' + item + '\`'" />
-            {:placeholder}
+            } @placeholder {
               Placeholder \`{{ item }}\`
-            {/defer}
-          {/for}
+            }
+          }
         `
       })
       class RootCmp {
@@ -1047,13 +1048,13 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#for item of items; track item}
-            {#defer on idle; prefetch on idle}
+          @for (item of items; track item) {
+            @defer (on idle; prefetch on idle) {
               <nested-cmp [block]="'primary for \`' + item + '\`'" />
-            {:placeholder}
+            } @placeholder {
               Placeholder \`{{ item }}\`
-            {/defer}
-          {/for}
+            }
+          }
         `
       })
       class RootCmp {
@@ -1123,11 +1124,11 @@ describe('#defer', () => {
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
-          {#defer when deferCond; prefetch on immediate}
+          @defer (when deferCond; prefetch on immediate) {
             <nested-cmp [block]="'primary'" />
-          {:placeholder}
+          } @placeholder {
             Placeholder
-          {/defer}
+          }
         `
       })
       class RootCmp {
@@ -1195,10 +1196,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#defer on interaction(trigger)}
+            @defer (on interaction(trigger)) {
               Main content
-              {:placeholder} Placeholder
-            {/defer}
+            } @placeholder {
+              Placeholder
+            }
 
             <div>
               <div>
@@ -1231,10 +1233,11 @@ describe('#defer', () => {
            standalone: true,
            imports: [SomeComp],
            template: `
-            {#defer on interaction(trigger)}
+            @defer (on interaction(trigger)) {
               Main content
-              {:placeholder} Placeholder
-            {/defer}
+            } @placeholder {
+              Placeholder
+            }
 
             <div>
               <div>
@@ -1265,10 +1268,11 @@ describe('#defer', () => {
             <button #trigger>
               <div>
                 <div>
-                {#defer on interaction(trigger)}
+                @defer (on interaction(trigger)) {
                   Main content
-                  {:placeholder} Placeholder
-                {/defer}
+                } @placeholder {
+                  Placeholder
+                }
                 </div>
               </div>
             </button>
@@ -1291,18 +1295,19 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#if cond}
+            @if (cond) {
               <button #trigger></button>
 
-              {#if cond}
-                {#if cond}
-                {#defer on interaction(trigger)}
-                  Main content
-                  {:placeholder} Placeholder
-                {/defer}
-                {/if}
-              {/if}
-            {/if}
+              @if (cond) {
+                @if (cond) {
+                  @defer (on interaction(trigger)) {
+                    Main content
+                  } @placeholder {
+                    Placeholder
+                  }
+                }
+              }
+            }
           `
          })
          class MyCmp {
@@ -1329,18 +1334,19 @@ describe('#defer', () => {
            standalone: true,
            imports: [SomeComp],
            template: `
-              {#if cond}
+              @if (cond) {
                 <some-comp #trigger/>
 
-                {#if cond}
-                  {#if cond}
-                  {#defer on interaction(trigger)}
-                    Main content
-                    {:placeholder} Placeholder
-                  {/defer}
-                  {/if}
-                {/if}
-              {/if}
+                @if (cond) {
+                  @if (cond) {
+                    @defer (on interaction(trigger)) {
+                      Main content
+                    } @placeholder {
+                      Placeholder
+                    }
+                  }
+                }
+              }
             `
          })
          class MyCmp {
@@ -1361,10 +1367,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#defer on interaction(trigger)}
+              @defer (on interaction(trigger)) {
                 Main content
-                {:placeholder} Placeholder <div><div><div><button #trigger></button></div></div></div>
-              {/defer}
+              } @placeholder {
+                Placeholder <div><div><div><button #trigger></button></div></div></div>
+              }
             `
          })
          class MyCmp {
@@ -1389,10 +1396,11 @@ describe('#defer', () => {
            standalone: true,
            imports: [SomeComp],
            template: `
-              {#defer on interaction(trigger)}
+              @defer (on interaction(trigger)) {
                 Main content
-                {:placeholder} Placeholder <div><div><div><some-comp #trigger/></div></div></div>
-              {/defer}
+              } @placeholder {
+                Placeholder <div><div><div><some-comp #trigger/></div></div></div>
+              }
             `
          })
          class MyCmp {
@@ -1414,10 +1422,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#defer on interaction(trigger)}
+              @defer (on interaction(trigger)) {
                 Main content
-                {:placeholder} Placeholder
-              {/defer}
+              } @placeholder {
+                Placeholder
+              }
 
               <button #trigger></button>
             `
@@ -1445,10 +1454,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#defer on interaction(trigger)}
+              @defer (on interaction(trigger)) {
                 Main content
-                {:placeholder} Placeholder
-              {/defer}
+              } @placeholder {
+                Placeholder
+              }
 
               <button #trigger></button>
             `
@@ -1471,10 +1481,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on interaction(trigger)}
-               Main content
-               {:placeholder} Placeholder
-             {/defer}
+              @defer (on interaction(trigger)) {
+                Main content
+              } @placeholder {
+                Placeholder
+              }
 
              <div #trigger>
                <div>
@@ -1500,15 +1511,17 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on interaction(trigger)}
-               Main content 1
-               {:placeholder}Placeholder 1
-             {/defer}
+             @defer (on interaction(trigger)) {
+              Main content 1
+             } @placeholder {
+              Placeholder 1
+             }
 
-             {#defer on interaction(trigger)}
-               Main content 2
-               {:placeholder}Placeholder 2
-             {/defer}
+             @defer (on interaction(trigger)) {
+              Main content 2
+             } @placeholder {
+              Placeholder 2
+             }
 
              <button #trigger></button>
            `
@@ -1518,7 +1531,7 @@ describe('#defer', () => {
 
          const fixture = TestBed.createComponent(MyCmp);
          fixture.detectChanges();
-         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1  Placeholder 2');
 
          fixture.nativeElement.querySelector('button').click();
          fixture.detectChanges();
@@ -1530,7 +1543,7 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on interaction(trigger)}Main content{/defer}
+             @defer (on interaction(trigger)) {Main content}
              <button #trigger></button>
            `
          })
@@ -1556,10 +1569,10 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#if renderBlock}
-              {#defer on interaction(trigger)}Main content{/defer}
+            @if (renderBlock) {
+              @defer (on interaction(trigger)) {Main content}
               <button #trigger></button>
-            {/if}
+            }
           `
          })
          class MyCmp {
@@ -1584,9 +1597,9 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#if renderBlock}
-                {#defer on interaction(trigger)}Main content{/defer}
-              {/if}
+              @if (renderBlock) {
+                @defer (on interaction(trigger)) {Main content}
+              }
 
               <button #trigger></button>
             `
@@ -1614,7 +1627,7 @@ describe('#defer', () => {
            standalone: true,
            selector: 'root-app',
            template: `
-              {#defer when isLoaded; prefetch on interaction(trigger)}Main content{/defer}
+              @defer (when isLoaded; prefetch on interaction(trigger)) {Main content}
               <button #trigger></button>
             `
          })
@@ -1665,10 +1678,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#defer on hover(trigger)}
+              @defer (on hover(trigger)) {
                 Main content
-                {:placeholder} Placeholder
-              {/defer}
+              } @placeholder {
+                Placeholder
+              }
 
               <button #trigger></button>
             `
@@ -1696,17 +1710,19 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on hover(trigger)}
-               Main content 1
-               {:placeholder}Placeholder 1
-             {/defer}
+              @defer (on hover(trigger)) {
+                Main content 1
+              } @placeholder {
+                Placeholder 1
+              }
 
-             {#defer on hover(trigger)}
-               Main content 2
-               {:placeholder}Placeholder 2
-             {/defer}
+              @defer (on hover(trigger)) {
+                Main content 2
+              } @placeholder {
+                Placeholder 2
+              }
 
-             <button #trigger></button>
+              <button #trigger></button>
            `
          })
          class MyCmp {
@@ -1714,7 +1730,7 @@ describe('#defer', () => {
 
          const fixture = TestBed.createComponent(MyCmp);
          fixture.detectChanges();
-         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1  Placeholder 2');
 
          const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
          button.dispatchEvent(new Event('mouseenter'));
@@ -1732,7 +1748,9 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on hover(trigger)}Main content{/defer}
+             @defer (on hover(trigger)) {
+              Main content
+             }
              <button #trigger></button>
            `
          })
@@ -1762,10 +1780,12 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#if renderBlock}
-              {#defer on hover(trigger)}Main content{/defer}
+            @if (renderBlock) {
+              @defer (on hover(trigger)) {
+                Main content
+              }
               <button #trigger></button>
-            {/if}
+            }
           `
          })
          class MyCmp {
@@ -1794,9 +1814,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#if renderBlock}
-                {#defer on hover(trigger)}Main content{/defer}
-              {/if}
+              @if (renderBlock) {
+                @defer (on hover(trigger)) {
+                  Main content
+                }
+              }
 
               <button #trigger></button>
             `
@@ -1828,7 +1850,9 @@ describe('#defer', () => {
            standalone: true,
            selector: 'root-app',
            template: `
-              {#defer when isLoaded; prefetch on hover(trigger)}Main content{/defer}
+              @defer (when isLoaded; prefetch on hover(trigger)) {
+                Main content
+              }
               <button #trigger></button>
             `
          })
@@ -1965,10 +1989,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-              {#defer on viewport(trigger)}
+              @defer (on viewport(trigger)) {
                 Main content
-                {:placeholder} Placeholder
-              {/defer}
+              } @placeholder {
+                Placeholder
+              }
 
               <button #trigger></button>
             `
@@ -1992,10 +2017,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#defer on viewport(trigger)}
-               Main content
-               {:placeholder} Placeholder
-             {/defer}
+             @defer (on viewport(trigger)) {
+              Main content
+             } @placeholder {
+              Placeholder
+             }
 
              <button #trigger></button>
            `
@@ -2030,15 +2056,17 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#defer on viewport(trigger)}
+            @defer (on viewport(trigger)) {
               Main content 1
-              {:placeholder}Placeholder 1
-            {/defer}
+            } @placeholder {
+              Placeholder 1
+            }
 
-            {#defer on viewport(trigger)}
+            @defer (on viewport(trigger)) {
               Main content 2
-              {:placeholder}Placeholder 2
-            {/defer}
+            } @placeholder {
+              Placeholder 2
+            }
 
             <button #trigger></button>
           `
@@ -2048,7 +2076,7 @@ describe('#defer', () => {
 
          const fixture = TestBed.createComponent(MyCmp);
          fixture.detectChanges();
-         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1 Placeholder 2');
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder 1  Placeholder 2');
 
          const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
          MockIntersectionObserver.invokeCallbacksForElement(button, true);
@@ -2061,7 +2089,9 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-            {#defer on viewport(trigger)}Main content{/defer}
+            @defer (on viewport(trigger)) {
+              Main content
+            }
             <button #trigger></button>
           `
          })
@@ -2088,10 +2118,12 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-           {#if renderBlock}
-             {#defer on viewport(trigger)}Main content{/defer}
+           @if (renderBlock) {
+             @defer (on viewport(trigger)) {
+              Main content
+             }
              <button #trigger></button>
-           {/if}
+           }
          `
          })
          class MyCmp {
@@ -2117,9 +2149,11 @@ describe('#defer', () => {
          @Component({
            standalone: true,
            template: `
-             {#if renderBlock}
-               {#defer on viewport(trigger)}Main content{/defer}
-             {/if}
+             @if (renderBlock) {
+              @defer (on viewport(trigger)) {
+                Main content
+              }
+             }
 
              <button #trigger></button>
            `
@@ -2149,10 +2183,14 @@ describe('#defer', () => {
            standalone: true,
            template: `
             <button #triggerOne></button>
-            {#defer on viewport(triggerOne)}One{/defer}
+            @defer (on viewport(triggerOne)) {
+              One
+            }
 
             <button #triggerTwo></button>
-            {#defer on viewport(triggerTwo)}Two{/defer}
+            @defer (on viewport(triggerTwo)) {
+              Two
+            }
           `
          })
          class MyCmp {
@@ -2186,7 +2224,9 @@ describe('#defer', () => {
            standalone: true,
            selector: 'root-app',
            template: `
-             {#defer when isLoaded; prefetch on viewport(trigger)}Main content{/defer}
+             @defer (when isLoaded; prefetch on viewport(trigger)) {
+              Main content
+             }
              <button #trigger></button>
            `
          })

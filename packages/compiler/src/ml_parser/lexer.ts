@@ -203,12 +203,12 @@ class _Tokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (this._tokenizeBlocks && this._attemptStr('{#')) {
-          this._consumeBlockGroupOpen(start);
-        } else if (this._tokenizeBlocks && this._attemptStr('{/')) {
-          this._consumeBlockGroupClose(start);
-        } else if (this._tokenizeBlocks && this._attemptStr('{:')) {
-          this._consumeBlock(start);
+        } else if (this._tokenizeBlocks && this._attemptCharCode(chars.$AT)) {
+          this._consumeBlockStart(start);
+        } else if (
+            this._tokenizeBlocks && !this._inInterpolation && !this._isInExpansionCase() &&
+            !this._isInExpansionForm() && this._attemptCharCode(chars.$RBRACE)) {
+          this._consumeBlockEnd(start);
         } else if (!(this._tokenizeIcu && this._tokenizeExpansionForm())) {
           // In (possibly interpolated) text the end of the text is given by `isTextEnd()`, while
           // the premature end of an interpolation is given by the start of a new HTML element.
@@ -224,34 +224,46 @@ class _Tokenizer {
     this._endToken([]);
   }
 
-  private _consumeBlockGroupOpen(start: CharacterCursor) {
-    this._beginToken(TokenType.BLOCK_GROUP_OPEN_START, start);
+  private _getBlockName(): string {
+    // This allows us to capture up something like `@else if`, but not `@ if`.
+    let spacesInNameAllowed = false;
     const nameCursor = this._cursor.clone();
-    this._attemptCharCodeUntilFn(code => !isBlockNameChar(code));
-    this._endToken([this._cursor.getChars(nameCursor)]);
-    this._consumeBlockParameters();
-    this._beginToken(TokenType.BLOCK_GROUP_OPEN_END);
-    this._requireCharCode(chars.$RBRACE);
+
+    this._attemptCharCodeUntilFn(code => {
+      if (chars.isWhitespace(code)) {
+        return !spacesInNameAllowed;
+      }
+      if (isBlockNameChar(code)) {
+        spacesInNameAllowed = true;
+        return false;
+      }
+      return true;
+    });
+    return this._cursor.getChars(nameCursor).trim();
+  }
+
+  private _consumeBlockStart(start: CharacterCursor) {
+    this._beginToken(TokenType.BLOCK_OPEN_START, start);
+    this._endToken([this._getBlockName()]);
+    if (this._cursor.peek() === chars.$LPAREN) {
+      // Advance past the opening paren.
+      this._cursor.advance();
+      // Capture the parameters.
+      this._consumeBlockParameters();
+      // Allow spaces before the closing paren.
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+      // Skip over the closing paren.
+      this._requireCharCode(chars.$RPAREN);
+      // Allow spaces after the paren.
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+    }
+    this._beginToken(TokenType.BLOCK_OPEN_END);
+    this._requireCharCode(chars.$LBRACE);
     this._endToken([]);
   }
 
-  private _consumeBlockGroupClose(start: CharacterCursor) {
-    this._beginToken(TokenType.BLOCK_GROUP_CLOSE, start);
-    const nameCursor = this._cursor.clone();
-    this._attemptCharCodeUntilFn(code => !isBlockNameChar(code));
-    const name = this._cursor.getChars(nameCursor);
-    this._requireCharCode(chars.$RBRACE);
-    this._endToken([name]);
-  }
-
-  private _consumeBlock(start: CharacterCursor) {
-    this._beginToken(TokenType.BLOCK_OPEN_START, start);
-    const nameCursor = this._cursor.clone();
-    this._attemptCharCodeUntilFn(code => !isBlockNameChar(code));
-    this._endToken([this._cursor.getChars(nameCursor)]);
-    this._consumeBlockParameters();
-    this._beginToken(TokenType.BLOCK_OPEN_END);
-    this._requireCharCode(chars.$RBRACE);
+  private _consumeBlockEnd(start: CharacterCursor) {
+    this._beginToken(TokenType.BLOCK_CLOSE, start);
     this._endToken([]);
   }
 
@@ -259,11 +271,11 @@ class _Tokenizer {
     // Trim the whitespace until the first parameter.
     this._attemptCharCodeUntilFn(isBlockParameterChar);
 
-    while (this._cursor.peek() !== chars.$RBRACE && this._cursor.peek() !== chars.$EOF) {
+    while (this._cursor.peek() !== chars.$RPAREN && this._cursor.peek() !== chars.$EOF) {
       this._beginToken(TokenType.BLOCK_PARAMETER);
       const start = this._cursor.clone();
       let inQuote: number|null = null;
-      let openBraces = 0;
+      let openParens = 0;
 
       // Consume the parameter until the next semicolon or brace.
       // Note that we skip over semicolons/braces inside of strings.
@@ -278,13 +290,13 @@ class _Tokenizer {
           inQuote = null;
         } else if (inQuote === null && chars.isQuote(char)) {
           inQuote = char;
-        } else if (char === chars.$LBRACE && inQuote === null) {
-          openBraces++;
-        } else if (char === chars.$RBRACE && inQuote === null) {
-          if (openBraces === 0) {
+        } else if (char === chars.$LPAREN && inQuote === null) {
+          openParens++;
+        } else if (char === chars.$RPAREN && inQuote === null) {
+          if (openParens === 0) {
             break;
-          } else if (openBraces > 0) {
-            openBraces--;
+          } else if (openParens > 0) {
+            openParens--;
           }
         }
 
@@ -880,7 +892,7 @@ class _Tokenizer {
   }
 
   private _isTextEnd(): boolean {
-    if (this._isTagStart() || this._isBlockStart() || this._cursor.peek() === chars.$EOF) {
+    if (this._isTagStart() || this._cursor.peek() === chars.$EOF) {
       return true;
     }
 
@@ -894,6 +906,11 @@ class _Tokenizer {
         // end of and expansion case
         return true;
       }
+    }
+
+    if (this._tokenizeBlocks && !this._inInterpolation && !this._isInExpansion() &&
+        (this._isBlockStart() || this._cursor.peek() === chars.$RBRACE)) {
+      return true;
     }
 
     return false;
@@ -919,15 +936,8 @@ class _Tokenizer {
   }
 
   private _isBlockStart(): boolean {
-    if (this._tokenizeBlocks && this._cursor.peek() === chars.$LBRACE) {
+    if (this._tokenizeBlocks && this._cursor.peek() === chars.$AT) {
       const tmp = this._cursor.clone();
-
-      // Check that the cursor is on a `{#`, `{/` or `{:`.
-      tmp.advance();
-      const next = tmp.peek();
-      if (next !== chars.$BANG && next !== chars.$SLASH && next !== chars.$COLON) {
-        return false;
-      }
 
       // If it is, also verify that the next character is a valid block identifier.
       tmp.advance();
@@ -942,6 +952,10 @@ class _Tokenizer {
     const start = this._cursor.clone();
     this._attemptUntilChar(char);
     return this._cursor.getChars(start);
+  }
+
+  private _isInExpansion(): boolean {
+    return this._isInExpansionCase() || this._isInExpansionForm();
   }
 
   private _isInExpansionCase(): boolean {

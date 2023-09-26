@@ -11,11 +11,13 @@ export class TestPipe {
   template: `
     <div>
       {{message}}
-      {#if (val | test) === 1}
+      @if ((val | test) === 1) {
         one
-        {:else if (val | test) === 2} two
-        {:else} three
-      {/if}
+      } @else if ((val | test) === 2) {
+        two
+      } @else {
+        three
+      }
     </div>
   `,
   standalone: true,

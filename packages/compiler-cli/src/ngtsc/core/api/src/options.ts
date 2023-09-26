@@ -32,7 +32,7 @@ export interface TestOnlyOptions {
 
   /**
    * Names of the blocks that should be enabled. E.g. `_enabledBlockTypes: ['defer']`
-   * would allow usages of `{#defer}{/defer}` in templates.
+   * would allow usages of `@defer {}` in templates.
    *
    * @internal
    */

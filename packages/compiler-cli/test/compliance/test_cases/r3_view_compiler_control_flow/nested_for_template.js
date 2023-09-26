@@ -5,7 +5,7 @@ function MyApp_For_3_For_2_Template(rf, ctx) {
   if (rf & 2) {
     const subitem_r5 = ctx.$implicit;
     const item_r1 = $r3$.ɵɵnextContext().$implicit;
-    $r3$.ɵɵtextInterpolate2("", subitem_r5, " from ", item_r1.name, "");
+    $r3$.ɵɵtextInterpolate2(" ", subitem_r5, " from ", item_r1.name, " ");
   }
 }
 

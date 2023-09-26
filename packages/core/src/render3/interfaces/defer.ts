@@ -43,14 +43,14 @@ export enum DeferDependenciesLoadingState {
   FAILED,
 }
 
-/** Configuration object for a `{:loading}` block as it is stored in the component constants. */
+/** Configuration object for a loading block as it is stored in the component constants. */
 export type DeferredLoadingBlockConfig = [minimumTime: number|null, afterTime: number|null];
 
-/** Configuration object for a `{:placeholder}` block as it is stored in the component constants. */
+/** Configuration object for a placeholder block as it is stored in the component constants. */
 export type DeferredPlaceholderBlockConfig = [afterTime: number|null];
 
 /**
- * Describes the data shared across all instances of a {#defer} block.
+ * Describes the data shared across all instances of a defer block.
  */
 export interface TDeferBlockDetails {
   /**
@@ -60,37 +60,32 @@ export interface TDeferBlockDetails {
   primaryTmplIndex: number;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:loading}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the loading block can be found.
    */
   loadingTmplIndex: number|null;
 
   /**
-   * Extra configuration parameters (such as `after` and `minimum`)
-   * for the `{:loading}` block.
+   * Extra configuration parameters (such as `after` and `minimum`) for the loading block.
    */
   loadingBlockConfig: DeferredLoadingBlockConfig|null;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:placeholder}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the placeholder block can be found.
    */
   placeholderTmplIndex: number|null;
 
   /**
-   * Extra configuration parameters (such as `after` and `minimum`)
-   * for the `{:placeholder}` block.
+   * Extra configuration parameters (such as `after` and `minimum`) for the placeholder block.
    */
   placeholderBlockConfig: DeferredPlaceholderBlockConfig|null;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:error}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the error block can be found.
    */
   errorTmplIndex: number|null;
 
   /**
-   * Compiler-generated function that loads all dependencies for a `{#defer}` block.
+   * Compiler-generated function that loads all dependencies for a defer block.
    */
   dependencyResolverFn: DependencyResolverFn|null;
 
@@ -108,27 +103,27 @@ export interface TDeferBlockDetails {
 }
 
 /**
- * Describes the current state of this {#defer} block instance.
+ * Describes the current state of this defer block instance.
  *
  * @publicApi
  * @developerPreview
  */
 export enum DeferBlockState {
-  /** The {:placeholder} block content is rendered */
+  /** The placeholder block content is rendered */
   Placeholder = 0,
 
-  /** The {:loading} block content is rendered */
+  /** The loading block content is rendered */
   Loading = 1,
 
   /** The main content block content is rendered */
   Complete = 2,
 
-  /** The {:error} block content is rendered */
+  /** The error block content is rendered */
   Error = 3,
 }
 
 /**
- * Describes the initial state of this {#defer} block instance.
+ * Describes the initial state of this defer block instance.
  *
  * Note: this state is internal only and *must* be represented
  * with a number lower than any value in the `DeferBlockState` enum.
@@ -145,7 +140,7 @@ export enum DeferBlockInternalState {
 export const DEFER_BLOCK_STATE = 0;
 
 /**
- * Describes instance-specific {#defer} block data.
+ * Describes instance-specific defer block data.
  *
  * Note: currently there is only the `state` slot, but more slots
  * would be added later to keep track of `after` and `maximum` features

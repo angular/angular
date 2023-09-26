@@ -259,7 +259,7 @@ class Scope implements Visitor {
  * Usually used via the static `apply()` method.
  */
 class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
-  // Indicates whether we are visiting elements within a {#defer} block
+  // Indicates whether we are visiting elements within a `defer` block
   private isInDeferBlock = false;
 
   private constructor(

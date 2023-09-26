@@ -12,10 +12,10 @@ import * as html from './ast';
 import {NAMED_ENTITIES} from './entities';
 import {tokenize, TokenizeOptions} from './lexer';
 import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
-import {AttributeNameToken, AttributeQuoteToken, BlockGroupCloseToken, BlockGroupOpenStartToken, BlockOpenStartToken, BlockParameterToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
+import {AttributeNameToken, AttributeQuoteToken, BlockCloseToken, BlockOpenStartToken, BlockParameterToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
 
 /** Nodes that can contain other nodes. */
-type NodeContainer = html.Element|html.Block|html.BlockGroup;
+type NodeContainer = html.Element|html.Block;
 
 /** Class that can construct a `NodeContainer`. */
 interface NodeContainerConstructor extends Function {
@@ -68,34 +68,40 @@ class _TreeBuilder {
     while (this._peek.type !== TokenType.EOF) {
       if (this._peek.type === TokenType.TAG_OPEN_START ||
           this._peek.type === TokenType.INCOMPLETE_TAG_OPEN) {
-        this._consumeStartTag(this._advance<TagOpenStartToken|IncompleteTagOpenToken>());
+        this._consumeStartTag(this._advance());
       } else if (this._peek.type === TokenType.TAG_CLOSE) {
-        this._consumeEndTag(this._advance<TagCloseToken>());
+        this._consumeEndTag(this._advance());
       } else if (this._peek.type === TokenType.CDATA_START) {
         this._closeVoidElement();
-        this._consumeCdata(this._advance<CdataStartToken>());
+        this._consumeCdata(this._advance());
       } else if (this._peek.type === TokenType.COMMENT_START) {
         this._closeVoidElement();
-        this._consumeComment(this._advance<CommentStartToken>());
+        this._consumeComment(this._advance());
       } else if (
           this._peek.type === TokenType.TEXT || this._peek.type === TokenType.RAW_TEXT ||
           this._peek.type === TokenType.ESCAPABLE_RAW_TEXT) {
         this._closeVoidElement();
-        this._consumeText(this._advance<TextToken>());
+        this._consumeText(this._advance());
       } else if (this._peek.type === TokenType.EXPANSION_FORM_START) {
-        this._consumeExpansion(this._advance<ExpansionFormStartToken>());
-      } else if (this._peek.type === TokenType.BLOCK_GROUP_OPEN_START) {
-        this._closeVoidElement();
-        this._consumeBlockGroupOpen(this._advance<BlockGroupOpenStartToken>());
+        this._consumeExpansion(this._advance());
       } else if (this._peek.type === TokenType.BLOCK_OPEN_START) {
         this._closeVoidElement();
-        this._consumeBlock(this._advance<BlockOpenStartToken>(), TokenType.BLOCK_OPEN_END);
-      } else if (this._peek.type === TokenType.BLOCK_GROUP_CLOSE) {
+        this._consumeBlockOpen(this._advance());
+      } else if (this._peek.type === TokenType.BLOCK_CLOSE) {
         this._closeVoidElement();
-        this._consumeBlockGroupClose(this._advance<BlockGroupCloseToken>());
+        this._consumeBlockClose(this._advance());
       } else {
         // Skip all other tokens...
         this._advance();
+      }
+    }
+
+    for (const leftoverContainer of this._containerStack) {
+      // Unlike HTML elements, blocks aren't closed implicitly by the end of the file.
+      if (leftoverContainer instanceof html.Block) {
+        this.errors.push(TreeError.create(
+            leftoverContainer.name, leftoverContainer.sourceSpan,
+            `Unclosed block "${leftoverContainer.name}"`));
       }
     }
   }
@@ -244,13 +250,6 @@ class _TreeBuilder {
     if (text.length > 0 && text[0] === '\n') {
       const parent = this._getContainer();
 
-      // This is unlikely to happen, but we have an assertion just in case.
-      if (parent instanceof html.BlockGroup) {
-        this.errors.push(TreeError.create(
-            null, startSpan, 'Text cannot be placed directly inside of a block group.'));
-        return;
-      }
-
       if (parent != null && parent.children.length === 0 &&
           this.getTagDefinition(parent.name).ignoreFirstLf) {
         text = text.substring(1);
@@ -371,14 +370,13 @@ class _TreeBuilder {
    * opening tag is recovered).
    */
   private _popContainer(
-      fullName: string, expectedType: NodeContainerConstructor,
+      expectedName: string|null, expectedType: NodeContainerConstructor,
       endSourceSpan: ParseSourceSpan|null): boolean {
     let unexpectedCloseTagDetected = false;
     for (let stackIndex = this._containerStack.length - 1; stackIndex >= 0; stackIndex--) {
       const node = this._containerStack[stackIndex];
-      const name = node instanceof html.BlockGroup ? node.blocks[0]?.name : node.name;
 
-      if (name === fullName && node instanceof expectedType) {
+      if ((node.name === expectedName || expectedName === null) && node instanceof expectedType) {
         // Record the parse span with the element that is being closed. Any elements that are
         // removed from the element stack at this point are closed implicitly, so they won't get
         // an end source span (as there is no explicit closing element).
@@ -388,8 +386,8 @@ class _TreeBuilder {
         return !unexpectedCloseTagDetected;
       }
 
-      // Blocks are self-closing while block groups and (most times) elements are not.
-      if (node instanceof html.BlockGroup ||
+      // Blocks and most elements are not self closing.
+      if (node instanceof html.Block ||
           node instanceof html.Element && !this.getTagDefinition(node.name).closedByParent) {
         // Note that we encountered an unexpected close tag but continue processing the element
         // stack so we can assign an `endSourceSpan` if there is a corresponding start tag for this
@@ -457,26 +455,7 @@ class _TreeBuilder {
         undefined);
   }
 
-
-  private _consumeBlockGroupOpen(token: BlockGroupOpenStartToken) {
-    const end = this._peek.sourceSpan.fullStart;
-    const span = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
-    // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
-    const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
-    const blockGroup = new html.BlockGroup([], span, startSpan, null);
-    this._pushContainer(blockGroup, false);
-    const implicitBlock = this._consumeBlock(token, TokenType.BLOCK_GROUP_OPEN_END);
-
-    // Block parameters are consumed as a part of the implicit block so we need to expand the
-    // start source span once the block is parsed to include the full opening tag.
-    startSpan.end = implicitBlock.startSourceSpan.end;
-  }
-
-  private _consumeBlock(
-      token: BlockOpenStartToken|BlockGroupOpenStartToken, closeToken: TokenType) {
-    // The start of a block implicitly closes the previous block.
-    this._conditionallyClosePreviousBlock();
-
+  private _consumeBlockOpen(token: BlockOpenStartToken) {
     const parameters: html.BlockParameter[] = [];
 
     while (this._peek.type === TokenType.BLOCK_PARAMETER) {
@@ -484,7 +463,7 @@ class _TreeBuilder {
       parameters.push(new html.BlockParameter(paramToken.parts[0], paramToken.sourceSpan));
     }
 
-    if (this._peek.type === closeToken) {
+    if (this._peek.type === TokenType.BLOCK_OPEN_END) {
       this._advance();
     }
 
@@ -493,49 +472,20 @@ class _TreeBuilder {
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
     const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
     const block = new html.Block(token.parts[0], parameters, [], span, startSpan);
-    const parent = this._getContainer();
-
-    if (!(parent instanceof html.BlockGroup)) {
-      this.errors.push(TreeError.create(
-          block.name, block.sourceSpan, 'Blocks can only be placed inside of block groups.'));
-    } else {
-      parent.blocks.push(block);
-      this._containerStack.push(block);
-    }
-
+    this._pushContainer(block, false);
     return block;
   }
 
-  private _consumeBlockGroupClose(token: BlockGroupCloseToken) {
-    const name = token.parts[0];
+  private _consumeBlockClose(token: BlockCloseToken) {
     const previousContainer = this._getContainer();
 
-    // Blocks are implcitly closed by the block group.
-    this._conditionallyClosePreviousBlock();
-
-    if (!this._popContainer(name, html.BlockGroup, token.sourceSpan)) {
+    if (!this._popContainer(null, html.Block, token.sourceSpan)) {
       const context = previousContainer instanceof html.Element ?
           `There is an unclosed "${
-              previousContainer.name}" HTML tag named that may have to be closed first.` :
+              previousContainer.name}" HTML tag that may have to be closed first.` :
           `The block may have been closed earlier.`;
-      this.errors.push(TreeError.create(
-          name, token.sourceSpan, `Unexpected closing block "${name}". ${context}`));
-    }
-  }
-
-  private _conditionallyClosePreviousBlock() {
-    const container = this._getContainer();
-
-    if (container instanceof html.Block) {
-      // Blocks don't have an explicit closing tag, they're closed either by the next block or
-      // the end of the block group. Infer the end span from the last child node.
-      const lastChild =
-          container.children.length ? container.children[container.children.length - 1] : null;
-      const endSpan = lastChild === null ?
-          null :
-          new ParseSourceSpan(lastChild.sourceSpan.end, lastChild.sourceSpan.end);
-
-      this._popContainer(container.name, html.Block, endSpan);
+      this.errors.push(
+          TreeError.create(null, token.sourceSpan, `Unexpected closing block. ${context}`));
     }
   }
 
@@ -559,11 +509,6 @@ class _TreeBuilder {
 
     if (parent === null) {
       this.rootNodes.push(node);
-    } else if (parent instanceof html.BlockGroup) {
-      // Due to how parsing is set up, we're unlikely to hit this code path, but we
-      // have the assertion here just in case and to satisfy the type checker.
-      this.errors.push(
-          TreeError.create(null, node.sourceSpan, 'Block groups can only contain blocks.'));
     } else {
       parent.children.push(node);
     }

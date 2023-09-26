@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
     <div>
       {{message}}
       <ng-template>
-        {#for item of items; track trackFn($index, item)}{/for}
+        @for (item of items; track trackFn($index, item)) {}
       </ng-template>
     </div>
   `,
