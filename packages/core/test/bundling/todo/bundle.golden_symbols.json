@@ -573,6 +573,9 @@
     "name": "_platformInjector"
   },
   {
+    "name": "_populateDehydratedViewsInLContainer"
+  },
+  {
     "name": "_processI18nInsertBefore"
   },
   {

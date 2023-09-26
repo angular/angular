@@ -628,8 +628,8 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
 }
 
 let _locateOrCreateAnchorNode = createAnchorNode;
-let _populateDehydratedViewsInContainer: typeof populateDehydratedViewsInContainerImpl =
-    (lContainer: LContainer, lView: LView, tNode: TNode) => false;  // noop by default
+let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLContainerImpl =
+    (lContainer: LContainer, tNode: TNode, hostLView: LView) => false;  // noop by default
 
 /**
  * Looks up dehydrated views that belong to a given LContainer and populates
@@ -637,13 +637,16 @@ let _populateDehydratedViewsInContainer: typeof populateDehydratedViewsInContain
  * in client-only mode, this function is a noop.
  *
  * @param lContainer LContainer that should be populated.
+ * @param tNode Corresponding TNode.
+ * @param hostLView LView that hosts LContainer.
  * @returns a boolean flag that indicates whether a populating operation
  *   was successful. The operation might be unsuccessful in case is has completed
  *   previously, we are rendering in client-only mode or this content is located
  *   in a skip hydration section.
  */
-export function populateDehydratedViewsInContainer(lContainer: LContainer): boolean {
-  return _populateDehydratedViewsInContainer(lContainer, getLView(), getCurrentTNode()!);
+export function populateDehydratedViewsInLContainer(
+    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
+  return _populateDehydratedViewsInLContainer(lContainer, tNode, hostLView);
 }
 
 /**
@@ -677,8 +680,8 @@ function createAnchorNode(
  *   previously, we are rendering in client-only mode or this content is located
  *   in a skip hydration section.
  */
-function populateDehydratedViewsInContainerImpl(
-    lContainer: LContainer, hostLView: LView, hostTNode: TNode): boolean {
+function populateDehydratedViewsInLContainerImpl(
+    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
   // We already have a native element (anchor) set and the process
   // of finding dehydrated views happened (so the `lContainer[DEHYDRATED_VIEWS]`
   // is not null), exit early.
@@ -687,11 +690,11 @@ function populateDehydratedViewsInContainerImpl(
   }
 
   const hydrationInfo = hostLView[HYDRATION];
-  const noOffsetIndex = hostTNode.index - HEADER_OFFSET;
+  const noOffsetIndex = tNode.index - HEADER_OFFSET;
 
   // TODO(akushnir): this should really be a single condition, refactor the code
   // to use `hasInSkipHydrationBlockFlag` logic inside `isInSkipHydrationBlock`.
-  const skipHydration = isInSkipHydrationBlock(hostTNode) || hasInSkipHydrationBlockFlag(hostTNode);
+  const skipHydration = isInSkipHydrationBlock(tNode) || hasInSkipHydrationBlockFlag(tNode);
 
   const isNodeCreationMode =
       !hydrationInfo || skipHydration || isDisconnectedNode(hydrationInfo, noOffsetIndex);
@@ -715,7 +718,7 @@ function populateDehydratedViewsInContainerImpl(
       locateDehydratedViewsInContainer(currentRNode!, serializedViews!);
 
   if (ngDevMode) {
-    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, hostTNode, true);
+    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, tNode, true);
     // Do not throw in case this node is already claimed (thus `false` as a second
     // argument). If this container is created based on an `<ng-template>`, the comment
     // node would be already claimed from the `template` instruction. If an element acts
@@ -732,7 +735,7 @@ function populateDehydratedViewsInContainerImpl(
 
 function locateOrCreateAnchorNode(
     lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any): void {
-  if (!_populateDehydratedViewsInContainer(lContainer, hostLView, hostTNode)) {
+  if (!_populateDehydratedViewsInLContainer(lContainer, hostTNode, hostLView)) {
     // Populating dehydrated views operation returned `false`, which indicates
     // that the logic was running in client-only mode, this an anchor comment
     // node should be created for this container.
@@ -742,5 +745,5 @@ function locateOrCreateAnchorNode(
 
 export function enableLocateOrCreateContainerRefImpl() {
   _locateOrCreateAnchorNode = locateOrCreateAnchorNode;
-  _populateDehydratedViewsInContainer = populateDehydratedViewsInContainerImpl;
+  _populateDehydratedViewsInLContainer = populateDehydratedViewsInLContainerImpl;
 }

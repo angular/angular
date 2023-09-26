@@ -9,7 +9,7 @@
 import {InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
 import {inject} from '../../di/injector_compatibility';
 import {findMatchingDehydratedView} from '../../hydration/views';
-import {populateDehydratedViewsInContainer} from '../../linker/view_container_ref';
+import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
 import {afterRender} from '../after_render_hooks';
 import {assertIndexInDeclRange, assertLContainer, assertLView, assertTNodeForLView} from '../assert';
@@ -91,10 +91,13 @@ export function ɵɵdefer(
     setTDeferBlockDetails(tView, adjustedIndex, deferBlockConfig);
   }
 
-  // Lookup dehydrated views that belong to this LContainer.
-  // In client-only mode, this operation is noop.
+  const tNode = getCurrentTNode()!;
   const lContainer = lView[adjustedIndex];
-  populateDehydratedViewsInContainer(lContainer);
+
+  // If hydration is enabled, looks up dehydrated views in the DOM
+  // using hydration annotation info and stores those views on LContainer.
+  // In client-only mode, this function is a noop.
+  populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
   // Init instance-specific defer details and store it.
   const lDetails = [];
