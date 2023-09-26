@@ -15,6 +15,7 @@ import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
+import {debugStringifyTypeForError} from '../util/stringify_utils';
 
 import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponentScope} from './api';
 
@@ -90,7 +91,8 @@ class DepsTracker implements DepsTrackerApi {
         throw new RuntimeError(
             RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
             `Orphan component found! Trying to render the component ${
-                type.name} without first loading the NgModule that declares it. Make sure that you import the component's NgModule in the NgModule or the standalone component in which you are trying to render this component. Also make sure the way the app is bundled and served always includes the component's NgModule before the component.`);
+                debugStringifyTypeForError(
+                    type)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid such confusing cases. If this is not possible now, please import the component's NgModule in the NgModule or the standalone component in which you are trying to render this component. Also make sure the way the app is bundled and served always includes the component's NgModule before the component.`);
       }
 
       const scope = this.getNgModuleScope(this.ownerNgModule.get(type)!);
