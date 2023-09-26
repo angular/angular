@@ -27,7 +27,7 @@ jobs:
         with:
           cache-node-modules: true
           # Checking out the pull request commit is intended here as we need to run the changed code tests.
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Setup Bazel
