@@ -39,6 +39,12 @@ export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => v
 export type ContentQueriesFunction<T> =
     <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
 
+export interface ClassDebugInfo {
+  className: string;
+  filePath?: string;
+  lineNumber?: number;
+}
+
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
  * should be executed.
@@ -224,6 +230,12 @@ export interface DirectiveDef<T> {
    * The features applied to this directive
    */
   readonly features: DirectiveDefFeature[]|null;
+
+  /**
+   * Info related to debugging/troubleshooting for this component. This info is only available in
+   * dev mode.
+   */
+  debugInfo: ClassDebugInfo|null;
 
   /**
    * Function that will add the host directives to the list of matches during directive matching.

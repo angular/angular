@@ -604,6 +604,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     hostDirectives: null,
     inputs: invertObject(directiveDefinition.inputs, declaredInputs),
     outputs: invertObject(directiveDefinition.outputs),
+    debugInfo: null,
   };
 }
 
