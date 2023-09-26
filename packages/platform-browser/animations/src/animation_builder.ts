@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, sequence} from '@angular/animations';
+import {ɵAnimationRenderer as AnimationRenderer} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
-
-import {AnimationRenderer} from './animation_renderer';
 
 @Injectable()
 export class BrowserAnimationBuilder extends AnimationBuilder {
