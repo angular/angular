@@ -66,6 +66,7 @@ export {
   RenderFlags as ɵRenderFlags,
   setClassMetadata as ɵsetClassMetadata,
   setClassMetadataAsync as ɵsetClassMetadataAsync,
+  ɵsetClassDebugInfo,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
   ɵDeferBlockDependencyInterceptor,
