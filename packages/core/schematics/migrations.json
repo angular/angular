@@ -9,6 +9,11 @@
       "version": "16.0.0",
       "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
       "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    },
+    "migration-v17-block-template-entities": {
+      "version": "17.0.0-0",
+      "description": "Angular v17 introduces a new control flow syntax that uses the @ and } characters. This migration replaces the existing usages with their corresponding HTML entities.",
+      "factory": "./migrations/block-template-entities/bundle"
     }
   }
 }
