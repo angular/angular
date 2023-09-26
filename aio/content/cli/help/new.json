@@ -147,9 +147,15 @@
       "description": "Do not generate \"spec.ts\" test files for the new project."
     },
     {
-      "name": "standalone",
+      "name": "ssr",
       "type": "boolean",
       "default": false,
+      "description": "Creates an application with Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering) enabled."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "default": true,
       "description": "Creates an application based upon the standalone API, without NgModules."
     },
     {
