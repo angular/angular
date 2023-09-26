@@ -2255,15 +2255,15 @@ describe('platform-server hydration integration', () => {
           template: `
             Visible: {{ isVisible }}.
 
-            {#defer when isVisible}
+            @defer (when isVisible) {
               <my-lazy-cmp />
-            {:loading}
+            } @loading {
               Loading...
-            {:placeholder}
+            } @placeholder {
               Placeholder!
-            {:error}
+            } @error {
               Failed to load dependencies :(
-            {/defer}
+            }
           `
         })
         class SimpleComponent {
@@ -2334,16 +2334,16 @@ describe('platform-server hydration integration', () => {
           template: `
             Visible: {{ isVisible }}.
 
-            {#defer when isVisible}
+            @defer (when isVisible) {
               <my-lazy-cmp />
-            {:loading}
+            } @loading {
               Loading...
-            {:placeholder}
+            } @placeholder {
               Placeholder!
               <my-placeholder-cmp />
-            {:error}
+            } @error {
               Failed to load dependencies :(
-            {/defer}
+            }
           `
         })
         class SimpleComponent {
@@ -2394,7 +2394,7 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [MyLazyCmp, MyPlaceholderCmp],
           template: `
-            Before|{#defer when isVisible}<my-lazy-cmp />{/defer}|After
+            Before|@defer (when isVisible) {<my-lazy-cmp />}|After
           `
         })
         class SimpleComponent {
@@ -2462,15 +2462,15 @@ describe('platform-server hydration integration', () => {
             Visible: {{ isVisible }}.
 
             <projector-cmp ngSkipHydration="true">
-              {#defer when isVisible}
+              @defer (when isVisible) {
                 <my-lazy-cmp />
-              {:loading}
+              } @loading {
                 Loading...
-              {:placeholder}
+              } @placeholder {
                 <my-placeholder-cmp />
-              {:error}
+              } @error {
                 Failed to load dependencies :(
-              {/defer}
+              }
             </projector-cmp>
           `
         })
@@ -2544,15 +2544,15 @@ describe('platform-server hydration integration', () => {
             Visible: {{ isVisible }}.
 
             <projector-cmp ngSkipHydration="true">
-              {#defer when isVisible}
+              @defer (when isVisible) {
                 <my-lazy-cmp />
-              {:loading}
+              } @loading {
                 Loading...
-              {:placeholder}
+              } @placeholder {
                 <my-placeholder-cmp ngSkipHydration="true" />
-              {:error}
+              } @error {
                 Failed to load dependencies :(
-              {/defer}
+              }
             </projector-cmp>
           `
         })

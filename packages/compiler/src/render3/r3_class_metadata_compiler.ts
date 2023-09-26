@@ -56,7 +56,7 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
 
 /**
  * Wraps the `setClassMetadata` function with extra logic that dynamically
- * loads dependencies from `{#defer}` blocks.
+ * loads dependencies from `@defer` blocks.
  *
  * Generates a call like this:
  * ```

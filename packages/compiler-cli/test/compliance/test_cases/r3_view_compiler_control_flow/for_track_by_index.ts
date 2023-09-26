@@ -4,7 +4,9 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track $index}{{item.name}}{/for}
+      @for (item of items; track $index) {
+        {{item.name}}
+      }
     </div>
   `,
 })

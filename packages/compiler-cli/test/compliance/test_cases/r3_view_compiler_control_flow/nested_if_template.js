@@ -46,7 +46,7 @@ function MyApp_Conditional_4_Template(rf, ctx) {
 
 function MyApp_Conditional_5_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, " inner three ");
+    $r3$.ɵɵtext(0, " three ");
   }
 }
 …

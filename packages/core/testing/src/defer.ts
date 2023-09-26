@@ -11,7 +11,7 @@ import {ɵCONTAINER_HEADER_OFFSET as CONTAINER_HEADER_OFFSET, ɵDeferBlockDetail
 import type {ComponentFixture} from './component_fixture';
 
 /**
- * Represents an individual `{#defer}` block for testing purposes.
+ * Represents an individual defer block for testing purposes.
  *
  * @publicApi
  * @developerPreview
@@ -30,7 +30,7 @@ export class DeferBlockFixture {
       const stateAsString = getDeferBlockStateNameFromEnum(state);
       throw new Error(
           `Tried to render this defer block in the \`${stateAsString}\` state, ` +
-          `but there was no \`{:${stateAsString.toLowerCase()}}\` section defined in a template.`);
+          `but there was no @${stateAsString.toLowerCase()} block defined in a template.`);
     }
     if (state === DeferBlockState.Complete) {
       await triggerResourceLoading(this.block.tDetails, this.block.lView);

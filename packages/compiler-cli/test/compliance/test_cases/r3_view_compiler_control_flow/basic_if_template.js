@@ -1,6 +1,6 @@
 function MyApp_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, "hello");
+    $r3$.ɵɵtext(0, " hello ");
   }
 }
 …

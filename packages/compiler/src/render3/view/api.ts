@@ -172,7 +172,7 @@ export const enum DeclarationListEmitMode {
 }
 
 /**
- * Describes a dependency used within a `{#defer}` block.
+ * Describes a dependency used within a `@defer` block.
  */
 export interface R3DeferBlockTemplateDependency {
   /**
@@ -238,7 +238,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   deferrableDeclToImportDecl: Map<o.Expression, o.Expression>;
 
   /**
-   * Map of {#defer} blocks -> their corresponding metadata.
+   * Map of `@defer` blocks -> their corresponding metadata.
    */
   deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>;
 

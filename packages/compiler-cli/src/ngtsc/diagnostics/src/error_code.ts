@@ -266,7 +266,7 @@ export enum ErrorCode {
    *
    * ```
    * <ng-template let-ref>
-   *   {#for item of items; track ref}{/for}
+   *   @for (item of items; track ref) {}
    * </ng-template>
    * ```
    */

@@ -322,12 +322,12 @@ class NestedAsyncTimeoutComp {
           standalone: true,
           imports: [DeferredComp, SecondDeferredComp],
           template: `<div>
-            {#defer on immediate}
+            @defer (on immediate) {
               <DeferredComp />
-            {/defer}
-            {#defer on idle}
+            }
+            @defer (on idle) {
               <SecondDeferredComp />
-            {/defer}
+            }
           </div>`
         })
         class DeferComp {

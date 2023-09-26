@@ -111,19 +111,19 @@ import {humanizeNodes} from './ast_spec_utils';
     });
 
     it('should parse an expansion forms inside of blocks', () => {
-      const res =
-          expand('{#if cond}{a, b, =4 {c}}{:else}{d, e, =4 {f}}{/if}', {tokenizeBlocks: true});
+      const res = expand(
+          '@if (cond) {{a, b, =4 {c}}@if (otherCond) {{d, e, =4 {f}}}}', {tokenizeBlocks: true});
 
       expect(humanizeNodes(res.nodes)).toEqual([
-        [html.BlockGroup, 0],
-        [html.Block, 'if', 1],
+        [html.Block, 'if', 0],
         [html.BlockParameter, 'cond'],
-        [html.Element, 'ng-container', 2],
+        [html.Element, 'ng-container', 1],
         [html.Attribute, '[ngSwitch]', 'a'],
-        [html.Element, 'ng-template', 3],
+        [html.Element, 'ng-template', 2],
         [html.Attribute, 'ngSwitchCase', '=4'],
-        [html.Text, 'c', 4, ['c']],
-        [html.Block, 'else', 1],
+        [html.Text, 'c', 3, ['c']],
+        [html.Block, 'if', 1],
+        [html.BlockParameter, 'otherCond'],
         [html.Element, 'ng-container', 2],
         [html.Attribute, '[ngSwitch]', 'd'],
         [html.Element, 'ng-template', 3],

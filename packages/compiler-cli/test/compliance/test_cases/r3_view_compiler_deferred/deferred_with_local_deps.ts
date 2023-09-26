@@ -16,10 +16,11 @@ export class LoadingDep {
   template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `,
   standalone: true,

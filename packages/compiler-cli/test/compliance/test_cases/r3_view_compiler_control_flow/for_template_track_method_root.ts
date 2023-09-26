@@ -4,7 +4,7 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track trackFn($index, item)}{/for}
+      @for (item of items; track trackFn($index, item)) {}
     </div>
   `,
 })

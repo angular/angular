@@ -4,18 +4,23 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#if val === 0}
+      @if (val === 0) {
         zero
-        {:else if val === 1} one
-        {:else if val === 2}
-          {#if innerVal === 0}
-            inner zero
-            {:else if innerVal === 1} inner one
-            {:else if innerVal === 2} inner two
-            {:else} inner three
-          {/if}
-        {:else} inner three
-      {/if}
+      } @else if (val === 1) {
+        one
+      } @else if (val === 2) {
+        @if (innerVal === 0) {
+          inner zero
+        } @else if (innerVal === 1) {
+          inner one
+        } @else if (innerVal === 2) {
+          inner two
+        } @else {
+          inner three
+        }
+      } @else {
+        three
+      }
     </div>
   `,
 })

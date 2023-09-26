@@ -2,8 +2,13 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    {#for item of items; track trackFn(item, message)}{{item.name}}{/for}
-    {#for otherItem of otherItems; track trackFn(otherItem, message)}{{otherItem.name}}{/for}
+    @for (item of items; track trackFn(item, message)) {
+      {{item.name}}
+    }
+
+    @for (otherItem of otherItems; track trackFn(otherItem, message)) {
+      {{otherItem.name}}
+    }
   `,
 })
 export class MyApp {

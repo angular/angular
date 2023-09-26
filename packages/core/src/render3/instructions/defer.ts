@@ -52,18 +52,18 @@ const _cancelIdleCallback =
     typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
 
 /**
- * Creates runtime data structures for `{#defer}` blocks.
+ * Creates runtime data structures for defer blocks.
  *
  * @param index Index of the `defer` instruction.
  * @param primaryTmplIndex Index of the template with the primary block content.
  * @param dependencyResolverFn Function that contains dependencies for this defer block.
- * @param loadingTmplIndex Index of the template with the `{:loading}` block content.
- * @param placeholderTmplIndex Index of the template with the `{:placeholder}` block content.
- * @param errorTmplIndex Index of the template with the `{:error}` block content.
- * @param loadingConfigIndex Index in the constants array of the configuration of the `{:loading}`.
+ * @param loadingTmplIndex Index of the template with the loading block content.
+ * @param placeholderTmplIndex Index of the template with the placeholder block content.
+ * @param errorTmplIndex Index of the template with the error block content.
+ * @param loadingConfigIndex Index in the constants array of the configuration of the loading.
  *     block.
  * @param placeholderConfigIndexIndex in the constants array of the configuration of the
- *     `{:placeholder}` block.
+ *     placeholder block.
  *
  * @codeGenApi
  */
@@ -598,7 +598,7 @@ export function renderDeferBlockState(
     const tNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
 
     // There is only 1 view that can be present in an LContainer that
-    // represents a `{#defer}` block, so always refer to the first one.
+    // represents a defer block, so always refer to the first one.
     const viewIndex = 0;
 
     removeLViewFromLContainer(lContainer, viewIndex);
@@ -652,7 +652,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       tDetails.dependencyResolverFn;
 
   // The `dependenciesFn` might be `null` when all dependencies within
-  // a given `{#defer}` block were eagerly references elsewhere in a file,
+  // a given defer block were eagerly references elsewhere in a file,
   // thus no dynamic `import()`s were produced.
   if (!dependenciesFn) {
     tDetails.loadingPromise = Promise.resolve().then(() => {
@@ -713,7 +713,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
   });
 }
 
-/** Utility function to render `{:placeholder}` content (if present) */
+/** Utility function to render placeholder content (if present) */
 function renderPlaceholder(lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
   const lContainer = lView[tNode.index];

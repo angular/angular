@@ -106,74 +106,73 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
     });
 
     describe('blocks', () => {
-      it('should extract from elements inside block groups', () => {
+      it('should extract from elements inside blocks', () => {
         expect(extract(
-                   '{#defer}<span i18n="a|b|c">main <span>nested</span></span>' +
-                   '{:loading}<div i18n="d|e|f">loading <span>nested</span></div>' +
-                   '{:placeholder}<strong i18n="g|h|i">placeholder <span>nested</span></strong>' +
-                   '{/defer}'))
+                   '@switch (value) {' +
+                   '@case (1) {<div i18n="a|b|c">one <span>nested</span></div>}' +
+                   '@case (2) {<strong i18n="d|e|f">two <span>nested</span></strong>}' +
+                   '@default {<strong i18n="g|h|i">default <span>nested</span></strong>}' +
+                   '}'))
             .toEqual([
               [
-                ['main ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'a',
+                ['one ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'a',
                 'b|c', ''
               ],
               [
-                ['loading ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'],
-                'd', 'e|f', ''
+                ['two ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'd',
+                'e|f', ''
               ],
               [
-                ['placeholder ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'],
+                ['default ', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'],
                 'g', 'h|i', ''
               ]
             ]);
       });
 
-      it('should extract from i18n comment blocks inside block groups', () => {
+      it('should extract from i18n comment blocks inside blocks', () => {
         expect(
             extract(
-                '{#defer}<!-- i18n: mainMeaning|mainDesc -->main message<!-- /i18n -->' +
-                '{:loading}<!-- i18n: loadingMeaning|loadingDesc -->loading message<!-- /i18n -->' +
-                '{:placeholder}<!-- i18n: placeholderMeaning|placeholderDesc -->placeholder message<!-- /i18n -->' +
-                '{/defer}'))
+                '@switch (value) {' +
+                '@case (1) {<!-- i18n: oneMeaning|oneDesc -->one message<!-- /i18n -->}' +
+                '@case (2) {<!-- i18n: twoMeaning|twoDesc -->two message<!-- /i18n -->}' +
+                '@default {<!-- i18n: defaultMeaning|defaultDesc -->default message<!-- /i18n -->}' +
+                '}'))
             .toEqual([
-              [['main message'], 'mainMeaning', 'mainDesc', ''],
-              [['loading message'], 'loadingMeaning', 'loadingDesc', ''],
-              [['placeholder message'], 'placeholderMeaning', 'placeholderDesc', '']
+              [['one message'], 'oneMeaning', 'oneDesc', ''],
+              [['two message'], 'twoMeaning', 'twoDesc', ''],
+              [['default message'], 'defaultMeaning', 'defaultDesc', ''],
             ]);
       });
 
-      it('should extract ICUs from elements inside block groups', () => {
+      it('should extract ICUs from elements inside blocks', () => {
         expect(extract(
-                   '{#defer}<div i18n="a|b">{count, plural, =0 {mainText}}</div>' +
-                   '{:loading}<div i18n="c|d">{count, plural, =0 {loadingText}}</div>' +
-                   '{:placeholder}<div i18n="e|f">{count, plural, =0 {placeholderText}}</div>' +
-                   '{/defer}'))
+                   '@switch (value) {' +
+                   '@case (1) {<div i18n="a|b">{count, plural, =0 {oneText}}</div>}' +
+                   '@case (2) {<div i18n="c|d">{count, plural, =0 {twoText}}</div>}' +
+                   '@default {<div i18n="e|f">{count, plural, =0 {defaultText}}</div>}' +
+                   '}'))
             .toEqual([
-              [['{count, plural, =0 {[mainText]}}'], 'a', 'b', ''],
-              [['{count, plural, =0 {[loadingText]}}'], 'c', 'd', ''],
-              [['{count, plural, =0 {[placeholderText]}}'], 'e', 'f', '']
+              [['{count, plural, =0 {[oneText]}}'], 'a', 'b', ''],
+              [['{count, plural, =0 {[twoText]}}'], 'c', 'd', ''],
+              [['{count, plural, =0 {[defaultText]}}'], 'e', 'f', '']
             ]);
       });
 
-      it('should not extract messages from ICUs directly inside block groups', () => {
+      it('should not extract messages from ICUs directly inside blocks', () => {
         const expression = '{count, plural, =0 {text}}';
 
         expect(extract(
-                   `{#defer}${expression}` +
-                   `{:loading}${expression}` +
-                   `{:placeholder}${expression}` +
-                   `{/defer}`))
+                   `@switch (value) {` +
+                   `@case (1) {${expression}}` +
+                   `@case (2) {${expression}}` +
+                   `@default {${expression}}` +
+                   `}`))
             .toEqual([]);
       });
 
       it('should handle blocks inside of translated elements', () => {
-        expect(extract('<span i18n="a|b|c">{#if cond}main content{:else}else content{/if}</span>'))
-            .toEqual([[['[[main content], [else content]]'], 'a', 'b|c', '']]);
-      });
-
-      it('should handle blocks inside of translated elements', () => {
-        expect(extract('<span i18n="a|b|c">{#if cond}main content{:else}else content{/if}</span>'))
-            .toEqual([[['[[main content], [else content]]'], 'a', 'b|c', '']]);
+        expect(extract('<span i18n="a|b|c">@if (cond) {main content} @else {else content}</span>`'))
+            .toEqual([[['[main content]', ' ', '[else content]'], 'a', 'b|c', '']]);
       });
     });
 

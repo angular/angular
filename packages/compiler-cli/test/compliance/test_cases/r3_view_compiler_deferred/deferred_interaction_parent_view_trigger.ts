@@ -8,7 +8,7 @@ import {Component} from '@angular/core';
 
       <ng-template>
         <ng-template>
-          {#defer on interaction(button); prefetch on interaction(button)}{/defer}
+          @defer (on interaction(button); prefetch on interaction(button)) {}
         </ng-template>
       </ng-template>
     </ng-template>

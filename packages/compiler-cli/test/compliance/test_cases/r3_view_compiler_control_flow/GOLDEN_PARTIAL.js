@@ -15,12 +15,20 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:case 2} case 2
-        {:default} default
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @case (2) {
+          case 2
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -29,12 +37,20 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:case 2} case 2
-        {:default} default
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @case (2) {
+          case 2
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `,
                 }]
@@ -66,11 +82,17 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:case 2} case 2
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @case (2) {
+          case 2
+        }
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -79,11 +101,17 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:case 2} case 2
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @case (2) {
+          case 2
+        }
+      }
     </div>
   `,
                 }]
@@ -116,16 +144,27 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1}
-          {#switch nestedValue()}
-            {:case 0} nested case 0
-            {:case 1} nested case 1
-            {:case 2} nested case 2
-          {/switch}
-        {:case 2} case 2
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          @switch (nestedValue()) {
+            @case (0) {
+              nested case 0
+            }
+            @case (1) {
+              nested case 1
+            }
+            @case (2) {
+              nested case 2
+            }
+          }
+        }
+        @case (2) {
+          case 2
+        }
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -134,16 +173,27 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1}
-          {#switch nestedValue()}
-            {:case 0} nested case 0
-            {:case 1} nested case 1
-            {:case 2} nested case 2
-          {/switch}
-        {:case 2} case 2
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          @switch (nestedValue()) {
+            @case (0) {
+              nested case 0
+            }
+            @case (1) {
+              nested case 1
+            }
+            @case (2) {
+              nested case 2
+            }
+          }
+        }
+        @case (2) {
+          case 2
+        }
+      }
     </div>
   `,
                 }]
@@ -187,11 +237,17 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#switch value() | test}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:default} default
-      {/switch}
+      @switch (value() | test) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `, isInline: true, dependencies: [{ kind: "pipe", type: TestPipe, name: "test" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -200,11 +256,17 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#switch value() | test}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:default} default
-      {/switch}
+      @switch (value() | test) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `,
                     standalone: true,
@@ -243,7 +305,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if value()}hello{/if}
+      @if (value()) {
+        hello
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -252,7 +316,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if value()}hello{/if}
+      @if (value()) {
+        hello
+      }
     </div>
   `,
                 }]
@@ -284,7 +350,11 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if value()}hello{:else}goodbye{/if}
+      @if (value()) {
+        hello
+      } @else {
+        goodbye
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -293,7 +363,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if value()}hello{:else}goodbye{/if}
+      @if (value()) {
+        hello
+      } @else {
+        goodbye
+      }
     </div>
   `,
                 }]
@@ -326,12 +400,15 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if value() === 1}
+      @if (value() === 1) {
         one
-        {:else if otherValue() === 2} two
-        {:else if message} three
-        {:else} four
-      {/if}
+      } @else if (otherValue() === 2) {
+        two
+      } @else if (message) {
+        three
+      } @else {
+        four
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -340,12 +417,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if value() === 1}
+      @if (value() === 1) {
         one
-        {:else if otherValue() === 2} two
-        {:else if message} three
-        {:else} four
-      {/if}
+      } @else if (otherValue() === 2) {
+        two
+      } @else if (message) {
+        three
+      } @else {
+        four
+      }
     </div>
   `,
                 }]
@@ -379,18 +459,23 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if val === 0}
+      @if (val === 0) {
         zero
-        {:else if val === 1} one
-        {:else if val === 2}
-          {#if innerVal === 0}
-            inner zero
-            {:else if innerVal === 1} inner one
-            {:else if innerVal === 2} inner two
-            {:else} inner three
-          {/if}
-        {:else} inner three
-      {/if}
+      } @else if (val === 1) {
+        one
+      } @else if (val === 2) {
+        @if (innerVal === 0) {
+          inner zero
+        } @else if (innerVal === 1) {
+          inner one
+        } @else if (innerVal === 2) {
+          inner two
+        } @else {
+          inner three
+        }
+      } @else {
+        three
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -399,18 +484,23 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if val === 0}
+      @if (val === 0) {
         zero
-        {:else if val === 1} one
-        {:else if val === 2}
-          {#if innerVal === 0}
-            inner zero
-            {:else if innerVal === 1} inner one
-            {:else if innerVal === 2} inner two
-            {:else} inner three
-          {/if}
-        {:else} inner three
-      {/if}
+      } @else if (val === 1) {
+        one
+      } @else if (val === 2) {
+        @if (innerVal === 0) {
+          inner zero
+        } @else if (innerVal === 1) {
+          inner one
+        } @else if (innerVal === 2) {
+          inner two
+        } @else {
+          inner three
+        }
+      } @else {
+        three
+      }
     </div>
   `,
                 }]
@@ -454,11 +544,13 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if (val | test) === 1}
+      @if ((val | test) === 1) {
         one
-        {:else if (val | test) === 2} two
-        {:else} three
-      {/if}
+      } @else if ((val | test) === 2) {
+        two
+      } @else {
+        three
+      }
     </div>
   `, isInline: true, dependencies: [{ kind: "pipe", type: TestPipe, name: "test" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -467,11 +559,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if (val | test) === 1}
+      @if ((val | test) === 1) {
         one
-        {:else if (val | test) === 2} two
-        {:else} three
-      {/if}
+      } @else if ((val | test) === 2) {
+        two
+      } @else {
+        three
+      }
     </div>
   `,
                     standalone: true,
@@ -510,7 +604,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#if value(); as alias}{{value()}} as {{alias}}{/if}
+      @if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -519,7 +615,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#if value(); as alias}{{value()}} as {{alias}}{/if}
+      @if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
     </div>
   `,
                 }]
@@ -548,29 +646,33 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#if value(); as root}
+    @if (value(); as root) {
       Root: {{value()}}/{{root}}
-      {#if value(); as inner}
+
+      @if (value(); as inner) {
         Inner: {{value()}}/{{root}}/{{inner}}
-        {#if value(); as innermost}
+
+        @if (value(); as innermost) {
           Innermost: {{value()}}/{{root}}/{{inner}}/{{innermost}}
-        {/if}
-      {/if}
-    {/if}
+        }
+      }
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#if value(); as root}
+    @if (value(); as root) {
       Root: {{value()}}/{{root}}
-      {#if value(); as inner}
+
+      @if (value(); as inner) {
         Inner: {{value()}}/{{root}}/{{inner}}
-        {#if value(); as innermost}
+
+        @if (value(); as innermost) {
           Innermost: {{value()}}/{{root}}/{{inner}}/{{innermost}}
-        {/if}
-      {/if}
-    {/if}
+        }
+      }
+    }
   `,
                 }]
         }] });
@@ -598,33 +700,33 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#if value(); as root}
+    @if (value(); as root) {
       <button (click)="log(value(), root)"></button>
 
-      {#if value(); as inner}
+      @if (value(); as inner) {
         <button (click)="log(value(), root, inner)"></button>
 
-        {#if value(); as innermost}
+        @if (value(); as innermost) {
           <button (click)="log(value(), root, inner, innermost)"></button>
-        {/if}
-      {/if}
-    {/if}
+        }
+      }
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#if value(); as root}
+    @if (value(); as root) {
       <button (click)="log(value(), root)"></button>
 
-      {#if value(); as inner}
+      @if (value(); as inner) {
         <button (click)="log(value(), root, inner)"></button>
 
-        {#if value(); as innermost}
+        @if (value(); as innermost) {
           <button (click)="log(value(), root, inner, innermost)"></button>
-        {/if}
-      {/if}
-    {/if}
+        }
+      }
+    }
   `,
                 }]
         }] });
@@ -655,7 +757,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item}{{item.name}}{/for}
+      @for (item of items; track item) {
+        {{item.name}}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -664,7 +768,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item}{{item.name}}{/for}
+      @for (item of items; track item) {
+        {{item.name}}
+      }
     </div>
   `,
                 }]
@@ -698,10 +804,11 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         {{item.name}}
-        {:empty} No items!
-      {/for}
+      } @empty {
+        No items!
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -710,10 +817,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         {{item.name}}
-        {:empty} No items!
-      {/for}
+      } @empty {
+        No items!
+      }
     </div>
   `,
                 }]
@@ -747,7 +855,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track $index}{{item.name}}{/for}
+      @for (item of items; track $index) {
+        {{item.name}}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -756,7 +866,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track $index}{{item.name}}{/for}
+      @for (item of items; track $index) {
+        {{item.name}}
+      }
     </div>
   `,
                 }]
@@ -790,7 +902,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
+      @for (item of items; track item.name[0].toUpperCase()) {
+        {{item.name}}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -799,7 +913,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
+      @for (item of items; track item.name[0].toUpperCase()) {
+        {{item.name}}
+      }
     </div>
   `,
                 }]
@@ -837,10 +953,12 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         {{item.name}}
-        {#for subitem of item.subItems; track $index}{{subitem}} from {{item.name}}{/for}
-      {/for}
+        @for (subitem of item.subItems; track $index) {
+          {{subitem}} from {{item.name}}
+        }
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -849,10 +967,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         {{item.name}}
-        {#for subitem of item.subItems; track $index}{{subitem}} from {{item.name}}{/for}
-      {/for}
+        @for (subitem of item.subItems; track $index) {
+          {{subitem}} from {{item.name}}
+        }
+      }
     </div>
   `,
                 }]
@@ -887,14 +1007,14 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         Index: {{$index}}
         First: {{$first}}
         Last: {{$last}}
         Even: {{$even}}
         Odd: {{$odd}}
         Count: {{$count}}
-      {/for}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -903,14 +1023,14 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item}
+      @for (item of items; track item) {
         Index: {{$index}}
         First: {{$first}}
         Last: {{$last}}
         Even: {{$even}}
         Odd: {{$odd}}
         Count: {{$count}}
-      {/for}
+      }
     </div>
   `,
                 }]
@@ -942,14 +1062,14 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count}
+      @for (item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count) {
         Index: {{idx}}
         First: {{f}}
         Last: {{l}}
         Even: {{ev}}
         Odd: {{o}}
         Count: {{co}}
-      {/for}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -958,14 +1078,14 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count}
+      @for (item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count) {
         Index: {{idx}}
         First: {{f}}
         Last: {{l}}
         Even: {{ev}}
         Odd: {{o}}
         Count: {{co}}
-      {/for}
+      }
     </div>
   `,
                 }]
@@ -1001,13 +1121,13 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item; let outerCount = $count}
+      @for (item of items; track item; let outerCount = $count) {
         {{item.name}}
-        {#for subitem of item.subItems; track subitem}
+        @for (subitem of item.subItems; track subitem) {
           Outer: {{outerCount}}
           Inner: {{$count}}
-        {/for}
-      {/for}
+        }
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1016,13 +1136,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item; let outerCount = $count}
+      @for (item of items; track item; let outerCount = $count) {
         {{item.name}}
-        {#for subitem of item.subItems; track subitem}
+        @for (subitem of item.subItems; track subitem) {
           Outer: {{outerCount}}
           Inner: {{$count}}
-        {/for}
-      {/for}
+        }
+      }
     </div>
   `,
                 }]
@@ -1058,9 +1178,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track item; let ev = $even}
+      @for (item of items; track item; let ev = $even) {
         <div (click)="log($index, ev, $first, $count)"></div>
-      {/for}
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1069,9 +1189,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track item; let ev = $even}
+      @for (item of items; track item; let ev = $even) {
         <div (click)="log($index, ev, $first, $count)"></div>
-      {/for}
+      }
     </div>
   `,
                 }]
@@ -1100,11 +1220,15 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `{#for item of items; track item}{{$odd + ''}}{/for}`, isInline: true });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `@for (item of items; track item) {
+    {{$odd + ''}}
+  }`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
-                    template: `{#for item of items; track item}{{$odd + ''}}{/for}`,
+                    template: `@for (item of items; track item) {
+    {{$odd + ''}}
+  }`,
                 }]
         }] });
 
@@ -1133,7 +1257,11 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <ng-template/>
-    {#for item of items; track item}{{item}}{:empty}Empty{/for}
+    @for (item of items; track item) {
+      {{item}}
+    } @empty {
+      Empty
+    }
     <ng-template/>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1141,7 +1269,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <ng-template/>
-    {#for item of items; track item}{{item}}{:empty}Empty{/for}
+    @for (item of items; track item) {
+      {{item}}
+    } @empty {
+      Empty
+    }
     <ng-template/>
   `,
                 }]
@@ -1172,9 +1304,9 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {{$index}} {{$count}} {{$first}} {{$last}}
 
-    {#for item of items; track item}
+    @for (item of items; track item) {
       {{$index}} {{$count}} {{$first}} {{$last}}
-    {/for}
+    }
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `, isInline: true });
@@ -1184,9 +1316,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     {{$index}} {{$count}} {{$first}} {{$last}}
 
-    {#for item of items; track item}
+    @for (item of items; track item) {
       {{$index}} {{$count}} {{$first}} {{$last}}
-    {/for}
+    }
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `,
@@ -1226,7 +1358,7 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#for item of items; track trackFn($index, item)}{/for}
+      @for (item of items; track trackFn($index, item)) {}
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1235,7 +1367,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#for item of items; track trackFn($index, item)}{/for}
+      @for (item of items; track trackFn($index, item)) {}
     </div>
   `,
                 }]
@@ -1274,7 +1406,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     <div>
       {{message}}
       <ng-template>
-        {#for item of items; track trackFn($index, item)}{/for}
+        @for (item of items; track trackFn($index, item)) {}
       </ng-template>
     </div>
   `, isInline: true });
@@ -1285,7 +1417,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>
       {{message}}
       <ng-template>
-        {#for item of items; track trackFn($index, item)}{/for}
+        @for (item of items; track trackFn($index, item)) {}
       </ng-template>
     </div>
   `,
@@ -1319,15 +1451,25 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
-    {#for otherItem of otherItems; track otherItem.name[0].toUpperCase()}{{otherItem.name}}{/for}
+    @for (item of items; track item.name[0].toUpperCase()) {
+      {{item.name}}
+    }
+
+    @for (otherItem of otherItems; track otherItem.name[0].toUpperCase()) {
+      {{otherItem.name}}
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#for item of items; track item.name[0].toUpperCase()}{{item.name}}{/for}
-    {#for otherItem of otherItems; track otherItem.name[0].toUpperCase()}{{otherItem.name}}{/for}
+    @for (item of items; track item.name[0].toUpperCase()) {
+      {{item.name}}
+    }
+
+    @for (otherItem of otherItems; track otherItem.name[0].toUpperCase()) {
+      {{otherItem.name}}
+    }
   `,
                 }]
         }] });
@@ -1364,15 +1506,25 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#for item of items; track trackFn(item, message)}{{item.name}}{/for}
-    {#for otherItem of otherItems; track trackFn(otherItem, message)}{{otherItem.name}}{/for}
+    @for (item of items; track trackFn(item, message)) {
+      {{item.name}}
+    }
+
+    @for (otherItem of otherItems; track trackFn(otherItem, message)) {
+      {{otherItem.name}}
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#for item of items; track trackFn(item, message)}{{item.name}}{/for}
-    {#for otherItem of otherItems; track trackFn(otherItem, message)}{{otherItem.name}}{/for}
+    @for (item of items; track trackFn(item, message)) {
+      {{item.name}}
+    }
+
+    @for (otherItem of otherItems; track trackFn(otherItem, message)) {
+      {{otherItem.name}}
+    }
   `,
                 }]
         }] });
@@ -1409,13 +1561,17 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#for item of items; track trackFn({foo: item, bar: item}, [item, item])}{{item.name}}{/for}
+    @for (item of items; track trackFn({foo: item, bar: item}, [item, item])) {
+      {{item.name}}
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#for item of items; track trackFn({foo: item, bar: item}, [item, item])}{{item.name}}{/for}
+    @for (item of items; track trackFn({foo: item, bar: item}, [item, item])) {
+      {{item.name}}
+    }
   `,
                 }]
         }] });

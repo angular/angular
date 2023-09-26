@@ -165,11 +165,6 @@ export class I18nMetaVisitor implements html.Visitor {
     return expansionCase;
   }
 
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    html.visitAll(this, group.blocks, context);
-    return group;
-  }
-
   visitBlock(block: html.Block, context: any) {
     html.visitAll(this, block.children, context);
     return block;

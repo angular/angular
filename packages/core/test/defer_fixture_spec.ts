@@ -32,11 +32,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -61,11 +63,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+        `
     })
     class DeferComp {
     }
@@ -88,11 +92,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer when shouldLoad}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (when shouldLoad) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
       shouldLoad = false;
@@ -124,11 +130,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer when shouldLoad}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (when shouldLoad) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
       shouldLoad = false;
@@ -159,11 +167,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -189,13 +199,15 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {:placeholder}
-                <span class="ph">This is placeholder content</span>
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          } @placeholder {
+            <span class="ph">This is placeholder content</span>
+          }
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -224,13 +236,15 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {:loading}
-                <span class="loading">Loading...</span>
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          } @loading {
+            <span class="loading">Loading...</span>
+          }w
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -259,13 +273,15 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {:error}
-                <span class="error">Flagrant Error!</span>
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          } @error {
+            <span class="error">Flagrant Error!</span>
+          }
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -294,11 +310,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-              {#defer on immediate}
-                <second-deferred-comp />
-              {/defer}
-            </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
     }
@@ -320,7 +338,7 @@ describe('DeferFixture', () => {
       expect(er.message)
           .toBe(
               'Tried to render this defer block in the `Placeholder` state, but' +
-              ' there was no `{:placeholder}` section defined in a template.');
+              ' there was no @placeholder block defined in a template.');
     }
   });
 
@@ -329,11 +347,13 @@ describe('DeferFixture', () => {
       selector: 'deferred-comp',
       standalone: true,
       imports: [SecondDeferredComp],
-      template: `<div>
-        {#defer on immediate}
-          <second-deferred-comp />
-        {/defer}
-      </div>`,
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `,
     })
     class DeferredComp {
     }
@@ -342,11 +362,13 @@ describe('DeferFixture', () => {
       selector: 'defer-comp',
       standalone: true,
       imports: [DeferredComp],
-      template: `<div>
-            {#defer on immediate}
-              <deferred-comp />
-            {/defer}
-          </div>`
+      template: `
+        <div>
+          @defer (on immediate) {
+            <deferred-comp />
+          }
+        </div>
+      `
     })
     class DeferComp {
     }

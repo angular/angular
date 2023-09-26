@@ -1194,7 +1194,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         if (alias) {
           // If the branch is aliased, we need to assign the expression value to the temporary
           // variable and then pass it into `conditional`. E.g. for the expression:
-          // `{#if foo(); as alias}...{/if}` we have to generate:
+          // `@if (foo(); as alias) {...}` we have to generate:
           // ```
           // let temp;
           // conditional(0, (temp = ctx.foo()) ? 0 : -1, temp);
@@ -1304,7 +1304,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         null;
     const placeholderConsts = placeholder && placeholder.minimumTime !== null ?
         // TODO(crisbeto): potentially pass the time directly instead of storing it in the `consts`
-        // since `{:placeholder}` can only have one parameter?
+        // since the placeholder block can only have one parameter?
         o.literalArr([o.literal(placeholder.minimumTime)]) :
         null;
 
@@ -2682,7 +2682,7 @@ export interface ParseTemplateOptions {
 
   /**
    * Names of the blocks that should be enabled. E.g. `enabledBlockTypes: new Set(['defer'])`
-   * would allow usages of `{#defer}{/defer}` in templates.
+   * would allow usages of `@defer {}` in templates.
    */
   enabledBlockTypes?: Set<string>;
 }

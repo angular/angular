@@ -1477,7 +1477,7 @@ describe('TestBed', () => {
      * class ComponentClass {}
      *
      * This is needed to closer match the behavior of AOT pre-compiled components (compiled
-     * outside of TestBed) for cases when `{#defer}` blocks are used.
+     * outside of TestBed) for cases when defer blocks are used.
      */
     const getAOTCompiledComponent =
         (selector: string, dependencies: Array<Type<unknown>> = [],

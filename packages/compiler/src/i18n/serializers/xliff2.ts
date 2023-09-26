@@ -283,8 +283,6 @@ class Xliff2Parser implements ml.Visitor {
 
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
-  visitBlockGroup(group: ml.BlockGroup, context: any) {}
-
   visitBlock(block: ml.Block, context: any) {}
 
   visitBlockParameter(parameter: ml.BlockParameter, context: any) {}
@@ -376,8 +374,6 @@ class XmlToI18n implements ml.Visitor {
   visitComment(comment: ml.Comment, context: any) {}
 
   visitAttribute(attribute: ml.Attribute, context: any) {}
-
-  visitBlockGroup(group: ml.BlockGroup, context: any) {}
 
   visitBlock(block: ml.Block, context: any) {}
 

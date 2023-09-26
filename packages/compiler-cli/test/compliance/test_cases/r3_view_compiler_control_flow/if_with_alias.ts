@@ -4,7 +4,9 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#if value(); as alias}{{value()}} as {{alias}}{/if}
+      @if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
     </div>
   `,
 })

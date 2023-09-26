@@ -11,11 +11,17 @@ export class TestPipe {
   template: `
     <div>
       {{message}}
-      {#switch value() | test}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:default} default
-      {/switch}
+      @switch (value() | test) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          case 1
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `,
   standalone: true,

@@ -1152,7 +1152,7 @@ class TcbComponentContextCompletionOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which renders a variable defined inside of block syntax (e.g. `{#if expr; as var}`).
+ * A `TcbOp` which renders a variable defined inside of block syntax (e.g. `@if (expr; as var) {}`).
  *
  * Executing this operation returns the identifier which can be used to refer to the variable.
  */
@@ -1177,7 +1177,7 @@ class TcbBlockVariableOp extends TcbOp {
 
 /**
  * A `TcbOp` which renders a variable that is implicitly available within a block (e.g. `$count`
- * in a `{#for}` block).
+ * in a `@for` block).
  *
  * Executing this operation returns the identifier which can be used to refer to the variable.
  */

@@ -1365,12 +1365,15 @@ describe('type check blocks', () => {
 
     it('should generate bindings inside deferred blocks', () => {
       const TEMPLATE = `
-        {#defer}
+        @defer {
           {{main()}}
-          {:placeholder}{{placeholder()}}
-          {:loading}{{loading()}}
-          {:error}{{error()}}
-        {/defer}
+        } @placeholder {
+          {{placeholder()}}
+        } @loading {
+          {{loading()}}
+        } @error {
+          {{error()}}
+        }
       `;
 
       expect(deferredTcb(TEMPLATE))
@@ -1380,7 +1383,9 @@ describe('type check blocks', () => {
 
     it('should generate `when` trigger', () => {
       const TEMPLATE = `
-        {#defer when shouldShow() && isVisible}{{main()}}{/defer}
+        @defer (when shouldShow() && isVisible) {
+          {{main()}}
+        }
       `;
 
       expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
@@ -1388,7 +1393,9 @@ describe('type check blocks', () => {
 
     it('should generate `prefetch when` trigger', () => {
       const TEMPLATE = `
-        {#defer prefetch when shouldShow() && isVisible}{{main()}}{/defer}
+        @defer (prefetch when shouldShow() && isVisible) {
+          {{main()}}
+        }
       `;
 
       expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
@@ -1405,12 +1412,15 @@ describe('type check blocks', () => {
 
     it('should generate an if block', () => {
       const TEMPLATE = `
-        {#if expr === 0}
+        @if (expr === 0) {
           {{main()}}
-          {:else if expr1 === 1}{{one()}}
-          {:else if expr2 === 2}{{two()}}
-          {:else}{{other()}}
-        {/if}
+        } @else if (expr1 === 1) {
+          {{one()}}
+        } @else if (expr2 === 2) {
+          {{two()}}
+        } @else {
+          {{other()}}
+        }
       `;
 
       expect(conditionalTcb(TEMPLATE))
@@ -1422,7 +1432,9 @@ describe('type check blocks', () => {
     });
 
     it('should generate an if block with an `as` expression', () => {
-      const TEMPLATE = `{#if expr === 1; as alias}{{alias}}{/if}`;
+      const TEMPLATE = `@if (expr === 1; as alias) {
+        {{alias}}
+      }`;
 
       expect(conditionalTcb(TEMPLATE))
           .toContain(
@@ -1431,11 +1443,17 @@ describe('type check blocks', () => {
 
     it('should generate a switch block', () => {
       const TEMPLATE = `
-        {#switch expr}
-          {:case 1}{{one()}}
-          {:case 2}{{two()}}
-          {:default}{{default()}}
-        {/switch}
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default {
+            {{default()}}
+          }
+        }
       `;
 
       expect(conditionalTcb(TEMPLATE))
@@ -1447,11 +1465,17 @@ describe('type check blocks', () => {
     it('should generate a switch block inside a template', () => {
       const TEMPLATE = `
         <ng-template let-expr="exp">
-          {#switch expr()}
-            {:case 'one'}{{one()}}
-            {:case 'two'}{{two()}}
-            {:default}{{default()}}
-          {/switch}
+          @switch (expr()) {
+            @case ('one') {
+              {{one()}}
+            }
+            @case ('two') {
+              {{two()}}
+            }
+            @default {
+              {{default()}}
+            }
+          }
         </ng-template>
       `;
 
@@ -1463,7 +1487,6 @@ describe('type check blocks', () => {
     });
   });
 
-  // TODO(crisbeto): tests for the tracking function.
   describe('for loop blocks', () => {
     // TODO(crisbeto): temporary utility while for loop blocks are disabled by default
     function loopTcb(template: string): string {
@@ -1472,10 +1495,11 @@ describe('type check blocks', () => {
 
     it('should generate a for block', () => {
       const TEMPLATE = `
-        {#for item of items; track item}
+        @for (item of items; track item) {
           {{main(item)}}
-          {:empty}{{empty()}}
-        {/for}
+        } @empty {
+          {{empty()}}
+        }
       `;
 
       const result = loopTcb(TEMPLATE);
@@ -1486,9 +1510,9 @@ describe('type check blocks', () => {
 
     it('should generate a for block with implicit variables', () => {
       const TEMPLATE = `
-        {#for item of items; track item}
+        @for (item of items; track item) {
           {{$index}} {{$first}} {{$last}} {{$even}} {{$odd}} {{$count}}
-        {/for}
+        }
       `;
 
       const result = loopTcb(TEMPLATE);
@@ -1504,9 +1528,9 @@ describe('type check blocks', () => {
 
     it('should generate a for block with aliased variables', () => {
       const TEMPLATE = `
-        {#for item of items; track item; let i = $index, f = $first, l = $last, e = $even, o = $odd, c = $count}
+        @for (item of items; track item; let i = $index, f = $first, l = $last, e = $even, o = $odd, c = $count) {
           {{i}} {{f}} {{l}} {{e}} {{o}} {{c}}
-        {/for}
+        }
       `;
 
       const result = loopTcb(TEMPLATE);
@@ -1522,7 +1546,7 @@ describe('type check blocks', () => {
 
     it('should read an implicit variable from the component scope if it is aliased', () => {
       const TEMPLATE = `
-        {#for item of items; track item; let i = $index} {{$index}} {{i}} {/for}
+        @for (item of items; track item; let i = $index) { {{$index}} {{i}} }
       `;
 
       const result = loopTcb(TEMPLATE);
@@ -1533,13 +1557,13 @@ describe('type check blocks', () => {
 
     it('should read variable from a parent for loop', () => {
       const TEMPLATE = `
-        {#for item of items; track item; let indexAlias = $index}
+        @for (item of items; track item; let indexAlias = $index) {
           {{item}} {{indexAlias}}
 
-          {#for inner of item.items; track inner}
+          @for (inner of item.items; track inner) {
             {{item}} {{indexAlias}} {{inner}} {{$index}}
-          {/for}
-        {/for}
+          }
+        }
       `;
 
       const result = loopTcb(TEMPLATE);
@@ -1552,7 +1576,7 @@ describe('type check blocks', () => {
     });
 
     it('should generate the tracking expression of a for loop', () => {
-      const result = loopTcb(`{#for item of items; track trackingFn($index, item, prop)}{/for}`);
+      const result = loopTcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
 
       expect(result).toContain(
           'for (const item of ((this).items)) { var _t1: number = null!; var _t2 = item;');

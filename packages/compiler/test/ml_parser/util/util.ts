@@ -39,22 +39,10 @@ class _SerializerVisitor implements html.Visitor {
     return ` ${expansionCase.value} {${this._visitAll(expansionCase.expression)}}`;
   }
 
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    if (group.blocks.length === 0) {
-      throw new Error('Block group must have at least one block.');
-    }
-
-    const [primaryBlock, ...remainingBlocks] = group.blocks;
-
-    // The primary block is created implicitly so we need to separate it out when serializing.
-    return `{#${primaryBlock.name}${this._visitAll(primaryBlock.parameters, ';', ' ')}}${
-        this._visitAll(
-            primaryBlock.children)}${this._visitAll(remainingBlocks)}{/${primaryBlock.name}}`;
-  }
-
   visitBlock(block: html.Block, context: any) {
-    return `{:${block.name}${this._visitAll(block.parameters, ';', ' ')}}${
-        this._visitAll(block.children)}`;
+    const params =
+        block.parameters.length === 0 ? ' ' : ` (${this._visitAll(block.parameters, ';', ' ')}) `;
+    return `@${block.name}${params}{${this._visitAll(block.children)}}`;
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
