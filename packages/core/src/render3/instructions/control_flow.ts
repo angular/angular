@@ -7,6 +7,7 @@
  */
 
 import {DefaultIterableDiffer, IterableChangeRecord, TrackByFunction} from '../../change_detection';
+import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined} from '../../util/assert';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
@@ -17,7 +18,7 @@ import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW, TView}
 import {detachView} from '../node_manipulation';
 import {getLView, nextBindingIndex} from '../state';
 import {getTNode} from '../util/view_utils';
-import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer} from '../view_manipulation';
+import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
 import {ɵɵtemplate} from './template';
 
@@ -47,9 +48,14 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
     // a truthy value and as the consequence we've got no view to show.
     if (matchingTemplateIndex !== -1) {
       const templateTNode = getExistingTNode(hostLView[TVIEW], matchingTemplateIndex);
-      const embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, value);
 
-      addLViewToLContainer(lContainer, embeddedLView, viewInContainerIdx);
+      const dehydratedView = findMatchingDehydratedView(lContainer, templateTNode.tView!.ssrId);
+      const embeddedLView =
+          createAndRenderEmbeddedLView(hostLView, templateTNode, value, {dehydratedView});
+
+      addLViewToLContainer(
+          lContainer, embeddedLView, viewInContainerIdx,
+          shouldAddViewToDom(templateTNode, dehydratedView));
     }
   } else {
     // We might keep displaying the same template but the actual value of the expression could have
