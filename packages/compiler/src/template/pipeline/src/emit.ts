@@ -14,6 +14,7 @@ import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
+import {phaseApplyI18nExpressions} from './phases/apply_i18n_expressions';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
 import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseChaining} from './phases/chaining';
@@ -81,6 +82,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
+  {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
   {kind: Kind.Tmpl, fn: phasePipeVariadic},
   {kind: Kind.Both, fn: phasePureLiteralStructures},
   {kind: Kind.Tmpl, fn: phaseGenerateProjectionDef},

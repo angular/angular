@@ -542,6 +542,11 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   expression: o.Expression;
 
+  /**
+   * The i18n placeholder associated with this expression.
+   */
+  i18nPlaceholder: i18n.Placeholder;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -549,11 +554,13 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    target: XrefId, expression: o.Expression, sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    target: XrefId, expression: o.Expression, i18nPlaceholder: i18n.Placeholder,
+    sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     target,
     expression,
+    i18nPlaceholder,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,
@@ -577,24 +584,16 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
    */
   slot: number|null;
 
-  /**
-   * The i18n placeholders associated with this operation.
-   */
-  i18nPlaceholders: i18n.Placeholder[];
-
   sourceSpan: ParseSourceSpan;
 }
 
 /**
  * Creates an op to apply i18n expression ops.
  */
-export function createI18nApplyOp(
-    target: XrefId, i18nPlaceholders: i18n.Placeholder[],
-    sourceSpan: ParseSourceSpan): I18nApplyOp {
+export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     target,
-    i18nPlaceholders,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,

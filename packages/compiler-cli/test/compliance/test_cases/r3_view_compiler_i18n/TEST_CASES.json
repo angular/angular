@@ -15,6 +15,20 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should support i18n message with multiple pipes",
+      "inputFiles": [
+        "multiple_pipes.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }
