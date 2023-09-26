@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, forwardRef, NgModule, Pipe, Type} from '@angular/core';
-import {NgModuleDef} from '@angular/core/src/r3_symbols';
-import {ComponentType, NgModuleType} from '@angular/core/src/render3';
+import {Component, Directive, forwardRef, NgModule, Pipe} from '@angular/core';
 
+import {NgModuleDef} from '../../src/r3_symbols';
+import {ComponentType, NgModuleType, ɵsetClassDebugInfo, ɵɵdefineComponent} from '../../src/render3';
 import {TEST_ONLY} from '../../src/render3/deps_tracker/deps_tracker';
 
 const {DepsTracker} = TEST_ONLY;
@@ -1069,9 +1069,15 @@ describe('runtime dependency tracker', () => {
         @Component({})
         class MainComponent {
         }
+        ɵsetClassDebugInfo(MainComponent, {
+          className: 'MainComponent',
+          filePath: 'main.ts',
+          lineNumber: 11,
+        });
 
         expect(() => depsTracker.getComponentDependencies(MainComponent as ComponentType<any>))
-            .toThrowError(/Orphan component found! Trying to render the component MainComponent/);
+            .toThrowError(
+                /Orphan component found! Trying to render the component MainComponent \(at main\.ts\:11\)/);
       });
 
       it('should return empty deps if the compilation scope of the declaring module is corrupted',
