@@ -14,7 +14,7 @@ function MyComponent_ng_template_2_Template(rf, ctx) {
 decls: 5,
 vars: 3,
 consts: function() {
-  __i18nMsg__('{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}', [['startTagNgTemplate', String.raw`\uFFFD*2:1\uFFFD`], ['closeTagNgTemplate', String.raw`\uFFFD/*2:1\uFFFD`], ['startTagNgContainer', String.raw`\uFFFD#3\uFFFD`], ['interpolation_1', String.raw`\uFFFD0\uFFFD`], ['closeTagNgContainer', String.raw`\uFFFD/#3\uFFFD`], ['interpolation', String.raw`\uFFFD0:1\uFFFD`]], {original_code: {'startTagNgTemplate': '<ng-template>', 'closeTagNgTemplate': '</ng-template>', 'startTagNgContainer': '<ng-container>', 'interpolation_1': '{{ valueB | uppercase }}', 'closeTagNgContainer': '</ng-container>', 'interpolation': '{{ valueA | uppercase }}'}}, {})
+  __i18nMsg__('{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}', [['closeTagNgContainer', String.raw`\uFFFD/#3\uFFFD`], ['closeTagNgTemplate', String.raw`\uFFFD/*2:1\uFFFD`], ['interpolation', String.raw`\uFFFD0:1\uFFFD`], ['interpolation_1', String.raw`\uFFFD0\uFFFD`], ['startTagNgContainer', String.raw`\uFFFD#3\uFFFD`], ['startTagNgTemplate', String.raw`\uFFFD*2:1\uFFFD`]], {original_code: {'closeTagNgContainer': '</ng-container>', 'closeTagNgTemplate': '</ng-template>', 'interpolation': '{{ valueA | uppercase }}', 'interpolation_1': '{{ valueB | uppercase }}', 'startTagNgContainer': '<ng-container>', 'startTagNgTemplate': '<ng-template>',}}, {})
   return [
     $i18n_0$
   ];
