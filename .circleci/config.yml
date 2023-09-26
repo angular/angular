@@ -264,10 +264,6 @@ jobs:
       - init_environment
       - init_saucelabs_environment
       - run:
-          name: Start Saucelabs daemon service
-          command: yarn bazel run //tools/saucelabs-daemon/background-service -- ${NUMBER_OF_PARALLEL_BROWSERS}
-          background: true
-      - run:
           name: Run Bazel tests on Saucelabs
           command: |
             TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
@@ -357,39 +353,3 @@ jobs:
           webhook_url_env_var: SLACK_CARETAKER_WEBHOOK_URL
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
-workflows:
-  version: 2
-  default_workflow:
-    jobs:
-      - setup:
-          filters:
-            branches:
-              ignore: g3
-      - build-npm-packages:
-          requires:
-            - setup
-      - publish_snapshot:
-          <<: *only_release_branches
-          requires:
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-
-  monitoring:
-    jobs:
-      - setup
-      - saucelabs:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          <<: *only_on_main_branch
-          # Runs monitoring jobs at 10:00AM every day.
-          cron: '0 10 * * *'

@@ -38,7 +38,9 @@ export function SaucelabsLauncher(
   this.name = browserDisplayName + ' on SauceLabs (daemon)';
 
   this.on('start', (pageUrl: string) => {
-    daemonConnection = createConnection({port: IPC_PORT}, () => _startBrowserTest(pageUrl, args));
+    daemonConnection = createConnection({port: IPC_PORT, family: 4}, () => _startBrowserTest(pageUrl, args));
+
+    
 
     daemonConnection.on(
         'data',
