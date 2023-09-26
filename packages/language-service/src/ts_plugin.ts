@@ -8,12 +8,15 @@
 
 import ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, isNgLanguageService, NgLanguageService} from '../api';
 
 import {LanguageService} from './language_service';
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
-  const {project, languageService: tsLS, config} = info;
+  const {project, languageService, config} = info;
+  const tsLS = isNgLanguageService(languageService) ?
+      languageService.getTypescriptLanguageService() :
+      languageService;
   const angularOnly = config?.angularOnly === true;
 
   const ngLS = new LanguageService(project, tsLS, config);
@@ -194,6 +197,9 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     }
   }
 
+  function getTypescriptLanguageService() {
+    return tsLS;
+  }
 
   return {
     ...tsLS,
@@ -214,6 +220,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getTemplateLocationForComponent,
     getCodeFixesAtPosition,
     getCombinedCodeFix,
+    getTypescriptLanguageService,
   };
 }
 
