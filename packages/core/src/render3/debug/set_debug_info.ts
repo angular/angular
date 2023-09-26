@@ -7,12 +7,8 @@
  */
 
 import {Type} from '../../interface/type';
-
-interface ClassDebugInfo {
-  className: string;
-  filePath?: string;
-  lineNumber?: number;
-}
+import {getComponentDef} from '../definition';
+import {ClassDebugInfo} from '../interfaces/definition';
 
 /**
  * Sets the debug info for an Angular class.
@@ -20,5 +16,8 @@ interface ClassDebugInfo {
  * This runtime is guarded by ngDevMode flag.
  */
 export function ɵsetClassDebugInfo(type: Type<any>, debugInfo: ClassDebugInfo): void {
-  // TODO(pmvald): Implement this function
+  const def = getComponentDef(type);
+  if (def !== null) {
+    def.debugInfo = debugInfo;
+  }
 }
