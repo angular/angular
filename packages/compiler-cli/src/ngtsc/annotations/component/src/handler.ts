@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, BoundTarget, compileClassMetadata, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileClassMetadata, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -26,7 +26,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/a
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, removeIdentifierReferences, resolveEncapsulationEnumValueLocally, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, tryUnwrapForwardRef, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassDebugInfo, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, removeIdentifierReferences, resolveEncapsulationEnumValueLocally, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, tryUnwrapForwardRef, validateHostDirectives, wrapFunctionExpressionsInParens} from '../../common';
 import {extractDirectiveMetadata, parseDirectiveStyles} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
@@ -481,6 +481,7 @@ export class ComponentDecoratorHandler implements
                 node, this.reflector, this.isCore, this.annotateForClosureCompiler,
                 dec => transformDecoratorResources(dec, component, styles, template)) :
             null,
+        classDebugInfo: extractClassDebugInfo(node, this.reflector, this.rootDirs),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -1041,8 +1042,12 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileComponentClassMetadata(analysis.classMetadata, deferrableTypes).toStmt() :
         null;
+    const debugInfo = analysis.classDebugInfo !== null ?
+        compileClassDebugInfo(analysis.classDebugInfo).toStmt() :
+        null;
     const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports);
+    return compileResults(
+        fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports, debugInfo);
   }
 
   compilePartial(
@@ -1067,6 +1072,7 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
+
     return compileResults(
         fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */);
   }
@@ -1094,8 +1100,12 @@ export class ComponentDecoratorHandler implements
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
+    const debugInfo = analysis.classDebugInfo !== null ?
+        compileClassDebugInfo(analysis.classDebugInfo).toStmt() :
+        null;
     return compileResults(
-        fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */);
+        fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */,
+        debugInfo);
   }
 
   /**
