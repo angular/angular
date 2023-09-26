@@ -9,6 +9,7 @@ export {Animation as ɵAnimation} from './dsl/animation';
 export {AnimationStyleNormalizer as ɵAnimationStyleNormalizer, NoopAnimationStyleNormalizer as ɵNoopAnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
 export {WebAnimationsStyleNormalizer as ɵWebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
 export {AnimationEngine as ɵAnimationEngine} from './render/animation_engine_next';
+export {AnimationRenderer as ɵAnimationRenderer, AnimationRendererFactory as ɵAnimationRendererFactory} from './render/animation_renderer';
 export {containsElement as ɵcontainsElement, getParentElement as ɵgetParentElement, invokeQuery as ɵinvokeQuery, validateStyleProperty as ɵvalidateStyleProperty, validateWebAnimatableStyleProperty as ɵvalidateWebAnimatableStyleProperty} from './render/shared';
 export {WebAnimationsDriver as ɵWebAnimationsDriver} from './render/web_animations/web_animations_driver';
 export {WebAnimationsPlayer as ɵWebAnimationsPlayer} from './render/web_animations/web_animations_player';

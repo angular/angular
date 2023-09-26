@@ -7,13 +7,12 @@
  */
 
 import {AnimationBuilder} from '@angular/animations';
-import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer} from '@angular/animations/browser';
+import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
 import {ANIMATION_MODULE_TYPE, ApplicationRef, Inject, Injectable, NgZone, OnDestroy, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
 import {BrowserAnimationBuilder} from './animation_builder';
-import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {
