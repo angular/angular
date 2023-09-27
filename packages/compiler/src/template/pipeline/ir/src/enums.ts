@@ -304,6 +304,11 @@ export enum ExpressionKind {
    * An expression that will cause a literal slot index to be emitted.
    */
   SlotLiteralExpr,
+
+  /**
+   * A test expression for a conditional op.
+   */
+  ConditionalCase,
 }
 
 /**

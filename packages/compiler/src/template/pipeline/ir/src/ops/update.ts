@@ -11,6 +11,7 @@ import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
+import type {ConditionalCaseExpr} from '../expression';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
@@ -496,7 +497,7 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
    * Each possible embedded view that could be displayed has a condition (or is default). This
    * structure maps each view xref to its corresponding condition.
    */
-  conditions: Array<[XrefId, o.Expression|null]>;
+  conditions: Array<ConditionalCaseExpr>;
 
   /**
    * After processing, this will be a single collapsed Joost-expression that evaluates to the right
@@ -511,13 +512,13 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, test: o.Expression|null, conditions: Array<[XrefId, o.Expression | null]>,
+    target: XrefId, test: o.Expression|null, conditions: Array<ConditionalCaseExpr>,
     sourceSpan: ParseSourceSpan): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
     test,
-    conditions: conditions,
+    conditions,
     processed: null,
     sourceSpan,
     ...NEW_OP,
