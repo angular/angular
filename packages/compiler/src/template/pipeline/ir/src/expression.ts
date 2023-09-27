@@ -23,7 +23,7 @@ export type Expression =
     LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
     ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
     PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr;
+    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -762,6 +762,44 @@ export class SlotLiteralExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
+export class ConditionalCaseExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ConditionalCase;
+
+  /**
+   * Create an expression for one branch of a conditional.
+   * @param expr The expression to be tested for this case. Might be null, as in an `else` case.
+   * @param target The Xref of the view to be displayed if this condition is true.
+   */
+  constructor(public expr: o.Expression|null, readonly target: XrefId) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    if (this.expr !== null) {
+      this.expr.visitExpression(visitor, context);
+    }
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof ConditionalCaseExpr && e.expr === this.expr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): ConditionalCaseExpr {
+    return new ConditionalCaseExpr(this.expr, this.target);
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    if (this.expr !== null) {
+      this.expr = transformExpressionsInExpression(this.expr, transform, flags);
+    }
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -831,11 +869,11 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Conditional:
       for (const condition of op.conditions) {
-        if (condition[1] === null) {
+        if (condition.expr === null) {
           // This is a default case.
           continue;
         }
-        condition[1] = transformExpressionsInExpression(condition[1]!, transform, flags);
+        condition.expr = transformExpressionsInExpression(condition.expr, transform, flags);
       }
       if (op.processed !== null) {
         op.processed = transformExpressionsInExpression(op.processed, transform, flags);

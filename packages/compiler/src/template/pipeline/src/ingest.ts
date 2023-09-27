@@ -269,7 +269,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
  */
 function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId|null = null;
-  let conditions: Array<[ir.XrefId, o.Expression | null]> = [];
+  let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const ifCase of ifBlock.branches) {
     const cView = unit.job.allocateView(unit.xref);
     if (firstXref === null) {
@@ -278,7 +278,8 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     unit.create.push(
         ir.createTemplateOp(cView.xref, 'Conditional', ir.Namespace.HTML, true, ifCase.sourceSpan));
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
-    conditions.push([cView.xref, caseExpr]);
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, cView.xref);
+    conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
   const conditional = ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan);
@@ -290,7 +291,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
   let firstXref: ir.XrefId|null = null;
-  let conditions: Array<[ir.XrefId, o.Expression | null]> = [];
+  let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
     if (firstXref === null) {
@@ -301,7 +302,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
-    conditions.push([cView.xref, caseExpr]);
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, cView.xref);
+    conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
   const conditional = ir.createConditionalOp(
