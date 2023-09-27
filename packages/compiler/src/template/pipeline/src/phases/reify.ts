@@ -263,7 +263,8 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         if (op.slot === null) {
           throw new Error(`Conditional slot was not set.`);
         }
-        ir.OpList.replace(op, ng.conditional(op.slot, op.processed));
+        ir.OpList.replace(
+            op, ng.conditional(op.slot, op.processed, op.contextValue, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

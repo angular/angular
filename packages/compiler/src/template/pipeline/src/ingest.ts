@@ -272,13 +272,17 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const ifCase of ifBlock.branches) {
     const cView = unit.job.allocateView(unit.xref);
+    if (ifCase.expressionAlias !== null) {
+      cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
+    }
     if (firstXref === null) {
       firstXref = cView.xref;
     }
     unit.create.push(
         ir.createTemplateOp(cView.xref, 'Conditional', ir.Namespace.HTML, true, ifCase.sourceSpan));
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
-    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, cView.xref);
+    const conditionalCaseExpr =
+        new ir.ConditionalCaseExpr(caseExpr, cView.xref, ifCase.expressionAlias);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
