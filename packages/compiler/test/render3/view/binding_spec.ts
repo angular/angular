@@ -522,6 +522,68 @@ describe('t2 binding', () => {
       expect(triggerEl?.name).toBe('button');
     });
 
+    it('should identify an implicit trigger inside the placeholder block', () => {
+      const template = parseTemplate(
+          `
+          <div #trigger>
+            @defer (on viewport) {} @placeholder {<button></button>}
+          </div>
+          `,
+          '', templateOptions);
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const block = Array.from(bound.getDeferBlocks())[0];
+      const triggerEl = bound.getDeferredTriggerTarget(block, block.triggers.viewport!);
+      expect(triggerEl?.name).toBe('button');
+    });
+
+    it('should not identify an implicit trigger if the placeholder has multiple root nodes', () => {
+      const template = parseTemplate(
+          `
+            <div #trigger>
+              @defer (on viewport) {} @placeholder {<button></button><div></div>}
+            </div>
+            `,
+          '', templateOptions);
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const block = Array.from(bound.getDeferBlocks())[0];
+      const triggerEl = bound.getDeferredTriggerTarget(block, block.triggers.viewport!);
+      expect(triggerEl).toBeNull();
+    });
+
+    it('should not identify an implicit trigger if there is no placeholder', () => {
+      const template = parseTemplate(
+          `
+          <div #trigger>
+            @defer (on viewport) {}
+            <button></button>
+          </div>
+          `,
+          '', templateOptions);
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const block = Array.from(bound.getDeferBlocks())[0];
+      const triggerEl = bound.getDeferredTriggerTarget(block, block.triggers.viewport!);
+      expect(triggerEl).toBeNull();
+    });
+
+    it('should not identify an implicit trigger if the placeholder has a single root text node',
+       () => {
+         const template = parseTemplate(
+             `
+              <div #trigger>
+                @defer (on viewport) {} @placeholder {hello}
+              </div>
+              `,
+             '', templateOptions);
+         const binder = new R3TargetBinder(makeSelectorMatcher());
+         const bound = binder.bind({template: template.nodes});
+         const block = Array.from(bound.getDeferBlocks())[0];
+         const triggerEl = bound.getDeferredTriggerTarget(block, block.triggers.viewport!);
+         expect(triggerEl).toBeNull();
+       });
+
     it('should not identify a trigger inside a sibling embedded view', () => {
       const template = parseTemplate(
           `

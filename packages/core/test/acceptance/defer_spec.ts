@@ -1256,7 +1256,7 @@ describe('@defer', () => {
             } @loading {
               Nested block loading
             }
-  
+
           } @placeholder {
             Root block placeholder
           }
@@ -1431,7 +1431,7 @@ describe('@defer', () => {
             } @loading {
               Nested block loading
             }
-  
+
           } @placeholder {
             Root block placeholder
           }
@@ -1786,6 +1786,31 @@ describe('@defer', () => {
          expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
        }));
 
+    it('should load the deferred content when an implicit trigger is clicked', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             @defer (on interaction) {
+               Main content
+             } @placeholder {
+               <button>Placeholder</button>
+             }
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
     it('should load the deferred content if a child of the trigger is clicked', fakeAsync(() => {
          @Component({
            standalone: true,
@@ -1975,6 +2000,55 @@ describe('@defer', () => {
 
          expect(loadingFnInvokedTimes).toBe(1);
        }));
+
+
+    it('should prefetch resources on interaction with an implicit trigger', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+             @defer (when isLoaded; prefetch on interaction) {
+              Main content
+             } @placeholder {
+              <button></button>
+             }
+           `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
   });
 
   describe('hover triggers', () => {
@@ -2007,6 +2081,37 @@ describe('@defer', () => {
          button.dispatchEvent(new Event('mouseenter'));
          fixture.detectChanges();
          flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should load the deferred content with an implicit trigger element', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           template: `
+             @defer (on hover) {
+               Main content
+             } @placeholder {
+              <button>Placeholder</button>
+             }
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+         fixture.detectChanges();
          expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
        }));
 
@@ -2201,6 +2306,61 @@ describe('@defer', () => {
 
          expect(loadingFnInvokedTimes).toBe(1);
        }));
+
+
+    it('should prefetch resources when an implicit trigger is hovered', fakeAsync(() => {
+         // Domino doesn't support creating custom events so we have to skip this test.
+         if (!isBrowser) {
+           return;
+         }
+
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+             @defer (when isLoaded; prefetch on hover) {
+               Main content
+             } @placeholder {
+               <button></button>
+             }
+           `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         button.dispatchEvent(new Event('mouseenter'));
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
   });
 
   describe('viewport triggers', () => {
@@ -2319,6 +2479,34 @@ describe('@defer', () => {
          MockIntersectionObserver.invokeCallbacksForElement(button, true);
          fixture.detectChanges();
          flush();
+         expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+       }));
+
+    it('should load the deferred content when an implicit trigger is in the viewport',
+       fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+             @defer (on viewport) {
+               Main content
+             } @placeholder {
+              <button>Placeholder</button>
+             }
+           `
+         })
+         class MyCmp {
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+         fixture.detectChanges();
          expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
        }));
 
@@ -2537,6 +2725,56 @@ describe('@defer', () => {
               Main content
              }
              <button #trigger></button>
+           `
+         })
+         class MyCmp {
+           // We need a `when` trigger here so that `on idle` doesn't get added automatically.
+           readonly isLoaded = false;
+         }
+
+         let loadingFnInvokedTimes = 0;
+
+         TestBed.configureTestingModule({
+           providers: [
+             {
+               provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+               useValue: {
+                 intercept: () => () => {
+                   loadingFnInvokedTimes++;
+                   return [];
+                 }
+               }
+             },
+           ],
+           deferBlockBehavior: DeferBlockBehavior.Playthrough,
+         });
+
+         clearDirectiveDefs(MyCmp);
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+
+         expect(loadingFnInvokedTimes).toBe(0);
+
+         const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+         MockIntersectionObserver.invokeCallbacksForElement(button, true);
+         fixture.detectChanges();
+         flush();
+
+         expect(loadingFnInvokedTimes).toBe(1);
+       }));
+
+    it('should prefetch resources when an implicit trigger comes into the viewport',
+       fakeAsync(() => {
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+             @defer (when isLoaded; prefetch on viewport) {
+              Main content
+             } @placeholder {
+               <button></button>
+             }
            `
          })
          class MyCmp {

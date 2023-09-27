@@ -58,7 +58,7 @@ export function parseWhenTrigger(
 /** Parses an `on` trigger */
 export function parseOnTrigger(
     {expression, sourceSpan}: html.BlockParameter, triggers: t.DeferredBlockTriggers,
-    errors: ParseError[]): void {
+    errors: ParseError[], placeholder: t.DeferredBlockPlaceholder|null): void {
   const onIndex = expression.indexOf('on');
 
   // This is here just to be safe, we shouldn't enter this function
@@ -67,7 +67,8 @@ export function parseOnTrigger(
     errors.push(new ParseError(sourceSpan, `Could not find "on" keyword in expression`));
   } else {
     const start = getTriggerParametersStart(expression, onIndex + 1);
-    const parser = new OnTriggerParser(expression, start, sourceSpan, triggers, errors);
+    const parser =
+        new OnTriggerParser(expression, start, sourceSpan, triggers, errors, placeholder);
     parser.parse();
   }
 }
@@ -79,7 +80,8 @@ class OnTriggerParser {
 
   constructor(
       private expression: string, private start: number, private span: ParseSourceSpan,
-      private triggers: t.DeferredBlockTriggers, private errors: ParseError[]) {
+      private triggers: t.DeferredBlockTriggers, private errors: ParseError[],
+      private placeholder: t.DeferredBlockPlaceholder|null) {
     this.tokens = new Lexer().tokenize(expression.slice(start));
   }
 
@@ -146,7 +148,8 @@ class OnTriggerParser {
           break;
 
         case OnTriggerType.INTERACTION:
-          this.trackTrigger('interaction', createInteractionTrigger(parameters, sourceSpan));
+          this.trackTrigger(
+              'interaction', createInteractionTrigger(parameters, sourceSpan, this.placeholder));
           break;
 
         case OnTriggerType.IMMEDIATE:
@@ -154,11 +157,12 @@ class OnTriggerParser {
           break;
 
         case OnTriggerType.HOVER:
-          this.trackTrigger('hover', createHoverTrigger(parameters, sourceSpan));
+          this.trackTrigger('hover', createHoverTrigger(parameters, sourceSpan, this.placeholder));
           break;
 
         case OnTriggerType.VIEWPORT:
-          this.trackTrigger('viewport', createViewportTrigger(parameters, sourceSpan));
+          this.trackTrigger(
+              'viewport', createViewportTrigger(parameters, sourceSpan, this.placeholder));
           break;
 
         default:
@@ -291,15 +295,6 @@ function createTimerTrigger(parameters: string[], sourceSpan: ParseSourceSpan) {
   return new t.TimerDeferredTrigger(delay, sourceSpan);
 }
 
-function createInteractionTrigger(
-    parameters: string[], sourceSpan: ParseSourceSpan): t.InteractionDeferredTrigger {
-  if (parameters.length !== 1) {
-    throw new Error(`"${OnTriggerType.INTERACTION}" trigger must have exactly one parameter`);
-  }
-
-  return new t.InteractionDeferredTrigger(parameters[0], sourceSpan);
-}
-
 function createImmediateTrigger(
     parameters: string[], sourceSpan: ParseSourceSpan): t.ImmediateDeferredTrigger {
   if (parameters.length > 0) {
@@ -310,22 +305,44 @@ function createImmediateTrigger(
 }
 
 function createHoverTrigger(
-    parameters: string[], sourceSpan: ParseSourceSpan): t.HoverDeferredTrigger {
-  if (parameters.length !== 1) {
-    throw new Error(`"${OnTriggerType.HOVER}" trigger must have exactly one parameter`);
-  }
+    parameters: string[], sourceSpan: ParseSourceSpan,
+    placeholder: t.DeferredBlockPlaceholder|null): t.HoverDeferredTrigger {
+  validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder);
+  return new t.HoverDeferredTrigger(parameters[0] ?? null, sourceSpan);
+}
 
-  return new t.HoverDeferredTrigger(parameters[0], sourceSpan);
+function createInteractionTrigger(
+    parameters: string[], sourceSpan: ParseSourceSpan,
+    placeholder: t.DeferredBlockPlaceholder|null): t.InteractionDeferredTrigger {
+  validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder);
+  return new t.InteractionDeferredTrigger(parameters[0] ?? null, sourceSpan);
 }
 
 function createViewportTrigger(
-    parameters: string[], sourceSpan: ParseSourceSpan): t.ViewportDeferredTrigger {
-  // TODO: the RFC has some more potential parameters for `viewport`.
+    parameters: string[], sourceSpan: ParseSourceSpan,
+    placeholder: t.DeferredBlockPlaceholder|null): t.ViewportDeferredTrigger {
+  validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder);
+  return new t.ViewportDeferredTrigger(parameters[0] ?? null, sourceSpan);
+}
+
+function validateReferenceBasedTrigger(
+    type: OnTriggerType, parameters: string[], placeholder: t.DeferredBlockPlaceholder|null) {
   if (parameters.length > 1) {
-    throw new Error(`"${OnTriggerType.VIEWPORT}" trigger can only have zero or one parameters`);
+    throw new Error(`"${type}" trigger can only have zero or one parameters`);
   }
 
-  return new t.ViewportDeferredTrigger(parameters[0] ?? null, sourceSpan);
+  if (parameters.length === 0) {
+    if (placeholder === null) {
+      throw new Error(`"${
+          type}" trigger with no parameters can only be placed on an @defer that has a @placeholder block`);
+    }
+
+    if (placeholder.children.length !== 1 || !(placeholder.children[0] instanceof t.Element)) {
+      throw new Error(
+          `"${type}" trigger with no parameters can only be placed on an @defer that has a ` +
+          `@placeholder block with exactly one root element node`);
+    }
+  }
 }
 
 /** Gets the index within an expression at which the trigger parameters start. */

@@ -1002,6 +1002,24 @@ describe('R3 template transform', () => {
           ]);
     });
 
+    it('should parse triggers with implied target elements', () => {
+      expectDeferred(
+          '@defer (on hover, interaction, viewport; prefetch on hover, interaction, viewport) {hello}' +
+          '@placeholder {<implied-trigger/>}')
+          .toEqual([
+            ['DeferredBlock'],
+            ['HoverDeferredTrigger', null],
+            ['InteractionDeferredTrigger', null],
+            ['ViewportDeferredTrigger', null],
+            ['HoverDeferredTrigger', null],
+            ['InteractionDeferredTrigger', null],
+            ['ViewportDeferredTrigger', null],
+            ['Text', 'hello'],
+            ['DeferredBlockPlaceholder'],
+            ['Element', 'implied-trigger'],
+          ]);
+    });
+
     describe('block validations', () => {
       it('should report syntax error in `when` trigger', () => {
         expectDeferredError('@defer (when isVisible#){hello}')
@@ -1130,7 +1148,7 @@ describe('R3 template transform', () => {
 
       it('should report if `interaction` trigger has more than one parameter', () => {
         expectDeferredError('@defer (on interaction(a, b)) {hello}')
-            .toThrowError(/"interaction" trigger must have exactly one parameter/);
+            .toThrowError(/"interaction" trigger can only have zero or one parameters/);
       });
 
       it('should report if parameters are passed to `immediate` trigger', () => {
@@ -1138,9 +1156,9 @@ describe('R3 template transform', () => {
             .toThrowError(/"immediate" trigger cannot have parameters/);
       });
 
-      it('should report if no parameters are passed to `hover` trigger', () => {
-        expectDeferredError('@defer (on hover) {hello}')
-            .toThrowError(/"hover" trigger must have exactly one parameter/);
+      it('should report if `hover` trigger has more than one parameter', () => {
+        expectDeferredError('@defer (on hover(a, b)) {hello}')
+            .toThrowError(/"hover" trigger can only have zero or one parameters/);
       });
 
       it('should report if `viewport` trigger has more than one parameter', () => {
@@ -1184,6 +1202,35 @@ describe('R3 template transform', () => {
         expectDeferredError('@defer {hello} @loading (after 1s; after 500ms) {loading}')
             .toThrowError(/@loading block can only have one "after" parameter/);
       });
+
+      it('should report if reference-based trigger has no reference and there is no placeholder block',
+         () => {
+           expectDeferredError('@defer (on viewport) {hello}')
+               .toThrowError(
+                   /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/);
+         });
+
+      it('should report if reference-based trigger has no reference and the placeholder is empty',
+         () => {
+           expectDeferredError('@defer (on viewport) {hello} @placeholder {}')
+               .toThrowError(
+                   /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
+         });
+
+      it('should report if reference-based trigger has no reference and the placeholder with text at the root',
+         () => {
+           expectDeferredError('@defer (on viewport) {hello} @placeholder {placeholder}')
+               .toThrowError(
+                   /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
+         });
+
+      it('should report if reference-based trigger has no reference and the placeholder has multiple root elements',
+         () => {
+           expectDeferredError(
+               '@defer (on viewport) {hello} @placeholder {<div></div><span></span>}')
+               .toThrowError(
+                   /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
+         });
     });
   });
 

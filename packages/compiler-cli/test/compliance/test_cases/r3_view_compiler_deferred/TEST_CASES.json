@@ -255,6 +255,27 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate a deferred block with implicit trigger references",
+      "angularCompilerOptions": {
+        "_enabledBlockTypes": ["defer"]
+      },
+      "inputFiles": [
+        "deferred_with_implicit_triggers.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_implicit_triggers_template.js",
+              "generated": "deferred_with_implicit_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
