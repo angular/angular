@@ -1,6 +1,6 @@
 {
   "schematics": {
-    "migration-v17-block-template-entities": {
+    "block-template-entities": {
       "version": "17.0.0",
       "description": "Angular v17 introduces a new control flow syntax that uses the @ and } characters. This migration replaces the existing usages with their corresponding HTML entities.",
       "factory": "./migrations/block-template-entities/bundle"

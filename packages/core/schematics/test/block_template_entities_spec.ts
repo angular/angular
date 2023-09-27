@@ -25,7 +25,7 @@ describe('Block template entities migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematic('migration-v17-block-template-entities', {}, tree);
+    return runner.runSchematic('block-template-entities', {}, tree);
   }
 
   beforeEach(() => {
