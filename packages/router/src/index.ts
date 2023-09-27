@@ -16,6 +16,7 @@ export {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchF
 export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+export {DefaultTagsStrategy, TagsStrategy} from './page_tags_strategy';
 export {DebugTracingFeature, DisabledInitialNavigationFeature, withViewTransitions, ViewTransitionsFeature, EnabledBlockingInitialNavigationFeature, InitialNavigationFeature, InMemoryScrollingFeature, NavigationErrorHandlerFeature, PreloadingFeature, provideRouter, provideRoutes, RouterConfigurationFeature, RouterFeature, RouterFeatures, RouterHashLocationFeature, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withHashLocation, withInMemoryScrolling, withNavigationErrorHandler, withPreloading, withRouterConfig} from './provide_router';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Router} from './router';

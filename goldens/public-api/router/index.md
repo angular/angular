@@ -16,6 +16,8 @@ import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { LocationStrategy } from '@angular/common';
+import { Meta } from '@angular/platform-browser';
+import { MetaDefinition } from '@angular/platform-browser';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -215,6 +217,18 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
 // @public
 export interface DefaultExport<T> {
     default: T;
+}
+
+// @public
+export class DefaultTagsStrategy extends TagsStrategy {
+    constructor(meta: Meta);
+    // (undocumented)
+    readonly meta: Meta;
+    updateTags(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DefaultTagsStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultTagsStrategy>;
 }
 
 // @public
@@ -657,6 +671,7 @@ export interface Route {
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
+    tags?: MetaDefinition[] | ResolveFn<MetaDefinition[]>;
     title?: string | Type<Resolve<string>> | ResolveFn<string>;
 }
 
@@ -977,6 +992,18 @@ export class Scroll {
     toString(): string;
     // (undocumented)
     readonly type = EventType.Scroll;
+}
+
+// @public
+export abstract class TagsStrategy {
+    // (undocumented)
+    buildTags(snapshot: RouterStateSnapshot): MetaDefinition[] | undefined;
+    getResolvedTagsForRoute(snapshot: ActivatedRouteSnapshot): any;
+    abstract updateTags(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TagsStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TagsStrategy>;
 }
 
 // @public

@@ -7,6 +7,7 @@
  */
 
 import {EnvironmentInjector, EnvironmentProviders, NgModuleFactory, Provider, ProviderToken, Type} from '@angular/core';
+import {MetaDefinition} from '@angular/platform-browser';
 import {Observable} from 'rxjs';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -465,6 +466,14 @@ export interface Route {
    * @see {@link TitleStrategy}
    */
   title?: string|Type<Resolve<string>>|ResolveFn<string>;
+
+  /**
+   * Used to define a page meta for the route. This can be a static string or an `Injectable` that
+   * implements `Resolve`.
+   *
+   * @see {@link TagsStrategy}
+   */
+  tags?: MetaDefinition[]|ResolveFn<MetaDefinition[]>;
 
   /**
    * The path to match against. Cannot be used together with a custom `matcher` function.

@@ -21,6 +21,7 @@ import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
+import {TagsStrategy} from './page_tags_strategy';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
@@ -301,6 +302,7 @@ export class NavigationTransitions {
   private readonly location = inject(Location);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
+  private readonly tagsStrategy?: TagsStrategy = inject(TagsStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
@@ -645,6 +647,7 @@ export class NavigationTransitions {
                                  t.id, this.urlSerializer.serialize(t.extractedUrl),
                                  this.urlSerializer.serialize(t.urlAfterRedirects!)));
                              this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+                             this.tagsStrategy?.updateTags(t.targetRouterState!.snapshot);
                              t.resolve(true);
                            },
                            complete: () => {

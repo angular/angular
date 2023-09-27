@@ -306,6 +306,35 @@ const routes: Routes = [
 const resolvedChildATitle: ResolveFn<string> = () => Promise.resolve('child a');
 ```
 
+## Setting the page tags
+
+Each page in your application can have some tags so that they can be identified by SEOs.
+The `Router` sets the document's tags using the `tags` property from the `Route` config.
+
+```
+const routes: Routes = [
+  {
+    path: 'first-component',
+    tags: [{ name: 'description', content: 'First component description'}],
+    component: FirstComponent,  // this is the component with the <router-outlet> in the template
+    children: [
+      {
+        path: 'child-a',  // child route path
+        tags: resolvedChildATags,
+        component: ChildAComponent,  // child route component that the router renders
+      },
+      {
+        path: 'child-b',
+        tags: [{ name: 'description', content: 'child b description'}],
+        component: ChildBComponent,  // another child route component that the router renders
+      },
+    ],
+  },
+];
+
+const resolvedChildATags: ResolveFn<MetaDefinition> = () => Promise.resolve([{ name: 'description', content: 'child a description'}]);
+```
+
 <div class="alert is-helpful">
 
 **NOTE**: <br /> The `title` property follows the same rules as static route `data` and dynamic values that implement `ResolveFn`.

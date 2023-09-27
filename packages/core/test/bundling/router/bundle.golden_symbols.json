@@ -162,6 +162,9 @@
     "name": "DefaultRouteReuseStrategy"
   },
   {
+    "name": "DefaultTagsStrategy"
+  },
+  {
     "name": "DefaultTitleStrategy"
   },
   {
@@ -318,6 +321,9 @@
     "name": "MATRIX_PARAM_SEGMENT_RE"
   },
   {
+    "name": "META_KEYS_MAP"
+  },
+  {
     "name": "MODIFIER_KEYS"
   },
   {
@@ -343,6 +349,9 @@
   },
   {
     "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "Meta"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -576,6 +585,9 @@
     "name": "RouteReuseStrategy"
   },
   {
+    "name": "RouteTagsKey"
+  },
+  {
     "name": "RouteTitleKey"
   },
   {
@@ -691,6 +703,9 @@
   },
   {
     "name": "TYPE"
+  },
+  {
+    "name": "TagsStrategy"
   },
   {
     "name": "TakeLastOperator"
@@ -1423,6 +1438,9 @@
   },
   {
     "name": "hasParentInjector"
+  },
+  {
+    "name": "hasStaticTags"
   },
   {
     "name": "hasStaticTitle"

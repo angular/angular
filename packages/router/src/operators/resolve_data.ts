@@ -13,7 +13,7 @@ import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 
 import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
-import {RouteTitleKey} from '../shared';
+import {RouteTagsKey, RouteTitleKey} from '../shared';
 import {getDataKeys, wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {getTokenOrFunctionIdentity} from '../utils/preactivation';
@@ -49,11 +49,17 @@ function runResolve(
   if (config?.title !== undefined && !hasStaticTitle(config)) {
     resolve[RouteTitleKey] = config.title;
   }
+  if (config?.tags !== undefined && !hasStaticTags(config)) {
+    resolve[RouteTagsKey] = config.tags;
+  }
   return resolveNode(resolve, futureARS, futureRSS, injector).pipe(map((resolvedData: any) => {
     futureARS._resolvedData = resolvedData;
     futureARS.data = inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve;
     if (config && hasStaticTitle(config)) {
       futureARS.data[RouteTitleKey] = config.title;
+    }
+    if (config && hasStaticTags(config)) {
+      futureARS.data[RouteTagsKey] = config.tags;
     }
     return null;
   }));
@@ -92,4 +98,8 @@ function getResolver(
 
 function hasStaticTitle(config: Route) {
   return typeof config.title === 'string' || config.title === null;
+}
+
+function hasStaticTags(config: Route) {
+  return Array.isArray(config.tags) || config.tags === null;
 }

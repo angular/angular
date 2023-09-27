@@ -23,6 +23,7 @@ export const PRIMARY_OUTLET = 'primary';
  * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
  */
 export const RouteTitleKey = /* @__PURE__ */ Symbol('RouteTitle');
+export const RouteTagsKey = /* @__PURE__ */ Symbol('RouteTags');
 
 /**
  * A collection of matrix and query URL parameters.
