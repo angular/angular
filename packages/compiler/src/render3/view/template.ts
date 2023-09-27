@@ -1378,7 +1378,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // Note that we generate an implicit `on idle` if the `deferred` block has no triggers.
-    // TODO(crisbeto): decide if this should be baked into the `defer` instruction.
     // `deferOnIdle()`
     if (idle || (!prefetch && Object.keys(triggers).length === 0)) {
       this.creationInstruction(

@@ -44,8 +44,9 @@ export function createDeferredBlock(
     ast: html.Block, connectedBlocks: html.Block[], visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.DeferredBlock, errors: ParseError[]} {
   const errors: ParseError[] = [];
-  const {triggers, prefetchTriggers} = parsePrimaryTriggers(ast.parameters, bindingParser, errors);
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
+  const {triggers, prefetchTriggers} =
+      parsePrimaryTriggers(ast.parameters, bindingParser, errors, placeholder);
   const node = new t.DeferredBlock(
       html.visitAll(visitor, ast.children, ast.children), triggers, prefetchTriggers, placeholder,
       loading, error, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan);
@@ -182,7 +183,8 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
 }
 
 function parsePrimaryTriggers(
-    params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[]) {
+    params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[],
+    placeholder: t.DeferredBlockPlaceholder|null) {
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
 
@@ -192,11 +194,11 @@ function parsePrimaryTriggers(
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
       parseWhenTrigger(param, bindingParser, triggers, errors);
     } else if (ON_PARAMETER_PATTERN.test(param.expression)) {
-      parseOnTrigger(param, triggers, errors);
+      parseOnTrigger(param, triggers, errors, placeholder);
     } else if (PREFETCH_WHEN_PATTERN.test(param.expression)) {
       parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
-      parseOnTrigger(param, prefetchTriggers, errors);
+      parseOnTrigger(param, prefetchTriggers, errors, placeholder);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
