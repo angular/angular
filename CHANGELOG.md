@@ -1,3 +1,16 @@
+<a name="16.2.7"></a>
+# 16.2.7 (2023-09-27)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39a3e34e03](https://github.com/angular/angular/commit/39a3e34e035b324bfa1f1a11cf452272c91011c6) | fix | allow toSignal calls in reactive context ([#51831](https://github.com/angular/angular/pull/51831)) ([#51892](https://github.com/angular/angular/pull/51892)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c3d901eacf](https://github.com/angular/angular/commit/c3d901eacfe8d035441e5c990f6e6b2630d592f5) | fix | throw a critical error when `handleFetch` fails ([#51885](https://github.com/angular/angular/pull/51885)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.5"></a>
 # 17.0.0-next.5 (2023-09-20)
 ## Breaking Changes
