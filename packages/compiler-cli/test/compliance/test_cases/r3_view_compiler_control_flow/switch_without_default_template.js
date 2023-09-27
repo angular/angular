@@ -24,10 +24,10 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    let MyApp_contFlowTmp;
+    let $MyApp_contFlowTmp$;
     $r3$.ɵɵadvance(1);
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance(1);
-    $r3$.ɵɵconditional(2, (MyApp_contFlowTmp = ctx.value()) === 0 ? 2 : MyApp_contFlowTmp === 1 ? 3 : MyApp_contFlowTmp === 2 ? 4 : -1);
+    $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.value()) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : $MyApp_contFlowTmp$ === 2 ? 4 : -1);
   }
 }
