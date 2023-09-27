@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstElement, TmplAstForLoopBlock, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1694,14 +1694,7 @@ class Scope {
       }
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof TmplAstDeferredBlock) {
-      node.triggers.when !== undefined &&
-          this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.triggers.when.value));
-      node.prefetchTriggers.when !== undefined &&
-          this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.prefetchTriggers.when.value));
-      this.appendChildren(node);
-      node.placeholder !== null && this.appendChildren(node.placeholder);
-      node.loading !== null && this.appendChildren(node.loading);
-      node.error !== null && this.appendChildren(node.error);
+      this.appendDeferredBlock(node);
     } else if (node instanceof TmplAstIfBlock) {
       this.opQueue.push(new TcbIfOp(this.tcb, this, node));
     } else if (node instanceof TmplAstSwitchBlock) {
@@ -1875,6 +1868,52 @@ class Scope {
       if (placeholder instanceof TmplAstBoundText) {
         this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value));
       }
+    }
+  }
+
+  private appendDeferredBlock(block: TmplAstDeferredBlock): void {
+    this.appendDeferredTriggers(block, block.triggers);
+    this.appendDeferredTriggers(block, block.prefetchTriggers);
+    this.appendChildren(block);
+
+    if (block.placeholder !== null) {
+      this.appendChildren(block.placeholder);
+    }
+
+    if (block.loading !== null) {
+      this.appendChildren(block.loading);
+    }
+
+    if (block.error !== null) {
+      this.appendChildren(block.error);
+    }
+  }
+
+  private appendDeferredTriggers(
+      block: TmplAstDeferredBlock, triggers: TmplAstDeferredBlockTriggers): void {
+    if (triggers.when !== undefined) {
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
+    }
+
+    if (triggers.hover !== undefined) {
+      this.appendReferenceBasedDeferredTrigger(block, triggers.hover);
+    }
+
+    if (triggers.interaction !== undefined) {
+      this.appendReferenceBasedDeferredTrigger(block, triggers.interaction);
+    }
+
+    if (triggers.viewport !== undefined) {
+      this.appendReferenceBasedDeferredTrigger(block, triggers.viewport);
+    }
+  }
+
+  private appendReferenceBasedDeferredTrigger(
+      block: TmplAstDeferredBlock,
+      trigger: TmplAstHoverDeferredTrigger|TmplAstInteractionDeferredTrigger|
+      TmplAstViewportDeferredTrigger): void {
+    if (this.tcb.boundTarget.getDeferredTriggerTarget(block, trigger) === null) {
+      this.tcb.oobRecorder.inaccessibleDeferredTriggerElement(this.tcb.id, trigger);
     }
   }
 }

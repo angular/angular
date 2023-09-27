@@ -3704,6 +3704,48 @@ suppress
           `Property 'does_not_exist' does not exist on type 'Main'.`,
         ]);
       });
+
+      it('should report if a deferred trigger reference does not exist', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @defer (on viewport(does_not_exist)) {Hello}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+            .toContain('Trigger cannot find reference "does_not_exist".');
+      });
+
+      it('should report if a deferred trigger reference is in a different embedded view', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @defer (on viewport(trigger)) {Hello}
+
+              <ng-template>
+                <button #trigger></button>
+              </ng-template>
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+            .toContain('Trigger cannot find reference "trigger".');
+      });
     });
 
     describe('conditional blocks', () => {

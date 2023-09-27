@@ -273,6 +273,20 @@ export enum ErrorCode {
   ILLEGAL_FOR_LOOP_TRACK_ACCESS = 8009,
 
   /**
+   * The trigger of a `defer` block cannot access its trigger element,
+   * either because it doesn't exist or it's in a different view.
+   *
+   * ```
+   * @defer (on interaction(trigger)) {...}
+   *
+   * <ng-template>
+   *   <button #trigger></button>
+   * </ng-template>
+   * ```
+   */
+  INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT = 8010,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
