@@ -33,14 +33,19 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
       }
 
       // Switch expressions assign their main test to a temporary, to avoid re-executing it.
-      let tmp = new ir.AssignTemporaryExpr(op.test, job.allocateXrefId());
+      let tmp = op.test == null ? null : new ir.AssignTemporaryExpr(op.test, job.allocateXrefId());
 
       // For each remaining condition, test whether the temporary satifies the check.
       for (let i = op.conditions.length - 1; i >= 0; i--) {
-        const useTmp = i === 0 ? tmp : new ir.ReadTemporaryExpr(tmp.xref);
-        const [xref, check] = op.conditions[i];
-        const comparison = new o.BinaryOperatorExpr(o.BinaryOperator.Identical, useTmp, check!);
-        test = new o.ConditionalExpr(comparison, new ir.SlotLiteralExpr(xref), test);
+        let [xref, check]: [ir.XrefId, o.Expression|null] = op.conditions[i];
+        if (check === null) {
+          continue;
+        }
+        if (tmp !== null) {
+          const useTmp = i === 0 ? tmp : new ir.ReadTemporaryExpr(tmp.xref);
+          check = new o.BinaryOperatorExpr(o.BinaryOperator.Identical, useTmp, check);
+        }
+        test = new o.ConditionalExpr(check, new ir.SlotLiteralExpr(xref), test);
       }
 
       // Save the resulting aggregate Joost-expression.

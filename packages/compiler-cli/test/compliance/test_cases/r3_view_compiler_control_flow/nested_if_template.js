@@ -39,8 +39,8 @@ function MyApp_Conditional_4_Template(rf, ctx) {
     $r3$.ɵɵtemplate(0, MyApp_Conditional_4_Conditional_0_Template, 1, 0)(1, MyApp_Conditional_4_Conditional_1_Template, 1, 0)(2, MyApp_Conditional_4_Conditional_2_Template, 1, 0)(3, MyApp_Conditional_4_Conditional_3_Template, 1, 0);
   }
   if (rf & 2) {
-    const ctx_r2 = $r3$.ɵɵnextContext();
-    $r3$.ɵɵconditional(0, ctx_r2.innerVal === 0 ? 0 : ctx_r2.innerVal === 1 ? 1 : ctx_r2.innerVal === 2 ? 2 : 3);
+    const $ctx_r2$ = $r3$.ɵɵnextContext();
+    $r3$.ɵɵconditional(0, $ctx_r2$.innerVal === 0 ? 0 : $ctx_r2$.innerVal === 1 ? 1 : $ctx_r2$.innerVal === 2 ? 2 : 3);
   }
 }
 

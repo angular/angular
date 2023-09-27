@@ -27,9 +27,10 @@ function MyApp_Case_3_Template(rf, ctx) {
     $r3$.ɵɵtemplate(0, MyApp_Case_3_Case_0_Template, 1, 0)(1, MyApp_Case_3_Case_1_Template, 1, 0)(2, MyApp_Case_3_Case_2_Template, 1, 0);
   }
   if (rf & 2) {
-    const ctx_r1 = $r3$.ɵɵnextContext();
-    let MyApp_Case_3_contFlowTmp;
-    $r3$.ɵɵconditional(0, (MyApp_Case_3_contFlowTmp = ctx_r1.nestedValue()) === 0 ? 0 : MyApp_Case_3_contFlowTmp === 1 ? 1 : MyApp_Case_3_contFlowTmp === 2 ? 2 : -1);
+    …
+    const $ctx_r1$ = $r3$.ɵɵnextContext();
+    …
+    $r3$.ɵɵconditional(0, ($MyApp_Case_3_contFlowTmp$ = $ctx_r1$.nestedValue()) === 0 ? 0 : $MyApp_Case_3_contFlowTmp$ === 1 ? 1 : $MyApp_Case_3_contFlowTmp$ === 2 ? 2 : -1);
   }
 }
 
@@ -47,10 +48,10 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    let MyApp_contFlowTmp;
+    let $MyApp_contFlowTmp$;
     $r3$.ɵɵadvance(1);
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance(1);
-    $r3$.ɵɵconditional(2, (MyApp_contFlowTmp = ctx.value()) === 0 ? 2 : MyApp_contFlowTmp === 1 ? 3 : MyApp_contFlowTmp === 2 ? 4 : -1);
+    $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.value()) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : $MyApp_contFlowTmp$ === 2 ? 4 : -1);
   }
 }

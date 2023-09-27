@@ -473,7 +473,7 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
  * Logical operation representing a conditional expression in the update IR.
  */
 export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
-                                       UsesSlotIndexTrait {
+                                       UsesSlotIndexTrait, ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -488,9 +488,9 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   slot: number|null;
 
   /**
-   * The main test expression.
+   * The main test expression (for a switch), or `null` (for an if, which has no test expression).
    */
-  test: o.Expression;
+  test: o.Expression|null;
 
   /**
    * Each possible embedded view that could be displayed has a condition (or is default). This
@@ -511,17 +511,19 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, test: o.Expression, sourceSpan: ParseSourceSpan): ConditionalOp {
+    target: XrefId, test: o.Expression|null, conditions: Array<[XrefId, o.Expression | null]>,
+    sourceSpan: ParseSourceSpan): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
     test,
-    conditions: [],
+    conditions: conditions,
     processed: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
   };
 }
 
