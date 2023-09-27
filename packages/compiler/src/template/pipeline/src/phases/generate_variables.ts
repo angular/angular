@@ -183,9 +183,12 @@ function generateVariablesInScopeForView(
 
   // Add variables for all context variables available in this scope's view.
   for (const [name, value] of view.job.views.get(scope.view)!.contextVariables) {
+    const context = new ir.ContextExpr(scope.view);
+    // We either read the context, or, if the variable is CTX_REF, use the context directly.
+    const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
+    // Add the variable declaration.
     newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), scope.contextVariables.get(name)!,
-        new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
+        view.job.allocateXrefId(), scope.contextVariables.get(name)!, variable));
   }
 
   // Add variables for all local references declared for elements in this scope.

@@ -500,10 +500,16 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   conditions: Array<ConditionalCaseExpr>;
 
   /**
-   * After processing, this will be a single collapsed Joost-expression that evaluates to the right
-   * slot..
+   * After processing, this will be a single collapsed Joost-expression that evaluates the
+   * conditions, and yields the slot number of the template which should be displayed.
    */
   processed: o.Expression|null;
+
+  /**
+   * Control flow conditionals can accept a context value (this is a result of specifying an alias).
+   * This expression will be passed to the conditional instruction's context parameter.
+   */
+  contextValue: o.Expression|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -521,6 +527,7 @@ export function createConditionalOp(
     conditions,
     processed: null,
     sourceSpan,
+    contextValue: null,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,

@@ -432,6 +432,13 @@ function allowConservativeInlining(
   // that behavior here.
   switch (decl.variable.kind) {
     case ir.SemanticVariableKind.Identifier:
+      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === 'ctx') {
+        // Although TemplateDefinitionBuilder is cautious about inlining, we still want to do so
+        // when the variable is the context, to imitate its behavior with aliases in control flow
+        // blocks. This quirky behavior will become dead code once compatibility mode is no longer
+        // supported.
+        return true;
+      }
       return false;
     case ir.SemanticVariableKind.Context:
       // Context can only be inlined into other variables.

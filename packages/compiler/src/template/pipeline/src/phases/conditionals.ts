@@ -35,7 +35,8 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
       // Switch expressions assign their main test to a temporary, to avoid re-executing it.
       let tmp = op.test == null ? null : new ir.AssignTemporaryExpr(op.test, job.allocateXrefId());
 
-      // For each remaining condition, test whether the temporary satifies the check.
+      // For each remaining condition, test whether the temporary satifies the check. (If no temp is
+      // present, just check each expression directly.)
       for (let i = op.conditions.length - 1; i >= 0; i--) {
         let conditionalCase = op.conditions[i];
         if (conditionalCase.expr === null) {
@@ -45,6 +46,11 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
           const useTmp = i === 0 ? tmp : new ir.ReadTemporaryExpr(tmp.xref);
           conditionalCase.expr =
               new o.BinaryOperatorExpr(o.BinaryOperator.Identical, useTmp, conditionalCase.expr);
+        } else if (conditionalCase.alias !== null) {
+          const caseExpressionTemporaryXref = job.allocateXrefId();
+          conditionalCase.expr =
+              new ir.AssignTemporaryExpr(conditionalCase.expr, caseExpressionTemporaryXref);
+          op.contextValue = new ir.ReadTemporaryExpr(caseExpressionTemporaryXref);
         }
         test = new o.ConditionalExpr(
             conditionalCase.expr, new ir.SlotLiteralExpr(conditionalCase.target), test);
