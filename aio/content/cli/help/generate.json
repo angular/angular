@@ -562,7 +562,7 @@
         {
           "name": "functional",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Creates the interceptor as a `HttpInterceptorFn`."
         },
         {
