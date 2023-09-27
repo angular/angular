@@ -5814,7 +5814,7 @@ describe('platform-server hydration integration', () => {
          });
     });
 
-    describe('@if (built-in control flow)', () => {
+    describe('@if', () => {
       it('should work with `if`s that have different value on the client and on the server',
          async () => {
            @Component({
@@ -5959,7 +5959,7 @@ describe('platform-server hydration integration', () => {
       });
     });
 
-    describe('#switch (built-in control flow)', () => {
+    describe('@switch', () => {
       it('should work with `switch`es that have different value on the client and on the server',
          async () => {
            @Component({
@@ -6058,6 +6058,229 @@ describe('platform-server hydration integration', () => {
 
         verifyAllNodesClaimedForHydration(clientRootNode);
       });
+    });
+
+    describe('@for', () => {
+      it('should hydrate for loop content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @for (item of items; track item) {
+              <div>
+                <h1>Item #{{ item }}</h1>
+              </div>
+            }
+          `,
+        })
+        class SimpleComponent {
+          items = [1, 2, 3];
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        // Check whether serialized hydration info has a multiplier
+        // (which avoids repeated views serialization).
+        const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+        expect(hydrationInfo).toContain('"x":3');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should hydrate @empty block content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @for (item of items; track item) {
+              <p>Item #{{ item }}</p>
+            } @empty {
+              <div>This is an "empty" block</div>
+            }
+          `,
+        })
+        class SimpleComponent {
+          items = [];
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should handle a case when @empty block is rendered ' +
+             'on the server and main content on the client',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+                @for (item of items; track item) {
+                  <p>Item #{{ item }}</p>
+                } @empty {
+                  <div>This is an "empty" block</div>
+                }
+              `,
+           })
+           class SimpleComponent {
+             items = isPlatformServer(inject(PLATFORM_ID)) ? [] : [1, 2, 3];
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+           resetTViewsFor(SimpleComponent);
+
+           // Expect only the `@empty` block to be rendered on the server.
+           expect(ssrContents).not.toContain('Item #1');
+           expect(ssrContents).not.toContain('Item #2');
+           expect(ssrContents).not.toContain('Item #3');
+           expect(ssrContents).toContain('This is an "empty" block');
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           await whenStable(appRef);
+
+           const clientRootNode = compRef.location.nativeElement;
+
+           // After hydration and post-hydration cleanup,
+           // expect items to be present, but `@empty` block to be removed.
+           expect(clientRootNode.innerHTML).toContain('Item #1');
+           expect(clientRootNode.innerHTML).toContain('Item #2');
+           expect(clientRootNode.innerHTML).toContain('Item #3');
+           expect(clientRootNode.innerHTML).not.toContain('This is an "empty" block');
+
+           const clientRenderedItems = compRef.location.nativeElement.querySelectorAll('p');
+           verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
+         });
+
+      it('should handle a case when @empty block is rendered ' +
+             'on the client and main content on the server',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+              @for (item of items; track item) {
+                <p>Item #{{ item }}</p>
+              } @empty {
+                <div>This is an "empty" block</div>
+              }
+            `,
+           })
+           class SimpleComponent {
+             items = isPlatformServer(inject(PLATFORM_ID)) ? [1, 2, 3] : [];
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+           resetTViewsFor(SimpleComponent);
+
+           // Expect items to be rendered on the server.
+           expect(ssrContents).toContain('Item #1');
+           expect(ssrContents).toContain('Item #2');
+           expect(ssrContents).toContain('Item #3');
+           expect(ssrContents).not.toContain('This is an "empty" block');
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           await whenStable(appRef);
+
+           const clientRootNode = compRef.location.nativeElement;
+
+           // After hydration and post-hydration cleanup,
+           // expect an `@empty` block to be present and items to be removed.
+           expect(clientRootNode.innerHTML).not.toContain('Item #1');
+           expect(clientRootNode.innerHTML).not.toContain('Item #2');
+           expect(clientRootNode.innerHTML).not.toContain('Item #3');
+           expect(clientRootNode.innerHTML).toContain('This is an "empty" block');
+
+           const clientRenderedItems = compRef.location.nativeElement.querySelectorAll('div');
+           verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
+         });
+
+      it('should handle different number of items rendered on the client and on the server',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+                @for (item of items; track item) {
+                  <p id="{{ item }}">Item #{{ item }}</p>
+                }
+              `,
+           })
+           class SimpleComponent {
+             // Item '3' is the same, the rest of the items are different.
+             items = isPlatformServer(inject(PLATFORM_ID)) ? [3, 2, 1] : [3, 4, 5];
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+           resetTViewsFor(SimpleComponent);
+
+           expect(ssrContents).toContain('Item #1');
+           expect(ssrContents).toContain('Item #2');
+           expect(ssrContents).toContain('Item #3');
+           expect(ssrContents).not.toContain('Item #4');
+           expect(ssrContents).not.toContain('Item #5');
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           await whenStable(appRef);
+
+           const clientRootNode = compRef.location.nativeElement;
+
+           // After hydration and post-hydration cleanup,
+           // expect items to be present, but `@empty` block to be removed.
+           expect(clientRootNode.innerHTML).not.toContain('Item #1');
+           expect(clientRootNode.innerHTML).not.toContain('Item #2');
+           expect(clientRootNode.innerHTML).toContain('Item #3');
+           expect(clientRootNode.innerHTML).toContain('Item #4');
+           expect(clientRootNode.innerHTML).toContain('Item #5');
+
+           // Note: we exclude item '3', since it's the same (and at the same location)
+           // on the server and on the client, so it was hydrated.
+           const clientRenderedItems =
+               [4, 5].map(id => compRef.location.nativeElement.querySelector(`[id=${id}]`));
+           verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
+         });
     });
 
     describe('Router', () => {
