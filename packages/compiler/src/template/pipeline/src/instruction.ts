@@ -420,8 +420,14 @@ function call<OpT extends ir.CreateOp|ir.UpdateOp>(
   return ir.createStatementOp(new o.ExpressionStatement(expr, sourceSpan)) as OpT;
 }
 
-export function conditional(slot: number, condition: o.Expression): ir.UpdateOp {
-  return call(Identifiers.conditional, [o.literal(slot), condition], null);
+export function conditional(
+    slot: number, condition: o.Expression, contextValue: o.Expression|null,
+    sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  const args = [o.literal(slot), condition];
+  if (contextValue !== null) {
+    args.push(contextValue);
+  }
+  return call(Identifiers.conditional, args, sourceSpan);
 }
 
 /**

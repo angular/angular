@@ -221,8 +221,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should expose the alias to nested conditional blocks",
@@ -244,8 +243,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should expose the alias to nested event listeners",
@@ -262,13 +260,13 @@
           "files": [
             {
               "expected": "if_nested_alias_listeners_template.js",
+              "templatePipelineExpected": "if_nested_alias_listeners_template.pipeline.js",
               "generated": "if_nested_alias_listeners.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic for block",

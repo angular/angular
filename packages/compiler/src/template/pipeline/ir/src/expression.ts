@@ -11,6 +11,7 @@ import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
 import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import * as t from '../../../../render3/r3_ast';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -770,7 +771,9 @@ export class ConditionalCaseExpr extends ExpressionBase {
    * @param expr The expression to be tested for this case. Might be null, as in an `else` case.
    * @param target The Xref of the view to be displayed if this condition is true.
    */
-  constructor(public expr: o.Expression|null, readonly target: XrefId) {
+  constructor(
+      public expr: o.Expression|null, readonly target: XrefId,
+      readonly alias: t.Variable|null = null) {
     super();
   }
 
@@ -877,6 +880,9 @@ export function transformExpressionsInOp(
       }
       if (op.processed !== null) {
         op.processed = transformExpressionsInExpression(op.processed, transform, flags);
+      }
+      if (op.contextValue !== null) {
+        op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
     case OpKind.Listener:

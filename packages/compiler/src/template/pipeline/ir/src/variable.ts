@@ -24,6 +24,12 @@ export interface SemanticVariableBase {
 }
 
 /**
+ * When referenced in the template's context parameters, this indicates a reference to the entire
+ * context object, rather than a specific parameter.
+ */
+export const CTX_REF = 'CTX_REF_MARKER';
+
+/**
  * A variable that represents the context of a particular view.
  */
 export interface ContextVariable extends SemanticVariableBase {
