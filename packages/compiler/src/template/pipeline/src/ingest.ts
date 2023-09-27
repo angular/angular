@@ -123,6 +123,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestText(unit, node);
     } else if (node instanceof t.BoundText) {
       ingestBoundText(unit, node);
+    } else if (node instanceof t.IfBlock) {
+      ingestIfBlock(unit, node);
     } else if (node instanceof t.SwitchBlock) {
       ingestSwitchBlock(unit, node);
     } else {
@@ -263,15 +265,39 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
 }
 
 /**
- * Ingest a `@switch` block into the given `ViewCompilation`.
+ * Ingest an `@if` block into the given `ViewCompilation`.
+ */
+function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
+  let firstXref: ir.XrefId|null = null;
+  let conditions: Array<[ir.XrefId, o.Expression | null]> = [];
+  for (const ifCase of ifBlock.branches) {
+    const cView = unit.job.allocateView(unit.xref);
+    if (firstXref === null) {
+      firstXref = cView.xref;
+    }
+    unit.create.push(
+        ir.createTemplateOp(cView.xref, 'Conditional', ir.Namespace.HTML, true, ifCase.sourceSpan));
+    const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
+    conditions.push([cView.xref, caseExpr]);
+    ingestNodes(cView, ifCase.children);
+  }
+  const conditional = ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan);
+  unit.update.push(conditional);
+}
+
+/**
+ * Ingest an `@switch` block into the given `ViewCompilation`.
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
   let firstXref: ir.XrefId|null = null;
   let conditions: Array<[ir.XrefId, o.Expression | null]> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
-    if (!firstXref) firstXref = cView.xref;
-    unit.create.push(ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, null!));
+    if (firstXref === null) {
+      firstXref = cView.xref;
+    }
+    unit.create.push(
+        ir.createTemplateOp(cView.xref, 'Case', ir.Namespace.HTML, true, switchCase.sourceSpan));
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
@@ -279,8 +305,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     ingestNodes(cView, switchCase.children);
   }
   const conditional = ir.createConditionalOp(
-      firstXref!, convertAst(switchBlock.expression, unit.job, switchBlock.startSourceSpan), null!);
-  conditional.conditions = conditions;
+      firstXref!, convertAst(switchBlock.expression, unit.job, null), conditions,
+      switchBlock.sourceSpan);
   unit.update.push(conditional);
 }
 
