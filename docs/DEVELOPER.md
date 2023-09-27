@@ -239,7 +239,7 @@ and create it if it doesn't exist.
 
 #### VS Code
 
-1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
+1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel) extension for VS Code.
 
 #### WebStorm / IntelliJ
 1. Install the [Bazel](https://plugins.jetbrains.com/plugin/8609-bazel) plugin
