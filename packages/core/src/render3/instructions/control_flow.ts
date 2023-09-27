@@ -181,10 +181,14 @@ export function ɵɵrepeater(
           if (item.previousIndex === null) {
             // add
             const newViewIdx = adjustToLastLContainerIndex(lContainer, currentIndex);
+            const dehydratedView =
+                findMatchingDehydratedView(lContainer, itemTemplateTNode.tView!.ssrId);
             const embeddedLView = createAndRenderEmbeddedLView(
                 hostLView, itemTemplateTNode,
-                new RepeaterContext(lContainer, item.item, newViewIdx));
-            addLViewToLContainer(lContainer, embeddedLView, newViewIdx);
+                new RepeaterContext(lContainer, item.item, newViewIdx), {dehydratedView});
+            addLViewToLContainer(
+                lContainer, embeddedLView, newViewIdx,
+                shouldAddViewToDom(itemTemplateTNode, dehydratedView));
             needsIndexUpdate = true;
           } else if (currentIndex === null) {
             // remove
@@ -228,9 +232,12 @@ export function ɵɵrepeater(
         removeLViewFromLContainer(lContainer, 0);
       } else {
         const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-        const embeddedLView =
-            createAndRenderEmbeddedLView(hostLView, emptyTemplateTNode, undefined);
-        addLViewToLContainer(lContainer, embeddedLView, 0);
+        const dehydratedView =
+            findMatchingDehydratedView(lContainer, emptyTemplateTNode.tView!.ssrId);
+        const embeddedLView = createAndRenderEmbeddedLView(
+            hostLView, emptyTemplateTNode, undefined, {dehydratedView});
+        addLViewToLContainer(
+            lContainer, embeddedLView, 0, shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
       }
     }
   }
