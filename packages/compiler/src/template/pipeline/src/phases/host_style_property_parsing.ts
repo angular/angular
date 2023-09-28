@@ -16,11 +16,17 @@ const CLASS_DOT = 'class.';
 
 const STYLE_BANG = 'style!';
 const CLASS_BANG = 'class!';
+const BANG_IMPORTANT = '!important';
 
 export function phaseHostStylePropertyParsing(job: CompilationJob): void {
   for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Binding) {
       continue;
+    }
+
+    if (op.name.endsWith(BANG_IMPORTANT)) {
+      // Delete any `!important` suffixes from the binding name.
+      op.name = op.name.substring(0, op.name.length - BANG_IMPORTANT.length);
     }
 
     if (op.name.startsWith(STYLE_DOT)) {
