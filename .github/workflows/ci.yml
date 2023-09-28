@@ -195,6 +195,25 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ANGULAR_ROBOT_SLACK_TOKEN }}
 
+  publish-snapshots:
+    if: github.event_name == 'push'
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
+      - run: yarn build
+      - run: ./scripts/ci/publish-build-artifacts.sh
+
   zone-js:
     runs-on:
       labels: ubuntu-latest-4core
