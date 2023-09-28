@@ -388,6 +388,19 @@ If you edit the proxy configuration file, you must relaunch the `ng serve` proce
 
 </div>
 
+<div class="alert is-important">
+
+As of Node version 17, Node will not always resolve `http://localhost:<port>` to `http://127.0.0.1:<port>`
+depending on each machine's configuration.
+
+If you get an `ECONNREFUSED` error using a proxy targeting a `localhost` URL,
+you can fix this issue by updating the target from `http://localhost:<port>` to `http://127.0.0.1:<port>`.
+
+See [the http proxy middleware documentation](https://github.com/chimurai/http-proxy-middleware#nodejs-17-econnrefused-issue-with-ipv6-and-localhost-705)
+for more information.
+
+</div>
+
 ### Rewrite the URL path
 
 The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time.
