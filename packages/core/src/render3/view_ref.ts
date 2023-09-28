@@ -63,7 +63,19 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
     return this._lView[CONTEXT] as unknown as T;
   }
 
+  /**
+   * @deprecated Replacing the full context object is not supported. Modify the context
+   *   directly, or consider using a `Proxy` if you need to replace the full object.
+   * // TODO(devversion): Remove this.
+   */
   set context(value: T) {
+    if (ngDevMode) {
+      // Note: We have a warning message here because the `@deprecated` JSDoc will not be picked
+      // up for assignments on the setter. We want to let users know about the deprecated usage.
+      console.warn(
+          'Angular: Replacing the `context` object of an `EmbeddedViewRef` is deprecated.');
+    }
+
     this._lView[CONTEXT] = value as unknown as {};
   }
 
