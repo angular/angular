@@ -3,6 +3,7 @@
     "noImplicitReturns": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
