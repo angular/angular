@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, ComponentCompilationJob} from '../compilation';
+import type {CompilationJob, CompilationUnit} from '../compilation';
 
 /**
  * Find all assignments and usages of temporary variables, which are linked to each other with cross
@@ -21,49 +21,69 @@ import {CompilationJob, ComponentCompilationJob} from '../compilation';
  */
 export function phaseTemporaryVariables(cpl: CompilationJob): void {
   for (const unit of cpl.units) {
-    let opCount = 0;
-    let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
-    for (const op of unit.ops()) {
-      // Identify the final time each temp var is read.
-      const finalReads = new Map<ir.XrefId, ir.ReadTemporaryExpr>();
-      ir.visitExpressionsInOp(op, expr => {
-        if (expr instanceof ir.ReadTemporaryExpr) {
-          finalReads.set(expr.xref, expr);
-        }
-      });
-
-      // Name the temp vars, accounting for the fact that a name can be reused after it has been
-      // read for the final time.
-      let count = 0;
-      const assigned = new Set<ir.XrefId>();
-      const released = new Set<ir.XrefId>();
-      const defs = new Map<ir.XrefId, string>();
-      ir.visitExpressionsInOp(op, expr => {
-        if (expr instanceof ir.AssignTemporaryExpr) {
-          if (!assigned.has(expr.xref)) {
-            assigned.add(expr.xref);
-            // TODO: Exactly replicate the naming scheme used by `TemplateDefinitionBuilder`.
-            // It seems to rely on an expression index instead of an op index.
-            defs.set(expr.xref, `tmp_${opCount}_${count++}`);
-          }
-          assignName(defs, expr);
-        } else if (expr instanceof ir.ReadTemporaryExpr) {
-          if (finalReads.get(expr.xref) === expr) {
-            released.add(expr.xref);
-            count--;
-          }
-          assignName(defs, expr);
-        }
-      });
-
-      // Add declarations for the temp vars.
-      generatedStatements.push(
-          ...Array.from(new Set(defs.values()))
-              .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
-      opCount++;
-    }
-    unit.update.prepend(generatedStatements);
+    unit.create.prepend(generateTemporaries(unit.create) as Array<ir.StatementOp<ir.CreateOp>>);
+    unit.update.prepend(generateTemporaries(unit.update) as Array<ir.StatementOp<ir.UpdateOp>>);
   }
+}
+
+function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
+    Array<ir.StatementOp<ir.CreateOp|ir.UpdateOp>> {
+  let opCount = 0;
+  let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
+
+  // For each op, search for any variables that are assigned or read. For each variable, generate a
+  // name and produce a `DeclareVarStmt` to the beginning of the block.
+  for (const op of ops) {
+    // Identify the final time each temp var is read.
+    const finalReads = new Map<ir.XrefId, ir.ReadTemporaryExpr>();
+    ir.visitExpressionsInOp(op, (expr, flag) => {
+      if (flag & ir.VisitorContextFlag.InChildOperation) {
+        return;
+      }
+      if (expr instanceof ir.ReadTemporaryExpr) {
+        finalReads.set(expr.xref, expr);
+      }
+    });
+
+    // Name the temp vars, accounting for the fact that a name can be reused after it has been
+    // read for the final time.
+    let count = 0;
+    const assigned = new Set<ir.XrefId>();
+    const released = new Set<ir.XrefId>();
+    const defs = new Map<ir.XrefId, string>();
+    ir.visitExpressionsInOp(op, (expr, flag) => {
+      if (flag & ir.VisitorContextFlag.InChildOperation) {
+        return;
+      }
+      if (expr instanceof ir.AssignTemporaryExpr) {
+        if (!assigned.has(expr.xref)) {
+          assigned.add(expr.xref);
+          // TODO: Exactly replicate the naming scheme used by `TemplateDefinitionBuilder`.
+          // It seems to rely on an expression index instead of an op index.
+          defs.set(expr.xref, `tmp_${opCount}_${count++}`);
+        }
+        assignName(defs, expr);
+      } else if (expr instanceof ir.ReadTemporaryExpr) {
+        if (finalReads.get(expr.xref) === expr) {
+          released.add(expr.xref);
+          count--;
+        }
+        assignName(defs, expr);
+      }
+    });
+
+    // Add declarations for the temp vars.
+    generatedStatements.push(
+        ...Array.from(new Set(defs.values()))
+            .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
+    opCount++;
+
+    if (op.kind === ir.OpKind.Listener) {
+      op.handlerOps.prepend(generateTemporaries(op.handlerOps) as ir.UpdateOp[]);
+    }
+  }
+
+  return generatedStatements;
 }
 
 /**
