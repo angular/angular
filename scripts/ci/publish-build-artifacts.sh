@@ -152,7 +152,7 @@ function publishAllBuilds() {
 }
 
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${CI_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=$(git symbolic-ref --short HEAD)
 if [ $# -gt 0 ]; then
   ORG=$1
   publishAllBuilds "ssh"
