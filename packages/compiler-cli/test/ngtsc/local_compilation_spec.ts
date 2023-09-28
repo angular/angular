@@ -475,6 +475,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Component({
             selector: 'test-main',
@@ -485,6 +486,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -502,7 +504,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone component factory',
@@ -513,6 +515,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Component({
             standalone: true,
@@ -524,6 +527,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -535,7 +539,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into directive factory',
@@ -546,6 +550,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Directive({
           })
@@ -554,6 +559,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -571,7 +577,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone directive factory',
@@ -582,6 +588,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Directive({
             standalone: true,
@@ -591,6 +598,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -602,7 +610,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into pipe factory',
@@ -613,6 +621,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Pipe({name: 'pipe'})
           export class MainPipe {         
@@ -620,6 +629,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -637,7 +647,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone pipe factory',
@@ -648,6 +658,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Pipe({
             name: 'pipe',
@@ -658,6 +669,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -669,7 +681,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into injectable factory',
@@ -680,6 +692,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Injectable({
             providedIn: 'root',
@@ -689,6 +702,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -700,7 +714,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into ng module factory',
@@ -711,6 +725,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @NgModule({
           })
@@ -719,6 +734,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -730,7 +746,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
          });
     });
 
