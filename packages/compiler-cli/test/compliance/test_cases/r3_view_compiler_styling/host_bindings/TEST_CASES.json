@@ -34,7 +34,6 @@
       "inputFiles": [
         "important.ts"
       ],
-      "skipForTemplatePipeline": true,
       "expectations": [
         {
           "failureMessage": "Incorrect template",
