@@ -114,7 +114,7 @@ export interface BindingOp extends Op<UpdateOp> {
   securityContext: SecurityContext;
 
   /**
-   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs to be
    * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
    * TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
