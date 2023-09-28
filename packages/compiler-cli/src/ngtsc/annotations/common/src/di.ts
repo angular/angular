@@ -53,20 +53,12 @@ export function getConstructorDependencies(
       const typeNode = param.typeValueReference.reason.typeNode;
 
       if (ts.isTypeReferenceNode(typeNode)) {
-        if (ts.isIdentifier(typeNode.typeName)) {
-          token = new WrappedNodeExpr(typeNode.typeName);
-        } else if (ts.isQualifiedName(typeNode.typeName)) {
-          const receiver = new WrappedNodeExpr(typeNode.typeName.left);
-
-          // Here we manually create the token out of the typeName without caring about its
-          // references for better TS tracking. This is because in this code path the typeNode is
-          // imported from another file and since we are in local compilation mode (=single file
-          // mode) the reference of this node (or its typeName node) cannot be resolved. So all we
-          // can do is just to create a new expression.
-          token = new ReadPropExpr(receiver, typeNode.typeName.right.getText());
-        } else {
-          throw new Error('Impossible state!');
-        }
+        // Here we manually create the token out of the typeName without caring about its
+        // references for better TS tracking. This is because in this code path the typeNode is
+        // imported from another file and since we are in local compilation mode (=single file
+        // mode) the reference of this node (or its typeName node) cannot be resolved. So all we
+        // can do is just to create a new expression.
+        token = toQualifiedExpression(typeNode.typeName);
       }
     } else {
       // In all other cases resolve the injection token
@@ -134,6 +126,14 @@ export function getConstructorDependencies(
   }
 }
 
+/** Converts a TS qualified name to output expression. */
+function toQualifiedExpression(entity: ts.EntityName): Expression {
+  if (ts.isIdentifier(entity)) {
+    return new WrappedNodeExpr(entity);
+  }
+
+  return new ReadPropExpr(toQualifiedExpression(entity.left), entity.right.text);
+}
 
 /**
  * Convert `ConstructorDeps` into the `R3DependencyMetadata` array for those deps if they're valid,
