@@ -60,12 +60,15 @@ export function transferCacheInterceptorFn(
     req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const {isCacheActive, ...globalOptions} = inject(CACHE_OPTIONS);
   const requestOptions = req.transferCache;
-
+  const requestMethod = req.method;
+  console.log(requestMethod === 'POST', !globalOptions.includePostRequests, !requestOptions)
+  debugger;
   // In the following situations we do not want to cache the request
-  if (!isCacheActive ||                                                    //
-      (req.method === 'POST' && !globalOptions.includePostRequests) ||     //
-      (req.method !== 'POST' && !ALLOWED_METHODS.includes(req.method)) ||  //
-      requestOptions === false ||                                          //
+  if (!isCacheActive ||
+      // POST requests are allowed either globally or at request level
+      (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
+      (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
+      requestOptions === false ||  //
       (globalOptions.filter?.(req)) === false) {
     return next(req);
   }
@@ -195,8 +198,7 @@ function generateHash(value: string): string {
  * load time.
  *
  */
-export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions&
-                                      {includePostRequests?: boolean}): Provider[] {
+export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): Provider[] {
   return [
     {
       provide: CACHE_OPTIONS,
@@ -239,9 +241,9 @@ function appendMissingHeadersDetection(
   return new Proxy<HttpHeaders>(headers, {
     get(target: HttpHeaders, prop: keyof HttpHeaders): unknown {
       const value = Reflect.get(target, prop);
-      const methods: (keyof HttpHeaders)[] = ['get', 'has'];
+      const methods: Set<keyof HttpHeaders> = new Set(['get', 'has', 'getAll']);
 
-      if (typeof value === 'function' && methods.includes(prop)) {
+      if (typeof value === 'function' && methods.has(prop)) {
         // using a regular function to access arguments, it's the only way to read the argument
         return function(this: HttpHeaders) {
           url = truncateMiddle(url);

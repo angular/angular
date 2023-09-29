@@ -217,6 +217,20 @@ describe('TransferCache', () => {
       expect(consoleWarnSpy.calls.count()).toBe(3);
     });
 
+    it('should not cache POST by default', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+    });
+
+    it('should cache POST with the transferCache option', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
+      makeRequestAndExpectNone('/test-1?foo=1', 'POST', {transferCache: true});
+
+      makeRequestAndExpectOne(
+          '/test-2?foo=1', 'foo', {method: 'POST', transferCache: {includeHeaders: []}});
+      makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
+    });
+
     describe('caching with global setting', () => {
       beforeEach(withBody('<test-app-http></test-app-http>', () => {
         TestBed.resetTestingModule();

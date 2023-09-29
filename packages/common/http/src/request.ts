@@ -155,12 +155,7 @@ export class HttpRequest<T> {
   readonly urlWithParams: string;
 
   /**
-   * This property accepts either a boolean to enable/disable transferring cache for eligible
-   * requests performed using `HttpClient`, or an object, which allows to configure cache
-   * parameters, such as which headers should be included (no headers are included by default).
-   *
-   * Setting this property will override the options passed to `provideClientHydration()` for this
-   * particular request
+   * The HttpTransferCache option for the request
    */
   readonly transferCache?: {includeHeaders?: string[]}|boolean;
 
@@ -171,6 +166,14 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    /**
+     * This property accepts either a boolean to enable/disable transferring cache for eligible
+     * requests performed using `HttpClient`, or an object, which allows to configure cache
+     * parameters, such as which headers should be included (no headers are included by default).
+     *
+     * Setting this property will override the options passed to `provideClientHydration()` for this
+     * particular request
+     */
     transferCache?: {includeHeaders?: string[]}|boolean
   });
   constructor(method: 'DELETE'|'JSONP'|'OPTIONS', url: string, init?: {
@@ -188,6 +191,14 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    /**
+     * This property accepts either a boolean to enable/disable transferring cache for eligible
+     * requests performed using `HttpClient`, or an object, which allows to configure cache
+     * parameters, such as which headers should be included (no headers are included by default).
+     *
+     * Setting this property will override the options passed to `provideClientHydration()` for this
+     * particular request
+     */
     transferCache?: {includeHeaders?: string[]}|boolean
   });
   constructor(method: 'PUT'|'PATCH', url: string, body: T|null, init?: {
@@ -205,6 +216,14 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    /**
+     * This property accepts either a boolean to enable/disable transferring cache for eligible
+     * requests performed using `HttpClient`, or an object, which allows to configure cache
+     * parameters, such as which headers should be included (no headers are included by default).
+     *
+     * Setting this property will override the options passed to `provideClientHydration()` for this
+     * particular request
+     */
     transferCache?: {includeHeaders?: string[]}|boolean
   });
   constructor(
