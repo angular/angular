@@ -102,8 +102,7 @@
             "content_query_forward_ref.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support content queries with local refs",
