@@ -338,6 +338,10 @@ def karma_web_test_suite(
             tags = tags + [
                 "manual",
                 "no-remote-exec",
+                # Requires network to be able to access saucelabs daemon
+                "requires-network",
+                # Prevent the sandbox from being used so that it can communicate with the saucelabs daemon
+                "no-sandbox",
                 "saucelabs",
             ],
             configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
