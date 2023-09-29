@@ -53,8 +53,8 @@ function MyComponent_ul_0_Template(rf, ctx) {
 …
 consts: [
   [__AttributeMarker.Template__, "ngFor", "ngForOf"],
-  [__AttributeMarker.Bindings__, "title", "click", __AttributeMarker.Template__, "ngFor", "ngForOf"],
-  [__AttributeMarker.Bindings__, "title", "click"]
+  [__AttributeMarker.Bindings__, "click", "title", __AttributeMarker.Template__, "ngFor", "ngForOf"],
+  [__AttributeMarker.Bindings__, "click", "title"]
 ],
 template:function MyComponent_Template(rf, ctx){
   if (rf & 1) {
