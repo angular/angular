@@ -3831,6 +3831,31 @@ suppress
         ]);
       });
 
+      it('should check narrow the type in the alias', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`@if (value; as alias) {
+              {{acceptsNumber(alias)}}
+            }\`,
+            standalone: true,
+          })
+          export class Main {
+            value: 'one' | 0 = 0;
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
       it('should not expose the aliased expression outside of the main block', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
