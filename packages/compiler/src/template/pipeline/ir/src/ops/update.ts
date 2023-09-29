@@ -486,7 +486,7 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   /**
    * The slot of the target, to be populated during slot allocation.
    */
-  slot: number|null;
+  targetSlot: number|null;
 
   /**
    * The main test expression (for a switch), or `null` (for an if, which has no test expression).
@@ -588,11 +588,6 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
    * The i18n block to which expressions are applied.
    */
   target: XrefId;
-
-  /**
-   * The slot of the target, to be populated during slot allocation.
-   */
-  slot: number|null;
 
   sourceSpan: ParseSourceSpan;
 }
