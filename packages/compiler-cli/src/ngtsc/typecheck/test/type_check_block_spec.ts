@@ -1424,8 +1424,7 @@ describe('type check blocks', () => {
       }`;
 
       expect(tcb(TEMPLATE))
-          .toContain(
-              'if ((((this).expr)) === (1)) { var _t1 = (((this).expr)) === (1); "" + (_t1); }');
+          .toContain('var _t1 = (((this).expr)) === (1); if (_t1) { "" + (_t1); } }');
     });
 
     it('should generate a switch block', () => {
