@@ -499,7 +499,6 @@ export function createProjectionOp(xref: XrefId, selector: string): ProjectionOp
     sourceSpan: null!,  // TODO
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
-    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 

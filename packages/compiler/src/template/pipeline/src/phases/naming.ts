@@ -46,7 +46,7 @@ function addNamesToView(
         if (op.handlerFnName !== null) {
           break;
         }
-        if (!op.hostListener && op.slot === null) {
+        if (!op.hostListener && op.targetSlot === null) {
           throw new Error(`Expected a slot to be assigned`);
         }
         let animation = '';
@@ -58,7 +58,7 @@ function addNamesToView(
           op.handlerFnName = `${baseName}_${animation}${op.name}_HostBindingHandler`;
         } else {
           op.handlerFnName = `${unit.fnName}_${op.tag!.replace('-', '_')}_${animation}${op.name}_${
-              op.slot}_listener`;
+              op.targetSlot}_listener`;
         }
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;

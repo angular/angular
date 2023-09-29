@@ -92,7 +92,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
 
   readonly[UsesSlotIndex] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
 
   constructor(readonly target: XrefId, readonly offset: number) {
     super();
@@ -112,7 +112,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
 
   override clone(): ReferenceExpr {
     const expr = new ReferenceExpr(this.target, this.offset);
-    expr.slot = this.slot;
+    expr.targetSlot = this.targetSlot;
     return expr;
   }
 }
@@ -420,7 +420,7 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
   varOffset: number|null = null;
 
   constructor(readonly target: XrefId, readonly name: string, readonly args: o.Expression[]) {
@@ -450,7 +450,7 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
 
   override clone() {
     const r = new PipeBindingExpr(this.target, this.name, this.args.map(a => a.clone()));
-    r.slot = this.slot;
+    r.targetSlot = this.targetSlot;
     r.varOffset = this.varOffset;
     return r;
   }
@@ -464,7 +464,7 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
   varOffset: number|null = null;
 
   constructor(
@@ -492,7 +492,7 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
 
   override clone(): PipeBindingVariadicExpr {
     const r = new PipeBindingVariadicExpr(this.target, this.name, this.args.clone(), this.numArgs);
-    r.slot = this.slot;
+    r.targetSlot = this.targetSlot;
     r.varOffset = this.varOffset;
     return r;
   }
@@ -736,7 +736,7 @@ export class SanitizerExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
-export class SlotLiteralExpr extends ExpressionBase {
+export class SlotLiteralExpr extends ExpressionBase implements UsesSlotIndexTrait {
   override readonly kind = ExpressionKind.SlotLiteralExpr;
   readonly[UsesSlotIndex] = true;
 
@@ -744,12 +744,13 @@ export class SlotLiteralExpr extends ExpressionBase {
     super();
   }
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof SlotLiteralExpr && e.target === this.target && e.slot === this.slot;
+    return e instanceof SlotLiteralExpr && e.target === this.target &&
+        e.targetSlot === this.targetSlot;
   }
 
   override isConstant() {
@@ -757,7 +758,9 @@ export class SlotLiteralExpr extends ExpressionBase {
   }
 
   override clone(): SlotLiteralExpr {
-    return new SlotLiteralExpr(this.target);
+    const copy = new SlotLiteralExpr(this.target);
+    copy.targetSlot = this.targetSlot;
+    return copy;
   }
 
   override transformInternalExpressions(): void {}
