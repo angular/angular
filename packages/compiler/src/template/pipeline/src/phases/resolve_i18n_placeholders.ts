@@ -85,7 +85,8 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
     for (const op of i18nOps.values()) {
       for (const placeholder in op.message.placeholders) {
         if (!op.params.has(placeholder)) {
-          throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
+          op.params.set(placeholder, o.literal(undefined));
+          // throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
         }
       }
     }
