@@ -35,7 +35,6 @@ import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
-import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseNonbindable} from './phases/nonbindable';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phaseOrdering} from './phases/ordering';
@@ -80,7 +79,6 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
   {kind: Kind.Tmpl, fn: phaseConditionals},
-  {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
   {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
