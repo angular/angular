@@ -219,7 +219,7 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, true, false);
+        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue);
   }
   unit.create.push(op);
 }
@@ -485,16 +485,27 @@ function convertAst(
  */
 function ingestBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
+  let flags: BindingFlags = BindingFlags.None;
+  const isPlainTemplate =
+      element instanceof t.Template && splitNsName(element.tagName ?? '')[1] === 'ng-template';
+
   if (element instanceof t.Template) {
+    flags |= BindingFlags.OnNgTemplateElement;
+    if (isPlainTemplate) {
+      flags |= BindingFlags.BindingTargetsTemplate;
+    }
+
+    const templateAttrFlags =
+        flags | BindingFlags.BindingTargetsTemplate | BindingFlags.IsStructuralTemplateAttribute;
     for (const attr of element.templateAttrs) {
       if (attr instanceof t.TextAttribute) {
         ingestBinding(
             unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-            SecurityContext.NONE, attr.sourceSpan, true, true);
+            SecurityContext.NONE, attr.sourceSpan, templateAttrFlags | BindingFlags.TextValue);
       } else {
         ingestBinding(
             unit, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.securityContext,
-            attr.sourceSpan, false, true);
+            attr.sourceSpan, templateAttrFlags);
       }
     }
   }
@@ -505,13 +516,12 @@ function ingestBindings(
     // `BindingType.Attribute`.
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, true, false);
+        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue);
   }
-
   for (const input of element.inputs) {
     ingestBinding(
         unit, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
-        input.sourceSpan, false, false);
+        input.sourceSpan, flags);
   }
 
   for (const output of element.outputs) {
@@ -521,6 +531,13 @@ function ingestBindings(
         throw Error('Animation listener should have a phase');
       }
     }
+
+    if (element instanceof t.Template && !isPlainTemplate) {
+      unit.create.push(
+          ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
+      continue;
+    }
+
     listenerOp =
         ir.createListenerOp(op.xref, output.name, op.tag, output.phase, false, output.sourceSpan);
 
@@ -564,12 +581,44 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Animation, ir.BindingKind.Animation],
 ]);
 
+enum BindingFlags {
+  None = 0b000,
+
+  /**
+   * The binding is to a static text literal and not to an expression.
+   */
+  TextValue = 0b0001,
+
+  /**
+   * The binding belongs to the `<ng-template>` side of a `t.Template`.
+   */
+  BindingTargetsTemplate = 0b0010,
+
+  /**
+   * The binding is on a structural directive.
+   */
+  IsStructuralTemplateAttribute = 0b0100,
+
+  /**
+   * The binding is on a `t.Template`.
+   */
+  OnNgTemplateElement = 0b1000,
+}
+
 function ingestBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, isTextAttribute: boolean, isTemplateBinding: boolean): void {
+    sourceSpan: ParseSourceSpan, flags: BindingFlags): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
+  }
+
+  if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
+      type === e.BindingType.Property) {
+    // This binding only exists for later const extraction, and is not an actual binding to be
+    // created.
+    view.create.push(ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null));
+    return;
   }
 
   let expression: o.Expression|ir.Interpolation;
@@ -586,8 +635,8 @@ function ingestBinding(
 
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
   view.update.push(ir.createBindingOp(
-      xref, kind, name, expression, unit, securityContext, isTextAttribute, isTemplateBinding,
-      sourceSpan));
+      xref, kind, name, expression, unit, securityContext, !!(flags & BindingFlags.TextValue),
+      !!(flags & BindingFlags.IsStructuralTemplateAttribute), sourceSpan));
 }
 
 /**
