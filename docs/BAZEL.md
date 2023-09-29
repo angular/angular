@@ -195,7 +195,7 @@ The first step is to generate a profile of the build using the `--profile filena
 yarn bazel build //packages/compiler --profile filename_name.profile
 ```
 
-This will generate a `filename_name.profile` that you can then analyse using [analyze-profile](https://docs.bazel.build/versions/master/user-manual.html#analyze-profile) command.
+This will generate a `filename_name.profile` that you can then analyze using [analyze-profile](https://docs.bazel.build/versions/master/user-manual.html#analyze-profile) command.
 
 ## Using the console profile report
 
