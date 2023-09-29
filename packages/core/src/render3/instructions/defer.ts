@@ -54,7 +54,7 @@ function shouldTriggerDeferBlock(injector: Injector): boolean {
  * @param errorTmplIndex Index of the template with the error block content.
  * @param loadingConfigIndex Index in the constants array of the configuration of the loading.
  *     block.
- * @param placeholderConfigIndexIndex in the constants array of the configuration of the
+ * @param placeholderConfigIndex Index in the constants array of the configuration of the
  *     placeholder block.
  *
  * @codeGenApi

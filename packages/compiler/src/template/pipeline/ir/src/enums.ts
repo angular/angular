@@ -146,6 +146,21 @@ export enum OpKind {
   ExtractedAttribute,
 
   /**
+   * An operation that configures a `@defer` block.
+   */
+  Defer,
+
+  /**
+   * An IR operation that provides secondary templates of a `@defer` block.
+   */
+  DeferSecondaryBlock,
+
+  /**
+   * An operation that controls when a `@defer` loads.
+   */
+  DeferOn,
+
+  /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
   ExtractedMessage,
@@ -351,6 +366,15 @@ export enum SanitizerFn {
   Url,
   ResourceUrl,
   IframeAttribute,
+}
+
+/**
+ * Enumeration of the different kinds of `@defer` secondary blocks.
+ */
+export enum DeferSecondaryKind {
+  Loading,
+  Placeholder,
+  Error,
 }
 
 /**

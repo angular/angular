@@ -183,6 +183,32 @@ export function text(
   return call(Identifiers.text, args, sourceSpan);
 }
 
+export function defer(
+    selfSlot: number, primarySlot: number, dependencyResolverFn: null, loadingSlot: number|null,
+    placeholderSlot: number|null, errorSlot: number|null, loadingConfigIndex: number|null,
+    placeholderConfigIndex: number|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  const args = [
+    o.literal(selfSlot),
+    o.literal(primarySlot),
+    o.literal(dependencyResolverFn),
+    o.literal(loadingSlot),
+    o.literal(placeholderSlot),
+    o.literal(errorSlot),
+    o.literal(loadingConfigIndex),
+    o.literal(placeholderConfigIndex),
+  ];
+
+  while (args[args.length - 1].value === null) {
+    args.pop();
+  }
+
+  return call(Identifiers.defer, args, sourceSpan);
+}
+
+export function deferOn(sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  return call(Identifiers.deferOnIdle, [], sourceSpan);
+}
+
 export function projectionDef(def: o.Expression|null): ir.CreateOp {
   return call(Identifiers.projectionDef, def ? [def] : [], null);
 }

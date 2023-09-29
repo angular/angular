@@ -909,6 +909,9 @@ export function transformExpressionsInOp(
         op.params.set(placeholder, transformExpressionsInExpression(expression, transform, flags));
       }
       break;
+    case OpKind.Defer:
+    case OpKind.DeferSecondaryBlock:
+    case OpKind.DeferOn:
     case OpKind.Projection:
     case OpKind.ProjectionDef:
     case OpKind.Element:
