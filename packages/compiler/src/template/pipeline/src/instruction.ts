@@ -225,12 +225,20 @@ export function projection(
   return call(Identifiers.projection, args, null);
 }
 
-export function i18nStart(slot: number, constIndex: number): ir.CreateOp {
-  return call(Identifiers.i18nStart, [o.literal(slot), o.literal(constIndex)], null);
+export function i18nStart(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+  const args = [o.literal(slot), o.literal(constIndex)];
+  if (subTemplateIndex !== null) {
+    args.push(o.literal(subTemplateIndex));
+  }
+  return call(Identifiers.i18nStart, args, null);
 }
 
-export function i18n(slot: number, constIndex: number): ir.CreateOp {
-  return call(Identifiers.i18n, [o.literal(slot), o.literal(constIndex)], null);
+export function i18n(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+  const args = [o.literal(slot), o.literal(constIndex)];
+  if (subTemplateIndex) {
+    args.push(o.literal(subTemplateIndex));
+  }
+  return call(Identifiers.i18n, args, null);
 }
 
 export function i18nEnd(): ir.CreateOp {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ParseSourceSpan} from '../../../../parse_util';
-import type {Op, XrefId} from './operations';
-import type {Expression} from './expression';
 import * as o from '../../../../output/output_ast';
+import type {ParseSourceSpan} from '../../../../parse_util';
+import type {Expression} from './expression';
+import type {Op, XrefId} from './operations';
 
 /**
  * Marker symbol for `ConsumesSlotOpTrait`.
