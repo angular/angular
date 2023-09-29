@@ -249,33 +249,6 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
-  # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
-  saucelabs:
-    executor:
-      name: default-executor
-      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-      # container for this job. This is necessary because we launch a lot of browsers concurrently
-      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
-    environment:
-      NUMBER_OF_PARALLEL_BROWSERS: 2
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - init_saucelabs_environment
-      - run:
-          name: Start Saucelabs daemon service
-          command: yarn bazel run //tools/saucelabs-daemon/background-service -- ${NUMBER_OF_PARALLEL_BROWSERS}
-          background: true
-      - run:
-          name: Run Bazel tests on Saucelabs
-          command: |
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-            yarn bazel test --config=saucelabs --jobs=${NUMBER_OF_PARALLEL_BROWSERS} ${TESTS}
-          no_output_timeout: 40m
-      - notify_webhook_on_fail:
-          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
   # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
   # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
   # Having multiple jobs that independently build in this manner duplicates some work; we build
@@ -375,21 +348,3 @@ workflows:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
-
-  monitoring:
-    jobs:
-      - setup
-      - saucelabs:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          <<: *only_on_main_branch
-          # Runs monitoring jobs at 10:00AM every day.
-          cron: '0 10 * * *'
