@@ -21,14 +21,17 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  */
 export const provideCloudflareLoader = createImageLoader(
     createCloudflareUrl,
-    ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined);
+    ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined,
+);
 
 function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
-  let params = `format=auto`;
-  if (config.width) {
-    params += `,width=${config.width}`;
-  }
+  const {src, width, height} = config;
+
+  const params = [`format=auto`];
+  if (width) params.push(`width=${width}`);
+  if (height) params.push(`height=${height}`);
+
   // Cloudflare image URLs format:
   // https://developers.cloudflare.com/images/image-resizing/url-format/
-  return `${path}/cdn-cgi/image/${params}/${config.src}`;
+  return `${path}/cdn-cgi/image/${params.join(',')}/${src}`;
 }

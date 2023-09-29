@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_LOADER, ImageLoader} from '@angular/common/src/directives/ng_optimized_image';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '@angular/common/src/directives/ng_optimized_image';
 import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
@@ -38,6 +38,20 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://somesite.imgix.net';
       const loader = createImgixLoader(path);
       const config = {src: 'img.png'};
+      expect(loader(config)).toBe(`${path}/img.png?auto=format`);
+    });
+
+    it('should construct an image loader with the given src, width and height', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      const config: ImageLoaderConfig = {src: 'img.png'};
+      expect(loader(config)).toBe(`${path}/img.png?auto=format`);
+      config.height = 100;
+      expect(loader(config)).toBe(`${path}/img.png?auto=format&h=100`);
+      config.width = 100;
+      expect(loader(config)).toBe(`${path}/img.png?auto=format&w=100&h=100`);
+      config.width = 0;
+      config.height = 0;
       expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
@@ -113,6 +127,20 @@ describe('Built-in image directive loaders', () => {
         const loader = createCloudinaryLoader(path);
         expect(loader({src: '/img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
       });
+
+      it('should construct an image loader with the given src, width and height', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const config: ImageLoaderConfig = {src: '/img.png'};
+        const loader = createCloudinaryLoader(path);
+        expect(loader(config)).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
+        config.width = 100;
+        expect(loader(config)).toBe(`${path}/image/upload/f_auto,q_auto,w_100/img.png`);
+        config.height = 100;
+        expect(loader(config)).toBe(`${path}/image/upload/f_auto,q_auto,w_100,h_100/img.png`);
+        config.width = 0;
+        config.height = 0;
+        expect(loader(config)).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
+      });
     });
   });
 
@@ -136,6 +164,23 @@ describe('Built-in image directive loaders', () => {
       expect(loader({src: 'img.png', width: 100})).toBe(`${path}/tr:w-100/img.png`);
       expect(loader({src: 'marketing/img-2.png', width: 200}))
           .toBe(`${path}/tr:w-200/marketing/img-2.png`);
+    });
+
+    it('should construct an image loader with src, width and height', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const config: ImageLoaderConfig = {src: 'img.png'};
+      const loader = createImageKitLoader(path);
+      expect(loader(config)).toBe(`${path}/img.png`);
+      config.height = 100;
+      expect(loader(config)).toBe(`${path}/tr:h-100/img.png`);
+      config.width = 100;
+      expect(loader(config)).toBe(`${path}/tr:w-100,h-100/img.png`);
+      config.src = 'marketing/img-2.png';
+      config.width = 200;
+      expect(loader(config)).toBe(`${path}/tr:w-200,h-100/marketing/img-2.png`);
+      config.width = 0;
+      config.height = 0;
+      expect(loader(config)).toBe(`${path}/marketing/img-2.png`);
     });
 
     describe('input validation', () => {
@@ -182,6 +227,19 @@ describe('Built-in image directive loaders', () => {
       const loader = createCloudflareLoader('https://mysite.com');
       const config = {src: 'img.png', width: 100};
       expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto,width=100/img.png');
+    });
+
+    it('should construct an image loader with src, width and height', () => {
+      const loader = createCloudflareLoader('https://mysite.com');
+      const config: ImageLoaderConfig = {src: 'img.png', height: 100};
+      expect(loader(config))
+          .toBe('https://mysite.com/cdn-cgi/image/format=auto,height=100/img.png');
+      config.width = 100;
+      expect(loader(config))
+          .toBe('https://mysite.com/cdn-cgi/image/format=auto,width=100,height=100/img.png');
+      config.width = 0;
+      config.height = 0;
+      expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto/img.png');
     });
 
     it('should throw if an absolute URL is provided as a loader input', () => {

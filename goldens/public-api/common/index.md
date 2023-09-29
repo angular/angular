@@ -325,6 +325,7 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    height?: number;
     loaderParams?: {
         [key: string]: any;
     };

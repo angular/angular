@@ -46,13 +46,18 @@ export const provideCloudinaryLoader = createImageLoader(
         undefined);
 
 function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
+  const {src, width, height} = config;
+
   // Cloudinary image URLformat:
   // https://cloudinary.com/documentation/image_transformations#transformation_url_structure
   // Example of a Cloudinary image URL:
   // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
-  let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
-  if (config.width) {
-    params += `,w_${config.width}`;
+  let params = ['f_auto', 'q_auto'];  // sets image format and quality to "auto"
+  if (width) {
+    params.push(`w_${width}`);
   }
-  return `${path}/image/upload/${params}/${config.src}`;
+  if (height) {
+    params.push(`h_${height}`);
+  }
+  return `${path}/image/upload/${params.join(',')}/${src}`;
 }

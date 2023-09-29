@@ -37,11 +37,16 @@ export const provideImgixLoader =
     createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
 
 function createImgixUrl(path: string, config: ImageLoaderConfig) {
-  const url = new URL(`${path}/${config.src}`);
+  const {src, width, height} = config;
+  const url = new URL(`${path}/${src}`);
   // This setting ensures the smallest allowable format is set.
   url.searchParams.set('auto', 'format');
-  if (config.width) {
-    url.searchParams.set('w', config.width.toString());
+
+  if (width) {
+    url.searchParams.set('w', width.toString());
+  }
+  if (height) {
+    url.searchParams.set('h', height.toString());
   }
   return url.href;
 }

@@ -37,16 +37,21 @@ function isImageKitUrl(url: string): boolean {
  */
 export const provideImageKitLoader = createImageLoader(
     createImagekitUrl,
-    ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined);
+    ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined,
+);
 
 export function createImagekitUrl(path: string, config: ImageLoaderConfig): string {
   // Example of an ImageKit image URL:
   // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
-  const {src, width} = config;
+  const {src, width, height} = config;
   let urlSegments: string[];
 
-  if (width) {
-    const params = `tr:w-${width}`;
+  if (width || height) {
+    let dimensions = [];
+    if (width) dimensions.push(`w-${width}`);
+    if (height) dimensions.push(`h-${height}`);
+
+    const params = 'tr:' + dimensions.join(',');
     urlSegments = [path, params, src];
   } else {
     urlSegments = [path, src];

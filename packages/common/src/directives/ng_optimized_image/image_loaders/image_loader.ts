@@ -31,6 +31,10 @@ export interface ImageLoaderConfig {
    * Additional user-provided parameters for use by the ImageLoader.
    */
   loaderParams?: {[key: string]: any;};
+  /**
+   * Height of the requested image.
+   */
+  height?: number;
 }
 
 /**
