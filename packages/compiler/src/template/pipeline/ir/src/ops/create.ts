@@ -9,9 +9,9 @@
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, OpKind} from '../enums';
+import {BindingKind, DeferSecondaryKind, OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -20,10 +20,11 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
-    ProjectionOp|ExtractedAttributeOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
+export type CreateOp =
+    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
+    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
+    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
+    DeferOp|DeferSecondaryBlockOp|DeferOnOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -178,24 +179,25 @@ export interface TemplateOp extends ElementOpBase {
   vars: number|null;
 
   /**
-   * Whether or not this template was automatically created for built-in control flow.
-   * TODO: Should control flow use a different op type, to avoid this flag?
+   * Whether or not this template was automatically created for use with block syntax (control flow
+   * or defer). This will eventually cause the emitted template instruction to use fewer arguments,
+   * since several of the default arguments are unnecessary for blocks.
    */
-  controlFlow: boolean;
+  block: boolean;
 }
 
 /**
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, namespace: Namespace, controlFlow: boolean,
-    sourceSpan: ParseSourceSpan): TemplateOp {
+    xref: XrefId, tag: string, namespace: Namespace, generatedInBlock: boolean,
+    i18n: i18n.I18nMeta|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
     attributes: null,
     tag,
-    controlFlow,
+    block: generatedInBlock,
     decls: null,
     vars: null,
     localRefs: [],
@@ -545,6 +547,103 @@ export function createExtractedAttributeOp(
   };
 }
 
+export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait, UsesSlotIndexTrait {
+  kind: OpKind.Defer;
+
+  /**
+   * The xref of this defer op.
+   */
+  xref: XrefId;
+
+  /**
+   * The xref of the main view. This will be associated with `slot`.
+   */
+  target: XrefId;
+
+  /**
+   * Secondary loading block associated with this defer op.
+   */
+  loading: DeferSecondaryBlockOp|null;
+
+  /**
+   * Secondary placeholder block associated with this defer op.
+   */
+  placeholder: DeferSecondaryBlockOp|null;
+
+  /**
+   * Secondary error block associated with this defer op.
+   */
+  error: DeferSecondaryBlockOp|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferOp(xref: XrefId, main: XrefId, sourceSpan: ParseSourceSpan): DeferOp {
+  return {
+    kind: OpKind.Defer,
+    xref,
+    target: main,
+    loading: null,
+    placeholder: null,
+    error: null,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+    ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
+export interface DeferSecondaryBlockOp extends Op<CreateOp>, UsesSlotIndexTrait, HasConstTrait {
+  kind: OpKind.DeferSecondaryBlock;
+
+  /**
+   * The xref of the corresponding defer op.
+   */
+  deferOp: XrefId;
+
+  /**
+   * Which kind of secondary block this op represents.
+   */
+  secondaryBlockKind: DeferSecondaryKind;
+
+  /**
+   * The xref of the secondary view. This will be associated with `slot`.
+   */
+  target: XrefId;
+}
+
+export function createDeferSecondaryOp(
+    deferOp: XrefId, secondaryView: XrefId,
+    secondaryBlockKind: DeferSecondaryKind): DeferSecondaryBlockOp {
+  return {
+    kind: OpKind.DeferSecondaryBlock,
+    deferOp,
+    target: secondaryView,
+    secondaryBlockKind,
+    constValue: null,
+    makeExpression: literalOrArrayLiteral,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
+    ...TRAIT_HAS_CONST,
+  };
+}
+
+export interface DeferOnOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.DeferOn;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferOnOp(xref: XrefId, sourceSpan: ParseSourceSpan): DeferOnOp {
+  return {
+    kind: OpKind.DeferOn,
+    xref,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+  };
+}
+
 /**
  * Represents an i18n message that has been extracted for inclusion in the consts array.
  */
@@ -664,3 +763,10 @@ export function createI18nEndOp(xref: XrefId): I18nEndOp {
  * component.
  */
 export type ConstIndex = number&{__brand: 'ConstIndex'};
+
+export function literalOrArrayLiteral(value: any): o.Expression {
+  if (Array.isArray(value)) {
+    return o.literalArr(value.map(literalOrArrayLiteral));
+  }
+  return o.literal(value, o.INFERRED_TYPE);
+}

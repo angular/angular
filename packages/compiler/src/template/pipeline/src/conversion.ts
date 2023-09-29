@@ -29,9 +29,8 @@ export const BINARY_OPERATORS = new Map([
   ['+', o.BinaryOperator.Plus],
 ]);
 
-export const NAMESPACES = new Map([['svg', ir.Namespace.SVG], ['math', ir.Namespace.Math]]);
-
 export function namespaceForKey(namespacePrefixKey: string|null): ir.Namespace {
+  const NAMESPACES = new Map([['svg', ir.Namespace.SVG], ['math', ir.Namespace.Math]]);
   if (namespacePrefixKey === null) {
     return ir.Namespace.HTML;
   }
@@ -39,6 +38,7 @@ export function namespaceForKey(namespacePrefixKey: string|null): ir.Namespace {
 }
 
 export function keyForNamespace(namespace: ir.Namespace): string|null {
+  const NAMESPACES = new Map([['svg', ir.Namespace.SVG], ['math', ir.Namespace.Math]]);
   for (const [k, n] of NAMESPACES.entries()) {
     if (n === namespace) {
       return k;
