@@ -19,9 +19,9 @@ export function phaseConstTraitCollection(job: ComponentCompilationJob): void {
   const collectGlobalConsts = (e: o.Expression): o.Expression => {
     if (e instanceof ir.ExpressionBase && ir.hasConstTrait(e as ir.Expression)) {
       // TODO: Figure out how to make this type narrowing work.
-      const ea = e as any;
+      const ea = e as unknown as ir.ExpressionBase & ir.HasConstTrait;
       if (ea.constValue !== null) {
-        ea.constIndex = job.addConst(ea.constValue);
+        ea.constIndex = job.addConst(ea.constValue as unknown as o.Expression);
       }
     }
     return e;
