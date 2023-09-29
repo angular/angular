@@ -65,14 +65,14 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
         op.decls = childView.decls;
       }
 
-      if (ir.hasUsesSlotIndexTrait(op) && op.slot === null) {
+      if (ir.hasUsesSlotIndexTrait(op) && op.targetSlot === null) {
         if (!slotMap.has(op.target)) {
           // We do expect to find a slot allocated for everything which might be referenced.
           throw new Error(
               `AssertionError: no slot allocated for ${ir.OpKind[op.kind]} target ${op.target}`);
         }
 
-        op.slot = slotMap.get(op.target)!;
+        op.targetSlot = slotMap.get(op.target)!;
       }
 
       // Process all `ir.Expression`s within this view, and look for `usesSlotIndexExprTrait`.
@@ -81,7 +81,7 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
           return;
         }
 
-        if (!ir.hasUsesSlotIndexTrait(expr) || expr.slot !== null) {
+        if (!ir.hasUsesSlotIndexTrait(expr) || expr.targetSlot !== null) {
           return;
         }
 
@@ -96,7 +96,7 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
         }
 
         // Record the allocated slot on the expression.
-        expr.slot = slotMap.get(expr.target)!;
+        expr.targetSlot = slotMap.get(expr.target)!;
       });
     }
   }

@@ -103,7 +103,7 @@ export interface UsesSlotIndexTrait {
   /**
    * The slot index of `target`, or `null` if slots have not yet been assigned.
    */
-  slot: number|null;
+  targetSlot: number|null;
 }
 
 /**
@@ -138,7 +138,7 @@ export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'> = {
  */
 export const TRAIT_USES_SLOT_INDEX: Omit<UsesSlotIndexTrait, 'target'> = {
   [UsesSlotIndex]: true,
-  slot: null,
+  targetSlot: null,
 } as const;
 
 /**
