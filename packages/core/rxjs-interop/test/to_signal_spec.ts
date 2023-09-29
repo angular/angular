@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {TestBed} from '@angular/core/testing';
 import {BehaviorSubject, ReplaySubject, Subject} from 'rxjs';
 
 describe('toSignal()', () => {
@@ -109,17 +110,16 @@ describe('toSignal()', () => {
     expect(counter()).toBe(1);
   });
 
-  it('should allow toSignal creation in a reactive context - issue 51027', () => {
+  it('should not allow toSignal creation in a reactive context', () => {
     const counter$ = new BehaviorSubject(1);
-
-    const injector = Injector.create([]);
-
     const doubleCounter = computed(() => {
-      const counter = toSignal(counter$, {requireSync: true, injector});
+      const counter = toSignal(counter$, {requireSync: true});
       return counter() * 2;
     });
 
-    expect(doubleCounter()).toBe(2);
+    expect(() => doubleCounter())
+        .toThrowError(
+            /toSignal\(\) cannot be called from within a reactive context. Invoking `toSignal` causes new subscriptions every time./);
   });
 
   describe('with no initial value', () => {
@@ -172,6 +172,31 @@ describe('toSignal()', () => {
          counter$.next(1);
          expect(counter()).not.toBeNull();
        }));
+  });
+
+  describe('in a @Component', () => {
+    it('should support `toSignal` as a class member initializer', () => {
+      @Component({
+        template: '{{counter()}}',
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class TestCmp {
+        // Component creation should not run inside the template effect/consumer,
+        // hence using `toSignal` should be allowed/supported.
+        counter$ = new Subject<number>();
+        counter = toSignal(this.counter$);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentInstance.counter$.next(2);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('2');
+    });
   });
 });
 
