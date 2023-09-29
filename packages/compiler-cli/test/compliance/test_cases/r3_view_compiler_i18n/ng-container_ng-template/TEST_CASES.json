@@ -42,7 +42,7 @@
           ]
         }
       ],
-      "skipForTemplatePipeline": true
+      "focusTest": true
     },
     {
       "description": "should handle ICUs outside of translatable sections",

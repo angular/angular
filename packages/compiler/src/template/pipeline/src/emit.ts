@@ -42,6 +42,7 @@ import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
 import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
+import {phasePropagateI18nBlocks} from './phases/propagate_i18n_blocks';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -75,6 +76,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseNamespace},
   {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
   {kind: Kind.Both, fn: phaseBindingSpecialization},
+  {kind: Kind.Tmpl, fn: phasePropagateI18nBlocks},
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},

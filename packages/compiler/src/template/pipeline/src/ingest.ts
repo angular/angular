@@ -177,7 +177,8 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
 function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
-  if (tmpl.i18n !== undefined && !(tmpl.i18n instanceof i18n.Message)) {
+  if (tmpl.i18n !== undefined &&
+      !(tmpl.i18n instanceof i18n.Message || tmpl.i18n instanceof i18n.TagPlaceholder)) {
     throw Error(`Unhandled i18n metadata type for template: ${tmpl.i18n.constructor.name}`);
   }
 
@@ -189,10 +190,11 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
     [namespacePrefix, tagNameWithoutNamespace] = splitNsName(tmpl.tagName);
   }
 
+  const i18nPlaceholder = tmpl.i18n instanceof i18n.TagPlaceholder ? tmpl.i18n : undefined;
   // TODO: validate the fallback tag name here.
   const tplOp = ir.createTemplateOp(
       childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
-      false, undefined, tmpl.startSourceSpan);
+      false, i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -245,7 +247,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
   }
   if (text.i18n !== undefined && !(text.i18n instanceof i18n.Container)) {
     throw Error(
-        `Unhandled i18n metadata type for text interpolation: ${text.i18n.constructor.name}`);
+        `Unhandled i18n metadata type for text interpolation: ${text.i18n?.constructor.name}`);
   }
 
   const i18nPlaceholders = text.i18n instanceof i18n.Container ?
@@ -304,7 +306,9 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       firstXref = cView.xref;
     }
     unit.create.push(ir.createTemplateOp(
-        cView.xref, 'Case', ir.Namespace.HTML, true, undefined, switchCase.sourceSpan));
+        cView.xref, 'Case', ir.Namespace.HTML, true,
+        undefined /* TODO: figure out how i18n works with new control flow */,
+        switchCase.sourceSpan));
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
