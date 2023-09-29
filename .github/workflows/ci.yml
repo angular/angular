@@ -186,6 +186,14 @@ jobs:
           CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: ${{ secrets.AIO_DEPLOY_TOKEN }}
           CI_SECRET_PAYLOAD_FIREBASE_TOKEN: ${{ secrets.AIO_PAYLOAD_TOKEN }}
         run: yarn --cwd aio deploy-production
+      - name: Notify about failed deployment
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@e28cf165c92ffef168d23c5c9000cffc8a25e117 # v=v1.24.0
+        with:
+          channel-id: 'C07DT5M6V,CKV1F72BG'
+          slack-message: 'Deploy to aio job failed for ${{ github.base_ref }} branch failed on build ${{ github.event.after }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ANGULAR_ROBOT_SLACK_TOKEN }}
 
   zone-js:
     runs-on:
