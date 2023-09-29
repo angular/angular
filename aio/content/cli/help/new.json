@@ -149,7 +149,6 @@
     {
       "name": "ssr",
       "type": "boolean",
-      "default": false,
       "description": "Creates an application with Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering) enabled."
     },
     {
