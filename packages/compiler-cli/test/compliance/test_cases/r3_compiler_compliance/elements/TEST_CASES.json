@@ -206,8 +206,7 @@
         {
           "failureMessage": "Incorrect `hostBindings` function."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should bind to class and style names",
