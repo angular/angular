@@ -18,7 +18,7 @@ import {bindingUpdated} from '../bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {DEFER_BLOCK_STATE, DeferBlockBehavior, DeferBlockConfig, DeferBlockInternalState, DeferBlockState, DeferBlockTriggers, DeferDependenciesLoadingState, DeferredLoadingBlockConfig, DeferredPlaceholderBlockConfig, DependencyResolverFn, LDeferBlockDetails, TDeferBlockDetails} from '../interfaces/defer';
-import {DirectiveDefList, PipeDefList} from '../interfaces/definition';
+import {DependencyDef, DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {TContainerNode, TNode} from '../interfaces/node';
 import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, INJECTOR, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
@@ -748,17 +748,34 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       // Update directive and pipe registries to add newly downloaded dependencies.
       const primaryBlockTView = primaryBlockTNode.tView!;
       if (directiveDefs.length > 0) {
-        primaryBlockTView.directiveRegistry = primaryBlockTView.directiveRegistry ?
-            [...primaryBlockTView.directiveRegistry, ...directiveDefs] :
-            directiveDefs;
+        primaryBlockTView.directiveRegistry =
+            addDepsToRegistry<DirectiveDefList>(primaryBlockTView.directiveRegistry, directiveDefs);
       }
       if (pipeDefs.length > 0) {
-        primaryBlockTView.pipeRegistry = primaryBlockTView.pipeRegistry ?
-            [...primaryBlockTView.pipeRegistry, ...pipeDefs] :
-            pipeDefs;
+        primaryBlockTView.pipeRegistry =
+            addDepsToRegistry<PipeDefList>(primaryBlockTView.pipeRegistry, pipeDefs);
       }
     }
   });
+}
+
+/**
+ * Adds downloaded dependencies into a directive or a pipe registry,
+ * making sure that a dependency doesn't yet exist in the registry.
+ */
+function addDepsToRegistry<T extends DependencyDef[]>(currentDeps: T|null, newDeps: T): T {
+  if (!currentDeps || currentDeps.length === 0) {
+    return newDeps;
+  }
+
+  const currentDepSet = new Set(currentDeps);
+  for (const dep of newDeps) {
+    currentDepSet.add(dep);
+  }
+
+  // If `currentDeps` is the same length, there were no new deps and can
+  // return the original array.
+  return (currentDeps.length === currentDepSet.size) ? currentDeps : Array.from(currentDepSet) as T;
 }
 
 /** Utility function to render placeholder content (if present) */
