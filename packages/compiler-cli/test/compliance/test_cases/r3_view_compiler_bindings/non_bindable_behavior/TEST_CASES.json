@@ -10,11 +10,14 @@
         {
           "failureMessage": "Incorrect handling of local refs for host element",
           "files": [
-            "local_ref_on_host.js"
+            {
+              "generated": "local_ref_on_host.js",
+              "expected": "local_ref_on_host.template.js",
+              "templatePipelineExpected": "local_ref_on_host.pipeline.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not have local refs for nested elements",

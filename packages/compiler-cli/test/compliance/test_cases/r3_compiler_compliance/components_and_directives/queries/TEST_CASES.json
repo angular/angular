@@ -87,8 +87,7 @@
             "content_query_for_directive.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support content queries with forwardRefs",

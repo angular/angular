@@ -80,13 +80,13 @@
           "files": [
             {
               "expected": "ng_for_parent_context_variables_template.js",
+              "templatePipelineExpected": "ng_for_parent_context_variables.pipeline.js",
               "generated": "ng_for_parent_context_variables.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should correctly skip contexts as needed",
@@ -234,8 +234,7 @@
             ]
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create unique listener function names even for similar nested template structures",

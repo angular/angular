@@ -128,8 +128,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate the $event argument if it is not being used in a template",
