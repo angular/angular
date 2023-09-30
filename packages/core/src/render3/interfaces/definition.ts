@@ -488,6 +488,8 @@ export type DirectiveDefListOrFactory = (() => DirectiveDefList)|DirectiveDefLis
 
 export type DirectiveDefList = (DirectiveDef<any>|ComponentDef<any>)[];
 
+export type DependencyDef = DirectiveDef<unknown>|ComponentDef<unknown>|PipeDef<unknown>;
+
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeList;
 
 export type DirectiveTypeList =
