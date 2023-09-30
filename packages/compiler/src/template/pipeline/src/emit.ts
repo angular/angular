@@ -25,6 +25,7 @@ import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
+import {phaseConstTraitCollection} from './phases/has_const_trait_collection';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
@@ -101,6 +102,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
   {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
+  {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
   {kind: Kind.Both, fn: phaseConstCollection},
   {kind: Kind.Both, fn: phaseVarCounting},
   {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
