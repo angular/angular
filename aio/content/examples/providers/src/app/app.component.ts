@@ -1,25 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
-import { User, UserService } from './user.service';
-
-// #docregion component-providers
 @Component({
-  // #enddocregion component-providers
+  standalone: true,
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  // #docregion component-providers
-  providers: [UserService]
+  template: `
+  <h1>Providers Example</h1>
+  <nav>
+    <a routerLink="">Users</a>
+    <a routerLink="/admin">Admin</a>
+    <a routerLink="/admin/users">Admin Users</a>
+  </nav>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+  `,
+  imports: [ RouterLink, RouterOutlet ],
+  styles: ['nav a { padding: 1rem; }']
 })
-// #enddocregion component-providers
-export class AppComponent implements OnInit {
-  title = 'Users list';
-  users: User[] = [];
-
-  constructor(private userService: UserService) { }
-
-  ngOnInit(): void {
-    this.userService.getUsers().then(users => this.users = users);
-  }
-
+export class AppComponent{
 }

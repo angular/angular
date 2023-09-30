@@ -1,6 +1,8 @@
 import { element, by } from 'protractor';
 import { AppPage } from './app.po';
 
+import { users } from '../../src/app/user';
+
 describe('providers App', () => {
   let page: AppPage;
 
@@ -9,15 +11,14 @@ describe('providers App', () => {
     await page.navigateTo();
   });
 
-  it('should display header that says Users list', async () => {
-    expect(await page.getTitleText()).toEqual('Users list');
+  it('should display header that says "Providers Example"', async () => {
+    expect(await page.getTitleText()).toEqual('Providers Example');
   });
 
-  it('shows a list of customers', async () => {
-    const items = element.all(by.css('app-root li'));
-    expect(await items.count()).toBe(10);
-    expect(await items.get(0).getText()).toBe('1 Maria');
-    expect(await items.get(9).getText()).toBe('10 Seth');
+  it('shows a list of regular users', async () => {
+    const items = element.all(by.css('app-users li'));
+    expect(await items.count()).toBe(users.length);
+    expect(await items.get(0).getText()).toBe(users[0].id + ' ' + users[0].name);
   });
 
 });
