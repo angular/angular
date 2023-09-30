@@ -34,19 +34,22 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if ((op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n)) {
-        // Sort the params map to match the ordering in TemplateDefinitionBuilder.
-        const params = new Map([...op.params.entries()].sort());
+        // Only extract messages from root i18n ops, not sub-template ones.
+        if (op.xref === op.root) {
+          // Sort the params map to match the ordering in TemplateDefinitionBuilder.
+          const params = new Map([...op.params.entries()].sort());
 
-        const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
-        // Closure Compiler requires const names to start with `MSG_` but disallows any other const
-        // to start with `MSG_`. We define a variable starting with `MSG_` just for the
-        // `goog.getMsg` call
-        const closureVar = i18nGenerateClosureVar(
-            job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
-        // TODO: figure out transformFn.
-        const statements = getTranslationDeclStmts(
-            op.message, mainVar, closureVar, params, undefined /*transformFn*/);
-        unit.create.push(ir.createExtractedMessageOp(op.xref, mainVar, statements));
+          const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
+          // Closure Compiler requires const names to start with `MSG_` but disallows any other
+          // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
+          // `goog.getMsg` call
+          const closureVar = i18nGenerateClosureVar(
+              job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
+          // TODO: figure out transformFn.
+          const statements = getTranslationDeclStmts(
+              op.message, mainVar, closureVar, params, undefined /*transformFn*/);
+          unit.create.push(ir.createExtractedMessageOp(op.xref, mainVar, statements));
+        }
       }
     }
   }
