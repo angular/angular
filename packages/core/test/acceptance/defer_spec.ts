@@ -619,6 +619,59 @@ describe('@defer', () => {
       // Nested defer block was triggered and the `CmpB` content got rendered.
       expect(fixture.nativeElement.outerHTML).toContain('<cmp-a>CmpA</cmp-a>');
     });
+
+    it('should handle nested blocks that defer load the same dep', async () => {
+      @Component({
+        selector: 'cmp-a',
+        standalone: true,
+        template: 'CmpA',
+      })
+      class CmpA {
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        imports: [CmpA],
+        template: `
+          @defer (on immediate) {
+            <cmp-a />
+
+            @defer (on immediate) {
+              <cmp-a />
+            }
+          }
+        `
+      })
+      class RootCmp {
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            return [dynamicImportOf(CmpA)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      // Wait for the dependency fn promise to resolve.
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect both <cmp-a> components to be rendered.
+      expect(fixture.nativeElement.innerHTML.replaceAll('<!--container-->', ''))
+          .toBe('<cmp-a>CmpA</cmp-a><cmp-a>CmpA</cmp-a>');
+    });
   });
 
   describe('prefetch', () => {
