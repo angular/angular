@@ -28,8 +28,7 @@ export function phaseI18nConstCollection(job: ComponentCompilationJob): void {
   // Assign const index to i18n ops that messages were extracted from.
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if ((op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n) &&
-          messageConstIndices[op.xref] !== undefined) {
+      if (op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n) {
         op.messageIndex = messageConstIndices[op.root];
       }
     }

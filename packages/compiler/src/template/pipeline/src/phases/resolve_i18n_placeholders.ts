@@ -8,7 +8,22 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob} from '../compilation';
+import {ComponentCompilationJob} from '../compilation';
+
+/**
+ * The kind of element tag.
+ */
+enum TagKind {
+  /**
+   * A starting tag.
+   */
+  START,
+
+  /**
+   * A closing tag.
+   */
+  CLOSE
+}
 
 /**
  * The escape sequence used indicate message param values.
@@ -16,13 +31,36 @@ import {CompilationJob} from '../compilation';
 const ESCAPE = '\uFFFD';
 
 /**
+ * Marker used to signify an element tag.
+ */
+const ELEMENT_MARKER = '#';
+
+/**
+ * Marker used to signify a template tag.
+ */
+const TEMPLATE_MARKER = '*';
+
+/**
+ * Marker used to signify parent context.
+ */
+const CONTEXT_MARKER = ':';
+
+/**
+ * Delimiter used to separate multiple values.
+ */
+const DELIMITER = '|';
+
+/**
  * Resolve the placeholders in i18n messages.
  */
-export function phaseResolveI18nPlaceholders(job: CompilationJob) {
+export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
   for (const unit of job.units) {
     const i18nOps = new Map<ir.XrefId, ir.I18nOp|ir.I18nStartOp>();
-    let startTagSlots = new Map<string, number[]>();
-    let closeTagSlots = new Map<string, number[]>();
+    let elementStartPlaceholders = new Map<string, (ir.ElementOp | ir.ElementStartOp)[]>();
+    let elementClosePlaceholders = new Map<string, (ir.ElementOp | ir.ElementStartOp)[]>();
+    let templateStartPlaceholders = new Map<string, ir.TemplateOp[]>();
+    let templateClosePlaceholders = new Map<string, ir.TemplateOp[]>();
+    let firstI18nOp: ir.I18nOp|ir.I18nStartOp|null = null;
     let currentI18nOp: ir.I18nStartOp|null = null;
 
     // Record slots for tag name placeholders.
@@ -32,36 +70,40 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
         case ir.OpKind.I18n:
           // Initialize collected slots for a new i18n block.
           i18nOps.set(op.xref, op);
+          if (firstI18nOp === null) {
+            firstI18nOp = op;
+          }
           currentI18nOp = op.kind === ir.OpKind.I18nStart ? op : null;
-          startTagSlots = new Map();
-          closeTagSlots = new Map();
+          elementStartPlaceholders = new Map();
+          elementClosePlaceholders = new Map();
+          templateStartPlaceholders = new Map();
+          templateClosePlaceholders = new Map();
           break;
         case ir.OpKind.I18nEnd:
           // Add values for tag placeholders.
           if (currentI18nOp === null) {
             throw Error('Missing corresponding i18n start op for i18n end op');
           }
-          for (const [placeholder, slots] of startTagSlots) {
-            currentI18nOp.params.set(placeholder, serializeSlots(slots, true));
-          }
-          for (const [placeholder, slots] of closeTagSlots) {
-            currentI18nOp.params.set(placeholder, serializeSlots(slots, false));
-          }
+          saveTagParams(currentI18nOp, elementStartPlaceholders, TagKind.START, ELEMENT_MARKER);
+          saveTagParams(currentI18nOp, elementClosePlaceholders, TagKind.CLOSE, ELEMENT_MARKER);
+          saveTagParams(currentI18nOp, templateStartPlaceholders, TagKind.START, TEMPLATE_MARKER);
+          saveTagParams(currentI18nOp, templateClosePlaceholders, TagKind.CLOSE, TEMPLATE_MARKER);
           currentI18nOp = null;
           break;
         case ir.OpKind.Element:
         case ir.OpKind.ElementStart:
-          // Record slots for tag placeholders.
-          if (op.i18nPlaceholder != undefined) {
+        case ir.OpKind.Template:
+          // Record ops for tag placeholders.
+          if (op.i18nPlaceholder !== undefined) {
             if (currentI18nOp === null) {
               throw Error('i18n tag placeholder should only occur inside an i18n block');
             }
-            if (!op.slot) {
-              throw Error('Slots should be allocated before i18n placeholder resolution');
-            }
             const {startName, closeName} = op.i18nPlaceholder;
-            addTagSlot(startTagSlots, startName, op.slot);
-            addTagSlot(closeTagSlots, closeName, op.slot);
+            const isTmpl = op.kind === ir.OpKind.Template;
+            addPlaceholderOp(
+                isTmpl ? templateStartPlaceholders : elementStartPlaceholders, startName, op);
+            addPlaceholderOp(
+                isTmpl ? templateClosePlaceholders : elementClosePlaceholders, closeName, op);
           }
           break;
       }
@@ -76,39 +118,53 @@ export function phaseResolveI18nPlaceholders(job: CompilationJob) {
         if (!i18nOp) {
           throw Error('Cannot find corresponding i18nStart for i18nExpr');
         }
-        i18nOp.params.set(op.i18nPlaceholder.name, o.literal(`${ESCAPE}${index++}${ESCAPE}`));
+        i18nOp.params.set(
+            op.i18nPlaceholder.name, o.literal(serializeValue(index++, i18nOp.subTemplateIndex)));
         i18nBlockPlaceholderIndices.set(op.target, index);
       }
     }
+  }
+}
 
-    // Verify that all placeholders have been resolved.
-    for (const op of i18nOps.values()) {
-      for (const placeholder in op.message.placeholders) {
-        if (!op.params.has(placeholder)) {
-          op.params.set(placeholder, o.literal(undefined));
-          // throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
-        }
-      }
-    }
+/**
+ * Saves values for the given tag name placeholders to the given i18n operation's params map.
+ */
+function saveTagParams(
+    i18nOp: ir.I18nStartOp, placeholderOps: Map<string, ir.ConsumesSlotOpTrait[]>, tagKind: TagKind,
+    marker: string) {
+  for (const [placeholder, ops] of placeholderOps) {
+    i18nOp.params.set(
+        placeholder,
+        o.literal(
+            serializeSlots(ops.map(op => op.slot!), tagKind, marker, i18nOp.subTemplateIndex)));
   }
 }
 
 /**
  * Updates the given slots map with the specified slot.
  */
-function addTagSlot(tagSlots: Map<string, number[]>, placeholder: string, slot: number) {
+function addPlaceholderOp<Op extends ir.Op<any>>(
+    tagSlots: Map<string, Op[]>, placeholder: string, slot: Op) {
   const slots = tagSlots.get(placeholder) || [];
   slots.push(slot);
   tagSlots.set(placeholder, slots);
 }
 
 /**
- * Serializes a list of slots to a string literal expression.
+ * Serializes a list of slots to an i18n placeholder value string.
  */
-function serializeSlots(slots: number[], start: boolean): o.Expression {
-  const slotStrings = slots.map(slot => `${ESCAPE}${start ? '' : '/'}#${slot}${ESCAPE}`);
-  if (slotStrings.length === 1) {
-    return o.literal(slotStrings[0]);
-  }
-  return o.literal(`[${slotStrings.join('|')}]`);
+function serializeSlots(
+    slots: number[], tagKind: TagKind, tagMarker: string, context: number|null): string {
+  const tagKindMarker = tagKind === TagKind.START ? '' : '/';
+  const slotStrings =
+      slots.map(slot => serializeValue(`${tagKindMarker}${tagMarker}${slot}`, context));
+  return slotStrings.length === 1 ? slotStrings[0] : `[${slotStrings.join(DELIMITER)}]`;
+}
+
+/**
+ * Serializes a value to to an i18n placeholder value string.
+ */
+function serializeValue(value: number|string, context: number|null) {
+  const contextStr = context === null ? '' : `${CONTEXT_MARKER}${context}`;
+  return `${ESCAPE}${value}${contextStr}${ESCAPE}`
 }
