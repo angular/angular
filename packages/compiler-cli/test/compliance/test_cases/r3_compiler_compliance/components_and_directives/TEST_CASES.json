@@ -69,8 +69,7 @@
             "constant_object_literals.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a pure function for constant array literals",
@@ -84,8 +83,7 @@
             "constant_array_literals.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not share pure functions between null and object literals",
@@ -99,8 +97,7 @@
             "object_literals_null_vs_empty.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not share pure functions between null and array literals",
@@ -114,8 +111,7 @@
             "array_literals_null_vs_empty.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not share pure functions between null and function calls",
@@ -129,8 +125,7 @@
             "object_literals_null_vs_function.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should emit a valid setClassMetadata call in ES5 if a class with a custom decorator is referencing itself inside its own metadata",
