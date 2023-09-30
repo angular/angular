@@ -1213,6 +1213,24 @@
   },
   {
     "date": {
+      "start": "2023-09-19"
+    },
+    "name": "GraphQL SF"
+  },
+  {
+    "date": {
+      "start": "2023-10-05"
+    },
+    "name": "ViteConf"
+  },
+  {
+    "date": {
+      "start": "2023-10-15"
+    },
+    "name": "All Things Open"
+  },
+  {
+    "date": {
       "start": "2023-11-08"
     },
     "name": "NGPoland"
@@ -1222,5 +1240,23 @@
       "start": "2023-11-09"
     },
     "name": "JSPoland"
+  },
+  {
+    "date": {
+      "start": "2023-12-01"
+    },
+    "name": "ngRome"
+  },
+  {
+    "date": {
+      "start": "2023-11-02"
+    },
+    "name": "JetBrains JavaScript Day "
+  },
+  {
+    "date": {
+      "start": "2023-09-26"
+    },
+    "name": "JSDayIE"
   }
 ]
