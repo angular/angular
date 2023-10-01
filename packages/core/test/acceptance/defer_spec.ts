@@ -1225,6 +1225,7 @@ describe('@defer', () => {
         template: 'Primary block content.',
       })
       class NestedCmp {
+        @Input() block!: string;
       }
 
       @Component({
@@ -1401,6 +1402,7 @@ describe('@defer', () => {
         template: 'Primary block content.',
       })
       class NestedCmp {
+        @Input() block!: string;
       }
 
       @Component({
@@ -1954,6 +1956,32 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
        }));
 
+    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+           @defer (on interaction(trigger)) {
+             Main content
+           }
+
+           <button #trigger></button>
+         `
+         })
+         class MyCmp {
+         }
+
+         const eventsInZone: Record<string, boolean> = {};
+         const fixture = TestBed.createComponent(MyCmp);
+         const button = fixture.nativeElement.querySelector('button');
+
+         spyOn(button, 'addEventListener').and.callFake((name: string) => {
+           eventsInZone[name] = NgZone.isInAngularZone();
+         });
+         fixture.detectChanges();
+
+         expect(eventsInZone).toEqual({click: true, keydown: true});
+       }));
+
     it('should prefetch resources on interaction', fakeAsync(() => {
          @Component({
            standalone: true,
@@ -2250,6 +2278,32 @@ describe('@defer', () => {
 
          expect(spy).toHaveBeenCalledTimes(1);
          expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+       }));
+
+    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+          @defer (on hover(trigger)) {
+            Main content
+          }
+
+          <button #trigger></button>
+        `
+         })
+         class MyCmp {
+         }
+
+         const eventsInZone: Record<string, boolean> = {};
+         const fixture = TestBed.createComponent(MyCmp);
+         const button = fixture.nativeElement.querySelector('button');
+
+         spyOn(button, 'addEventListener').and.callFake((name: string) => {
+           eventsInZone[name] = NgZone.isInAngularZone();
+         });
+         fixture.detectChanges();
+
+         expect(eventsInZone).toEqual({mouseenter: true});
        }));
 
     it('should prefetch resources on hover', fakeAsync(() => {

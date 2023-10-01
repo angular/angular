@@ -7,7 +7,6 @@
  */
 
 import {InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
-import {inject} from '../../di/injector_compatibility';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
