@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, interval, NEVER, of} from 'rxjs';
+import {EMPTY, interval, NEVER, of as observableOf} from 'rxjs';
 import {TestScheduler} from 'rxjs/testing';
 
 import {resolveData} from '../../src/operators/resolve_data';
@@ -20,7 +20,7 @@ describe('resolveData operator', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {provide: 'resolveTwo', useValue: (a: any, b: any) => of(2)},
+        {provide: 'resolveTwo', useValue: (a: any, b: any) => observableOf(2)},
         {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
         {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
         {provide: 'resolveInterval', useValue: (a: any, b: any) => interval()},

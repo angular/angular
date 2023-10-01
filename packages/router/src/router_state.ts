@@ -12,8 +12,8 @@ import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
-import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {shallowEqual, shallowEqualArrays} from './utils/collection';
+import {equalSegments, UrlSegment, UrlTree} from './url_tree';
+import {getDataKeys, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 /**
@@ -261,6 +261,39 @@ export function inheritedParamsDataResolve(
   return flattenInherited(pathFromRoot.slice(inheritingStartingFrom));
 }
 
+/**
+ * Updates resolved data of all *rootRoute* descendants.
+ * By default, this only traverses all subtrees of rootRoute until it reaches leaf node or an
+ * "empty" node. Does not overwrite any data of child routes which the child route either resolved
+ * itself or declared statically.
+ * @internal
+ */
+export function updateDescendantsResolveData(
+    rootRoute: ActivatedRouteSnapshot,
+    paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'): void {
+  const routeDataKeys = getDataKeys({...rootRoute.routeConfig?.data, ...rootRoute._resolvedData});
+
+  function _updateDescendantsResolveData(route: ActivatedRouteSnapshot, keys: (string|symbol)[]) {
+    if (paramsInheritanceStrategy === 'emptyOnly' &&
+        !(!route.component || (route.routeConfig && route.routeConfig.path === ''))) {
+      return;
+    }
+    for (const child of route.children) {
+      const childDataKeys = getDataKeys({...child.routeConfig?.data, ...child._resolvedData});
+      const keysToUpdate = keys.filter(key => !childDataKeys.includes(key));
+      if (!keysToUpdate.length) continue;
+      const newData = Object.assign({}, child.data);
+      for (const key of keysToUpdate) {
+        newData[key] = rootRoute.data[key];
+      }
+      child.data = newData;
+      _updateDescendantsResolveData(child, keysToUpdate);
+    }
+  }
+
+  return _updateDescendantsResolveData(rootRoute, routeDataKeys);
+}
+
 /** @internal */
 function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
   return pathFromRoot.reduce((res, curr) => {
@@ -300,7 +333,9 @@ export class ActivatedRouteSnapshot {
   public readonly routeConfig: Route|null;
   /** @internal */
   _resolve: ResolveData;
-  /** @internal */
+  /**
+   * @internal Results of route's own resolvers.
+   */
   _resolvedData?: Data;
   /** @internal */
   _routerState!: RouterStateSnapshot;

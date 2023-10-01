@@ -12,7 +12,7 @@ import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 
 
 import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../navigation_transition';
-import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot, updateDescendantsResolveData} from '../router_state';
 import {RouteTitleKey} from '../shared';
 import {getDataKeys, wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
@@ -52,6 +52,7 @@ function runResolve(
   return resolveNode(resolve, futureARS, futureRSS, injector).pipe(map((resolvedData: any) => {
     futureARS._resolvedData = resolvedData;
     futureARS.data = inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve;
+    updateDescendantsResolveData(futureARS, paramsInheritanceStrategy);
     if (config && hasStaticTitle(config)) {
       futureARS.data[RouteTitleKey] = config.title;
     }
