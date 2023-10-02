@@ -734,7 +734,7 @@ export function withViewTransitions(options?: ViewTransitionsFeatureOptions):
     {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
     {
       provide: VIEW_TRANSITION_OPTIONS,
-      useValue: {skipNextTransition: !!options?.skipInitialTransition}
+      useValue: {skipNextTransition: !!options?.skipInitialTransition, ...options}
     },
   ];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
