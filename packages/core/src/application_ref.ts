@@ -8,6 +8,7 @@
 
 import './util/ng_jit_mode';
 
+import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
 import {Observable, of, Subscription} from 'rxjs';
 import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
@@ -43,7 +44,6 @@ import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
-import {setThrowInvalidWriteToSignalError} from './signals';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';

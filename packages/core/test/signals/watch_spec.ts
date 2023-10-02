@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {createWatch} from '@angular/core/src/signals';
+import {createWatch} from '@angular/core/primitives/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 

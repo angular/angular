@@ -29,11 +29,11 @@ ng_module(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
-        "//packages/core/src/signals",
         "//packages/core/src/util",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
@@ -75,6 +75,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
         "//packages/core/testing",
     ],
@@ -102,7 +103,6 @@ api_golden_test(
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
-        "//packages/core/src/signals",
         "//packages/core/src/util",
     ],
     entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
@@ -126,7 +126,7 @@ filegroup(
         "src/**/*.ts",
     ]) + [
         "PACKAGE.md",
-        "global/index.ts",
         "global/PACKAGE.md",
+        "global/index.ts",
     ],
 )

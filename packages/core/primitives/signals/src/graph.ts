@@ -8,7 +8,7 @@
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
-import '../../util/ng_dev_mode';
+declare const ngDevMode: boolean|undefined;
 
 
 /**
