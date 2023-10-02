@@ -43,11 +43,17 @@ export enum DeferDependenciesLoadingState {
   FAILED,
 }
 
+/** Slot index where `minimum` parameter value is stored. */
+export const MINIMUM_SLOT = 0;
+
+/** Slot index where `after` parameter value is stored. */
+export const LOADING_AFTER_SLOT = 1;
+
 /** Configuration object for a loading block as it is stored in the component constants. */
 export type DeferredLoadingBlockConfig = [minimumTime: number|null, afterTime: number|null];
 
 /** Configuration object for a placeholder block as it is stored in the component constants. */
-export type DeferredPlaceholderBlockConfig = [afterTime: number|null];
+export type DeferredPlaceholderBlockConfig = [minimumTime: number|null];
 
 /**
  * Describes the data shared across all instances of a defer block.
@@ -133,11 +139,14 @@ export enum DeferBlockInternalState {
   Initial = -1,
 }
 
-/**
- * A slot in the `LDeferBlockDetails` array that contains a number
- * that represent a current block state that is being rendered.
- */
-export const DEFER_BLOCK_STATE = 0;
+export const NEXT_DEFER_BLOCK_STATE = 0;
+// Note: it's *important* to keep the state in this slot, because this slot
+// is used by runtime logic to differentiate between LViews, LContainers and
+// other types (see `isLView` and `isLContainer` functions). In case of defer
+// blocks, this slot would always be a number.
+export const DEFER_BLOCK_STATE = 1;
+export const STATE_IS_FROZEN_UNTIL = 2;
+export const LOADING_AFTER_CLEANUP_FN = 3;
 
 /**
  * Describes instance-specific defer block data.
@@ -147,7 +156,28 @@ export const DEFER_BLOCK_STATE = 0;
  * (which would require per-instance state).
  */
 export interface LDeferBlockDetails extends Array<unknown> {
+  /**
+   * Currently rendered block state.
+   */
   [DEFER_BLOCK_STATE]: DeferBlockState|DeferBlockInternalState;
+
+  /**
+   * Block state that was requested when another state was rendered.
+   */
+  [NEXT_DEFER_BLOCK_STATE]: DeferBlockState|null;
+
+  /**
+   * Timestamp indicating when the current state can be switched to
+   * the next one, in case teh current state has `minimum` parameter.
+   */
+  [STATE_IS_FROZEN_UNTIL]: number|null;
+
+  /**
+   * Contains a reference to a cleanup function which cancels a timeout
+   * when Angular waits before rendering loading state. This is used when
+   * the loading block has the `after` parameter configured.
+   */
+  [LOADING_AFTER_CLEANUP_FN]: VoidFunction|null;
 }
 
 /**
