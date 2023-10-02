@@ -1170,9 +1170,10 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-"domino@https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1":
-  version "2.1.6"
-  resolved "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1"
+"domino@https://github.com/angular/domino.git#f2435fe1f9f7c91ade0bd472c4723e5eacd7d19a":
+  version "2.1.6+git"
+  uid f2435fe1f9f7c91ade0bd472c4723e5eacd7d19a
+  resolved "https://github.com/angular/domino.git#f2435fe1f9f7c91ade0bd472c4723e5eacd7d19a"
 
 electron-to-chromium@^1.4.477:
   version "1.4.508"
