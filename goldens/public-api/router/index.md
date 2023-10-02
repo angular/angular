@@ -1086,7 +1086,25 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export interface ViewTransitionInfo {
+    from: ActivatedRouteSnapshot;
+    to: ActivatedRouteSnapshot;
+    transition: {
+        finished: Promise<void>;
+        ready: Promise<void>;
+        updateCallbackDone: Promise<void>;
+        skipTransition(): void;
+    };
+}
+
+// @public
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+// @public
+export interface ViewTransitionsFeatureOptions {
+    onViewTransitionCreated?: (transitionInfo: ViewTransitionInfo) => void;
+    skipInitialTransition?: boolean;
+}
 
 // @public
 export function withComponentInputBinding(): ComponentInputBindingFeature;
