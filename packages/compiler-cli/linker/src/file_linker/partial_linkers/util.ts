@@ -10,6 +10,8 @@ import {createMayBeForwardRefExpression, ForwardRefHandling, MaybeForwardRefExpr
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
+export const PLACEHOLDER_VERSION = '0.0.0-PLACEHOLDER';
+
 export function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
   return {value: wrapped, type: wrapped};
 }

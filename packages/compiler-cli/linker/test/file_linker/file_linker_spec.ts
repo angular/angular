@@ -120,6 +120,48 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('block syntax support', () => {
+    function linkComponentWithTemplate(version: string, template: string): string {
+      // Note that the `minVersion` is set to the placeholder,
+      // because that's what we have in the source code as well.
+      const source = `
+        ɵɵngDeclareComponent({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "${version}",
+          ngImport: core,
+          template: \`${template}\`,
+          isInline: true,
+          type: SomeComp
+        });
+      `;
+
+      // We need to create a new source file here, because template parsing requires
+      // the template string to have offsets which synthetic nodes do not.
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call =
+          (sourceFile.statements[0] as ts.ExpressionStatement).expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+          'ɵɵngDeclareComponent', [call.arguments[0]], new MockDeclarationScope());
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should enable block syntax if compiled with version 17 or above', () => {
+      for (const version of ['17.0.0', '17.0.1', '17.1.0', '17.0.0-next.0', '18.0.0']) {
+        expect(linkComponentWithTemplate(version, '@defer {}')).toContain('ɵɵdefer(');
+      }
+    });
+
+    it('should enable block syntax if compiled with a local version', () => {
+      expect(linkComponentWithTemplate('0.0.0-PLACEHOLDER', '@defer {}')).toContain('ɵɵdefer(');
+    });
+
+    it('should not enable block syntax if compiled with a version older than 17', () => {
+      expect(linkComponentWithTemplate('16.2.0', '@Input() is a decorator. This is a brace }'))
+          .toContain('@Input() is a decorator. This is a brace }');
+    });
+  });
+
   describe('getConstantStatements()', () => {
     it('should capture shared constant values', () => {
       const {fileLinker} = createFileLinker();
@@ -179,9 +221,9 @@ describe('FileLinker', () => {
        });
   });
 
-  function createFileLinker(): {
+  function createFileLinker(code = '// test code'): {
     host: AstHost<ts.Expression>,
-    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>
+    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>,
   } {
     const fs = new MockFileSystemNative();
     const logger = new MockLogger();
@@ -189,7 +231,7 @@ describe('FileLinker', () => {
         fs, logger, new TypeScriptAstHost(),
         new TypeScriptAstFactory(/* annotateForClosureCompiler */ false), DEFAULT_LINKER_OPTIONS);
     const fileLinker = new FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>(
-        linkerEnvironment, fs.resolve('/test.js'), '// test code');
+        linkerEnvironment, fs.resolve('/test.js'), code);
     return {host: linkerEnvironment.host, fileLinker};
   }
 });
