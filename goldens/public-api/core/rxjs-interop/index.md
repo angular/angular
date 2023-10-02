@@ -22,28 +22,36 @@ export interface ToObservableOptions {
     injector?: Injector;
 }
 
-// @public
+// @public (undocumented)
 export function toSignal<T>(source: Observable<T> | Subscribable<T>): Signal<T | undefined>;
 
-// @public
-export function toSignal<T>(source: Observable<T> | Subscribable<T>, options?: ToSignalOptions<undefined> & {
+// @public (undocumented)
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+    initialValue?: undefined;
     requireSync?: false;
 }): Signal<T | undefined>;
 
-// @public
-export function toSignal<T, U extends T | null | undefined>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions<U> & {
+// @public (undocumented)
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+    initialValue?: null;
+    requireSync?: false;
+}): Signal<T | null>;
+
+// @public (undocumented)
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+    initialValue?: undefined;
+    requireSync: true;
+}): Signal<T>;
+
+// @public (undocumented)
+export function toSignal<T, const U extends T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
     initialValue: U;
     requireSync?: false;
 }): Signal<T | U>;
 
 // @public
-export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions<undefined> & {
-    requireSync: true;
-}): Signal<T>;
-
-// @public
-export interface ToSignalOptions<T> {
-    initialValue?: T;
+export interface ToSignalOptions {
+    initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
     requireSync?: boolean;
