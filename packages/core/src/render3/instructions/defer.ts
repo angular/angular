@@ -17,7 +17,7 @@ import {assertIndexInDeclRange, assertLContainer, assertLView, assertTNodeForLVi
 import {bindingUpdated} from '../bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
-import {DEFER_BLOCK_STATE, DeferBlockBehavior, DeferBlockConfig, DeferBlockInternalState, DeferBlockState, DeferBlockTriggers, DeferDependenciesLoadingState, DeferredLoadingBlockConfig, DeferredPlaceholderBlockConfig, DependencyResolverFn, LDeferBlockDetails, TDeferBlockDetails} from '../interfaces/defer';
+import {DEFER_BLOCK_STATE, DeferBlockBehavior, DeferBlockConfig, DeferBlockInternalState, DeferBlockState, DeferBlockTriggers, DeferDependenciesLoadingState, DeferredLoadingBlockConfig, DeferredPlaceholderBlockConfig, DependencyResolverFn, LDeferBlockDetails, LOADING_AFTER_CLEANUP_FN, LOADING_AFTER_SLOT, MINIMUM_SLOT, NEXT_DEFER_BLOCK_STATE, STATE_IS_FROZEN_UNTIL, TDeferBlockDetails} from '../interfaces/defer';
 import {DependencyDef, DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {TContainerNode, TNode} from '../interfaces/node';
 import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
@@ -101,9 +101,13 @@ export function ɵɵdefer(
   populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
   // Init instance-specific defer details and store it.
-  const lDetails = [];
-  lDetails[DEFER_BLOCK_STATE] = DeferBlockInternalState.Initial;
-  setLDeferBlockDetails(lView, adjustedIndex, lDetails as LDeferBlockDetails);
+  const lDetails: LDeferBlockDetails = [
+    null,                             // NEXT_DEFER_BLOCK_STATE
+    DeferBlockInternalState.Initial,  // DEFER_BLOCK_STATE
+    null,                             // STATE_IS_FROZEN_UNTIL
+    null                              // LOADING_AFTER_CLEANUP_FN
+  ];
+  setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 }
 
 /**
@@ -612,6 +616,26 @@ function getTemplateIndexForState(
 }
 
 /**
+ * Returns a minimum amount of time that a given state should be rendered for,
+ * taking into account `minimum` parameter value. If the `minimum` value is
+ * not specified - returns `null`.
+ */
+function getMinimumDurationForState(
+    tDetails: TDeferBlockDetails, currentState: DeferBlockState): number|null {
+  if (currentState === DeferBlockState.Placeholder) {
+    return tDetails.placeholderBlockConfig?.[MINIMUM_SLOT] ?? null;
+  } else if (currentState === DeferBlockState.Loading) {
+    return tDetails.loadingBlockConfig?.[MINIMUM_SLOT] ?? null;
+  }
+  return null;
+}
+
+/** Retrieves the value of the `after` parameter on the @loading block. */
+function getLoadingBlockAfter(tDetails: TDeferBlockDetails): number|null {
+  return tDetails.loadingBlockConfig?.[LOADING_AFTER_SLOT] ?? null;
+}
+
+/**
  * Transitions a defer block to the new state. Updates the  necessary
  * data structures and renders corresponding block.
  *
@@ -622,6 +646,7 @@ function getTemplateIndexForState(
 export function renderDeferBlockState(
     newState: DeferBlockState, tNode: TNode, lContainer: LContainer): void {
   const hostLView = lContainer[PARENT];
+  const hostTView = hostLView[TVIEW];
 
   // Check if this view is not destroyed. Since the loading process was async,
   // the view might end up being destroyed by the time rendering happens.
@@ -631,15 +656,97 @@ export function renderDeferBlockState(
   ngDevMode && assertTNodeForLView(tNode, hostLView);
 
   const lDetails = getLDeferBlockDetails(hostLView, tNode);
+  const tDetails = getTDeferBlockDetails(hostTView, tNode);
 
   ngDevMode && assertDefined(lDetails, 'Expected a defer block state defined');
 
+  const now = Date.now();
+  const currentState = lDetails[DEFER_BLOCK_STATE];
+
+  if (!isValidStateChange(currentState, newState) ||
+      !isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState))
+    return;
+
+  if (lDetails[STATE_IS_FROZEN_UNTIL] === null || lDetails[STATE_IS_FROZEN_UNTIL] <= now) {
+    lDetails[STATE_IS_FROZEN_UNTIL] = null;
+
+    const loadingAfter = getLoadingBlockAfter(tDetails);
+    const inLoadingAfterPhase = lDetails[LOADING_AFTER_CLEANUP_FN] !== null;
+    if (newState === DeferBlockState.Loading && loadingAfter !== null && !inLoadingAfterPhase) {
+      // Trying to render loading, but it has an `after` config,
+      // so schedule an update action after a timeout.
+      lDetails[NEXT_DEFER_BLOCK_STATE] = newState;
+      const cleanupFn =
+          scheduleDeferBlockUpdate(loadingAfter, lDetails, tNode, lContainer, hostLView);
+      lDetails[LOADING_AFTER_CLEANUP_FN] = cleanupFn;
+    } else {
+      // If we transition to a complete or an error state and there is a pending
+      // operation to render loading after a timeout - invoke a cleanup operation,
+      // which stops the timer.
+      if (newState > DeferBlockState.Loading && inLoadingAfterPhase) {
+        lDetails[LOADING_AFTER_CLEANUP_FN]!();
+        lDetails[LOADING_AFTER_CLEANUP_FN] = null;
+        lDetails[NEXT_DEFER_BLOCK_STATE] = null;
+      }
+
+      applyDeferBlockStateToDom(newState, lDetails, lContainer, hostLView, tNode);
+
+      const duration = getMinimumDurationForState(tDetails, newState);
+      if (duration !== null) {
+        lDetails[STATE_IS_FROZEN_UNTIL] = now + duration;
+        scheduleDeferBlockUpdate(duration, lDetails, tNode, lContainer, hostLView);
+      }
+    }
+  } else {
+    // We are still rendering the previous state.
+    // Update the `NEXT_DEFER_BLOCK_STATE`, which would be
+    // picked up once it's time to transition to the next state.
+    lDetails[NEXT_DEFER_BLOCK_STATE] = newState;
+  }
+}
+
+/**
+ * Schedules an update operation after a specified timeout.
+ */
+function scheduleDeferBlockUpdate(
+    timeout: number, lDetails: LDeferBlockDetails, tNode: TNode, lContainer: LContainer,
+    hostLView: LView<unknown>): VoidFunction {
+  const callback = () => {
+    const nextState = lDetails[NEXT_DEFER_BLOCK_STATE];
+    lDetails[STATE_IS_FROZEN_UNTIL] = null;
+    lDetails[NEXT_DEFER_BLOCK_STATE] = null;
+    if (nextState !== null) {
+      renderDeferBlockState(nextState, tNode, lContainer);
+    }
+  };
+  // TODO: this needs refactoring to make `TimerScheduler` that is used inside
+  // of the `scheduleTimerTrigger` function tree-shakable.
+  return scheduleTimerTrigger(timeout, callback, hostLView, true);
+}
+
+/**
+ * Checks whether we can transition to the next state.
+ *
+ * We transition to the next state if the previous state was represented
+ * with a number that is less than the next state. For example, if the current
+ * state is "loading" (represented as `1`), we should not show a placeholder
+ * (represented as `0`), but we can show a completed state (represented as `2`)
+ * or an error state (represented as `3`).
+ */
+function isValidStateChange(
+    currentState: DeferBlockState|DeferBlockInternalState, newState: DeferBlockState): boolean {
+  return currentState < newState;
+}
+
+/**
+ * Applies changes to the DOM to reflect a given state.
+ */
+function applyDeferBlockStateToDom(
+    newState: DeferBlockState, lDetails: LDeferBlockDetails, lContainer: LContainer,
+    hostLView: LView<unknown>, tNode: TNode) {
   const stateTmplIndex = getTemplateIndexForState(newState, hostLView, tNode);
-  // Note: we transition to the next state if the previous state was represented
-  // with a number that is less than the next state. For example, if the current
-  // state is "loading" (represented as `2`), we should not show a placeholder
-  // (represented as `1`).
-  if (lDetails[DEFER_BLOCK_STATE] < newState && stateTmplIndex !== null) {
+
+  if (stateTmplIndex !== null) {
     lDetails[DEFER_BLOCK_STATE] = newState;
     const hostTView = hostLView[TVIEW];
     const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
@@ -832,13 +939,9 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
   if (!shouldTriggerDeferBlock(injector)) return;
 
   const tDetails = getTDeferBlockDetails(tView, tNode);
-
-  // Condition is triggered, try to render loading state and start downloading.
-  // Note: if a block is in a loading, completed or an error state, this call would be a noop.
-  renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
-
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:
+      renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
       triggerResourceLoading(tDetails, lView);
 
       // The `loadingState` might have changed to "loading".
@@ -848,6 +951,7 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
       }
       break;
     case DeferDependenciesLoadingState.IN_PROGRESS:
+      renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
       renderDeferStateAfterResourceLoading(tDetails, tNode, lContainer);
       break;
     case DeferDependenciesLoadingState.COMPLETE:
