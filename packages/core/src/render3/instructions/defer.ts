@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
+import {inject, InjectionToken, Injector, ɵɵdefineInjectable} from '../../di';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
