@@ -6,26 +6,46 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defaultEquals, SIGNAL, Signal, ValueEqualityFn} from './api';
-import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode} from './graph';
+import {defaultEquals, ValueEqualityFn} from './equality';
+import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
+
 
 /**
- * Options passed to the `computed` creation function.
+ * A computation, which derives a value from a declarative reactive expression.
+ *
+ * `Computed`s are both producers and consumers of reactivity.
  */
-export interface CreateComputedOptions<T> {
+export interface ComputedNode<T> extends ReactiveNode {
   /**
-   * A comparison function which defines equality for computed values.
+   * Current value of the computation, or one of the sentinel values above (`UNSET`, `COMPUTING`,
+   * `ERROR`).
    */
-  equal?: ValueEqualityFn<T>;
+  value: T;
+
+  /**
+   * If `value` is `ERRORED`, the error caught from the last computation attempt which will
+   * be re-thrown.
+   */
+  error: unknown;
+
+  /**
+   * The computation function which will produce a new value.
+   */
+  computation: () => T;
+
+  equal: ValueEqualityFn<T>;
 }
 
+export type ComputedGetter<T> = (() => T)&{
+  [SIGNAL]: ComputedNode<T>;
+};
+
 /**
- * Create a computed `Signal` which derives a reactive value from an expression.
+ * Create a computed signal which derives a reactive value from an expression.
  */
-export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
+export function createComputed<T>(computation: () => T): ComputedGetter<T> {
   const node: ComputedNode<T> = Object.create(COMPUTED_NODE);
   node.computation = computation;
-  options?.equal && (node.equal = options.equal);
 
   const computed = () => {
     // Check if the value needs updating before returning it.
@@ -40,10 +60,9 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
 
     return node.value;
   };
-  (computed as any)[SIGNAL] = node;
-  return computed as any as Signal<T>;
+  (computed as ComputedGetter<T>)[SIGNAL] = node;
+  return computed as unknown as ComputedGetter<T>;
 }
-
 
 /**
  * A dedicated symbol used before a computed value has been calculated for the first time.
@@ -64,32 +83,6 @@ const COMPUTING: any = /* @__PURE__ */ Symbol('COMPUTING');
  * Explicitly typed as `any` so we can use it as signal's value.
  */
 const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
-
-/**
- * A computation, which derives a value from a declarative reactive expression.
- *
- * `Computed`s are both producers and consumers of reactivity.
- */
-interface ComputedNode<T> extends ReactiveNode {
-  /**
-   * Current value of the computation, or one of the sentinel values above (`UNSET`, `COMPUTING`,
-   * `ERROR`).
-   */
-  value: T;
-
-  /**
-   * If `value` is `ERRORED`, the error caught from the last computation attempt which will
-   * be re-thrown.
-   */
-  error: unknown;
-
-  /**
-   * The computation function which will produce a new value.
-   */
-  computation: () => T;
-
-  equal: ValueEqualityFn<T>;
-}
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.

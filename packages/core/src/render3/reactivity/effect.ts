@@ -13,15 +13,13 @@ import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
 import {DestroyRef} from '../../linker/destroy_ref';
-import {watch, Watch, WatchCleanupRegisterFn} from '../../signals';
+import {createWatch, Watch, WatchCleanupRegisterFn} from '../../signals';
 
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
- *
- * @developerPreview
  */
 export type EffectCleanupFn = () => void;
 
@@ -176,8 +174,8 @@ class EffectHandle implements EffectRef, SchedulableEffect {
       private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
       public creationZone: Zone|null, destroyRef: DestroyRef|null,
       private errorHandler: ErrorHandler|null, allowSignalWrites: boolean) {
-    this.watcher =
-        watch((onCleanup) => this.runEffect(onCleanup), () => this.schedule(), allowSignalWrites);
+    this.watcher = createWatch(
+        (onCleanup) => this.runEffect(onCleanup), () => this.schedule(), allowSignalWrites);
     this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
   }
 
@@ -212,8 +210,6 @@ class EffectHandle implements EffectRef, SchedulableEffect {
 
 /**
  * A global reactive effect, which can be manually destroyed.
- *
- * @developerPreview
  */
 export interface EffectRef {
   /**
@@ -224,8 +220,6 @@ export interface EffectRef {
 
 /**
  * Options passed to the `effect` function.
- *
- * @developerPreview
  */
 export interface CreateEffectOptions {
   /**
@@ -255,8 +249,6 @@ export interface CreateEffectOptions {
 
 /**
  * Create a global `Effect` for the given reactive function.
- *
- * @developerPreview
  */
 export function effect(
     effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
