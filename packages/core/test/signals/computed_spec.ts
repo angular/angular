@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, watch} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {createWatch} from '@angular/core/src/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -138,7 +139,7 @@ describe('computed', () => {
     const derived = computed(() => source().toUpperCase());
 
     let watchCount = 0;
-    const w = watch(
+    const w = createWatch(
         () => {
           derived();
         },

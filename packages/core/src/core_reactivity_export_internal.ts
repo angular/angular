@@ -8,16 +8,22 @@
 
 // clang-format off
 export {
-  computed,
-  CreateComputedOptions,
-  CreateSignalOptions,
   isSignal,
   Signal,
-  signal,
-  untracked,
   ValueEqualityFn,
+} from './render3/reactivity/api';
+export {
+  computed,
+  CreateComputedOptions,
+} from './render3/reactivity/computed';
+export {
+  CreateSignalOptions,
+  signal,
   WritableSignal,
-} from './signals';
+} from './render3/reactivity/signal';
+export {
+  untracked,
+} from './render3/reactivity/untracked';
 export {
   CreateEffectOptions,
   effect,

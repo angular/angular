@@ -1,6 +1,6 @@
 # Angular Signals Implementation
 
-This directory contains the code for Angular's reactive primitive, an implementation of the "signal" concept. A signal is a value which is "reactive", meaning it can notify interested consumers when it changes. There are many different implementations of this concept, with different designs for how these notifications are subscribed to and propagated, how cleanup/unsubscription works, how dependencies are tracked, etc. This document describes the algorithm behind our specific implementation of the signal pattern.
+This directory contains the code which powers Angular's reactive primitive, an implementation of the "signal" concept. A signal is a value which is "reactive", meaning it can notify interested consumers when it changes. There are many different implementations of this concept, with different designs for how these notifications are subscribed to and propagated, how cleanup/unsubscription works, how dependencies are tracked, etc. This document describes the algorithm behind our specific implementation of the signal pattern.
 
 ## Conceptual surface
 
@@ -10,9 +10,13 @@ Particular contexts (such as template expressions) can be _reactive_. In such co
 
 This context and getter function mechanism allows for signal dependencies of a context to be tracked _automatically_ and _implicitly_. Users do not need to declare arrays of dependencies, nor does the set of dependencies of a particular context need to remain static across executions.
 
+### Source signals
+
+
+
 ### Writable signals: `signal()`
 
-The `signal()` function produces a specific type of signal known as a `WritableSignal`. In addition to being a getter function, `WritableSignal`s have an additional API for changing the value of the signal (along with notifying any dependents of the change). These include the `.set` operation for replacing the signal value, `.update` for deriving a new value, and `.mutate` for performing internal mutation of the current value. These are exposed as functions on the signal getter itself.
+The `createSignal()` function produces a specific type of signal that tracks a stored value. In addition to providing a getter function, these signals can be wired up with additional APIs for changing the value of the signal (along with notifying any dependents of the change). These include the `.set` operation for replacing the signal value, `.update` for deriving a new value, and `.mutate` for performing internal mutation of the current value. In Angular, these are exposed as functions on the signal getter itself. For example:
 
 ```typescript
 const counter = signal(0);
@@ -39,9 +43,9 @@ If the equality function determines that 2 values are equal it will:
 * block update of signal’s value;
 * skip change propagation.
 
-### Declarative derived values: `computed()`
+### Declarative derived values
 
-`computed()` creates a memoizing signal, which calculates its value from the values of some number of input signals.
+`createComputed()` creates a memoizing signal, which calculates its value from the values of some number of input signals. In Angular this is wrapped into the `computed` constructor:
 
 ```typescript
 const counter = signal(0);
@@ -54,7 +58,9 @@ Because the calculation function used to create the `computed` is executed in a 
 
 Similarly to signals, the `computed` can (optionally) specify an equality comparator function. 
 
-### Side effects: `effect()`
+### Side effects: `createWatch()`
+
+The signals library provides an operation to watch a reactive function and receive notifications when the dependencies of that function change. This is used within Angular to build `effect()`.
 
 `effect()` schedules and runs a side-effectful function inside a reactive context. Signal dependencies of this function are captured, and the side effect is re-executed whenever any of its dependencies produces a new value.
 

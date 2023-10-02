@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {defaultEquals, isSignal, Signal, SIGNAL, ValueEqualityFn} from './src/api';
-export {computed, CreateComputedOptions} from './src/computed';
+export {createComputed} from './src/computed';
+export {defaultEquals, ValueEqualityFn} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
-export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, getActiveConsumer, isInNotificationPhase, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, setActiveConsumer} from './src/graph';
-export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal} from './src/signal';
-export {untracked} from './src/untracked';
-export {Watch, watch, WatchCleanupFn, WatchCleanupRegisterFn} from './src/watch';
+export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, getActiveConsumer, isInNotificationPhase, isReactive, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, Reactive, REACTIVE_NODE, ReactiveNode, setActiveConsumer, SIGNAL} from './src/graph';
+export {createSignal, setPostSignalSetFn, SignalGetter, signalMutateFn, SignalNode, signalSetFn, signalUpdateFn} from './src/signal';
+export {createWatch, Watch, WatchCleanupFn, WatchCleanupRegisterFn} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';

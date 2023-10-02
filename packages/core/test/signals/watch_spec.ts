@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, watch} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {createWatch} from '@angular/core/src/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
@@ -163,7 +164,7 @@ describe('watchers', () => {
   it('should throw an error when reading a signal during the notification phase', () => {
     const source = signal(0);
     let ranScheduler = false;
-    const w = watch(
+    const w = createWatch(
         () => {
           source();
         },
@@ -184,7 +185,7 @@ describe('watchers', () => {
   describe('destroy', () => {
     it('should not run destroyed watchers', () => {
       let watchRuns = 0;
-      const watchRef = watch(() => {
+      const watchRef = createWatch(() => {
         watchRuns++;
       }, NOOP_FN, false);
 
@@ -200,7 +201,7 @@ describe('watchers', () => {
       const counter = signal(0);
 
       let scheduleCount = 0;
-      const watchRef = watch(() => counter(), () => scheduleCount++, false);
+      const watchRef = createWatch(() => counter(), () => scheduleCount++, false);
 
       // watches are _not_ scheduled by default, run it for the first time to capture
       // dependencies
@@ -214,7 +215,7 @@ describe('watchers', () => {
 
     it('should not schedule destroyed watches', () => {
       let scheduleCount = 0;
-      const watchRef = watch(NOOP_FN, () => scheduleCount++, false);
+      const watchRef = createWatch(NOOP_FN, () => scheduleCount++, false);
 
       // watches are _not_ scheduled by default
       expect(scheduleCount).toBe(0);
@@ -230,7 +231,7 @@ describe('watchers', () => {
     it('should not run cleanup functions after destroy', () => {
       const counter = signal(0);
       let cleanupRuns = 0;
-      const watchRef = watch((onCleanup) => {
+      const watchRef = createWatch((onCleanup) => {
         counter();
         onCleanup(() => cleanupRuns++);
       }, NOOP_FN, false);

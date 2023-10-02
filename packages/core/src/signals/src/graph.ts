@@ -10,7 +10,6 @@
 // global `ngDevMode` type is defined.
 import '../../util/ng_dev_mode';
 
-type Version = number&{__brand: 'Version'};
 
 /**
  * The currently active consumer `ReactiveNode`, if running code in a reactive context.
@@ -19,6 +18,15 @@ type Version = number&{__brand: 'Version'};
  */
 let activeConsumer: ReactiveNode|null = null;
 let inNotificationPhase = false;
+
+type Version = number&{__brand: 'Version'};
+
+/**
+ * Symbol used to tell `Signal`s apart from other functions.
+ *
+ * This can be used to auto-unwrap signals in various cases, or to auto-wrap non-signal values.
+ */
+export const SIGNAL = /* @__PURE__ */ Symbol('SIGNAL');
 
 export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
   const prev = activeConsumer;
@@ -32,6 +40,14 @@ export function getActiveConsumer(): ReactiveNode|null {
 
 export function isInNotificationPhase(): boolean {
   return inNotificationPhase;
+}
+
+export interface Reactive {
+  [SIGNAL]: ReactiveNode;
+}
+
+export function isReactive(value: unknown): value is Reactive {
+  return (value as Partial<Reactive>)[SIGNAL] !== undefined;
 }
 
 export const REACTIVE_NODE: ReactiveNode = {
