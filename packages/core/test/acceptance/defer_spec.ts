@@ -8,7 +8,7 @@
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
-import {Component, Input, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {Component, Input, NgZone, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {DeferBlockBehavior, fakeAsync, flush, TestBed} from '@angular/core/testing';
 
@@ -633,6 +633,7 @@ describe('@defer', () => {
         (callback: IdleRequestCallback, options?: IdleRequestOptions): number => {
           onIdleCallbackQueue.push(callback);
           expect(idleCallbacksRequested).toBe(0);
+          expect(NgZone.isInAngularZone()).toBe(true);
           idleCallbacksRequested++;
           return 0;
         };
