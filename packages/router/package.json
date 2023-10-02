@@ -27,6 +27,7 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "@types/dom-view-transitions": "^1.0.1",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "ng-update": {

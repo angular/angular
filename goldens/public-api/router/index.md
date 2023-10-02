@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="@types/dom-view-transitions" />
+
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { Compiler } from '@angular/core';
@@ -1086,7 +1088,20 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export interface ViewTransitionInfo {
+    from: ActivatedRouteSnapshot;
+    to: ActivatedRouteSnapshot;
+    transition: ViewTransition;
+}
+
+// @public
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+// @public
+export interface ViewTransitionsFeatureOptions {
+    onViewTransitionCreated?: (transitionInfo: ViewTransitionInfo) => void;
+    skipInitialTransition?: boolean;
+}
 
 // @public
 export function withComponentInputBinding(): ComponentInputBindingFeature;
