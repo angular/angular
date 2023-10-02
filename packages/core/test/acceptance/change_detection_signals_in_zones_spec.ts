@@ -7,10 +7,8 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, signal, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
-import {signal} from '../../src/signals';
 
 describe('CheckAlways components', () => {
   it('can read a signal', () => {

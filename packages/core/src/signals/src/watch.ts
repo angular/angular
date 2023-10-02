@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, consumerMarkDirty, consumerPollProducersForChange, isInNotificationPhase, REACTIVE_NODE, ReactiveNode} from './graph';
+import {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, consumerMarkDirty, consumerPollProducersForChange, isInNotificationPhase, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
 
 /**
  * A cleanup function that can be optionally registered from the watch logic. If registered, the
@@ -38,9 +38,18 @@ export interface Watch {
    * - mark it as destroyed so subsequent run and notify operations are noop.
    */
   destroy(): void;
+
+  [SIGNAL]: WatchNode;
+}
+export interface WatchNode extends ReactiveNode {
+  hasRun: boolean;
+  fn: ((onCleanup: WatchCleanupRegisterFn) => void)|null;
+  schedule: ((watch: Watch) => void)|null;
+  cleanupFn: WatchCleanupFn;
+  ref: Watch;
 }
 
-export function watch(
+export function createWatch(
     fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void,
     allowSignalWrites: boolean): Watch {
   const node: WatchNode = Object.create(WATCH_NODE);
@@ -102,20 +111,13 @@ export function watch(
     run,
     cleanup: () => node.cleanupFn(),
     destroy: () => destroyWatchNode(node),
+    [SIGNAL]: node,
   };
 
   return node.ref;
 }
 
 const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
-
-interface WatchNode extends ReactiveNode {
-  hasRun: boolean;
-  fn: ((onCleanup: WatchCleanupRegisterFn) => void)|null;
-  schedule: ((watch: Watch) => void)|null;
-  cleanupFn: WatchCleanupFn;
-  ref: Watch;
-}
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.

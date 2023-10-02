@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, untracked} from '@angular/core/src/signals';
+import {computed, signal, untracked} from '@angular/core';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
