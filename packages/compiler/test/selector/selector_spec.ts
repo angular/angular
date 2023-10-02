@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
+import {
+  CssSelector,
+  CssSelectorParserErrors,
+  SelectorMatcher,
+} from '@angular/compiler/src/selector';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 describe('SelectorMatcher', () => {
@@ -548,13 +552,55 @@ describe('CssSelector.parse', () => {
   it('should throw when nested :not', () => {
     expect(() => {
       CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0];
-    }).toThrowError('Nesting :not in a selector is not allowed');
+    }).toThrowError(new RegExp(CssSelectorParserErrors.NotInNot));
+  });
+  it('should throw when css combinators ', () => {
+    const expectError = (selector: string) => {
+      expect(() => {
+        CssSelector.parse(selector);
+      }).toThrowMatching((error: Error) =>
+        error.message.startsWith(CssSelectorParserErrors.Combinators),
+      );
+    };
+
+    expectError('sometag [type]'); // space
+    expectError('sometag + [type]'); // +
+    expectError('sometag ~ [type]'); // ~
+    expectError('sometag > [type]'); // >
+  });
+
+  it('should throw when nested :not', () => {
+    expect(() => {
+      CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0];
+    }).toThrowError(new RegExp(CssSelectorParserErrors.NotInNot));
   });
 
   it('should throw when multiple selectors in :not', () => {
     expect(() => {
       CssSelector.parse('sometag:not(a,b)');
-    }).toThrowError('Multiple selectors in :not are not supported');
+    }).toThrowError(new RegExp(CssSelectorParserErrors.CommaInNot));
+  });
+
+  it('should throw when pseudo element ', () => {
+    expect(() => {
+      CssSelector.parse('sometag::after');
+    }).toThrowError(new RegExp(CssSelectorParserErrors.PseudoElement));
+  });
+
+  it('should throw when multiple tagName', () => {
+    expect(() => {
+      CssSelector.parse('sometag[type=text]sometag2]');
+    }).toThrowError(new RegExp(CssSelectorParserErrors.MultipleTagName));
+  });
+
+  it('should handle ":svg:*" selector', () => {
+    const cssSelectors1 = CssSelector.parse(':svg:ng-template');
+    expect(cssSelectors1.length).toEqual(1);
+    expect(cssSelectors1[0].element).toEqual('ng-template');
+
+    const cssSelectors2 = CssSelector.parse(':svg:circle');
+    expect(cssSelectors2.length).toEqual(1);
+    expect(cssSelectors2[0].element).toEqual('circle');
   });
 
   it('should detect lists of selectors', () => {
@@ -580,6 +626,12 @@ describe('CssSelector.parse', () => {
 
     expect(cssSelectors[2].element).toEqual('textbox');
     expect(cssSelectors[2].notSelectors[0].classNames).toEqual(['special']);
+  });
+
+  it('should refuse multiple tagName', () => {
+    expect(() => {
+      CssSelector.parse('input[type=text]button');
+    }).toThrowError(new RegExp(CssSelectorParserErrors.MultipleTagName));
   });
 });
 
