@@ -9,6 +9,7 @@ import * as core from '../../core';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
+import {RecursiveVisitor, visitAll} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {generateForwardRef, R3CompiledExpression} from '../util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
@@ -71,10 +72,19 @@ export function createComponentDefinitionMap(
     templateInfo: DeclareComponentTemplateInfo): DefinitionMap<R3DeclareComponentMetadata> {
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
       createDirectiveDefinitionMap(meta);
+  const blockVisitor = new BlockPresenceVisitor();
+  visitAll(blockVisitor, template.nodes);
 
   definitionMap.set('template', getTemplateExpression(template, templateInfo));
+
   if (templateInfo.isInline) {
     definitionMap.set('isInline', o.literal(true));
+  }
+
+  // Set the minVersion to 17.0.0 if the component is using at least one block in its template.
+  // We don't do this for templates without blocks, in order to preserve backwards compatibility.
+  if (blockVisitor.hasBlocks) {
+    definitionMap.set('minVersion', o.literal('17.0.0'));
   }
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
@@ -188,4 +198,48 @@ function compileUsedDependenciesMetadata(meta: R3ComponentMetadata<R3TemplateDep
         return ngModuleMeta.toLiteralMap();
     }
   });
+}
+
+class BlockPresenceVisitor extends RecursiveVisitor {
+  hasBlocks = false;
+
+  override visitDeferredBlock(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitDeferredBlockPlaceholder(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitDeferredBlockLoading(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitDeferredBlockError(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitIfBlock(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitIfBlockBranch(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitForLoopBlock(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitForLoopBlockEmpty(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitSwitchBlock(): void {
+    this.hasBlocks = true;
+  }
+
+  override visitSwitchBlockCase(): void {
+    this.hasBlocks = true;
+  }
 }
