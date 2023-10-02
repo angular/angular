@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {setActiveConsumer} from '../../signals';
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 /**
  * Execute an arbitrary function in a non-reactive (non-tracking) context. The executed function

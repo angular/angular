@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
-import {setActiveConsumer} from '../signals';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {assertFirstCreatePass} from './assert';

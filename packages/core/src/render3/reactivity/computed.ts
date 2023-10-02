@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createComputed, SIGNAL} from '../../signals';
+import {createComputed, SIGNAL} from '@angular/core/primitives/signals';
 
 import {Signal, ValueEqualityFn} from './api';
 

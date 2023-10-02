@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getActiveConsumer} from '@angular/core/primitives/signals';
+
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {getActiveConsumer} from '../../signals';
 
 /**
  * Asserts that the current stack frame is not within a reactive context. Useful

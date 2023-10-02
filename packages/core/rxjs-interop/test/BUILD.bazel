@@ -15,7 +15,6 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "//packages/core/rxjs-interop",
-        "//packages/core/src/signals",
         "//packages/core/testing",
         "//packages/private/testing",
         "@npm//rxjs",

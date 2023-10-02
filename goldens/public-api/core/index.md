@@ -5,6 +5,7 @@
 ```ts
 
 import { Observable } from 'rxjs';
+import { SIGNAL } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 

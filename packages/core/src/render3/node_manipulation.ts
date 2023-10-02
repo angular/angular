@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {consumerDestroy} from '@angular/core/primitives/signals';
+
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
-import {consumerDestroy} from '../signals';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertFunction, assertNumber, assertString} from '../util/assert';
 import {escapeCommentText} from '../util/dom';

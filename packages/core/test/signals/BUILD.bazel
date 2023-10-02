@@ -10,7 +10,7 @@ ts_library(
     ),
     deps = [
         "//packages/core",
-        "//packages/core/src/signals",
+        "//packages/core/primitives/signals",
         "//packages/core/src/util",
     ],
 )

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {createWatch, Watch, WatchCleanupRegisterFn} from '@angular/core/primitives/signals';
+
 import {assertInInjectionContext} from '../../di/contextual';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
@@ -13,7 +15,6 @@ import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
 import {DestroyRef} from '../../linker/destroy_ref';
-import {createWatch, Watch, WatchCleanupRegisterFn} from '../../signals';
 
 
 /**

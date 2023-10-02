@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SIGNAL} from '../../signals';
+import {SIGNAL} from '@angular/core/primitives/signals';
 
 /**
  * A reactive value which notifies consumers of any changes.

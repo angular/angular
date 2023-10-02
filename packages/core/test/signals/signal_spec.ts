@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {setPostSignalSetFn} from '@angular/core/src/signals';
+import {setPostSignalSetFn} from '@angular/core/primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {
