@@ -21,6 +21,7 @@ import {PartialInjectorLinkerVersion1} from './partial_injector_linker_1';
 import {PartialLinker} from './partial_linker';
 import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1';
 import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1';
+import {PLACEHOLDER_VERSION} from './util';
 
 export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareClassMetadata = 'ɵɵngDeclareClassMetadata';
@@ -68,7 +69,7 @@ export function createLinkerMap<TStatement, TExpression>(
     environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
     code: string): Map<string, LinkerRange<TExpression>[]> {
   const linkers = new Map<string, LinkerRange<TExpression>[]>();
-  const LATEST_VERSION_RANGE = getRange('<=', '0.0.0-PLACEHOLDER');
+  const LATEST_VERSION_RANGE = getRange('<=', PLACEHOLDER_VERSION);
 
   linkers.set(ɵɵngDeclareDirective, [
     {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(sourceUrl, code)},
@@ -143,7 +144,7 @@ export class PartialLinkerSelector<TExpression> {
     }
     const linkerRanges = this.linkers.get(functionName)!;
 
-    if (version === '0.0.0-PLACEHOLDER') {
+    if (version === PLACEHOLDER_VERSION) {
       // Special case if the `version` is the same as the current compiler version.
       // This helps with compliance tests where the version placeholders have not been replaced.
       return linkerRanges[linkerRanges.length - 1].linker;

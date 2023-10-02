@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BoundTarget, ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TargetBinder, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation} from '@angular/compiler';
+import semver from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -15,7 +16,7 @@ import {GetSourceFileFn} from '../get_source_file';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef} from './util';
+import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
 
 function makeDirectiveMetadata<TExpression>(
     directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
@@ -49,21 +50,26 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       private code: string) {}
 
   linkPartialDeclaration(
-      constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
-    const meta = this.toR3ComponentMeta(metaObj);
+      constantPool: ConstantPool, metaObj: AstObject<R3PartialDeclaration, TExpression>,
+      version: string): LinkedDefinition {
+    const meta = this.toR3ComponentMeta(metaObj, version);
     return compileComponentFromMetadata(meta, constantPool, makeBindingParser());
   }
 
   /**
    * This function derives the `R3ComponentMetadata` from the provided AST object.
    */
-  private toR3ComponentMeta(metaObj: AstObject<R3DeclareComponentMetadata, TExpression>):
-      R3ComponentMetadata<R3TemplateDependencyMetadata> {
+  private toR3ComponentMeta(
+      metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
+      version: string): R3ComponentMetadata<R3TemplateDependencyMetadata> {
     const interpolation = parseInterpolationConfig(metaObj);
     const templateSource = metaObj.getValue('template');
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
     const templateInfo = this.getTemplateInfo(templateSource, isInline);
+
+    // Enable the new block syntax if compiled with v17 and
+    // above, or when using the local placeholder version.
+    const supportsBlockSyntax = semver.major(version) >= 17 || version === PLACEHOLDER_VERSION;
 
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
@@ -74,6 +80,12 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
           metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
+
+      // TODO(crisbeto): hardcode the supported blocks for now. Before the final release
+      // `enabledBlockTypes` will be replaced with a boolean, at which point `supportsBlockSyntax`
+      // can be passed in directly here.
+      enabledBlockTypes: supportsBlockSyntax ? new Set(['if', 'switch', 'for', 'defer']) :
+                                               undefined,
     });
     if (template.errors !== null) {
       const errors = template.errors.map(err => err.toString()).join('\n');

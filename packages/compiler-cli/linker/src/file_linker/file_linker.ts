@@ -69,7 +69,7 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     const minVersion = metaObj.getString('minVersion');
     const version = metaObj.getString('version');
     const linker = this.linkerSelector.getLinker(declarationFn, minVersion, version);
-    const definition = linker.linkPartialDeclaration(emitScope.constantPool, metaObj);
+    const definition = linker.linkPartialDeclaration(emitScope.constantPool, metaObj, version);
 
     return emitScope.translateDefinition(definition);
   }
