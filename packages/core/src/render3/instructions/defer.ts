@@ -11,6 +11,7 @@ import {inject} from '../../di/injector_compatibility';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertDefined, assertElement, assertEqual, throwError} from '../../util/assert';
+import {NgZone} from '../../zone';
 import {afterRender} from '../after_render_hooks';
 import {assertIndexInDeclRange, assertLContainer, assertLView, assertTNodeForLView} from '../assert';
 import {bindingUpdated} from '../bindings';
@@ -996,6 +997,8 @@ class OnIdleScheduler {
   // Those callbacks are scheduled for the next idle period.
   deferred = new Set<VoidFunction>();
 
+  ngZone = inject(NgZone);
+
   requestIdleCallback = _requestIdleCallback().bind(globalThis);
   cancelIdleCallback = _cancelIdleCallback().bind(globalThis);
 
@@ -1037,7 +1040,9 @@ class OnIdleScheduler {
         this.scheduleIdleCallback();
       }
     };
-    this.idleId = this.requestIdleCallback(callback) as number;
+    // Ensure that the callback runs in the NgZone since
+    // the `requestIdleCallback` is not currently patched by Zone.js.
+    this.idleId = this.requestIdleCallback(() => this.ngZone.run(callback)) as number;
   }
 
   ngOnDestroy() {
