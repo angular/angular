@@ -9,7 +9,7 @@
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {Component, Input, NgZone, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {DeferBlockBehavior, fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -63,6 +63,95 @@ function timer(delay: number): Promise<void> {
   return new Promise<void>((resolve) => {
     setTimeout(() => resolve(), delay);
   });
+}
+
+/**
+ * Allows to verify behavior of defer blocks by providing a set of
+ * [time, expected output] pairs. Also allows to provide a function
+ * instead of an expected output string, in which case the function
+ * is invoked at a specified time.
+ */
+async function verifyTimeline(
+    fixture: ComponentFixture<unknown>,
+    ...slots: Array<[time: number, expected: string|VoidFunction]>) {
+  for (let i = 0; i < slots.length; i++) {
+    const timeToWait = i === 0 ? slots[0][0] : (slots[i][0] - slots[i - 1][0]);
+    const slotValue = slots[i][1];
+    // This is an action, just invoke a function.
+    if (typeof slotValue === 'function') {
+      slotValue();
+    }
+    tick(timeToWait);
+    fixture.detectChanges();
+    if (typeof slotValue === 'string') {
+      const actual = fixture.nativeElement.textContent.trim();
+      expect(actual).withContext(`${slots[i][0]}ms`).toBe(slotValue);
+    }
+  }
+}
+
+
+/**
+ * Given a template, creates a component fixture and returns
+ * a set of helper functions to trigger rendering of prefetching
+ * of a defer block.
+ */
+function createFixture(template: string) {
+  @Component({
+    selector: 'nested-cmp',
+    standalone: true,
+    template: '{{ block }}',
+  })
+  class NestedCmp {
+    @Input() block!: string;
+  }
+
+  @Component({
+    standalone: true,
+    selector: 'simple-app',
+    imports: [NestedCmp],
+    template,
+  })
+  class MyCmp {
+    trigger = false;
+    prefetchTrigger = false;
+  }
+
+  let loadingTimeout = 0;
+  const deferDepsInterceptor = {
+    intercept() {
+      return () => {
+        return [dynamicImportOf(NestedCmp, loadingTimeout)];
+      };
+    }
+  };
+
+  TestBed.configureTestingModule({
+    providers: [
+      ...COMMON_PROVIDERS,
+      {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+    ],
+    deferBlockBehavior: DeferBlockBehavior.Playthrough,
+  });
+
+  clearDirectiveDefs(MyCmp);
+
+  const fixture = TestBed.createComponent(MyCmp);
+  fixture.detectChanges();
+
+  const trigger = (loadingResourcesTime: number) => () => {
+    loadingTimeout = loadingResourcesTime;
+    fixture.componentInstance.trigger = true;
+    fixture.detectChanges();
+  };
+
+  const triggerPrefetch = (loadingResourcesTime: number) => () => {
+    loadingTimeout = loadingResourcesTime;
+    fixture.componentInstance.prefetchTrigger = true;
+    fixture.detectChanges();
+  };
+
+  return {trigger, triggerPrefetch, fixture};
 }
 
 // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
@@ -292,6 +381,151 @@ describe('@defer', () => {
           .toContain(
               '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>');
     });
+  });
+
+  describe('minimum and after conditions', () => {
+    it('should support minimum and after conditions', fakeAsync(() => {
+         const {trigger, fixture} = createFixture(`
+            @defer (when trigger; prefetch when prefetchTrigger) {
+              <nested-cmp [block]="'Main'" />
+            } @loading (after 100ms; minimum 150ms) {
+              Loading
+            } @placeholder (minimum 100ms) {
+              Placeholder
+            } @error {
+              Error
+            }
+          `);
+
+         verifyTimeline(
+             fixture,
+             [50, 'Placeholder'],
+             [100, trigger(170)],
+             [150, 'Placeholder'],
+             [250, 'Loading'],
+             [300, 'Loading'],
+             [450, 'Main'],
+         );
+       }));
+
+    it('should support @placeholder with `minimum`', fakeAsync(() => {
+         const {trigger, fixture} = createFixture(`
+          @defer (when trigger; prefetch when prefetchTrigger) {
+            <nested-cmp [block]="'Main'" />
+          } @placeholder (minimum 100ms) {
+            Placeholder
+          }
+        `);
+
+         verifyTimeline(
+             fixture,
+             [0, trigger(40)],
+             [90, 'Placeholder'],
+             [100, 'Main'],
+         );
+       }));
+
+    it('should keep rendering @placeholder if trigger happened later', fakeAsync(() => {
+         const {trigger, fixture} = createFixture(`
+          @defer (when trigger; prefetch when prefetchTrigger) {
+            <nested-cmp [block]="'Main'" />
+          } @placeholder (minimum 100ms) {
+            Placeholder
+          }
+        `);
+
+         verifyTimeline(
+             fixture,
+             [0, 'Placeholder'],
+             [50, trigger(20)],
+             [90, 'Placeholder'],
+             [100, 'Main'],
+         );
+       }));
+
+    it('should transition from @placeholder to primary content ' +
+           'if it was prefetched',
+       fakeAsync(() => {
+         const {trigger, triggerPrefetch, fixture} = createFixture(`
+         @defer (when trigger; prefetch when prefetchTrigger) {
+           <nested-cmp [block]="'Main'" />
+         } @placeholder (minimum 100ms) {
+           Placeholder
+         }
+       `);
+
+         verifyTimeline(
+             fixture,
+             [0, 'Placeholder'],
+             [20, triggerPrefetch(20)],
+             [150, 'Placeholder'],
+             [200, trigger(0)],
+             [225, 'Main'],
+         );
+       }));
+
+    it('should support @loading with `minimum`', fakeAsync(() => {
+         const {trigger, fixture} = createFixture(`
+          @defer (when trigger; prefetch when prefetchTrigger) {
+            <nested-cmp [block]="'Main'" />
+          } @loading (minimum 100ms) {
+            Loading
+          }
+        `);
+
+         verifyTimeline(
+             fixture,
+             [0, trigger(20)],
+             // Even though loading happened in 20ms,
+             // we still render @loading block for longer
+             // period of time, since there was `minimum` defined.
+             [95, 'Loading'],
+             [100, 'Main'],
+         );
+       }));
+
+    it('should support @loading with `after` and `minimum`', fakeAsync(() => {
+         const {trigger, fixture} = createFixture(`
+         @defer (when trigger; prefetch when prefetchTrigger) {
+           <nested-cmp [block]="'Main'" />
+         } @loading (after 100ms; minimum 150ms) {
+           Loading
+         }
+       `);
+
+         verifyTimeline(
+             fixture,
+             [0, trigger(150)],
+             [50, ''],
+             // Start showing loading after `after` ms.
+             [100, 'Loading'],
+             [150, 'Loading'],
+             [200, 'Loading'],
+             // Render main content after `after` + `minimum` ms.
+             [300, 'Main'],
+         );
+       }));
+
+    it('should skip @loading when resources were prefetched', fakeAsync(() => {
+         const {trigger, triggerPrefetch, fixture} = createFixture(`
+          @defer (when trigger; prefetch when prefetchTrigger) {
+            <nested-cmp [block]="'Main'" />
+          } @loading (minimum 100ms) {
+            Loading
+          }
+        `);
+
+         verifyTimeline(
+             fixture,
+             [0, triggerPrefetch(50)],
+             [50, ''],
+             [75, ''],
+             [100, trigger(0)],
+             // We go directly into the final state, since
+             // resources were already preloaded.
+             [125, 'Main'],
+         );
+       }));
   });
 
   describe('error handling', () => {
