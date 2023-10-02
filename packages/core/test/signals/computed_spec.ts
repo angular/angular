@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {createWatch} from '@angular/core/src/signals';
+import {createWatch} from '@angular/core/primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {

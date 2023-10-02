@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createWatch, Watch, WatchCleanupFn} from '@angular/core/src/signals';
+import {createWatch, Watch, WatchCleanupFn} from '@angular/core/primitives/signals';
 
 let queue = new Set<Watch>();
 

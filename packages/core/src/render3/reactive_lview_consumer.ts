@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {REACTIVE_NODE, ReactiveNode} from '../signals';
+import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
+
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {markViewDirty} from './instructions/mark_view_dirty';
