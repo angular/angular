@@ -29,10 +29,9 @@ describe('NgOptimizedImage directive', () => {
 
     // Make sure that only one warning is in the console for image `a.png`,
     // since the `b.png` should be below the fold and not treated as an LCP element.
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
-    expect(logs.length).toEqual(2);
+    const logs = await collectBrowserLogs(logging.Level.SEVERE);
+    expect(logs.length).toEqual(1);
     // Verify that the error code and the image src are present in the error message.
     expect(logs[0].message).toMatch(/NG02955.*?a\.png/);
-    expect(logs[1].message).toMatch(/NG02964.*?logo-500w\.jpg/);
   });
 });
