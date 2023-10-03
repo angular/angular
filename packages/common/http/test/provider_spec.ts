@@ -7,14 +7,14 @@
  */
 
 import {DOCUMENT, XhrFactory} from '@angular/common';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, JsonpClientBackend} from '@angular/common/http';
+import {FetchBackend, HTTP_INTERCEPTORS, HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpXhrBackend, JsonpClientBackend} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {createEnvironmentInjector, EnvironmentInjector, inject, InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable} from 'rxjs';
 
 import {HttpInterceptorFn} from '../src/interceptor';
-import {provideHttpClient, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
+import {provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
 
 describe('provideHttp', () => {
   beforeEach(() => {
@@ -385,6 +385,31 @@ describe('provideHttp', () => {
       const req = TestBed.inject(HttpTestingController).expectOne('/test');
       expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
       req.flush('');
+    });
+  });
+
+  describe('fetch support', () => {
+    it('withFetch', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({providers: [provideHttpClient(withFetch())]});
+      const fetchBackend = TestBed.inject(HttpBackend);
+      expect(fetchBackend).toBeInstanceOf(FetchBackend);
+    });
+
+    it('withFetch should always override the backend', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withFetch()),
+          // This emulates a situation when `provideHttpClient()` is used
+          // later in a different part of an app. We want to make sure that
+          // the `FetchBackend` is enabled in that case as well.
+          {provide: HttpBackend, useClass: HttpXhrBackend},
+        ]
+      });
+
+      const handler = TestBed.inject(HttpHandler);
+      expect((handler as any).backend).toBeInstanceOf(FetchBackend);
     });
   });
 });
