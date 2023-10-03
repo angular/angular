@@ -64,6 +64,7 @@ export const REACTIVE_NODE: ReactiveNode = {
   producerMustRecompute: () => false,
   producerRecomputeValue: () => {},
   consumerMarkedDirty: () => {},
+  consumerOnSignalRead: () => {},
 };
 
 /**
@@ -160,6 +161,11 @@ export interface ReactiveNode {
   producerMustRecompute(node: unknown): boolean;
   producerRecomputeValue(node: unknown): void;
   consumerMarkedDirty(node: unknown): void;
+
+  /**
+   * Called when a signal is read within this consumer.
+   */
+  consumerOnSignalRead(node: unknown): void;
 }
 
 interface ConsumerNode extends ReactiveNode {
@@ -188,6 +194,8 @@ export function producerAccessed(node: ReactiveNode): void {
     // Accessed outside of a reactive context, so nothing to record.
     return;
   }
+
+  activeConsumer.consumerOnSignalRead(node);
 
   // This producer is the `idx`th dependency of `activeConsumer`.
   const idx = activeConsumer.nextProducerIndex++;
