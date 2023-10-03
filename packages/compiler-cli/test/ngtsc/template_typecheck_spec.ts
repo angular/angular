@@ -4495,6 +4495,57 @@ suppress
         expect(diags[0].messageText)
             .toContain('Error: Illegal State: Pipes are not allowed in this context');
       });
+
+      it('should allow nullable values in loop expression', () => {
+        env.write('test.ts', `
+          import {Component, Pipe} from '@angular/core';
+
+          @Pipe({name: 'fakeAsync', standalone: true})
+          export class FakeAsyncPipe {
+            transform<T>(value: Iterable<T>): Iterable<T> | null | undefined {
+              return null;
+            }
+          }
+
+          @Component({
+            template: \`
+              @for (item of items | fakeAsync; track item) {
+                {{item}}
+              }
+            \`,
+            standalone: true,
+            imports: [FakeAsyncPipe]
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([]);
+      });
+
+      it('should enforce that the loop expression is iterable', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            items = 123;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Type 'number' must have a '[Symbol.iterator]()' method that returns an iterator.`
+        ]);
+      });
     });
   });
 });
