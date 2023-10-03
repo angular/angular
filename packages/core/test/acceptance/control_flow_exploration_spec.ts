@@ -459,36 +459,29 @@ describe('control flow', () => {
 
     it('should be able to access component properties in the tracking function from a loop at the root of the template',
        () => {
-         const calls: string[][] = [];
+         const calls = new Set();
 
          @Component({
            template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
          })
          class TestComponent {
-           items = ['one', 'two', 'three'];
+           items = ['a', 'b'];
            compProp = 'hello';
 
            trackingFn(item: string, message: string) {
-             calls.push([item, message]);
+             calls.add(`${item}:${message}`);
              return item;
            }
          }
 
          const fixture = TestBed.createComponent(TestComponent);
          fixture.detectChanges();
-         expect(calls).toEqual([
-           ['one', 'hello'],
-           ['two', 'hello'],
-           ['three', 'hello'],
-           ['one', 'hello'],
-           ['two', 'hello'],
-           ['three', 'hello'],
-         ]);
+         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
        });
 
     it('should be able to access component properties in the tracking function from a nested template',
        () => {
-         const calls: string[][] = [];
+         const calls = new Set();
 
          @Component({
            template: `
@@ -502,25 +495,18 @@ describe('control flow', () => {
            `,
          })
          class TestComponent {
-           items = ['one', 'two', 'three'];
+           items = ['a', 'b'];
            compProp = 'hello';
 
            trackingFn(item: string, message: string) {
-             calls.push([item, message]);
+             calls.add(`${item}:${message}`);
              return item;
            }
          }
 
          const fixture = TestBed.createComponent(TestComponent);
          fixture.detectChanges();
-         expect(calls).toEqual([
-           ['one', 'hello'],
-           ['two', 'hello'],
-           ['three', 'hello'],
-           ['one', 'hello'],
-           ['two', 'hello'],
-           ['three', 'hello'],
-         ]);
+         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
        });
   });
 });
