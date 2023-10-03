@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DefaultIterableDiffer, IterableChangeRecord, TrackByFunction} from '../../change_detection';
+import {TrackByFunction} from '../../change_detection';
+import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined} from '../../util/assert';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
@@ -14,8 +15,9 @@ import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW, TView} from '../interfaces/view';
-import {detachView} from '../node_manipulation';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, TVIEW, TView} from '../interfaces/view';
+import {LiveCollection, reconcile} from '../list_reconciliation';
+import {destroyLView, detachView} from '../node_manipulation';
 import {getLView, nextBindingIndex} from '../state';
 import {getTNode} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
@@ -99,7 +101,7 @@ export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
 }
 
 class RepeaterMetadata {
-  constructor(public hasEmptyBlock: boolean, public differ: DefaultIterableDiffer<unknown>) {}
+  constructor(public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>) {}
 }
 
 /**
@@ -135,7 +137,7 @@ export function ɵɵrepeaterCreate(
       // new function. For pure functions it's not necessary.
       trackByFn.bind(hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT]) :
       trackByFn;
-  const metadata = new RepeaterMetadata(hasEmptyBlock, new DefaultIterableDiffer(boundTrackBy));
+  const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
   ɵɵtemplate(index + 1, templateFn, decls, vars);
@@ -147,6 +149,48 @@ export function ɵɵrepeaterCreate(
         assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
     ɵɵtemplate(index + 2, emptyTemplateFn, emptyDecls!, emptyVars!);
+  }
+}
+
+class LiveCollectionLContainerImpl extends
+    LiveCollection<LView<RepeaterContext<unknown>>, RepeaterContext<unknown>> {
+  constructor(
+      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode,
+      private trackByFn: TrackByFunction<unknown>) {
+    super();
+  }
+
+  override get length(): number {
+    return this.lContainer.length - CONTAINER_HEADER_OFFSET;
+  }
+  override at(index: number): LView<RepeaterContext<unknown>> {
+    return getExistingLViewFromLContainer(this.lContainer, index);
+  }
+  override key(index: number): unknown {
+    return this.trackByFn(index, this.at(index)[CONTEXT].$implicit);
+  }
+  override attach(index: number, lView: LView<RepeaterContext<unknown>>): void {
+    const dehydratedView = lView[HYDRATION] as DehydratedContainerView;
+    addLViewToLContainer(
+        this.lContainer, lView, index, shouldAddViewToDom(this.templateTNode, dehydratedView));
+  }
+  override detach(index: number): LView<RepeaterContext<unknown>> {
+    return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
+  }
+  override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
+    const dehydratedView =
+        findMatchingDehydratedView(this.lContainer, this.templateTNode.tView!.ssrId);
+    const embeddedLView = createAndRenderEmbeddedLView(
+        this.hostLView, this.templateTNode, new RepeaterContext(this.lContainer, value, index),
+        {dehydratedView});
+
+    return embeddedLView;
+  }
+  override destroy(lView: LView<RepeaterContext<unknown>>): void {
+    destroyLView(lView[TVIEW], lView);
+  }
+  override updateValue(index: number, value: unknown): void {
+    this.at(index)[CONTEXT].$implicit = value;
   }
 }
 
@@ -165,79 +209,43 @@ export function ɵɵrepeater(
   const hostLView = getLView();
   const hostTView = hostLView[TVIEW];
   const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
+  const containerIndex = metadataSlotIdx + 1;
+  const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+  const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
 
-  const differ = metadata.differ;
-  const changes = differ.diff(collection);
+  reconcile(
+      new LiveCollectionLContainerImpl(
+          lContainer, hostLView, itemTemplateTNode, metadata.trackByFn),
+      collection, metadata.trackByFn);
 
-  // handle repeater changes
-  if (changes !== null) {
-    const containerIndex = metadataSlotIdx + 1;
-    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
-    const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
-    let needsIndexUpdate = false;
-    changes.forEachOperation(
-        (item: IterableChangeRecord<unknown>, adjustedPreviousIndex: number|null,
-         currentIndex: number|null) => {
-          if (item.previousIndex === null) {
-            // add
-            const newViewIdx = adjustToLastLContainerIndex(lContainer, currentIndex);
-            const dehydratedView =
-                findMatchingDehydratedView(lContainer, itemTemplateTNode.tView!.ssrId);
-            const embeddedLView = createAndRenderEmbeddedLView(
-                hostLView, itemTemplateTNode,
-                new RepeaterContext(lContainer, item.item, newViewIdx), {dehydratedView});
-            addLViewToLContainer(
-                lContainer, embeddedLView, newViewIdx,
-                shouldAddViewToDom(itemTemplateTNode, dehydratedView));
-            needsIndexUpdate = true;
-          } else if (currentIndex === null) {
-            // remove
-            adjustedPreviousIndex = adjustToLastLContainerIndex(lContainer, adjustedPreviousIndex);
-            removeLViewFromLContainer(lContainer, adjustedPreviousIndex);
-            needsIndexUpdate = true;
-          } else if (adjustedPreviousIndex !== null) {
-            // move
-            const existingLView =
-                detachExistingView<RepeaterContext<unknown>>(lContainer, adjustedPreviousIndex);
-            addLViewToLContainer(lContainer, existingLView, currentIndex);
-            needsIndexUpdate = true;
-          }
-        });
-
-    // A trackBy function might return the same value even if the underlying item changed - re-bind
-    // it in the context.
-    changes.forEachIdentityChange((record: IterableChangeRecord<unknown>) => {
-      const viewIdx = adjustToLastLContainerIndex(lContainer, record.currentIndex);
-      const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, viewIdx);
-      lView[CONTEXT].$implicit = record.item;
-    });
-
-    // moves in the container might caused context's index to get out of order, re-adjust
-    if (needsIndexUpdate) {
-      for (let i = 0; i < lContainer.length - CONTAINER_HEADER_OFFSET; i++) {
-        const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, i);
-        lView[CONTEXT].$index = i;
-      }
-    }
+  // moves in the container might caused context's index to get out of order, re-adjust
+  // PERF: we could try to book-keep moves and do this index re-adjust as need, at the cost of the
+  // additional code complexity
+  for (let i = 0; i < lContainer.length - CONTAINER_HEADER_OFFSET; i++) {
+    const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, i);
+    lView[CONTEXT].$index = i;
   }
 
   // handle empty blocks
+  // PERF: maybe I could skip allocation of memory for the empty block? Isn't it the "fix" on the
+  // compiler side that we've been discussing? Talk to K & D!
   const bindingIndex = nextBindingIndex();
   if (metadata.hasEmptyBlock) {
-    const hasItemsInCollection = differ.length > 0;
-    if (bindingUpdated(hostLView, bindingIndex, hasItemsInCollection)) {
+    const isCollectionEmpty = lContainer.length - CONTAINER_HEADER_OFFSET === 0;
+    if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
       const emptyTemplateIndex = metadataSlotIdx + 2;
-      const lContainer = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
-      if (hasItemsInCollection) {
-        removeLViewFromLContainer(lContainer, 0);
-      } else {
+      const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
+      if (isCollectionEmpty) {
         const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
         const dehydratedView =
-            findMatchingDehydratedView(lContainer, emptyTemplateTNode.tView!.ssrId);
+            findMatchingDehydratedView(lContainerForEmpty, emptyTemplateTNode.tView!.ssrId);
         const embeddedLView = createAndRenderEmbeddedLView(
             hostLView, emptyTemplateTNode, undefined, {dehydratedView});
         addLViewToLContainer(
-            lContainer, embeddedLView, 0, shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
+            lContainerForEmpty, embeddedLView, 0,
+            shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
+      } else {
+        removeLViewFromLContainer(lContainerForEmpty, 0);
       }
     }
   }
@@ -248,10 +256,6 @@ function getLContainer(lView: LView, index: number): LContainer {
   ngDevMode && assertLContainer(lContainer);
 
   return lContainer;
-}
-
-function adjustToLastLContainerIndex(lContainer: LContainer, index: number|null): number {
-  return index !== null ? index : lContainer.length - CONTAINER_HEADER_OFFSET;
 }
 
 function detachExistingView<T>(lContainer: LContainer, index: number): LView<T> {
