@@ -340,7 +340,7 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
     case ir.ExpressionKind.SanitizerExpr:
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
-      return o.literal(expr.targetSlot!);
+      return o.literal(expr.targetSlot);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);
