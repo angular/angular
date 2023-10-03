@@ -5,8 +5,8 @@
       "main": 501754,
       "polyfills": 33862,
       "styles": 60209,
-      "light-theme": 31614,
-      "dark-theme": 31808
+      "light-theme": 34317,
+      "dark-theme": 34598
     }
   },
   "aio-local": {
@@ -15,8 +15,8 @@
       "main": 501754,
       "polyfills": 33862,
       "styles": 60209,
-      "light-theme": 31614,
-      "dark-theme": 31808
+      "light-theme": 34317,
+      "dark-theme": 34598
     }
   }
 }
