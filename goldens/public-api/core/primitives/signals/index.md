@@ -62,6 +62,7 @@ export interface ReactiveNode {
     readonly consumerIsAlwaysLive: boolean;
     // (undocumented)
     consumerMarkedDirty(node: unknown): void;
+    consumerOnSignalRead(node: unknown): void;
     dirty: boolean;
     liveConsumerIndexOfThis: number[] | undefined;
     liveConsumerNode: ReactiveNode[] | undefined;
