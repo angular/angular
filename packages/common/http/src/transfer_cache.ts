@@ -59,10 +59,8 @@ const ALLOWED_METHODS = ['GET', 'HEAD'];
 export function transferCacheInterceptorFn(
     req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const {isCacheActive, ...globalOptions} = inject(CACHE_OPTIONS);
-  const requestOptions = req.transferCache;
-  const requestMethod = req.method;
-  console.log(requestMethod === 'POST', !globalOptions.includePostRequests, !requestOptions)
-  debugger;
+  const {transferCache: requestOptions, method: requestMethod} = req;
+
   // In the following situations we do not want to cache the request
   if (!isCacheActive ||
       // POST requests are allowed either globally or at request level
@@ -243,37 +241,34 @@ function appendMissingHeadersDetection(
       const value = Reflect.get(target, prop);
       const methods: Set<keyof HttpHeaders> = new Set(['get', 'has', 'getAll']);
 
-      if (typeof value === 'function' && methods.has(prop)) {
-        // using a regular function to access arguments, it's the only way to read the argument
-        return function(this: HttpHeaders) {
-          url = truncateMiddle(url);
-          const [headerKey] = arguments;
-
-          // We log when the key has been removed and a warning hasn't been produced for the header
-          const key = (prop + ':' + headerKey).toLowerCase();  // e.g. `get:cache-control`
-          if (!headersToInclude.includes(headerKey) && !warningProduced.has(key)) {
-            warningProduced.add(key);
-            // TODO: create Error guide for this warning
-            console.warn(formatRuntimeError(
-                RuntimeErrorCode.HEADERS_ALTERED_BY_TRANSFER_CACHE,
-                `Angular detected that the \`${
-                    headerKey}\` header is accessed, but the value of the header ` +
-                    `was not transferred from the server to the client by the HttpTransferCache. ` +
-                    `To include the value of the \`${headerKey}\` header for the \`${
-                        url}\` request, ` +
-                    `use the \`includeHeaders\` list. The \`includeHeaders\` can be defined either ` +
-                    `on a request level by adding the \`transferCache\` parameter, or on an application ` +
-                    `level by adding the \`httpCacheTransfer.includeHeaders\` argument to the ` +
-                    `\`provideClientHydration()\` call. `));
-          }
-
-          // invoking the original method
-          return (target[prop] as any).apply(this, arguments);
-        };
+      if (typeof value !== 'function' || !methods.has(prop)) {
+        return value;
       }
 
-      // this will handle any other method or property
-      return value;
-    },
+      return (headerName: string) => {
+        // We log when the key has been removed and a warning hasn't been produced for the header
+        const key = (prop + ':' + headerName).toLowerCase();  // e.g. `get:cache-control`
+        if (!headersToInclude.includes(headerName) && !warningProduced.has(key)) {
+          warningProduced.add(key);
+          const truncatedUrl = truncateMiddle(url);
+
+          // TODO: create Error guide for this warning
+          console.warn(formatRuntimeError(
+              RuntimeErrorCode.HEADERS_ALTERED_BY_TRANSFER_CACHE,
+              `Angular detected that the \`${
+                  headerName}\` header is accessed, but the value of the header ` +
+                  `was not transferred from the server to the client by the HttpTransferCache. ` +
+                  `To include the value of the \`${headerName}\` header for the \`${
+                      truncatedUrl}\` request, ` +
+                  `use the \`includeHeaders\` list. The \`includeHeaders\` can be defined either ` +
+                  `on a request level by adding the \`transferCache\` parameter, or on an application ` +
+                  `level by adding the \`httpCacheTransfer.includeHeaders\` argument to the ` +
+                  `\`provideClientHydration()\` call. `));
+        }
+
+        // invoking the original method
+        return (value as Function).apply(target, [headerName]);
+      };
+    }
   });
 }
