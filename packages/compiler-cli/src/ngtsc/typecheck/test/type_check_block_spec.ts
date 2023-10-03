@@ -1485,7 +1485,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('for (const item of ((this).items)!) { var _t1 = item;');
       expect(result).toContain('"" + ((this).main(_t1))');
       expect(result).toContain('"" + ((this).empty())');
     });
@@ -1498,7 +1498,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('for (const item of ((this).items)!) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('var _t3: number = null!;');
       expect(result).toContain('var _t4: number = null!;');
@@ -1516,7 +1516,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('for (const item of ((this).items)!) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('var _t3: number = null!;');
       expect(result).toContain('var _t4: number = null!;');
@@ -1532,7 +1532,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
+      expect(result).toContain('for (const item of ((this).items)!) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('"" + (((this).$index)) + (_t2)');
     });
@@ -1550,10 +1550,10 @@ describe('type check blocks', () => {
 
       const result = tcb(TEMPLATE);
       expect(result).toContain(
-          'for (const item of ((this).items)) { var _t1 = item; var _t2: number = null!;');
+          'for (const item of ((this).items)!) { var _t1 = item; var _t2: number = null!;');
       expect(result).toContain('"" + (_t1) + (_t2)');
       expect(result).toContain(
-          'for (const inner of ((_t1).items)) { var _t8 = inner; var _t9: number = null!;');
+          'for (const inner of ((_t1).items)!) { var _t8 = inner; var _t9: number = null!;');
       expect(result).toContain('"" + (_t1) + (_t2) + (_t8) + (_t9)');
     });
 
@@ -1561,7 +1561,7 @@ describe('type check blocks', () => {
       const result = tcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
 
       expect(result).toContain(
-          'for (const item of ((this).items)) { var _t1: number = null!; var _t2 = item;');
+          'for (const item of ((this).items)!) { var _t1: number = null!; var _t2 = item;');
       expect(result).toContain('(this).trackingFn(_t1, _t2, ((this).prop));');
     });
   });

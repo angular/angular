@@ -1297,7 +1297,10 @@ class TcbForOfOp extends TcbOp {
     const loopScope = Scope.forNodes(this.tcb, this.scope, this.block, null);
     const initializer = ts.factory.createVariableDeclarationList(
         [ts.factory.createVariableDeclaration(this.block.item.name)], ts.NodeFlags.Const);
-    const expression = tcbExpression(this.block.expression, this.tcb, loopScope);
+    // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
+    // Add a non-null expression to allow such values to be assigned.
+    const expression = ts.factory.createNonNullExpression(
+        tcbExpression(this.block.expression, this.tcb, loopScope));
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
     const statements = [
