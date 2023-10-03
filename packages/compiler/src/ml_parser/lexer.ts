@@ -90,9 +90,9 @@ export interface TokenizeOptions {
    */
   preserveLineEndings?: boolean;
 
-  // TODO(crisbeto): temporary option to limit access to the block syntax.
   /**
-   * Whether the block syntax is enabled at the compiler level.
+   * Whether to tokenize @ block syntax. Otherwise considered text,
+   * or ICU tokens if `tokenizeExpansionForms` is enabled.
    */
   tokenizeBlocks?: boolean;
 }
@@ -166,7 +166,7 @@ class _Tokenizer {
                                            new PlainCharacterCursor(_file, range);
     this._preserveLineEndings = options.preserveLineEndings || false;
     this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
-    this._tokenizeBlocks = options.tokenizeBlocks || false;
+    this._tokenizeBlocks = options.tokenizeBlocks ?? true;
     try {
       this._cursor.init();
     } catch (e) {

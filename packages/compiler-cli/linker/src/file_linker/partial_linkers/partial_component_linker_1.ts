@@ -69,7 +69,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
     // Enable the new block syntax if compiled with v17 and
     // above, or when using the local placeholder version.
-    const supportsBlockSyntax = semver.major(version) >= 17 || version === PLACEHOLDER_VERSION;
+    const enableBlockSyntax = semver.major(version) >= 17 || version === PLACEHOLDER_VERSION;
 
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
@@ -80,12 +80,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
           metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
-
-      // TODO(crisbeto): hardcode the supported blocks for now. Before the final release
-      // `enabledBlockTypes` will be replaced with a boolean, at which point `supportsBlockSyntax`
-      // can be passed in directly here.
-      enabledBlockTypes: supportsBlockSyntax ? new Set(['if', 'switch', 'for', 'defer']) :
-                                               undefined,
+      enableBlockSyntax,
     });
     if (template.errors !== null) {
       const errors = template.errors.map(err => err.toString()).join('\n');

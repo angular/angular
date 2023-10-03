@@ -3,9 +3,6 @@
   "cases": [
     {
       "description": "should generate a basic deferred block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "basic_deferred.ts"
       ],
@@ -24,9 +21,6 @@
     },
     {
       "description": "should generate a deferred block with secondary blocks",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_secondary_blocks.ts"
       ],
@@ -45,9 +39,6 @@
     },
     {
       "description": "should generate a deferred block with placeholder block parameters",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_placeholder_params.ts"
       ],
@@ -66,9 +57,6 @@
     },
     {
       "description": "should generate a deferred block with loading block parameters",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_loading_params.ts"
       ],
@@ -87,9 +75,6 @@
     },
     {
       "description": "should generate a deferred block with local dependencies",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_local_deps.ts"
       ],
@@ -108,9 +93,6 @@
     },
     {
       "description": "should generate a deferred block with external dependencies",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_external_deps.ts",
         "deferred_with_external_deps_eager.ts",
@@ -132,9 +114,6 @@
     },
     {
       "description": "should generate a deferred block with triggers",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_triggers.ts"
       ],
@@ -153,9 +132,6 @@
     },
     {
       "description": "should generate a deferred block with prefetch triggers",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_prefetch_triggers.ts"
       ],
@@ -174,9 +150,6 @@
     },
     {
       "description": "should generate a deferred block with a `when` trigger that has a pipe",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_when_with_pipe.ts"
       ],
@@ -195,9 +168,6 @@
     },
     {
       "description": "should generate a deferred block with an interaction trigger in the same view",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_interaction_same_view_trigger.ts"
       ],
@@ -216,9 +186,6 @@
     },
     {
       "description": "should generate a deferred block with an interaction trigger in a parent view",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_interaction_parent_view_trigger.ts"
       ],
@@ -237,9 +204,6 @@
     },
     {
       "description": "should generate a deferred block with an interaction trigger inside the placeholder",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_interaction_placeholder_trigger.ts"
       ],
@@ -258,9 +222,6 @@
     },
     {
       "description": "should generate a deferred block with implicit trigger references",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["defer"]
-      },
       "inputFiles": [
         "deferred_with_implicit_triggers.ts"
       ],

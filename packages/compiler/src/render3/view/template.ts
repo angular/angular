@@ -34,6 +34,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3DeferBlockMetadata} from './api';
+import {BLOCK_SYNTAX_ENABLED_DEFAULT} from './block_syntax_switch';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -2674,11 +2675,8 @@ export interface ParseTemplateOptions {
    */
   collectCommentNodes?: boolean;
 
-  /**
-   * Names of the blocks that should be enabled. E.g. `enabledBlockTypes: new Set(['defer'])`
-   * would allow usages of `@defer {}` in templates.
-   */
-  enabledBlockTypes?: Set<string>;
+  /** Whether the @ block syntax is enabled. */
+  enableBlockSyntax?: boolean;
 }
 
 /**
@@ -2697,7 +2695,7 @@ export function parseTemplate(
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
     ...options,
     tokenizeExpansionForms: true,
-    tokenizeBlocks: options.enabledBlockTypes != null && options.enabledBlockTypes.size > 0,
+    tokenizeBlocks: options.enableBlockSyntax ?? BLOCK_SYNTAX_ENABLED_DEFAULT,
   });
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
@@ -2760,11 +2758,8 @@ export function parseTemplate(
     }
   }
 
-  const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} =
-      htmlAstToRender3Ast(rootNodes, bindingParser, {
-        collectCommentNodes: !!options.collectCommentNodes,
-        enabledBlockTypes: options.enabledBlockTypes || new Set(),
-      });
+  const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} = htmlAstToRender3Ast(
+      rootNodes, bindingParser, {collectCommentNodes: !!options.collectCommentNodes});
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
   const parsedTemplate: ParsedTemplate = {

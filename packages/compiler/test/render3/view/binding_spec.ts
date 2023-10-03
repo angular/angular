@@ -259,8 +259,6 @@ describe('t2 binding', () => {
   });
 
   describe('extracting defer blocks info', () => {
-    const templateOptions = {enabledBlockTypes: new Set(['defer'])};
-
     it('should extract top-level defer blocks', () => {
       const template = parseTemplate(
           `
@@ -268,7 +266,7 @@ describe('t2 binding', () => {
             @defer {<cmp-b />}
             <cmp-c />
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -301,7 +299,7 @@ describe('t2 binding', () => {
             }
             {{ name | pipeF }}
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -329,7 +327,7 @@ describe('t2 binding', () => {
             {{ name | pipeC }}
           }
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
 
@@ -363,7 +361,7 @@ describe('t2 binding', () => {
             }
             <img *f />
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const deferBlocks = bound.getDeferBlocks();
@@ -395,7 +393,7 @@ describe('t2 binding', () => {
             <img *c />
           }
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const allDirs = bound.getUsedDirectives().map(dir => dir.name);
@@ -412,7 +410,7 @@ describe('t2 binding', () => {
             @defer (on viewport(trigger)) {}
           </div>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -433,7 +431,7 @@ describe('t2 binding', () => {
               </div>
             </div>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -454,7 +452,7 @@ describe('t2 binding', () => {
               </div>
             </div>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -471,7 +469,7 @@ describe('t2 binding', () => {
               <button #trigger></button>
             }
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -484,7 +482,7 @@ describe('t2 binding', () => {
           `
             @defer (on viewport(trigger)) {<button #trigger></button>}
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -499,7 +497,7 @@ describe('t2 binding', () => {
 
             <comp #trigger/>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -514,7 +512,7 @@ describe('t2 binding', () => {
 
             <button dir #trigger="dir"></button>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -529,7 +527,7 @@ describe('t2 binding', () => {
             @defer (on viewport) {} @placeholder {<button></button>}
           </div>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -544,7 +542,7 @@ describe('t2 binding', () => {
               @defer (on viewport) {} @placeholder {<button></button><div></div>}
             </div>
             `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -560,7 +558,7 @@ describe('t2 binding', () => {
             <button></button>
           </div>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -576,7 +574,7 @@ describe('t2 binding', () => {
                 @defer (on viewport) {} @placeholder {hello}
               </div>
               `,
-             '', templateOptions);
+             '');
          const binder = new R3TargetBinder(makeSelectorMatcher());
          const bound = binder.bind({template: template.nodes});
          const block = Array.from(bound.getDeferBlocks())[0];
@@ -593,7 +591,7 @@ describe('t2 binding', () => {
 
             @defer (on viewport(trigger)) {}
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -610,7 +608,7 @@ describe('t2 binding', () => {
               <div *ngIf="cond"><button #trigger></button></div>
             }
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];
@@ -630,7 +628,7 @@ describe('t2 binding', () => {
                   }
                 }
               `,
-             '', templateOptions);
+             '');
          const binder = new R3TargetBinder(makeSelectorMatcher());
          const bound = binder.bind({template: template.nodes});
          const block = Array.from(bound.getDeferBlocks())[0];
@@ -645,7 +643,7 @@ describe('t2 binding', () => {
 
             <ng-template #trigger></ng-template>
           `,
-          '', templateOptions);
+          '');
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const bound = binder.bind({template: template.nodes});
       const block = Array.from(bound.getDeferBlocks())[0];

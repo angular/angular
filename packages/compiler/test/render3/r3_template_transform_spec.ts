@@ -175,8 +175,8 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 }
 
-function expectFromHtml(html: string, ignoreError = false, enabledBlockTypes?: string[]) {
-  const res = parse(html, {ignoreError, enabledBlockTypes});
+function expectFromHtml(html: string, ignoreError = false) {
+  const res = parse(html, {ignoreError});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -734,25 +734,15 @@ describe('R3 template transform', () => {
   });
 
   describe('deferred blocks', () => {
-    // TODO(crisbeto): temporary utility while blocks are disabled by default.
-    function expectDeferred(html: string, preserveWhitespaces?: boolean) {
-      return expectFromR3Nodes(
-          parse(html, {enabledBlockTypes: ['defer'], preserveWhitespaces}).nodes);
-    }
-
-    function expectDeferredError(html: string) {
-      return expect(() => parse(html, {enabledBlockTypes: ['defer']}));
-    }
-
     it('should parse a simple deferred block', () => {
-      expectDeferred('@defer{hello}').toEqual([
+      expectFromHtml('@defer{hello}').toEqual([
         ['DeferredBlock'],
         ['Text', 'hello'],
       ]);
     });
 
     it('should parse a deferred block with a `when` trigger', () => {
-      expectDeferred('@defer (when isVisible() && loaded){hello}').toEqual([
+      expectFromHtml('@defer (when isVisible() && loaded){hello}').toEqual([
         ['DeferredBlock'],
         ['BoundDeferredTrigger', 'isVisible() && loaded'],
         ['Text', 'hello'],
@@ -760,7 +750,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a single `on` trigger', () => {
-      expectDeferred('@defer (on idle){hello}').toEqual([
+      expectFromHtml('@defer (on idle){hello}').toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['Text', 'hello'],
@@ -768,7 +758,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with multiple `on` triggers', () => {
-      expectDeferred('@defer (on idle, viewport(button)){hello}').toEqual([
+      expectFromHtml('@defer (on idle, viewport(button)){hello}').toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
@@ -777,7 +767,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a non-parenthesized trigger at the end', () => {
-      expectDeferred('@defer (on idle, viewport(button), immediate){hello}').toEqual([
+      expectFromHtml('@defer (on idle, viewport(button), immediate){hello}').toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
@@ -787,9 +777,9 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with `when` and `on` triggers', () => {
-      const markup = '@defer (when isVisible(); on timer(100ms), idle, viewport(button)){hello}';
+      const template = '@defer (when isVisible(); on timer(100ms), idle, viewport(button)){hello}';
 
-      expectDeferred(markup).toEqual([
+      expectFromHtml(template).toEqual([
         ['DeferredBlock'],
         ['BoundDeferredTrigger', 'isVisible()'],
         ['TimerDeferredTrigger', 100],
@@ -800,10 +790,10 @@ describe('R3 template transform', () => {
     });
 
     it('should allow new line after trigger name', () => {
-      const markup =
+      const template =
           `@defer(\nwhen\nisVisible(); on\ntimer(100ms),\nidle, viewport(button)){hello}`;
 
-      expectDeferred(markup).toEqual([
+      expectFromHtml(template).toEqual([
         ['DeferredBlock'],
         ['BoundDeferredTrigger', 'isVisible()'],
         ['TimerDeferredTrigger', 100],
@@ -814,7 +804,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a timeout set in seconds', () => {
-      expectDeferred('@defer (on timer(10s)){hello}').toEqual([
+      expectFromHtml('@defer (on timer(10s)){hello}').toEqual([
         ['DeferredBlock'],
         ['TimerDeferredTrigger', 10000],
         ['Text', 'hello'],
@@ -822,7 +812,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a timeout that has no units', () => {
-      expectDeferred('@defer (on timer(100)){hello}').toEqual([
+      expectFromHtml('@defer (on timer(100)){hello}').toEqual([
         ['DeferredBlock'],
         ['TimerDeferredTrigger', 100],
         ['Text', 'hello'],
@@ -830,7 +820,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with a hover trigger', () => {
-      expectDeferred('@defer (on hover(button)){hello}').toEqual([
+      expectFromHtml('@defer (on hover(button)){hello}').toEqual([
         ['DeferredBlock'],
         ['HoverDeferredTrigger', 'button'],
         ['Text', 'hello'],
@@ -838,7 +828,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with an interaction trigger', () => {
-      expectDeferred('@defer (on interaction(button)){hello}').toEqual([
+      expectFromHtml('@defer (on interaction(button)){hello}').toEqual([
         ['DeferredBlock'],
         ['InteractionDeferredTrigger', 'button'],
         ['Text', 'hello'],
@@ -846,7 +836,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a deferred block with connected blocks', () => {
-      expectDeferred(
+      expectFromHtml(
           '@defer {<calendar-cmp [date]="current"/>}' +
           '@loading {Loading...}' +
           '@placeholder {Placeholder content!}' +
@@ -867,28 +857,27 @@ describe('R3 template transform', () => {
     it('should parse a deferred block with connected blocks that have an arbitrary ' +
            'amount of whitespace between them when preserveWhitespaces is enabled',
        () => {
-         expectDeferred(
-             '@defer {<calendar-cmp [date]="current"/>}' +
-                 '           @loading {Loading...}       ' +
-                 '\n\n @placeholder {Placeholder content!} \n\n' +
-                 '@error {Loading failed :(}',
-             true)
-             .toEqual([
-               // Note: we also expect the whitespace nodes between the blocks to be ignored here.
-               ['DeferredBlock'],
-               ['Element', 'calendar-cmp'],
-               ['BoundAttribute', 0, 'date', 'current'],
-               ['DeferredBlockPlaceholder'],
-               ['Text', 'Placeholder content!'],
-               ['DeferredBlockLoading'],
-               ['Text', 'Loading...'],
-               ['DeferredBlockError'],
-               ['Text', 'Loading failed :('],
-             ]);
+         const template = '@defer {<calendar-cmp [date]="current"/>}' +
+             '           @loading {Loading...}       ' +
+             '\n\n @placeholder {Placeholder content!} \n\n' +
+             '@error {Loading failed :(}';
+
+         expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
+           // Note: we also expect the whitespace nodes between the blocks to be ignored here.
+           ['DeferredBlock'],
+           ['Element', 'calendar-cmp'],
+           ['BoundAttribute', 0, 'date', 'current'],
+           ['DeferredBlockPlaceholder'],
+           ['Text', 'Placeholder content!'],
+           ['DeferredBlockLoading'],
+           ['Text', 'Loading...'],
+           ['DeferredBlockError'],
+           ['Text', 'Loading failed :('],
+         ]);
        });
 
     it('should parse a loading block with parameters', () => {
-      expectDeferred(
+      expectFromHtml(
           '@defer{<calendar-cmp [date]="current"/>}' +
           '@loading (after 100ms; minimum 1s){Loading...}')
           .toEqual([
@@ -901,7 +890,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a placeholder block with parameters', () => {
-      expectDeferred(
+      expectFromHtml(
           '@defer {<calendar-cmp [date]="current"/>}' +
           '@placeholder (minimum 1s){Placeholder...}')
           .toEqual([
@@ -917,7 +906,7 @@ describe('R3 template transform', () => {
       const html =
           '@defer (on idle; prefetch on viewport(button), hover(button); prefetch when shouldPrefetch()){hello}';
 
-      expectDeferred(html).toEqual([
+      expectFromHtml(html).toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
@@ -931,7 +920,7 @@ describe('R3 template transform', () => {
       const html =
           '@defer (on idle; prefetch         on viewport(button), hover(button); prefetch    when shouldPrefetch()){hello}';
 
-      expectDeferred(html).toEqual([
+      expectFromHtml(html).toEqual([
         ['DeferredBlock'],
         ['IdleDeferredTrigger'],
         ['ViewportDeferredTrigger', 'button'],
@@ -942,7 +931,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a complete example', () => {
-      expectDeferred(
+      expectFromHtml(
           '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
           'interaction(button), viewport(container); prefetch on immediate; ' +
           'prefetch when isDataLoaded()){<calendar-cmp [date]="current"/>}' +
@@ -972,7 +961,7 @@ describe('R3 template transform', () => {
     });
 
     it('should treat blocks as plain text inside ngNonBindable', () => {
-      expectDeferred(
+      expectFromHtml(
           '<div ngNonBindable>' +
           '@defer (when isVisible() && foo; on hover, timer(10s); ' +
           'prefetch on immediate; prefetch when isDataLoaded()){<calendar-cmp [date]="current"/>}' +
@@ -1003,7 +992,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse triggers with implied target elements', () => {
-      expectDeferred(
+      expectFromHtml(
           '@defer (on hover, interaction, viewport; prefetch on hover, interaction, viewport) {hello}' +
           '@placeholder {<implied-trigger/>}')
           .toEqual([
@@ -1022,212 +1011,214 @@ describe('R3 template transform', () => {
 
     describe('block validations', () => {
       it('should report syntax error in `when` trigger', () => {
-        expectDeferredError('@defer (when isVisible#){hello}')
+        expect(() => parse('@defer (when isVisible#){hello}'))
             .toThrowError(/Invalid character \[#\]/);
       });
 
       it('should report unrecognized trigger', () => {
-        expectDeferredError('@defer (unknown visible()){hello}')
+        expect(() => parse('@defer (unknown visible()){hello}'))
             .toThrowError(/Unrecognized trigger/);
       });
 
       it('should report content before a connected block', () => {
-        expectDeferredError('@defer {hello} <br> @placeholder {placeholder}')
+        expect(() => parse('@defer {hello} <br> @placeholder {placeholder}'))
             .toThrowError(/@placeholder block can only be used after an @defer block/);
       });
 
       it('should report connected defer blocks used without a defer block', () => {
-        expectDeferredError('@placeholder {placeholder}')
+        expect(() => parse('@placeholder {placeholder}'))
             .toThrowError(/@placeholder block can only be used after an @defer block/);
-        expectDeferredError('@loading {loading}')
+        expect(() => parse('@loading {loading}'))
             .toThrowError(/@loading block can only be used after an @defer block/);
-        expectDeferredError('@error {error}')
+        expect(() => parse('@error {error}'))
             .toThrowError(/@error block can only be used after an @defer block/);
       });
 
       it('should report multiple placeholder blocks', () => {
-        expectDeferredError('@defer {hello} @placeholder {p1} @placeholder {p2}')
+        expect(() => parse('@defer {hello} @placeholder {p1} @placeholder {p2}'))
             .toThrowError(/@defer block can only have one @placeholder block/);
       });
 
       it('should report multiple loading blocks', () => {
-        expectDeferredError('@defer {hello} @loading {l1} @loading {l2}')
+        expect(() => parse('@defer {hello} @loading {l1} @loading {l2}'))
             .toThrowError(/@defer block can only have one @loading block/);
       });
 
       it('should report multiple error blocks', () => {
-        expectDeferredError('@defer {hello} @error {e1} @error {e2}')
+        expect(() => parse('@defer {hello} @error {e1} @error {e2}'))
             .toThrowError(/@defer block can only have one @error block/);
       });
 
       it('should report unrecognized parameter in placeholder block', () => {
-        expectDeferredError('@defer {hello} @placeholder (unknown 100ms) {hi}')
+        expect(() => parse('@defer {hello} @placeholder (unknown 100ms) {hi}'))
             .toThrowError(/Unrecognized parameter in @placeholder block: "unknown 100ms"/);
       });
 
       it('should report unrecognized parameter in loading block', () => {
-        expectDeferredError('@defer {hello} @loading (unknown 100ms) {hi}')
+        expect(() => parse('@defer {hello} @loading (unknown 100ms) {hi}'))
             .toThrowError(/Unrecognized parameter in @loading block: "unknown 100ms"/);
       });
 
       it('should report any parameter usage in error block', () => {
-        expectDeferredError('@defer {hello} @error (foo) {hi}')
+        expect(() => parse('@defer {hello} @error (foo) {hi}'))
             .toThrowError(/@error block cannot have parameters/);
       });
 
       it('should report if minimum placeholder time cannot be parsed', () => {
-        expectDeferredError('@defer {hello} @placeholder (minimum 123abc) {hi}')
+        expect(() => parse('@defer {hello} @placeholder (minimum 123abc) {hi}'))
             .toThrowError(/Could not parse time value of parameter "minimum"/);
       });
 
       it('should report if minimum loading time cannot be parsed', () => {
-        expectDeferredError('@defer {hello} @loading (minimum 123abc) {hi}')
+        expect(() => parse('@defer {hello} @loading (minimum 123abc) {hi}'))
             .toThrowError(/Could not parse time value of parameter "minimum"/);
       });
 
       it('should report if after loading time cannot be parsed', () => {
-        expectDeferredError('@defer {hello} @loading (after 123abc) {hi}')
+        expect(() => parse('@defer {hello} @loading (after 123abc) {hi}'))
             .toThrowError(/Could not parse time value of parameter "after"/);
       });
 
       it('should report unrecognized `on` trigger', () => {
-        expectDeferredError('@defer (on foo) {hello}')
+        expect(() => parse('@defer (on foo) {hello}'))
             .toThrowError(/Unrecognized trigger type "foo"/);
       });
 
       it('should report missing comma after unparametarized `on` trigger', () => {
-        expectDeferredError('@defer (on hover idle) {hello}').toThrowError(/Unexpected token/);
+        expect(() => parse('@defer (on hover idle) {hello}')).toThrowError(/Unexpected token/);
       });
 
       it('should report missing comma after parametarized `on` trigger', () => {
-        expectDeferredError('@defer (on viewport(button) idle) {hello}')
+        expect(() => parse('@defer (on viewport(button) idle) {hello}'))
             .toThrowError(/Unexpected token/);
       });
 
       it('should report mutliple commas after between `on` triggers', () => {
-        expectDeferredError('@defer (on viewport(button), , idle) {hello}')
+        expect(() => parse('@defer (on viewport(button), , idle) {hello}'))
             .toThrowError(/Unexpected token/);
       });
 
       it('should report unclosed parenthesis in `on` trigger', () => {
-        expectDeferredError('@defer (on viewport(button) {hello}')
+        expect(() => parse('@defer (on viewport(button) {hello}'))
             .toThrowError(/Unexpected character "EOF"/);
       });
 
       it('should report incorrect closing parenthesis in `on` trigger', () => {
-        expectDeferredError('@defer (on viewport(but)ton) {hello}')
+        expect(() => parse('@defer (on viewport(but)ton) {hello}'))
             .toThrowError(/Unexpected token/);
       });
 
       it('should report stray closing parenthesis in `on` trigger', () => {
-        expectDeferredError('@defer (on idle)) {hello}').toThrowError(/Unexpected character "\)"/);
+        expect(() => parse('@defer (on idle)) {hello}')).toThrowError(/Unexpected character "\)"/);
       });
 
       it('should report non-identifier token usage in `on` trigger', () => {
-        expectDeferredError('@defer (on 123) {hello}').toThrowError(/Unexpected token/);
+        expect(() => parse('@defer (on 123) {hello}')).toThrowError(/Unexpected token/);
       });
 
       it('should report if identifier is not followed by an opening parenthesis', () => {
-        expectDeferredError('@defer (on viewport[]) {hello}').toThrowError(/Unexpected token/);
+        expect(() => parse('@defer (on viewport[]) {hello}')).toThrowError(/Unexpected token/);
       });
 
       it('should report if parameters are passed to `idle` trigger', () => {
-        expectDeferredError('@defer (on idle(1)) {hello}')
+        expect(() => parse('@defer (on idle(1)) {hello}'))
             .toThrowError(/"idle" trigger cannot have parameters/);
       });
 
       it('should report if no parameters are passed into `timer` trigger', () => {
-        expectDeferredError('@defer (on timer) {hello}')
+        expect(() => parse('@defer (on timer) {hello}'))
             .toThrowError(/"timer" trigger must have exactly one parameter/);
       });
 
       it('should report if `timer` trigger value cannot be parsed', () => {
-        expectDeferredError('@defer (on timer(123abc)) {hello}')
+        expect(() => parse('@defer (on timer(123abc)) {hello}'))
             .toThrowError(/Could not parse time value of trigger "timer"/);
       });
 
       it('should report if `interaction` trigger has more than one parameter', () => {
-        expectDeferredError('@defer (on interaction(a, b)) {hello}')
+        expect(() => parse('@defer (on interaction(a, b)) {hello}'))
             .toThrowError(/"interaction" trigger can only have zero or one parameters/);
       });
 
       it('should report if parameters are passed to `immediate` trigger', () => {
-        expectDeferredError('@defer (on immediate(1)) {hello}')
+        expect(() => parse('@defer (on immediate(1)) {hello}'))
             .toThrowError(/"immediate" trigger cannot have parameters/);
       });
 
       it('should report if `hover` trigger has more than one parameter', () => {
-        expectDeferredError('@defer (on hover(a, b)) {hello}')
+        expect(() => parse('@defer (on hover(a, b)) {hello}'))
             .toThrowError(/"hover" trigger can only have zero or one parameters/);
       });
 
       it('should report if `viewport` trigger has more than one parameter', () => {
-        expectDeferredError('@defer (on viewport(a, b)) {hello}')
+        expect(() => parse('@defer (on viewport(a, b)) {hello}'))
             .toThrowError(/"viewport" trigger can only have zero or one parameters/);
       });
 
       it('should report duplicate when triggers', () => {
-        expectDeferredError('@defer (when isVisible(); when somethingElse()) {hello}')
+        expect(() => parse('@defer (when isVisible(); when somethingElse()) {hello}'))
             .toThrowError(/Duplicate "when" trigger is not allowed/);
       });
 
       it('should report duplicate on triggers', () => {
-        expectDeferredError('@defer (on idle; when isVisible(); on timer(10), idle) {hello}')
+        expect(() => parse('@defer (on idle; when isVisible(); on timer(10), idle) {hello}'))
             .toThrowError(/Duplicate "idle" trigger is not allowed/);
       });
 
       it('should report duplicate prefetch when triggers', () => {
-        expectDeferredError(
-            '@defer (prefetch when isVisible(); prefetch when somethingElse()) {hello}')
+        expect(
+            () =>
+                parse('@defer (prefetch when isVisible(); prefetch when somethingElse()) {hello}'))
             .toThrowError(/Duplicate "when" trigger is not allowed/);
       });
 
       it('should report duplicate prefetch on triggers', () => {
-        expectDeferredError(
-            '@defer (prefetch on idle; prefetch when isVisible(); prefetch on timer(10), idle) {hello}')
+        expect(
+            () => parse(
+                '@defer (prefetch on idle; prefetch when isVisible(); prefetch on timer(10), idle) {hello}'))
             .toThrowError(/Duplicate "idle" trigger is not allowed/);
       });
 
       it('should report multiple minimum parameters on a placeholder block', () => {
-        expectDeferredError('@defer {hello} @placeholder (minimum 1s; minimum 500ms) {placeholder}')
+        expect(() => parse('@defer {hello} @placeholder (minimum 1s; minimum 500ms) {placeholder}'))
             .toThrowError(/@placeholder block can only have one "minimum" parameter/);
       });
 
       it('should report multiple minimum parameters on a loading block', () => {
-        expectDeferredError('@defer {hello} @loading (minimum 1s; minimum 500ms) {loading}')
+        expect(() => parse('@defer {hello} @loading (minimum 1s; minimum 500ms) {loading}'))
             .toThrowError(/@loading block can only have one "minimum" parameter/);
       });
 
       it('should report multiple after parameters on a loading block', () => {
-        expectDeferredError('@defer {hello} @loading (after 1s; after 500ms) {loading}')
+        expect(() => parse('@defer {hello} @loading (after 1s; after 500ms) {loading}'))
             .toThrowError(/@loading block can only have one "after" parameter/);
       });
 
       it('should report if reference-based trigger has no reference and there is no placeholder block',
          () => {
-           expectDeferredError('@defer (on viewport) {hello}')
+           expect(() => parse('@defer (on viewport) {hello}'))
                .toThrowError(
                    /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/);
          });
 
       it('should report if reference-based trigger has no reference and the placeholder is empty',
          () => {
-           expectDeferredError('@defer (on viewport) {hello} @placeholder {}')
+           expect(() => parse('@defer (on viewport) {hello} @placeholder {}'))
                .toThrowError(
                    /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
          });
 
       it('should report if reference-based trigger has no reference and the placeholder with text at the root',
          () => {
-           expectDeferredError('@defer (on viewport) {hello} @placeholder {placeholder}')
+           expect(() => parse('@defer (on viewport) {hello} @placeholder {placeholder}'))
                .toThrowError(
                    /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
          });
 
       it('should report if reference-based trigger has no reference and the placeholder has multiple root elements',
          () => {
-           expectDeferredError(
-               '@defer (on viewport) {hello} @placeholder {<div></div><span></span>}')
+           expect(
+               () => parse('@defer (on viewport) {hello} @placeholder {<div></div><span></span>}'))
                .toThrowError(
                    /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/);
          });
@@ -1235,18 +1226,8 @@ describe('R3 template transform', () => {
   });
 
   describe('switch blocks', () => {
-    // TODO(crisbeto): temporary utility while control flow is disabled by default.
-    function expectSwitch(html: string, preserveWhitespaces?: boolean) {
-      return expectFromR3Nodes(
-          parse(html, {enabledBlockTypes: ['switch'], preserveWhitespaces}).nodes);
-    }
-
-    function expectSwitchError(html: string) {
-      return expect(() => parse(html, {enabledBlockTypes: ['switch']}));
-    }
-
     it('should parse a switch block', () => {
-      expectSwitch(`
+      expectFromHtml(`
           @switch (cond.kind) {
             @case (x()) { X case }
             @case ('hello') {<button>Y case</button>}
@@ -1287,7 +1268,7 @@ describe('R3 template transform', () => {
         }
       `;
 
-      expectSwitch(template, true).toEqual([
+      expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
         ['Text', '\n        '],
         ['SwitchBlock', 'cond.kind'],
         ['SwitchBlockCase', 'x()'],
@@ -1306,7 +1287,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a switch block with optional parentheses', () => {
-      expectSwitch(`
+      expectFromHtml(`
           @switch ((cond.kind)) {
             @case ((x())) { X case }
             @case (('hello')) {<button>Y case</button>}
@@ -1328,7 +1309,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a nested switch block', () => {
-      expectSwitch(`
+      expectFromHtml(`
           @switch (cond) {
             @case ('a') {
               @switch (innerCond) {
@@ -1381,101 +1362,92 @@ describe('R3 template transform', () => {
 
     describe('validations', () => {
       it('should report syntax error in switch expression', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond/.kind) {
             @case (x()) {X case}
             @default {No case matched}
           }
-        `).toThrowError(/Parser Error: Unexpected token \./);
+        `)).toThrowError(/Parser Error: Unexpected token \./);
       });
 
       it('should report syntax error in case expression', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case (x/.y) {X case}
           }
-        `).toThrowError(/Parser Error: Unexpected token \./);
+        `)).toThrowError(/Parser Error: Unexpected token \./);
       });
 
       it('should report if a block different from "case" and "default" is used in a switch', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case (x()) {X case}
             @foo {Foo}
           }
-        `).toThrowError(/@switch block can only contain @case and @default blocks/);
+        `)).toThrowError(/@switch block can only contain @case and @default blocks/);
       });
 
       it('should report if @case or @default is used outside of a switch block', () => {
-        expectSwitchError(`@case (foo) {}`).toThrowError(/Unrecognized block @case/);
-        expectSwitchError(`@default {}`).toThrowError(/Unrecognized block @default/);
+        expect(() => parse(`@case (foo) {}`)).toThrowError(/Unrecognized block @case/);
+        expect(() => parse(`@default {}`)).toThrowError(/Unrecognized block @default/);
       });
 
       it('should report if a switch has no parameters', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch {
             @case (1) {case}
           }
-        `).toThrowError(/@switch block must have exactly one parameter/);
+        `)).toThrowError(/@switch block must have exactly one parameter/);
       });
 
       it('should report if a switch has more than one parameter', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (foo; bar) {
             @case (1) {case}
           }
-        `).toThrowError(/@switch block must have exactly one parameter/);
+        `)).toThrowError(/@switch block must have exactly one parameter/);
       });
 
       it('should report if a case has no parameters', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case {case}
           }
-        `).toThrowError(/@case block must have exactly one parameter/);
+        `)).toThrowError(/@case block must have exactly one parameter/);
       });
 
       it('should report if a case has more than one parameter', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case (foo; bar) {case}
           }
-        `).toThrowError(/@case block must have exactly one parameter/);
+        `)).toThrowError(/@case block must have exactly one parameter/);
       });
 
       it('should report if a switch has multiple default blocks', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case (foo) {foo}
             @default {one}
             @default {two}
           }
-        `).toThrowError(/@switch block can only have one @default block/);
+        `)).toThrowError(/@switch block can only have one @default block/);
       });
 
       it('should report if a default block has parameters', () => {
-        expectSwitchError(`
+        expect(() => parse(`
           @switch (cond) {
             @case (foo) {foo}
             @default (bar) {bar}
           }
-        `).toThrowError(/@default block cannot have parameters/);
+        `)).toThrowError(/@default block cannot have parameters/);
       });
     });
   });
 
   describe('for loop blocks', () => {
-    // TODO(crisbeto): temporary utility while control flow is disabled by default.
-    function expectLoop(html: string) {
-      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['for']}).nodes);
-    }
-
-    function expectLoopError(html: string) {
-      return expect(() => parse(html, {enabledBlockTypes: ['for']}));
-    }
-
     it('should parse a for loop block', () => {
-      expectLoop(`
+      expectFromHtml(`
         @for (item of items.foo.bar; track item.id) {
           {{ item }}
         } @empty {
@@ -1491,7 +1463,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a for loop block with optional parentheses', () => {
-      expectLoop(`
+      expectFromHtml(`
         @for ((item of items.foo.bar); track item.id){
           {{ item }}
         }
@@ -1501,7 +1473,7 @@ describe('R3 template transform', () => {
         ['BoundText', ' {{ item }} '],
       ]);
 
-      expectLoop(`
+      expectFromHtml(`
         @for ((item of items.foo.bar()); track item.id) {
           {{ item }}
         }
@@ -1511,7 +1483,7 @@ describe('R3 template transform', () => {
         ['BoundText', ' {{ item }} '],
       ]);
 
-      expectLoop(`
+      expectFromHtml(`
         @for ((   ( (item of items.foo.bar()) )   ); track item.id) {
           {{ item }}
         }
@@ -1523,7 +1495,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a for loop block with let parameters', () => {
-      expectLoop(`
+      expectFromHtml(`
         @for (item of items.foo.bar; track item.id; let idx = $index, f = $first, c = $count; let l = $last, ev = $even, od = $odd) {
           {{ item }}
         }
@@ -1541,7 +1513,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse nested for loop blocks', () => {
-      expectLoop(`
+      expectFromHtml(`
         @for (item of items.foo.bar; track item.id) {
           {{ item }}
 
@@ -1566,7 +1538,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse a for loop block with a function call in the `track` expression', () => {
-      expectLoop(`
+      expectFromHtml(`
         @for (item of items.foo.bar; track trackBy(item.id, 123)) {
           {{ item }}
         }
@@ -1579,29 +1551,30 @@ describe('R3 template transform', () => {
 
     describe('validations', () => {
       it('should report if for loop does not have an expression', () => {
-        expectLoopError(`@for {hello}`).toThrowError(/@for loop does not have an expression/);
+        expect(() => parse(`@for {hello}`)).toThrowError(/@for loop does not have an expression/);
       });
 
       it('should report if for loop does not have a tracking expression', () => {
-        expectLoopError(`@for (a of b) {hello}`)
+        expect(() => parse(`@for (a of b) {hello}`))
             .toThrowError(/@for loop must have a "track" expression/);
       });
 
       it('should report mismatching optional parentheses around for loop expression', () => {
-        expectLoopError(`@for ((a of b; track c) {hello}`)
+        expect(() => parse(`@for ((a of b; track c) {hello}`))
             .toThrowError(/Unclosed parentheses in expression/);
-        expectLoopError(`@for ((a of b(); track c) {hello}`)
+        expect(() => parse(`@for ((a of b(); track c) {hello}`))
             .toThrowError(/Unexpected end of expression: b\(/);
-        expectLoopError(`@for (a of b); track c) {hello}`).toThrowError(/Unexpected character ";"/);
+        expect(() => parse(`@for (a of b); track c) {hello}`))
+            .toThrowError(/Unexpected character ";"/);
       });
 
       it('should report unrecognized for loop parameters', () => {
-        expectLoopError(`@for (a of b; foo bar) {hello}`)
+        expect(() => parse(`@for (a of b; foo bar) {hello}`))
             .toThrowError(/Unrecognized @for loop paramater "foo bar"/);
       });
 
       it('should report multiple `track` parameters', () => {
-        expectLoopError(`@for (a of b; track c; track d) {hello}`)
+        expect(() => parse(`@for (a of b; track c; track d) {hello}`))
             .toThrowError(/@for loop can only have one "track" expression/);
       });
 
@@ -1609,18 +1582,19 @@ describe('R3 template transform', () => {
         const errorPattern =
             /Cannot parse expression\. @for loop expression must match the pattern "<identifier> of <expression>"/;
 
-        expectLoopError(`@for (//invalid of items) {hello}`).toThrowError(errorPattern);
-        expectLoopError(`@for (item) {hello}`).toThrowError(errorPattern);
-        expectLoopError(`@for (item in items) {hello}`).toThrowError(errorPattern);
-        expectLoopError(`@for (item of    ) {hello}`).toThrowError(errorPattern);
+        expect(() => parse(`@for (//invalid of items) {hello}`)).toThrowError(errorPattern);
+        expect(() => parse(`@for (item) {hello}`)).toThrowError(errorPattern);
+        expect(() => parse(`@for (item in items) {hello}`)).toThrowError(errorPattern);
+        expect(() => parse(`@for (item of    ) {hello}`)).toThrowError(errorPattern);
       });
 
       it('should report syntax error in for loop expression', () => {
-        expectLoopError(`@for (item of items..foo) {hello}`).toThrowError(/Unexpected token \./);
+        expect(() => parse(`@for (item of items..foo) {hello}`))
+            .toThrowError(/Unexpected token \./);
       });
 
       it('should report for loop with multiple `empty` blocks', () => {
-        expectLoopError(`
+        expect(() => parse(`
           @for (a of b; track a) {
             Main
           } @empty {
@@ -1628,71 +1602,63 @@ describe('R3 template transform', () => {
           } @empty {
             Empty two
           }
-        `).toThrowError(/@for loop can only have one @empty block/);
+        `)).toThrowError(/@for loop can only have one @empty block/);
       });
 
       it('should report empty block with parameters', () => {
-        expectLoopError(`
+        expect(() => parse(`
           @for (a of b; track a) {
             main
           } @empty (foo) {
             empty
           }
-        `).toThrowError(/@empty block cannot have parameters/);
+        `)).toThrowError(/@empty block cannot have parameters/);
       });
 
       it('should content between @for and @empty blocks', () => {
-        expectLoopError(`
+        expect(() => parse(`
           @for (a of b; track a) {
             main
           } <div></div> @empty {
             empty
           }
-        `).toThrowError(/@empty block can only be used after an @for block/);
+        `)).toThrowError(/@empty block can only be used after an @for block/);
       });
 
       it('should report an empty block used without a @for loop block', () => {
-        expectLoopError(`@empty {hello}`)
+        expect(() => parse(`@empty {hello}`))
             .toThrowError(/@empty block can only be used after an @for block/);
       });
 
       it('should report an empty `let` parameter', () => {
-        expectLoopError(`@for (item of items.foo.bar; track item.id; let ) {}`)
+        expect(() => parse(`@for (item of items.foo.bar; track item.id; let ) {}`))
             .toThrowError(
                 /Invalid @for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"/);
       });
 
       it('should report an invalid `let` parameter', () => {
-        expectLoopError(`@for (item of items.foo.bar; track item.id; let i = $index, $odd) {}`)
+        expect(() => parse(`@for (item of items.foo.bar; track item.id; let i = $index, $odd) {}`))
             .toThrowError(
                 /Invalid @for loop "let" parameter\. Parameter should match the pattern "<name> = <variable name>"/);
       });
 
       it('should an unknown variable in a `let` parameter', () => {
-        expectLoopError(`@for (item of items.foo.bar; track item.id; let foo = $foo) {}`)
+        expect(() => parse(`@for (item of items.foo.bar; track item.id; let foo = $foo) {}`))
             .toThrowError(/Unknown "let" parameter variable "\$foo"\. The allowed variables are:/);
       });
 
       it('should report duplicate `let` parameter variables', () => {
-        expectLoopError(
-            `@for (item of items.foo.bar; track item.id; let i = $index, f = $first, in = $index) {}`)
+        expect(
+            () => parse(
+                `@for (item of items.foo.bar; track item.id; let i = $index, f = $first, in = $index) {}`))
             .toThrowError(/Duplicate "let" parameter variable "\$index"/);
       });
     });
   });
 
   describe('if blocks', () => {
-    // TODO(crisbeto): temporary utility while control flow is disabled by default.
-    function expectIf(html: string) {
-      return expectFromR3Nodes(parse(html, {enabledBlockTypes: ['if']}).nodes);
-    }
-
-    function expectIfError(html: string) {
-      return expect(() => parse(html, {enabledBlockTypes: ['if']}));
-    }
-
     it('should parse an if block', () => {
-      expectIf(`
+      expectFromHtml(`
         @if (cond.expr; as foo) {
           Main case was true!
         } @else if (other.expr) {
@@ -1713,7 +1679,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse an if block with optional parentheses', () => {
-      expectIf(`
+      expectFromHtml(`
         @if ((cond.expr)) {
           Main case was true!
         } @else if ((other.expr)) {
@@ -1733,7 +1699,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse nested if blocks', () => {
-      expectIf(`
+      expectFromHtml(`
         @if (a) {
           @if (a1) {
             a1
@@ -1774,7 +1740,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse an else if block with multiple spaces', () => {
-      expectIf(`
+      expectFromHtml(`
         @if (cond.expr; as foo) {
           Main case was true!
         } @else        if (other.expr) {
@@ -1791,7 +1757,7 @@ describe('R3 template transform', () => {
     });
 
     it('should parse an else if block with a tab between `else` and `if`', () => {
-      expectIf(`
+      expectFromHtml(`
         @if (cond.expr; as foo) {
           Main case was true!
         } @else\tif (other.expr) {
@@ -1809,77 +1775,77 @@ describe('R3 template transform', () => {
 
     describe('validations', () => {
       it('should report an if block without a condition', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if {hello}
-        `).toThrowError(/Conditional block does not have an expression/);
+        `)).toThrowError(/Conditional block does not have an expression/);
       });
 
       it('should report an unknown parameter in an if block', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo; bar) {hello}
-        `).toThrowError(/Unrecognized conditional paramater "bar"/);
+        `)).toThrowError(/Unrecognized conditional paramater "bar"/);
       });
 
       it('should report an unknown parameter in an else if block', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else if (bar; baz) {goodbye}
-        `).toThrowError(/Unrecognized conditional paramater "baz"/);
+        `)).toThrowError(/Unrecognized conditional paramater "baz"/);
       });
 
       it('should report an if block that has multiple `as` expressions', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo; as foo; as bar) {hello}
-        `).toThrowError(/Conditional can only have one "as" expression/);
+        `)).toThrowError(/Conditional can only have one "as" expression/);
       });
 
       it('should report an else if block with a newline in the name', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else\nif (bar) {goodbye}
-        `).toThrowError(/Unrecognized block @else\nif/);
+        `)).toThrowError(/Unrecognized block @else\nif/);
       });
 
       it('should report an else if block that has an `as` expression', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else if (bar; as alias) {goodbye}
-        `).toThrowError(/"as" expression is only allowed on the primary @if block/);
+        `)).toThrowError(/"as" expression is only allowed on the primary @if block/);
       });
 
       it('should report an @else if block used without an @if block', () => {
-        expectIfError(`@else if (foo) {hello}`)
+        expect(() => parse(`@else if (foo) {hello}`))
             .toThrowError(/@else if block can only be used after an @if or @else if block/);
       });
 
       it('should report an @else block used without an @if block', () => {
-        expectIfError(`@else (foo) {hello}`)
+        expect(() => parse(`@else (foo) {hello}`))
             .toThrowError(/@else block can only be used after an @if or @else if block/);
       });
 
       it('should report content between an @if and @else if block', () => {
-        expectIfError(`@if (foo) {hello} <div></div> @else if (bar) {goodbye}`)
+        expect(() => parse(`@if (foo) {hello} <div></div> @else if (bar) {goodbye}`))
             .toThrowError(/@else if block can only be used after an @if or @else if block/);
       });
 
       it('should report content between an @if and @else block', () => {
-        expectIfError(`@if (foo) {hello} <div></div> @else {goodbye}`)
+        expect(() => parse(`@if (foo) {hello} <div></div> @else {goodbye}`))
             .toThrowError(/@else block can only be used after an @if or @else if block/);
       });
 
       it('should report an else block with parameters', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else (bar) {goodbye}
-        `).toThrowError(/@else block cannot have parameters/);
+        `)).toThrowError(/@else block cannot have parameters/);
       });
 
       it('should report a conditional with multiple else blocks', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else {goodbye} @else {goodbye again}
-        `).toThrowError(/Conditional can only have one @else block/);
+        `)).toThrowError(/Conditional can only have one @else block/);
       });
 
       it('should report an else if block after an else block', () => {
-        expectIfError(`
+        expect(() => parse(`
           @if (foo) {hello} @else {goodbye} @else (if bar) {goodbye again}
-        `).toThrowError(/@else block must be last inside the conditional/);
+        `)).toThrowError(/@else block must be last inside the conditional/);
       });
     });
   });

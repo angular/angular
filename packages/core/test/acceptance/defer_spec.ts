@@ -7,7 +7,6 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Input, NgZone, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {DeferBlockBehavior, fakeAsync, flush, TestBed} from '@angular/core/testing';
@@ -62,9 +61,6 @@ function allPendingDynamicImports() {
 const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
 
 describe('@defer', () => {
-  beforeEach(() => setEnabledBlockTypes(['defer', 'for', 'if']));
-  afterEach(() => setEnabledBlockTypes([]));
-
   beforeEach(() => {
     TestBed.configureTestingModule(
         {providers: COMMON_PROVIDERS, deferBlockBehavior: DeferBlockBehavior.Playthrough});

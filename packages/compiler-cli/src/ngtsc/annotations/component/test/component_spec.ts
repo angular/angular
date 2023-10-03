@@ -88,7 +88,6 @@ function setup(
       /* enableI18nLegacyMessageIdFormat */ false,
       !!usePoisonedData,
       /* i18nNormalizeLineEndingsInICUs */ false,
-      /* enabledBlockTypes */ new Set(),
       moduleResolver,
       cycleAnalyzer,
       CycleHandlingStrategy.UseRemoteScoping,

@@ -60,7 +60,6 @@ export interface Render3ParseResult {
 
 interface Render3ParseOptions {
   collectCommentNodes: boolean;
-  enabledBlockTypes: Set<string>;
 }
 
 export function htmlAstToRender3Ast(
@@ -342,26 +341,6 @@ class HtmlAstToIvyAst implements html.Visitor {
       return null;
     }
 
-    if (!this.options.enabledBlockTypes.has(block.name)) {
-      let errorMessage: string;
-
-      if (isConnectedDeferLoopBlock(block.name)) {
-        errorMessage = `@${block.name} block can only be used after an @defer block.`;
-        this.processedNodes.add(block);
-      } else if (isConnectedForLoopBlock(block.name)) {
-        errorMessage = `@${block.name} block can only be used after an @for block.`;
-        this.processedNodes.add(block);
-      } else if (isConnectedIfLoopBlock(block.name)) {
-        errorMessage = `@${block.name} block can only be used after an @if or @else if block.`;
-        this.processedNodes.add(block);
-      } else {
-        errorMessage = `Unrecognized block @${block.name}.`;
-      }
-
-      this.reportError(errorMessage, block.sourceSpan);
-      return null;
-    }
-
     let result: {node: t.Node|null, errors: ParseError[]}|null = null;
 
     switch (block.name) {
@@ -388,10 +367,22 @@ class HtmlAstToIvyAst implements html.Visitor {
         break;
 
       default:
-        result = {
-          node: null,
-          errors: [new ParseError(block.sourceSpan, `Unrecognized block @${block.name}.`)]
-        };
+        let errorMessage: string;
+
+        if (isConnectedDeferLoopBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @defer block.`;
+          this.processedNodes.add(block);
+        } else if (isConnectedForLoopBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @for block.`;
+          this.processedNodes.add(block);
+        } else if (isConnectedIfLoopBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @if or @else if block.`;
+          this.processedNodes.add(block);
+        } else {
+          errorMessage = `Unrecognized block @${block.name}.`;
+        }
+
+        result = {node: null, errors: [new ParseError(block.sourceSpan, errorMessage)]};
         break;
     }
 

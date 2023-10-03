@@ -74,10 +74,9 @@ export class ComponentDecoratorHandler implements
       private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
       private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
       private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
-      private enabledBlockTypes: Set<string>, private moduleResolver: ModuleResolver,
-      private cycleAnalyzer: CycleAnalyzer, private cycleHandlingStrategy: CycleHandlingStrategy,
-      private refEmitter: ReferenceEmitter, private referencesRegistry: ReferencesRegistry,
-      private depTracker: DependencyTracker|null,
+      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
+      private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
+      private referencesRegistry: ReferencesRegistry, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
@@ -88,7 +87,6 @@ export class ComponentDecoratorHandler implements
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       usePoisonedData: this.usePoisonedData,
-      enabledBlockTypes: this.enabledBlockTypes,
     };
   }
 
@@ -107,7 +105,6 @@ export class ComponentDecoratorHandler implements
     enableI18nLegacyMessageIdFormat: boolean,
     i18nNormalizeLineEndingsInICUs: boolean,
     usePoisonedData: boolean,
-    enabledBlockTypes: Set<string>,
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -362,7 +359,6 @@ export class ComponentDecoratorHandler implements
             enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
             i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
             usePoisonedData: this.usePoisonedData,
-            enabledBlockTypes: this.enabledBlockTypes,
           },
           this.compilationMode);
     }

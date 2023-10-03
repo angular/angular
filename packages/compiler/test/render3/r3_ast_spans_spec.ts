@@ -216,9 +216,8 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string, enabledBlockTypes?: string[]) {
-  const res = parse(html, {enabledBlockTypes});
-  return expectFromR3Nodes(res.nodes);
+function expectFromHtml(html: string) {
+  return expectFromR3Nodes(parse(html).nodes);
 }
 
 function expectFromR3Nodes(nodes: t.Node[]) {
@@ -617,7 +616,7 @@ describe('R3 AST source spans', () => {
           '@placeholder (minimum 500) {Placeholder content!}' +
           '@error {Loading failed :(}';
 
-      expectFromHtml(html, ['defer']).toEqual([
+      expectFromHtml(html).toEqual([
         [
           'DeferredBlock',
           '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}',
@@ -663,7 +662,7 @@ describe('R3 AST source spans', () => {
           `@default {No case matched}` +
           `}`;
 
-      expectFromHtml(html, ['switch']).toEqual([
+      expectFromHtml(html).toEqual([
         [
           'SwitchBlock',
           '@switch (cond.kind) {@case (x()) {X case}@case (\'hello\') {Y case}@case (42) {Z case}@default {No case matched}}',
@@ -686,7 +685,7 @@ describe('R3 AST source spans', () => {
       const html = `@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}` +
           `@empty {There were no items in the list.}`;
 
-      expectFromHtml(html, ['for']).toEqual([
+      expectFromHtml(html).toEqual([
         [
           'ForLoopBlock', '@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}',
           '@for (item of items.foo.bar; track item.id) {', '}'
@@ -705,7 +704,7 @@ describe('R3 AST source spans', () => {
           `@else if (other.expr) {Extra case was true!}` +
           `@else {False case!}`;
 
-      expectFromHtml(html, ['if']).toEqual([
+      expectFromHtml(html).toEqual([
         [
           'IfBlock', '@if (cond.expr; as foo) {Main case was true!}', '@if (cond.expr; as foo) {',
           '}'

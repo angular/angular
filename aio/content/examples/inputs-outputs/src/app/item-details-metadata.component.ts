@@ -9,7 +9,7 @@ import { booleanAttribute } from '@angular/core'; // First, import booleanAttrib
   standalone: true,
   selector: 'app-item-detail-metadata',
   template: `
-  <h2>Child component with @Input() metadata configurations</h2>
+  <h2>Child component with &#64;Input() metadata configurations</h2>
 
   <p>
     Today's item: {{item}}
