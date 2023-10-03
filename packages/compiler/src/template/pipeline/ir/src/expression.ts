@@ -9,9 +9,9 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
+import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
 import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
-import * as t from '../../../../render3/r3_ast';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
