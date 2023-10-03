@@ -10,6 +10,8 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
+type CreateOpWithSlot = ir.CreateOp&ir.ConsumesSlotOpTrait;
+
 /**
  * The kind of element tag.
  */
@@ -84,10 +86,14 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
           if (currentI18nOp === null) {
             throw Error('Missing corresponding i18n start op for i18n end op');
           }
-          saveTagParams(currentI18nOp, elementStartPlaceholders, TagKind.START, ELEMENT_MARKER);
-          saveTagParams(currentI18nOp, elementClosePlaceholders, TagKind.CLOSE, ELEMENT_MARKER);
-          saveTagParams(currentI18nOp, templateStartPlaceholders, TagKind.START, TEMPLATE_MARKER);
-          saveTagParams(currentI18nOp, templateClosePlaceholders, TagKind.CLOSE, TEMPLATE_MARKER);
+          saveTagParams(
+              job, currentI18nOp, elementStartPlaceholders, TagKind.START, ELEMENT_MARKER);
+          saveTagParams(
+              job, currentI18nOp, elementClosePlaceholders, TagKind.CLOSE, ELEMENT_MARKER);
+          saveTagParams(
+              job, currentI18nOp, templateStartPlaceholders, TagKind.START, TEMPLATE_MARKER);
+          saveTagParams(
+              job, currentI18nOp, templateClosePlaceholders, TagKind.CLOSE, TEMPLATE_MARKER);
           currentI18nOp = null;
           break;
         case ir.OpKind.Element:
@@ -130,13 +136,10 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
  * Saves values for the given tag name placeholders to the given i18n operation's params map.
  */
 function saveTagParams(
-    i18nOp: ir.I18nStartOp, placeholderOps: Map<string, ir.ConsumesSlotOpTrait[]>, tagKind: TagKind,
-    marker: string) {
+    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp,
+    placeholderOps: Map<string, CreateOpWithSlot[]>, tagKind: TagKind, marker: string) {
   for (const [placeholder, ops] of placeholderOps) {
-    i18nOp.params.set(
-        placeholder,
-        o.literal(
-            serializeSlots(ops.map(op => op.slot!), tagKind, marker, i18nOp.subTemplateIndex)));
+    i18nOp.params.set(placeholder, o.literal(serializeSlots(job, i18nOp, ops, tagKind, marker)));
   }
 }
 
@@ -154,11 +157,25 @@ function addPlaceholderOp<Op extends ir.Op<any>>(
  * Serializes a list of slots to an i18n placeholder value string.
  */
 function serializeSlots(
-    slots: number[], tagKind: TagKind, tagMarker: string, context: number|null): string {
+    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, ops: CreateOpWithSlot[], tagKind: TagKind,
+    tagMarker: string): string {
   const tagKindMarker = tagKind === TagKind.START ? '' : '/';
-  const slotStrings =
-      slots.map(slot => serializeValue(`${tagKindMarker}${tagMarker}${slot}`, context));
+  const slotStrings = ops.map(
+      op => serializeValue(
+          `${tagKindMarker}${tagMarker}${op.slot}`, getSubTemplateIndexForTag(job, i18nOp, op)));
   return slotStrings.length === 1 ? slotStrings[0] : `[${slotStrings.join(DELIMITER)}]`;
+}
+
+function getSubTemplateIndexForTag(
+    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, op: ir.CreateOp): number|null {
+  if (op.kind === ir.OpKind.Template) {
+    for (const childOp of job.views.get(op.xref)!.create) {
+      if (childOp.kind === ir.OpKind.I18nStart) {
+        return childOp.subTemplateIndex;
+      }
+    }
+  }
+  return i18nOp.subTemplateIndex;
 }
 
 /**

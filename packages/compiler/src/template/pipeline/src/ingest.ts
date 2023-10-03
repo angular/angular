@@ -283,7 +283,8 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       firstXref = cView.xref;
     }
     unit.create.push(ir.createTemplateOp(
-        cView.xref, 'Conditional', ir.Namespace.HTML, true, undefined, ifCase.sourceSpan));
+        cView.xref, 'Conditional', ir.Namespace.HTML, true,
+        undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan));
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr =
         new ir.ConditionalCaseExpr(caseExpr, cView.xref, ifCase.expressionAlias);
