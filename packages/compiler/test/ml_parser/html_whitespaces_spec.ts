@@ -68,7 +68,7 @@ import {humanizeDom} from './ast_spec_utils';
     it('should remove whitespace inside of blocks', () => {
       const markup = '@if (cond) {<br>  <br>\t<br>\n<br>}';
 
-      expect(parseAndRemoveWS(markup, {tokenizeBlocks: true})).toEqual([
+      expect(parseAndRemoveWS(markup)).toEqual([
         [html.Block, 'if', 0],
         [html.BlockParameter, 'cond'],
         [html.Element, 'br', 1],

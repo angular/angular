@@ -7,7 +7,6 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, PLATFORM_ID} from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -24,9 +23,6 @@ const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
 
 
 describe('DeferFixture', () => {
-  beforeEach(() => setEnabledBlockTypes(['defer']));
-  afterEach(() => setEnabledBlockTypes([]));
-
   it('should start in manual behavior mode', async () => {
     @Component({
       selector: 'defer-comp',

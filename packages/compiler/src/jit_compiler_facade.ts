@@ -30,13 +30,6 @@ import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
 
-let enabledBlockTypes: Set<string>|undefined;
-
-/** Temporary utility that enables specific block types in JIT compilations. */
-export function ɵsetEnabledBlockTypes(types: string[]) {
-  enabledBlockTypes = types.length > 0 ? new Set(types) : undefined;
-}
-
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
   ResourceLoader = ResourceLoader;
@@ -546,8 +539,7 @@ function parseJitTemplate(
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
-  const parsed = parseTemplate(
-      template, sourceMapUrl, {preserveWhitespaces, interpolationConfig, enabledBlockTypes});
+  const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces, interpolationConfig});
   if (parsed.errors !== null) {
     const errors = parsed.errors.map(err => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);

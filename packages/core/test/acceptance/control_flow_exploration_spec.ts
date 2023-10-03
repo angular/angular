@@ -7,7 +7,6 @@
  */
 
 
-import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -21,9 +20,6 @@ describe('control flow', () => {
   }
 
   describe('if', () => {
-    beforeEach(() => setEnabledBlockTypes(['if']));
-    afterEach(() => setEnabledBlockTypes([]));
-
     it('should add and remove views based on conditions change', () => {
       @Component({standalone: true, template: '@if (show) {Something} @else {Nothing}'})
       class TestComponent {
@@ -244,9 +240,6 @@ describe('control flow', () => {
   });
 
   describe('switch', () => {
-    beforeEach(() => setEnabledBlockTypes(['switch']));
-    afterEach(() => setEnabledBlockTypes([]));
-
     // Open question: == vs. === for comparison
     // == is the current Angular implementation
     // === is used by JavaScript semantics
@@ -341,9 +334,6 @@ describe('control flow', () => {
   });
 
   describe('for', () => {
-    beforeEach(() => setEnabledBlockTypes(['for', 'if']));
-    afterEach(() => setEnabledBlockTypes([]));
-
     it('should create, remove and move views corresponding to items in a collection', () => {
       @Component({
         template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',

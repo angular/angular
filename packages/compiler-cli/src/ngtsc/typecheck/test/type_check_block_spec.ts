@@ -1357,12 +1357,6 @@ describe('type check blocks', () => {
   });
 
   describe('deferred blocks', () => {
-    // TODO(crisbeto): temporary utility while deferred blocks are disabled by default
-    function deferredTcb(template: string): string {
-      return tcb(
-          template, undefined, undefined, undefined, {enabledBlockTypes: new Set(['defer'])});
-    }
-
     it('should generate bindings inside deferred blocks', () => {
       const TEMPLATE = `
         @defer {
@@ -1376,7 +1370,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(deferredTcb(TEMPLATE))
+      expect(tcb(TEMPLATE))
           .toContain(
               '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
     });
@@ -1388,7 +1382,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
     });
 
     it('should generate `prefetch when` trigger', () => {
@@ -1398,18 +1392,11 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(deferredTcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
     });
   });
 
   describe('conditional blocks', () => {
-    // TODO(crisbeto): temporary utility while conditional blocks are disabled by default
-    function conditionalTcb(template: string): string {
-      return tcb(
-          template, undefined, undefined, undefined,
-          {enabledBlockTypes: new Set(['if', 'switch'])});
-    }
-
     it('should generate an if block', () => {
       const TEMPLATE = `
         @if (expr === 0) {
@@ -1423,7 +1410,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(conditionalTcb(TEMPLATE))
+      expect(tcb(TEMPLATE))
           .toContain(
               'if ((((this).expr)) === (0)) { "" + ((this).main()); } ' +
               'else if ((((this).expr1)) === (1)) { "" + ((this).one()); } ' +
@@ -1436,7 +1423,7 @@ describe('type check blocks', () => {
         {{alias}}
       }`;
 
-      expect(conditionalTcb(TEMPLATE))
+      expect(tcb(TEMPLATE))
           .toContain(
               'if ((((this).expr)) === (1)) { var _t1 = (((this).expr)) === (1); "" + (_t1); }');
     });
@@ -1456,7 +1443,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(conditionalTcb(TEMPLATE))
+      expect(tcb(TEMPLATE))
           .toContain(
               'switch (((this).expr)) { case 1: "" + ((this).one()); break; ' +
               'case 2: "" + ((this).two()); break; default: "" + ((this).default()); break; }');
@@ -1479,7 +1466,7 @@ describe('type check blocks', () => {
         </ng-template>
       `;
 
-      expect(conditionalTcb(TEMPLATE))
+      expect(tcb(TEMPLATE))
           .toContain(
               'var _t1: any = null!; { var _t2 = (_t1.exp); switch (_t2()) { ' +
               'case "one": "" + ((this).one()); break; case "two": "" + ((this).two()); break; ' +
@@ -1488,11 +1475,6 @@ describe('type check blocks', () => {
   });
 
   describe('for loop blocks', () => {
-    // TODO(crisbeto): temporary utility while for loop blocks are disabled by default
-    function loopTcb(template: string): string {
-      return tcb(template, undefined, undefined, undefined, {enabledBlockTypes: new Set(['for'])});
-    }
-
     it('should generate a for block', () => {
       const TEMPLATE = `
         @for (item of items; track item) {
@@ -1502,7 +1484,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      const result = loopTcb(TEMPLATE);
+      const result = tcb(TEMPLATE);
       expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
       expect(result).toContain('"" + ((this).main(_t1))');
       expect(result).toContain('"" + ((this).empty())');
@@ -1515,7 +1497,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      const result = loopTcb(TEMPLATE);
+      const result = tcb(TEMPLATE);
       expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('var _t3: number = null!;');
@@ -1533,7 +1515,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      const result = loopTcb(TEMPLATE);
+      const result = tcb(TEMPLATE);
       expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('var _t3: number = null!;');
@@ -1549,7 +1531,7 @@ describe('type check blocks', () => {
         @for (item of items; track item; let i = $index) { {{$index}} {{i}} }
       `;
 
-      const result = loopTcb(TEMPLATE);
+      const result = tcb(TEMPLATE);
       expect(result).toContain('for (const item of ((this).items)) { var _t1 = item;');
       expect(result).toContain('var _t2: number = null!;');
       expect(result).toContain('"" + (((this).$index)) + (_t2)');
@@ -1566,7 +1548,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      const result = loopTcb(TEMPLATE);
+      const result = tcb(TEMPLATE);
       expect(result).toContain(
           'for (const item of ((this).items)) { var _t1 = item; var _t2: number = null!;');
       expect(result).toContain('"" + (_t1) + (_t2)');
@@ -1576,7 +1558,7 @@ describe('type check blocks', () => {
     });
 
     it('should generate the tracking expression of a for loop', () => {
-      const result = loopTcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
+      const result = tcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
 
       expect(result).toContain(
           'for (const item of ((this).items)) { var _t1: number = null!; var _t2 = item;');
