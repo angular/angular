@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, NgZone} from '@angular/core';
+import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -41,7 +41,6 @@ function getResponseUrl(response: Response): string|null {
  * @see {@link HttpHandler}
  *
  * @publicApi
- * @developerPreview
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {

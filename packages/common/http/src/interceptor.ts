@@ -190,6 +190,12 @@ export const HTTP_ROOT_INTERCEPTOR_FNS =
     new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
 
 /**
+ * A provider to set a global primary http backend. If set, it will override the default one
+ */
+export const PRIMARY_HTTP_BACKEND = new InjectionToken<HttpBackend>(ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '');
+
+
+/**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
  * class-based interceptors and runs the request through it.
  */
@@ -220,6 +226,9 @@ export class HttpInterceptorHandler extends HttpHandler {
 
   constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
     super();
+
+    const primaryHttpBackend = inject(PRIMARY_HTTP_BACKEND, {optional: true});
+    this.backend = primaryHttpBackend ?? backend;
   }
 
   override handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
