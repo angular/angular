@@ -11,7 +11,7 @@ import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders, 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
-import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory, PRIMARY_HTTP_BACKEND} from './interceptor';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
@@ -261,5 +261,6 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},
+    {provide: PRIMARY_HTTP_BACKEND, useExisting: FetchBackend},
   ]);
 }
