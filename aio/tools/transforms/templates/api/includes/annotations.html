@@ -3,7 +3,7 @@
   <h2>Annotations</h2>
 
   {%- for decorator in doc.decorators %}
-  <code-example language="ts" hideCopy="true" class="no-box api-heading{% if decorator.deprecated %} deprecated-api-item{% endif %}">@{$ decorator.name $}({$ decorator.arguments $})</code-example>
+  <code-example language="ts" hideCopy="true" class="no-box api-heading{% if decorator.deprecated %} deprecated-api-item{% endif %}">&#64;{$ decorator.name $}({$ decorator.arguments $})</code-example>
 
   {%- if not decorator.notYetDocumented %}
   {$ decorator.description | marked $}

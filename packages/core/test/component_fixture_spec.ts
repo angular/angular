@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵsetEnabledBlockTypes as setEnabledBlockTypes} from '@angular/compiler/src/jit_compiler_facade';
 import {Component, Injectable, Input} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -117,9 +116,6 @@ class NestedAsyncTimeoutComp {
 
 {
   describe('ComponentFixture', () => {
-    beforeEach(() => setEnabledBlockTypes(['defer']));
-    afterEach(() => setEnabledBlockTypes([]));
-
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [

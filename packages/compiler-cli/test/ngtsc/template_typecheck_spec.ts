@@ -3625,10 +3625,6 @@ suppress
     });
 
     describe('deferred blocks', () => {
-      beforeEach(() => {
-        env.tsconfig({_enabledBlockTypes: ['defer']});
-      });
-
       it('should check bindings inside deferred blocks', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -3749,10 +3745,6 @@ suppress
     });
 
     describe('conditional blocks', () => {
-      beforeEach(() => {
-        env.tsconfig({_enabledBlockTypes: ['if', 'switch']});
-      });
-
       it('should check bindings inside if blocks', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -4014,11 +4006,8 @@ suppress
 
     describe('for loop blocks', () => {
       beforeEach(() => {
-        env.tsconfig({
-          // `fullTemplateTypeCheck: true` is necessary so content inside `ng-template` is checked.
-          fullTemplateTypeCheck: true,
-          _enabledBlockTypes: ['for', 'if'],
-        });
+        // `fullTemplateTypeCheck: true` is necessary so content inside `ng-template` is checked.
+        env.tsconfig({fullTemplateTypeCheck: true});
       });
 
       it('should check bindings inside of for loop blocks', () => {

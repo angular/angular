@@ -8806,7 +8806,6 @@ function allTests(os: string) {
 
     describe('deferred blocks', () => {
       it('should handle deferred blocks', () => {
-        env.tsconfig({_enabledBlockTypes: ['defer']});
         env.write('cmp-a.ts', `
           import { Component } from '@angular/core';
 
@@ -8857,7 +8856,6 @@ function allTests(os: string) {
 
       describe('imports', () => {
         it('should retain regular imports when symbol is eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -8905,7 +8903,6 @@ function allTests(os: string) {
         });
 
         it('should retain regular imports when one of the symbols is eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -8962,7 +8959,6 @@ function allTests(os: string) {
         });
 
         it('should drop regular imports when none of the symbols are eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -9018,7 +9014,6 @@ function allTests(os: string) {
 
       describe('setClassMetadataAsync', () => {
         it('should generate setClassMetadataAsync for components with defer blocks', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import {Component} from '@angular/core';
 
@@ -9075,7 +9070,6 @@ function allTests(os: string) {
         it('should *not* generate setClassMetadataAsync for components with defer blocks ' +
                'when dependencies are eagerly referenced as well',
            () => {
-             env.tsconfig({_enabledBlockTypes: ['defer']});
              env.write('cmp-a.ts', `
                 import {Component} from '@angular/core';
 

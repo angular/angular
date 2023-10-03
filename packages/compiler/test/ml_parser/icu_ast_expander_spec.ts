@@ -111,8 +111,7 @@ import {humanizeNodes} from './ast_spec_utils';
     });
 
     it('should parse an expansion forms inside of blocks', () => {
-      const res = expand(
-          '@if (cond) {{a, b, =4 {c}}@if (otherCond) {{d, e, =4 {f}}}}', {tokenizeBlocks: true});
+      const res = expand('@if (cond) {{a, b, =4 {c}}@if (otherCond) {{d, e, =4 {f}}}}');
 
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Block, 'if', 0],
