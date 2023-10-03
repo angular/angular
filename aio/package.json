@@ -106,7 +106,7 @@
     "chalk": "^4.1.0",
     "cjson": "^0.5.0",
     "cross-spawn": "^7.0.3",
-    "css-selector-parser": "^1.4.1",
+    "css-selector-parser": "^3.0.0",
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.30.0",
     "entities": "^4.0.0",
