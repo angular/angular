@@ -13,7 +13,7 @@ jobs:
   assistant_to_the_branch_manager:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           persist-credentials: false
       - uses: angular/dev-infra/github-actions/branch-manager@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
