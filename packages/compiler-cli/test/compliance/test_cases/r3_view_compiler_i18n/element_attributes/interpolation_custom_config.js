@@ -1,4 +1,4 @@
-consts: function() {
+consts: () => {
   __i18nMsg__('intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{% valueA | uppercase %}'}}, {meaning: 'm', desc: 'd'})
   return [
     [__AttributeMarker.I18n__, "title"],

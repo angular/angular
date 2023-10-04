@@ -1,4 +1,4 @@
-consts: function() {
+consts: () => {
   __i18nMsg__('{$interpolation} and {$interpolation_1}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`]], {original_code: {'interpolation': '{{ valueA | pipeA }}', 'interpolation_1': '{{ valueB | pipeB }}'}}, {})
   __i18nMsg__('{$startTagSpan}{$interpolation}{$closeTagSpan} and {$interpolation_1} {$startTagSpan}and {$interpolation_2}{$closeTagSpan}', [['closeTagSpan', String.raw`[\uFFFD/#6\uFFFD|\uFFFD/#9\uFFFD]`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['interpolation_2', String.raw`\uFFFD2\uFFFD`], ['startTagSpan', String.raw`[\uFFFD#6\uFFFD|\uFFFD#9\uFFFD]`]], {original_code: {'closeTagSpan': '</span>', 'interpolation': '{{ valueA | pipeA }}', 'interpolation_1': '{{ valueB | pipeB }}', 'interpolation_2': '{{ valueC | pipeC }}', 'startTagSpan': '<span>'}}, {})
   …

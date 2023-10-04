@@ -79,7 +79,7 @@ export function wrapReference(value: any): R3Reference {
 
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
   const values = o.literalArr(refs.map(ref => ref.value));
-  return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
+  return shouldForwardDeclare ? o.arrowFn([], values) : values;
 }
 
 
@@ -151,7 +151,7 @@ export function convertFromMaybeForwardRefExpression(
  * ```
  */
 export function generateForwardRef(expr: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.forwardRef).callFn([o.fn([], [new o.ReturnStatement(expr)])]);
+  return o.importExpr(Identifiers.forwardRef).callFn([o.arrowFn([], expr)]);
 }
 
 /**

@@ -218,14 +218,14 @@ export function compileComponentFromMetadata(
     // - either as an array:
     //   `consts: [['one', 'two'], ['three', 'four']]`
     // - or as a factory function in case additional statements are present (to support i18n):
-    //   `consts: function() { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
+    //   `consts: () => { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
     //   }`
     const {constExpressions, prepareStatements} = templateBuilder.getConsts();
     if (constExpressions.length > 0) {
-      let constsExpr: o.LiteralArrayExpr|o.FunctionExpr = o.literalArr(constExpressions);
+      let constsExpr: o.LiteralArrayExpr|o.ArrowFunctionExpr = o.literalArr(constExpressions);
       // Prepare statements are present - turn `consts` into a function.
       if (prepareStatements.length > 0) {
-        constsExpr = o.fn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
+        constsExpr = o.arrowFn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
       }
       definitionMap.set('consts', constsExpr);
     }
@@ -252,9 +252,9 @@ export function compileComponentFromMetadata(
     definitionMap.set('vars', o.literal(tpl.root.vars as number));
     if (tpl.consts.length > 0) {
       if (tpl.constsInitializers.length > 0) {
-        definitionMap.set(
-            'consts',
-            o.fn([], [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))]));
+        definitionMap.set('consts', o.arrowFn([], [
+          ...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))
+        ]));
       } else {
         definitionMap.set('consts', o.literalArr(tpl.consts));
       }
@@ -361,11 +361,11 @@ function compileDeclarationList(
       return list;
     case DeclarationListEmitMode.Closure:
       // directives: function () { return [MyDir]; }
-      return o.fn([], [new o.ReturnStatement(list)]);
+      return o.arrowFn([], list);
     case DeclarationListEmitMode.ClosureResolved:
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
       const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
-      return o.fn([], [new o.ReturnStatement(resolvedList)]);
+      return o.arrowFn([], resolvedList);
     case DeclarationListEmitMode.RuntimeResolved:
       throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }

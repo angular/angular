@@ -8,7 +8,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: `
     <my-forward-directive></my-forward-directive>
-  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return MyForwardDirective; }), selector: "my-forward-directive" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => MyForwardDirective), selector: "my-forward-directive" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
             type: Component,
             args: [{
@@ -60,7 +60,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: `
     <div [attr.style]="{} | my_forward_pipe">...</div>
-  `, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(function () { return MyForwardPipe; }), name: "my_forward_pipe" }] });
+  `, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(() => MyForwardPipe), name: "my_forward_pipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
             type: Component,
             args: [{
