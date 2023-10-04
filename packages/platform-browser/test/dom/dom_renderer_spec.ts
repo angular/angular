@@ -262,6 +262,31 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         expect(styles?.length).toBe(1);
         expect(styles?.[0].nativeElement.disabled).toBeTrue();
       });
+
+      it('should not add duplicate stylesheets', async () => {
+        const fixture = TestBed.createComponent(SomeAppForCleanUp);
+        const compInstance = fixture.componentInstance;
+        compInstance.showEmulatedComponents = false;
+        compInstance.componentTwoInstanceHidden = true;
+
+        fixture.detectChanges();
+        // verify style is in DOM
+        expect(await styleCount(fixture, '.none')).toBe(1);
+
+        // Remove a single instance of the component.
+        compInstance.componentOneInstanceHidden = true;
+        fixture.detectChanges();
+
+        // Verify style is still in DOM
+        expect(await styleCount(fixture, '.none')).toBe(1);
+
+        // Re-create the component
+        compInstance.componentOneInstanceHidden = false;
+        fixture.detectChanges();
+
+        // Verify there is only 1 style
+        expect(await styleCount(fixture, '.none')).toBe(1);
+      });
     });
   });
 }
