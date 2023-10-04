@@ -20,8 +20,6 @@ let postSignalSetFn: (() => void)|null = null;
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
- *
- * @developerPreview
  */
 export interface WritableSignal<T> extends Signal<T> {
   /**
@@ -45,8 +43,6 @@ export interface WritableSignal<T> extends Signal<T> {
 
 /**
  * Options passed to the `signal` creation function.
- *
- * @developerPreview
  */
 export interface CreateSignalOptions<T> {
   /**
@@ -58,8 +54,6 @@ export interface CreateSignalOptions<T> {
 
 /**
  * Create a `Signal` that can be set or updated directly.
- *
- * @developerPreview
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
   const node: SignalNode<T> = Object.create(SIGNAL_NODE);
