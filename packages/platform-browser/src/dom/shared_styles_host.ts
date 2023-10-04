@@ -129,7 +129,9 @@ export class SharedStylesHost implements OnDestroy {
     return usage;
   }
 
-  private getStyleElement(host: Node, style: string): HTMLStyleElement {
+  private getStyleElement(
+      host: Node, style: string,
+      existingStyleElements: HTMLStyleElement[]|undefined): HTMLStyleElement {
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
@@ -145,6 +147,11 @@ export class SharedStylesHost implements OnDestroy {
 
       return styleEl;
     } else {
+      const existingStyleElement =
+          existingStyleElements?.find(styleElement => styleElement.parentNode === host);
+      if (existingStyleElement) {
+        return existingStyleElement;
+      }
       const styleEl = this.doc.createElement('style');
 
       if (this.nonce) {
@@ -162,12 +169,12 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   private addStyleToHost(host: Node, style: string): void {
-    const styleEl = this.getStyleElement(host, style);
+    const styleRef = this.styleRef;
+    const styleResult = styleRef.get(style);
+    const styleEl = this.getStyleElement(host, style, styleResult?.elements);
 
     host.appendChild(styleEl);
 
-    const styleRef = this.styleRef;
-    const styleResult = styleRef.get(style);
     if (styleResult) {
       if (styleResult.usage === 0) {
         disableStylesheet(styleEl);
