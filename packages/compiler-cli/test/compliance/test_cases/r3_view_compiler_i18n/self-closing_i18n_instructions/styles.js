@@ -1,6 +1,6 @@
 decls: 4,
 vars: 0,
-consts: function() {
+consts: () => {
   __i18nMsg__('Text #1', [], {}, {})
   __i18nMsg__('Text #2', [], {}, {})
   return [

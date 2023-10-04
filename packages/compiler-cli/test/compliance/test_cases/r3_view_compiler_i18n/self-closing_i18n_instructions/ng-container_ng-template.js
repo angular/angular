@@ -4,7 +4,7 @@ function MyComponent_ng_template_0_Template(rf, ctx) {
   }
 }
 …
-consts: function() {
+consts: () => {
   __i18nMsg__('My i18n block #2', [], {}, {})
   __i18nMsg__('My i18n block #1', [], {}, {})
   return [

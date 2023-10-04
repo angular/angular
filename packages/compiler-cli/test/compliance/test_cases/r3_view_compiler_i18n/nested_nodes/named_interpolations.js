@@ -1,7 +1,7 @@
 // NOTE: Keeping raw content (avoiding `__i18nMsg__` macro) to illustrate how named interpolations are generated.
 decls: 2,
 vars: 2,
-consts: function() {
+consts: () => {
   let $I18N_0$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
       /**

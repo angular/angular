@@ -1,6 +1,6 @@
 decls: 2,
 vars: 2,
-consts: function() {
+consts: () => {
   __i18nIcuMsg__('{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]], {})
   return [
     $i18n_0$

@@ -6,7 +6,7 @@ function MyComponent_ng_template_3_Template(rf, ctx) {
   }
 }
 …
-consts: function() {
+consts: () => {
   __i18nMsg__('{$tagImg} is my logo #1 ', [['tagImg', String.raw`\uFFFD#2\uFFFD\uFFFD/#2\uFFFD`]], {original_code: {tagImg: '<img src="logo.png" title="Logo" />'}}, {})
   __i18nMsg__('{$tagImg} is my logo #2 ', [['tagImg', String.raw`\uFFFD#1\uFFFD\uFFFD/#1\uFFFD`]], {original_code: {tagImg: '<img src="logo.png" title="Logo" />'}}, {})
   return [

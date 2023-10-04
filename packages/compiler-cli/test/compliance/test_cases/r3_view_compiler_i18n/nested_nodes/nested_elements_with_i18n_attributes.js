@@ -1,6 +1,6 @@
 decls: 9,
 vars: 7,
-consts: function() {
+consts: () => {
   __i18nMsg__('Span title {$interpolation} and {$interpolation_1}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`]], {original_code: {'interpolation': '{{ valueB }}', 'interpolation_1': '{{ valueC }}'}}, {})
   __i18nMsg__(' My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}',[['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagSpan', String.raw`\uFFFD#2\uFFFD`]], {original_code: {'closeTagSpan': '</span>', 'interpolation': '{{ valueA }}', 'startTagSpan': '<span i18n-title title="Span title {{ valueB }} and {{ valueC }}">'}}, {})
   __i18nMsg__('Span title {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ valueE }}'}}, {})

@@ -1,4 +1,4 @@
-consts: function() {
+consts: () => {
   __i18nMsg__('My i18n block #1', [], {}, {})
   return [
     $i18n_0$

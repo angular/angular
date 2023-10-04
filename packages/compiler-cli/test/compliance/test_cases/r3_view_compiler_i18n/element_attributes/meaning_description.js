@@ -1,5 +1,5 @@
 consts:
-    function() {
+    () => {
       __i18nMsg__('Content A', [], {}, {id: 'idA', meaning: 'meaningA', desc: 'descA'})
       __i18nMsg__('Title B', [], {}, {id: 'idB', meaning: 'meaningB', desc: 'descB'})
       __i18nMsg__('Title C', [], {}, {meaning: 'meaningC'})

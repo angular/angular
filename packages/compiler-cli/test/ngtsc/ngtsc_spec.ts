@@ -162,7 +162,7 @@ function allTests(os: string) {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function () { return (() => new Service())(); }');
+      expect(jsContents).toContain('factory: () => (() => new Service())()');
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
@@ -257,7 +257,7 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
-      expect(jsContents).toContain('providedIn: i0.forwardRef(function () { return Mod; }) })');
+      expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
@@ -564,7 +564,7 @@ function allTests(os: string) {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ function () {');
+          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
           expect(jsContents)
               .toContain(
                   '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir);');
@@ -1599,7 +1599,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('bootstrap: function () { return [Foo]; }');
+      expect(jsContents).toContain('bootstrap: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared directives', () => {
@@ -1618,7 +1618,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('declarations: function () { return [Foo]; }');
+      expect(jsContents).toContain('declarations: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared imports', () => {
@@ -1637,7 +1637,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('imports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('imports: () => [BarModule]');
     });
 
     it('should compile NgModules with references to forward declared exports', () => {
@@ -1656,7 +1656,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('exports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('exports: () => [BarModule]');
     });
 
     it('should use relative import for forward references that were resolved from a relative file',
@@ -4789,7 +4789,7 @@ function allTests(os: string) {
           .toContain('function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }');
       expect(jsContents)
           .toContain(
-              'function () { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
+              '(() => { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; })();');
       expect(jsContents)
           .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
     });
@@ -4815,7 +4815,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ function () { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
+              '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; })();');
     });
 
     it('should wrap "directives" in component metadata in a closure when forward references are present',
@@ -4844,7 +4844,7 @@ function allTests(os: string) {
          env.driveMain();
 
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain('dependencies: function () { return [CmpB]; }');
+         expect(jsContents).toContain('dependencies: () => [CmpB]');
        });
 
     it('should wrap setClassMetadata in an iife with ngDevMode guard', () => {

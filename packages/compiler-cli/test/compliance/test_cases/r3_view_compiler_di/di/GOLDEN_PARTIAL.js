@@ -261,7 +261,7 @@ import * as i0 from "@angular/core";
 class SomeProvider {
 }
 SomeProvider.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeProvider, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-SomeProvider.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeProvider, providedIn: 'root', useClass: i0.forwardRef(function () { return SomeProviderImpl; }) });
+SomeProvider.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeProvider, providedIn: 'root', useClass: i0.forwardRef(() => SomeProviderImpl) });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeProvider, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl) }]
@@ -295,7 +295,7 @@ export class Service {
     constructor(dep) { }
 }
 Service.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, deps: [{ token: Dep }], target: i0.ɵɵFactoryTarget.Injectable });
-Service.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, providedIn: i0.forwardRef(function () { return Mod; }) });
+Service.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, providedIn: i0.forwardRef(() => Mod) });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, decorators: [{
             type: Injectable,
             args: [{ providedIn: forwardRef(() => Mod) }]

@@ -1,6 +1,6 @@
 decls: 5,
 vars: 8,
-consts: function() {
+consts: () => {
   __i18nMsg__('static text', [], {}, {})
   __i18nMsg__('intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ valueA | uppercase }}'}}, {meaning: 'm', desc: 'd'})
   __i18nMsg__('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ valueB }}'}}, {meaning: 'm1', desc: 'd1'})

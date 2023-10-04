@@ -1,6 +1,6 @@
 decls: 2,
 vars: 1,
-consts: function() {
+consts: () => {
   __i18nMsg__('{$interpolation} title', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{valueA.getRawValue()?.getTitle()}}'}}, {})
   return [
     [__AttributeMarker.I18n__, "title"],

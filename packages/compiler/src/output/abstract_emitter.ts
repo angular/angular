@@ -284,7 +284,15 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
+    const shouldParenthesize = expr.fn instanceof o.ArrowFunctionExpr;
+
+    if (shouldParenthesize) {
+      ctx.print(expr.fn, '(');
+    }
     expr.fn.visitExpression(this, ctx);
+    if (shouldParenthesize) {
+      ctx.print(expr.fn, ')');
+    }
     ctx.print(expr, `(`);
     this.visitAllExpressions(expr.args, ctx, ',');
     ctx.print(expr, `)`);

@@ -1,4 +1,4 @@
-consts: function() {
+consts: () => {
   __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]], {})
   return [
     $i18n_0$

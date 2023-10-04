@@ -186,7 +186,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   if (baseFactoryVar !== null) {
     // There is a base factory variable so wrap its declaration along with the factory function into
     // an IIFE.
-    factoryFn = o.fn([], [
+    factoryFn = o.arrowFn([], [
                    new o.DeclareVarStmt(baseFactoryVar.name!), new o.ReturnStatement(factoryFn)
                  ]).callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }
