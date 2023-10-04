@@ -14,25 +14,42 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassEntry, DirectiveEntry, EntryType, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
+import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
 import {extractResolvedTypeString} from './type_extractor';
+
+// For the purpose of extraction, we can largely treat properties and accessors the same.
 
 /** A class member declaration that is *like* a property (including accessors) */
 type PropertyDeclarationLike = ts.PropertyDeclaration|ts.AccessorDeclaration;
 
-/** Extractor to pull info for API reference documentation for a TypeScript class. */
+// For the purposes of extraction, we can treat interfaces as identical to classes
+// with a couple of shorthand types to normalize over the differences between them.
+
+/** Type representing either a class declaration ro an interface declaration. */
+type ClassDeclarationLike = ts.ClassDeclaration|ts.InterfaceDeclaration;
+
+/** Type representing either a class member node or an interface member node. */
+type MemberElement = ts.ClassElement|ts.TypeElement;
+
+/** Type representing either a class method declaration or an interface method signature. */
+type MethodLike = ts.MethodDeclaration|ts.MethodSignature;
+
+/** Type representing either a class property declaration or an interface property signature. */
+type PropertyLike = PropertyDeclarationLike|ts.PropertySignature;
+
+/** Extractor to pull info for API reference documentation for a TypeScript class or interface. */
 class ClassExtractor {
   constructor(
-      protected declaration: ClassDeclaration&ts.ClassDeclaration,
-      protected reference: Reference,
+      protected declaration: ClassDeclaration&ClassDeclarationLike,
       protected typeChecker: ts.TypeChecker,
   ) {}
 
   /** Extract docs info specific to classes. */
   extract(): ClassEntry {
     return {
-      name: this.declaration.name!.text,
-      entryType: EntryType.UndecoratedClass,
+      name: this.declaration.name.text,
+      entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
+                                                               EntryType.UndecoratedClass,
       members: this.extractAllClassMembers(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
@@ -41,7 +58,7 @@ class ClassExtractor {
   }
 
   /** Extracts doc info for a class's members. */
-  protected extractAllClassMembers(classDeclaration: ts.ClassDeclaration): MemberEntry[] {
+  protected extractAllClassMembers(classDeclaration: ClassDeclarationLike): MemberEntry[] {
     const members: MemberEntry[] = [];
 
     for (const member of classDeclaration.members) {
@@ -57,10 +74,10 @@ class ClassExtractor {
   }
 
   /** Extract docs for a class's members (methods and properties).  */
-  protected extractClassMember(memberDeclaration: ts.ClassElement): MemberEntry|undefined {
-    if (ts.isMethodDeclaration(memberDeclaration)) {
+  protected extractClassMember(memberDeclaration: MemberElement): MemberEntry|undefined {
+    if (this.isMethod(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
-    } else if (ts.isPropertyDeclaration(memberDeclaration)) {
+    } else if (this.isProperty(memberDeclaration)) {
       return this.extractClassProperty(memberDeclaration);
     } else if (ts.isAccessor(memberDeclaration)) {
       return this.extractGetterSetter(memberDeclaration);
@@ -72,7 +89,7 @@ class ClassExtractor {
   }
 
   /** Extracts docs for a class method. */
-  protected extractMethod(methodDeclaration: ts.MethodDeclaration): MethodEntry {
+  protected extractMethod(methodDeclaration: MethodLike): MethodEntry {
     const functionExtractor = new FunctionExtractor(methodDeclaration, this.typeChecker);
     return {
       ...functionExtractor.extract(),
@@ -82,7 +99,7 @@ class ClassExtractor {
   }
 
   /** Extracts doc info for a property declaration. */
-  protected extractClassProperty(propertyDeclaration: PropertyDeclarationLike): PropertyEntry {
+  protected extractClassProperty(propertyDeclaration: PropertyLike): PropertyEntry {
     return {
       name: propertyDeclaration.name.getText(),
       type: extractResolvedTypeString(propertyDeclaration, this.typeChecker),
@@ -102,8 +119,7 @@ class ClassExtractor {
   }
 
   /** Gets the tags for a member (protected, readonly, static, etc.) */
-  protected getMemberTags(member: ts.MethodDeclaration|ts.PropertyDeclaration|
-                          ts.AccessorDeclaration): MemberTags[] {
+  protected getMemberTags(member: MethodLike|PropertyLike): MemberTags[] {
     const tags: MemberTags[] = this.getMemberTagsFromModifiers(member.modifiers ?? []);
 
     if (member.questionToken) {
@@ -144,16 +160,26 @@ class ClassExtractor {
    *  - The member is neither a method nor property
    *  - The member is protected
    */
-  private isMemberExcluded(member: ts.ClassElement): boolean {
+  private isMemberExcluded(member: MemberElement): boolean {
     return !member.name || !this.isDocumentableMember(member) ||
         !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword);
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
-  private isDocumentableMember(member: ts.ClassElement): member is ts.MethodDeclaration
-      |ts.PropertyDeclaration {
-    return ts.isMethodDeclaration(member) || ts.isPropertyDeclaration(member) ||
-        ts.isAccessor(member);
+  private isDocumentableMember(member: MemberElement): member is MethodLike|PropertyLike {
+    return this.isMethod(member) || this.isProperty(member) || ts.isAccessor(member);
+  }
+
+  /** Gets whether a member is a property. */
+  private isProperty(member: MemberElement): member is PropertyLike {
+    // Classes have declarations, interface have signatures
+    return ts.isPropertyDeclaration(member) || ts.isPropertySignature(member);
+  }
+
+  /** Gets whether a member is a method. */
+  private isMethod(member: MemberElement): member is MethodLike {
+    // Classes have declarations, interface have signatures
+    return ts.isMethodDeclaration(member) || ts.isMethodSignature(member);
   }
 }
 
@@ -161,11 +187,11 @@ class ClassExtractor {
 class DirectiveExtractor extends ClassExtractor {
   constructor(
       declaration: ClassDeclaration&ts.ClassDeclaration,
-      reference: Reference,
+      protected reference: Reference,
       protected metadata: DirectiveMeta,
       checker: ts.TypeChecker,
   ) {
-    super(declaration, reference, checker);
+    super(declaration, checker);
   }
 
   /** Extract docs info for directives and components (including underlying class info). */
@@ -215,11 +241,11 @@ class DirectiveExtractor extends ClassExtractor {
 class PipeExtractor extends ClassExtractor {
   constructor(
       declaration: ClassDeclaration&ts.ClassDeclaration,
-      reference: Reference,
+      protected reference: Reference,
       private metadata: PipeMeta,
       typeChecker: ts.TypeChecker,
   ) {
-    super(declaration, reference, typeChecker);
+    super(declaration, typeChecker);
   }
 
   override extract(): PipeEntry {
@@ -236,11 +262,11 @@ class PipeExtractor extends ClassExtractor {
 class NgModuleExtractor extends ClassExtractor {
   constructor(
       declaration: ClassDeclaration&ts.ClassDeclaration,
-      reference: Reference,
+      protected reference: Reference,
       private metadata: NgModuleMeta,
       typeChecker: ts.TypeChecker,
   ) {
-    super(declaration, reference, typeChecker);
+    super(declaration, typeChecker);
   }
 
   override extract(): ClassEntry {
@@ -272,8 +298,17 @@ export function extractClass(
   } else if (ngModuleMetadata) {
     extractor = new NgModuleExtractor(classDeclaration, ref, ngModuleMetadata, typeChecker);
   } else {
-    extractor = new ClassExtractor(classDeclaration, ref, typeChecker);
+    extractor = new ClassExtractor(classDeclaration, typeChecker);
   }
 
+  return extractor.extract();
+}
+
+/** Extracts documentation info for an interface. */
+export function extractInterface(
+    declaration: ts.InterfaceDeclaration,
+    typeChecker: ts.TypeChecker,
+    ): InterfaceEntry {
+  const extractor = new ClassExtractor(declaration, typeChecker);
   return extractor.extract();
 }
