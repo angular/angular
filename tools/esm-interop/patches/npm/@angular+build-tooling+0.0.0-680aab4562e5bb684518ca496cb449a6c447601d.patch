@@ -1,3 +1,56 @@
+diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
+index afe4e5c..095a8f0 100755
+--- a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
++++ b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
+@@ -1,5 +1,5 @@
+ load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
++load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
+ load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
+
+ package(default_visibility = ["@npm//@angular/build-tooling/bazel/api-gen:__subpackages__"])
+@@ -16,7 +16,7 @@ esbuild(
+     target = "es2022",
+     deps = [
+         ":extract_api_to_json_lib",
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler-cli",
+     ],
+ )
+
+@@ -26,8 +26,8 @@ ts_library(
+     devmode_module = "commonjs",
+     tsconfig = "@npm//@angular/build-tooling:tsconfig.json",
+     deps = [
+-        "@npm//@angular/compiler",
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler",
++        "@angular//packages/compiler-cli",
+         "@npm//@bazel/runfiles",
+         "@npm//@types/node",
+     ],
+@@ -38,8 +38,8 @@ nodejs_binary(
+     name = "extract_api_to_json",
+     data = [
+         ":bin",
+-        "@npm//@angular/compiler",
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler",
++        "@angular//packages/compiler-cli",
+     ],
+     entry_point = "bin.mjs",
+     # Note: Using the linker here as we need it for ESM. The linker is not
+diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
+index 850265d..68146c8 100755
+--- a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
++++ b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
+@@ -1,5 +1,5 @@
+ load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
++load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
+
+ package(default_visibility = ["@npm//@angular/build-tooling/bazel/api-gen:__subpackages__"])
+
 diff --git a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
 index 6cee158..815a55d 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
@@ -116,7 +169,7 @@ index 04cc755..ec01017 100755
 
  package(default_visibility = ["//visibility:public"])
 diff --git a/node_modules/@angular/build-tooling/bazel/integration/index.bzl b/node_modules/@angular/build-tooling/bazel/integration/index.bzl
-index 662272d..9fc6330 100755
+index 6f99d65..1bd5183 100755
 --- a/node_modules/@angular/build-tooling/bazel/integration/index.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/integration/index.bzl
 @@ -1,4 +1,4 @@
