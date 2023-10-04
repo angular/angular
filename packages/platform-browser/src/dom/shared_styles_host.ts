@@ -132,6 +132,10 @@ export class SharedStylesHost implements OnDestroy {
   private getStyleElement(
       host: Node, style: string,
       existingStyleElements: Map<Node, HTMLStyleElement>|undefined): HTMLStyleElement {
+    const existingStyleElement = existingStyleElements?.get(host);
+    if (existingStyleElement) {
+      return existingStyleElement;
+    }
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
@@ -147,10 +151,6 @@ export class SharedStylesHost implements OnDestroy {
 
       return styleEl;
     } else {
-      const existingStyleElement = existingStyleElements?.get(host);
-      if (existingStyleElement) {
-        return existingStyleElement;
-      }
       const styleEl = this.doc.createElement('style');
 
       if (this.nonce) {
