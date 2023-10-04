@@ -507,11 +507,12 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitForLoopBlock(block: t.ForLoopBlock) {
-    block.item.visit(this);
+    this.visit(block.item);
     this.visitAll(Object.values(block.contextVariables));
     this.visitBinding(block.expression);
+    this.visitBinding(block.trackBy);
     this.visitAll(block.children);
-    block.empty?.visit(this);
+    block.empty && this.visit(block.empty);
   }
 
   visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty) {
@@ -524,7 +525,7 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visitIfBlockBranch(block: t.IfBlockBranch) {
     block.expression && this.visitBinding(block.expression);
-    block.expressionAlias?.visit(this);
+    block.expressionAlias && this.visit(block.expressionAlias);
     this.visitAll(block.children);
   }
 
