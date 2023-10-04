@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {HttpClient, provideHttpClient} from '@angular/common/http';
+import {HttpClient, HttpTransferCacheOptions, provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {ApplicationRef, Component, Injectable, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -15,19 +15,22 @@ import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 import {provideClientHydration, withNoHttpTransferCache} from '../public_api';
+import {withHttpTransferCacheOptions} from '../src/hydration';
 
 describe('provideClientHydration', () => {
   @Component({selector: 'test-hydrate-app', template: ''})
   class SomeComponent {
   }
 
-  function makeRequestAndExpectOne(url: string, body: string): void {
-    TestBed.inject(HttpClient).get(url).subscribe();
+  function makeRequestAndExpectOne(
+      url: string, body: string, options: HttpTransferCacheOptions|boolean = true): void {
+    TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
     TestBed.inject(HttpTestingController).expectOne(url).flush(body);
   }
 
-  function makeRequestAndExpectNone(url: string): void {
-    TestBed.inject(HttpClient).get(url).subscribe();
+  function makeRequestAndExpectNone(
+      url: string, options: HttpTransferCacheOptions|boolean = true): void {
+    TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
     TestBed.inject(HttpTestingController).expectNone(url);
   }
 
@@ -83,10 +86,42 @@ describe('provideClientHydration', () => {
           appRef.bootstrap(SomeComponent);
         }));
 
-    it(`should not cached HTTP calls`, () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
+    it(`should not cache HTTP calls`, () => {
+      makeRequestAndExpectOne('/test-1', 'foo', false);
       // Do the same call, this time should pass through as cache is disabled.
       makeRequestAndExpectOne('/test-1', 'foo');
+    });
+  });
+
+  describe('withHttpTransferCacheOptions', () => {
+    beforeEach(withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+          TestBed.resetTestingModule();
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              provideClientHydration(withHttpTransferCacheOptions(
+                  {includePostRequests: true, includeHeaders: ['foo']})),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+        }));
+
+    it(`should cache HTTP POST calls`, () => {
+      const url = '/test-1';
+      const body = 'foo';
+      TestBed.inject(HttpClient).post(url, body).subscribe();
+      TestBed.inject(HttpTestingController).expectOne(url).flush(body);
+
+      TestBed.inject(HttpClient).post(url, body).subscribe();
+      TestBed.inject(HttpTestingController).expectNone(url);
     });
   });
 });

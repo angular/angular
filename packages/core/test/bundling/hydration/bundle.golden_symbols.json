@@ -45,7 +45,7 @@
     "name": "BrowserXhr"
   },
   {
-    "name": "CACHE_STATE"
+    "name": "CACHE_OPTIONS"
   },
   {
     "name": "CIRCULAR"
@@ -825,10 +825,10 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getFirstLContainer"
+    "name": "getFilteredHeaders"
   },
   {
-    "name": "getHeadersMap"
+    "name": "getFirstLContainer"
   },
   {
     "name": "getInjectableDef"

@@ -10,6 +10,7 @@ import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
+import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
@@ -154,6 +155,8 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 // @public
 export const enum HydrationFeatureKind {
     // (undocumented)
+    HttpTransferCacheOptions = 2,
+    // (undocumented)
     NoDomReuseFeature = 0,
     // (undocumented)
     NoHttpTransferCache = 1
@@ -253,6 +256,9 @@ export const TransferState: {
 
 // @public (undocumented)
 export const VERSION: Version;
+
+// @public
+export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions>;
 
 // @public
 export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
