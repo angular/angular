@@ -175,7 +175,7 @@ export function createSwitchBlock(
         null;
     const ast = new t.SwitchBlockCase(
         expression, html.visitAll(visitor, node.children, node.children), node.sourceSpan,
-        node.startSourceSpan);
+        node.startSourceSpan, node.endSourceSpan);
 
     if (expression === null) {
       defaultCase = ast;
