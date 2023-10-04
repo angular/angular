@@ -13,9 +13,16 @@ import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
-import {HttpClient, provideHttpClient} from '../public_api';
+import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
 import {withHttpTransferCache} from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
+
+interface RequestParams {
+  method?: string;
+  observe?: 'body'|'response';
+  transferCache?: {includeHeaders: string[]}|boolean;
+  headers?: {[key: string]: string};
+}
 
 describe('TransferCache', () => {
   @Component({selector: 'test-app-http', template: 'hello'})
@@ -25,14 +32,27 @@ describe('TransferCache', () => {
   describe('withHttpTransferCache', () => {
     let isStable: BehaviorSubject<boolean>;
 
-    function makeRequestAndExpectOne(url: string, body: string): void {
-      TestBed.inject(HttpClient).get(url).subscribe();
-      TestBed.inject(HttpTestingController).expectOne(url).flush(body);
+    function makeRequestAndExpectOne(url: string, body: string, params?: RequestParams): string;
+    function makeRequestAndExpectOne(
+        url: string, body: string,
+        params?: RequestParams&{observe: 'response'}): HttpResponse<string>;
+    function makeRequestAndExpectOne(url: string, body: string, params?: RequestParams): any {
+      let response!: any;
+      TestBed.inject(HttpClient)
+          .request(params?.method ?? 'GET', url, params)
+          .subscribe(r => response = r);
+      TestBed.inject(HttpTestingController).expectOne(url).flush(body, {headers: params?.headers});
+      return response;
     }
 
-    function makeRequestAndExpectNone(url: string): void {
-      TestBed.inject(HttpClient).get(url).subscribe();
+    function makeRequestAndExpectNone(
+        url: string, method: string = 'GET', params?: RequestParams): HttpResponse<string> {
+      let response!: HttpResponse<string>;
+      TestBed.inject(HttpClient)
+          .request(method, url, {observe: 'response', ...params})
+          .subscribe(r => response = r);
       TestBed.inject(HttpTestingController).expectNone(url);
+      return response;
     }
 
     beforeEach(withBody('<test-app-http></test-app-http>', () => {
@@ -49,7 +69,7 @@ describe('TransferCache', () => {
         providers: [
           {provide: DOCUMENT, useFactory: () => document},
           {provide: ApplicationRef, useClass: ApplicationRefPatched},
-          withHttpTransferCache(),
+          withHttpTransferCache({}),
           provideHttpClient(),
           provideHttpClientTesting(),
         ],
@@ -123,6 +143,170 @@ describe('TransferCache', () => {
       makeRequestAndExpectNone('/test-1?foo=1');
       await expectAsync(TestBed.inject(HttpClient).get('/test-1?foo=1').toPromise())
           .toBeResolvedTo('foo');
+    });
+
+    it('should skip cache when specified', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {transferCache: false});
+      // The previous request wasn't cached so this one can't use the cache
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+      // But this one will
+      makeRequestAndExpectNone('/test-1?foo=1');
+    });
+
+    it('should not cache a POST even with filter true specified', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST'});
+
+      // Previous POST request wasn't cached
+      makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
+
+      // filter => true won't cache neither
+      makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST', transferCache: true});
+
+      const response = makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
+      expect(response).toBe('body2');
+    });
+
+    it('should not cache headers', async () => {
+      // HttpTransferCacheOptions: true = fallback to default = headers won't be cached
+      makeRequestAndExpectOne(
+          '/test-1?foo=1',
+          'foo',
+          {headers: {foo: 'foo', bar: 'bar'}, transferCache: true},
+      );
+
+      // request returns the cache without any header.
+      const response2 = makeRequestAndExpectNone('/test-1?foo=1');
+      expect(response2.headers.keys().length).toBe(0);
+    });
+
+
+    it('should cache with headers', async () => {
+      // headers are case not sensitive
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {
+        headers: {foo: 'foo', bar: 'bar', 'BAZ': 'baz'},
+        transferCache: {includeHeaders: ['foo', 'baz']}
+      });
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      // request returns the cache with only 2 header entries.
+      const response = makeRequestAndExpectNone(
+          '/test-1?foo=1', 'GET', {transferCache: {includeHeaders: ['foo', 'baz']}});
+      expect(response.headers.keys().length).toBe(2);
+
+      // foo has been kept
+      const foo = response.headers.get('foo');
+      expect(foo).toBe('foo');
+
+      // foo wasn't removed, we won't log anything
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+
+      // bar has been removed
+      response.headers.get('bar');
+      response.headers.get('some-other-header');
+
+      expect(consoleWarnSpy.calls.count()).toBe(2);
+
+      response.headers.get('some-other-header');
+
+      // We ensure the warning is only logged once per header method + entry
+      expect(consoleWarnSpy.calls.count()).toBe(2);
+
+      response.headers.has('some-other-header');
+
+      // Here the method is different, we get one more call.
+      expect(consoleWarnSpy.calls.count()).toBe(3);
+    });
+
+    it('should not cache POST by default', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+    });
+
+    it('should cache POST with the transferCache option', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
+      makeRequestAndExpectNone('/test-1?foo=1', 'POST', {transferCache: true});
+
+      makeRequestAndExpectOne(
+          '/test-2?foo=1', 'foo', {method: 'POST', transferCache: {includeHeaders: []}});
+      makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
+    });
+
+    describe('caching with global setting', () => {
+      beforeEach(withBody('<test-app-http></test-app-http>', () => {
+        TestBed.resetTestingModule();
+        isStable = new BehaviorSubject<boolean>(false);
+
+        @Injectable()
+        class ApplicationRefPatched extends ApplicationRef {
+          override isStable = new BehaviorSubject<boolean>(false);
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [SomeComponent],
+          providers: [
+            {provide: DOCUMENT, useFactory: () => document},
+            {provide: ApplicationRef, useClass: ApplicationRefPatched},
+            withHttpTransferCache({
+              filter: (req) => {
+                if (req.url.includes('include')) {
+                  return true;
+                } else if (req.url.includes('exclude')) {
+                  return false;
+                } else {
+                  return true;
+                }
+              },
+              includeHeaders: ['foo', 'bar'],
+              includePostRequests: true,
+            }),
+            provideHttpClient(),
+            provideHttpClientTesting(),
+          ],
+        });
+
+        const appRef = TestBed.inject(ApplicationRef);
+        appRef.bootstrap(SomeComponent);
+        isStable = appRef.isStable as BehaviorSubject<boolean>;
+      }));
+
+
+      it('should cache because of global filter', () => {
+        makeRequestAndExpectOne('/include?foo=1', 'foo');
+        makeRequestAndExpectNone('/include?foo=1');
+      });
+
+      it('should not cache because of global filter', () => {
+        makeRequestAndExpectOne('/exclude?foo=1', 'foo');
+        makeRequestAndExpectOne('/exclude?foo=1', 'foo');
+      });
+
+      it('should cache a POST request', () => {
+        makeRequestAndExpectOne('/include?foo=1', 'post-body', {method: 'POST'});
+
+        // Previous POST request wasn't cached
+        const response = makeRequestAndExpectNone('/include?foo=1', 'POST');
+        expect(response.body).toBe('post-body');
+      });
+
+      it('should cache with headers', () => {
+        //  nothing specified, should use global options = callback => include + headers
+        makeRequestAndExpectOne('/include?foo=1', 'foo', {headers: {foo: 'foo', bar: 'bar'}});
+
+        // This one was cached with headers
+        const response = makeRequestAndExpectNone('/include?foo=1');
+        expect(response.headers.keys().length).toBe(2);
+      });
+
+      it('should cache without headers because overriden', () => {
+        //  nothing specified, should use global options = callback => include + headers
+        makeRequestAndExpectOne(
+            '/include?foo=1', 'foo',
+            {headers: {foo: 'foo', bar: 'bar'}, transferCache: {includeHeaders: []}});
+
+        // This one was cached with headers
+        const response = makeRequestAndExpectNone('/include?foo=1');
+        expect(response.headers.keys().length).toBe(0);
+      });
     });
   });
 });
