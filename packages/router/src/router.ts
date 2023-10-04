@@ -75,7 +75,7 @@ export class Router {
     return this.stateManager.rawUrlTree;
   }
   private disposed = false;
-  private locationSubscription?: SubscriptionLike;
+  private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
   private isNgZoneEnabled = false;
 
   private readonly console = inject(Console);
@@ -233,8 +233,8 @@ export class Router {
   initialNavigation(): void {
     this.setUpLocationChangeListener();
     if (!this.navigationTransitions.hasRequestedNavigation) {
-      const state = this.location.getState() as RestoredState;
-      this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
+      this.navigateToSyncWithBrowser(
+          this.location.path(true), IMPERATIVE_NAVIGATION, this.stateManager.restoredState());
     }
   }
 
@@ -247,17 +247,15 @@ export class Router {
     // Don't need to use Zone.wrap any more, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
-    if (!this.locationSubscription) {
-      this.locationSubscription = this.location.subscribe(event => {
-        const source = event['type'] === 'popstate' ? 'popstate' : 'hashchange';
-        if (source === 'popstate') {
-          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-          // hybrid apps.
-          setTimeout(() => {
-            this.navigateToSyncWithBrowser(event['url']!, source, event.state);
-          }, 0);
-        }
-      });
+    if (!this.nonRouterCurrentEntryChangeSubscription) {
+      this.nonRouterCurrentEntryChangeSubscription =
+          this.stateManager.nonRouterCurrentEntryChange((url, state) => {
+            // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+            // hybrid apps.
+            setTimeout(() => {
+              this.navigateToSyncWithBrowser(url, 'popstate', state);
+            }, 0);
+          });
     }
   }
 
@@ -269,7 +267,7 @@ export class Router {
    * the Router needs to respond to ensure its internal state matches.
    */
   private navigateToSyncWithBrowser(
-      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+      url: string, source: NavigationTrigger, state: RestoredState|null|undefined) {
     const extras: NavigationExtras = {replaceUrl: true};
 
     // TODO: restoredState should always include the entire state, regardless
@@ -348,9 +346,9 @@ export class Router {
   /** Disposes of the router. */
   dispose(): void {
     this.navigationTransitions.complete();
-    if (this.locationSubscription) {
-      this.locationSubscription.unsubscribe();
-      this.locationSubscription = undefined;
+    if (this.nonRouterCurrentEntryChangeSubscription) {
+      this.nonRouterCurrentEntryChangeSubscription.unsubscribe();
+      this.nonRouterCurrentEntryChangeSubscription = undefined;
     }
     this.disposed = true;
     this.eventsSubscription.unsubscribe();
