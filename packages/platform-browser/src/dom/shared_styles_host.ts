@@ -84,6 +84,9 @@ export class SharedStylesHost implements OnDestroy {
 
   removeHost(hostNode: Node): void {
     this.hostNodes.delete(hostNode);
+    for (const {elements} of this.styleRef.values()) {
+      elements.delete(hostNode);
+    }
   }
 
   private getAllStyles(): IterableIterator<string> {
@@ -169,22 +172,18 @@ export class SharedStylesHost implements OnDestroy {
 
   private addStyleToHost(host: Node, style: string): void {
     const styleRef = this.styleRef;
-    const styleResult = styleRef.get(style);
-    const styleEl = this.getStyleElement(host, style, styleResult?.elements);
+    const styleResult = styleRef.get(style)!;  // This will always be defined in `changeUsageCount`
+    const styleEl = this.getStyleElement(host, style, styleResult.elements);
 
     host.appendChild(styleEl);
 
-    if (styleResult) {
-      if (styleResult.usage === 0) {
-        disableStylesheet(styleEl);
-      } else {
-        enableStylesheet(styleEl);
-      }
-
-      styleResult.elements.set(host, styleEl);
+    if (styleResult.usage === 0) {
+      disableStylesheet(styleEl);
     } else {
-      styleRef.set(style, {elements: new Map([[host, styleEl]]), usage: 1});
+      enableStylesheet(styleEl);
     }
+
+    styleResult.elements.set(host, styleEl);
   }
 
   private resetHostNodes(): void {
