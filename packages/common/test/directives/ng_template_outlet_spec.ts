@@ -318,6 +318,30 @@ describe('NgTemplateOutlet', () => {
 
     expect(fixture.nativeElement.textContent).toBe('Hello World');
   });
+
+  it('should properly bind context if context is unset initially', () => {
+    @Component({
+      imports: [NgTemplateOutlet],
+      template: `
+        <ng-template #tpl let-name>Name:{{name}}</ng-template>
+        <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
+      `,
+      standalone: true,
+    })
+    class TestComponent {
+      ctx: {$implicit: string}|undefined = undefined;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Name:');
+
+    fixture.componentInstance.ctx = {$implicit: 'Angular'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Name:Angular');
+  });
 });
 
 const templateToken = new InjectionToken<string>('templateToken');
