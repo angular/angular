@@ -7,7 +7,7 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {ParseError} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
@@ -47,9 +47,23 @@ export function createDeferredBlock(
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
   const {triggers, prefetchTriggers} =
       parsePrimaryTriggers(ast.parameters, bindingParser, errors, placeholder);
+
+  // The `defer` block has a main span encompassing all of the connected branches as well. For the
+  // span of only the first "main" branch, use `mainSourceSpan`.
+  let lastEndSourceSpan = ast.endSourceSpan;
+  let endOfLastSourceSpan = ast.sourceSpan.end;
+  if (connectedBlocks.length > 0) {
+    const lastConnectedBlock = connectedBlocks[connectedBlocks.length - 1];
+    lastEndSourceSpan = lastConnectedBlock.endSourceSpan;
+    endOfLastSourceSpan = lastConnectedBlock.sourceSpan.end;
+  }
+
+  const mainDeferredSourceSpan = new ParseSourceSpan(ast.sourceSpan.start, endOfLastSourceSpan);
+
   const node = new t.DeferredBlock(
       html.visitAll(visitor, ast.children, ast.children), triggers, prefetchTriggers, placeholder,
-      loading, error, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan);
+      loading, error, mainDeferredSourceSpan, ast.sourceSpan, ast.startSourceSpan,
+      lastEndSourceSpan);
 
   return {node, errors};
 }

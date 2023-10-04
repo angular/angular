@@ -210,8 +210,8 @@ export class DeferredBlock implements Node {
       public children: Node[], triggers: DeferredBlockTriggers,
       prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {
+      public sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
     // We cache the keys since we know that they won't change and we
@@ -228,16 +228,14 @@ export class DeferredBlock implements Node {
     this.visitTriggers(this.definedTriggers, this.triggers, visitor);
     this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
     visitAll(visitor, this.children);
-    this.placeholder && visitor.visitDeferredBlockPlaceholder(this.placeholder);
-    this.loading && visitor.visitDeferredBlockLoading(this.loading);
-    this.error && visitor.visitDeferredBlockError(this.error);
+    const remainingBlocks =
+        [this.placeholder, this.loading, this.error].filter(x => x !== null) as Array<Node>;
+    visitAll(visitor, remainingBlocks);
   }
 
   private visitTriggers(
       keys: (keyof DeferredBlockTriggers)[], triggers: DeferredBlockTriggers, visitor: Visitor) {
-    for (const key of keys) {
-      visitor.visitDeferredTrigger(triggers[key]!);
-    }
+    visitAll(visitor, keys.map(k => triggers[k]!));
   }
 }
 
@@ -272,7 +270,8 @@ export class ForLoopBlock implements Node {
       public item: Variable, public expression: ASTWithSource, public trackBy: ASTWithSource,
       public contextVariables: ForLoopBlockContext, public children: Node[],
       public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public mainBlockSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
@@ -282,7 +281,7 @@ export class ForLoopBlock implements Node {
 export class ForLoopBlockEmpty implements Node {
   constructor(
       public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan) {}
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlockEmpty(this);
@@ -302,7 +301,8 @@ export class IfBlock implements Node {
 export class IfBlockBranch implements Node {
   constructor(
       public expression: AST|null, public children: Node[], public expressionAlias: Variable|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlockBranch(this);

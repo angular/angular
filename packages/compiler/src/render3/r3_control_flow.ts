@@ -64,7 +64,7 @@ export function createIfBlock(
   if (mainBlockParams !== null) {
     branches.push(new t.IfBlockBranch(
         mainBlockParams.expression, html.visitAll(visitor, ast.children, ast.children),
-        mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan));
+        mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan));
   }
 
   // Assumes that the structure is valid since we validated it above.
@@ -77,16 +77,28 @@ export function createIfBlock(
       if (params !== null) {
         branches.push(new t.IfBlockBranch(
             params.expression, children, params.expressionAlias, block.sourceSpan,
-            block.startSourceSpan));
+            block.startSourceSpan, block.endSourceSpan));
       }
     } else if (block.name === 'else') {
-      branches.push(
-          new t.IfBlockBranch(null, children, null, block.sourceSpan, block.startSourceSpan));
+      branches.push(new t.IfBlockBranch(
+          null, children, null, block.sourceSpan, block.startSourceSpan, block.endSourceSpan));
     }
   }
 
+  // The outer IfBlock should have a span that encapsulates all branches.
+  const ifBlockStartSourceSpan =
+      branches.length > 0 ? branches[0].startSourceSpan : ast.startSourceSpan;
+  const ifBlockEndSourceSpan =
+      branches.length > 0 ? branches[branches.length - 1].endSourceSpan : ast.endSourceSpan;
+
+  let wholeSourceSpan = ast.sourceSpan;
+  const lastBranch = branches[branches.length - 1];
+  if (lastBranch !== undefined) {
+    wholeSourceSpan = new ParseSourceSpan(ifBlockStartSourceSpan.start, lastBranch.sourceSpan.end);
+  }
+
   return {
-    node: new t.IfBlock(branches, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan),
+    node: new t.IfBlock(branches, wholeSourceSpan, ast.startSourceSpan, ifBlockEndSourceSpan),
     errors,
   };
 }
@@ -109,21 +121,29 @@ export function createForLoop(
       } else {
         empty = new t.ForLoopBlockEmpty(
             html.visitAll(visitor, block.children, block.children), block.sourceSpan,
-            block.startSourceSpan);
+            block.startSourceSpan, block.endSourceSpan);
       }
     } else {
       errors.push(new ParseError(block.sourceSpan, `Unrecognized @for loop block "${block.name}"`));
     }
   }
 
+
   if (params !== null) {
     if (params.trackBy === null) {
+      // TODO: We should not fail here, and instead try to produce some AST for the language
+      // service.
       errors.push(new ParseError(ast.sourceSpan, '@for loop must have a "track" expression'));
     } else {
+      // The `for` block has a main span that includes the `empty` branch. For only the span of the
+      // main `for` body, use `mainSourceSpan`.
+      const endSpan = empty?.endSourceSpan ?? ast.endSourceSpan;
+      const sourceSpan =
+          new ParseSourceSpan(ast.sourceSpan.start, endSpan?.end ?? ast.sourceSpan.end);
       node = new t.ForLoopBlock(
           params.itemName, params.expression, params.trackBy, params.context,
-          html.visitAll(visitor, ast.children, ast.children), empty, ast.sourceSpan,
-          ast.startSourceSpan, ast.endSourceSpan);
+          html.visitAll(visitor, ast.children, ast.children), empty, sourceSpan, ast.sourceSpan,
+          ast.startSourceSpan, endSpan);
     }
   }
 
@@ -231,8 +251,12 @@ function parseForLoopParameters(
   // Fill out any variables that haven't been defined explicitly.
   for (const variableName of ALLOWED_FOR_LOOP_LET_VARIABLES) {
     if (!result.context.hasOwnProperty(variableName)) {
-      result.context[variableName] =
-          new t.Variable(variableName, variableName, block.startSourceSpan, block.startSourceSpan);
+      // Give ambiently-available context variables empty spans at the end of the start of the `for`
+      // block, since they are not explicitly defined.
+      const emptySpanAfterForBlockStart =
+          new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
+      result.context[variableName] = new t.Variable(
+          variableName, variableName, emptySpanAfterForBlockStart, emptySpanAfterForBlockStart);
     }
   }
 
