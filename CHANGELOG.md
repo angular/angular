@@ -1,3 +1,16 @@
+<a name="16.2.8"></a>
+# 16.2.8 (2023-10-04)
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b732961fc3](https://github.com/angular/angular/commit/b732961fc3c6eec3cf5508330cc09d6a0a2d8f9a) | fix | Retain correct language service when `ts.Project` reloads ([#51912](https://github.com/angular/angular/pull/51912)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [966ce9790a](https://github.com/angular/angular/commit/966ce9790aa7c9414bcd35b49621f169d67b5669) | fix | throw a critical error when handleFetch fails ([#51960](https://github.com/angular/angular/pull/51960)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.10"></a>
 # 15.2.10 (2023-10-04)
 ### service-worker
