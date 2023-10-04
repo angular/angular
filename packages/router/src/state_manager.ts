@@ -8,6 +8,7 @@
 
 import {Location} from '@angular/common';
 import {inject, Injectable} from '@angular/core';
+import {SubscriptionLike} from 'rxjs';
 
 import {BeforeActivateRoutes, Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, PrivateRouterEvents, RoutesRecognized} from './events';
 import {isBrowserTriggeredNavigation, Navigation, RestoredState} from './navigation_transition';
@@ -76,6 +77,12 @@ export class StateManager {
    */
   private currentPageId: number = 0;
   lastSuccessfulId: number = -1;
+
+  /** Returns the current state from the browser. */
+  restoredState(): RestoredState|null|undefined {
+    return this.location.getState() as RestoredState | null | undefined;
+  }
+
   /**
    * The ɵrouterPageId of whatever page is currently active in the browser history. This is
    * important for computing the target page id for new navigations because we need to ensure each
@@ -85,8 +92,9 @@ export class StateManager {
     if (this.canceledNavigationResolution !== 'computed') {
       return this.currentPageId;
     }
-    return (this.location.getState() as RestoredState | null)?.ɵrouterPageId ?? this.currentPageId;
+    return this.restoredState()?.ɵrouterPageId ?? this.currentPageId;
   }
+
   routerState = createEmptyState(this.currentUrlTree, null);
   private stateMemento = this.createStateMemento();
 
@@ -96,6 +104,15 @@ export class StateManager {
       currentUrlTree: this.currentUrlTree,
       routerState: this.routerState,
     };
+  }
+
+  nonRouterCurrentEntryChange(
+      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike {
+    return this.location.subscribe(event => {
+      if (event['type'] === 'popstate') {
+        listener(event['url']!, event.state as RestoredState | null | undefined);
+      }
+    });
   }
 
   handleNavigationEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation) {
