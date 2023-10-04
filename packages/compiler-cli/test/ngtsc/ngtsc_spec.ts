@@ -9010,6 +9010,47 @@ function allTests(os: string) {
                   'import("./cmp-a").then(m => m.CmpB)]');
           expect(jsContents).not.toContain('import { CmpA, CmpB }');
         });
+
+        it('should lazy-load dependency referenced with a fowrardRef', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component, forwardRef } from '@angular/core';
+            import { CmpA } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [forwardRef(() => CmpA)],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+
+          // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
+          // via dynamic imports and an original import can be removed.
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
       });
 
       describe('setClassMetadataAsync', () => {
