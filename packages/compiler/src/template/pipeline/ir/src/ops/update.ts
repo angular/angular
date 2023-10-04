@@ -545,6 +545,12 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The i18n block that this expression belongs to.
    */
+  owner: XrefId;
+
+  /**
+   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
+   * block. This is necessary so that we run all lifecycle hooks.
+   */
   target: XrefId;
 
   /**
@@ -564,11 +570,12 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    target: XrefId, expression: o.Expression, i18nPlaceholder: i18n.Placeholder,
+    owner: XrefId, expression: o.Expression, i18nPlaceholder: i18n.Placeholder,
     sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
-    target,
+    owner,
+    target: owner,
     expression,
     i18nPlaceholder,
     sourceSpan,
