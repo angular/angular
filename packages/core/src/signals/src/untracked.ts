@@ -11,8 +11,6 @@ import {setActiveConsumer} from './graph';
 /**
  * Execute an arbitrary function in a non-reactive (non-tracking) context. The executed function
  * can, optionally, return a value.
- *
- * @developerPreview
  */
 export function untracked<T>(nonReactiveReadsFn: () => T): T {
   const prevConsumer = setActiveConsumer(null);
