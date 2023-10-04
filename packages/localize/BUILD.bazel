@@ -1,5 +1,6 @@
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_package", "ts_library")
 load("//packages/bazel:index.bzl", "types_bundle")
+load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -77,4 +78,11 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "localize_docs",
+    srcs = [":files_for_docgen"],
+    entry_point = ":index.ts",
+    module_name = "@angular/localize",
 )
