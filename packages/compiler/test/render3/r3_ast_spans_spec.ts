@@ -623,7 +623,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml(html).toEqual([
         [
           'DeferredBlock',
-          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}',
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms) {Loading...}@placeholder (minimum 500) {Placeholder content!}@error {Loading failed :(}',
           '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {',
           '}'
         ],
@@ -691,7 +691,8 @@ describe('R3 AST source spans', () => {
 
       expectFromHtml(html).toEqual([
         [
-          'ForLoopBlock', '@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}',
+          'ForLoopBlock',
+          '@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
           '@for (item of items.foo.bar; track item.id) {', '}'
         ],
         ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
@@ -710,8 +711,9 @@ describe('R3 AST source spans', () => {
 
       expectFromHtml(html).toEqual([
         [
-          'IfBlock', '@if (cond.expr; as foo) {Main case was true!}', '@if (cond.expr; as foo) {',
-          '}'
+          'IfBlock',
+          '@if (cond.expr; as foo) {Main case was true!}@else if (other.expr) {Extra case was true!}@else {False case!}',
+          '@if (cond.expr; as foo) {', '}'
         ],
         [
           'IfBlockBranch', '@if (cond.expr; as foo) {Main case was true!}',
