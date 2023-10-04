@@ -16,7 +16,7 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 export class SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
   private readonly styleRef = new Map < string /** Style string */, {
-    elements: HTMLStyleElement[];
+    elements: Map</** Host */ Node, /** Style Node */ HTMLStyleElement>;
     usage: number;
   }
   > ();
@@ -125,13 +125,13 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     const usage = nonNegativeNumber(delta);
-    map.set(style, {usage, elements: []});
+    map.set(style, {usage, elements: new Map()});
     return usage;
   }
 
   private getStyleElement(
       host: Node, style: string,
-      existingStyleElements: HTMLStyleElement[]|undefined): HTMLStyleElement {
+      existingStyleElements: Map<Node, HTMLStyleElement>|undefined): HTMLStyleElement {
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
@@ -147,8 +147,7 @@ export class SharedStylesHost implements OnDestroy {
 
       return styleEl;
     } else {
-      const existingStyleElement =
-          existingStyleElements?.find(styleElement => styleElement.parentNode === host);
+      const existingStyleElement = existingStyleElements?.get(host);
       if (existingStyleElement) {
         return existingStyleElement;
       }
@@ -182,9 +181,9 @@ export class SharedStylesHost implements OnDestroy {
         enableStylesheet(styleEl);
       }
 
-      styleResult.elements.push(styleEl);
+      styleResult.elements.set(host, styleEl);
     } else {
-      styleRef.set(style, {elements: [styleEl], usage: 1});
+      styleRef.set(style, {elements: new Map([[host, styleEl]]), usage: 1});
     }
   }
 
