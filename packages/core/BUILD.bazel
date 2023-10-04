@@ -1,6 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
+load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -129,4 +130,11 @@ filegroup(
         "global/PACKAGE.md",
         "global/index.ts",
     ],
+)
+
+generate_api_docs(
+    name = "core_docs",
+    srcs = [":files_for_docgen"],
+    entry_point = ":index.ts",
+    module_name = "@angular/core",
 )
