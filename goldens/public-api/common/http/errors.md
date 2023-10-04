@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
+    // (undocumented)
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
     NOT_USING_FETCH_BACKEND_IN_SSR = 2801
