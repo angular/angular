@@ -10,6 +10,7 @@
 <section class="decorator-options">
   <h2>Options</h2>
   {% for option in doc.members %}
+  {% if not option.internal %}
   <a id="{$ option.anchor $}"></a>
   <table class="is-full-width option-table">
     <thead>
@@ -64,6 +65,7 @@
       {% endif %}
     </tbody>
   </table>
+  {% endif %}
   {% endfor %}
 </section>
 {% endblock %}
