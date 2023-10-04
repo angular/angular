@@ -113,8 +113,8 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
     const i18nBlockPlaceholderIndices = new Map<ir.XrefId, number>();
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
-        const i18nOp = i18nOps.get(op.target);
-        let index = i18nBlockPlaceholderIndices.get(op.target) || 0;
+        const i18nOp = i18nOps.get(op.owner);
+        let index = i18nBlockPlaceholderIndices.get(op.owner) || 0;
         if (!i18nOp) {
           throw Error('Cannot find corresponding i18nStart for i18nExpr');
         }
