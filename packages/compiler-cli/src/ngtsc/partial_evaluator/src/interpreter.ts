@@ -216,7 +216,7 @@ export class StaticInterpreter {
   private visitIdentifier(node: ts.Identifier, context: Context): ResolvedValue {
     const decl = this.host.getDeclarationOfIdentifier(node);
     if (decl === null) {
-      if (getOriginalKeywordKind(node) === ts.SyntaxKind.UndefinedKeyword) {
+      if (ts.identifierToKeywordKind(node) === ts.SyntaxKind.UndefinedKeyword) {
         return undefined;
       } else {
         // Check if the symbol here is imported.
@@ -762,15 +762,4 @@ function owningModule(context: Context, override: OwningModule|null = null): Own
   } else {
     return null;
   }
-}
-
-/**
- * Gets the original keyword kind of an identifier. This is a compatibility
- * layer while we need to support TypeScript versions less than 5.1
- * TODO(crisbeto): remove this function once support for TS 4.9 is removed.
- */
-function getOriginalKeywordKind(identifier: ts.Identifier): ts.SyntaxKind|undefined {
-  return typeof (ts as any).identifierToKeywordKind === 'function' ?
-      (ts as any).identifierToKeywordKind(identifier) :
-      identifier.originalKeywordKind;
 }
