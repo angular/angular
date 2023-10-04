@@ -16,7 +16,7 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 export class SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
   private readonly styleRef = new Map < string /** Style string */, {
-    elements: HTMLStyleElement[];
+    elements: Map</** Host */ Node, /** Style Node */ HTMLStyleElement>;
     usage: number;
   }
   > ();
@@ -84,6 +84,9 @@ export class SharedStylesHost implements OnDestroy {
 
   removeHost(hostNode: Node): void {
     this.hostNodes.delete(hostNode);
+    for (const {elements} of this.styleRef.values()) {
+      elements.delete(hostNode);
+    }
   }
 
   private getAllStyles(): IterableIterator<string> {
@@ -125,11 +128,17 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     const usage = nonNegativeNumber(delta);
-    map.set(style, {usage, elements: []});
+    map.set(style, {usage, elements: new Map()});
     return usage;
   }
 
-  private getStyleElement(host: Node, style: string): HTMLStyleElement {
+  private getStyleElement(
+      host: Node, style: string,
+      existingStyleElements: Map<Node, HTMLStyleElement>|undefined): HTMLStyleElement {
+    const existingStyleElement = existingStyleElements?.get(host);
+    if (existingStyleElement) {
+      return existingStyleElement;
+    }
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
@@ -162,23 +171,19 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   private addStyleToHost(host: Node, style: string): void {
-    const styleEl = this.getStyleElement(host, style);
+    const styleRef = this.styleRef;
+    const styleResult = styleRef.get(style)!;  // This will always be defined in `changeUsageCount`
+    const styleEl = this.getStyleElement(host, style, styleResult.elements);
 
     host.appendChild(styleEl);
 
-    const styleRef = this.styleRef;
-    const styleResult = styleRef.get(style);
-    if (styleResult) {
-      if (styleResult.usage === 0) {
-        disableStylesheet(styleEl);
-      } else {
-        enableStylesheet(styleEl);
-      }
-
-      styleResult.elements.push(styleEl);
+    if (styleResult.usage === 0) {
+      disableStylesheet(styleEl);
     } else {
-      styleRef.set(style, {elements: [styleEl], usage: 1});
+      enableStylesheet(styleEl);
     }
+
+    styleResult.elements.set(host, styleEl);
   }
 
   private resetHostNodes(): void {
