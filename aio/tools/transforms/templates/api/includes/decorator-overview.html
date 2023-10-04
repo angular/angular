@@ -6,7 +6,7 @@
     <tr><th>Option</th><th>Description</th></tr>
   </thead>
   <tbody>
-    {%- for option in doc.members %}
+    {%- for option in doc.members %}{% if not option.internal %}
     <tr class="option">
       <td>
         <a class="code-anchor" href="{$ doc.path $}#{$ option.anchor | urlencode $}">
@@ -29,6 +29,7 @@
         {$ option.shortDescription | marked $}
       </td>
     </tr>
+    {%- endif %}
     {%- endfor %}
   </tbody>
 </table>
