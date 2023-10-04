@@ -17,25 +17,7 @@ export function phaseGenerateAdvance(job: CompilationJob): void {
   for (const unit of job.units) {
     // First build a map of all of the declarations in the view that have assigned slots.
     const slotMap = new Map<ir.XrefId, number>();
-    let lastSlotOp = null;
     for (const op of unit.create) {
-      // For i18n blocks, we want to advance to the last element index in the block before invoking
-      // `i18nExp` instructions, to make sure the necessary lifecycle hooks of components/directives
-      // are properly flushed.
-      if (op.kind === ir.OpKind.I18nEnd) {
-        if (lastSlotOp === null) {
-          throw Error('Expected to have encountered an op prior to i18nEnd that consumes a slot');
-        }
-        // TODO(mmalerba): For empty i18n blocks, we move to the next slot to match
-        // TemplateDefinitionBuilder. This seems like just a quirk resulting from the special
-        // handling of i18n blocks that can be removed when compatibility is no longer required.
-        let lastSlot = lastSlotOp.slot!;
-        if (lastSlotOp.kind === ir.OpKind.I18nStart && job.compatibility) {
-          lastSlot++;
-        }
-        slotMap.set(op.xref, lastSlot);
-      }
-
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
       } else if (op.slot === null) {
@@ -43,7 +25,6 @@ export function phaseGenerateAdvance(job: CompilationJob): void {
             `AssertionError: expected slots to have been allocated before generating advance() calls`);
       }
 
-      lastSlotOp = op;
       slotMap.set(op.xref, op.slot);
     }
 
