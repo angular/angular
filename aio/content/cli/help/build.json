@@ -122,6 +122,12 @@
       "description": "Translate the bundles in one or more locales."
     },
     {
+      "name": "named-chunks",
+      "type": "boolean",
+      "default": false,
+      "description": "Use file name for lazy loaded chunks."
+    },
+    {
       "name": "optimization",
       "type": "boolean",
       "default": true,
