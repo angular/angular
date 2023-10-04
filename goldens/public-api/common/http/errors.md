@@ -7,7 +7,9 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
-    MISSING_JSONP_MODULE = -2800
+    MISSING_JSONP_MODULE = -2800,
+    // (undocumented)
+    NOT_USING_FETCH_BACKEND_IN_SSR = 2801
 }
 
 // (No @packageDocumentation comment for this package)

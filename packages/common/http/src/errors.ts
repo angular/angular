@@ -12,4 +12,5 @@
  */
 export const enum RuntimeErrorCode {
   MISSING_JSONP_MODULE = -2800,
+  NOT_USING_FETCH_BACKEND_IN_SSR = 2801,
 }
