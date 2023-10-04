@@ -11,8 +11,6 @@ import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, p
 
 /**
  * Options passed to the `computed` creation function.
- *
- * @developerPreview
  */
 export interface CreateComputedOptions<T> {
   /**
@@ -23,8 +21,6 @@ export interface CreateComputedOptions<T> {
 
 /**
  * Create a computed `Signal` which derives a reactive value from an expression.
- *
- * @developerPreview
  */
 export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
   const node: ComputedNode<T> = Object.create(COMPUTED_NODE);
