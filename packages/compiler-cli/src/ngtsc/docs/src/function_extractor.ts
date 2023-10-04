@@ -14,7 +14,7 @@ import {extractResolvedTypeString} from './type_extractor';
 
 export class FunctionExtractor {
   constructor(
-      private declaration: ts.FunctionDeclaration|ts.MethodDeclaration,
+      private declaration: ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature,
       private typeChecker: ts.TypeChecker,
   ) {}
 

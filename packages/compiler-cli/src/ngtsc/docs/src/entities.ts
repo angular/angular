@@ -66,6 +66,11 @@ export interface ClassEntry extends DocEntry {
   members: MemberEntry[];
 }
 
+// From an API doc perspective, class and interfaces are identical.
+
+/** Documentation entity for a TypeScript interface. */
+export type InterfaceEntry = ClassEntry;
+
 /** Documentation entity for a TypeScript enum. */
 export interface EnumEntry extends DocEntry {
   members: EnumMemberEntry[];

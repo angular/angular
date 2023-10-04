@@ -13,7 +13,7 @@ import ts from 'typescript';
 import {MetadataReader} from '../../metadata';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 
-import {extractClass} from './class_extractor';
+import {extractClass, extractInterface} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {DocEntry} from './entities';
 
@@ -52,6 +52,10 @@ export class DocsExtractor {
       // Ignore anonymous classes.
       if (isNamedClassDeclaration(node)) {
         entry = extractClass(node, this.metadataReader, this.typeChecker);
+      }
+
+      if (ts.isInterfaceDeclaration(node)) {
+        entry = extractInterface(node, this.typeChecker);
       }
 
       if (ts.isFunctionDeclaration(node)) {
