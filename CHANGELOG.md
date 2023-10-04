@@ -1,3 +1,12 @@
+<a name="15.2.10"></a>
+# 15.2.10 (2023-10-04)
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9fe08968b8](https://github.com/angular/angular/commit/9fe08968b84b92da47ce91f5d2860b3aa23d2d2b) | fix | throw a critical error when handleFetch fail ([#51989](https://github.com/angular/angular/pull/51989)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.6"></a>
 # 17.0.0-next.6 (2023-09-27)
 ## Breaking Changes
