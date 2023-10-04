@@ -77,10 +77,7 @@ export function compileInjectable(
         delegateType: R3FactoryDelegateType.Function,
       });
     } else {
-      result = {
-        statements: [],
-        expression: o.fn([], [new o.ReturnStatement(meta.useFactory.callFn([]))])
-      };
+      result = {statements: [], expression: o.arrowFn([], meta.useFactory.callFn([]))};
     }
   } else if (meta.useValue !== undefined) {
     // Note: it's safe to use `meta.useValue` instead of the `USE_VALUE in meta` check used for
@@ -161,8 +158,7 @@ function delegateToFactory(
   return createFactoryFunction(unwrappedType);
 }
 
-function createFactoryFunction(type: o.Expression): o.FunctionExpr {
-  return o.fn(
-      [new o.FnParam('t', o.DYNAMIC_TYPE)],
-      [new o.ReturnStatement(type.prop('ɵfac').callFn([o.variable('t')]))]);
+function createFactoryFunction(type: o.Expression): o.ArrowFunctionExpr {
+  return o.arrowFn(
+      [new o.FnParam('t', o.DYNAMIC_TYPE)], type.prop('ɵfac').callFn([o.variable('t')]));
 }

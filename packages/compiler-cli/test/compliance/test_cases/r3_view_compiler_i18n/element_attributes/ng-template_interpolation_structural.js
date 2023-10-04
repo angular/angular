@@ -10,7 +10,7 @@ function MyComponent_0_Template(rf, ctx) {
   }
 }
 …
-consts: function() {
+consts: () => {
   __i18nMsg__('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ name }}'}}, {})
   return [
     [__AttributeMarker.Template__, "ngIf"],

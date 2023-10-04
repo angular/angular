@@ -20,7 +20,7 @@ function MyComponent_ng_container_1_Template(rf, ctx) {
 …
 decls: 2,
 vars: 2,
-consts: function() {
+consts: () => {
   __i18nMsg__('Content A', [], {}, {})
   __i18nMsg__('Content B', [], {}, {})
   return [

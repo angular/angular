@@ -1,6 +1,6 @@
 decls: 3,
 vars: 0,
-consts: function() {
+consts: () => {
   __i18nMsg__(' Hello {$startTagNgContainer}there{$closeTagNgContainer}', [['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`], ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`],], {original_code: {'closeTagNgContainer': '</ng-container>', 'startTagNgContainer': '<ng-container>'}}, {})
   return [
     $i18n_0$

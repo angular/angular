@@ -14,7 +14,7 @@ function MyComponent_div_3_Template(rf, ctx) {
 …
 decls: 4,
 vars: 3,
-consts: function() {
+consts: () => {
   // NOTE: Keeping raw content here to illustrate the difference in placeholders generated for goog.getMsg and $localize calls (see last i18n block).
   let $I18N_1$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {

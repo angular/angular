@@ -56,7 +56,7 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `
   <div i18n>{{ valueA | pipeA }} and {{ valueB | pipeB }}</div>
   <div i18n><span>{{ valueA | pipeA }}</span> and {{ valueB | pipeB }} <span>and {{ valueC | pipeC }}</span></div>
-`, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(function () { return PipeA; }), name: "pipeA" }, { kind: "pipe", type: i0.forwardRef(function () { return PipeB; }), name: "pipeB" }, { kind: "pipe", type: i0.forwardRef(function () { return PipeC; }), name: "pipeC" }] });
+`, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(() => PipeA), name: "pipeA" }, { kind: "pipe", type: i0.forwardRef(() => PipeB), name: "pipeB" }, { kind: "pipe", type: i0.forwardRef(() => PipeC), name: "pipeC" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
