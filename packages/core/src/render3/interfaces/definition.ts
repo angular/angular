@@ -43,6 +43,7 @@ export interface ClassDebugInfo {
   className: string;
   filePath?: string;
   lineNumber?: number;
+  forbidOrphanRendering?: boolean;
 }
 
 /**
