@@ -1219,6 +1219,18 @@
   },
   {
     "date": {
+      "start": "2023-09-26"
+    },
+    "name": "IJS New York"
+  },
+  {
+    "date": {
+      "start": "2023-10-03"
+    },
+    "name": "Angular London Meetup"
+  },
+  {
+    "date": {
       "start": "2023-10-05"
     },
     "name": "ViteConf"
@@ -1228,6 +1240,18 @@
       "start": "2023-10-15"
     },
     "name": "All Things Open"
+  },
+  {
+    "date": {
+      "start": "2023-10-26"
+    },
+    "name": "Connect.tech"
+  },
+  {
+    "date": {
+      "start": "2023-10-27"
+    },
+    "name": "REFACTR.tech"
   },
   {
     "date": {
