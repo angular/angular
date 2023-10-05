@@ -8854,6 +8854,47 @@ function allTests(os: string) {
         expect(jsContents).not.toContain('import { CmpA }');
       });
 
+      it('should include timer scheduler function when ' +
+             '`after` or `minimum` parameters are used',
+         () => {
+           env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+              import { CmpA } from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  @defer {
+                    <cmp-a />
+                  } @loading (after 500ms; minimum 300ms) {
+                    Loading...
+                  }
+                \`,
+              })
+              export class TestCmp {}
+            `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)');
+         });
+
       describe('imports', () => {
         it('should retain regular imports when symbol is eagerly referenced', () => {
           env.write('cmp-a.ts', `

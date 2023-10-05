@@ -46,6 +46,38 @@ function shouldTriggerDeferBlock(injector: Injector): boolean {
 }
 
 /**
+ * Reference to the timer-based scheduler implementation of defer block state
+ * rendering method. It's used to make timer-based scheduling tree-shakable.
+ * If `minimum` or `after` parameters are used, compiler generates an extra
+ * argument for the `ɵɵdefer` instruction, which references a timer-based
+ * implementation.
+ */
+let applyDeferBlockStateWithSchedulingImpl: (typeof applyDeferBlockState)|null = null;
+
+/**
+ * Enables timer-related scheduling if `after` or `minimum` parameters are setup
+ * on the `@loading` or `@placeholder` blocks.
+ */
+export function ɵɵdeferEnableTimerScheduling(
+    tView: TView, tDetails: TDeferBlockDetails, placeholderConfigIndex?: number|null,
+    loadingConfigIndex?: number|null) {
+  const tViewConsts = tView.consts;
+  if (placeholderConfigIndex != null) {
+    tDetails.placeholderBlockConfig =
+        getConstant<DeferredPlaceholderBlockConfig>(tViewConsts, placeholderConfigIndex);
+  }
+  if (loadingConfigIndex != null) {
+    tDetails.loadingBlockConfig =
+        getConstant<DeferredLoadingBlockConfig>(tViewConsts, loadingConfigIndex);
+  }
+
+  // Enable implementation that supports timer-based scheduling.
+  if (applyDeferBlockStateWithSchedulingImpl === null) {
+    applyDeferBlockStateWithSchedulingImpl = applyDeferBlockStateWithScheduling;
+  }
+}
+
+/**
  * Creates runtime data structures for defer blocks.
  *
  * @param index Index of the `defer` instruction.
@@ -58,6 +90,8 @@ function shouldTriggerDeferBlock(injector: Injector): boolean {
  *     block.
  * @param placeholderConfigIndex Index in the constants array of the configuration of the
  *     placeholder block.
+ * @param enableTimerScheduling Function that enables timer-related scheduling if `after`
+ *     or `minimum` parameters are setup on the `@loading` or `@placeholder` blocks.
  *
  * @codeGenApi
  */
@@ -65,32 +99,28 @@ export function ɵɵdefer(
     index: number, primaryTmplIndex: number, dependencyResolverFn?: DependencyResolverFn|null,
     loadingTmplIndex?: number|null, placeholderTmplIndex?: number|null,
     errorTmplIndex?: number|null, loadingConfigIndex?: number|null,
-    placeholderConfigIndex?: number|null) {
+    placeholderConfigIndex?: number|null,
+    enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling) {
   const lView = getLView();
   const tView = getTView();
-  const tViewConsts = tView.consts;
   const adjustedIndex = index + HEADER_OFFSET;
 
   ɵɵtemplate(index, null, 0, 0);
 
   if (tView.firstCreatePass) {
-    const deferBlockConfig: TDeferBlockDetails = {
+    const tDetails: TDeferBlockDetails = {
       primaryTmplIndex,
       loadingTmplIndex: loadingTmplIndex ?? null,
       placeholderTmplIndex: placeholderTmplIndex ?? null,
       errorTmplIndex: errorTmplIndex ?? null,
-      placeholderBlockConfig: placeholderConfigIndex != null ?
-          getConstant<DeferredPlaceholderBlockConfig>(tViewConsts, placeholderConfigIndex) :
-          null,
-      loadingBlockConfig: loadingConfigIndex != null ?
-          getConstant<DeferredLoadingBlockConfig>(tViewConsts, loadingConfigIndex) :
-          null,
+      placeholderBlockConfig: null,
+      loadingBlockConfig: null,
       dependencyResolverFn: dependencyResolverFn ?? null,
       loadingState: DeferDependenciesLoadingState.NOT_STARTED,
       loadingPromise: null,
     };
-
-    setTDeferBlockDetails(tView, adjustedIndex, deferBlockConfig);
+    enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
+    setTDeferBlockDetails(tView, adjustedIndex, tDetails);
   }
 
   const tNode = getCurrentTNode()!;
@@ -657,16 +687,68 @@ export function renderDeferBlockState(
   ngDevMode && assertTNodeForLView(tNode, hostLView);
 
   const lDetails = getLDeferBlockDetails(hostLView, tNode);
-  const tDetails = getTDeferBlockDetails(hostTView, tNode);
 
   ngDevMode && assertDefined(lDetails, 'Expected a defer block state defined');
 
-  const now = Date.now();
   const currentState = lDetails[DEFER_BLOCK_STATE];
 
-  if (!isValidStateChange(currentState, newState) ||
-      !isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState))
-    return;
+  if (isValidStateChange(currentState, newState) &&
+      isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState)) {
+    const tDetails = getTDeferBlockDetails(hostTView, tNode);
+    const needsScheduling = getLoadingBlockAfter(tDetails) !== null ||
+        getMinimumDurationForState(tDetails, DeferBlockState.Loading) !== null ||
+        getMinimumDurationForState(tDetails, DeferBlockState.Placeholder);
+
+    if (ngDevMode && needsScheduling) {
+      assertDefined(
+          applyDeferBlockStateWithSchedulingImpl, 'Expected scheduling function to be defined');
+    }
+
+    const applyStateFn =
+        needsScheduling ? applyDeferBlockStateWithSchedulingImpl! : applyDeferBlockState;
+    applyStateFn(newState, lDetails, lContainer, tNode, hostLView);
+  }
+}
+
+/**
+ * Applies changes to the DOM to reflect a given state.
+ */
+function applyDeferBlockState(
+    newState: DeferBlockState, lDetails: LDeferBlockDetails, lContainer: LContainer, tNode: TNode,
+    hostLView: LView<unknown>) {
+  const stateTmplIndex = getTemplateIndexForState(newState, hostLView, tNode);
+
+  if (stateTmplIndex !== null) {
+    lDetails[DEFER_BLOCK_STATE] = newState;
+    const hostTView = hostLView[TVIEW];
+    const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
+    const tNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
+
+    // There is only 1 view that can be present in an LContainer that
+    // represents a defer block, so always refer to the first one.
+    const viewIndex = 0;
+
+    removeLViewFromLContainer(lContainer, viewIndex);
+    const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
+    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
+    addLViewToLContainer(
+        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
+    markViewDirty(embeddedLView);
+  }
+}
+
+/**
+ * Extends the `applyDeferBlockState` with timer-based scheduling.
+ * This function becomes available on a page if there are defer blocks
+ * that use `after` or `minimum` parameters in the `@loading` or
+ * `@placeholder` blocks.
+ */
+function applyDeferBlockStateWithScheduling(
+    newState: DeferBlockState, lDetails: LDeferBlockDetails, lContainer: LContainer, tNode: TNode,
+    hostLView: LView<unknown>) {
+  const now = Date.now();
+  const hostTView = hostLView[TVIEW];
+  const tDetails = getTDeferBlockDetails(hostTView, tNode);
 
   if (lDetails[STATE_IS_FROZEN_UNTIL] === null || lDetails[STATE_IS_FROZEN_UNTIL] <= now) {
     lDetails[STATE_IS_FROZEN_UNTIL] = null;
@@ -690,7 +772,7 @@ export function renderDeferBlockState(
         lDetails[NEXT_DEFER_BLOCK_STATE] = null;
       }
 
-      applyDeferBlockStateToDom(newState, lDetails, lContainer, hostLView, tNode);
+      applyDeferBlockState(newState, lDetails, lContainer, tNode, hostLView);
 
       const duration = getMinimumDurationForState(tDetails, newState);
       if (duration !== null) {
@@ -720,8 +802,6 @@ function scheduleDeferBlockUpdate(
       renderDeferBlockState(nextState, tNode, lContainer);
     }
   };
-  // TODO: this needs refactoring to make `TimerScheduler` that is used inside
-  // of the `scheduleTimerTrigger` function tree-shakable.
   return scheduleTimerTrigger(timeout, callback, hostLView, true);
 }
 
@@ -737,33 +817,6 @@ function scheduleDeferBlockUpdate(
 function isValidStateChange(
     currentState: DeferBlockState|DeferBlockInternalState, newState: DeferBlockState): boolean {
   return currentState < newState;
-}
-
-/**
- * Applies changes to the DOM to reflect a given state.
- */
-function applyDeferBlockStateToDom(
-    newState: DeferBlockState, lDetails: LDeferBlockDetails, lContainer: LContainer,
-    hostLView: LView<unknown>, tNode: TNode) {
-  const stateTmplIndex = getTemplateIndexForState(newState, hostLView, tNode);
-
-  if (stateTmplIndex !== null) {
-    lDetails[DEFER_BLOCK_STATE] = newState;
-    const hostTView = hostLView[TVIEW];
-    const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
-    const tNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
-
-    // There is only 1 view that can be present in an LContainer that
-    // represents a defer block, so always refer to the first one.
-    const viewIndex = 0;
-
-    removeLViewFromLContainer(lContainer, viewIndex);
-    const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
-    addLViewToLContainer(
-        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
-    markViewDirty(embeddedLView);
-  }
 }
 
 /**
