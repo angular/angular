@@ -24,6 +24,7 @@ ng_module(
         "//devtools/projects/ng-devtools/src/lib:theme",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree:injector_tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",

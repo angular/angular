@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, PropertyQueryTypes, UpdatedStateData,} from 'protocol';
+import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, InjectedService, PropertyQueryTypes, ProviderRecord, SerializedInjectedService, SerializedInjector, SerializedProviderRecord, UpdatedStateData,} from 'protocol';
 
 import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
 import {deeplySerializeSelectedProperties, serializeDirectiveState} from './state-serializer/state-serializer';
@@ -21,12 +21,69 @@ enum ChangeDetectionStrategy {
 }
 
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
+import type {ClassProvider, ExistingProvider, FactoryProvider, InjectionToken, Injector, Type, ValueProvider} from '@angular/core';
 
 const ngDebug = () => (window as any).ng;
+export const injectorToId = new WeakMap<Injector|HTMLElement, string>();
+export const idToInjector = new Map<string, Injector>();
+export const injectorsSeen = new Set<string>();
+let injectorId = 0;
+
+export function getInjectorId() {
+  return `${injectorId++}`;
+}
+
+export function hasDiDebugAPIs(): boolean {
+  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
+    return false;
+  }
+  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
+    return false;
+  }
+  if (!ngDebugApiIsSupported('ɵgetInjectorProviders')) {
+    return false;
+  }
+  if (!ngDebugApiIsSupported('ɵgetInjectorMetadata')) {
+    return false;
+  }
+
+  return true;
+}
+
+export function ngDebugApiIsSupported(api: string): boolean {
+  const ng = ngDebug();
+  return typeof ng[api] === 'function';
+}
+
+export function getInjectorMetadata(injector: Injector):
+    {type: string; source: HTMLElement | string | null;}|null {
+  return ngDebug().ɵgetInjectorMetadata(injector);
+}
+
+export function getInjectorResolutionPath(injector: Injector): Injector[] {
+  return ngDebug().ɵgetInjectorResolutionPath(injector);
+}
+
+export function getInjectorFromElementNode(element: Node): Injector|null {
+  return ngDebug().getInjector(element);
+}
+
+export function getDirectivesFromElement(element: HTMLElement):
+    {component: unknown|null; directives: unknown[];} {
+  let component = null;
+  if (element instanceof Element) {
+    component = ngDebug().getComponent(element);
+  }
+
+  return {
+    component,
+    directives: ngDebug().getDirectives(element),
+  };
+}
 
 export const getLatestComponentState =
     (query: ComponentExplorerViewQuery, directiveForest?: ComponentTreeNode[]):
-        DirectivesProperties|undefined => {
+        {directiveProperties: DirectivesProperties;}|undefined => {
           // if a directive forest is passed in we don't have to build the forest again.
           directiveForest = directiveForest ?? buildDirectiveForest();
 
@@ -35,31 +92,88 @@ export const getLatestComponentState =
             return;
           }
 
-          const result: DirectivesProperties = {};
+          const directiveProperties: DirectivesProperties = {};
+
+          const injector = ngDebug().getInjector(node.nativeElement);
+
+          const resolutionPathWithProviders = getInjectorResolutionPath(injector).map(
+              injector => ({injector, providers: getInjectorProviders(injector)}));
+
 
           const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
+            const {instance, name} = dir;
+            const metadata = getDirectiveMetadata(instance);
+            metadata.dependencies = getDependenciesForDirective(
+                injector, resolutionPathWithProviders, instance.constructor);
+
             if (query.propertyQuery.type === PropertyQueryTypes.All) {
-              result[dir.name] = {
-                props: serializeDirectiveState(dir.instance),
-                metadata: getDirectiveMetadata(dir.instance),
+              directiveProperties[dir.name] = {
+                props: serializeDirectiveState(instance),
+                metadata,
               };
             }
+
             if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
-              result[dir.name] = {
+              directiveProperties[name] = {
                 props: deeplySerializeSelectedProperties(
-                    dir.instance, query.propertyQuery.properties[dir.name] || []),
-                metadata: getDirectiveMetadata(dir.instance),
+                    instance, query.propertyQuery.properties[name] || []),
+                metadata,
               };
             }
           };
 
-          node.directives.forEach(populateResultSet);
+          node.directives.forEach((dir) => populateResultSet(dir));
           if (node.component) {
             populateResultSet(node.component);
           }
 
-          return result;
+          return {
+            directiveProperties,
+          };
         };
+
+export function serializeElementInjectorWithId(injector: Injector): SerializedInjector|null {
+  let id: string;
+  const element = getElementInjectorElement(injector);
+
+  if (!injectorToId.has(element)) {
+    id = getInjectorId();
+    injectorToId.set(element, id);
+    idToInjector.set(id, injector);
+  }
+
+  id = injectorToId.get(element)!;
+  idToInjector.set(id, injector);
+  injectorsSeen.add(id);
+
+  const serializedInjector = serializeInjector(injector);
+  if (serializedInjector === null) {
+    return null;
+  }
+
+  return {id, ...serializedInjector};
+}
+
+export function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector|null {
+  let id: string;
+
+  if (!injectorToId.has(injector)) {
+    id = getInjectorId();
+    injectorToId.set(injector, id);
+    idToInjector.set(id, injector);
+  }
+
+  id = injectorToId.get(injector)!;
+  idToInjector.set(id, injector);
+  injectorsSeen.add(id);
+
+  const serializedInjector = serializeInjector(injector);
+  if (serializedInjector === null) {
+    return null;
+  }
+
+  return {id, ...serializedInjector};
+}
 
 const enum DirectiveMetadataKey {
   INPUTS = 'inputs',
@@ -102,6 +216,202 @@ export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
     onPush: safelyGrabMetadata(DirectiveMetadataKey.ON_PUSH),
   };
 };
+
+export function getInjectorProviders(injector: Injector): ProviderRecord[] {
+  if (isPlatformInjector(injector)) {
+    return [];
+  }
+
+  if (isNullInjector(injector)) {
+    return [];
+  }
+
+  return ngDebug().ɵgetInjectorProviders(injector);
+}
+
+const getDependenciesForDirective =
+    (injector: Injector, resolutionPath: {injector: Injector; providers: ProviderRecord[]}[],
+     directive: any): SerializedInjectedService[] => {
+      let dependencies: InjectedService[] =
+          ngDebug().ɵgetDependenciesFromInjectable(injector, directive).dependencies;
+      const serializedInjectedServices: SerializedInjectedService[] = [];
+
+      let position = 0;
+      for (const dependency of dependencies) {
+        const providedIn = dependency.providedIn;
+        const foundInjectorIndex = resolutionPath.findIndex(node => node.injector === providedIn);
+
+        if (foundInjectorIndex === -1) {
+          position++;
+          continue;
+        }
+
+        const providers = resolutionPath[foundInjectorIndex].providers;
+        const foundProvider = providers.find(provider => provider.token === dependency.token);
+
+        // the dependency resolution path is
+        // the path from the root injector to the injector that provided the dependency (1)
+        // +
+        // the import path from the providing injector to the feature module that provided the
+        // dependency (2)
+        const dependencyResolutionPath = [
+          // (1)
+          ...resolutionPath.slice(0, foundInjectorIndex + 1).map(node => {
+            if (isElementInjector(node.injector)) {
+              return {injector: serializeElementInjectorWithId(node.injector)};
+            }
+            return {injector: serializeEnvironmentInjectorWithId(node.injector)};
+          }),
+
+          // (2)
+          // We slice the import path to remove the first element because this is the same
+          // injector as the last injector in the resolution path.
+          ...(foundProvider?.importPath ?? []).slice(1).map(node => {
+            return {
+              injector: {type: 'imported-module', name: valueToLabel(node), id: getInjectorId()}
+            };
+          })
+        ];
+
+        if (dependency.token && isInjectionToken(dependency.token)) {
+          serializedInjectedServices.push({
+            token: dependency.token!.toString(),
+            value: valueToLabel(dependency.value),
+            flags: dependency.flags,
+            position: [position],
+            resolutionPath: dependencyResolutionPath
+          });
+        }
+
+        serializedInjectedServices.push({
+          token: valueToLabel(dependency.token),
+          value: valueToLabel(dependency.value),
+          flags: dependency.flags,
+          position: [position],
+          resolutionPath: dependencyResolutionPath
+        });
+
+        position++;
+      }
+
+      return serializedInjectedServices;
+    };
+
+export const valueToLabel = (value: any): string => {
+  if (isInjectionToken(value)) {
+    return `InjectionToken(${value['_desc']})`;
+  }
+
+  if (typeof value === 'object') {
+    return value.constructor.name;
+  }
+
+  if (typeof value === 'function') {
+    return value.name;
+  }
+
+  return value;
+};
+
+export function serializeInjector(injector: Injector): Omit<SerializedInjector, 'id'>|null {
+  const metadata = getInjectorMetadata(injector);
+
+  if (metadata === null) {
+    console.error('Angular DevTools: Could not serialize injector.', injector);
+    return null;
+  }
+
+  if (metadata.type === 'element') {
+    const source = metadata.source! as HTMLElement;
+    const name = elementToDirectiveNames(source)[0];
+
+    return {type: 'element', name};
+  }
+
+  if (metadata.type === 'environment') {
+    return {type: 'environment', name: metadata.source as string};
+  }
+
+  if (metadata.type === 'null') {
+    return {type: 'null', name: 'Null Injector'};
+  }
+
+  console.error('Angular DevTools: Could not serialize injector.', injector);
+  return null;
+}
+
+export function serializeProviderRecord(
+    providerRecord: ProviderRecord, hasImportPath = false): SerializedProviderRecord {
+  let type: 'type'|'class'|'value'|'factory'|'existing' = 'type';
+  let multi = false;
+
+  if (typeof providerRecord.provider === 'object') {
+    if ((providerRecord.provider as ClassProvider).useClass !== undefined) {
+      type = 'class';
+    } else if ((providerRecord.provider as ValueProvider).useValue !== undefined) {
+      type = 'value';
+    } else if ((providerRecord.provider as FactoryProvider).useFactory !== undefined) {
+      type = 'factory';
+    } else if ((providerRecord.provider as ExistingProvider).useExisting !== undefined) {
+      type = 'existing';
+    }
+
+    if (providerRecord.provider.multi !== undefined) {
+      multi = providerRecord.provider.multi;
+    }
+  }
+
+  const serializedProvider = {
+    token: valueToLabel(providerRecord.token),
+    type,
+    multi,
+    isViewProvider: providerRecord.isViewProvider,
+  };
+
+  if (hasImportPath) {
+    serializedProvider['importPath'] =
+        (providerRecord.importPath ?? []).map(injector => valueToLabel(injector as any));
+  }
+
+  return serializedProvider;
+}
+
+function elementToDirectiveNames(element: HTMLElement): string[] {
+  const {component, directives} = getDirectivesFromElement(element);
+  return [component, ...directives].map(dir => dir?.constructor?.name ?? '').filter(dir => !!dir);
+}
+
+export function getElementInjectorElement(elementInjector: Injector): HTMLElement {
+  if (!isElementInjector(elementInjector)) {
+    throw new Error('Injector is not an element injector');
+  }
+
+  return getInjectorMetadata(elementInjector)!.source as HTMLElement;
+}
+
+export function isInjectionToken(token: Type<unknown>|InjectionToken<unknown>): boolean {
+  return token.constructor.name === 'InjectionToken';
+}
+
+export function isPlatformInjector(injector: Injector) {
+  return isEnvironmentInjector(injector) && injector['scopes'] instanceof Set &&
+      injector['scopes'].has('platform');
+}
+
+export function isEnvironmentInjector(injector: Injector) {
+  const metadata = getInjectorMetadata(injector);
+  return metadata !== null && metadata.type === 'environment';
+}
+
+export function isElementInjector(injector: Injector) {
+  const metadata = getInjectorMetadata(injector);
+  return metadata !== null && metadata.type === 'element';
+}
+
+function isNullInjector(injector: Injector) {
+  const metadata = getInjectorMetadata(injector);
+  return metadata !== null && metadata.type === 'null';
+}
 
 const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set<any> => {
   if (!(element instanceof HTMLElement)) {

@@ -7,7 +7,6 @@
  */
 
 import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTabNav} from '@angular/material/tabs';
 import {Events, MessageBus, Route} from 'protocol';
 import {Subscription} from 'rxjs';
@@ -28,7 +27,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
   @ViewChild('navBar', {static: true}) navbar: MatTabNav;
 
-  activeTab: 'Components'|'Profiler'|'Router Tree' = 'Components';
+  activeTab: 'Components'|'Profiler'|'Router Tree'|'Injector Tree' = 'Components';
 
   inspectorRunning = false;
   routerTreeEnabled = false;
@@ -57,7 +56,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get tabs(): string[] {
-    const alwaysShown = ['Components', 'Profiler'];
+    const alwaysShown = ['Components', 'Profiler', 'Injector Tree'];
     return this.routes.length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
   }
 
