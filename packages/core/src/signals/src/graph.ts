@@ -26,6 +26,10 @@ export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|nul
   return prev;
 }
 
+export function getActiveConsumer(): ReactiveNode|null {
+  return activeConsumer;
+}
+
 export function isInNotificationPhase(): boolean {
   return inNotificationPhase;
 }

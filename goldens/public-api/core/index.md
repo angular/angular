@@ -129,6 +129,9 @@ export function asNativeElements(debugEls: DebugElement[]): any;
 export function assertInInjectionContext(debugFn: Function): void;
 
 // @public
+export function assertNotInReactiveContext(debugFn: Function, extraContext?: string): void;
+
+// @public
 export function assertPlatform(requiredToken: any): PlatformRef;
 
 // @public
