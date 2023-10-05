@@ -12,7 +12,7 @@ import * as html from './ast';
 import {NAMED_ENTITIES} from './entities';
 import {tokenize, TokenizeOptions} from './lexer';
 import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
-import {AttributeNameToken, AttributeQuoteToken, BlockCloseToken, BlockOpenStartToken, BlockParameterToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
+import {AttributeNameToken, AttributeQuoteToken, BlockCloseToken, BlockOpenStartToken, BlockParameterToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteBlockOpenToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
 
 /** Nodes that can contain other nodes. */
 type NodeContainer = html.Element|html.Block;
@@ -90,6 +90,9 @@ class _TreeBuilder {
       } else if (this._peek.type === TokenType.BLOCK_CLOSE) {
         this._closeVoidElement();
         this._consumeBlockClose(this._advance());
+      } else if (this._peek.type === TokenType.INCOMPLETE_BLOCK_OPEN) {
+        this._closeVoidElement();
+        this._consumeIncompleteBlock(this._advance());
       } else {
         // Skip all other tokens...
         this._advance();
@@ -473,20 +476,40 @@ class _TreeBuilder {
     const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
     const block = new html.Block(token.parts[0], parameters, [], span, startSpan);
     this._pushContainer(block, false);
-    return block;
   }
 
   private _consumeBlockClose(token: BlockCloseToken) {
-    const previousContainer = this._getContainer();
-
     if (!this._popContainer(null, html.Block, token.sourceSpan)) {
-      const context = previousContainer instanceof html.Element ?
-          `There is an unclosed "${
-              previousContainer.name}" HTML tag that may have to be closed first.` :
-          `The block may have been closed earlier.`;
-      this.errors.push(
-          TreeError.create(null, token.sourceSpan, `Unexpected closing block. ${context}`));
+      this.errors.push(TreeError.create(
+          null, token.sourceSpan,
+          `Unexpected closing block. The block may have been closed earlier. ` +
+              `If you meant to write the } character, you should use the "&#125;" ` +
+              `HTML entity instead.`));
     }
+  }
+
+  private _consumeIncompleteBlock(token: IncompleteBlockOpenToken) {
+    const parameters: html.BlockParameter[] = [];
+
+    while (this._peek.type === TokenType.BLOCK_PARAMETER) {
+      const paramToken = this._advance<BlockParameterToken>();
+      parameters.push(new html.BlockParameter(paramToken.parts[0], paramToken.sourceSpan));
+    }
+
+    const end = this._peek.sourceSpan.fullStart;
+    const span = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
+    // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
+    const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
+    const block = new html.Block(token.parts[0], parameters, [], span, startSpan);
+    this._pushContainer(block, false);
+
+    // Incomplete blocks don't have children so we close them immediately and report an error.
+    this._popContainer(null, html.Block, null);
+
+    this.errors.push(TreeError.create(
+        token.parts[0], span,
+        `Incomplete block "${token.parts[0]}". If you meant to write the @ character, ` +
+            `you should use the "&#64;" HTML entity instead.`));
   }
 
   private _getContainer(): NodeContainer|null {

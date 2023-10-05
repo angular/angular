@@ -886,9 +886,11 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
         it('should report an unexpected block close', () => {
           const errors = parser.parse('hello}', 'TestComp').errors;
           expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([
-            [null, 'Unexpected closing block. The block may have been closed earlier.', '0:5']
-          ]);
+          expect(humanizeErrors(errors)).toEqual([[
+            null,
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+            '0:5'
+          ]]);
         });
 
         it('should report unclosed tags inside of a block', () => {
@@ -896,7 +898,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([[
             null,
-            'Unexpected closing block. There is an unclosed "strong" HTML tag that may have to be closed first.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:19'
           ]]);
         });
@@ -910,7 +912,11 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
               '0:22'
             ],
-            [null, 'Unexpected closing block. The block may have been closed earlier.', '0:28'],
+            [
+              null,
+              'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+              '0:28'
+            ],
           ]);
         });
 
@@ -945,6 +951,39 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             [html.Element, 'strong', 2, '<strong>r</strong>', '<strong>', '</strong>'],
             [html.Text, 'r', 3, ['r'], 'r'],
           ]);
+        });
+
+        it('should parse an incomplete block with no parameters', () => {
+          const result = parser.parse('Use the @Input() decorator', 'TestComp');
+
+          expect(humanizeNodes(result.rootNodes, true)).toEqual([
+            [html.Text, 'Use the ', 0, ['Use the '], 'Use the '],
+            [html.Block, 'Input', 0, '@Input() ', '@Input() ', null],
+            [html.Text, 'decorator', 0, ['decorator'], 'decorator'],
+          ]);
+
+          expect(humanizeErrors(result.errors)).toEqual([[
+            'Input',
+            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:8'
+          ]]);
+        });
+
+        it('should parse an incomplete block with no parameters', () => {
+          const result = parser.parse('Use @Input({alias: "foo"}) to alias your input', 'TestComp');
+
+          expect(humanizeNodes(result.rootNodes, true)).toEqual([
+            [html.Text, 'Use ', 0, ['Use '], 'Use '],
+            [html.Block, 'Input', 0, '@Input({alias: "foo"}) ', '@Input({alias: "foo"}) ', null],
+            [html.BlockParameter, '{alias: "foo"}', '{alias: "foo"}'],
+            [html.Text, 'to alias your input', 0, ['to alias your input'], 'to alias your input'],
+          ]);
+
+          expect(humanizeErrors(result.errors)).toEqual([[
+            'Input',
+            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:4'
+          ]]);
         });
       });
 
