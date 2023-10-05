@@ -16,7 +16,9 @@ import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflectio
 import {extractClass, extractInterface} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {DocEntry} from './entities';
+import {isAngularPrivateName} from './filters';
 
+type DeclarationWithExportName = readonly[string, ts.Declaration];
 
 /**
  * Extracts all information from a source file that may be relevant for generating
@@ -34,51 +36,80 @@ export class DocsExtractor {
   extractAll(sourceFile: ts.SourceFile): DocEntry[] {
     const entries: DocEntry[] = [];
 
+    const exportedDeclarations = this.getExportedDeclarations(sourceFile);
+    for (const [exportName, node] of exportedDeclarations) {
+      // Skip any symbols with an Angular-internal name.
+      if (isAngularPrivateName(exportName)) continue;
+
+      const entry = this.extractDeclaration(node);
+      if (entry) {
+        // The exported name of an API may be different from its declaration name, so
+        // use the declaration name.
+        entries.push({...entry, name: exportName});
+      }
+    }
+
+    return entries;
+  }
+
+  /** Extract the doc entry for a single declaration. */
+  private extractDeclaration(node: ts.Declaration): DocEntry|null {
+    // Ignore anonymous classes.
+    if (isNamedClassDeclaration(node)) {
+      return extractClass(node, this.metadataReader, this.typeChecker);
+    }
+
+    if (ts.isInterfaceDeclaration(node)) {
+      return extractInterface(node, this.typeChecker);
+    }
+
+    if (ts.isFunctionDeclaration(node)) {
+      const functionExtractor = new FunctionExtractor(node, this.typeChecker);
+      return functionExtractor.extract();
+    }
+
+    if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
+      return extractConstant(node, this.typeChecker);
+    }
+
+    if (ts.isEnumDeclaration(node)) {
+      return extractEnum(node, this.typeChecker);
+    }
+
+    return null;
+  }
+
+  /** Gets the list of exported declarations for doc extraction. */
+  private getExportedDeclarations(sourceFile: ts.SourceFile): DeclarationWithExportName[] {
     // Use the reflection host to get all the exported declarations from this
     // source file entry point.
     const reflector = new TypeScriptReflectionHost(this.typeChecker);
     const exportedDeclarationMap = reflector.getExportsOfModule(sourceFile);
 
-    // Sort the declaration nodes into declaration position because their order is lost in
-    // reading from the export map. This is primarily useful for testing and debugging.
-    const exportedDeclarations =
+    // Augment each declaration with the exported name in the public API.
+    let exportedDeclarations =
         Array.from(exportedDeclarationMap?.entries() ?? [])
-            .map(([exportName, declaration]) => [exportName, declaration.node] as const)
-            .sort(([a, declarationA], [b, declarationB]) => declarationA.pos - declarationB.pos);
+            .map(([exportName, declaration]) => [exportName, declaration.node] as const);
 
-    for (const [exportName, node] of exportedDeclarations) {
-      let entry: DocEntry|undefined = undefined;
+    // Cache the declaration count since we're going to be appending more declarations as
+    // we iterate.
+    const declarationCount = exportedDeclarations.length;
 
-      // Ignore anonymous classes.
-      if (isNamedClassDeclaration(node)) {
-        entry = extractClass(node, this.metadataReader, this.typeChecker);
-      }
+    // The exported declaration map only includes one function declaration in situations
+    // where a function has overloads, so we add the overloads here.
+    for (let i = 0; i < declarationCount; i++) {
+      const [exportName, declaration] = exportedDeclarations[i];
+      if (ts.isFunctionDeclaration(declaration)) {
+        const extractor = new FunctionExtractor(declaration, this.typeChecker);
+        const overloads = extractor.getOverloads().map(overload => [exportName, overload] as const);
 
-      if (ts.isInterfaceDeclaration(node)) {
-        entry = extractInterface(node, this.typeChecker);
-      }
-
-      if (ts.isFunctionDeclaration(node)) {
-        const functionExtractor = new FunctionExtractor(node, this.typeChecker);
-        entry = functionExtractor.extract();
-      }
-
-      if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
-        entry = extractConstant(node, this.typeChecker);
-      }
-
-      if (ts.isEnumDeclaration(node)) {
-        entry = extractEnum(node, this.typeChecker);
-      }
-
-      // The exported name of an API may be different from its declaration name, so
-      // use the declaration name.
-      if (entry) {
-        entry.name = exportName;
-        entries.push(entry);
+        exportedDeclarations.push(...overloads);
       }
     }
 
-    return entries;
+    // Sort the declaration nodes into declaration position because their order is lost in
+    // reading from the export map. This is primarily useful for testing and debugging.
+    return exportedDeclarations.sort(
+        ([a, declarationA], [b, declarationB]) => declarationA.pos - declarationB.pos);
   }
 }
