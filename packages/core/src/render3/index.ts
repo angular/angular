@@ -143,6 +143,7 @@ export {
   ɵɵdeferPrefetchOnHover,
   ɵɵdeferPrefetchOnInteraction,
   ɵɵdeferPrefetchOnViewport,
+  ɵɵdeferEnableTimerScheduling,
 
   ɵɵtext,
   ɵɵtextInterpolate,

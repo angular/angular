@@ -160,6 +160,8 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnInteraction', moduleName: CORE};
   static deferPrefetchOnViewport:
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
+  static deferEnableTimerScheduling:
+      o.ExternalReference = {name: 'ɵɵdeferEnableTimerScheduling', moduleName: CORE};
 
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
