@@ -1025,12 +1025,14 @@ describe('component', () => {
       className: 'Comp',
       filePath: 'comp.ts',
       lineNumber: 11,
+      forbidOrphanRendering: true,
     });
 
     expect(Comp.ɵcmp.debugInfo).toEqual({
       className: 'Comp',
       filePath: 'comp.ts',
       lineNumber: 11,
+      forbidOrphanRendering: true,
     });
   });
 });
