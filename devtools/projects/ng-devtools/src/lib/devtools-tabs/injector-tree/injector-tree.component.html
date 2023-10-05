@@ -1,0 +1,33 @@
+<p class="not-supported" *ngIf="!diDebugAPIsAvailable">
+  This feature is not supported by your version of Angular. Please update to version 17.0.0 or higher.
+</p>
+
+<as-split [class.hidden]="!diDebugAPIsAvailable" unit="percent" direction="horizontal" [gutterSize]="9">
+  <as-split-area size="60">
+    <as-split unit="percent" direction="vertical" [gutterSize]="9">
+      <as-split-area size="30">
+        <div class="injector-tree">
+          <h1>Environment Hierarchy</h1>
+          <section #injectorTree class="environment-injectors graph">
+            <svg #svgContainer class="svg-container">
+              <g #mainGroup></g>
+            </svg>
+          </section>
+        </div>
+      </as-split-area>
+      <as-split-area size="70">
+        <div class="injector-tree">
+          <h1>Element Hierarchy</h1>
+          <section #elementInjectorTree class="element-injectors graph">
+            <svg #elementSvgContainer class="svg-container">
+              <g #elementMainGroup></g>
+            </svg>
+          </section>
+        </div>
+      </as-split-area>
+    </as-split>
+  </as-split-area>
+  <as-split-area *ngIf="selectedNode && providers.length > 0" size="40" minSize="25">
+    <ng-injector-providers [injector]="selectedNode.data.injector" [providers]="providers"></ng-injector-providers>
+  </as-split-area>
+</as-split>

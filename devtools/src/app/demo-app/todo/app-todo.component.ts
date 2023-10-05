@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {Component, Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 
 import {DialogComponent} from './dialog.component';
+
+@Injectable()
+export class MyServiceA {
+}
 
 @Component({
   selector: 'app-todo-demo',
   templateUrl: './app-todo.component.html',
   styleUrls: ['./app-todo.component.scss'],
+  viewProviders: [MyServiceA]
 })
 export class AppTodoComponent {
   name: string;
