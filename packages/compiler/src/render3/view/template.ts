@@ -1323,6 +1323,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           o.literal(errorIndex),
           loadingConsts?.length ? this.addToConsts(o.literalArr(loadingConsts)) : o.TYPED_NULL_EXPR,
           placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
+          (loadingConsts?.length || placeholderConsts) ?
+              o.importExpr(R3.deferEnableTimerScheduling) :
+              o.TYPED_NULL_EXPR,
         ]));
 
     this.createDeferTriggerInstructions(deferredIndex, triggers, metadata, false);

@@ -225,6 +225,7 @@ export {
   ɵɵdeferPrefetchOnHover,
   ɵɵdeferPrefetchOnInteraction,
   ɵɵdeferPrefetchOnViewport,
+  ɵɵdeferEnableTimerScheduling,
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,

@@ -234,9 +234,6 @@
     "name": "KeyEventsPlugin"
   },
   {
-    "name": "LOADING_AFTER_CLEANUP_FN"
-  },
-  {
     "name": "LOADING_AFTER_SLOT"
   },
   {
@@ -429,9 +426,6 @@
     "name": "SOURCE"
   },
   {
-    "name": "STATE_IS_FROZEN_UNTIL"
-  },
-  {
     "name": "SVG_NAMESPACE"
   },
   {
@@ -490,9 +484,6 @@
   },
   {
     "name": "TYPE"
-  },
-  {
-    "name": "TimerScheduler"
   },
   {
     "name": "USE_VALUE"
@@ -612,6 +603,12 @@
     "name": "appendChild"
   },
   {
+    "name": "applyDeferBlockState"
+  },
+  {
+    "name": "applyDeferBlockStateWithSchedulingImpl"
+  },
+  {
     "name": "applyNodes"
   },
   {
@@ -622,9 +619,6 @@
   },
   {
     "name": "applyView"
-  },
-  {
-    "name": "arraySplice"
   },
   {
     "name": "assertConsumerNode"
@@ -889,6 +883,9 @@
   },
   {
     "name": "getLViewParent"
+  },
+  {
+    "name": "getMinimumDurationForState"
   },
   {
     "name": "getNativeByTNode"
@@ -2259,9 +2256,6 @@
     "name": "scheduleArray"
   },
   {
-    "name": "scheduleDeferBlockUpdate"
-  },
-  {
     "name": "searchTokensOnInjector"
   },
   {
@@ -2320,9 +2314,6 @@
   },
   {
     "name": "shouldSearchParent"
-  },
-  {
-    "name": "storeLViewOnDestroy"
   },
   {
     "name": "stringify"
