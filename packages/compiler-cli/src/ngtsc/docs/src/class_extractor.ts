@@ -15,6 +15,7 @@ import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta
 import {ClassDeclaration} from '../../reflection';
 
 import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
+import {isAngularPrivateName} from './filters';
 import {extractResolvedTypeString} from './type_extractor';
 
 // For the purpose of extraction, we can largely treat properties and accessors the same.
@@ -48,6 +49,7 @@ class ClassExtractor {
   extract(): ClassEntry {
     return {
       name: this.declaration.name.text,
+      isAbstract: this.isAbstract(),
       entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
                                                                EntryType.UndecoratedClass,
       members: this.extractAllClassMembers(this.declaration),
@@ -75,7 +77,7 @@ class ClassExtractor {
 
   /** Extract docs for a class's members (methods and properties).  */
   protected extractClassMember(memberDeclaration: MemberElement): MemberEntry|undefined {
-    if (this.isMethod(memberDeclaration)) {
+    if (this.isMethod(memberDeclaration) && !this.isImplementationForOverload(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
     } else if (this.isProperty(memberDeclaration)) {
       return this.extractClassProperty(memberDeclaration);
@@ -148,6 +150,8 @@ class ClassExtractor {
         return MemberTags.Readonly;
       case ts.SyntaxKind.ProtectedKeyword:
         return MemberTags.Protected;
+      case ts.SyntaxKind.AbstractKeyword:
+        return MemberTags.Abstract;
       default:
         return undefined;
     }
@@ -158,11 +162,13 @@ class ClassExtractor {
    * This is the case if:
    *  - The member does not have a name
    *  - The member is neither a method nor property
-   *  - The member is protected
+   *  - The member is private
+   *  - The member has a name that marks it as Angular-internal.
    */
   private isMemberExcluded(member: MemberElement): boolean {
     return !member.name || !this.isDocumentableMember(member) ||
-        !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword);
+        !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
+        isAngularPrivateName(member.name.getText());
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
@@ -180,6 +186,29 @@ class ClassExtractor {
   private isMethod(member: MemberElement): member is MethodLike {
     // Classes have declarations, interface have signatures
     return ts.isMethodDeclaration(member) || ts.isMethodSignature(member);
+  }
+
+  /** Gets whether the declaration for this extractor is abstract. */
+  private isAbstract(): boolean {
+    const modifiers = this.declaration.modifiers ?? [];
+    return modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+  }
+
+  /** Gets whether a method is the concrete implementation for an overloaded function. */
+  private isImplementationForOverload(method: MethodLike): boolean {
+    // Method signatures (in an interface) are never implementations.
+    if (method.kind === ts.SyntaxKind.MethodSignature) return false;
+
+    const methodsWithSameName =
+        this.declaration.members.filter(member => member.name?.getText() === method.name.getText())
+            .sort((a, b) => a.pos - b.pos);
+
+    // No overloads.
+    if (methodsWithSameName.length === 1) return false;
+
+    // The implementation is always the last declaration, so we know this is the
+    // implementation if it's the last position.
+    return method.pos === methodsWithSameName[methodsWithSameName.length - 1].pos;
   }
 }
 
@@ -213,6 +242,7 @@ class DirectiveExtractor extends ClassExtractor {
     if (inputMetadata) {
       entry.memberTags.push(MemberTags.Input);
       entry.inputAlias = inputMetadata.bindingPropertyName;
+      entry.isRequiredInput = inputMetadata.required;
     }
 
     const outputMetadata = this.getOutputMetadata(propertyDeclaration);

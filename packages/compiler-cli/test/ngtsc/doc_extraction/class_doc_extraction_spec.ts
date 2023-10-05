@@ -33,16 +33,22 @@ runInEachFileSystem(os => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
-      expect(docs[0].name).toBe('UserProfile');
-      expect(docs[0].entryType).toBe(EntryType.UndecoratedClass);
-      expect(docs[1].name).toBe('CustomSlider');
-      expect(docs[1].entryType).toBe(EntryType.UndecoratedClass);
+
+      const [userProfileEntry, customSliderEntry] = docs as ClassEntry[];
+
+      expect(userProfileEntry.name).toBe('UserProfile');
+      expect(userProfileEntry.isAbstract).toBe(false);
+      expect(userProfileEntry.entryType).toBe(EntryType.UndecoratedClass);
+
+      expect(customSliderEntry.name).toBe('CustomSlider');
+      expect(customSliderEntry.isAbstract).toBe(false);
+      expect(customSliderEntry.entryType).toBe(EntryType.UndecoratedClass);
     });
 
     it('should extract class members', () => {
       env.write('index.ts', `
         export class UserProfile {
-          firstName(): string { return 'Morgan'; }          
+          firstName(): string { return 'Morgan'; }
           age: number = 25;
         }
       `);
@@ -60,6 +66,47 @@ runInEachFileSystem(os => {
       expect(propertyEntry.memberType).toBe(MemberType.Property);
       expect(propertyEntry.name).toBe('age');
       expect(propertyEntry.type).toBe('number');
+    });
+
+    it('should extract methods with overloads', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          ident(value: boolean): boolean
+          ident(value: number): number
+          ident(value: number|boolean): number|boolean {
+            return value;
+          }
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(2);
+
+      const [booleanOverloadEntry, numberOverloadEntry] = classEntry.members as MethodEntry[];
+
+      expect(booleanOverloadEntry.name).toBe('ident');
+      expect(booleanOverloadEntry.params.length).toBe(1);
+      expect(booleanOverloadEntry.params[0].type).toBe('boolean');
+      expect(booleanOverloadEntry.returnType).toBe('boolean');
+
+      expect(numberOverloadEntry.name).toBe('ident');
+      expect(numberOverloadEntry.params.length).toBe(1);
+      expect(numberOverloadEntry.params[0].type).toBe('number');
+      expect(numberOverloadEntry.returnType).toBe('number');
+    });
+
+    it('should not extract Angular-internal members', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          ɵfirstName(): string { return 'Morgan'; }
+          _age: number = 25;
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(0);
     });
 
     it('should extract a method with a rest parameter', () => {
@@ -216,6 +263,38 @@ runInEachFileSystem(os => {
       expect(userNameSetter.memberType).toBe(MemberType.Setter);
       expect(isAdminSetter.name).toBe('isAdmin');
       expect(isAdminSetter.memberType).toBe(MemberType.Setter);
+    });
+
+    it('should extract abstract classes', () => {
+      env.write('index.ts', `
+        export abstract class UserProfile {
+          firstName: string;
+          abstract lastName: string;
+
+          save(): void { }
+          abstract reset(): void;
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.isAbstract).toBe(true);
+      expect(classEntry.members.length).toBe(4);
+
+      const [firstNameEntry, latsNameEntry, saveEntry, resetEntry] = classEntry.members;
+
+      expect(firstNameEntry.name).toBe('firstName');
+      expect(firstNameEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(latsNameEntry.name).toBe('lastName');
+      expect(latsNameEntry.memberTags).toContain(MemberTags.Abstract);
+
+      expect(saveEntry.name).toBe('save');
+      expect(saveEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(resetEntry.name).toBe('reset');
+      expect(resetEntry.memberTags).toContain(MemberTags.Abstract);
     });
   });
 });

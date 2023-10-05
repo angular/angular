@@ -34,6 +34,7 @@ export enum MemberType {
 
 /** Informational tags applicable to class members. */
 export enum MemberTags {
+  Abstract = 'abstract',
   Static = 'static',
   Readonly = 'readonly',
   Protected = 'protected',
@@ -63,6 +64,7 @@ export interface ConstantEntry extends DocEntry {
 
 /** Documentation entity for a TypeScript class. */
 export interface ClassEntry extends DocEntry {
+  isAbstract: boolean;
   members: MemberEntry[];
 }
 
@@ -114,6 +116,7 @@ export interface PropertyEntry extends MemberEntry {
   type: string;
   inputAlias?: string;
   outputAlias?: string;
+  isRequiredInput?: boolean;
 }
 
 /** Sub-entry for a class method. */

@@ -48,4 +48,36 @@ export class FunctionExtractor {
                         isRestParam: !!param.dotDotDotToken,
                       }));
   }
+
+  /** Gets all overloads for the function (excluding this extractor's FunctionDeclaration). */
+  getOverloads(): ts.FunctionDeclaration[] {
+    const overloads = [];
+
+    // The symbol for this declaration has reference to the other function declarations for
+    // the overloads.
+    const symbol = this.getSymbol();
+
+    const declarationCount = symbol?.declarations?.length ?? 0;
+    if (declarationCount > 1) {
+      // Stop iterating before the final declaration, which is the actual implementation.
+      for (let i = 0; i < declarationCount - 1; i++) {
+        const overloadDeclaration = symbol?.declarations?.[i];
+
+        // Skip the declaration we started with.
+        if (overloadDeclaration?.pos === this.declaration.pos) continue;
+
+        if (overloadDeclaration && ts.isFunctionDeclaration(overloadDeclaration) &&
+            overloadDeclaration.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+          overloads.push(overloadDeclaration);
+        }
+      }
+    }
+
+    return overloads;
+  }
+
+  private getSymbol(): ts.Symbol|undefined {
+    return this.typeChecker.getSymbolsInScope(this.declaration, ts.SymbolFlags.Function)
+        .find(s => s.name === this.declaration.name?.getText());
+  }
 }
