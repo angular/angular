@@ -17,6 +17,8 @@
         <th>
           <div class="with-github-links">
             <h3>{$ option.name $}</h3>
+            {%- if option.deprecated !== undefined %}
+            <label class="api-status-label deprecated">deprecated</label>{% endif %}
             {%- if option.developerPreview %}
             <label class="api-status-label dev-preview" title="This API is in Developer Preview">
               <a href="guide/releases#developer-preview">developer
