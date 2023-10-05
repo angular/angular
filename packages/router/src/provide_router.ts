@@ -586,11 +586,11 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  *
  * @publicApi
  */
-export function withHashLocation(): RouterConfigurationFeature {
+export function withHashLocation(): RouterHashLocationFeature {
   const providers = [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
   ];
-  return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
+  return routerFeature(RouterFeatureKind.RouterHashLocationFeature, providers);
 }
 
 /**
@@ -752,7 +752,7 @@ export function withViewTransitions(options?: ViewTransitionsFeatureOptions):
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
     InMemoryScrollingFeature|RouterConfigurationFeature|NavigationErrorHandlerFeature|
-    ComponentInputBindingFeature|ViewTransitionsFeature;
+    ComponentInputBindingFeature|ViewTransitionsFeature|RouterHashLocationFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
