@@ -287,6 +287,19 @@ class DepsTracker implements DepsTrackerApi {
 
     return ans;
   }
+
+  /** @override */
+  isOrphanComponent(cmp: Type<any>): boolean {
+    const def = getComponentDef(cmp);
+
+    if (!def || def.standalone) {
+      return false;
+    }
+
+    this.resolveNgModulesDecls();
+
+    return !this.ownerNgModule.has(cmp as ComponentType<any>);
+  }
 }
 
 function addSet<T>(sourceSet: Set<T>, targetSet: Set<T>): void {
