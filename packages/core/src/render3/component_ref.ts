@@ -30,6 +30,7 @@ import {AfterRenderEventManager} from './after_render_hooks';
 import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
+import {depsTracker} from './deps_tracker/deps_tracker';
 import {getNodeInjectable, NodeInjector} from './di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
@@ -48,7 +49,7 @@ import {EffectScheduler} from './reactivity/effect';
 import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
-import {stringifyForError} from './util/stringify_utils';
+import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -163,6 +164,18 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       environmentInjector?: NgModuleRef<any>|EnvironmentInjector|
       undefined): AbstractComponentRef<T> {
+    // Check if the component is orphan
+    if (ngDevMode && (typeof ngJitMode === 'undefined' || ngJitMode) &&
+        this.componentDef.debugInfo?.forbidOrphanRendering) {
+      if (depsTracker.isOrphanComponent(this.componentType)) {
+        throw new RuntimeError(
+            RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
+            `Orphan component found! Trying to render the component ${
+                debugStringifyTypeForError(
+                    this.componentType)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid this error. If this is not possible now, import the component's NgModule in the appropriate NgModule, or the standalone component in which you are trying to render this component. If this is a lazy import, load the NgModule lazily as well and use its module injector.`);
+      }
+    }
+
     environmentInjector = environmentInjector || this.ngModule;
 
     let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
