@@ -13,6 +13,8 @@ import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interfac
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
+import type {TNode} from '../interfaces/node';
+import type {LView} from '../interfaces/view';
 
 /**
  * An enum describing the types of events that can be emitted from the injector profiler
@@ -138,6 +140,11 @@ export interface InjectedService {
    * Injector that this service was provided in.
    */
   providedIn?: Injector;
+
+  /**
+   * In NodeInjectors, the LView and TNode that serviced this injection.
+   */
+  injectedIn?: {lView: LView, tNode: TNode};
 }
 
 export interface InjectorProfiler {

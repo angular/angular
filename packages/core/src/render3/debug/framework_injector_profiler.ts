@@ -9,9 +9,11 @@
 import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
-import {throwError} from '../../util/assert';
+import {assertDefined, throwError} from '../../util/assert';
+import {assertTNode, assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../definition';
-import {getNodeInjectorLView, NodeInjector} from '../di';
+import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
+import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
 
 import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, InjectorProfilerEvent, InjectorProfilerEventType, ProviderRecord, setInjectorProfiler} from './injector_profiler';
@@ -131,7 +133,41 @@ function handleInjectEvent(context: InjectorProfilerContext, data: InjectedServi
   }
 
   const {token, value, flags} = data;
-  instantiatedTokenToDependencies.get(context.token!)!.push({token, value, flags});
+
+  assertDefined(context.token, 'Injector profiler context token is undefined.');
+
+  const dependencies = instantiatedTokenToDependencies.get(context.token);
+  assertDefined(dependencies, 'Could not resolve dependencies for token.');
+
+  if (context.injector instanceof NodeInjector) {
+    dependencies.push({token, value, flags, injectedIn: getNodeInjectorContext(context.injector)});
+  } else {
+    dependencies.push({token, value, flags});
+  }
+}
+
+/**
+ *
+ * Returns the LView and TNode associated with a NodeInjector. Returns undefined if the injector
+ * is not a NodeInjector.
+ *
+ * @param injector
+ * @returns {lView: LView, tNode: TNode}|undefined
+ */
+function getNodeInjectorContext(injector: Injector): {lView: LView, tNode: TNode}|undefined {
+  if (!(injector instanceof NodeInjector)) {
+    throwError('getNodeInjectorContext must be called with a NodeInjector');
+  }
+
+  const lView = getNodeInjectorLView(injector);
+  const tNode = getNodeInjectorTNode(injector);
+  if (tNode === null) {
+    return;
+  }
+
+  assertTNodeForLView(tNode, lView);
+
+  return {lView, tNode};
 }
 
 /**

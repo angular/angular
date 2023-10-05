@@ -24,11 +24,12 @@ import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
-import {HOST, INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
-import {assertTNodeForLView} from '../assert';
+import {assertTNodeForLView, assertTNode} from '../assert';
 import {RElement} from '../interfaces/renderer_dom';
+import {getNativeByTNode} from './view_utils';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -41,8 +42,8 @@ import {RElement} from '../interfaces/renderer_dom';
  * injector.
  */
 export function getDependenciesFromInjectable<T>(
-    injector: Injector,
-    token: Type<T>|InjectionToken<T>): {instance: T; dependencies: InjectedService[]}|undefined {
+    injector: Injector, token: Type<T>|InjectionToken<T>):
+    {instance: T; dependencies: Omit<InjectedService, 'injectedIn'>[]}|undefined {
   // First we check to see if the token given maps to an actual instance in the injector given.
   // We use `self: true` because we only want to look at the injector we were given.
   // We use `optional: true` because it's possible that the token we were given was never
@@ -52,18 +53,11 @@ export function getDependenciesFromInjectable<T>(
     throw new Error(`Unable to determine instance of ${token} in given injector`);
   }
 
-  let diResolver: Injector|LView = injector;
-  if (injector instanceof NodeInjector) {
-    diResolver = getNodeInjectorLView(injector);
-  }
-
-  const {resolverToTokenToDependencies} = getFrameworkDIDebugData();
-
-  let dependencies =
-      resolverToTokenToDependencies.get(diResolver)?.get?.(token as Type<unknown>) ?? [];
-
+  const unformattedDependencies = getDependenciesForTokenInInjector(token, injector);
   const resolutionPath = getInjectorResolutionPath(injector);
-  dependencies = dependencies.map(dep => {
+
+  const dependencies = unformattedDependencies.map(dep => {
+    // convert injection flags to booleans
     const flags = dep.flags as InternalInjectFlags;
     dep.flags = {
       optional: (InternalInjectFlags.Optional & flags) === InternalInjectFlags.Optional,
@@ -72,6 +66,7 @@ export function getDependenciesFromInjectable<T>(
       skipSelf: (InternalInjectFlags.SkipSelf & flags) === InternalInjectFlags.SkipSelf,
     };
 
+    // find the injector that provided the dependency
     for (let i = 0; i < resolutionPath.length; i++) {
       const injectorToCheck = resolutionPath[i];
 
@@ -115,10 +110,48 @@ export function getDependenciesFromInjectable<T>(
       }
     }
 
-    return dep;
+    // injectedIn contains private fields, so we omit it from the response
+    const formattedDependency: Omit<InjectedService, 'injectedIn'> = {
+      value: dep.value,
+    };
+
+    if (dep.token) formattedDependency.token = dep.token;
+    if (dep.flags) formattedDependency.flags = dep.flags;
+    if (dep.providedIn) formattedDependency.providedIn = dep.providedIn;
+
+    return formattedDependency;
   });
 
   return {instance, dependencies};
+}
+
+function getDependenciesForTokenInInjector<T>(
+    token: Type<T>|InjectionToken<T>, injector: Injector): InjectedService[] {
+  const {resolverToTokenToDependencies} = getFrameworkDIDebugData();
+
+  if (!(injector instanceof NodeInjector)) {
+    return resolverToTokenToDependencies.get(injector)?.get?.(token as Type<T>) ?? [];
+  }
+
+  const lView = getNodeInjectorLView(injector);
+  const tokenDependencyMap = resolverToTokenToDependencies.get(lView);
+  const dependencies = tokenDependencyMap?.get(token as Type<T>) ?? [];
+
+  // In the NodeInjector case, all injections for every node are stored in the same lView.
+  // We use the injectedIn field of the dependency to filter out the dependencies that
+  // do not come from the same node as the instance we're looking at.
+  return dependencies.filter(dependency => {
+    const dependencyNode = dependency.injectedIn?.tNode;
+    if (dependencyNode === undefined) {
+      return false;
+    }
+
+    const instanceNode = getNodeInjectorTNode(injector);
+    assertTNode(dependencyNode);
+    assertTNode(instanceNode!);
+
+    return dependencyNode === instanceNode;
+  });
 }
 
 /**
@@ -413,9 +446,8 @@ export function getInjectorMetadata(injector: Injector):
     const lView = getNodeInjectorLView(injector);
     const tNode = getNodeInjectorTNode(injector)!;
     assertTNodeForLView(tNode, lView);
-    assertDefined(lView[tNode.index][HOST], 'Could not find node in element view.');
 
-    return {type: 'element', source: lView[tNode.index][HOST]};
+    return {type: 'element', source: getNativeByTNode(tNode, lView) as RElement};
   }
 
   if (injector instanceof R3Injector) {
