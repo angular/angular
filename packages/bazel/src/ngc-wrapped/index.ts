@@ -86,6 +86,7 @@ export async function runOneBuild(
     'preserveWhitespaces',
     'createExternalSymbolFactoryReexports',
     'extendedDiagnostics',
+    'forbidOrphanComponents',
   ]);
 
   const userOverrides = Object.entries(userOptions)
