@@ -2502,8 +2502,9 @@ describe('@defer', () => {
          fixture.detectChanges();
          flush();
 
-         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledTimes(2);
          expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
        }));
 
     it('should unbind the trigger events when the trigger is destroyed', fakeAsync(() => {
@@ -2536,8 +2537,9 @@ describe('@defer', () => {
          fixture.componentInstance.renderBlock = false;
          fixture.detectChanges();
 
-         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledTimes(2);
          expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
        }));
 
     it('should unbind the trigger events when the deferred block is destroyed', fakeAsync(() => {
@@ -2571,8 +2573,9 @@ describe('@defer', () => {
          fixture.componentInstance.renderBlock = false;
          fixture.detectChanges();
 
-         expect(spy).toHaveBeenCalledTimes(1);
+         expect(spy).toHaveBeenCalledTimes(2);
          expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+         expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
        }));
 
     it('should bind the trigger events inside the NgZone', fakeAsync(() => {
@@ -2598,7 +2601,10 @@ describe('@defer', () => {
          });
          fixture.detectChanges();
 
-         expect(eventsInZone).toEqual({mouseenter: true});
+         expect(eventsInZone).toEqual({
+           mouseenter: true,
+           focusin: true,
+         });
        }));
 
     it('should prefetch resources on hover', fakeAsync(() => {
