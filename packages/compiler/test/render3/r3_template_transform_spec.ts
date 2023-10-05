@@ -170,6 +170,10 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitUnknownBlock(block: t.UnknownBlock): void {
+    this.result.push(['UnknownBlock', block.name]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
@@ -1100,7 +1104,7 @@ describe('R3 template transform', () => {
 
       it('should report unclosed parenthesis in `on` trigger', () => {
         expect(() => parse('@defer (on viewport(button) {hello}'))
-            .toThrowError(/Unexpected character "EOF"/);
+            .toThrowError(/Incomplete block "defer"/);
       });
 
       it('should report incorrect closing parenthesis in `on` trigger', () => {
@@ -1109,7 +1113,7 @@ describe('R3 template transform', () => {
       });
 
       it('should report stray closing parenthesis in `on` trigger', () => {
-        expect(() => parse('@defer (on idle)) {hello}')).toThrowError(/Unexpected character "\)"/);
+        expect(() => parse('@defer (on idle)) {hello}')).toThrowError(/Unexpected character "EOF"/);
       });
 
       it('should report non-identifier token usage in `on` trigger', () => {
@@ -1565,7 +1569,7 @@ describe('R3 template transform', () => {
         expect(() => parse(`@for ((a of b(); track c) {hello}`))
             .toThrowError(/Unexpected end of expression: b\(/);
         expect(() => parse(`@for (a of b); track c) {hello}`))
-            .toThrowError(/Unexpected character ";"/);
+            .toThrowError(/Unexpected character "EOF"/);
       });
 
       it('should report unrecognized for loop parameters', () => {
@@ -1847,6 +1851,14 @@ describe('R3 template transform', () => {
           @if (foo) {hello} @else {goodbye} @else (if bar) {goodbye again}
         `)).toThrowError(/@else block must be last inside the conditional/);
       });
+    });
+  });
+
+  describe('unknown blocks', () => {
+    it('should parse unknown blocks', () => {
+      expectFromHtml('@unknown {}', true /* ignoreError */).toEqual([
+        ['UnknownBlock', 'unknown'],
+      ]);
     });
   });
 });

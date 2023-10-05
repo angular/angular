@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -207,6 +207,7 @@ class Scope implements Visitor {
   visitTextAttribute(attr: TextAttribute) {}
   visitIcu(icu: Icu) {}
   visitDeferredTrigger(trigger: DeferredTrigger) {}
+  visitUnknownBlock(block: UnknownBlock) {}
 
   private maybeDeclare(thing: Reference|Variable) {
     // Declare something with a name, as long as that name isn't taken.
@@ -447,6 +448,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   visitBoundText(text: BoundText): void {}
   visitIcu(icu: Icu): void {}
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
+  visitUnknownBlock(block: UnknownBlock) {}
 }
 
 /**
@@ -590,6 +592,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitText(text: Text) {}
   visitContent(content: Content) {}
   visitTextAttribute(attribute: TextAttribute) {}
+  visitUnknownBlock(block: UnknownBlock) {}
   visitIcu(icu: Icu): void {
     Object.keys(icu.vars).forEach(key => icu.vars[key].visit(this));
     Object.keys(icu.placeholders).forEach(key => icu.placeholders[key].visit(this));

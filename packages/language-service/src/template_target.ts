@@ -528,6 +528,8 @@ class TemplateTargetVisitor implements t.Visitor {
     this.visitAll(block.children);
   }
 
+  visitUnknownBlock(block: t.UnknownBlock) {}
+
   visitAll(nodes: t.Node[]) {
     for (const node of nodes) {
       this.visit(node);
