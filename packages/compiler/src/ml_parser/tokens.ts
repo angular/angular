@@ -37,16 +37,17 @@ export const enum TokenType {
   BLOCK_OPEN_END,
   BLOCK_CLOSE,
   BLOCK_PARAMETER,
+  INCOMPLETE_BLOCK_OPEN,
   EOF,
 }
 
-export type Token =
-    TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|IncompleteTagOpenToken|
-    TextToken|InterpolationToken|EncodedEntityToken|CommentStartToken|CommentEndToken|
-    CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|AttributeValueTextToken|
-    AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|ExpansionCaseValueToken|
-    ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|ExpansionFormEndToken|
-    EndOfFileToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken|BlockCloseToken;
+export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|
+    IncompleteTagOpenToken|TextToken|InterpolationToken|EncodedEntityToken|CommentStartToken|
+    CommentEndToken|CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|
+    AttributeValueTextToken|AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|
+    ExpansionCaseValueToken|ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|
+    ExpansionFormEndToken|EndOfFileToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken|
+    BlockCloseToken|IncompleteBlockOpenToken;
 
 export type InterpolatedTextToken = TextToken|InterpolationToken|EncodedEntityToken;
 
@@ -194,4 +195,9 @@ export interface BlockOpenEndToken extends TokenBase {
 export interface BlockCloseToken extends TokenBase {
   type: TokenType.BLOCK_CLOSE;
   parts: [];
+}
+
+export interface IncompleteBlockOpenToken extends TokenBase {
+  type: TokenType.INCOMPLETE_BLOCK_OPEN;
+  parts: [name: string];
 }

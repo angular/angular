@@ -1955,21 +1955,20 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             ]);
       });
 
-      it('should unclosed parameters', () => {
-        expect(tokenizeAndHumanizeErrors(`@foo (a === b {hello}`)).toEqual([
-          [null, 'Unexpected character "EOF"', '0:21']
+      it('should parse block with unclosed parameters', () => {
+        expect(tokenizeAndHumanizeParts(`@foo (a === b {hello}`)).toEqual([
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo'],
+          [TokenType.BLOCK_PARAMETER, 'a === b {hello}'],
+          [TokenType.EOF],
         ]);
       });
 
-      it('should report stray parentheses in the parameter position', () => {
-        expect(tokenizeAndHumanizeErrors(`@foo a === b) {hello}`)).toEqual([
-          [TokenType.BLOCK_OPEN_END, 'Unexpected character "="', '0:7']
-        ]);
-      });
-
-      it('should report missing block opening brace', () => {
-        expect(tokenizeAndHumanizeErrors(`@foo (a === b) hello}`)).toEqual([
-          [TokenType.BLOCK_OPEN_END, 'Unexpected character "h"', '0:15']
+      it('should parse block with stray parentheses in the parameter position', () => {
+        expect(tokenizeAndHumanizeParts(`@foo a === b) {hello}`)).toEqual([
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo a'],
+          [TokenType.TEXT, '=== b) {hello'],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.EOF],
         ]);
       });
 
@@ -1984,14 +1983,12 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should report unclosed object literal inside a parameter', () => {
-        expect(tokenizeAndHumanizeErrors(`@foo ({invalid: true) hello}`)).toEqual([
-          [TokenType.BLOCK_OPEN_END, 'Unexpected character "h"', '0:22'],
-        ]);
-      });
-
-      it('should block parameters without parentheses', () => {
-        expect(tokenizeAndHumanizeErrors(`@foo a === b {hello}`)).toEqual([
-          [TokenType.BLOCK_OPEN_END, 'Unexpected character "="', '0:7']
+        expect(tokenizeAndHumanizeParts(`@foo ({invalid: true) hello}`)).toEqual([
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo'],
+          [TokenType.BLOCK_PARAMETER, '{invalid: true'],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.EOF],
         ]);
       });
 
@@ -2142,6 +2139,42 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [TokenType.INTERPOLATION, '{{', 'message', '}}'],
           [TokenType.TEXT, ''],
           [TokenType.BLOCK_CLOSE],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an incomplete block start without parameters with surrounding text', () => {
+        expect(tokenizeAndHumanizeParts('My email frodo@baggins.com')).toEqual([
+          [TokenType.TEXT, 'My email frodo'],
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'baggins'],
+          [TokenType.TEXT, '.com'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an incomplete block start at the end of the input', () => {
+        expect(tokenizeAndHumanizeParts('My username is @frodo')).toEqual([
+          [TokenType.TEXT, 'My username is '],
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'frodo'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an incomplete block start with parentheses but without params', () => {
+        expect(tokenizeAndHumanizeParts('Use the @Input() decorator')).toEqual([
+          [TokenType.TEXT, 'Use the '],
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'Input'],
+          [TokenType.TEXT, 'decorator'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an incomplete block start with parentheses and params', () => {
+        expect(tokenizeAndHumanizeParts('Use @Input({alias: "foo"}) to alias the input')).toEqual([
+          [TokenType.TEXT, 'Use '],
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'Input'],
+          [TokenType.BLOCK_PARAMETER, '{alias: "foo"}'],
+          [TokenType.TEXT, 'to alias the input'],
           [TokenType.EOF],
         ]);
       });
