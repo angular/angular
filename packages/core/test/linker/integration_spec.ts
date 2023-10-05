@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Attribute, Compiler, Component, ComponentFactory, ComponentRef, ContentChildren, createComponent, Directive, EnvironmentInjector, EventEmitter, Host, HostBinding, HostListener, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, Output, Pipe, reflectComponentType, SkipSelf, ViewChild, ViewRef} from '@angular/core';
+import {Attribute, Compiler, Component, ComponentFactory, ComponentRef, ContentChildren, createComponent, Directive, EnvironmentInjector, EventEmitter, Host, HostBinding, HostListener, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, Output, Pipe, reflectComponentType, SkipSelf, ViewChild, ViewRef, ɵsetClassDebugInfo} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -1950,6 +1950,41 @@ describe('integration tests', function() {
 
          expect(f.nativeElement.childNodes.length).toBe(2);
        }));
+  });
+
+  describe('orphan components', () => {
+    it('should display correct error message for orphan component if forbidOrphanRendering option is set',
+       () => {
+         @Component({template: '...'})
+         class MainComp {
+         }
+         ɵsetClassDebugInfo(MainComp, {
+           className: 'MainComp',
+           filePath: 'test.ts',
+           lineNumber: 11,
+           forbidOrphanRendering: true,
+         });
+
+         TestBed.configureTestingModule({declarations: [MainComp]});
+         expect(() => TestBed.createComponent(MainComp))
+             .toThrowError(
+                 /^NG01001: Orphan component found\! Trying to render the component MainComp \(at test\.ts:11\) without first loading the NgModule that declares it/);
+       });
+
+    it('should not throw error for orphan component if forbidOrphanRendering option is not set',
+       () => {
+         @Component({template: '...'})
+         class MainComp {
+         }
+         ɵsetClassDebugInfo(MainComp, {
+           className: 'MainComp',
+           filePath: 'test.ts',
+           lineNumber: 11,
+         });
+
+         TestBed.configureTestingModule({declarations: [MainComp]});
+         expect(() => TestBed.createComponent(MainComp)).not.toThrow();
+       });
   });
 
   if (getDOM().supportsDOMEvents) {
