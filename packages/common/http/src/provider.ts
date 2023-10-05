@@ -57,6 +57,19 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * feature functions to `provideHttpClient`. For example, HTTP interceptors can be added using the
  * `withInterceptors(...)` feature.
  *
+ * <div class="alert is-helpful">
+ *
+ * It's strongly recommended to enable
+ * [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for applications that use
+ * Server-Side Rendering for better performance and compatibility. To enable `fetch`, add
+ * `withFetch()` feature to the `provideHttpClient()` call at the root of the application:
+ *
+ * ```
+ * provideHttpClient(withFetch());
+ * ```
+ *
+ * </div>
+ *
  * @see {@link withInterceptors}
  * @see {@link withInterceptorsFromDi}
  * @see {@link withXsrfConfiguration}
