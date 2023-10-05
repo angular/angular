@@ -24,6 +24,9 @@ const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 /** Names of the events considered as interaction events. */
 const interactionEventNames = ['click', 'keydown'] as const;
 
+/** Names of the events considered as hover events. */
+const hoverEventNames = ['mouseenter', 'focusin'];
+
 /** Object keeping track of registered callbacks for a deferred block trigger. */
 class DeferEventEntry {
   callbacks = new Set<() => void>();
@@ -103,7 +106,9 @@ export function onHover(
     // Ensure that the handler runs in the NgZone since it gets
     // registered in `afterRender` which runs outside.
     injector.get(NgZone).run(() => {
-      trigger.addEventListener('mouseenter', entry!.listener, eventListenerOptions);
+      for (const name of hoverEventNames) {
+        trigger.addEventListener(name, entry!.listener, eventListenerOptions);
+      }
     });
   }
 
@@ -114,7 +119,9 @@ export function onHover(
     callbacks.delete(callback);
 
     if (callbacks.size === 0) {
-      trigger.removeEventListener('mouseenter', listener, eventListenerOptions);
+      for (const name of hoverEventNames) {
+        trigger.removeEventListener(name, listener, eventListenerOptions);
+      }
       hoverTriggers.delete(trigger);
     }
   };
