@@ -902,6 +902,9 @@ describe('@defer', () => {
       await allPendingDynamicImports();
       fixture.detectChanges();
 
+      // Await all async work to be completed.
+      await fixture.whenStable();
+
       // Expect both <cmp-a> components to be rendered.
       expect(fixture.nativeElement.innerHTML.replaceAll('<!--container-->', ''))
           .toBe('<cmp-a>CmpA</cmp-a><cmp-a>CmpA</cmp-a>');
