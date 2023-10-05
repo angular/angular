@@ -309,6 +309,14 @@ export class IfBlockBranch implements Node {
   }
 }
 
+export class UnknownBlock implements Node {
+  constructor(public name: string, public sourceSpan: ParseSourceSpan) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitUnknownBlock(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
       // tagName is the name of the container element, if applicable.
@@ -399,6 +407,7 @@ export interface Visitor<Result = any> {
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
   visitIfBlock(block: IfBlock): Result;
   visitIfBlockBranch(block: IfBlockBranch): Result;
+  visitUnknownBlock(block: UnknownBlock): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -461,6 +470,7 @@ export class RecursiveVisitor implements Visitor<void> {
   visitBoundText(text: BoundText): void {}
   visitIcu(icu: Icu): void {}
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
+  visitUnknownBlock(block: UnknownBlock): void {}
 }
 
 

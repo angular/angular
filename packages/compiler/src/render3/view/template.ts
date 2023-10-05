@@ -1054,6 +1054,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitIfBlockBranch = invalid;
   readonly visitSwitchBlockCase = invalid;
   readonly visitForLoopBlockEmpty = invalid;
+  readonly visitUnknownBlock = invalid;
 
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {

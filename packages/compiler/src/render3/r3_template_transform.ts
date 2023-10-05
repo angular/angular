@@ -382,7 +382,10 @@ class HtmlAstToIvyAst implements html.Visitor {
           errorMessage = `Unrecognized block @${block.name}.`;
         }
 
-        result = {node: null, errors: [new ParseError(block.sourceSpan, errorMessage)]};
+        result = {
+          node: new t.UnknownBlock(block.name, block.sourceSpan),
+          errors: [new ParseError(block.sourceSpan, errorMessage)],
+        };
         break;
     }
 

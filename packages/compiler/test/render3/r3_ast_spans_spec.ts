@@ -204,6 +204,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitUnknownBlock(block: t.UnknownBlock): void {
+    this.result.push(['UnknownBlock', humanizeSpan(block.sourceSpan)]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
