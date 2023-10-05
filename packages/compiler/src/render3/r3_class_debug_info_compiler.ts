@@ -41,6 +41,12 @@ export interface R3ClassDebugInfo {
    * A number literal number containing the line number in which this class is defined.
    */
   lineNumber: o.Expression;
+
+  /**
+   * Whether to check if this component is being rendered without its NgModule being loaded into the
+   * browser. Such checks is carried out only in dev mode.
+   */
+  forbidOrphanRendering: boolean;
 }
 
 /**
@@ -48,15 +54,24 @@ export interface R3ClassDebugInfo {
  * (e.g., the file name in which the class is defined)
  */
 export function compileClassDebugInfo(debugInfo: R3ClassDebugInfo): o.Expression {
-  const debugInfoObject:
-      {className: o.Expression; filePath?: o.Expression; lineNumber?: o.Expression;} = {
-        className: debugInfo.className,
-      };
+  const debugInfoObject: {
+    className: o.Expression;
+    filePath?: o.Expression;
+    lineNumber?: o.Expression;
+    forbidOrphanRendering?: o.Expression;
+  } = {
+    className: debugInfo.className,
+  };
 
   // Include file path and line number only if the file relative path is calculated successfully.
   if (debugInfo.filePath) {
     debugInfoObject.filePath = debugInfo.filePath;
     debugInfoObject.lineNumber = debugInfo.lineNumber;
+  }
+
+  // Include forbidOrphanRendering only if it's set to true (to reduce generated code)
+  if (debugInfo.forbidOrphanRendering) {
+    debugInfoObject.forbidOrphanRendering = o.literal(true);
   }
 
   const fnCall = o.importExpr(R3.setClassDebugInfo).callFn([

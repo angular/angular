@@ -82,7 +82,8 @@ export class ComponentDecoratorHandler implements
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
       private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
-      private readonly deferredSymbolTracker: DeferredSymbolTracker) {
+      private readonly deferredSymbolTracker: DeferredSymbolTracker,
+      private readonly forbidOrphanRendering: boolean) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -481,7 +482,9 @@ export class ComponentDecoratorHandler implements
                 node, this.reflector, this.isCore, this.annotateForClosureCompiler,
                 dec => transformDecoratorResources(dec, component, styles, template)) :
             null,
-        classDebugInfo: extractClassDebugInfo(node, this.reflector, this.rootDirs),
+        classDebugInfo: extractClassDebugInfo(
+            node, this.reflector, this.rootDirs,
+            /* forbidOrphanRenderering */ this.forbidOrphanRendering),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,

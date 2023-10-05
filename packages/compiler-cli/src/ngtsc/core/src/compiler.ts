@@ -1105,7 +1105,8 @@ export class NgCompiler {
           this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
-          supportTestBed, compilationMode, deferredSymbolsTracker),
+          supportTestBed, compilationMode, deferredSymbolsTracker,
+          !!this.options.forbidOrphanComponents),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
