@@ -8,7 +8,7 @@
 
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ViewEncapsulation} from '@angular/core';
-import {Descriptor, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
+import {Descriptor, DirectiveMetadata, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
 
 import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
@@ -65,6 +65,10 @@ export class DirectivePropertyResolver {
 
   get directiveStateControls(): DirectiveTreeData {
     return getDirectiveControls(this._stateDataSource);
+  }
+
+  get directiveMetadata(): DirectiveMetadata|undefined {
+    return this._props.metadata;
   }
 
   get directiveProperties(): {[name: string]: Descriptor} {

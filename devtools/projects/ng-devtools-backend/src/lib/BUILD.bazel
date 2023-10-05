@@ -125,6 +125,7 @@ ts_library(
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
+        "//packages/core",
     ],
 )
 
