@@ -96,83 +96,161 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent).toBe('Empty');
   });
 
-  it('should have access to the host context in the track function', () => {
-    let offsetReads = 0;
+  describe('trackBy', () => {
+    it('should have access to the host context in the track function', () => {
+      let offsetReads = 0;
 
-    @Component({template: '@for ((item of items); track $index + offset) {{{item}}}'})
-    class TestComponent {
-      items = ['a', 'b', 'c'];
+      @Component({template: '@for ((item of items); track $index + offset) {{{item}}}'})
+      class TestComponent {
+        items = ['a', 'b', 'c'];
 
-      get offset() {
-        offsetReads++;
-        return 0;
+        get offset() {
+          offsetReads++;
+          return 0;
+        }
       }
-    }
 
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('abc');
-    expect(offsetReads).toBeGreaterThan(0);
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('abc');
+      expect(offsetReads).toBeGreaterThan(0);
 
-    const prevReads = offsetReads;
-    // explicitly modify the DOM text node to make sure that the list reconciliation algorithm
-    // based on tracking indices overrides it.
-    fixture.debugElement.childNodes[1].nativeNode.data = 'x';
-    fixture.componentInstance.items.shift();
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('bc');
-    expect(offsetReads).toBeGreaterThan(prevReads);
+      const prevReads = offsetReads;
+      // explicitly modify the DOM text node to make sure that the list reconciliation algorithm
+      // based on tracking indices overrides it.
+      fixture.debugElement.childNodes[1].nativeNode.data = 'x';
+      fixture.componentInstance.items.shift();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('bc');
+      expect(offsetReads).toBeGreaterThan(prevReads);
+    });
+
+    it('should be able to access component properties in the tracking function from a loop at the root of the template',
+       () => {
+         const calls = new Set();
+
+         @Component({
+           template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
+         })
+         class TestComponent {
+           items = ['a', 'b'];
+           compProp = 'hello';
+
+           trackingFn(item: string, message: string) {
+             calls.add(`${item}:${message}`);
+             return item;
+           }
+         }
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
+       });
+
+    it('should be able to access component properties in the tracking function from a nested template',
+       () => {
+         const calls = new Set();
+
+         @Component({
+           template: `
+                    @if (true) {
+                      @if (true) {
+                        @if (true) {
+                          @for ((item of items); track trackingFn(item, compProp)) {{{item}}}
+                        }
+                      }
+                    }
+                   `,
+         })
+         class TestComponent {
+           items = ['a', 'b'];
+           compProp = 'hello';
+
+           trackingFn(item: string, message: string) {
+             calls.add(`${item}:${message}`);
+             return item;
+           }
+         }
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
+       });
   });
 
-  it('should be able to access component properties in the tracking function from a loop at the root of the template',
-     () => {
-       const calls = new Set();
+  describe('list diffing and view operations', () => {
+    it('should delete views in the middle', () => {
+      @Component({
+        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
 
-       @Component({
-         template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
-       })
-       class TestComponent {
-         items = ['a', 'b'];
-         compProp = 'hello';
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
-         trackingFn(item: string, message: string) {
-           calls.add(`${item}:${message}`);
-           return item;
-         }
-       }
+      // delete in the middle
+      fixture.componentInstance.items.splice(1, 1);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1(0)|3(1)|');
+    });
 
-       const fixture = TestBed.createComponent(TestComponent);
-       fixture.detectChanges();
-       expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
-     });
+    it('should insert views in the middle', () => {
+      @Component({
+        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+      })
+      class TestComponent {
+        items = [1, 3];
+      }
 
-  it('should be able to access component properties in the tracking function from a nested template',
-     () => {
-       const calls = new Set();
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1(0)|3(1)|');
 
-       @Component({
-         template: `
-            @if (true) {
-              @if (true) {
-                @if (true) {
-                  @for ((item of items); track trackingFn(item, compProp)) {{{item}}}
-                }
-              }
-            }
-           `,
-       })
-       class TestComponent {
-         items = ['a', 'b'];
-         compProp = 'hello';
 
-         trackingFn(item: string, message: string) {
-           calls.add(`${item}:${message}`);
-           return item;
-         }
-       }
+      // add in the middle
+      fixture.componentInstance.items.splice(1, 0, 2);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
+    });
 
-       const fixture = TestBed.createComponent(TestComponent);
-       fixture.detectChanges();
-       expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
-     });
+    it('should replace different items', () => {
+      @Component({
+        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
+
+
+      // an item in the middle stays the same, the rest gets replaced
+      fixture.componentInstance.items = [5, 2, 7];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('5(0)|2(1)|7(2)|');
+    });
+
+    it('should move and delete items', () => {
+      @Component({
+        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+      })
+      class TestComponent {
+        items = [1, 2, 3, 4, 5, 6];
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|4(3)|5(4)|6(5)|');
+
+      // move 5 and do some other delete other operations
+      fixture.componentInstance.items = [5, 3, 7];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('5(0)|3(1)|7(2)|');
+    });
+  });
 });
