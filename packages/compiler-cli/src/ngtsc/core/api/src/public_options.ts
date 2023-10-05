@@ -411,4 +411,13 @@ export interface MiscOptions {
    * Disable TypeScript Version Check.
    */
   disableTypeScriptVersionCheck?: boolean;
+
+  /**
+   * Enables the runtime check to guard against rendering a component without first loading its
+   * NgModule.
+   *
+   * This check is only applied to the current compilation unit, i.e., a component imported from
+   * another library without option set will not issue error if rendered in orphan way.
+   */
+  forbidOrphanComponents?: boolean;
 }
