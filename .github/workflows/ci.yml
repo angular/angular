@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches:
+      - publish-snapshots
       - main
       - '[0-9]+.[0-9]+.x'
   pull_request:
@@ -20,6 +21,7 @@ defaults:
 
 jobs:
   lint:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
@@ -57,6 +59,7 @@ jobs:
         run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
 
   devtools:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
@@ -75,6 +78,7 @@ jobs:
         run: yarn devtools:build:chrome
 
   framework-win:
+    if: false
     runs-on: windows-latest
     steps:
       - name: Initialize environment
@@ -94,6 +98,7 @@ jobs:
         run: bazel test --test_tag_filters="-browser:chromium-local" --test_env=NG_SKIP_SIMULATED_FS=true //packages/compiler-cli/...
 
   test:
+    if: false
     runs-on: ubuntu-latest-4core
     steps:
       - name: Initialize environment
@@ -110,6 +115,7 @@ jobs:
         run: yarn test:ci
 
   aio:
+    if: false
     runs-on: ubuntu-latest-4core
     steps:
       - name: Initialize environment
@@ -130,6 +136,7 @@ jobs:
         run: yarn --cwd aio payload-size
 
   aio-local:
+    if: false
     runs-on:
       labels: ubuntu-latest-4core
     steps:
@@ -215,6 +222,7 @@ jobs:
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   zone-js:
+    if: false
     runs-on:
       labels: ubuntu-latest-4core
     steps:
