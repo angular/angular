@@ -1280,6 +1280,47 @@ describe('runtime dependency tracker', () => {
       });
     });
   });
+
+  describe('isOrphanComponent method', () => {
+    it('should return true for non-standalone component without NgModule', () => {
+      @Component({})
+      class MainComponent {
+      }
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeTrue();
+    });
+
+    it('should return false for standalone component', () => {
+      @Component({
+        standalone: true,
+      })
+      class MainComponent {
+      }
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();
+    });
+
+    it('should return false for non-standalone component with its NgModule', () => {
+      @Component({})
+      class MainComponent {
+      }
+
+      @NgModule({
+        declarations: [MainComponent],
+      })
+      class MainModule {
+      }
+      depsTracker.registerNgModule(MainModule as NgModuleType, {});
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();
+    });
+
+    it('should return false for class which is not a component', () => {
+      class RandomClass {}
+
+      expect(depsTracker.isOrphanComponent(RandomClass as ComponentType<any>)).toBeFalse();
+    });
+  });
 });
 
 function createNgModuleDef(data: Partial<NgModuleDef<any>>): NgModuleDef<any> {
