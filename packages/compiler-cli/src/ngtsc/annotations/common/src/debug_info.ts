@@ -12,8 +12,8 @@ import * as path from 'path';
 import {DeclarationNode, ReflectionHost} from '../../../reflection';
 
 export function extractClassDebugInfo(
-    clazz: DeclarationNode, reflection: ReflectionHost,
-    rootDirs: ReadonlyArray<string>): R3ClassDebugInfo|null {
+    clazz: DeclarationNode, reflection: ReflectionHost, rootDirs: ReadonlyArray<string>,
+    forbidOrphanRendering: boolean): R3ClassDebugInfo|null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
@@ -26,6 +26,7 @@ export function extractClassDebugInfo(
     className: literal(clazz.name.getText()),
     filePath: srcFileMaybeRelativePath ? literal(srcFileMaybeRelativePath) : null,
     lineNumber: literal(srcFile.getLineAndCharacterOfPosition(clazz.name.pos).line + 1),
+    forbidOrphanRendering,
   };
 }
 

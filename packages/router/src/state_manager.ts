@@ -106,8 +106,8 @@ export class StateManager {
     };
   }
 
-  nonRouterCurrentEntryChange(
-      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike {
+  nonRouterCurrentEntryChange(listener: (url: string, state: RestoredState|null|undefined) => void):
+      SubscriptionLike {
     return this.location.subscribe(event => {
       if (event['type'] === 'popstate') {
         listener(event['url']!, event.state as RestoredState | null | undefined);
