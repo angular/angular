@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer} from '@angular/animations/browser';
+import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
 import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
 /**
@@ -104,13 +104,25 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
  * by changing the delegate renderer.
  */
 export class DynamicDelegationRenderer implements Renderer2 {
+  // List of animation events registered by the default renderer
+  private animationEvents:|
+      Array<{target: any; eventName: string; callback: (event: any) => boolean | void}>|null = [];
+
   constructor(private delegate: Renderer2) {}
 
-  use(impl: Renderer2) {
+  use(impl: BaseAnimationRenderer) {
     this.delegate = impl;
+
+    if (this.animationEvents) {
+      // Register the event against the animation renderer
+      for (const {target, eventName, callback} of this.animationEvents) {
+        this.delegate.listen(target, eventName, callback);
+      }
+      this.animationEvents = null;
+    }
   }
 
-  get data(): {[key: string]: any;} {
+  get data(): {[key: string]: any} {
     return this.delegate.data;
   }
 
@@ -191,6 +203,11 @@ export class DynamicDelegationRenderer implements Renderer2 {
   }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+    // We need to keep track of animation events registred by the default renderer
+    // So we can also register them against the animation renderer
+    if (this.animationEvents !== null && eventName.startsWith('@')) {
+      this.animationEvents.push({target, eventName, callback});
+    }
     return this.delegate.listen(target, eventName, callback);
   }
 }

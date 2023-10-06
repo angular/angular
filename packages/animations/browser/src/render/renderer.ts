@@ -66,7 +66,7 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onInsert(this.namespaceId, newChild, parent, isMove);
   }
 
-  removeChild(parent: any, oldChild: any, isHostElement: boolean): void {
+  removeChild(parent: any, oldChild: any): void {
     this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
   }
 
