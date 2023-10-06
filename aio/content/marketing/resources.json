@@ -665,9 +665,9 @@
             "logo": ""
           },
           "butter-cms": {
-            "title":"How to integrate ButterCMS into Angular 2+ App",
+            "title": "How to integrate ButterCMS into Angular 2+ App",
             "desc": "Integrate a Headless CMS into your Angular App, create blog posts and pages",
-            "url":"https://medium.com/orlyknop/how-to-integrate-buttercms-into-angular-2-app-a1baaa51402",
+            "url": "https://medium.com/orlyknop/how-to-integrate-buttercms-into-angular-2-app-a1baaa51402",
             "logo": ""
           },
           "angular-projects": {
@@ -822,6 +822,11 @@
             "desc": "Want to learn #Angular, but not sure where to start? Check out this in-depth “Angular for Beginners Course“ created by Angular #GDE @SantoshYadavDev.",
             "title": "Angular for Beginners Course",
             "url": "https://youtu.be/3qBXWUpoPHo"
+          },
+          "angular-challenges": {
+            "desc": "Learn angular its ecosystem and open-source by practising on real-life examples.",
+            "title": "Angular Challenges",
+            "url": "https://angular-challenges.vercel.app/"
           }
         }
       },

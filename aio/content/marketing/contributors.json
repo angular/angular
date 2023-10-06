@@ -995,6 +995,14 @@
     "bio": "Owner and trainer at Ultimate Angular. Lives in England, UK. Has a love for teaching, OSS and speaking at conferences. Google Developer Expert for Web Technologies and Angular.",
     "groups": ["GDE"]
   },
+  "thomaslaforge": {
+    "name": "Thomas Laforge",
+    "picture": "thomaslaforge.png",
+    "twitter": "laforge_toma",
+    "website": "https://thomaslaforge.dev/home",
+    "bio": "Thomas is a contractor with a strong passion for frontend development, specifically focusing on Angular. He is the creator and maintainer of Angular Challenges, a platform that gathers multiple challenges to help you improve your skills in Angular.",
+    "groups": ["GDE"]
+  },
   "tomastrajan": {
     "name": "Tomas Trajan",
     "picture": "tomastrajan.jpg",
