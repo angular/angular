@@ -1422,6 +1422,9 @@
     "name": "init_iframe_attrs_validation"
   },
   {
+    "name": "init_image_performance_warning"
+  },
+  {
     "name": "init_inert_body"
   },
   {
