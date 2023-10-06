@@ -80,7 +80,7 @@ describe('@angular/common ng_package', () => {
         typings: `./index.d.ts`,
         exports: matchesObjectWithOrder({
           './locales/global/*': {default: './locales/global/*.js'},
-          './locales/*': {default: './locales/*.mjs'},
+          './locales/*': {types: './locales/*.d.ts', default: './locales/*.mjs'},
           './package.json': {default: './package.json'},
           '.': {
             types: './index.d.ts',
