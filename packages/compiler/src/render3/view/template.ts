@@ -34,7 +34,6 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3DeferBlockMetadata} from './api';
-import {BLOCK_SYNTAX_ENABLED_DEFAULT} from './block_syntax_switch';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -2696,7 +2695,7 @@ export function parseTemplate(
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
     ...options,
     tokenizeExpansionForms: true,
-    tokenizeBlocks: options.enableBlockSyntax ?? BLOCK_SYNTAX_ENABLED_DEFAULT,
+    tokenizeBlocks: options.enableBlockSyntax ?? true,
   });
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
