@@ -66,5 +66,13 @@
       "main": 91485,
       "polyfills": 33802
     }
+  },
+  "defer": {
+    "uncompressed": {
+      "runtime": 2689,
+      "main": 124117,
+      "polyfills": 33807,
+      "src_app_defer_component_ts": 450
+    }
   }
 }
