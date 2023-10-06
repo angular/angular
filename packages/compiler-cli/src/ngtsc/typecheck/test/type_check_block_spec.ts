@@ -1418,6 +1418,30 @@ describe('type check blocks', () => {
               'else { "" + ((this).other()); }');
     });
 
+    it('should generate a guard expression for listener inside conditional', () => {
+      const TEMPLATE = `
+        @if (expr === 0) {
+          <button (click)="zero()"></button>
+        } @else if (expr === 1) {
+          <button (click)="one()"></button>
+        } @else if (expr === 2) {
+          <button (click)="two()"></button>
+        } @else {
+          <button (click)="otherwise()"></button>
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if ((((this).expr)) === (0)) (this).zero();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`);
+    });
+
     it('should generate an if block with an `as` expression', () => {
       const TEMPLATE = `@if (expr === 1; as alias) {
         {{alias}}
