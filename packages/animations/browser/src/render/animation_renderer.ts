@@ -38,7 +38,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     };
   }
 
-  createRenderer(hostElement: any, type: RendererType2): Renderer2 {
+  createRenderer(hostElement: any, type: RendererType2): BaseAnimationRenderer {
     const EMPTY_NAMESPACE_ID = '';
 
     // cache the delegates to find out which cached delegate can
