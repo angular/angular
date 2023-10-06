@@ -54,9 +54,6 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/router",
     npm_package = "angular/packages/router/npm_package",
-    types = [
-        "@npm//@types/dom-view-transitions",
-    ],
 )
 
 api_golden_test(

@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="@types/dom-view-transitions" />
-
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { Compiler } from '@angular/core';
@@ -1091,7 +1089,12 @@ export const VERSION: Version;
 export interface ViewTransitionInfo {
     from: ActivatedRouteSnapshot;
     to: ActivatedRouteSnapshot;
-    transition: ViewTransition;
+    transition: {
+        finished: Promise<void>;
+        ready: Promise<void>;
+        updateCallbackDone: Promise<void>;
+        skipTransition(): void;
+    };
 }
 
 // @public
