@@ -16,6 +16,7 @@
       "default": "./locales/global/*.js"
     },
     "./locales/*": {
+      "types": "./locales/*.d.ts",
       "default": "./locales/*.mjs"
     }
   },
