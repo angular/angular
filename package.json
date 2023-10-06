@@ -86,6 +86,7 @@
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
     "@types/dom-view-transitions": "^1.0.1",
+    "@types/dom-navigation": "^1.0.1",
     "@types/hammerjs": "2.0.41",
     "@types/jasmine": "^4.0.0",
     "@types/jasmine-ajax": "^3.3.1",

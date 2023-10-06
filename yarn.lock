@@ -3318,6 +3318,11 @@
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-5.0.4.tgz#ba774c225ee68ce13a090fec16cf34b97a78537b"
   integrity sha512-d7489/WO4B65k0SIqxXtviR9+MrPDipWQF6w+5D7YPrqgu6Qb87JsTdWQaNZo7itcdbViQSev3Jaz7dtKO0+Dg==
 
+"@types/dom-navigation@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/dom-navigation/-/dom-navigation-1.0.1.tgz#792c538e9f9fe08e15d64e612757ada469de9180"
+  integrity sha512-csUoKffCd5o2OQ3r3z/1s3ewKOtF/ObneFIShJzsK6pAZ/cTYlmRSoTYH+kJuz9Hx3PqbLlEIuGjgTmQOCz1Gg==
+
 "@types/dom-view-transitions@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/dom-view-transitions/-/dom-view-transitions-1.0.1.tgz#55333c2862c349153b9007ca01011d9379c12c6c"

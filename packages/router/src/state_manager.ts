@@ -77,6 +77,14 @@ export class StateManager {
    */
   private currentPageId: number = 0;
   lastSuccessfulId: number = -1;
+  /**
+   * Used to skip popstate/hashchange events from the location subscription when they come
+   * synchronously after we update the browser url during the navigation. _Usually_ these don't
+   * happen because `history.pushState/replaceState` don't emit these events by default. However, if
+   * the browser navigation event is intercepted (https://github.com/WICG/navigation-api), this
+   * _will_ produce a `popstate` event that we need to ignore.
+   */
+  private ignoreLocationChangeEvents = false;
 
   /** Returns the current state from the browser. */
   restoredState(): RestoredState|null|undefined {
@@ -106,9 +114,12 @@ export class StateManager {
     };
   }
 
-  nonRouterCurrentEntryChange(
-      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike {
+  nonRouterCurrentEntryChange(listener: (url: string, state: RestoredState|null|undefined) => void):
+      SubscriptionLike {
     return this.location.subscribe(event => {
+      if (this.ignoreLocationChangeEvents) {
+        return;
+      }
       if (event['type'] === 'popstate') {
         listener(event['url']!, event.state as RestoredState | null | undefined);
       }
@@ -152,6 +163,7 @@ export class StateManager {
   }
 
   private setBrowserUrl(url: UrlTree, transition: Navigation) {
+    this.ignoreLocationChangeEvents = true;
     const path = this.urlSerializer.serialize(url);
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
       // replacements do not update the target page
@@ -168,6 +180,7 @@ export class StateManager {
       };
       this.location.go(path, '', state);
     }
+    this.ignoreLocationChangeEvents = false;
   }
 
   /**
@@ -216,9 +229,11 @@ export class StateManager {
   }
 
   private resetUrlToCurrentUrlTree(): void {
+    this.ignoreLocationChangeEvents = true;
     this.location.replaceState(
         this.urlSerializer.serialize(this.rawUrlTree), '',
         this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
+    this.ignoreLocationChangeEvents = false;
   }
 
   private generateNgRouterState(navigationId: number, routerPageId: number) {
