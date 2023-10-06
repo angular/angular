@@ -517,7 +517,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-
     @defer (when isVisible() && (isReady | testPipe)) {
       Hello
     }
-  `, isInline: true });
+  `, isInline: true, dependencies: [{ kind: "pipe", type: TestPipe, name: "testPipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{

@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundDeferredTrigger, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -593,6 +593,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitContent(content: Content) {}
   visitTextAttribute(attribute: TextAttribute) {}
   visitUnknownBlock(block: UnknownBlock) {}
+  visitDeferredTrigger(): void {}
   visitIcu(icu: Icu): void {
     Object.keys(icu.vars).forEach(key => icu.vars[key].visit(this));
     Object.keys(icu.placeholders).forEach(key => icu.placeholders[key].visit(this));
@@ -612,15 +613,11 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     this.deferBlocks.add(deferred);
     this.ingestScopedNode(deferred);
 
+    deferred.triggers.when?.value.visit(this);
+    deferred.prefetchTriggers.when?.value.visit(this);
     deferred.placeholder && this.visitNode(deferred.placeholder);
     deferred.loading && this.visitNode(deferred.loading);
     deferred.error && this.visitNode(deferred.error);
-  }
-
-  visitDeferredTrigger(trigger: DeferredTrigger): void {
-    if (trigger instanceof BoundDeferredTrigger) {
-      trigger.value.visit(this);
-    }
   }
 
   visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
