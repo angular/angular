@@ -1208,6 +1208,8 @@ class TcbBlockImplicitVariableOp extends TcbOp {
  * Executing this operation returns nothing.
  */
 class TcbIfOp extends TcbOp {
+  private expressionScopes = new Map<TmplAstIfBlockBranch, Scope>();
+
   constructor(private tcb: Context, private scope: Scope, private block: TmplAstIfBlock) {
     super();
   }
@@ -1231,29 +1233,81 @@ class TcbIfOp extends TcbOp {
 
     // If the expression is null, it means that it's an `else` statement.
     if (branch.expression === null) {
-      const branchScope = Scope.forNodes(this.tcb, this.scope, null, branch.children, null);
+      const branchScope = Scope.forNodes(
+          this.tcb, this.scope, null, branch.children, this.generateBranchGuard(index));
       return ts.factory.createBlock(branchScope.render());
     }
 
-    let branchParentScope: Scope;
+    // We need to process the expression first so it gets its own scope that the body of the
+    // conditional will inherit from. We do this, because we need to declare a separate variable
+    // for the case where the expression has an alias _and_ because we need the processed
+    // expression when generating the guard for the body.
+    const expressionScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
+    expressionScope.render().forEach(stmt => this.scope.addStatement(stmt));
+    this.expressionScopes.set(branch, expressionScope);
 
-    if (branch.expressionAlias === null) {
-      branchParentScope = this.scope;
-    } else {
-      // If the expression is aliased, we create a scope with a variable containing the expression.
-      // Further down we'll use the variable instead of the expression itself in the `if` statement.
-      // This allows for the type of the alias to be narrowed.
-      branchParentScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
-      branchParentScope.render().forEach(stmt => this.scope.addStatement(stmt));
-    }
-
-    const branchScope = Scope.forNodes(this.tcb, branchParentScope, null, branch.children, null);
     const expression = branch.expressionAlias === null ?
-        tcbExpression(branch.expression, this.tcb, branchScope) :
-        branchScope.resolve(branch.expressionAlias);
+        tcbExpression(branch.expression, this.tcb, expressionScope) :
+        expressionScope.resolve(branch.expressionAlias);
+
+    const bodyScope = Scope.forNodes(
+        this.tcb, expressionScope, null, branch.children, this.generateBranchGuard(index));
 
     return ts.factory.createIfStatement(
-        expression, ts.factory.createBlock(branchScope.render()), this.generateBranch(index + 1));
+        expression, ts.factory.createBlock(bodyScope.render()), this.generateBranch(index + 1));
+  }
+
+  private generateBranchGuard(index: number): ts.Expression|null {
+    let guard: ts.Expression|null = null;
+
+    // Since event listeners are inside callbacks, type narrowing doesn't apply to them anymore.
+    // To recreate the behavior, we generate an expression that negates all the values of the
+    // branches _before_ the current one, and then we add the current branch's expression on top.
+    // For example `@if (expr === 1) {} @else if (expr === 2) {} @else if (expr === 3)`, the guard
+    // for the last expression will be `!(expr === 1) && !(expr === 2) && expr === 3`.
+    for (let i = 0; i <= index; i++) {
+      const branch = this.block.branches[i];
+
+      // Skip over branches without an expression.
+      if (branch.expression === null) {
+        continue;
+      }
+
+      // This shouldn't happen since all the state is handled
+      // internally, but we have the check just in case.
+      if (!this.expressionScopes.has(branch)) {
+        throw new Error(`Could not determine expression scope of branch at index ${i}`);
+      }
+
+      const expressionScope = this.expressionScopes.get(branch)!;
+      let expression: ts.Expression;
+
+      if (branch.expressionAlias === null) {
+        // We need to recreate the expression and mark it to be ignored for diagnostics,
+        // because it was already checked as a part of the block's condition and we don't
+        // want it to produce a duplicate diagnostic.
+        expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+        markIgnoreDiagnostics(expression);
+      } else {
+        expression = expressionScope.resolve(branch.expressionAlias);
+      }
+
+      // The expressions of the preceeding branches have to be negated
+      // (e.g. `expr` becomes `!(expr)`) when comparing in the guard, except
+      // for the branch's own expression which is preserved as is.
+      const comparisonExpression = i === index ?
+          expression :
+          ts.factory.createPrefixUnaryExpression(
+              ts.SyntaxKind.ExclamationToken, ts.factory.createParenthesizedExpression(expression));
+
+      // Finally add the expression to the guard with an && operator.
+      guard = guard === null ?
+          comparisonExpression :
+          ts.factory.createBinaryExpression(
+              guard, ts.SyntaxKind.AmpersandAmpersandToken, comparisonExpression);
+    }
+
+    return guard;
   }
 }
 

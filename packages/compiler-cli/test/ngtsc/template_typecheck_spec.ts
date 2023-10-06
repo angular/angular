@@ -3831,13 +3831,38 @@ suppress
         ]);
       });
 
-      it('should check narrow the type in the alias', () => {
+      it('should narrow the type of the if alias', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
           @Component({
             template: \`@if (value; as alias) {
               {{acceptsNumber(alias)}}
+            }\`,
+            standalone: true,
+          })
+          export class Main {
+            value: 'one' | 0 = 0;
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should narrow the type of the if alias used in a listener', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`@if (value; as alias) {
+              <button (click)="acceptsNumber(alias)"></button>
             }\`,
             standalone: true,
           })
@@ -3926,6 +3951,93 @@ suppress
           })
           export class Main {
             expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should narrow the type in listeners inside if blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (expr === 'hello') {
+                <button (click)="acceptsNumber(expr)"></button>
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should narrow the type in listeners inside else if blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (expr === 1) {
+                One
+              } @else if (expr === 'hello') {
+                <button (click)="acceptsNumber(expr)"></button>
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 | 2 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        ]);
+      });
+
+      it('should narrow the type in listeners inside else blocks', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (expr === 1) {
+                One
+              } @else if (expr === 2) {
+                Two
+              } @else {
+                <button (click)="acceptsNumber(expr)"></button>
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 | 2 = 'hello';
 
             acceptsNumber(value: number) {
               return value;
@@ -4126,6 +4238,30 @@ suppress
           `Argument of type 'string' is not assignable to parameter of type 'number'.`
         ]);
       });
+
+      it('should produce a single diagnostic for an invalid expression of a block containing a event listener',
+         () => {
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                template: \`
+                  @if (does_not_exist) {
+                    <button (click)="test()"></button>
+                  }
+                \`,
+                standalone: true,
+              })
+              export class Main {
+                test() {}
+              }
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Property 'does_not_exist' does not exist on type 'Main'.`,
+           ]);
+         });
     });
 
     describe('for loop blocks', () => {
