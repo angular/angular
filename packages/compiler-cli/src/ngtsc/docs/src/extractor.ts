@@ -17,6 +17,7 @@ import {extractClass, extractInterface} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {DocEntry} from './entities';
 import {isAngularPrivateName} from './filters';
+import {extractTypeAlias} from './type_alias_extractor';
 
 type DeclarationWithExportName = readonly[string, ts.Declaration];
 
@@ -70,6 +71,10 @@ export class DocsExtractor {
 
     if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
       return extractConstant(node, this.typeChecker);
+    }
+
+    if (ts.isTypeAliasDeclaration(node)) {
+      return extractTypeAlias(node);
     }
 
     if (ts.isEnumDeclaration(node)) {
