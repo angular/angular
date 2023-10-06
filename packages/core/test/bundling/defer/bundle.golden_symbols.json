@@ -1,0 +1,2408 @@
+[
+  {
+    "name": "APP_BOOTSTRAP_LISTENER"
+  },
+  {
+    "name": "APP_ID"
+  },
+  {
+    "name": "APP_INITIALIZER"
+  },
+  {
+    "name": "AfterRenderEventManager"
+  },
+  {
+    "name": "AnonymousSubject"
+  },
+  {
+    "name": "AppComponent_DeferError_5_Template"
+  },
+  {
+    "name": "AppComponent_DeferLoading_3_Template"
+  },
+  {
+    "name": "AppComponent_DeferPlaceholder_4_Template"
+  },
+  {
+    "name": "AppComponent_Defer_2_Template"
+  },
+  {
+    "name": "AppComponent_Defer_6_DepsFn"
+  },
+  {
+    "name": "ApplicationInitStatus"
+  },
+  {
+    "name": "ApplicationRef"
+  },
+  {
+    "name": "BLOOM_BUCKET_BITS"
+  },
+  {
+    "name": "BLOOM_MASK"
+  },
+  {
+    "name": "BROWSER_MODULE_PROVIDERS"
+  },
+  {
+    "name": "BehaviorSubject"
+  },
+  {
+    "name": "BrowserDomAdapter"
+  },
+  {
+    "name": "BrowserXhr"
+  },
+  {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "COMPONENT_REGEX"
+  },
+  {
+    "name": "CONTAINER_HEADER_OFFSET"
+  },
+  {
+    "name": "CSP_NONCE"
+  },
+  {
+    "name": "ChainedInjector"
+  },
+  {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentFactory2"
+  },
+  {
+    "name": "ComponentFactoryResolver"
+  },
+  {
+    "name": "ComponentFactoryResolver2"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
+    "name": "ComponentRef2"
+  },
+  {
+    "name": "ConnectableObservable"
+  },
+  {
+    "name": "ConnectableSubscriber"
+  },
+  {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
+    "name": "DEFAULT_LOCALE_ID"
+  },
+  {
+    "name": "DEFER_BLOCK_CONFIG"
+  },
+  {
+    "name": "DEFER_BLOCK_DEPENDENCY_INTERCEPTOR"
+  },
+  {
+    "name": "DEFER_BLOCK_STATE"
+  },
+  {
+    "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "DOCUMENT"
+  },
+  {
+    "name": "DOCUMENT2"
+  },
+  {
+    "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DeferBlockBehavior"
+  },
+  {
+    "name": "DeferBlockCleanupManager"
+  },
+  {
+    "name": "DeferBlockInternalState"
+  },
+  {
+    "name": "DeferBlockState"
+  },
+  {
+    "name": "DeferComponent"
+  },
+  {
+    "name": "DeferDependenciesLoadingState"
+  },
+  {
+    "name": "DistinctUntilChangedOperator"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
+  },
+  {
+    "name": "DomAdapter"
+  },
+  {
+    "name": "DomEventsPlugin"
+  },
+  {
+    "name": "DomRendererFactory2"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "EMPTY_OBJ"
+  },
+  {
+    "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "ERROR_ORIGINAL_ERROR"
+  },
+  {
+    "name": "EVENT_MANAGER_PLUGINS"
+  },
+  {
+    "name": "ElementRef"
+  },
+  {
+    "name": "EmulatedEncapsulationDomRenderer2"
+  },
+  {
+    "name": "EnvironmentInjector"
+  },
+  {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
+    "name": "ErrorHandler"
+  },
+  {
+    "name": "EventEmitter"
+  },
+  {
+    "name": "EventManager"
+  },
+  {
+    "name": "EventManagerPlugin"
+  },
+  {
+    "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_TRANSPLANTED_VIEWS"
+  },
+  {
+    "name": "INJECTOR2"
+  },
+  {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
+    "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
+  },
+  {
+    "name": "InjectFlags"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "Injector"
+  },
+  {
+    "name": "KeyEventsPlugin"
+  },
+  {
+    "name": "LOADING_AFTER_CLEANUP_FN"
+  },
+  {
+    "name": "LOADING_AFTER_SLOT"
+  },
+  {
+    "name": "LOCALE_ID2"
+  },
+  {
+    "name": "LifecycleHooksFeature"
+  },
+  {
+    "name": "MATH_ML_NAMESPACE"
+  },
+  {
+    "name": "MINIMUM_SLOT"
+  },
+  {
+    "name": "MODIFIER_KEYS"
+  },
+  {
+    "name": "MODIFIER_KEY_GETTERS"
+  },
+  {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
+  },
+  {
+    "name": "MapOperator"
+  },
+  {
+    "name": "MapSubscriber"
+  },
+  {
+    "name": "MergeMapOperator"
+  },
+  {
+    "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NATIVE"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
+    "name": "NEXT_DEFER_BLOCK_STATE"
+  },
+  {
+    "name": "NG_COMP_DEF"
+  },
+  {
+    "name": "NG_DIR_DEF"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_ENV_ID"
+  },
+  {
+    "name": "NG_FACTORY_DEF"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
+    "name": "NG_INJ_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
+    "name": "NOT_FOUND"
+  },
+  {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NO_PARENT_INJECTOR"
+  },
+  {
+    "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NgModuleRef"
+  },
+  {
+    "name": "NgOnChangesFeatureImpl"
+  },
+  {
+    "name": "NgZone"
+  },
+  {
+    "name": "NgZoneChangeDetectionScheduler"
+  },
+  {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
+  },
+  {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
+    "name": "PLATFORM_ID"
+  },
+  {
+    "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "REACTIVE_LVIEW_CONSUMER_NODE"
+  },
+  {
+    "name": "REACTIVE_NODE"
+  },
+  {
+    "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
+  },
+  {
+    "name": "RefCountOperator"
+  },
+  {
+    "name": "RefCountSubscriber"
+  },
+  {
+    "name": "RendererFactory2"
+  },
+  {
+    "name": "RendererStyleFlags2"
+  },
+  {
+    "name": "RootViewRef"
+  },
+  {
+    "name": "RuntimeError"
+  },
+  {
+    "name": "SIMPLE_CHANGES_STORE"
+  },
+  {
+    "name": "SOURCE"
+  },
+  {
+    "name": "STATE_IS_FROZEN_UNTIL"
+  },
+  {
+    "name": "SVG_NAMESPACE"
+  },
+  {
+    "name": "SafeSubscriber"
+  },
+  {
+    "name": "Sanitizer"
+  },
+  {
+    "name": "ShadowDomRenderer"
+  },
+  {
+    "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
+    "name": "SimpleInnerSubscriber"
+  },
+  {
+    "name": "SimpleOuterSubscriber"
+  },
+  {
+    "name": "StandaloneService"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
+  },
+  {
+    "name": "SwitchMapOperator"
+  },
+  {
+    "name": "SwitchMapSubscriber"
+  },
+  {
+    "name": "TESTABILITY"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "TRACKED_LVIEWS"
+  },
+  {
+    "name": "TYPE"
+  },
+  {
+    "name": "TimerScheduler"
+  },
+  {
+    "name": "USE_VALUE"
+  },
+  {
+    "name": "UnsubscriptionError"
+  },
+  {
+    "name": "VERSION"
+  },
+  {
+    "name": "VIEW_REFS"
+  },
+  {
+    "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
+  },
+  {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
+    "name": "_DOM"
+  },
+  {
+    "name": "_NullComponentFactoryResolver"
+  },
+  {
+    "name": "__defProp"
+  },
+  {
+    "name": "__esm"
+  },
+  {
+    "name": "__forward_ref__"
+  },
+  {
+    "name": "__getOwnPropNames"
+  },
+  {
+    "name": "_applyRootElementTransformImpl"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "_findMatchingDehydratedViewImpl"
+  },
+  {
+    "name": "_getInsertInFrontOfRNodeWithI18n"
+  },
+  {
+    "name": "_global"
+  },
+  {
+    "name": "_icuContainerIterate"
+  },
+  {
+    "name": "_injectImplementation"
+  },
+  {
+    "name": "_keyMap"
+  },
+  {
+    "name": "_locateOrCreateContainerAnchor"
+  },
+  {
+    "name": "_locateOrCreateElementNode"
+  },
+  {
+    "name": "_locateOrCreateTextNode"
+  },
+  {
+    "name": "_platformInjector"
+  },
+  {
+    "name": "_populateDehydratedViewsInLContainer"
+  },
+  {
+    "name": "_processI18nInsertBefore"
+  },
+  {
+    "name": "_retrieveHydrationInfoImpl"
+  },
+  {
+    "name": "_wasLastNodeCreated"
+  },
+  {
+    "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
+  },
+  {
+    "name": "addDepsToRegistry"
+  },
+  {
+    "name": "addLViewToLContainer"
+  },
+  {
+    "name": "addPropertyAlias"
+  },
+  {
+    "name": "addToViewTree"
+  },
+  {
+    "name": "allocExpando"
+  },
+  {
+    "name": "allocLFrame"
+  },
+  {
+    "name": "appendChild"
+  },
+  {
+    "name": "applyNodes"
+  },
+  {
+    "name": "applyProjectionRecursive"
+  },
+  {
+    "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyView"
+  },
+  {
+    "name": "arraySplice"
+  },
+  {
+    "name": "assertConsumerNode"
+  },
+  {
+    "name": "attachPatchData"
+  },
+  {
+    "name": "baseElement"
+  },
+  {
+    "name": "bloomHasToken"
+  },
+  {
+    "name": "callHook"
+  },
+  {
+    "name": "callHookInternal"
+  },
+  {
+    "name": "callHooks"
+  },
+  {
+    "name": "checkStable"
+  },
+  {
+    "name": "classIndexOf"
+  },
+  {
+    "name": "cleanUpView"
+  },
+  {
+    "name": "clearViewRefreshFlag"
+  },
+  {
+    "name": "collectNativeNodes"
+  },
+  {
+    "name": "collectNativeNodesInLContainer"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
+  },
+  {
+    "name": "computeStaticStyling"
+  },
+  {
+    "name": "concatStringsWithSpace"
+  },
+  {
+    "name": "config"
+  },
+  {
+    "name": "configureViewWithDirective"
+  },
+  {
+    "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "consumerAfterComputation"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
+    "name": "consumerIsLive"
+  },
+  {
+    "name": "convertToBitFlags"
+  },
+  {
+    "name": "createContainerAnchorImpl"
+  },
+  {
+    "name": "createDirectivesInstances"
+  },
+  {
+    "name": "createElementNode"
+  },
+  {
+    "name": "createElementRef"
+  },
+  {
+    "name": "createInjector"
+  },
+  {
+    "name": "createLFrame"
+  },
+  {
+    "name": "createLView"
+  },
+  {
+    "name": "createLViewConsumer"
+  },
+  {
+    "name": "createNodeInjector"
+  },
+  {
+    "name": "createTView"
+  },
+  {
+    "name": "currentConsumer"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "deepForEachProvider"
+  },
+  {
+    "name": "defer_component_exports"
+  },
+  {
+    "name": "destroyLView"
+  },
+  {
+    "name": "detachMovedView"
+  },
+  {
+    "name": "detachView"
+  },
+  {
+    "name": "detectChangesInChildComponents"
+  },
+  {
+    "name": "detectChangesInComponent"
+  },
+  {
+    "name": "detectChangesInEmbeddedViews"
+  },
+  {
+    "name": "detectChangesInView"
+  },
+  {
+    "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublicInInjector"
+  },
+  {
+    "name": "disableStylesheet"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "enterDI"
+  },
+  {
+    "name": "enterView"
+  },
+  {
+    "name": "executeCheckHooks"
+  },
+  {
+    "name": "executeContentQueries"
+  },
+  {
+    "name": "executeInitAndCheckHooks"
+  },
+  {
+    "name": "executeTemplate"
+  },
+  {
+    "name": "executeViewQueryFn"
+  },
+  {
+    "name": "extractDefListOrFactory"
+  },
+  {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forEachSingleProvider"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "from"
+  },
+  {
+    "name": "fromArray"
+  },
+  {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingsEnabled"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentLViewByIndex"
+  },
+  {
+    "name": "getConstant"
+  },
+  {
+    "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
+  },
+  {
+    "name": "getDOM"
+  },
+  {
+    "name": "getDeclarationTNode"
+  },
+  {
+    "name": "getDeferBlockDataIndex"
+  },
+  {
+    "name": "getDirectiveDef"
+  },
+  {
+    "name": "getFactoryDef"
+  },
+  {
+    "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
+  },
+  {
+    "name": "getInjectorIndex"
+  },
+  {
+    "name": "getInsertInFrontOfRNodeWithNoI18n"
+  },
+  {
+    "name": "getLDeferBlockDetails"
+  },
+  {
+    "name": "getLView"
+  },
+  {
+    "name": "getLViewParent"
+  },
+  {
+    "name": "getNativeByTNode"
+  },
+  {
+    "name": "getNearestLContainer"
+  },
+  {
+    "name": "getNextLContainer"
+  },
+  {
+    "name": "getNodeInjectable"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getOrCreateComponentTView"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
+  },
+  {
+    "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOriginalError"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "getParentInjectorIndex"
+  },
+  {
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
+  },
+  {
+    "name": "getPipeDef"
+  },
+  {
+    "name": "getProjectionNodes"
+  },
+  {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
+  },
+  {
+    "name": "getSelectedIndex"
+  },
+  {
+    "name": "getSimpleChangesStore"
+  },
+  {
+    "name": "getSymbolIterator"
+  },
+  {
+    "name": "getTDeferBlockDetails"
+  },
+  {
+    "name": "getTNode"
+  },
+  {
+    "name": "getTNodeFromLView"
+  },
+  {
+    "name": "getTView"
+  },
+  {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
+    "name": "hasTagAndTypeMatch"
+  },
+  {
+    "name": "hostReportError"
+  },
+  {
+    "name": "icuContainerIterate"
+  },
+  {
+    "name": "identity"
+  },
+  {
+    "name": "importProvidersFrom"
+  },
+  {
+    "name": "includeViewProviders"
+  },
+  {
+    "name": "incrementInitPhaseFlags"
+  },
+  {
+    "name": "init_BehaviorSubject"
+  },
+  {
+    "name": "init_ConnectableObservable"
+  },
+  {
+    "name": "init_ObjectUnsubscribedError"
+  },
+  {
+    "name": "init_Observable"
+  },
+  {
+    "name": "init_Observer"
+  },
+  {
+    "name": "init_Subject"
+  },
+  {
+    "name": "init_SubjectSubscription"
+  },
+  {
+    "name": "init_Subscriber"
+  },
+  {
+    "name": "init_Subscription"
+  },
+  {
+    "name": "init_UnsubscriptionError"
+  },
+  {
+    "name": "init_advance"
+  },
+  {
+    "name": "init_after_render_hooks"
+  },
+  {
+    "name": "init_all"
+  },
+  {
+    "name": "init_annotate"
+  },
+  {
+    "name": "init_api"
+  },
+  {
+    "name": "init_api2"
+  },
+  {
+    "name": "init_api3"
+  },
+  {
+    "name": "init_api_flags"
+  },
+  {
+    "name": "init_application_config"
+  },
+  {
+    "name": "init_application_init"
+  },
+  {
+    "name": "init_application_module"
+  },
+  {
+    "name": "init_application_ref"
+  },
+  {
+    "name": "init_application_tokens"
+  },
+  {
+    "name": "init_array_utils"
+  },
+  {
+    "name": "init_assert"
+  },
+  {
+    "name": "init_assert2"
+  },
+  {
+    "name": "init_asserts"
+  },
+  {
+    "name": "init_async_stack_tagging"
+  },
+  {
+    "name": "init_attribute"
+  },
+  {
+    "name": "init_attribute_interpolation"
+  },
+  {
+    "name": "init_attrs_utils"
+  },
+  {
+    "name": "init_bindings"
+  },
+  {
+    "name": "init_bypass"
+  },
+  {
+    "name": "init_canReportError"
+  },
+  {
+    "name": "init_change_detection"
+  },
+  {
+    "name": "init_change_detection2"
+  },
+  {
+    "name": "init_change_detection3"
+  },
+  {
+    "name": "init_change_detection_utils"
+  },
+  {
+    "name": "init_change_detector_ref"
+  },
+  {
+    "name": "init_class_differ"
+  },
+  {
+    "name": "init_class_map_interpolation"
+  },
+  {
+    "name": "init_cleanup"
+  },
+  {
+    "name": "init_closure"
+  },
+  {
+    "name": "init_coercion"
+  },
+  {
+    "name": "init_collect_native_nodes"
+  },
+  {
+    "name": "init_comparison"
+  },
+  {
+    "name": "init_compiler"
+  },
+  {
+    "name": "init_compiler_facade"
+  },
+  {
+    "name": "init_compiler_facade_interface"
+  },
+  {
+    "name": "init_component"
+  },
+  {
+    "name": "init_component_factory"
+  },
+  {
+    "name": "init_component_factory_resolver"
+  },
+  {
+    "name": "init_component_instance"
+  },
+  {
+    "name": "init_component_ref"
+  },
+  {
+    "name": "init_compression"
+  },
+  {
+    "name": "init_computed"
+  },
+  {
+    "name": "init_config"
+  },
+  {
+    "name": "init_console"
+  },
+  {
+    "name": "init_constants"
+  },
+  {
+    "name": "init_container"
+  },
+  {
+    "name": "init_context"
+  },
+  {
+    "name": "init_context_discovery"
+  },
+  {
+    "name": "init_contextual"
+  },
+  {
+    "name": "init_control_flow"
+  },
+  {
+    "name": "init_copy_definition_feature"
+  },
+  {
+    "name": "init_core"
+  },
+  {
+    "name": "init_core2"
+  },
+  {
+    "name": "init_core_private_export"
+  },
+  {
+    "name": "init_core_reactivity_export"
+  },
+  {
+    "name": "init_core_reactivity_export_internal"
+  },
+  {
+    "name": "init_core_render3_private_export"
+  },
+  {
+    "name": "init_create_injector"
+  },
+  {
+    "name": "init_debug_node"
+  },
+  {
+    "name": "init_decorators"
+  },
+  {
+    "name": "init_default_iterable_differ"
+  },
+  {
+    "name": "init_default_keyvalue_differ"
+  },
+  {
+    "name": "init_defer"
+  },
+  {
+    "name": "init_defer2"
+  },
+  {
+    "name": "init_defer_component"
+  },
+  {
+    "name": "init_defer_events"
+  },
+  {
+    "name": "init_definition"
+  },
+  {
+    "name": "init_definition_factory"
+  },
+  {
+    "name": "init_defs"
+  },
+  {
+    "name": "init_deps_tracker"
+  },
+  {
+    "name": "init_destroy_ref"
+  },
+  {
+    "name": "init_di"
+  },
+  {
+    "name": "init_di2"
+  },
+  {
+    "name": "init_di3"
+  },
+  {
+    "name": "init_di4"
+  },
+  {
+    "name": "init_di5"
+  },
+  {
+    "name": "init_di_attr"
+  },
+  {
+    "name": "init_di_setup"
+  },
+  {
+    "name": "init_directive"
+  },
+  {
+    "name": "init_directives"
+  },
+  {
+    "name": "init_discovery_utils"
+  },
+  {
+    "name": "init_distinctUntilChanged"
+  },
+  {
+    "name": "init_document"
+  },
+  {
+    "name": "init_dom"
+  },
+  {
+    "name": "init_effect"
+  },
+  {
+    "name": "init_element"
+  },
+  {
+    "name": "init_element_container"
+  },
+  {
+    "name": "init_element_ref"
+  },
+  {
+    "name": "init_element_validation"
+  },
+  {
+    "name": "init_empty"
+  },
+  {
+    "name": "init_environment"
+  },
+  {
+    "name": "init_environment2"
+  },
+  {
+    "name": "init_error_details_base_url"
+  },
+  {
+    "name": "init_error_handler"
+  },
+  {
+    "name": "init_error_handling"
+  },
+  {
+    "name": "init_errors"
+  },
+  {
+    "name": "init_errors2"
+  },
+  {
+    "name": "init_errors3"
+  },
+  {
+    "name": "init_errors4"
+  },
+  {
+    "name": "init_errors_di"
+  },
+  {
+    "name": "init_esm2015"
+  },
+  {
+    "name": "init_event_emitter"
+  },
+  {
+    "name": "init_fields"
+  },
+  {
+    "name": "init_forward_ref"
+  },
+  {
+    "name": "init_framework_injector_profiler"
+  },
+  {
+    "name": "init_from"
+  },
+  {
+    "name": "init_fromArray"
+  },
+  {
+    "name": "init_get_current_view"
+  },
+  {
+    "name": "init_global"
+  },
+  {
+    "name": "init_global_utils"
+  },
+  {
+    "name": "init_graph"
+  },
+  {
+    "name": "init_hooks"
+  },
+  {
+    "name": "init_hostReportError"
+  },
+  {
+    "name": "init_host_directives_feature"
+  },
+  {
+    "name": "init_host_property"
+  },
+  {
+    "name": "init_html_sanitizer"
+  },
+  {
+    "name": "init_i18n"
+  },
+  {
+    "name": "init_i18n2"
+  },
+  {
+    "name": "init_i18n_apply"
+  },
+  {
+    "name": "init_i18n_debug"
+  },
+  {
+    "name": "init_i18n_icu_container_visitor"
+  },
+  {
+    "name": "init_i18n_insert_before_index"
+  },
+  {
+    "name": "init_i18n_locale_id"
+  },
+  {
+    "name": "init_i18n_parse"
+  },
+  {
+    "name": "init_i18n_postprocess"
+  },
+  {
+    "name": "init_i18n_tree_shaking"
+  },
+  {
+    "name": "init_i18n_util"
+  },
+  {
+    "name": "init_identity"
+  },
+  {
+    "name": "init_iframe_attrs_validation"
+  },
+  {
+    "name": "init_inert_body"
+  },
+  {
+    "name": "init_inherit_definition_feature"
+  },
+  {
+    "name": "init_initial_render_pending_tasks"
+  },
+  {
+    "name": "init_initializer_token"
+  },
+  {
+    "name": "init_inject_switch"
+  },
+  {
+    "name": "init_injectable"
+  },
+  {
+    "name": "init_injectable2"
+  },
+  {
+    "name": "init_injection_token"
+  },
+  {
+    "name": "init_injector"
+  },
+  {
+    "name": "init_injector2"
+  },
+  {
+    "name": "init_injector3"
+  },
+  {
+    "name": "init_injector_compatibility"
+  },
+  {
+    "name": "init_injector_discovery_utils"
+  },
+  {
+    "name": "init_injector_profiler"
+  },
+  {
+    "name": "init_injector_token"
+  },
+  {
+    "name": "init_injector_utils"
+  },
+  {
+    "name": "init_innerSubscribe"
+  },
+  {
+    "name": "init_input_transforms_feature"
+  },
+  {
+    "name": "init_interfaces"
+  },
+  {
+    "name": "init_internal_tokens"
+  },
+  {
+    "name": "init_interpolation"
+  },
+  {
+    "name": "init_isArray"
+  },
+  {
+    "name": "init_isArrayLike"
+  },
+  {
+    "name": "init_isFunction"
+  },
+  {
+    "name": "init_isInteropObservable"
+  },
+  {
+    "name": "init_isIterable"
+  },
+  {
+    "name": "init_isObject"
+  },
+  {
+    "name": "init_isPromise"
+  },
+  {
+    "name": "init_isScheduler"
+  },
+  {
+    "name": "init_is_dev_mode"
+  },
+  {
+    "name": "init_iterable"
+  },
+  {
+    "name": "init_iterable_differs"
+  },
+  {
+    "name": "init_iterator"
+  },
+  {
+    "name": "init_jit_options"
+  },
+  {
+    "name": "init_keyvalue_differs"
+  },
+  {
+    "name": "init_lang"
+  },
+  {
+    "name": "init_linker"
+  },
+  {
+    "name": "init_list_reconciliation"
+  },
+  {
+    "name": "init_listener"
+  },
+  {
+    "name": "init_local_compilation"
+  },
+  {
+    "name": "init_locale_data_api"
+  },
+  {
+    "name": "init_locale_en"
+  },
+  {
+    "name": "init_localization"
+  },
+  {
+    "name": "init_lview_tracking"
+  },
+  {
+    "name": "init_map"
+  },
+  {
+    "name": "init_mark_view_dirty"
+  },
+  {
+    "name": "init_merge"
+  },
+  {
+    "name": "init_mergeAll"
+  },
+  {
+    "name": "init_mergeMap"
+  },
+  {
+    "name": "init_metadata"
+  },
+  {
+    "name": "init_metadata2"
+  },
+  {
+    "name": "init_metadata3"
+  },
+  {
+    "name": "init_metadata_attr"
+  },
+  {
+    "name": "init_misc_utils"
+  },
+  {
+    "name": "init_module"
+  },
+  {
+    "name": "init_module_patch"
+  },
+  {
+    "name": "init_multicast"
+  },
+  {
+    "name": "init_namespace"
+  },
+  {
+    "name": "init_namespaces"
+  },
+  {
+    "name": "init_next_context"
+  },
+  {
+    "name": "init_ng_dev_mode"
+  },
+  {
+    "name": "init_ng_i18n_closure_mode"
+  },
+  {
+    "name": "init_ng_jit_mode"
+  },
+  {
+    "name": "init_ng_module"
+  },
+  {
+    "name": "init_ng_module_factory"
+  },
+  {
+    "name": "init_ng_module_factory_loader"
+  },
+  {
+    "name": "init_ng_module_factory_loader_impl"
+  },
+  {
+    "name": "init_ng_module_ref"
+  },
+  {
+    "name": "init_ng_module_registration"
+  },
+  {
+    "name": "init_ng_onchanges_feature"
+  },
+  {
+    "name": "init_ng_reflect"
+  },
+  {
+    "name": "init_ng_zone"
+  },
+  {
+    "name": "init_node"
+  },
+  {
+    "name": "init_node_assert"
+  },
+  {
+    "name": "init_node_lookup_utils"
+  },
+  {
+    "name": "init_node_manipulation"
+  },
+  {
+    "name": "init_node_manipulation_i18n"
+  },
+  {
+    "name": "init_node_selector_matcher"
+  },
+  {
+    "name": "init_noop"
+  },
+  {
+    "name": "init_null_injector"
+  },
+  {
+    "name": "init_observable"
+  },
+  {
+    "name": "init_of"
+  },
+  {
+    "name": "init_operators"
+  },
+  {
+    "name": "init_partial"
+  },
+  {
+    "name": "init_pipe"
+  },
+  {
+    "name": "init_pipe2"
+  },
+  {
+    "name": "init_pipe3"
+  },
+  {
+    "name": "init_platform_core_providers"
+  },
+  {
+    "name": "init_profiler"
+  },
+  {
+    "name": "init_projection"
+  },
+  {
+    "name": "init_property"
+  },
+  {
+    "name": "init_property2"
+  },
+  {
+    "name": "init_property_interpolation"
+  },
+  {
+    "name": "init_provider"
+  },
+  {
+    "name": "init_provider_collection"
+  },
+  {
+    "name": "init_provider_flags"
+  },
+  {
+    "name": "init_providers_feature"
+  },
+  {
+    "name": "init_public_api"
+  },
+  {
+    "name": "init_pure_function"
+  },
+  {
+    "name": "init_query"
+  },
+  {
+    "name": "init_query_list"
+  },
+  {
+    "name": "init_r3_injector"
+  },
+  {
+    "name": "init_r3_symbols"
+  },
+  {
+    "name": "init_raf"
+  },
+  {
+    "name": "init_reactive_lview_consumer"
+  },
+  {
+    "name": "init_refCount"
+  },
+  {
+    "name": "init_reflection_capabilities"
+  },
+  {
+    "name": "init_render"
+  },
+  {
+    "name": "init_render2"
+  },
+  {
+    "name": "init_render3"
+  },
+  {
+    "name": "init_resource_loading"
+  },
+  {
+    "name": "init_rxSubscriber"
+  },
+  {
+    "name": "init_sanitization"
+  },
+  {
+    "name": "init_sanitizer"
+  },
+  {
+    "name": "init_scheduleArray"
+  },
+  {
+    "name": "init_scheduleIterable"
+  },
+  {
+    "name": "init_scheduleObservable"
+  },
+  {
+    "name": "init_schedulePromise"
+  },
+  {
+    "name": "init_scheduled"
+  },
+  {
+    "name": "init_schema"
+  },
+  {
+    "name": "init_scope"
+  },
+  {
+    "name": "init_scope2"
+  },
+  {
+    "name": "init_security"
+  },
+  {
+    "name": "init_share"
+  },
+  {
+    "name": "init_shared"
+  },
+  {
+    "name": "init_signal"
+  },
+  {
+    "name": "init_signals"
+  },
+  {
+    "name": "init_simple_change"
+  },
+  {
+    "name": "init_skip_hydration"
+  },
+  {
+    "name": "init_standalone_feature"
+  },
+  {
+    "name": "init_state"
+  },
+  {
+    "name": "init_static_styling"
+  },
+  {
+    "name": "init_storage"
+  },
+  {
+    "name": "init_stringify"
+  },
+  {
+    "name": "init_stringify_utils"
+  },
+  {
+    "name": "init_style_binding_list"
+  },
+  {
+    "name": "init_style_map_interpolation"
+  },
+  {
+    "name": "init_style_prop_interpolation"
+  },
+  {
+    "name": "init_styling"
+  },
+  {
+    "name": "init_styling2"
+  },
+  {
+    "name": "init_styling_parser"
+  },
+  {
+    "name": "init_subscribeTo"
+  },
+  {
+    "name": "init_subscribeToArray"
+  },
+  {
+    "name": "init_subscribeToIterable"
+  },
+  {
+    "name": "init_subscribeToObservable"
+  },
+  {
+    "name": "init_subscribeToPromise"
+  },
+  {
+    "name": "init_switchMap"
+  },
+  {
+    "name": "init_template"
+  },
+  {
+    "name": "init_template_ref"
+  },
+  {
+    "name": "init_testability"
+  },
+  {
+    "name": "init_text"
+  },
+  {
+    "name": "init_text_interpolation"
+  },
+  {
+    "name": "init_toSubscriber"
+  },
+  {
+    "name": "init_tokens"
+  },
+  {
+    "name": "init_tokens2"
+  },
+  {
+    "name": "init_tokens3"
+  },
+  {
+    "name": "init_transfer_state"
+  },
+  {
+    "name": "init_trusted_types"
+  },
+  {
+    "name": "init_trusted_types_bypass"
+  },
+  {
+    "name": "init_type"
+  },
+  {
+    "name": "init_type_checks"
+  },
+  {
+    "name": "init_untracked"
+  },
+  {
+    "name": "init_url_sanitizer"
+  },
+  {
+    "name": "init_util"
+  },
+  {
+    "name": "init_util2"
+  },
+  {
+    "name": "init_utils"
+  },
+  {
+    "name": "init_version"
+  },
+  {
+    "name": "init_view"
+  },
+  {
+    "name": "init_view2"
+  },
+  {
+    "name": "init_view_container_ref"
+  },
+  {
+    "name": "init_view_engine_compatibility_prebound"
+  },
+  {
+    "name": "init_view_manipulation"
+  },
+  {
+    "name": "init_view_ref"
+  },
+  {
+    "name": "init_view_ref2"
+  },
+  {
+    "name": "init_view_traversal_utils"
+  },
+  {
+    "name": "init_view_utils"
+  },
+  {
+    "name": "init_views"
+  },
+  {
+    "name": "init_watch"
+  },
+  {
+    "name": "init_weak_ref"
+  },
+  {
+    "name": "init_zone"
+  },
+  {
+    "name": "initializeDirectives"
+  },
+  {
+    "name": "inject"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectElementRef"
+  },
+  {
+    "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectRootLimpMode"
+  },
+  {
+    "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "innerSubscribe"
+  },
+  {
+    "name": "insertBloom"
+  },
+  {
+    "name": "instructionState"
+  },
+  {
+    "name": "internalImportProvidersFrom"
+  },
+  {
+    "name": "invertObject"
+  },
+  {
+    "name": "invokeDirectivesHostBindings"
+  },
+  {
+    "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "isArray"
+  },
+  {
+    "name": "isArrayLike"
+  },
+  {
+    "name": "isComponentDef"
+  },
+  {
+    "name": "isComponentHost"
+  },
+  {
+    "name": "isContentQueryHost"
+  },
+  {
+    "name": "isCssClassMatching"
+  },
+  {
+    "name": "isCurrentTNodeParent"
+  },
+  {
+    "name": "isDirectiveHost"
+  },
+  {
+    "name": "isEnvironmentProviders"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isInlineTemplate"
+  },
+  {
+    "name": "isLContainer"
+  },
+  {
+    "name": "isLView"
+  },
+  {
+    "name": "isNodeMatchingSelector"
+  },
+  {
+    "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isObject"
+  },
+  {
+    "name": "isPlatformServer"
+  },
+  {
+    "name": "isPositive"
+  },
+  {
+    "name": "isPromise"
+  },
+  {
+    "name": "isPromise2"
+  },
+  {
+    "name": "isScheduler"
+  },
+  {
+    "name": "isStableFactory"
+  },
+  {
+    "name": "isTemplateNode"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValidStateChange"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "iterator"
+  },
+  {
+    "name": "lastNodeWasCreated"
+  },
+  {
+    "name": "leaveDI"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "leaveViewLight"
+  },
+  {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
+    "name": "lookupTokenUsingNodeInjector"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "map"
+  },
+  {
+    "name": "markAsComponentHost"
+  },
+  {
+    "name": "markViewDirty"
+  },
+  {
+    "name": "markViewForRefresh"
+  },
+  {
+    "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeAll"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
+  },
+  {
+    "name": "mergeMap"
+  },
+  {
+    "name": "nativeAppendChild"
+  },
+  {
+    "name": "nativeAppendOrInsertBefore"
+  },
+  {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeParentNode"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
+    "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
+    "name": "nonNegativeNumber"
+  },
+  {
+    "name": "nonNull"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "notFoundValueOrThrow"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "onEnter"
+  },
+  {
+    "name": "onLeave"
+  },
+  {
+    "name": "populateDehydratedViewsInLContainer"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "producerRemoveLiveConsumerAtIndex"
+  },
+  {
+    "name": "profiler"
+  },
+  {
+    "name": "provideZoneChangeDetection"
+  },
+  {
+    "name": "refCount"
+  },
+  {
+    "name": "refreshContentQueries"
+  },
+  {
+    "name": "refreshView"
+  },
+  {
+    "name": "registerPostOrderHooks"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
+  },
+  {
+    "name": "remove"
+  },
+  {
+    "name": "removeFromArray"
+  },
+  {
+    "name": "renderComponent"
+  },
+  {
+    "name": "renderDeferBlockState"
+  },
+  {
+    "name": "renderDeferStateAfterResourceLoading"
+  },
+  {
+    "name": "renderView"
+  },
+  {
+    "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resolveDirectives"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "retrieveHydrationInfo"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
+    "name": "saveNameToExportMap"
+  },
+  {
+    "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "scheduleArray"
+  },
+  {
+    "name": "scheduleDeferBlockUpdate"
+  },
+  {
+    "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "selectIndexInternal"
+  },
+  {
+    "name": "setActiveConsumer"
+  },
+  {
+    "name": "setBindingRootForHostBindings"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setCurrentTNode"
+  },
+  {
+    "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setIncludeViewProviders"
+  },
+  {
+    "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInputsForProperty"
+  },
+  {
+    "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setSelectedIndex"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
+    "name": "setupStaticAttributes"
+  },
+  {
+    "name": "share"
+  },
+  {
+    "name": "shareSubjectFactory"
+  },
+  {
+    "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldSearchParent"
+  },
+  {
+    "name": "storeLViewOnDestroy"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "subscribeTo"
+  },
+  {
+    "name": "subscribeToArray"
+  },
+  {
+    "name": "subscribeToIterable"
+  },
+  {
+    "name": "subscribeToObservable"
+  },
+  {
+    "name": "subscribeToPromise"
+  },
+  {
+    "name": "switchMap"
+  },
+  {
+    "name": "throwProviderNotFoundError"
+  },
+  {
+    "name": "toRefArray"
+  },
+  {
+    "name": "uniqueIdCounter"
+  },
+  {
+    "name": "unwrapRNode"
+  },
+  {
+    "name": "updateMicroTaskStatus"
+  },
+  {
+    "name": "updateViewsToRefresh"
+  },
+  {
+    "name": "urlParsingNode"
+  },
+  {
+    "name": "walkProviderTree"
+  },
+  {
+    "name": "wasLastNodeCreated"
+  },
+  {
+    "name": "writeDirectClass"
+  },
+  {
+    "name": "writeToDirectiveInput"
+  },
+  {
+    "name": "ɵɵNgOnChangesFeature"
+  },
+  {
+    "name": "ɵɵStandaloneFeature"
+  },
+  {
+    "name": "ɵɵdeferWhen"
+  },
+  {
+    "name": "ɵɵdefineComponent"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵdirectiveInject"
+  },
+  {
+    "name": "ɵɵelement"
+  },
+  {
+    "name": "ɵɵelementEnd"
+  },
+  {
+    "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵinject"
+  },
+  {
+    "name": "ɵɵtemplate"
+  },
+  {
+    "name": "ɵɵtext"
+  }
+]
