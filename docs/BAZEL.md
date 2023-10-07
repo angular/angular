@@ -33,7 +33,7 @@ want Bazel to create several symlinks in your project directory
 `.bazelrc` file.
 
 [GitHub]: https://github.com/bazelbuild/rules_typescript
-[bazelrc doc]: https://bazel.build/versions/master/docs/bazel-user-manual.html#bazelrc
+[bazelrc doc]: https://bazel.build/run/bazelrc
 
 ## Building Angular
 
