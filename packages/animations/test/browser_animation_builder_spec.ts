@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, AnimationBuilder, style} from '@angular/animations';
+import {animate, AnimationBuilder, style, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/animations';
 import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {Component, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
-import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
+import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 {
   describe('BrowserAnimationBuilder', () => {
@@ -22,8 +23,9 @@ import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuild
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [NoopAnimationsModule],
-        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
+        providers: [
+          {provide: AnimationDriver, useClass: MockAnimationDriver},
+        ]
       });
     });
 
@@ -211,5 +213,28 @@ import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuild
          flushMicrotasks();
          expect(player.hasStarted()).toBeFalsy();
        }));
+
+
+    describe('without Animations enabled', () => {
+      beforeEach(() => {
+        // We need to reset the test environement because
+        // browser_tests.init.ts inits the environment with the NoopAnimationsModule
+        TestBed.resetTestEnvironment();
+        TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
+      });
+
+      it('should throw an error when injecting AnimationBuilder without animation providers set',
+         () => {
+           expect(() => TestBed.inject(AnimationBuilder))
+               .toThrowError(/Angular detected that the `AnimationBuilder` was injected/);
+         });
+
+      afterEach(() => {
+        // We're reset the test environment to their default values, cf browser_tests.init.ts
+        TestBed.resetTestEnvironment();
+        TestBed.initTestEnvironment(
+            [BrowserDynamicTestingModule, NoopAnimationsModule], platformBrowserDynamicTesting());
+      });
+    });
   });
 }

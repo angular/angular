@@ -12,6 +12,7 @@ ng_module(
         ],
     ),
     deps = [
+        "//packages/common",
         "//packages/core",
     ],
 )
@@ -59,7 +60,7 @@ api_golden_test(
         "//packages/animations",
         "//packages/animations/browser",
     ],
-    entry_point = "angular/packages/animations/browser/src/errors.d.ts",
+    entry_point = "angular/packages/animations/src/errors.d.ts",
     golden = "angular/goldens/public-api/animations/errors.md",
 )
 

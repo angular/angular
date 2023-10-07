@@ -30,9 +30,9 @@
   },
   "animations": {
     "uncompressed": {
-      "runtime": 2694,
-      "main": 284463,
-      "polyfills": 33809,
+      "runtime": 2704,
+      "main": 283017,
+      "polyfills": 33817,
       "src_app_open-close_component_ts": 1321
     }
   },

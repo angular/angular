@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {BrowserAnimationBuilder as ɵBrowserAnimationBuilder} from './animation_builder';
 export {InjectableAnimationEngine as ɵInjectableAnimationEngine} from './providers';

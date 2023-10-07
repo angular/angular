@@ -9,14 +9,16 @@
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
 
-import type {Renderer2, RendererFactory2, RendererStyleFlags2} from '@angular/core';
+import {Renderer2, RendererFactory2, RendererStyleFlags2, ɵAnimationRendererType as AnimationRendererType} from '@angular/core';
 import type {AnimationEngine} from './animation_engine_next';
 
 type AnimationFactoryWithListenerCallback = RendererFactory2&
     {scheduleListenerCallback: (count: number, fn: (e: any) => any, data: any) => void};
 
 export class BaseAnimationRenderer implements Renderer2 {
-  public readonly isAnimationRenderer = true;
+  // We need to explicitly type this property because of an api-extractor bug
+  // See https://github.com/microsoft/rushstack/issues/4390
+  readonly ɵtype: AnimationRendererType.Regular = AnimationRendererType.Regular;
 
   constructor(
       protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine,
