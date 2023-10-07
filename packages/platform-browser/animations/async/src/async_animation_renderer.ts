@@ -7,7 +7,7 @@
  */
 
 import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
-import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵRuntimeError as RuntimeError, ɵAnimationRendererType as AnimationRendererType} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 /**
  * This alias narrows down to only the properties we need when lazy loading (or mock) the module
@@ -66,7 +66,7 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
   createRenderer(hostElement: any, rendererType: RendererType2): Renderer2 {
     const renderer = this.delegate.createRenderer(hostElement, rendererType);
 
-    if ((renderer as AnimationRenderer).isAnimationRenderer) {
+    if ((renderer as AnimationRenderer).ɵtype === AnimationRendererType.Regular) {
       // The factory is already loaded, this is an animation renderer
       return renderer;
     }
@@ -119,6 +119,7 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
 export class DynamicDelegationRenderer implements Renderer2 {
   // List of callbacks that need to be replayed on the animation renderer once its loaded
   private replay: ((renderer: Renderer2) => void)[]|null = [];
+  readonly ɵtype = AnimationRendererType.Delegated;
 
   constructor(private delegate: Renderer2) {}
 

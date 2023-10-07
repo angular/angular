@@ -24,16 +24,10 @@
     "name": "AnimationAstBuilderVisitor"
   },
   {
-    "name": "AnimationBuilder"
-  },
-  {
     "name": "AnimationDriver"
   },
   {
     "name": "AnimationEngine"
-  },
-  {
-    "name": "AnimationFactory"
   },
   {
     "name": "AnimationGroupPlayer"
@@ -94,12 +88,6 @@
   },
   {
     "name": "BehaviorSubject"
-  },
-  {
-    "name": "BrowserAnimationBuilder"
-  },
-  {
-    "name": "BrowserAnimationFactory"
   },
   {
     "name": "BrowserDomAdapter"
@@ -442,9 +430,6 @@
   },
   {
     "name": "RefCountSubscriber"
-  },
-  {
-    "name": "RendererAnimationPlayer"
   },
   {
     "name": "RendererFactory2"
@@ -1191,9 +1176,6 @@
     "name": "isValueProvider"
   },
   {
-    "name": "issueAnimationCommand"
-  },
-  {
     "name": "iterator"
   },
   {
@@ -1396,9 +1378,6 @@
   },
   {
     "name": "searchTokensOnInjector"
-  },
-  {
-    "name": "sequence"
   },
   {
     "name": "setActiveConsumer"
