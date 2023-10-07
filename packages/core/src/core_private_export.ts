@@ -28,6 +28,7 @@ export {Writable as ɵWritable} from './interface/type';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
+export {AnimationRendererType as ɵAnimationRendererType} from './render/api';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
 export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks, renderDeferBlockState as ɵrenderDeferBlockState, triggerResourceLoading as ɵtriggerResourceLoading} from './render3/instructions/defer';
 export {DeferBlockBehavior as ɵDeferBlockBehavior, DeferBlockConfig as ɵDeferBlockConfig, DeferBlockState as ɵDeferBlockState} from './render3/interfaces/defer';

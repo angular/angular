@@ -9,6 +9,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     ANIMATION_FAILED = 3502,
     // (undocumented)
+    BROWSER_ANIMATION_BUILDER_INJECTED_WITHOUT_ANIMATIONS = 3600,
+    // (undocumented)
     BUILDING_FAILED = 3501,
     // (undocumented)
     CREATE_ANIMATION_FAILED = 3504,
