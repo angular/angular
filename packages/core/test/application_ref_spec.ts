@@ -66,7 +66,7 @@ class SomeComponent {
         options = providersOrOptions || {};
       }
       const errorHandler = new ErrorHandler();
-      (errorHandler as any)._console = mockConsole as any;
+      errorHandler['_console'] = mockConsole as any;
 
       const platformModule =
           getDOM().supportsDOMEvents ? BrowserModule : await serverPlatformModule!;

@@ -19,7 +19,7 @@ class MockConsole {
 function errorToString(error: any) {
   const logger = new MockConsole();
   const errorHandler = new ErrorHandler();
-  (errorHandler as any)._console = logger as any;
+  errorHandler['_console'] = logger as any;
   errorHandler.handleError(error);
   return logger.res.map(line => line.map(x => `${x}`).join('#')).join('\n');
 }

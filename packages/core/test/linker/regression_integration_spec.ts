@@ -357,7 +357,7 @@ describe('regressions using bootstrap', () => {
 
     logger = new MockConsole();
     errorHandler = new ErrorHandler();
-    (errorHandler as any)._console = logger as any;
+    errorHandler['_console'] = logger as any;
   }));
 
   afterEach(() => {

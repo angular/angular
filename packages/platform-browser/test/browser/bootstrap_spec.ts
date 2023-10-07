@@ -449,7 +449,7 @@ function bootstrap(
     it('should throw if bootstrapped Directive is not a Component', done => {
       const logger = new MockConsole();
       const errorHandler = new ErrorHandler();
-      (errorHandler as any)._console = logger as any;
+      errorHandler['_console'] = logger as any;
       bootstrap(HelloRootDirectiveIsNotCmp, [
         {provide: ErrorHandler, useValue: errorHandler}
       ]).catch((error: Error) => {
@@ -486,7 +486,7 @@ function bootstrap(
     it('should throw if no element is found', done => {
       const logger = new MockConsole();
       const errorHandler = new ErrorHandler();
-      (errorHandler as any)._console = logger as any;
+      errorHandler['_console'] = logger as any;
       bootstrap(NonExistentComp, [
         {provide: ErrorHandler, useValue: errorHandler}
       ]).then(null, (reason) => {
@@ -499,7 +499,7 @@ function bootstrap(
     it('should throw if no provider', async () => {
       const logger = new MockConsole();
       const errorHandler = new ErrorHandler();
-      (errorHandler as any)._console = logger as any;
+      errorHandler['_console'] = logger as any;
 
       class IDontExist {}
 
@@ -528,7 +528,7 @@ function bootstrap(
       it('should forward the error to promise when bootstrap fails', done => {
         const logger = new MockConsole();
         const errorHandler = new ErrorHandler();
-        (errorHandler as any)._console = logger as any;
+        errorHandler['_console'] = logger as any;
 
         const refPromise =
             bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
@@ -542,7 +542,7 @@ function bootstrap(
       it('should invoke the default exception handler when bootstrap fails', done => {
         const logger = new MockConsole();
         const errorHandler = new ErrorHandler();
-        (errorHandler as any)._console = logger as any;
+        errorHandler['_console'] = logger as any;
 
         const refPromise =
             bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
