@@ -28,6 +28,7 @@ import {getConstant, getNativeByIndex, getTNode, removeLViewOnDestroy, storeLVie
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
 import {onHover, onInteraction, onViewport} from './defer_events';
+import {markViewDirty} from './mark_view_dirty';
 import {ɵɵtemplate} from './template';
 
 /**
@@ -761,6 +762,7 @@ function applyDeferBlockStateToDom(
     const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
     addLViewToLContainer(
         lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
+    markViewDirty(embeddedLView);
   }
 }
 
