@@ -1161,6 +1161,9 @@
     "name": "init_computed"
   },
   {
+    "name": "init_computed2"
+  },
+  {
     "name": "init_config"
   },
   {
@@ -1309,6 +1312,9 @@
   },
   {
     "name": "init_environment2"
+  },
+  {
+    "name": "init_equality"
   },
   {
     "name": "init_error_details_base_url"
@@ -1801,6 +1807,9 @@
   },
   {
     "name": "init_signal"
+  },
+  {
+    "name": "init_signal2"
   },
   {
     "name": "init_signals"
