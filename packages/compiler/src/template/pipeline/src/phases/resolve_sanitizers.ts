@@ -57,6 +57,5 @@ export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
  * Checks whether the given op represents an iframe element.
  */
 function isIframeElement(op: ir.ElementOrContainerOps): boolean {
-  return (op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart) &&
-      op.tag.toLowerCase() === 'iframe';
+  return op.kind === ir.OpKind.ElementStart && op.tag.toLowerCase() === 'iframe';
 }

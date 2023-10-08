@@ -33,7 +33,7 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if ((op.kind === ir.OpKind.I18nStart || op.kind === ir.OpKind.I18n)) {
+      if (op.kind === ir.OpKind.I18nStart) {
         // Only extract messages from root i18n ops, not sub-template ones.
         if (op.xref === op.root) {
           // Sort the params map to match the ordering in TemplateDefinitionBuilder.
