@@ -111,7 +111,7 @@ class I18nPlaceholderParams {
   /**
    * Saves the params map, in serialized form, into the given i18n op.
    */
-  saveToOp(op: ir.I18nOp|ir.I18nStartOp) {
+  saveToOp(op: ir.I18nStartOp) {
     for (const [placeholder, placeholderValues] of this.values) {
       op.params.set(placeholder, o.literal(this.serializeValues(placeholderValues)));
     }
@@ -152,7 +152,7 @@ class I18nPlaceholderParams {
  */
 export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
   for (const unit of job.units) {
-    const i18nOps = new Map<ir.XrefId, ir.I18nOp|ir.I18nStartOp>();
+    const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
     const params = new Map<ir.XrefId, I18nPlaceholderParams>();
     let currentI18nOp: ir.I18nStartOp|null = null;
 
@@ -160,14 +160,12 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-        case ir.OpKind.I18n:
           i18nOps.set(op.xref, op);
           currentI18nOp = op.kind === ir.OpKind.I18nStart ? op : null;
           break;
         case ir.OpKind.I18nEnd:
           currentI18nOp = null;
           break;
-        case ir.OpKind.Element:
         case ir.OpKind.ElementStart:
         case ir.OpKind.Template:
           // For elements with i18n placeholders, record its slot value in the params map under both
@@ -214,8 +212,8 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
  * Add a param to the params map for the given i18n op.
  */
 function addParam(
-    params: Map<ir.XrefId, I18nPlaceholderParams>, i18nOp: ir.I18nOp|ir.I18nStartOp,
-    placeholder: string, value: string|number, subTemplateIndex: number|null,
+    params: Map<ir.XrefId, I18nPlaceholderParams>, i18nOp: ir.I18nStartOp, placeholder: string,
+    value: string|number, subTemplateIndex: number|null,
     flags: I18nParamValueFlags = I18nParamValueFlags.None) {
   const i18nOpParams = params.get(i18nOp.xref) ?? new I18nPlaceholderParams();
   i18nOpParams.addValue(placeholder, value, subTemplateIndex, flags);

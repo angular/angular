@@ -136,7 +136,6 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
 
   for (const op of view.create) {
     switch (op.kind) {
-      case ir.OpKind.Element:
       case ir.OpKind.ElementStart:
       case ir.OpKind.Template:
         if (!Array.isArray(op.localRefs)) {

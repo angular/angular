@@ -20,7 +20,6 @@ export function phaseLocalRefs(job: ComponentCompilationJob): void {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.ElementStart:
-        case ir.OpKind.Element:
         case ir.OpKind.Template:
           if (!Array.isArray(op.localRefs)) {
             throw new Error(`AssertionError: expected localRefs to be an array still`);
