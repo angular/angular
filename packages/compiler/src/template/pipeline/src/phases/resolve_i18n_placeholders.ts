@@ -50,8 +50,12 @@ const LIST_END_MARKER = ']';
  */
 const LIST_DELIMITER = '|';
 
+/**
+ * Flags that describe what an i18n param value. These determine how the value is serialized into
+ * the final map.
+ */
 enum I18nParamValueFlags {
-  None = 0b000,
+  None = 0b0000,
 
   /**
    *  This value represtents an element tag.
@@ -61,13 +65,17 @@ enum I18nParamValueFlags {
   /**
    * This value represents a template tag.
    */
-  TemplateTag = 0b010,
+  TemplateTag = 0b0010,
 
   /**
-   * This value represents the closing of a tag. (Can only be used together with ElementTag or
-   * TemplateTag)
+   * This value represents the opening of a tag.
    */
-  CloseTag = 0b100,
+  OpenTag = 0b0100,
+
+  /**
+   * This value represents the closing of a tag.
+   */
+  CloseTag = 0b1000,
 }
 
 /**
@@ -130,7 +138,8 @@ class I18nPlaceholderParams {
       const currentValues = this.values.get(placeholder) || [];
       // Child element close tag params should be prepended to maintain the same order as
       // TemplateDefinitionBuilder.
-      if (otherValues[0]!.flags & I18nParamValueFlags.CloseTag) {
+      const flags = otherValues[0]!.flags;
+      if ((flags & I18nParamValueFlags.CloseTag) && !(flags & I18nParamValueFlags.OpenTag)) {
         this.values.set(placeholder, [...otherValues, ...currentValues]);
       } else {
         this.values.set(placeholder, [...currentValues, ...otherValues]);
@@ -164,6 +173,12 @@ class I18nPlaceholderParams {
     }
     const context =
         value.subTemplateIndex === null ? '' : `${CONTEXT_MARKER}${value.subTemplateIndex}`;
+    // Self-closing tags use a special form that concatenates the start and close tag values.
+    if ((value.flags & I18nParamValueFlags.OpenTag) &&
+        (value.flags & I18nParamValueFlags.CloseTag)) {
+      return `${ESCAPE}${tagMarker}${value.value}${context}${ESCAPE}${ESCAPE}${closeMarker}${
+          tagMarker}${value.value}${context}${ESCAPE}`;
+    }
     return `${ESCAPE}${closeMarker}${tagMarker}${value.value}${context}${ESCAPE}`;
   }
 }
@@ -216,16 +231,22 @@ function resolvePlaceholders(
           currentI18nOp = null;
           break;
         case ir.OpKind.ElementStart:
-          // For elements with i18n placeholders, record its slot value in the params map under both
-          // the start and close placeholders.
+          // For elements with i18n placeholders, record its slot value in the params map under the
+          // corresponding tag start placeholder.
           if (op.i18nPlaceholder !== undefined) {
             if (currentI18nOp === null) {
               throw Error('i18n tag placeholder should only occur inside an i18n block');
             }
             elements.set(op.xref, op);
+            const {startName, closeName} = op.i18nPlaceholder;
+            let flags = I18nParamValueFlags.ElementTag | I18nParamValueFlags.OpenTag;
+            // For self-closing tags, there is no close tag placeholder. Instead, the start tag
+            // placeholder accounts for the start and close of the element.
+            if (closeName === '') {
+              flags |= I18nParamValueFlags.CloseTag;
+            }
             addParam(
-                params, currentI18nOp, op.i18nPlaceholder.startName, op.slot!,
-                currentI18nOp.subTemplateIndex, I18nParamValueFlags.ElementTag);
+                params, currentI18nOp, startName, op.slot!, currentI18nOp.subTemplateIndex, flags);
           }
           break;
         case ir.OpKind.ElementEnd:
@@ -234,10 +255,13 @@ function resolvePlaceholders(
             if (currentI18nOp === null) {
               throw Error('i18n tag placeholder should only occur inside an i18n block');
             }
-            addParam(
-                params, currentI18nOp, startOp.i18nPlaceholder.closeName, startOp.slot!,
-                currentI18nOp.subTemplateIndex,
-                I18nParamValueFlags.ElementTag | I18nParamValueFlags.CloseTag);
+            const {closeName} = startOp.i18nPlaceholder;
+            // Self-closing tags don't have a closing tag placeholder.
+            if (closeName !== '') {
+              addParam(
+                  params, currentI18nOp, closeName, startOp.slot!, currentI18nOp.subTemplateIndex,
+                  I18nParamValueFlags.ElementTag | I18nParamValueFlags.CloseTag);
+            }
           }
           break;
         case ir.OpKind.Template:

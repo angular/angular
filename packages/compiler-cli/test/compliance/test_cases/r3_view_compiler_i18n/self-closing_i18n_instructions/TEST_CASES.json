@@ -13,8 +13,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should be generated for ICU-only i18n blocks",
@@ -43,8 +42,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not be generated in case we have styling instructions",
@@ -53,13 +51,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "styles.js",
+              "expected": "styles.template.js",
+              "templatePipelineExpected": "styles.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
