@@ -83,7 +83,6 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
             "polyfills": [
               "zone.js",
               "zone.js/testing"
