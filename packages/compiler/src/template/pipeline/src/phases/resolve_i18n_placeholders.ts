@@ -118,6 +118,22 @@ class I18nPlaceholderParams {
   }
 
   /**
+   * Merges another param map into this one.
+   */
+  merge(other: I18nPlaceholderParams) {
+    for (const [placeholder, otherValues] of other.values) {
+      const currentValues = this.values.get(placeholder) || [];
+      // Child element close tag params should be prepended to maintain the same order as
+      // TemplateDefinitionBuilder.
+      if (otherValues[0]!.flags & I18nParamValueFlags.CloseTag) {
+        this.values.set(placeholder, [...otherValues, ...currentValues]);
+      } else {
+        this.values.set(placeholder, [...currentValues, ...otherValues]);
+      }
+    }
+  }
+
+  /**
    * Serializes a list of i18n placeholder values.
    */
   private serializeValues(values: I18nPlaceholderValue[]) {
@@ -151,9 +167,37 @@ class I18nPlaceholderParams {
  * Resolve the placeholders in i18n messages.
  */
 export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
+  const params = new Map<ir.XrefId, I18nPlaceholderParams>();
+  const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
+
+  resolvePlaceholders(job, params, i18nOps);
+  propagatePlaceholders(params, i18nOps);
+
+  // After colleccting all params, save them to the i18n ops.
+  for (const [xref, i18nOpParams] of params) {
+    i18nOpParams.saveToOp(i18nOps.get(xref)!);
+  }
+
+  // Validate the root i18n ops have all placeholders filled in.
+  for (const op of i18nOps.values()) {
+    if (op.xref === op.root) {
+      for (const placeholder in op.message.placeholders) {
+        if (!op.params.has(placeholder)) {
+          throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Resolve placeholders for each i18n op.
+ */
+function resolvePlaceholders(
+    job: ComponentCompilationJob, params: Map<ir.XrefId, I18nPlaceholderParams>,
+    i18nOps: Map<ir.XrefId, ir.I18nStartOp>) {
   for (const unit of job.units) {
-    const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
-    const params = new Map<ir.XrefId, I18nPlaceholderParams>();
+    const elements = new Map<ir.XrefId, ir.ElementStartOp>();
     let currentI18nOp: ir.I18nStartOp|null = null;
 
     // Record slots for tag name placeholders.
@@ -167,21 +211,42 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
           currentI18nOp = null;
           break;
         case ir.OpKind.ElementStart:
-        case ir.OpKind.Template:
           // For elements with i18n placeholders, record its slot value in the params map under both
           // the start and close placeholders.
           if (op.i18nPlaceholder !== undefined) {
             if (currentI18nOp === null) {
               throw Error('i18n tag placeholder should only occur inside an i18n block');
             }
-            const {startName, closeName} = op.i18nPlaceholder;
-            const subTemplateIndex = getSubTemplateIndexForTag(job, currentI18nOp, op);
-            const flags = op.kind === ir.OpKind.Template ? I18nParamValueFlags.TemplateTag :
-                                                           I18nParamValueFlags.ElementTag;
-            addParam(params, currentI18nOp, startName, op.slot!, subTemplateIndex, flags);
+            elements.set(op.xref, op);
             addParam(
-                params, currentI18nOp, closeName, op.slot!, subTemplateIndex,
-                flags | I18nParamValueFlags.CloseTag);
+                params, currentI18nOp, op.i18nPlaceholder.startName, op.slot!,
+                currentI18nOp.subTemplateIndex, I18nParamValueFlags.ElementTag);
+          }
+          break;
+        case ir.OpKind.ElementEnd:
+          const startOp = elements.get(op.xref);
+          if (startOp && startOp.i18nPlaceholder !== undefined) {
+            if (currentI18nOp === null) {
+              throw Error('i18n tag placeholder should only occur inside an i18n block');
+            }
+            addParam(
+                params, currentI18nOp, startOp.i18nPlaceholder.closeName, startOp.slot!,
+                currentI18nOp.subTemplateIndex,
+                I18nParamValueFlags.ElementTag | I18nParamValueFlags.CloseTag);
+          }
+          break;
+        case ir.OpKind.Template:
+          if (op.i18nPlaceholder !== undefined) {
+            if (currentI18nOp === null) {
+              throw Error('i18n tag placeholder should only occur inside an i18n block');
+            }
+            const subTemplateIndex = getSubTemplateIndexForTemplateTag(job, currentI18nOp, op);
+            addParam(
+                params, currentI18nOp, op.i18nPlaceholder.startName, op.slot!, subTemplateIndex,
+                I18nParamValueFlags.TemplateTag);
+            addParam(
+                params, currentI18nOp, op.i18nPlaceholder.closeName, op.slot!, subTemplateIndex,
+                I18nParamValueFlags.TemplateTag | I18nParamValueFlags.CloseTag);
           }
           break;
       }
@@ -200,11 +265,6 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
         i18nBlockPlaceholderIndices.set(op.owner, index);
       }
     }
-
-    // After colleccting all params, save them to the i18n ops.
-    for (const [xref, i18nOpParams] of params) {
-      i18nOpParams.saveToOp(i18nOps.get(xref)!);
-    }
   }
 }
 
@@ -215,24 +275,35 @@ function addParam(
     params: Map<ir.XrefId, I18nPlaceholderParams>, i18nOp: ir.I18nStartOp, placeholder: string,
     value: string|number, subTemplateIndex: number|null,
     flags: I18nParamValueFlags = I18nParamValueFlags.None) {
-  const i18nOpParams = params.get(i18nOp.xref) ?? new I18nPlaceholderParams();
+  const i18nOpParams = params.get(i18nOp.xref) || new I18nPlaceholderParams();
   i18nOpParams.addValue(placeholder, value, subTemplateIndex, flags);
   params.set(i18nOp.xref, i18nOpParams);
 }
 
 /**
- * Get the subTemplateIndex for the given op. For template ops, use the subTemplateIndex of the
- * child i18n block inside the template. For all other ops, use the subTemplateIndex of the i18n
- * block the op belongs to.
+ * Get the subTemplateIndex for the given template op. For template ops, use the subTemplateIndex of
+ * the child i18n block inside the template.
  */
-function getSubTemplateIndexForTag(
-    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, op: ir.CreateOp): number|null {
-  if (op.kind === ir.OpKind.Template) {
-    for (const childOp of job.views.get(op.xref)!.create) {
-      if (childOp.kind === ir.OpKind.I18nStart) {
-        return childOp.subTemplateIndex;
-      }
+function getSubTemplateIndexForTemplateTag(
+    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, op: ir.TemplateOp): number|null {
+  for (const childOp of job.views.get(op.xref)!.create) {
+    if (childOp.kind === ir.OpKind.I18nStart) {
+      return childOp.subTemplateIndex;
     }
   }
   return i18nOp.subTemplateIndex;
+}
+
+/**
+ * Propagate placeholders up to their root i18n op.
+ */
+function propagatePlaceholders(
+    params: Map<ir.XrefId, I18nPlaceholderParams>, i18nOps: Map<ir.XrefId, ir.I18nStartOp>) {
+  for (const [xref, opParams] of params) {
+    const op = i18nOps.get(xref)!;
+    if (op.xref !== op.root) {
+      const rootParams = params.get(op.root) || new I18nPlaceholderParams();
+      rootParams.merge(opParams);
+    }
+  }
 }
