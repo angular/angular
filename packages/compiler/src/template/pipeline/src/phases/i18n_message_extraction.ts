@@ -10,6 +10,7 @@ import {type ConstantPool} from '../../../../constant_pool';
 import * as i18n from '../../../../i18n/i18n_ast';
 import * as o from '../../../../output/output_ast';
 import {sanitizeIdentifier} from '../../../../parse_util';
+import {Identifiers} from '../../../../render3/r3_identifiers';
 import {createGoogleGetMsgStatements} from '../../../../render3/view/i18n/get_msg_utils';
 import {createLocalizeStatements} from '../../../../render3/view/i18n/localize_utils';
 import {declareI18nVariable, formatI18nPlaceholderNamesInMap, getTranslationConstPrefix} from '../../../../render3/view/i18n/util';
@@ -45,9 +46,11 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
           // `goog.getMsg` call
           const closureVar = i18nGenerateClosureVar(
               job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
-          // TODO: figure out transformFn.
-          const statements = getTranslationDeclStmts(
-              op.message, mainVar, closureVar, params, undefined /*transformFn*/);
+          const transformFn = op.needsPostprocessing ?
+              (expr: o.ReadVarExpr) => o.importExpr(Identifiers.i18nPostprocess).callFn([expr]) :
+              undefined;
+          const statements =
+              getTranslationDeclStmts(op.message, mainVar, closureVar, params, transformFn);
           unit.create.push(ir.createExtractedMessageOp(op.xref, mainVar, statements));
         }
       }

@@ -113,6 +113,11 @@ class I18nPlaceholderParams {
    */
   saveToOp(op: ir.I18nStartOp) {
     for (const [placeholder, placeholderValues] of this.values) {
+      // We need to run post-processing for any 1i8n ops that contain parameters with more than one
+      // value.
+      if (placeholderValues.length > 1) {
+        op.needsPostprocessing = true;
+      }
       op.params.set(placeholder, o.literal(this.serializeValues(placeholderValues)));
     }
   }
