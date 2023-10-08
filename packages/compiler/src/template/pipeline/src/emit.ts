@@ -44,7 +44,6 @@ import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selecto
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePropagateI18nBlocks} from './phases/propagate_i18n_blocks';
-import {phasePropagateI18nPlaceholders} from './phases/propagate_i18n_placeholders';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -102,7 +101,6 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseTemporaryVariables},
   {kind: Kind.Tmpl, fn: phaseSlotAllocation},
   {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
-  {kind: Kind.Tmpl, fn: phasePropagateI18nPlaceholders},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
   {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
   {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
