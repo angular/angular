@@ -94,13 +94,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "self_closing_tags.js",
+              "expected": "self_closing_tags.template.js",
+              "templatePipelineExpected": "self_closing_tags.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not emit duplicate i18n consts for nested <ng-container>s",
@@ -126,8 +132,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a self-closing container instruction for ng-container inside i18n",
@@ -141,8 +146,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate a self-closing container instruction for ng-container with non-text ",
