@@ -27,7 +27,7 @@ import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
 import {AfterRenderEventManager} from './after_render_hooks';
-import {assertComponentType} from './assert';
+import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {getNodeInjectable, NodeInjector} from './di';
@@ -246,6 +246,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         hostDirectiveDefs = new Map();
         rootComponentDef.findHostDirectiveDefs(rootComponentDef, rootDirectives, hostDirectiveDefs);
         rootDirectives.push(rootComponentDef);
+        ngDevMode && assertNoDuplicateDirectives(rootDirectives);
       } else {
         rootDirectives = [rootComponentDef];
       }

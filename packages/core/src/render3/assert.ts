@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
 
 import {getComponentDef, getNgModuleDef} from './definition';
@@ -140,6 +141,24 @@ export function assertParentView(lView: LView|null, errMessage?: string) {
       errMessage || 'Component views should always have a parent view (component\'s host view)');
 }
 
+export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
+  // The array needs at least two elements in order to have duplicates.
+  if (directives.length < 2) {
+    return;
+  }
+
+  const seenDirectives = new Set<DirectiveDef<unknown>>();
+
+  for (const current of directives) {
+    if (seenDirectives.has(current)) {
+      throw new RuntimeError(
+          RuntimeErrorCode.DUPLICATE_DIRECTITVE,
+          `Directive ${current.type.name} matches multiple times on the same element. ` +
+              `Directives can only match an element once.`);
+    }
+    seenDirectives.add(current);
+  }
+}
 
 /**
  * This is a basic sanity check that the `injectorIndex` seems to point to what looks like a
