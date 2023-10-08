@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
@@ -18,7 +17,7 @@ export function phaseNamespace(job: CompilationJob): void {
     let activeNamespace = ir.Namespace.HTML;
 
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.Element && op.kind !== ir.OpKind.ElementStart) {
+      if (op.kind !== ir.OpKind.ElementStart) {
         continue;
       }
       if (op.namespace !== activeNamespace) {
