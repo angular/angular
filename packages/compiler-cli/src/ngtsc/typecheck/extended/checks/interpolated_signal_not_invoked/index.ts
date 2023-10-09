@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
+import {AST, ASTWithName, ASTWithSource, Call, ImplicitReceiver, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
+import {BoundAttribute} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -24,30 +25,55 @@ class InterpolatedSignalCheck extends
       ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>,
       component: ts.ClassDeclaration,
       node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>[] {
-    if (!(node instanceof Interpolation)) {
-      return [];
-    }
-    return node.expressions.filter((item): item is PropertyRead => item instanceof PropertyRead)
-        .flatMap((item) => {
-          if (item instanceof PropertyRead) {
-            const symbol = ctx.templateTypeChecker.getSymbolOfNode(item, component)!;
-            if (symbol.kind === SymbolKind.Expression &&
-                /* can this condition be improved ? */
-                (symbol.tsType.symbol?.escapedName === 'WritableSignal' ||
-                 symbol.tsType.symbol?.escapedName === 'Signal') &&
-                (symbol.tsType.symbol as any).parent.escapedName.includes('@angular/core')) {
-              const templateMapping =
-                  ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
-
-              const errorString = `${item.name} is a function should be invoked : ${item.name}()`;
-              const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
-              return [diagnostic];
+    if (node instanceof Interpolation) {
+      return node.expressions.filter((item): item is PropertyRead => item instanceof PropertyRead)
+          .flatMap((item) => {
+            if (item instanceof PropertyRead) {
+              return buildDiagnosticForSignal(ctx, item, component);
             }
-          }
-          return [];
-        });
+            return [];
+          });
+    }
+
+    if (node instanceof BoundAttribute && node.value instanceof ASTWithSource) {
+      // We keeping PropertyRead & nested object (and ditching interpolations at this point)
+      if (!(node.value.ast instanceof PropertyRead) && !(node.value.ast instanceof Call)) {
+        return [];
+      }
+
+      let baseNode: PropertyRead = node.value.ast as PropertyRead;
+      while (baseNode instanceof Call && !(baseNode.receiver instanceof ImplicitReceiver)) {
+        baseNode = baseNode.receiver as PropertyRead;
+      }
+
+      return buildDiagnosticForSignal(ctx, baseNode, component);
+    }
+
+    return [];
   }
 }
+
+function buildDiagnosticForSignal(
+    ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>, node: PropertyRead,
+    component: ts.ClassDeclaration):
+    Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
+  const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
+  if (symbol?.kind === SymbolKind.Expression &&
+      /* can this condition be improved ? */
+      (symbol.tsType.symbol?.escapedName === 'WritableSignal' ||
+       symbol.tsType.symbol?.escapedName === 'Signal') &&
+      (symbol.tsType.symbol as any).parent.escapedName.includes('@angular/core')) {
+    const templateMapping =
+        ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
+
+    const errorString = `${node.name} is a function and should be invoked : ${node.name}()`;
+    const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
+    return [diagnostic];
+  }
+
+  return [];
+}
+
 
 export const factory: TemplateCheckFactory<
     ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED,
