@@ -3996,6 +3996,62 @@ suppress
         ]);
       });
 
+      it('should only produce one diagnostic if the switch expression has an error', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @switch (does_not_exist_main) {
+                @case (1) {
+                  One
+                }
+
+                @case (2) {
+                  Two
+                }
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist_main' does not exist on type 'Main'.`,
+        ]);
+      });
+
+      it('should check a switch block that only has a default case', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @switch (expr) {
+                @default {
+                  {{acceptsNumber(expr)}}
+                }
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string | number' is not assignable to parameter of type 'number'.  Type 'string' is not assignable to type 'number'.`
+        ]);
+      });
+
       it('should narrow the type inside switch cases', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -4015,6 +4071,49 @@ suppress
           })
           export class Main {
             expr: 'hello' | 1 = 'hello';
+
+            acceptsNumber(value: number) {
+              return value;
+            }
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`
+        ]);
+      });
+
+      it('should narrow the switch type based on a field', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          export interface Base {
+            type: 'foo' | 'bar'
+          }
+
+          export interface Foo extends Base {
+            type: 'foo';
+            foo: string;
+          }
+
+          export interface Bar extends Base {
+            type: 'bar';
+            bar: number;
+          }
+
+          @Component({
+            template: \`
+              @switch (value.type) {
+                @case ('foo') {
+                  {{ acceptsNumber(value.foo) }}
+                }
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            value: Foo | Bar = { type: 'foo', foo: 'foo' };
 
             acceptsNumber(value: number) {
               return value;
