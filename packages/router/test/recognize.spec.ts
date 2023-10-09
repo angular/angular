@@ -166,6 +166,19 @@ describe('recognize', async () => {
       expect(r.data).toEqual({two: 2});
     });
 
+    it('should not inherit route\'s data if it has loadComponent', async () => {
+      const s = await recognize(
+          [{
+            path: 'a',
+            loadComponent: () => ComponentA,
+            data: {one: 1},
+            children: [{path: 'b', data: {two: 2}, component: ComponentB}]
+          }],
+          'a/b');
+      const r: ActivatedRouteSnapshot = s.root.firstChild!.firstChild!;
+      expect(r.data).toEqual({two: 2});
+    });
+
     it('should inherit route\'s data if paramsInheritanceStrategy is \'always\'', async () => {
       const s = await recognize(
           [{
