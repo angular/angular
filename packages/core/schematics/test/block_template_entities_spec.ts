@@ -249,4 +249,31 @@ describe('Block template entities migration', () => {
 
     expect(content).toContain('template: `@</span>`');
   });
+
+  it('should not stop the migration if a file cannot be read', async () => {
+    writeFile('/comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: './does-not-exist.html'
+      })
+      class BrokenComp {}
+    `);
+
+    writeFile('/other-comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: './comp.html'
+      })
+      class Comp {}
+    `);
+
+    writeFile('/comp.html', 'My email is admin@test.com');
+
+    await runMigration();
+    const content = tree.readContent('/comp.html');
+
+    expect(content).toBe('My email is admin&#64;test.com');
+  });
 });
