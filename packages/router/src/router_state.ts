@@ -249,7 +249,7 @@ export function inheritedParamsDataResolve(
         inheritingStartingFrom--;
 
         // parent is componentless => current route should inherit its params and data
-      } else if (!parent.component) {
+      } else if (!parent.component && parent.routeConfig?.loadComponent === undefined) {
         inheritingStartingFrom--;
 
       } else {
