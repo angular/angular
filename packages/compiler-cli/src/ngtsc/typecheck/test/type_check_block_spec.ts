@@ -1444,8 +1444,20 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'switch (((this).expr)) { case 1: "" + ((this).one()); break; ' +
-              'case 2: "" + ((this).two()); break; default: "" + ((this).default()); break; }');
+              'if (((this).expr) === 1) { "" + ((this).one()); } else if ' +
+              '(((this).expr) === 2) { "" + ((this).two()); } else { "" + ((this).default()); }');
+    });
+
+    it('should generate a switch block that only has a default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('{ "" + ((this).default()); }');
     });
 
     it('should generate a switch block inside a template', () => {
@@ -1467,9 +1479,10 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'var _t1: any = null!; { var _t2 = (_t1.exp); switch (_t2()) { ' +
-              'case "one": "" + ((this).one()); break; case "two": "" + ((this).two()); break; ' +
-              'default: "" + ((this).default()); break; } } ');
+              'var _t1: any = null!; { var _t2 = (_t1.exp); _t2(); ' +
+              'if (_t2() === "one") { "" + ((this).one()); } ' +
+              'else if (_t2() === "two") { "" + ((this).two()); } ' +
+              'else { "" + ((this).default()); } }');
     });
   });
 
