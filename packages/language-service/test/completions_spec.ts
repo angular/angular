@@ -281,6 +281,25 @@ describe('completions', () => {
        });
   });
 
+  describe('for blocks', () => {
+    it('at top level', () => {
+      const {templateFile} = setup(`@`, ``);
+      templateFile.moveCursorToText('@¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK), ['if']);
+    });
+
+    it('inside if', () => {
+      const {templateFile} = setup(`@if (1) { @s }`, ``);
+      templateFile.moveCursorToText('@s¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+          ['switch']);
+    });
+  });
+
   describe('in an expression scope', () => {
     it('should return completions in a property access expression', () => {
       const {templateFile} = setup(`{{name.f}}`, `name!: {first: string; last: string;};`);
