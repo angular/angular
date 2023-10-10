@@ -298,6 +298,15 @@ describe('completions', () => {
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
           ['switch']);
     });
+
+    it('inside switch', () => {
+      const {templateFile} = setup(`@switch (1) { @c }`, ``);
+      templateFile.moveCursorToText('@c¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+          ['case']);
+    });
   });
 
   describe('in an expression scope', () => {

@@ -499,6 +499,7 @@ class TemplateTargetVisitor implements t.Visitor {
   visitSwitchBlock(block: t.SwitchBlock) {
     this.visitBinding(block.expression);
     this.visitAll(block.cases);
+    this.visitAll(block.unknownBlocks);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase) {
