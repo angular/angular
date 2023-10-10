@@ -7,7 +7,7 @@ A basic understanding of the following:
 *   [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule)
 
 An NgModule describes how the application parts fit together.
-Every application has at least one Angular module, the *root* module, which must be present for bootstrapping the application on launch.
+Except [Standalone Component](guide/standalone-components '"Standalone component" explained') as the application's root component, every application has at least one Angular module, the *root* module, which must be present for bootstrapping the application on launch.
 By convention and by default, this NgModule is named `AppModule`.
 
 When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` looks like the following:
