@@ -14,15 +14,6 @@ ts_library(
 )
 
 esbuild(
-    name = "compiler_options_cjs",
-    entry_point = ":compilerOptionsRule.ts",
-    format = "cjs",
-    output = "compilerOptionsCjsRule.js",
-    platform = "node",
-    deps = [":google3"],
-)
-
-esbuild(
     name = "wait_for_async_rule_cjs",
     entry_point = ":waitForAsyncRule.ts",
     format = "cjs",
