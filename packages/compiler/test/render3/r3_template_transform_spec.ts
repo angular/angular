@@ -1516,6 +1516,24 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a for loop block with newlines in its let parameters', () => {
+      expectFromHtml(`
+        @for (item of items.foo.bar; track item.id; let\nidx = $index,\nf = $first,\nc = $count,\nl = $last,\nev = $even,\nod = $odd) {
+          {{ item }}
+        }
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', 'idx', '$index'],
+        ['Variable', 'f', '$first'],
+        ['Variable', 'c', '$count'],
+        ['Variable', 'l', '$last'],
+        ['Variable', 'ev', '$even'],
+        ['Variable', 'od', '$odd'],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
     it('should parse nested for loop blocks', () => {
       expectFromHtml(`
         @for (item of items.foo.bar; track item.id) {
@@ -1551,6 +1569,21 @@ describe('R3 template transform', () => {
         ['Variable', 'item', '$implicit'],
         ['BoundText', ' {{ item }} '],
       ]);
+    });
+
+    it('should parse a for loop block with newlines in its expression', () => {
+      const expectedResult = [
+        ['ForLoopBlock', 'items.foo.bar', 'item.id + foo'],
+        ['Variable', 'item', '$implicit'],
+        ['BoundText', '{{ item }}'],
+      ];
+
+      expectFromHtml(`
+        @for (item\nof\nitems.foo.bar; track item.id +\nfoo) {{{ item }}}
+      `).toEqual(expectedResult);
+      expectFromHtml(`
+        @for ((item\nof\nitems.foo.bar); track (item.id +\nfoo)) {{{ item }}}
+      `).toEqual(expectedResult);
     });
 
     describe('validations', () => {
