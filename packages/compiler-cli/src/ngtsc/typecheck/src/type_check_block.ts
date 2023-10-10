@@ -1348,8 +1348,9 @@ class TcbSwitchOp extends TcbOp {
     // If we've reached the end, output the default case as the final `else`.
     if (index >= this.block.cases.length) {
       if (defaultCase !== null) {
-        // TODO(crisbeto): pass the guard once #52069 is merged.
-        const defaultScope = Scope.forNodes(this.tcb, this.scope, null, defaultCase.children, null);
+        const defaultScope = Scope.forNodes(
+            this.tcb, this.scope, null, defaultCase.children,
+            this.generateGuard(defaultCase, switchValue));
         return ts.factory.createBlock(defaultScope.render());
       }
       return undefined;
@@ -1362,8 +1363,8 @@ class TcbSwitchOp extends TcbOp {
       return this.generateCase(index + 1, switchValue, current);
     }
 
-    // TODO(crisbeto): pass the guard once #52069 is merged.
-    const caseScope = Scope.forNodes(this.tcb, this.scope, null, current.children, null);
+    const caseScope = Scope.forNodes(
+        this.tcb, this.scope, null, current.children, this.generateGuard(current, switchValue));
     const caseValue = tcbExpression(current.expression, this.tcb, caseScope);
 
     // TODO(crisbeto): change back to a switch statement when the TS bug is resolved.
@@ -1377,6 +1378,50 @@ class TcbSwitchOp extends TcbOp {
             switchValue, ts.SyntaxKind.EqualsEqualsEqualsToken, caseValue),
         ts.factory.createBlock(caseScope.render()),
         this.generateCase(index + 1, switchValue, defaultCase));
+  }
+
+  private generateGuard(node: TmplAstSwitchBlockCase, switchValue: ts.Expression): ts.Expression
+      |null {
+    // For non-default cases, the guard needs to compare against the case value, e.g.
+    // `switchExpression === caseExpression`.
+    if (node.expression !== null) {
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(node.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      return ts.factory.createBinaryExpression(
+          switchValue, ts.SyntaxKind.EqualsEqualsEqualsToken, expression);
+    }
+
+    // To fully narrow the type in the default case, we need to generate an expression that negates
+    // the values of all of the other expressions. For example:
+    // @switch (expr) {
+    //   @case (1) {}
+    //   @case (2) {}
+    //   @default {}
+    // }
+    // Will produce the guard `expr !== 1 && expr !== 2`.
+    let guard: ts.Expression|null = null;
+
+    for (const current of this.block.cases) {
+      if (current.expression === null) {
+        continue;
+      }
+
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(current.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      const comparison = ts.factory.createBinaryExpression(
+          switchValue, ts.SyntaxKind.ExclamationEqualsEqualsToken, expression);
+
+      if (guard === null) {
+        guard = comparison;
+      } else {
+        guard = ts.factory.createBinaryExpression(
+            guard, ts.SyntaxKind.AmpersandAmpersandToken, comparison);
+      }
+    }
+
+    return guard;
   }
 }
 
