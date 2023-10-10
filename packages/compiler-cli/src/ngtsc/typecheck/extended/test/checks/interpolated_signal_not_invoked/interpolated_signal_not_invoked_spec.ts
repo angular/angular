@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
           .toBe(ExtendedTemplateDiagnosticName.INTERPOLATED_SIGNAL_NOT_INVOKED);
     });
 
-    it('should not produce a warning', () => {
+    it('should not produce a warning when a signal getter is invoked', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([
         coreDtsWithSignals(),
@@ -80,7 +80,7 @@ runInEachFileSystem(() => {
 
           export class TestCmp {
             mySignal1 = signal<number>(0);
-            mySignal2:Signal<number>;        
+            mySignal2:Signal<number>;
           }`,
       },
     ]);
@@ -97,90 +97,6 @@ runInEachFileSystem(() => {
     expect(getSourceCodeForDiagnostic(diags[1])).toBe(`mySignal2`);
   });
 
-  it('should produce a warning when a signal binding isn\'t invoked', () => {
-    const fileName = absoluteFrom('/main.ts');
-    const {program, templateTypeChecker} = setup([
-      coreDtsWithSignals(),
-      {
-        fileName,
-        templates: {
-          'TestCmp': `<div [id]="mySignal"></div>`,
-        },
-        source: `
-          import {signal, Signal} from '@angular/core';
-
-          export class TestCmp {
-            mySignal = signal<number>(0);
-          }`,
-      },
-    ]);
-    const sf = getSourceFileOrError(program, fileName);
-    const component = getClass(sf, 'TestCmp');
-    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {} /* options */
-    );
-    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(1);
-    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
-    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
-  });
-
-  it('should produce a warning when a binding with a nested signal isn\'t invoked', () => {
-    const fileName = absoluteFrom('/main.ts');
-    const {program, templateTypeChecker} = setup([
-      coreDtsWithSignals(),
-      {
-        fileName,
-        templates: {
-          'TestCmp': `<div [id]="myObject.myObject2.mySignal"></div>`,
-        },
-        source: `
-          import {signal, Signal} from '@angular/core';
-
-          export class TestCmp {
-            myObject = {myObject2: {mySignal: signal<number>(0)}};
-          }`,
-      },
-    ]);
-    const sf = getSourceFileOrError(program, fileName);
-    const component = getClass(sf, 'TestCmp');
-    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {} /* options */
-    );
-    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(1);
-    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
-    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
-  });
-
-  it('should not produce a warning when a binding with a nested signal is invoked', () => {
-    const fileName = absoluteFrom('/main.ts');
-    const {program, templateTypeChecker} = setup([
-      coreDtsWithSignals(),
-      {
-        fileName,
-        templates: {
-          'TestCmp': `<div [id]="myObject.myObject2.mySignal()"></div>`,
-        },
-        source: `
-          import {signal, Signal} from '@angular/core';
-
-          export class TestCmp {
-            myObject = {myObject2: {mySignal: signal<number>(0)}};
-          }`,
-      },
-    ]);
-    const sf = getSourceFileOrError(program, fileName);
-    const component = getClass(sf, 'TestCmp');
-    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {} /* options */
-    );
-    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(0);
-  });
-
   it('should produce a warning when a computed signal isn\'t invoked', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
@@ -195,7 +111,7 @@ runInEachFileSystem(() => {
 
           export class TestCmp {
             mySignal1 = signal<number>(0);
-            mySignal2 = computed(() => mySignal() * 2);   
+            mySignal2 = computed(() => mySignal() * 2);
           }`,
       },
     ]);
@@ -225,7 +141,7 @@ runInEachFileSystem(() => {
 
           export class TestCmp {
             mySignal1 = signal<number>(0);
-            mySignal2 = computed(() => mySignal() * 2);   
+            mySignal2 = computed(() => mySignal() * 2);
           }`,
       },
     ]);
@@ -292,6 +208,63 @@ runInEachFileSystem(() => {
     const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
     expect(diags.length).toBe(0);
   });
+
+  it('should produce a warning when signal is invoked in attribute binding interpolation ', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      coreDtsWithSignals(),
+      {
+        fileName,
+        templates: {
+          'TestCmp': `<div attr.id="my-{{mySignal}}-item"></div>`,
+        },
+        source: `
+          import {signal, Signal, computed} from '@angular/core';
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {} /* options */
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
+  });
+
+  it('should not produce a warning when signal is invoked in attribute binding interpolation ',
+     () => {
+       const fileName = absoluteFrom('/main.ts');
+       const {program, templateTypeChecker} = setup([
+         coreDtsWithSignals(),
+         {
+           fileName,
+           templates: {
+             'TestCmp': `<div attr.id="my-{{mySignal()}}-item"></div>`,
+           },
+           source: `
+          import {signal, Signal, computed} from '@angular/core';
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+         },
+       ]);
+       const sf = getSourceFileOrError(program, fileName);
+       const component = getClass(sf, 'TestCmp');
+       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+           templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {}
+           /* options */
+       );
+       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+       expect(diags.length).toBe(0);
+     });
 
   it('should produce a warning when nested signal isn\'t invoked on interpolated binding', () => {
     const fileName = absoluteFrom('/main.ts');
@@ -364,9 +337,9 @@ runInEachFileSystem(() => {
           export class TestCmp {
             mySignal = signal(0);
 
-            foo(signal: Signal) { 
-              return 'foo' 
-            } 
+            foo(signal: Signal) {
+              return 'foo'
+            }
           }
           `,
       },

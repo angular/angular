@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithName, ASTWithSource, Call, ImplicitReceiver, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
-import {BoundAttribute} from '@angular/compiler/src/render3/r3_ast';
+import {AST, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -34,21 +33,6 @@ class InterpolatedSignalCheck extends
             return [];
           });
     }
-
-    if (node instanceof BoundAttribute && node.value instanceof ASTWithSource) {
-      // We keeping PropertyRead & nested object (and ditching interpolations at this point)
-      if (!(node.value.ast instanceof PropertyRead) && !(node.value.ast instanceof Call)) {
-        return [];
-      }
-
-      let baseNode: PropertyRead = node.value.ast as PropertyRead;
-      while (baseNode instanceof Call && !(baseNode.receiver instanceof ImplicitReceiver)) {
-        baseNode = baseNode.receiver as PropertyRead;
-      }
-
-      return buildDiagnosticForSignal(ctx, baseNode, component);
-    }
-
     return [];
   }
 }
@@ -73,7 +57,6 @@ function buildDiagnosticForSignal(
 
   return [];
 }
-
 
 export const factory: TemplateCheckFactory<
     ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED,
