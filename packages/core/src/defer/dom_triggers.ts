@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injector, ɵɵdefineInjectable} from '../../di';
-import {NgZone} from '../../zone';
+import {inject, Injector, ɵɵdefineInjectable} from '../di';
+import {afterRender} from '../render3/after_render_hooks';
+import {assertLContainer, assertLView} from '../render3/assert';
+import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
+import {TNode} from '../render3/interfaces/node';
+import {FLAGS, HEADER_OFFSET, INJECTOR, LView, LViewFlags} from '../render3/interfaces/view';
+import {getNativeByIndex, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../render3/util/view_utils';
+import {assertElement, assertEqual} from '../util/assert';
+import {NgZone} from '../zone';
+
+import {DEFER_BLOCK_STATE, DeferBlockInternalState, DeferBlockState} from './interfaces';
+import {getLDeferBlockDetails} from './utils';
 
 /** Configuration object used to register passive and capturing events. */
 const eventListenerOptions: AddEventListenerOptions = {
@@ -204,4 +214,118 @@ class DeferIntersectionManager {
       }
     }
   }
+}
+
+/**
+ * Helper function to get the LView in which a deferred block's trigger is rendered.
+ * @param deferredHostLView LView in which the deferred block is defined.
+ * @param deferredTNode TNode defining the deferred block.
+ * @param walkUpTimes Number of times to go up in the view hierarchy to find the trigger's view.
+ *   A negative value means that the trigger is inside the block's placeholder, while an undefined
+ *   value means that the trigger is in the same LView as the deferred block.
+ */
+export function getTriggerLView(
+    deferredHostLView: LView, deferredTNode: TNode, walkUpTimes: number|undefined): LView|null {
+  // The trigger is in the same view, we don't need to traverse.
+  if (walkUpTimes == null) {
+    return deferredHostLView;
+  }
+
+  // A positive value or zero means that the trigger is in a parent view.
+  if (walkUpTimes >= 0) {
+    return walkUpViews(walkUpTimes, deferredHostLView);
+  }
+
+  // If the value is negative, it means that the trigger is inside the placeholder.
+  const deferredContainer = deferredHostLView[deferredTNode.index];
+  ngDevMode && assertLContainer(deferredContainer);
+  const triggerLView = deferredContainer[CONTAINER_HEADER_OFFSET] ?? null;
+
+  // We need to null check, because the placeholder might not have been rendered yet.
+  if (ngDevMode && triggerLView !== null) {
+    const lDetails = getLDeferBlockDetails(deferredHostLView, deferredTNode);
+    const renderedState = lDetails[DEFER_BLOCK_STATE];
+    assertEqual(
+        renderedState, DeferBlockState.Placeholder,
+        'Expected a placeholder to be rendered in this defer block.');
+    assertLView(triggerLView);
+  }
+
+  return triggerLView;
+}
+
+/**
+ * Gets the element that a deferred block's trigger is pointing to.
+ * @param triggerLView LView in which the trigger is defined.
+ * @param triggerIndex Index at which the trigger element should've been rendered.
+ */
+export function getTriggerElement(triggerLView: LView, triggerIndex: number): Element {
+  const element = getNativeByIndex(HEADER_OFFSET + triggerIndex, triggerLView);
+  ngDevMode && assertElement(element);
+  return element as Element;
+}
+
+/**
+ * Registers a DOM-node based trigger.
+ * @param initialLView LView in which the defer block is rendered.
+ * @param tNode TNode representing the defer block.
+ * @param triggerIndex Index at which to find the trigger element.
+ * @param walkUpTimes Number of times to go up/down in the view hierarchy to find the trigger.
+ * @param registerFn Function that will register the DOM events.
+ * @param callback Callback to be invoked when the trigger receives the event that should render
+ *     the deferred block.
+ */
+export function registerDomTrigger(
+    initialLView: LView, tNode: TNode, triggerIndex: number, walkUpTimes: number|undefined,
+    registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
+    callback: VoidFunction) {
+  const injector = initialLView[INJECTOR]!;
+
+  // Assumption: the `afterRender` reference should be destroyed
+  // automatically so we don't need to keep track of it.
+  const afterRenderRef = afterRender(() => {
+    const lDetails = getLDeferBlockDetails(initialLView, tNode);
+    const renderedState = lDetails[DEFER_BLOCK_STATE];
+
+    // If the block was loaded before the trigger was resolved, we don't need to do anything.
+    if (renderedState !== DeferBlockInternalState.Initial &&
+        renderedState !== DeferBlockState.Placeholder) {
+      afterRenderRef.destroy();
+      return;
+    }
+
+    const triggerLView = getTriggerLView(initialLView, tNode, walkUpTimes);
+
+    // Keep polling until we resolve the trigger's LView.
+    // `afterRender` should stop automatically if the view is destroyed.
+    if (!triggerLView) {
+      return;
+    }
+
+    // It's possible that the trigger's view was destroyed before we resolved the trigger element.
+    if (triggerLView[FLAGS] & LViewFlags.Destroyed) {
+      afterRenderRef.destroy();
+      return;
+    }
+
+    // TODO: add integration with `DeferBlockCleanupManager`.
+    const element = getTriggerElement(triggerLView, triggerIndex);
+    const cleanup = registerFn(element, () => {
+      callback();
+      removeLViewOnDestroy(triggerLView, cleanup);
+      if (initialLView !== triggerLView) {
+        removeLViewOnDestroy(initialLView, cleanup);
+      }
+      cleanup();
+    }, injector);
+
+    afterRenderRef.destroy();
+    storeLViewOnDestroy(triggerLView, cleanup);
+
+    // Since the trigger and deferred block might be in different
+    // views, we have to register the callback in both locations.
+    if (initialLView !== triggerLView) {
+      storeLViewOnDestroy(initialLView, cleanup);
+    }
+  }, {injector});
 }

@@ -1116,6 +1116,9 @@
     "name": "init_cleanup"
   },
   {
+    "name": "init_cleanup2"
+  },
+  {
     "name": "init_closure"
   },
   {
@@ -1221,16 +1224,7 @@
     "name": "init_default_keyvalue_differ"
   },
   {
-    "name": "init_defer"
-  },
-  {
-    "name": "init_defer2"
-  },
-  {
     "name": "init_defer_component"
-  },
-  {
-    "name": "init_defer_events"
   },
   {
     "name": "init_definition"
@@ -1275,6 +1269,9 @@
     "name": "init_directives"
   },
   {
+    "name": "init_discovery"
+  },
+  {
     "name": "init_discovery_utils"
   },
   {
@@ -1285,6 +1282,9 @@
   },
   {
     "name": "init_dom"
+  },
+  {
+    "name": "init_dom_triggers"
   },
   {
     "name": "init_effect"
@@ -1422,6 +1422,9 @@
     "name": "init_identity"
   },
   {
+    "name": "init_idle_scheduler"
+  },
+  {
     "name": "init_iframe_attrs_validation"
   },
   {
@@ -1482,7 +1485,13 @@
     "name": "init_input_transforms_feature"
   },
   {
+    "name": "init_instructions"
+  },
+  {
     "name": "init_interfaces"
+  },
+  {
+    "name": "init_interfaces2"
   },
   {
     "name": "init_internal_tokens"
@@ -1890,6 +1899,9 @@
     "name": "init_text_interpolation"
   },
   {
+    "name": "init_timer_scheduler"
+  },
+  {
     "name": "init_toSubscriber"
   },
   {
@@ -1930,6 +1942,9 @@
   },
   {
     "name": "init_utils"
+  },
+  {
+    "name": "init_utils2"
   },
   {
     "name": "init_version"

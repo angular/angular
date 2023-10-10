@@ -23,7 +23,7 @@ import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
-import {TDeferBlockDetails} from './defer';
+import {TDeferBlockDetails} from '../../defer/interfaces';
 
 
 
