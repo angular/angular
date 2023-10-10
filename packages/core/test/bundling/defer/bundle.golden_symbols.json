@@ -201,6 +201,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
@@ -651,9 +654,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -753,7 +753,7 @@
     "name": "detectChangesInEmbeddedViews"
   },
   {
-    "name": "detectChangesInView"
+    "name": "detectChangesInViewIfAttached"
   },
   {
     "name": "detectChangesInternal"
@@ -1797,6 +1797,9 @@
     "name": "init_security"
   },
   {
+    "name": "init_set_debug_info"
+  },
+  {
     "name": "init_share"
   },
   {
@@ -2118,6 +2121,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -2352,13 +2358,16 @@
     "name": "unwrapRNode"
   },
   {
+    "name": "updateAncestorTraversalFlagsOnAttach"
+  },
+  {
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"
