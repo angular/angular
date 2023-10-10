@@ -87,7 +87,7 @@
     "@types/diff": "^5.0.0",
     "@types/dom-view-transitions": "^1.0.1",
     "@types/hammerjs": "2.0.42",
-    "@types/jasmine": "^4.0.0",
+    "@types/jasmine": "^5.0.0",
     "@types/jasmine-ajax": "^3.3.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^16.11.7",
