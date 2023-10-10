@@ -16,6 +16,8 @@ import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
 import {DestroyRef} from '../../linker/destroy_ref';
 
+import {assertNotInReactiveContext} from './asserts';
+
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
@@ -254,6 +256,12 @@ export interface CreateEffectOptions {
 export function effect(
     effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
     options?: CreateEffectOptions): EffectRef {
+  ngDevMode &&
+      assertNotInReactiveContext(
+          effect,
+          'Call `effect` outside of a reactive context. For example, schedule the ' +
+              'effect inside the component constructor.');
+
   !options?.injector && assertInInjectionContext(effect);
   const injector = options?.injector ?? inject(Injector);
   const errorHandler = injector.get(ErrorHandler, null, {optional: true});
