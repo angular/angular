@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
@@ -166,6 +167,12 @@ export interface AfterRenderRef {
  * @developerPreview
  */
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
+  ngDevMode &&
+      assertNotInReactiveContext(
+          afterRender,
+          'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
+              'callback inside the component constructor`.');
+
   !options && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
 

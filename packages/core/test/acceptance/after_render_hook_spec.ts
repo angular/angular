@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, computed, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
@@ -363,6 +363,61 @@ describe('after render hooks', () => {
           'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
           'mixed-read-write-2', 'read-1', 'read-2'
         ]);
+      });
+
+      describe('throw error inside reactive context', () => {
+        it('inside template effect', () => {
+          @Component({template: `{{someFn()}}`})
+          class TestCmp {
+            someFn() {
+              afterRender(() => {});
+            }
+          }
+
+          const fixture = TestBed.createComponent(TestCmp);
+          expect(() => fixture.detectChanges())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
+
+        it('inside computed', () => {
+          const testComputed = computed(() => {
+            afterRender(() => {});
+          });
+
+          expect(() => testComputed())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
+
+        it('inside effect', () => {
+          @Component({template: ``})
+          class TestCmp {
+            constructor() {
+              effect(() => {
+                this.someFnThatWillScheduleAfterRender();
+              });
+            }
+
+            someFnThatWillScheduleAfterRender() {
+              afterRender(() => {});
+            }
+          }
+
+          TestBed.configureTestingModule({
+            providers: [
+              {
+                provide: ErrorHandler, useClass: class extends ErrorHandler{
+                  override handleError(e: Error) {
+                    throw e;
+                  }
+                },
+              },
+            ]
+          });
+          TestBed.createComponent(TestCmp);
+
+          expect(() => TestBed.flushEffects())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
       });
     });
 
