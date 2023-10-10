@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, SchemaMetadata} from '@angular/core';
+import {InjectionToken, SchemaMetadata, ɵDeferBlockBehavior as DeferBlockBehavior} from '@angular/core';
 
 
 /** Whether test modules should be torn down by default. */
@@ -61,6 +61,12 @@ export interface TestModuleMetadata {
    * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
+
+  /**
+   * Whether defer blocks should behave with manual triggering or play through normally.
+   * Defaults to `manual`.
+   */
+  deferBlockBehavior?: DeferBlockBehavior;
 }
 
 /**

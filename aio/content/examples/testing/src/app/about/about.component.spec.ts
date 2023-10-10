@@ -1,8 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { UserService } from '../model';
+import { TwainService } from '../twain/twain.service';
+
 import { AboutComponent } from './about.component';
-import { HighlightDirective } from '../shared/highlight.directive';
 
 let fixture: ComponentFixture<AboutComponent>;
 
@@ -10,10 +13,10 @@ describe('AboutComponent (highlightDirective)', () => {
   // #docregion tests
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      declarations: [ AboutComponent, HighlightDirective ],
-      schemas:      [ CUSTOM_ELEMENTS_SCHEMA ]
-    })
-    .createComponent(AboutComponent);
+      imports: [AboutComponent],
+      providers: [provideHttpClient(), TwainService, UserService],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).createComponent(AboutComponent);
     fixture.detectChanges(); // initial binding
   });
 

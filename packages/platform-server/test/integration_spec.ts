@@ -11,15 +11,14 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
+import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoHttpTransferCache} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
-import {first} from 'rxjs/operators';
 
 import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 
@@ -725,7 +724,7 @@ describe('platform-server integration', () => {
 
       const moduleRef = await platform.bootstrapModule(AsyncServerModule);
       const applicationRef = moduleRef.injector.get(ApplicationRef);
-      await applicationRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+      await whenStable(applicationRef);
       // Note: the `ng-server-context` is not present in this output, since
       // `renderModule` or `renderApplication` functions are not used here.
       const expectedOutput = '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
@@ -910,60 +909,6 @@ describe('platform-server integration', () => {
         const output = await bootstrap;
         expect(output).toMatch(/ng-server-context="ssg\|httpcache,hydration"/);
       });
-
-      it('should include a set of features into `ng-server-context` attribute ' +
-             '(excluding disabled hydration feature)',
-         async () => {
-           const options = {
-             document: doc,
-           };
-           const providers = [{
-             provide: SERVER_CONTEXT,
-             useValue: 'ssg',
-           }];
-           @Component({
-             standalone: true,
-             selector: 'app',
-             template: `<div>Works!</div>`,
-           })
-           class SimpleApp {
-           }
-
-           const bootstrap = renderApplication(
-               getStandaloneBoostrapFn(SimpleApp, [provideClientHydration(withNoDomReuse())]),
-               {...options, platformProviders: providers});
-           const output = await bootstrap;
-           // Dom hydration is disabled, so it should not be included.
-           expect(output).toMatch(/ng-server-context="ssg\|httpcache"/);
-         });
-
-      it('should not include features into `ng-server-context` attribute ' +
-             'when all features are disabled',
-         async () => {
-           const options = {
-             document: doc,
-           };
-           const providers = [{
-             provide: SERVER_CONTEXT,
-             useValue: 'ssg',
-           }];
-           @Component({
-             standalone: true,
-             selector: 'app',
-             template: `<div>Works!</div>`,
-           })
-           class SimpleApp {
-           }
-
-           const bootstrap = renderApplication(
-               getStandaloneBoostrapFn(
-                   SimpleApp,
-                   [provideClientHydration(withNoDomReuse(), withNoHttpTransferCache())]),
-               {...options, platformProviders: providers});
-           const output = await bootstrap;
-           // All features were disabled, so none of them are included.
-           expect(output).toMatch(/ng-server-context="ssg"/);
-         });
 
       it('should handle false values on attributes', async () => {
         const options = {document: doc};

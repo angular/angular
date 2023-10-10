@@ -1,8 +1,0 @@
-{
-  "name": "zone-mix",
-  "description": "Zone.js for mixed environment(both browser and NodeJS) such as Electron",
-  "main": "../bundles/zone-mix.umd.js",
-  "module": "../fesm2015/zone-mix.js",
-  "es2015": "../fesm2015/zone-mix.js",
-  "fesm2015": "../fesm2015/zone-mix.js"
-}

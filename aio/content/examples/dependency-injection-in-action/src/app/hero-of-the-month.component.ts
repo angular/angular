@@ -15,6 +15,7 @@ import { LoggerService } from './logger.service';
 import { MinimalLogger } from './minimal-logger.service';
 import { RUNNERS_UP,
          runnersUpFactory } from './runners-up';
+import { NgFor } from '@angular/common';
 
 // #enddocregion hero-of-the-month
 // #docregion some-hero
@@ -23,6 +24,7 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
 
 // #docregion hero-of-the-month
 @Component({
+  standalone: true,
   selector: 'app-hero-of-the-month',
   templateUrl: './hero-of-the-month.component.html',
   providers: [
@@ -42,7 +44,8 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
     // #docregion provide-injection-token, use-factory
     { provide: RUNNERS_UP,    useFactory:  runnersUpFactory(2), deps: [Hero, HeroService] }
     // #enddocregion provide-injection-token, use-factory
-  ]
+  ],
+  imports: [NgFor]
 })
 export class HeroOfTheMonthComponent {
   logs: string[] = [];

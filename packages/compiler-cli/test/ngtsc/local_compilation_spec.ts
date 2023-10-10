@@ -62,7 +62,7 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({})');
       });
 
-      it('should include raw module imports (including forward refs) in the injector def imports',
+      it('should include raw module imports array elements (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -90,7 +90,36 @@ runInEachFileSystem(() => {
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)] })');
          });
 
-      it('should include raw module exports (including forward refs) in the injector def imports',
+      it('should include non-array raw module imports as it is in the injector def imports', () => {
+        env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {SubModule1} from './some-where';
+        import {SubModule2} from './another-where';
+
+        const NG_IMPORTS = [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)];
+
+        @NgModule({})
+        class LocalModule1 {}
+
+        @NgModule({
+          imports: NG_IMPORTS,
+        })
+        export class MainModule {
+        }
+
+        @NgModule({})
+        class LocalModule2 {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_IMPORTS] })');
+      });
+
+      it('should include raw module exports array elements (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -118,7 +147,37 @@ runInEachFileSystem(() => {
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)] })');
          });
 
-      it('should combine raw module imports and exports (including forward refs) in the injector def imports',
+      it('should include non-array raw module exports (including forward refs) in the injector def imports',
+         () => {
+           env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {SubModule1} from './some-where';
+        import {SubModule2} from './another-where';
+
+        const NG_EXPORTS = [SubModule1, forwardRef(() => SubModule2), LocalModule1, forwardRef(() => LocalModule2)];
+
+        @NgModule({})
+        class LocalModule1 {}
+
+        @NgModule({
+          exports: NG_EXPORTS,
+        })
+        export class MainModule {
+        }
+
+        @NgModule({})
+        class LocalModule2 {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_EXPORTS] })');
+         });
+
+      it('should concat raw module imports and exports arrays (including forward refs) in the injector def imports',
          () => {
            env.write('test.ts', `
         import {NgModule, forwardRef} from '@angular/core';
@@ -139,6 +198,29 @@ runInEachFileSystem(() => {
            expect(jsContents)
                .toContain(
                    'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SubModule1, forwardRef(() => SubModule2), SubModule3, forwardRef(() => SubModule4)] })');
+         });
+
+      it('should combines non-array raw module imports and exports (including forward refs) in the injector def imports',
+         () => {
+           env.write('test.ts', `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {NG_IMPORTS} from './some-where';
+        import {NG_EXPORTS} from './another-where';
+
+        @NgModule({
+          imports: NG_IMPORTS,
+          exports: NG_EXPORTS,
+        })
+        export class MainModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'MainModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NG_IMPORTS, NG_EXPORTS] })');
          });
     });
 
@@ -194,7 +276,33 @@ runInEachFileSystem(() => {
                    'dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [SomeThing, forwardRef(() => SomeThing2)])');
          });
 
-      it('should not generate ɵɵgetComponentDepsFactory for standalone component with empty imports',
+      it('should generate ɵɵgetComponentDepsFactory with raw non-array imports as second param for component def dependencies - for standalone component with non-empty imports',
+         () => {
+           env.write('test.ts', `
+          import {Component, forwardRef} from '@angular/core';
+          import {SomeThing} from 'some-where';
+          import {SomeThing2} from 'some-where2';
+
+          const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
+          
+          @Component({
+            standalone: true,
+            imports: NG_IMPORTS,
+            selector: 'test-main',
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, NG_IMPORTS)');
+         });
+
+      it('should generate ɵɵgetComponentDepsFactory with empty array as secon d arg for standalone component with empty imports',
          () => {
            env.write('test.ts', `
       import {Component} from '@angular/core';
@@ -213,7 +321,7 @@ runInEachFileSystem(() => {
            const jsContents = env.getContents('test.js');
 
            expect(jsContents)
-               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent)');
+               .toContain('dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [])');
          });
 
       it('should not generate ɵɵgetComponentDepsFactory for standalone component with no imports',
@@ -237,6 +345,127 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('component fields', () => {
+      it('should place the changeDetection as it is into the component def', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {SomeWeirdThing} from 'some-where';
+          
+          @Component({
+            changeDetection: SomeWeirdThing,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('changeDetection: SomeWeirdThing');
+      });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with no styles',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.Emulated,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // If there is no style, don't generate css selectors on elements by setting
+           // encapsulation to none (=2)
+           expect(jsContents).toContain('encapsulation: 2');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with styles',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.Emulated,
+            styles: ['color: blue'],
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // encapsulation is set only for non-default value
+           expect(jsContents).not.toContain('encapsulation: 0');
+           expect(jsContents).toContain('styles: ["color: blue"]');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.ShadowDom',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.ShadowDom,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toContain('encapsulation: 3');
+         });
+
+      it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.None',
+         () => {
+           env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            encapsulation: ViewEncapsulation.None,
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toContain('encapsulation: 2');
+         });
+
+      it('should default encapsulation to Emulated', () => {
+        env.write('test.ts', `
+          import {Component, ViewEncapsulation} from '@angular/core';          
+          
+          @Component({
+            template: '<span>Hello world!</span>',
+          })
+          export class MainComponent {
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // If there is no style, don't generate css selectors on elements by setting encapsulation
+        // to none (=2)
+        expect(jsContents).toContain('encapsulation: 2');
+      });
+    });
+
     describe('constructor injection', () => {
       it('should include injector types with all possible import/injection styles into component factory',
          () => {
@@ -246,6 +475,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Component({
             selector: 'test-main',
@@ -256,6 +486,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -273,7 +504,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone component factory',
@@ -284,6 +515,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Component({
             standalone: true,
@@ -295,6 +527,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -306,7 +539,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into directive factory',
@@ -317,6 +550,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Directive({
           })
@@ -325,6 +559,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -342,7 +577,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone directive factory',
@@ -353,6 +588,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Directive({
             standalone: true,
@@ -362,6 +598,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -373,7 +610,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into pipe factory',
@@ -384,6 +621,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Pipe({name: 'pipe'})
           export class MainPipe {         
@@ -391,6 +629,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -408,7 +647,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone pipe factory',
@@ -419,6 +658,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Pipe({
             name: 'pipe',
@@ -429,6 +669,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -440,7 +681,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into injectable factory',
@@ -451,6 +692,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @Injectable({
             providedIn: 'root',
@@ -460,6 +702,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -471,7 +714,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into ng module factory',
@@ -482,6 +725,7 @@ runInEachFileSystem(() => {
           import {SomeService1} from './some-where1'
           import SomeService2 from './some-where2'
           import * as SomeWhere3 from './some-where3'
+          import * as SomeWhere4 from './some-where4'
 
           @NgModule({
           })
@@ -490,6 +734,7 @@ runInEachFileSystem(() => {
               private someService1: SomeService1,
               private someService2: SomeService2,
               private someService3: SomeWhere3.SomeService3,
+              private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
               ) {}  
@@ -501,7 +746,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
          });
     });
 
@@ -560,6 +805,56 @@ runInEachFileSystem(() => {
 
            expect(text).toContain('Unknown identifier used as styles string: ExternalString');
            expect(text).toContain('either inline it or move it to a separate file');
+         });
+    });
+
+    describe('ng module bootstrap def', () => {
+      it('should include the bootstrap definition in ɵɵsetNgModuleScope instead of ɵɵdefineNgModule',
+         () => {
+           env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {App} from './some-where';
+
+        @NgModule({
+          declarations: [App],
+          bootstrap: [App],
+        })
+        export class AppModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵsetNgModuleScope(AppModule, { declarations: [App], bootstrap: [App] }); })();');
+         });
+
+      it('should include no bootstrap definition in ɵɵsetNgModuleScope if the NgModule has no bootstrap field',
+         () => {
+           env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {App} from './some-where';
+
+        @NgModule({
+          declarations: [App],
+        })
+        export class AppModule {
+        }
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });');
+           expect(jsContents)
+               .toContain('ɵɵsetNgModuleScope(AppModule, { declarations: [App] }); })();');
          });
     });
   });

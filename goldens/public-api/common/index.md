@@ -8,6 +8,8 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
+import { ɵIMAGE_CONFIG as IMAGE_CONFIG } from '@angular/core';
+import { ɵImageConfig as ImageConfig } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { IterableDiffers } from '@angular/core';
@@ -141,9 +143,9 @@ export class DatePipe implements PipeTransform {
 // @public
 export interface DatePipeConfig {
     // (undocumented)
-    dateFormat: string;
+    dateFormat?: string;
     // (undocumented)
-    timezone: string;
+    timezone?: string;
 }
 
 // @public
@@ -311,16 +313,12 @@ export class I18nSelectPipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<I18nSelectPipe, "i18nSelect", true>;
 }
 
-// @public
-export const IMAGE_CONFIG: InjectionToken<ImageConfig>;
+export { IMAGE_CONFIG }
 
 // @public
 export const IMAGE_LOADER: InjectionToken<ImageLoader>;
 
-// @public
-export type ImageConfig = {
-    breakpoints?: number[];
-};
+export { ImageConfig }
 
 // @public
 export type ImageLoader = (config: ImageLoaderConfig) => string;

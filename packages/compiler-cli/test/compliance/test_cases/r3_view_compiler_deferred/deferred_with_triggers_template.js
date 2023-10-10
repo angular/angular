@@ -6,9 +6,9 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferOnIdle();
     $r3$.ɵɵdeferOnImmediate();
     $r3$.ɵɵdeferOnTimer(1337);
-    $r3$.ɵɵdeferOnHover();
-    $r3$.ɵɵdeferOnInteraction("button");
-    $r3$.ɵɵdeferOnViewport("button");
+    $r3$.ɵɵdeferOnHover(0, -1);
+    $r3$.ɵɵdeferOnInteraction(0, -1);
+    $r3$.ɵɵdeferOnViewport(0, -1);
   }
   if (rf & 2) {
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");

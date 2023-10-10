@@ -7,6 +7,7 @@
  */
 
 import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
+import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import ts from 'typescript';
 
@@ -44,16 +45,16 @@ export class NgtscTestEnvironment {
   /**
    * Set up a new testing environment.
    */
-  static setup(files?: Folder, workingDir: AbsoluteFsPath = absoluteFrom('/')):
-      NgtscTestEnvironment {
+  static setup(files: Folder = {}, workingDir?: AbsoluteFsPath): NgtscTestEnvironment {
     const fs = getFileSystem();
-    if (files !== undefined && fs instanceof MockFileSystem) {
+    if (fs instanceof MockFileSystem) {
       fs.init(files);
     }
 
     const host = new AugmentedCompilerHost(fs);
     setWrapHostForTest(makeWrapHost(host));
 
+    workingDir = workingDir ?? absoluteFrom('/');
     const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
     fs.chdir(workingDir);
 
@@ -197,7 +198,7 @@ export class NgtscTestEnvironment {
       tsconfig['files'] = files;
     }
     if (extraRootDirs !== undefined) {
-      tsconfig.compilerOptions = {
+      tsconfig['compilerOptions'] = {
         rootDirs: ['.', ...extraRootDirs],
       };
     }
@@ -284,6 +285,13 @@ export class NgtscTestEnvironment {
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return (program as NgtscProgram).getIndexedComponents();
+  }
+
+  driveDocsExtraction(entryPoint: string): DocEntry[] {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    return (program as NgtscProgram).getApiDocumentation(entryPoint);
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string|null = null): void {

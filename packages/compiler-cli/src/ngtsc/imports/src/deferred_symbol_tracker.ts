@@ -18,7 +18,7 @@ type AssumeEager = typeof AssumeEager;
  *
  * This information is later used to determine whether it's safe to drop
  * a regular import of this symbol (actually the entire import declaration)
- * in favor of using a dynamic import for cases when `{#defer}` blocks are used.
+ * in favor of using a dynamic import for cases when defer blocks are used.
  */
 export class DeferredSymbolTracker {
   private readonly imports =
@@ -92,7 +92,7 @@ export class DeferredSymbolTracker {
     const identifiers = symbolMap.get(identifier.text) as Set<ts.Identifier>;
 
     // Drop the current identifier, since we are trying to make it deferrable
-    // (it's used as a dependency in one of the `{#defer}` blocks).
+    // (it's used as a dependency in one of the defer blocks).
     identifiers.delete(identifier);
   }
 

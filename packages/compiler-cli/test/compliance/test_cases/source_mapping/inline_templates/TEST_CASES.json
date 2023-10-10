@@ -317,8 +317,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a simple output binding expression (partial compile)",
@@ -352,8 +351,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a complex output binding expression (partial compile)",
@@ -387,8 +385,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a longhand output binding expression (partial compile)",
@@ -492,8 +489,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a class input binding (partial compile)",
@@ -944,8 +940,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create correct inline template source-mapping when the source contains escape sequences (partial compile)",

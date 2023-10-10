@@ -185,8 +185,6 @@ export function compileComponentFromMetadata(
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
 
-  const changeDetection = meta.changeDetection;
-
   // Template compilation is currently conditional as we're in the process of rewriting it.
   if (!USE_TEMPLATE_PIPELINE) {
     // This is the main path currently used in compilation, which compiles the template with the
@@ -195,7 +193,8 @@ export function compileComponentFromMetadata(
     const template = meta.template;
     const templateBuilder = new TemplateDefinitionBuilder(
         constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
-        R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.deferBlocks);
+        R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.deferBlocks,
+        new Map());
 
     const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
@@ -219,14 +218,14 @@ export function compileComponentFromMetadata(
     // - either as an array:
     //   `consts: [['one', 'two'], ['three', 'four']]`
     // - or as a factory function in case additional statements are present (to support i18n):
-    //   `consts: function() { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
+    //   `consts: () => { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
     //   }`
     const {constExpressions, prepareStatements} = templateBuilder.getConsts();
     if (constExpressions.length > 0) {
-      let constsExpr: o.LiteralArrayExpr|o.FunctionExpr = o.literalArr(constExpressions);
+      let constsExpr: o.LiteralArrayExpr|o.ArrowFunctionExpr = o.literalArr(constExpressions);
       // Prepare statements are present - turn `consts` into a function.
       if (prepareStatements.length > 0) {
-        constsExpr = o.fn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
+        constsExpr = o.arrowFn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
       }
       definitionMap.set('consts', constsExpr);
     }
@@ -244,13 +243,18 @@ export function compileComponentFromMetadata(
 
     // Finally we emit the template function:
     const templateFn = emitTemplateFn(tpl, constantPool);
+
+    if (tpl.contentSelectors !== null) {
+      definitionMap.set('ngContentSelectors', tpl.contentSelectors);
+    }
+
     definitionMap.set('decls', o.literal(tpl.root.decls as number));
     definitionMap.set('vars', o.literal(tpl.root.vars as number));
     if (tpl.consts.length > 0) {
       if (tpl.constsInitializers.length > 0) {
-        definitionMap.set(
-            'consts',
-            o.fn([], [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))]));
+        definitionMap.set('consts', o.arrowFn([], [
+          ...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))
+        ]));
       } else {
         definitionMap.set('consts', o.literalArr(tpl.consts));
       }
@@ -307,9 +311,17 @@ export function compileComponentFromMetadata(
         'data', o.literalMap([{key: 'animation', value: meta.animations, quoted: false}]));
   }
 
-  // Only set the change detection flag if it's defined and it's not the default.
-  if (changeDetection != null && changeDetection !== core.ChangeDetectionStrategy.Default) {
-    definitionMap.set('changeDetection', o.literal(changeDetection));
+  // Setting change detection flag
+  if (meta.changeDetection !== null) {
+    if (typeof meta.changeDetection === 'number' &&
+        meta.changeDetection !== core.ChangeDetectionStrategy.Default) {
+      // changeDetection is resolved during analysis. Only set it if not the default.
+      definitionMap.set('changeDetection', o.literal(meta.changeDetection));
+    } else if (typeof meta.changeDetection === 'object') {
+      // changeDetection is not resolved during analysis (e.g., we are in local compilation mode).
+      // So place it as is.
+      definitionMap.set('changeDetection', meta.changeDetection);
+    }
   }
 
   const expression =
@@ -349,11 +361,11 @@ function compileDeclarationList(
       return list;
     case DeclarationListEmitMode.Closure:
       // directives: function () { return [MyDir]; }
-      return o.fn([], [new o.ReturnStatement(list)]);
+      return o.arrowFn([], list);
     case DeclarationListEmitMode.ClosureResolved:
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
       const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
-      return o.fn([], [new o.ReturnStatement(resolvedList)]);
+      return o.arrowFn([], resolvedList);
     case DeclarationListEmitMode.RuntimeResolved:
       throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }
@@ -577,11 +589,11 @@ function createHostBindingsFunction(
     // actually already handle these special attributes internally. Therefore, we just drop them
     // into the attributes map.
     if (hostBindingsMetadata.specialAttributes.styleAttr) {
-      hostBindingsMetadata.attributes.style =
+      hostBindingsMetadata.attributes['style'] =
           o.literal(hostBindingsMetadata.specialAttributes.styleAttr);
     }
     if (hostBindingsMetadata.specialAttributes.classAttr) {
-      hostBindingsMetadata.attributes.class =
+      hostBindingsMetadata.attributes['class'] =
           o.literal(hostBindingsMetadata.specialAttributes.classAttr);
     }
 

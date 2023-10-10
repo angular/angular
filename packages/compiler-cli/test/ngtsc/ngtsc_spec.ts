@@ -162,7 +162,7 @@ function allTests(os: string) {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function () { return (() => new Service())(); }');
+      expect(jsContents).toContain('factory: () => (() => new Service())()');
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
@@ -257,7 +257,7 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
-      expect(jsContents).toContain('providedIn: i0.forwardRef(function () { return Mod; }) })');
+      expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
@@ -564,7 +564,7 @@ function allTests(os: string) {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ function () {');
+          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
           expect(jsContents)
               .toContain(
                   '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir);');
@@ -1599,7 +1599,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('bootstrap: function () { return [Foo]; }');
+      expect(jsContents).toContain('bootstrap: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared directives', () => {
@@ -1618,7 +1618,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('declarations: function () { return [Foo]; }');
+      expect(jsContents).toContain('declarations: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared imports', () => {
@@ -1637,7 +1637,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('imports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('imports: () => [BarModule]');
     });
 
     it('should compile NgModules with references to forward declared exports', () => {
@@ -1656,7 +1656,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('exports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('exports: () => [BarModule]');
     });
 
     it('should use relative import for forward references that were resolved from a relative file',
@@ -4789,7 +4789,7 @@ function allTests(os: string) {
           .toContain('function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }');
       expect(jsContents)
           .toContain(
-              'function () { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
+              '(() => { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; })();');
       expect(jsContents)
           .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
     });
@@ -4815,7 +4815,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ function () { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
+              '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; })();');
     });
 
     it('should wrap "directives" in component metadata in a closure when forward references are present',
@@ -4844,7 +4844,7 @@ function allTests(os: string) {
          env.driveMain();
 
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain('dependencies: function () { return [CmpB]; }');
+         expect(jsContents).toContain('dependencies: () => [CmpB]');
        });
 
     it('should wrap setClassMetadata in an iife with ngDevMode guard', () => {
@@ -4859,7 +4859,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
+              `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
               `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
     });
 
@@ -7436,6 +7436,61 @@ function allTests(os: string) {
                 // Large string should be called from function definition.
                 '_c0()]');
       });
+
+      it('should process `styles` as a string', () => {
+        env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          styles: 'h2 {width: 10px}'
+        })
+        export class TestCmp {}
+      `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should process `styleUrl`', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('styleUrl');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should produce a diagnostic if both `styleUrls` and `styleUrl` are defined', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            styleUrls: ['dir/styles.css'],
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('@Component cannot define both `styleUrl` and `styleUrls`');
+      });
     });
 
     describe('empty resources', () => {
@@ -8751,7 +8806,6 @@ function allTests(os: string) {
 
     describe('deferred blocks', () => {
       it('should handle deferred blocks', () => {
-        env.tsconfig({_enabledBlockTypes: ['defer']});
         env.write('cmp-a.ts', `
           import { Component } from '@angular/core';
 
@@ -8779,10 +8833,10 @@ function allTests(os: string) {
             standalone: true,
             imports: [CmpA, LocalDep],
             template: \`
-              {#defer}
+              @defer {
                 <cmp-a />
                 <local-dep />
-              {/defer}
+              }
             \`,
           })
           export class TestCmp {}
@@ -8800,9 +8854,49 @@ function allTests(os: string) {
         expect(jsContents).not.toContain('import { CmpA }');
       });
 
+      it('should include timer scheduler function when ' +
+             '`after` or `minimum` parameters are used',
+         () => {
+           env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+              import { CmpA } from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  @defer {
+                    <cmp-a />
+                  } @loading (after 500ms; minimum 300ms) {
+                    Loading...
+                  }
+                \`,
+              })
+              export class TestCmp {}
+            `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)');
+         });
+
       describe('imports', () => {
         it('should retain regular imports when symbol is eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -8823,9 +8917,9 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {
@@ -8850,7 +8944,6 @@ function allTests(os: string) {
         });
 
         it('should retain regular imports when one of the symbols is eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -8878,10 +8971,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, CmpB],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <cmp-b />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {
@@ -8907,7 +9000,6 @@ function allTests(os: string) {
         });
 
         it('should drop regular imports when none of the symbols are eagerly referenced', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
           env.write('cmp-a.ts', `
             import { Component } from '@angular/core';
 
@@ -8935,10 +9027,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, CmpB],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <cmp-b />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {}
@@ -8950,7 +9042,7 @@ function allTests(os: string) {
 
           expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
 
-          // Both `CmpA` and `CmpB` were used inside the `{#defer}` and were not
+          // Both `CmpA` and `CmpB` were used inside the defer block and were not
           // referenced elsewhere, so we generate dynamic imports and drop a regular one.
           expect(jsContents)
               .toContain(
@@ -8959,11 +9051,150 @@ function allTests(os: string) {
                   'import("./cmp-a").then(m => m.CmpB)]');
           expect(jsContents).not.toContain('import { CmpA, CmpB }');
         });
+
+        it('should lazy-load dependency referenced with a fowrardRef', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component, forwardRef } from '@angular/core';
+            import { CmpA } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [forwardRef(() => CmpA)],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+
+          // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
+          // via dynamic imports and an original import can be removed.
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
+      });
+
+      it('should detect pipe used in the `when` trigger as an eager dependency', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { hello }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
+      });
+
+      it('should detect pipe used in the `prefetch when` trigger as an eager dependency', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { hello }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
+      });
+
+      it('should detect pipe used both in a trigger and the deferred content as eager', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { {{1 | test}} }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
       });
 
       describe('setClassMetadataAsync', () => {
-        it('should generate setClassMetadataAsync for components with `{#defer}` blocks', () => {
-          env.tsconfig({_enabledBlockTypes: ['defer']});
+        it('should generate setClassMetadataAsync for components with defer blocks', () => {
           env.write('cmp-a.ts', `
             import {Component} from '@angular/core';
 
@@ -8991,10 +9222,10 @@ function allTests(os: string) {
               standalone: true,
               imports: [CmpA, LocalDep],
               template: \`
-                {#defer}
+                @defer {
                   <cmp-a />
                   <local-dep />
-                {/defer}
+                }
               \`,
             })
             export class TestCmp {}
@@ -9008,19 +9239,18 @@ function allTests(os: string) {
           expect(jsContents)
               .toContain(
                   // ngDevMode check is present
-                  '(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+                  '(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
                   // Main `setClassMetadataAsync` call
                   'i0.ɵsetClassMetadataAsync(TestCmp, ' +
                   // Dependency loading function (note: no local `LocalDep` here)
-                  'function () { return [import("./cmp-a").then(function (m) { return m.CmpA; })]; }, ' +
+                  '() => [import("./cmp-a").then(m => m.CmpA)], ' +
                   // Callback that invokes `setClassMetadata` at the end
-                  'function (CmpA) { i0.ɵsetClassMetadata(TestCmp');
+                  'CmpA => { i0.ɵsetClassMetadata(TestCmp');
         });
 
-        it('should *not* generate setClassMetadataAsync for components with `{#defer}` blocks ' +
+        it('should *not* generate setClassMetadataAsync for components with defer blocks ' +
                'when dependencies are eagerly referenced as well',
            () => {
-             env.tsconfig({_enabledBlockTypes: ['defer']});
              env.write('cmp-a.ts', `
                 import {Component} from '@angular/core';
 
@@ -9041,9 +9271,9 @@ function allTests(os: string) {
                 standalone: true,
                 imports: [CmpA],
                 template: \`
-                  {#defer}
+                  @defer {
                     <cmp-a />
-                  {/defer}
+                  }
                 \`,
               })
               export class TestCmp {
@@ -9068,195 +9298,6 @@ function allTests(os: string) {
              // But the regular `setClassMetadata` is present.
              expect(jsContents).toContain('setClassMetadata');
            });
-      });
-    });
-
-    // TODO(crisbeto): currently these validations happen when the template is
-    // constructed, because we don't have template type checking support for `for`
-    // blocks. Eventually they should happen as a part of template type checking
-    // instead at which point these tests should be moved.
-    describe('for loop block validations', () => {
-      beforeEach(() => {
-        env.tsconfig({_enabledBlockTypes: ['for', 'if']});
-      });
-
-      it('should not allow usages of loop context variables inside the tracking expression', () => {
-        env.write('/test.ts', `
-          import { Component } from '@angular/core';
-
-          @Component({
-            selector: 'test-cmp',
-            standalone: true,
-            template: '{#for foo of bar; track $index + $count}{/for}',
-          })
-          export class TestCmp {}
-        `);
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toContain('Error: Accessing $count inside of a track expression is not allowed');
-      });
-
-      it('should not allow usages of aliased loop context variables inside the tracking expression',
-         () => {
-           env.write('/test.ts', `
-              import { Component } from '@angular/core';
-
-              @Component({
-                selector: 'test-cmp',
-                standalone: true,
-                template: '{#for foo of bar; let c = $count; track $index + c}{/for}',
-              })
-              export class TestCmp {}
-            `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing c inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of local references within the same template inside the tracking expression',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                <input #ref/>
-                {#for foo of bar; track $index + ref.value}{/for}
-              \`,
-            })
-            export class TestCmp {}
-          `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing ref inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of local references outside of the template template in the tracking expression',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                <input #ref/>
-
-                <ng-template>
-                  {#for foo of bar; track $index + ref.value}{/for}
-                </ng-template>
-              \`,
-            })
-            export class TestCmp {}
-          `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing ref inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of parent template variables inside the tracking expression',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                <ng-template let-foo>
-                  {#for foo of bar; track $index + foo.value}{/for}
-                </ng-template>
-              \`,
-            })
-            export class TestCmp {}
-          `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing foo inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of parent template for loop variables inside the tracking expression',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                {#for parent of items; track item}
-                  {#for item of parent.items; track parent}{/for}
-                {/for}
-              \`,
-            })
-            export class TestCmp {}
-          `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing parent inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of aliased `if` block variables inside the tracking exprssion',
-         () => {
-           env.write('/test.ts', `
-            import { Component } from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              template: \`
-                {#if expr; as alias}
-                  {#for foo of bar; track $index + alias}{/for}
-                {/if}
-              \`,
-            })
-            export class TestCmp {}
-          `);
-
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toContain('Error: Accessing alias inside of a track expression is not allowed');
-         });
-
-      it('should not allow usages of pipes inside the tracking expression', () => {
-        env.write('/test.ts', `
-          import { Component, Pipe } from '@angular/core';
-
-          @Pipe({name: 'test', standalone: true})
-          export class TestPipe {
-            transform(value: any) {
-              return value;
-            }
-          }
-
-          @Component({
-            selector: 'test-cmp',
-            standalone: true,
-            imports: [TestPipe],
-            template: '{#for foo of bar; track foo | test}{/for}',
-          })
-          export class TestCmp {}
-        `);
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toContain('Error: Illegal State: Pipes are not allowed in this context');
       });
     });
   });

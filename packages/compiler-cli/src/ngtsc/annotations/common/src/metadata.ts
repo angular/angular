@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, FunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, ReturnStatement, WrappedNodeExpr} from '@angular/compiler';
+import {ArrowFunctionExpr, Expression, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../../reflection';
@@ -58,9 +58,7 @@ export function extractClassMetadata(
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
     const ctorParameters = classCtorParameters.map(param => ctorParameterToMetadata(param, isCore));
-    metaCtorParameters = new FunctionExpr([], [
-      new ReturnStatement(new LiteralArrayExpr(ctorParameters)),
-    ]);
+    metaCtorParameters = new ArrowFunctionExpr([], new LiteralArrayExpr(ctorParameters));
   }
 
   // Do the same for property decorators.

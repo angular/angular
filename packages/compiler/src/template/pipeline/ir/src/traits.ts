@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
-import type {Op, XrefId} from './operations';
 import type {Expression} from './expression';
+import type {Op, XrefId} from './operations';
 
 /**
  * Marker symbol for `ConsumesSlotOpTrait`.
@@ -34,6 +35,11 @@ export const ConsumesVarsTrait = Symbol('ConsumesVars');
  * Marker symbol for `UsesVarOffset` trait.
  */
 export const UsesVarOffset = Symbol('UsesVarOffset');
+
+/**
+ * Marker symbol for `HasConst` trait.
+ */
+export const HasConst = Symbol('HasConst');
 
 /**
  * Marks an operation as requiring allocation of one or more data slots for storage.
@@ -103,7 +109,7 @@ export interface UsesSlotIndexTrait {
   /**
    * The slot index of `target`, or `null` if slots have not yet been assigned.
    */
-  slot: number|null;
+  targetSlot: number|null;
 }
 
 /**
@@ -122,6 +128,31 @@ export interface UsesVarOffsetTrait {
 
   varOffset: number|null;
 }
+
+/**
+ * Marker trait indicating that an op or expression has some data which should be collected into the
+ * component constant array.
+ *
+ */
+export interface HasConstTrait {
+  [HasConst]: true;
+
+  /**
+   * The constant to be collected into the const array, if non-null.
+   */
+  constValue: unknown|null;
+
+  /**
+   * The index of the collected constant, after processing.
+   */
+  constIndex: number|null;
+
+  /**
+   * A callback which converts the constValue into an o.Expression for the const array.
+   */
+  makeExpression: (value: unknown) => o.Expression;
+}
+
 /**
  * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
  * implementors of the trait).
@@ -138,7 +169,7 @@ export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'> = {
  */
 export const TRAIT_USES_SLOT_INDEX: Omit<UsesSlotIndexTrait, 'target'> = {
   [UsesSlotIndex]: true,
-  slot: null,
+  targetSlot: null,
 } as const;
 
 /**
@@ -165,6 +196,15 @@ export const TRAIT_CONSUMES_VARS: ConsumesVarsTrait = {
 export const TRAIT_USES_VAR_OFFSET: UsesVarOffsetTrait = {
   [UsesVarOffset]: true,
   varOffset: null,
+} as const;
+
+/**
+ * Default values for `HasConst` fields (used with the spread operator to initialize
+ * implementors of this trait).
+ */
+export const TRAIT_HAS_CONST: Omit<HasConstTrait, 'constValue'|'makeExpression'> = {
+  [HasConst]: true,
+  constIndex: null,
 } as const;
 
 /**
@@ -208,4 +248,13 @@ export function hasUsesSlotIndexTrait<ExprT extends Expression>(expr: ExprT): ex
 export function hasUsesSlotIndexTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&UsesSlotIndexTrait;
 export function hasUsesSlotIndexTrait(value: any): boolean {
   return (value as Partial<UsesSlotIndexTrait>)[UsesSlotIndex] === true;
+}
+
+/**
+ * Test whether an operation or expression implements `HasConstTrait`.
+ */
+export function hasConstTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&HasConstTrait;
+export function hasConstTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&HasConstTrait;
+export function hasConstTrait(value: any): boolean {
+  return (value as Partial<HasConstTrait>)[HasConst] === true;
 }

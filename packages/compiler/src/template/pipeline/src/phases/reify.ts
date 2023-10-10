@@ -81,13 +81,13 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(op, ng.elementContainerEnd());
         break;
       case ir.OpKind.I18nStart:
-        ir.OpList.replace(op, ng.i18nStart(op.slot as number, op.messageIndex!));
+        ir.OpList.replace(op, ng.i18nStart(op.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
       case ir.OpKind.I18nEnd:
         ir.OpList.replace(op, ng.i18nEnd());
         break;
       case ir.OpKind.I18n:
-        ir.OpList.replace(op, ng.i18n(op.slot as number));
+        ir.OpList.replace(op, ng.i18n(op.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
@@ -97,14 +97,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.template(
-                op.slot!,
-                o.variable(childView.fnName!),
-                childView.decls!,
-                childView.vars!,
-                op.tag,
-                op.attributes as number,
-                op.sourceSpan,
-                ),
+                op.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
+                op.block ? null : op.tag, op.attributes as number, op.sourceSpan),
         );
         break;
       case ir.OpKind.DisableBindings:
@@ -120,8 +114,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         const reified = op.hostListener && op.isAnimationListener ?
-            ng.syntheticHostListener(op.name, listenerFn) :
-            ng.listener(op.name, listenerFn);
+            ng.syntheticHostListener(op.name, listenerFn, op.sourceSpan) :
+            ng.listener(op.name, listenerFn, op.sourceSpan);
         ir.OpList.replace(op, reified);
         break;
       case ir.OpKind.Variable:
@@ -145,6 +139,30 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             ir.OpList.replace<ir.CreateOp>(op, ng.namespaceMath());
             break;
         }
+        break;
+      case ir.OpKind.Defer:
+        ir.OpList.replace(
+            op,
+            ng.defer(
+                op.slot!, op.targetSlot!, null, op.loading && op.loading.targetSlot,
+                op.placeholder && op.placeholder.targetSlot, op.error && op.error.targetSlot,
+                op.loading?.constIndex ?? null, op.placeholder?.constIndex ?? null, op.sourceSpan));
+        break;
+      case ir.OpKind.DeferSecondaryBlock:
+        ir.OpList.remove<ir.CreateOp>(op);
+        break;
+      case ir.OpKind.DeferOn:
+        ir.OpList.replace(op, ng.deferOn(op.sourceSpan));
+        break;
+      case ir.OpKind.ProjectionDef:
+        ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
+        break;
+      case ir.OpKind.Projection:
+        if (op.slot === null) {
+          throw new Error('No slot was assigned for project instruction');
+        }
+        ir.OpList.replace<ir.CreateOp>(
+            op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
@@ -180,29 +198,40 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(
               op,
               ng.stylePropInterpolate(
-                  op.name, op.expression.strings, op.expression.expressions, op.unit));
+                  op.name, op.expression.strings, op.expression.expressions, op.unit,
+                  op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
+          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         }
         break;
       case ir.OpKind.ClassProp:
-        ir.OpList.replace(op, ng.classProp(op.name, op.expression));
+        ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleMap:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
-              op, ng.styleMapInterpolate(op.expression.strings, op.expression.expressions));
+              op,
+              ng.styleMapInterpolate(
+                  op.expression.strings, op.expression.expressions, op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.styleMap(op.expression));
+          ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         }
         break;
       case ir.OpKind.ClassMap:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
-              op, ng.classMapInterpolate(op.expression.strings, op.expression.expressions));
+              op,
+              ng.classMapInterpolate(
+                  op.expression.strings, op.expression.expressions, op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.classMap(op.expression));
+          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         }
+        break;
+      case ir.OpKind.I18nExpression:
+        ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
+        break;
+      case ir.OpKind.I18nApply:
+        ir.OpList.replace(op, ng.i18nApply(op.targetSlot!, op.sourceSpan));
         break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(
@@ -215,7 +244,8 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(
               op,
               ng.attributeInterpolate(
-                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer));
+                  op.name, op.expression.strings, op.expression.expressions, op.sanitizer,
+                  op.sourceSpan));
         } else {
           ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
         }
@@ -225,9 +255,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           throw new Error('not yet handled');
         } else {
           if (op.isAnimationTrigger) {
-            ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression));
+            ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
-            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression));
+            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression, op.sourceSpan));
           }
         }
         break;
@@ -244,10 +274,11 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         if (op.processed === null) {
           throw new Error(`Conditional test was not set.`);
         }
-        if (op.slot === null) {
+        if (op.targetSlot === null) {
           throw new Error(`Conditional slot was not set.`);
         }
-        ir.OpList.replace(op, ng.conditional(op.slot, op.processed));
+        ir.OpList.replace(
+            op, ng.conditional(op.targetSlot, op.processed, op.contextValue, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
@@ -268,7 +299,7 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
     case ir.ExpressionKind.NextContext:
       return ng.nextContext(expr.steps);
     case ir.ExpressionKind.Reference:
-      return ng.reference(expr.slot! + 1 + expr.offset);
+      return ng.reference(expr.targetSlot! + 1 + expr.offset);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
     case ir.ExpressionKind.RestoreView:
@@ -303,13 +334,13 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
     case ir.ExpressionKind.PureFunctionParameterExpr:
       throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);
     case ir.ExpressionKind.PipeBinding:
-      return ng.pipeBind(expr.slot!, expr.varOffset!, expr.args);
+      return ng.pipeBind(expr.targetSlot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.PipeBindingVariadic:
-      return ng.pipeBindV(expr.slot!, expr.varOffset!, expr.args);
+      return ng.pipeBindV(expr.targetSlot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.SanitizerExpr:
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
-      return o.literal(expr.slot);
+      return o.literal(expr.targetSlot);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);

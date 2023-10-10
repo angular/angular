@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/fake-async-test.min",
-  "main": "../../bundles/fake-async-test.umd.min.js",
-  "fesm2015": "../../fesm2015/fake-async-test.min.js",
-  "es2015": "../../fesm2015/fake-async-test.min.js",
-  "module": "../../fesm2015/fake-async-test.min.js"
-}

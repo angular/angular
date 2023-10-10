@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 
 @Component({
+  standalone: true,
   selector: 'app-heroes',
   templateUrl: './heroes.component.html',
+  imports: [ NgFor, RouterLink ],
   styleUrls: ['./heroes.component.css']
 })
 export class HeroesComponent implements OnInit {

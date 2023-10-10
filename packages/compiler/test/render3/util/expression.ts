@@ -138,6 +138,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
   visitContent(ast: t.Content) {}
   visitText(ast: t.Text) {}
+  visitUnknownBlock(block: t.UnknownBlock) {}
   visitIcu(ast: t.Icu) {
     for (const key of Object.keys(ast.vars)) {
       ast.vars[key].visit(this);
@@ -180,6 +181,8 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
 
   visitForLoopBlock(block: t.ForLoopBlock) {
+    block.item.visit(this);
+    t.visitAll(this, Object.values(block.contextVariables));
     block.expression.visit(this);
     t.visitAll(this, block.children);
     block.empty?.visit(this);
@@ -195,6 +198,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
 
   visitIfBlockBranch(block: t.IfBlockBranch) {
     block.expression?.visit(this);
+    block.expressionAlias?.visit(this);
     t.visitAll(this, block.children);
   }
 }

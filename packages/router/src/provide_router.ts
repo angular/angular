@@ -22,6 +22,7 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
+import {CREATE_VIEW_TRANSITION, createViewTransition, VIEW_TRANSITION_OPTIONS, ViewTransitionsFeatureOptions} from './utils/view_transition';
 
 
 /**
@@ -585,11 +586,11 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  *
  * @publicApi
  */
-export function withHashLocation(): RouterConfigurationFeature {
+export function withHashLocation(): RouterHashLocationFeature {
   const providers = [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
   ];
-  return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
+  return routerFeature(RouterFeatureKind.RouterHashLocationFeature, providers);
 }
 
 /**
@@ -662,6 +663,16 @@ export type ComponentInputBindingFeature =
     RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
 
 /**
+ * A type alias for providers returned by `withViewTransitions` for use with `provideRouter`.
+ *
+ * @see {@link withViewTransitions}
+ * @see {@link provideRouter}
+ *
+ * @publicApi
+ */
+export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+/**
  * Enables binding information from the `Router` state directly to the inputs of the component in
  * `Route` configurations.
  *
@@ -691,6 +702,45 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
 }
 
 /**
+ * Enables view transitions in the Router by running the route activation and deactivation inside of
+ * `document.startViewTransition`.
+ *
+ * Note: The View Transitions API is not available in all browsers. If the browser does not support
+ * view transitions, the Router will not attempt to start a view transition and continue processing
+ * the navigation as usual.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable the feature:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withViewTransitions())
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ * @see https://developer.chrome.com/docs/web-platform/view-transitions/
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
+ * @experimental
+ */
+export function withViewTransitions(options?: ViewTransitionsFeatureOptions):
+    ViewTransitionsFeature {
+  const providers = [
+    {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
+    {
+      provide: VIEW_TRANSITION_OPTIONS,
+      useValue: {skipNextTransition: !!options?.skipInitialTransition}
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -700,9 +750,9 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  *
  * @publicApi
  */
-export type RouterFeatures =
-    PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|InMemoryScrollingFeature|
-    RouterConfigurationFeature|NavigationErrorHandlerFeature|ComponentInputBindingFeature;
+export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
+    InMemoryScrollingFeature|RouterConfigurationFeature|NavigationErrorHandlerFeature|
+    ComponentInputBindingFeature|ViewTransitionsFeature|RouterHashLocationFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -717,4 +767,5 @@ export const enum RouterFeatureKind {
   RouterHashLocationFeature,
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
+  ViewTransitionsFeature,
 }

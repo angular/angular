@@ -23,7 +23,8 @@ export function getRedirector() {
 
 export function getSwNavigationUrlChecker() {
   const config = loadJson(`${AIO_DIR}/src/generated/ngsw-config.json`);
-  const navigationUrlSpecs = processNavigationUrls('', config.navigationUrls);
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  const navigationUrlSpecs = processNavigationUrls('', config['navigationUrls']);
 
   const includePatterns =
       navigationUrlSpecs.filter(spec => spec.positive).map(spec => new RegExp(spec.regex));
@@ -37,7 +38,8 @@ export function getSwNavigationUrlChecker() {
 export function loadRedirects(): FirebaseRedirectConfig[] {
   const pathToFirebaseJSON = `${AIO_DIR}/firebase.json`;
   const contents = loadJson(pathToFirebaseJSON);
-  return contents.hosting.redirects;
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  return contents['hosting'].redirects;
 }
 
 export function loadLegacyUrls() {

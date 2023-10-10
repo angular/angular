@@ -33,13 +33,12 @@ export const enum TokenType {
   EXPANSION_CASE_EXP_START,
   EXPANSION_CASE_EXP_END,
   EXPANSION_FORM_END,
-  EOF,
-  BLOCK_GROUP_OPEN_START,
-  BLOCK_GROUP_OPEN_END,
-  BLOCK_GROUP_CLOSE,
-  BLOCK_PARAMETER,
   BLOCK_OPEN_START,
   BLOCK_OPEN_END,
+  BLOCK_CLOSE,
+  BLOCK_PARAMETER,
+  INCOMPLETE_BLOCK_OPEN,
+  EOF,
 }
 
 export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|
@@ -47,8 +46,8 @@ export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagClo
     CommentEndToken|CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|
     AttributeValueTextToken|AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|
     ExpansionCaseValueToken|ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|
-    ExpansionFormEndToken|EndOfFileToken|BlockGroupOpenStartToken|BlockGroupOpenEndToken|
-    BlockGroupCloseToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken;
+    ExpansionFormEndToken|EndOfFileToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken|
+    BlockCloseToken|IncompleteBlockOpenToken;
 
 export type InterpolatedTextToken = TextToken|InterpolationToken|EncodedEntityToken;
 
@@ -178,21 +177,6 @@ export interface EndOfFileToken extends TokenBase {
   parts: [];
 }
 
-export interface BlockGroupOpenStartToken extends TokenBase {
-  type: TokenType.BLOCK_GROUP_OPEN_START;
-  parts: [name: string];
-}
-
-export interface BlockGroupOpenEndToken extends TokenBase {
-  type: TokenType.BLOCK_GROUP_OPEN_END;
-  parts: [];
-}
-
-export interface BlockGroupCloseToken extends TokenBase {
-  type: TokenType.BLOCK_GROUP_CLOSE;
-  parts: [name: string];
-}
-
 export interface BlockParameterToken extends TokenBase {
   type: TokenType.BLOCK_PARAMETER;
   parts: [expression: string];
@@ -206,4 +190,14 @@ export interface BlockOpenStartToken extends TokenBase {
 export interface BlockOpenEndToken extends TokenBase {
   type: TokenType.BLOCK_OPEN_END;
   parts: [];
+}
+
+export interface BlockCloseToken extends TokenBase {
+  type: TokenType.BLOCK_CLOSE;
+  parts: [];
+}
+
+export interface IncompleteBlockOpenToken extends TokenBase {
+  type: TokenType.INCOMPLETE_BLOCK_OPEN;
+  parts: [name: string];
 }

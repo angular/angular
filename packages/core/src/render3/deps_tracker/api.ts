@@ -29,6 +29,16 @@ interface ScopeData {
   isPoisoned?: boolean;
 }
 
+/**
+ * Represents scope data for standalone components as calculated during runtime by the deps
+ * tracker.
+ */
+interface StandaloneCompScopeData extends ScopeData {
+  // Standalone components include the imported NgModules in their dependencies in order to
+  // determine their injector info. The following field stores the set of such NgModules.
+  ngModules: Set<NgModuleType<any>>;
+}
+
 /** Represents scope data for NgModule as calculated during runtime by the deps tracker. */
 export interface NgModuleScope {
   compilation: ScopeData;
@@ -39,7 +49,7 @@ export interface NgModuleScope {
  * Represents scope data for standalone component as calculated during runtime by the deps tracker.
  */
 export interface StandaloneComponentScope {
-  compilation: ScopeData;
+  compilation: StandaloneCompScopeData;
 }
 
 /** Component dependencies info as calculated during runtime by the deps tracker. */

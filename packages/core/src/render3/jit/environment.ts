@@ -154,6 +154,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵdeferPrefetchOnHover': r3.ɵɵdeferPrefetchOnHover,
        'ɵɵdeferPrefetchOnInteraction': r3.ɵɵdeferPrefetchOnInteraction,
        'ɵɵdeferPrefetchOnViewport': r3.ɵɵdeferPrefetchOnViewport,
+       'ɵɵdeferEnableTimerScheduling': r3.ɵɵdeferEnableTimerScheduling,
        'ɵɵrepeater': r3.ɵɵrepeater,
        'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
        'ɵɵrepeaterTrackByIndex': r3.ɵɵrepeaterTrackByIndex,
@@ -184,6 +185,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵsetNgModuleScope': r3.ɵɵsetNgModuleScope,
        'ɵɵregisterNgModuleType': registerNgModuleType,
        'ɵɵgetComponentDepsFactory': r3.ɵɵgetComponentDepsFactory,
+       'ɵsetClassDebugInfo': r3.ɵsetClassDebugInfo,
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,

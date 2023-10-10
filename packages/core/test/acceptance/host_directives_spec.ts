@@ -474,7 +474,7 @@ describe('host directives', () => {
         abstract name: string;
 
         ngOnChanges(changes: SimpleChanges) {
-          logs.push(`${this.name} - ${changes.someInput.currentValue}`);
+          logs.push(`${this.name} - ${changes['someInput'].currentValue}`);
         }
       }
 
@@ -1837,7 +1837,7 @@ describe('host directives', () => {
            @Input('colorAlias') color?: string;
 
            ngOnChanges(changes: SimpleChanges) {
-             logs.push(changes.color.currentValue);
+             logs.push(changes['color'].currentValue);
            }
          }
 
@@ -2919,6 +2919,45 @@ describe('host directives', () => {
       expect(() => TestBed.createComponent(App))
           .toThrowError(
               'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.');
+    });
+
+    it('should throw an error if a host directive matches multiple times on a component', () => {
+      @Directive({standalone: true, selector: '[dir]'})
+      class HostDir {
+      }
+
+      @Component({
+        selector: 'comp',
+        hostDirectives: [HostDir],
+        standalone: true,
+        template: '',
+      })
+      class Comp {
+      }
+
+      const baseAppMetadata = {
+        template: '<comp dir></comp>',
+        standalone: true,
+      };
+
+      const expectedError =
+          'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.';
+
+      // Note: the definition order in `imports` seems to affect the
+      // directive matching order so we test both scenarios.
+      expect(() => {
+        @Component({...baseAppMetadata, imports: [Comp, HostDir]})
+        class App {
+        }
+        TestBed.createComponent(App);
+      }).toThrowError(expectedError);
+
+      expect(() => {
+        @Component({...baseAppMetadata, imports: [HostDir, Comp]})
+        class App {
+        }
+        TestBed.createComponent(App);
+      }).toThrowError(expectedError);
     });
 
     it('should throw an error if a host directive appears multiple times in a chain', () => {

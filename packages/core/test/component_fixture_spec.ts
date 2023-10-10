@@ -21,6 +21,22 @@ class SimpleComp {
 }
 
 @Component({
+  selector: 'deferred-comp',
+  standalone: true,
+  template: `<div>Deferred Component</div>`,
+})
+class DeferredComp {
+}
+
+@Component({
+  selector: 'second-deferred-comp',
+  standalone: true,
+  template: `<div>More Deferred Component</div>`,
+})
+class SecondDeferredComp {
+}
+
+@Component({
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
 })
@@ -294,6 +310,30 @@ class NestedAsyncTimeoutComp {
            });
          });
        }));
+
+    describe('defer', () => {
+      it('should return all defer blocks in the component', async () => {
+        @Component({
+          selector: 'defer-comp',
+          standalone: true,
+          imports: [DeferredComp, SecondDeferredComp],
+          template: `<div>
+            @defer (on immediate) {
+              <DeferredComp />
+            }
+            @defer (on idle) {
+              <SecondDeferredComp />
+            }
+          </div>`
+        })
+        class DeferComp {
+        }
+
+        const componentFixture = TestBed.createComponent(DeferComp);
+        const deferBlocks = await componentFixture.getDeferBlocks();
+        expect(deferBlocks.length).toBe(2);
+      });
+    });
 
     describe('No NgZone', () => {
       beforeEach(() => {

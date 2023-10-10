@@ -12,7 +12,7 @@ import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import type {EffectManager} from '../reactivity/effect';
+import type {FlushableEffectRunner} from '../reactivity/effect';
 import type {AfterRenderEventManager} from '../after_render_hooks';
 
 import {LContainer} from './container';
@@ -33,10 +33,14 @@ import {TDeferBlockDetails} from './defer';
 export const HOST = 0;
 export const TVIEW = 1;
 export const FLAGS = 2;
+
+// Shared with LContainer
 export const PARENT = 3;
 export const NEXT = 4;
-export const DESCENDANT_VIEWS_TO_REFRESH = 5;
-export const T_HOST = 6;
+export const T_HOST = 5;
+// End shared with LContainer
+
+export const HYDRATION = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
 export const INJECTOR = 9;
@@ -53,9 +57,9 @@ export const QUERIES = 18;
 export const ID = 19;
 export const EMBEDDED_VIEW_INJECTOR = 20;
 export const ON_DESTROY_HOOKS = 21;
-export const HYDRATION = 22;
 export const REACTIVE_TEMPLATE_CONSUMER = 23;
 export const REACTIVE_HOST_BINDING_CONSUMER = 24;
+
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -318,14 +322,6 @@ export interface LView<T = unknown> extends Array<any> {
    */
   [PREORDER_HOOK_FLAGS]: PreOrderHookFlags;
 
-  /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
-   */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
-
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;
 
@@ -372,7 +368,7 @@ export interface LViewEnvironment {
   sanitizer: Sanitizer|null;
 
   /** Container for reactivity system `effect`s. */
-  effectManager: EffectManager|null;
+  inlineEffectRunner: FlushableEffectRunner|null;
 
   /** Container for after render hooks */
   afterRenderEventManager: AfterRenderEventManager|null;
@@ -424,8 +420,8 @@ export const enum LViewFlags {
   /**
    * Whether this moved LView was needs to be refreshed. Similar to the Dirty flag, but used for
    * transplanted and signal views where the parent/ancestor views are not marked dirty as well.
-   * i.e. "Refresh just this view". Used in conjunction with the DESCENDANT_VIEWS_TO_REFRESH
-   * counter.
+   * i.e. "Refresh just this view". Used in conjunction with the HAS_CHILD_VIEWS_TO_REFRESH
+   * flag.
    */
   RefreshView = 1 << 10,
 
@@ -436,17 +432,25 @@ export const enum LViewFlags {
   SignalView = 1 << 12,
 
   /**
-   * Index of the current init phase on last 21 bits
+   * Indicates that this LView has a view underneath it that needs to be refreshed during change
+   * detection. This flag indicates that even if this view is not dirty itself, we still need to
+   * traverse its children during change detection.
    */
-  IndexWithinInitPhaseIncrementer = 1 << 13,
+  HasChildViewsToRefresh = 1 << 13,
+
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 13,
+  IndexWithinInitPhaseShift = 14,
+
+  /**
+   * Index of the current init phase on last 21 bits
+   */
+  IndexWithinInitPhaseIncrementer = 1 << IndexWithinInitPhaseShift,
 
   // Subtracting 1 gives all 1s to the right of the initial shift
   // So `(1 << 3) - 1` would give 3 1s: 1 << 3 = 0b01000, subtract 1 = 0b00111
-  IndexWithinInitPhaseReset = (1 << 13) - 1,
+  IndexWithinInitPhaseReset = (1 << IndexWithinInitPhaseShift) - 1,
 }
 
 /**

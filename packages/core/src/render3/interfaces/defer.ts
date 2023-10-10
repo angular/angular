@@ -15,14 +15,23 @@ import type {DependencyType} from './definition';
 export type DependencyResolverFn = () => Array<Promise<DependencyType>>;
 
 /**
+ * Enumerates all `on` triggers of a defer block.
+ */
+export const enum DeferBlockTriggers {
+  OnIdle,
+  OnTimer,
+  OnImmediate,
+  OnHover,
+  OnInteraction,
+  OnViewport,
+}
+
+/**
  * Describes the state of defer block dependency loading.
  */
-export const enum DeferDependenciesLoadingState {
+export enum DeferDependenciesLoadingState {
   /** Initial state, dependency loading is not yet triggered */
   NOT_STARTED,
-
-  /** Dependency loading was scheduled (e.g. `on idle`), but has not started yet */
-  SCHEDULED,
 
   /** Dependency loading is in progress */
   IN_PROGRESS,
@@ -34,14 +43,20 @@ export const enum DeferDependenciesLoadingState {
   FAILED,
 }
 
-/** Configuration object for a `{:loading}` block as it is stored in the component constants. */
+/** Slot index where `minimum` parameter value is stored. */
+export const MINIMUM_SLOT = 0;
+
+/** Slot index where `after` parameter value is stored. */
+export const LOADING_AFTER_SLOT = 1;
+
+/** Configuration object for a loading block as it is stored in the component constants. */
 export type DeferredLoadingBlockConfig = [minimumTime: number|null, afterTime: number|null];
 
-/** Configuration object for a `{:placeholder}` block as it is stored in the component constants. */
-export type DeferredPlaceholderBlockConfig = [afterTime: number|null];
+/** Configuration object for a placeholder block as it is stored in the component constants. */
+export type DeferredPlaceholderBlockConfig = [minimumTime: number|null];
 
 /**
- * Describes the data shared across all instances of a {#defer} block.
+ * Describes the data shared across all instances of a defer block.
  */
 export interface TDeferBlockDetails {
   /**
@@ -51,37 +66,32 @@ export interface TDeferBlockDetails {
   primaryTmplIndex: number;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:loading}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the loading block can be found.
    */
   loadingTmplIndex: number|null;
 
   /**
-   * Extra configuration parameters (such as `after` and `minimum`)
-   * for the `{:loading}` block.
+   * Extra configuration parameters (such as `after` and `minimum`) for the loading block.
    */
   loadingBlockConfig: DeferredLoadingBlockConfig|null;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:placeholder}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the placeholder block can be found.
    */
   placeholderTmplIndex: number|null;
 
   /**
-   * Extra configuration parameters (such as `after` and `minimum`)
-   * for the `{:placeholder}` block.
+   * Extra configuration parameters (such as `after` and `minimum`) for the placeholder block.
    */
   placeholderBlockConfig: DeferredPlaceholderBlockConfig|null;
 
   /**
-   * Index in an LView and TData arrays where a template for the `{:error}`
-   * block can be found.
+   * Index in an LView and TData arrays where a template for the error block can be found.
    */
   errorTmplIndex: number|null;
 
   /**
-   * Compiler-generated function that loads all dependencies for a `{#defer}` block.
+   * Compiler-generated function that loads all dependencies for a defer block.
    */
   dependencyResolverFn: DependencyResolverFn|null;
 
@@ -99,34 +109,98 @@ export interface TDeferBlockDetails {
 }
 
 /**
- * Describes the current state of this {#defer} block instance.
+ * Describes the current state of this defer block instance.
+ *
+ * @publicApi
+ * @developerPreview
  */
-export const enum DeferBlockInstanceState {
-  /** Initial state, nothing is rendered yet */
-  INITIAL,
+export enum DeferBlockState {
+  /** The placeholder block content is rendered */
+  Placeholder = 0,
 
-  /** The {:placeholder} block content is rendered */
-  PLACEHOLDER,
-
-  /** The {:loading} block content is rendered */
-  LOADING,
+  /** The loading block content is rendered */
+  Loading = 1,
 
   /** The main content block content is rendered */
-  COMPLETE,
+  Complete = 2,
 
-  /** The {:error} block content is rendered */
-  ERROR
+  /** The error block content is rendered */
+  Error = 3,
 }
 
-export const DEFER_BLOCK_STATE = 0;
+/**
+ * Describes the initial state of this defer block instance.
+ *
+ * Note: this state is internal only and *must* be represented
+ * with a number lower than any value in the `DeferBlockState` enum.
+ */
+export enum DeferBlockInternalState {
+  /** Initial state. Nothing is rendered yet. */
+  Initial = -1,
+}
+
+export const NEXT_DEFER_BLOCK_STATE = 0;
+// Note: it's *important* to keep the state in this slot, because this slot
+// is used by runtime logic to differentiate between LViews, LContainers and
+// other types (see `isLView` and `isLContainer` functions). In case of defer
+// blocks, this slot would always be a number.
+export const DEFER_BLOCK_STATE = 1;
+export const STATE_IS_FROZEN_UNTIL = 2;
+export const LOADING_AFTER_CLEANUP_FN = 3;
 
 /**
- * Describes instance-specific {#defer} block data.
+ * Describes instance-specific defer block data.
  *
  * Note: currently there is only the `state` slot, but more slots
  * would be added later to keep track of `after` and `maximum` features
  * (which would require per-instance state).
  */
 export interface LDeferBlockDetails extends Array<unknown> {
-  [DEFER_BLOCK_STATE]: DeferBlockInstanceState;
+  /**
+   * Currently rendered block state.
+   */
+  [DEFER_BLOCK_STATE]: DeferBlockState|DeferBlockInternalState;
+
+  /**
+   * Block state that was requested when another state was rendered.
+   */
+  [NEXT_DEFER_BLOCK_STATE]: DeferBlockState|null;
+
+  /**
+   * Timestamp indicating when the current state can be switched to
+   * the next one, in case teh current state has `minimum` parameter.
+   */
+  [STATE_IS_FROZEN_UNTIL]: number|null;
+
+  /**
+   * Contains a reference to a cleanup function which cancels a timeout
+   * when Angular waits before rendering loading state. This is used when
+   * the loading block has the `after` parameter configured.
+   */
+  [LOADING_AFTER_CLEANUP_FN]: VoidFunction|null;
+}
+
+/**
+ * Internal structure used for configuration of defer block behavior.
+ * */
+export interface DeferBlockConfig {
+  behavior: DeferBlockBehavior;
+}
+
+/**
+ * Options for configuring defer blocks behavior.
+ * @publicApi
+ * @developerPreview
+ */
+export enum DeferBlockBehavior {
+  /**
+   * Manual triggering mode for defer blocks. Provides control over when defer blocks render
+   * and which state they render. This is the default behavior in test environments.
+   */
+  Manual,
+
+  /**
+   * Playthrough mode for defer blocks. This mode behaves like defer blocks would in a browser.
+   */
+  Playthrough,
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT} from '@angular/common';
+import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
@@ -17,7 +17,7 @@ import {withHead} from '@angular/private/testing';
 
 import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, IMAGE_CONFIG, ImageConfig, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -1187,8 +1187,8 @@ describe('Image directive', () => {
     //   transforms2: {example2: "bar"}
     // }
     const nestedImageLoader = (config: ImageLoaderConfig) => {
-      return `${config.src}/${config.loaderParams?.transforms1.example1}/${
-          config.loaderParams?.transforms2.example2}`;
+      return `${config.src}/${config.loaderParams?.['transforms1'].example1}/${
+          config.loaderParams?.['transforms2'].example2}`;
     };
 
     it('should set `src` to match `ngSrc` if image loader is not provided', () => {
@@ -1400,7 +1400,7 @@ describe('Image directive', () => {
     it('should pass data payload from loaderParams to custom image loaders', () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
-        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50" 
+        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);

@@ -19,7 +19,7 @@ import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
-import {storeLViewOnDestroy} from './util/view_utils';
+import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -63,7 +63,19 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
     return this._lView[CONTEXT] as unknown as T;
   }
 
+  /**
+   * @deprecated Replacing the full context object is not supported. Modify the context
+   *   directly, or consider using a `Proxy` if you need to replace the full object.
+   * // TODO(devversion): Remove this.
+   */
   set context(value: T) {
+    if (ngDevMode) {
+      // Note: We have a warning message here because the `@deprecated` JSDoc will not be picked
+      // up for assignments on the setter. We want to let users know about the deprecated usage.
+      console.warn(
+          'Angular: Replacing the `context` object of an `EmbeddedViewRef` is deprecated.');
+    }
+
     this._lView[CONTEXT] = value as unknown as {};
   }
 
@@ -246,6 +258,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * ```
    */
   reattach(): void {
+    updateAncestorTraversalFlagsOnAttach(this._lView);
     this._lView[FLAGS] |= LViewFlags.Attached;
   }
 

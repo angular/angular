@@ -798,4 +798,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}
   missingRequiredInputs(): void {}
+  illegalForLoopTrackAccess(): void {}
+  inaccessibleDeferredTriggerElement(): void {}
 }

@@ -5,11 +5,14 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <ng-template/>
-    {#for item of items; track item}{{item}}{:empty}Empty{/for}
+    @for (item of items; track item) {
+      {{item}}
+    } @empty {
+      Empty
+    }
     <ng-template/>
   `,
 })
 export class MyApp {
   items = ['one', 'two', 'three'];
-  item: any;  // TODO(crisbeto): remove this once template type checking is fully implemented.
 }

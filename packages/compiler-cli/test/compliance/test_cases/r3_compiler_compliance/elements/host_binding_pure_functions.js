@@ -1,6 +1,6 @@
-const $_c0$ = function (a0, a1) { return { collapsedHeight: a0, expandedHeight: a1 }; };
-const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
-const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
+const $_c0$ = ($a0$, $a1$) => ({ collapsedHeight: $a0$, expandedHeight: $a1$ });
+const $_c1$ = ($a0$, $a1$) => ({ value: $a0$, params: $a1$ });
+const $_c2$ = ($a0$, $a1$) => ({ collapsedWidth: $a0$, expandedWidth: $a1$ });
 …
 hostVars: 14,
 hostBindings: function MyComponent_HostBindings(rf, ctx) {

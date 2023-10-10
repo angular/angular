@@ -11,6 +11,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     FOR_ROOT_CALLED_TWICE = 4007,
     // (undocumented)
+    INFINITE_REDIRECT = 4016,
+    // (undocumented)
     INVALID_DOUBLE_DOTS = 4005,
     // (undocumented)
     INVALID_ROOT_URL_SEGMENT = 4015,

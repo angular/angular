@@ -10,10 +10,12 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import {CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit, CompilationJob} from './compilation';
+import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
+import {phaseApplyI18nExpressions} from './phases/apply_i18n_expressions';
+import {phaseAssignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
 import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseChaining} from './phases/chaining';
@@ -22,9 +24,11 @@ import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseGenerateI18nBlocks} from './phases/generate_i18n_blocks';
+import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
+import {phaseConstTraitCollection} from './phases/has_const_trait_collection';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
+import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
 import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
 import {phaseLocalRefs} from './phases/local_refs';
@@ -32,13 +36,15 @@ import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
-import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
 import {phaseNonbindable} from './phases/nonbindable';
 import {phaseNullishCoalescing} from './phases/nullish_coalescing';
+import {phaseOrdering} from './phases/ordering';
 import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
+import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phaseOrdering} from './phases/ordering';
+import {phasePropagateI18nBlocks} from './phases/propagate_i18n_blocks';
+import {phasePropagateI18nPlaceholders} from './phases/propagate_i18n_placeholders';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -67,20 +73,22 @@ type Phase = {
 };
 
 const phases: Phase[] = [
-  {kind: Kind.Tmpl, fn: phaseGenerateI18nBlocks},
-  {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
+  {kind: Kind.Tmpl, fn: phaseRemoveContentSelectors},
   {kind: Kind.Host, fn: phaseHostStylePropertyParsing},
   {kind: Kind.Tmpl, fn: phaseNamespace},
   {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
   {kind: Kind.Both, fn: phaseBindingSpecialization},
+  {kind: Kind.Tmpl, fn: phasePropagateI18nBlocks},
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
   {kind: Kind.Tmpl, fn: phaseConditionals},
-  {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
+  {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
+  {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
   {kind: Kind.Tmpl, fn: phasePipeVariadic},
   {kind: Kind.Both, fn: phasePureLiteralStructures},
+  {kind: Kind.Tmpl, fn: phaseGenerateProjectionDef},
   {kind: Kind.Tmpl, fn: phaseGenerateVariables},
   {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
   {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
@@ -94,8 +102,12 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseTemporaryVariables},
   {kind: Kind.Tmpl, fn: phaseSlotAllocation},
   {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
+  {kind: Kind.Tmpl, fn: phasePropagateI18nPlaceholders},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
+  {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
+  {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
   {kind: Kind.Both, fn: phaseConstCollection},
+  {kind: Kind.Tmpl, fn: phaseAssignI18nSlotDependencies},
   {kind: Kind.Both, fn: phaseVarCounting},
   {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
   {kind: Kind.Both, fn: phaseVariableOptimization},

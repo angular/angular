@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, inject, Injectable, InjectionToken, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
+import {isPlatformServer} from '@angular/common';
+import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
 import {HttpBackend, HttpHandler} from './backend';
+import {RuntimeErrorCode} from './errors';
+import {FetchBackend} from './fetch';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
@@ -175,19 +178,26 @@ function chainedInterceptorFn(
  * @publicApi
  */
 export const HTTP_INTERCEPTORS =
-    new InjectionToken<HttpInterceptor[]>(ngDevMode ? 'HTTP_INTERCEPTORS' : '');
+    new InjectionToken<readonly HttpInterceptor[]>(ngDevMode ? 'HTTP_INTERCEPTORS' : '');
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s.
  */
 export const HTTP_INTERCEPTOR_FNS =
-    new InjectionToken<HttpInterceptorFn[]>(ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '');
+    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '');
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s that are only set in root.
  */
 export const HTTP_ROOT_INTERCEPTOR_FNS =
-    new InjectionToken<HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
+    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
+
+/**
+ * A provider to set a global primary http backend. If set, it will override the default one
+ */
+export const PRIMARY_HTTP_BACKEND =
+    new InjectionToken<HttpBackend>(ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '');
+
 
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
@@ -213,6 +223,13 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
   };
 }
 
+let fetchBackendWarningDisplayed = false;
+
+/** Internal function to reset the flag in tests */
+export function resetFetchBackendWarningFlag() {
+  fetchBackendWarningDisplayed = false;
+}
+
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown>|null = null;
@@ -220,6 +237,30 @@ export class HttpInterceptorHandler extends HttpHandler {
 
   constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
     super();
+
+    // Check if there is a preferred HTTP backend configured and use it if that's the case.
+    // This is needed to enable `FetchBackend` globally for all HttpClient's when `withFetch`
+    // is used.
+    const primaryHttpBackend = inject(PRIMARY_HTTP_BACKEND, {optional: true});
+    this.backend = primaryHttpBackend ?? backend;
+
+    // We strongly recommend using fetch backend for HTTP calls when SSR is used
+    // for an application. The logic below checks if that's the case and produces
+    // a warning otherwise.
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
+      const isServer = isPlatformServer(injector.get(PLATFORM_ID));
+      if (isServer && !(this.backend instanceof FetchBackend)) {
+        fetchBackendWarningDisplayed = true;
+        injector.get(Console).warn(formatRuntimeError(
+            RuntimeErrorCode.NOT_USING_FETCH_BACKEND_IN_SSR,
+            'Angular detected that `HttpClient` is not configured ' +
+                'to use `fetch` APIs. It\'s strongly recommended to ' +
+                'enable `fetch` for applications that use Server-Side Rendering ' +
+                'for better performance and compatibility. ' +
+                'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
+                'call at the root of the application.'));
+      }
+    }
   }
 
   override handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {

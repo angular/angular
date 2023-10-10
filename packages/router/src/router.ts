@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
@@ -30,11 +30,6 @@ import {afterNextNavigation} from './utils/navigations';
 
 function defaultErrorHandler(error: any): never {
   throw error;
-}
-
-function defaultMalformedUriErrorHandler(
-    error: URIError, urlSerializer: UrlSerializer, url: string): UrlTree {
-  return urlSerializer.parse('/');
 }
 
 /**
@@ -79,11 +74,8 @@ export class Router {
   private get rawUrlTree() {
     return this.stateManager.rawUrlTree;
   }
-  private get browserUrlTree() {
-    return this.stateManager.browserUrlTree;
-  }
   private disposed = false;
-  private locationSubscription?: SubscriptionLike;
+  private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
   private isNgZoneEnabled = false;
 
   private readonly console = inject(Console);
@@ -127,17 +119,6 @@ export class Router {
    * @see {@link withNavigationErrorHandler}
    */
   errorHandler: (error: any) => any = this.options.errorHandler || defaultErrorHandler;
-
-  /**
-   * A handler for errors thrown by `Router.parseUrl(url)`
-   * when `url` contains an invalid character.
-   * The most common case is a `%` sign
-   * that's not encoded and is not part of a percent encoded sequence.
-   *
-   * @see {@link RouterModule}
-   */
-  private malformedUriErrorHandler =
-      this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
 
   /**
    * True if at least one navigation event has occurred,
@@ -252,8 +233,8 @@ export class Router {
   initialNavigation(): void {
     this.setUpLocationChangeListener();
     if (!this.navigationTransitions.hasRequestedNavigation) {
-      const state = this.location.getState() as RestoredState;
-      this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
+      this.navigateToSyncWithBrowser(
+          this.location.path(true), IMPERATIVE_NAVIGATION, this.stateManager.restoredState());
     }
   }
 
@@ -266,17 +247,15 @@ export class Router {
     // Don't need to use Zone.wrap any more, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
-    if (!this.locationSubscription) {
-      this.locationSubscription = this.location.subscribe(event => {
-        const source = event['type'] === 'popstate' ? 'popstate' : 'hashchange';
-        if (source === 'popstate') {
-          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-          // hybrid apps.
-          setTimeout(() => {
-            this.navigateToSyncWithBrowser(event['url']!, source, event.state);
-          }, 0);
-        }
-      });
+    if (!this.nonRouterCurrentEntryChangeSubscription) {
+      this.nonRouterCurrentEntryChangeSubscription =
+          this.stateManager.nonRouterCurrentEntryChange((url, state) => {
+            // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+            // hybrid apps.
+            setTimeout(() => {
+              this.navigateToSyncWithBrowser(url, 'popstate', state);
+            }, 0);
+          });
     }
   }
 
@@ -288,7 +267,7 @@ export class Router {
    * the Router needs to respond to ensure its internal state matches.
    */
   private navigateToSyncWithBrowser(
-      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+      url: string, source: NavigationTrigger, state: RestoredState|null|undefined) {
     const extras: NavigationExtras = {replaceUrl: true};
 
     // TODO: restoredState should always include the entire state, regardless
@@ -367,9 +346,9 @@ export class Router {
   /** Disposes of the router. */
   dispose(): void {
     this.navigationTransitions.complete();
-    if (this.locationSubscription) {
-      this.locationSubscription.unsubscribe();
-      this.locationSubscription = undefined;
+    if (this.nonRouterCurrentEntryChangeSubscription) {
+      this.nonRouterCurrentEntryChangeSubscription.unsubscribe();
+      this.nonRouterCurrentEntryChangeSubscription = undefined;
     }
     this.disposed = true;
     this.eventsSubscription.unsubscribe();
@@ -550,13 +529,11 @@ export class Router {
 
   /** Parses a string into a `UrlTree` */
   parseUrl(url: string): UrlTree {
-    let urlTree: UrlTree;
     try {
-      urlTree = this.urlSerializer.parse(url);
-    } catch (e) {
-      urlTree = this.malformedUriErrorHandler(e as URIError, this.urlSerializer, url);
+      return this.urlSerializer.parse(url);
+    } catch {
+      return this.urlSerializer.parse('/');
     }
-    return urlTree;
   }
 
   /**
@@ -639,7 +616,6 @@ export class Router {
       restoredState,
       currentUrlTree: this.currentUrlTree,
       currentRawUrl: this.currentUrlTree,
-      currentBrowserUrl: this.browserUrlTree,
       rawUrl,
       extras,
       resolve,

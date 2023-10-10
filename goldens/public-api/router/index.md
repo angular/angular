@@ -296,11 +296,10 @@ export const enum EventType {
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
+    enableViewTransitions?: boolean;
     // @deprecated
     errorHandler?: (error: any) => any;
     initialNavigation?: InitialNavigation;
-    // @deprecated
-    malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
     useHash?: boolean;
@@ -771,7 +770,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | RouterHashLocationFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1087,6 +1086,9 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+// @public
 export function withComponentInputBinding(): ComponentInputBindingFeature;
 
 // @public
@@ -1099,7 +1101,7 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
 
 // @public
-export function withHashLocation(): RouterConfigurationFeature;
+export function withHashLocation(): RouterHashLocationFeature;
 
 // @public
 export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;
@@ -1112,6 +1114,9 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 
 // @public
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature;
+
+// @public
+export function withViewTransitions(options?: ViewTransitionsFeatureOptions): ViewTransitionsFeature;
 
 // (No @packageDocumentation comment for this package)
 

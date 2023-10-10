@@ -642,11 +642,6 @@
                   "tooltip": "Introduces the optional Angular internationalization tasks and lists topics that teach you how to manually configure localization settings for your applications"
                 },
                 {
-                  "url": "guide/i18n-optional-manual-runtime-locale",
-                  "title": "Set the runtime locale manually",
-                  "tooltip": "Set the runtime locale manually"
-                },
-                {
                   "url": "guide/i18n-optional-import-global-variants",
                   "title": "Import global variants of the locale data",
                   "tooltip": "Import global variants of the locale data"
@@ -706,11 +701,6 @@
               "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
             },
             {
-              "url": "guide/app-shell",
-              "title": "App shell",
-              "tooltip": "Render a portion of your app quickly to improve the startup experience."
-            },
-            {
               "url": "guide/service-worker-communications",
               "title": "Service worker communication",
               "tooltip": "Services that enable you to interact with an Angular service worker."
@@ -729,6 +719,11 @@
               "url": "guide/service-worker-config",
               "title": "Service worker configuration",
               "tooltip": "Configuring service worker caching behavior."
+            },
+            {
+              "url": "guide/app-shell",
+              "title": "App shell",
+              "tooltip": "Render a portion of your app quickly to improve the startup experience."
             }
           ]
         },
@@ -1250,6 +1245,11 @@
                   "url": "guide/ngmodule-api",
                   "title": "NgModule API",
                   "tooltip": "Understand the details of NgModules."
+                },
+                {
+                  "url": "guide/universal-ngmodule",
+                  "title": "Server-side rendering with NgModule applications",
+                  "tooltip": "Render HTML server-side with Angular Universal (using NgModule)."
                 },
                 {
                   "url": "guide/ngmodule-faq",

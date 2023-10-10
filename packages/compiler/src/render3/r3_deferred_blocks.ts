@@ -7,7 +7,7 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {ParseError} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
@@ -31,72 +31,82 @@ const WHEN_PARAMETER_PATTERN = /^when\s/;
 /** Pattern to identify a `on` parameter in a block. */
 const ON_PARAMETER_PATTERN = /^on\s/;
 
-/** Possible types of secondary deferred blocks. */
-export enum SecondaryDeferredBlockType {
-  PLACEHOLDER = 'placeholder',
-  LOADING = 'loading',
-  ERROR = 'error',
+/**
+ * Predicate function that determines if a block with
+ * a specific name cam be connected to a `defer` block.
+ */
+export function isConnectedDeferLoopBlock(name: string): boolean {
+  return name === 'placeholder' || name === 'loading' || name === 'error';
 }
 
 /** Creates a deferred block from an HTML AST node. */
 export function createDeferredBlock(
-    ast: html.BlockGroup, visitor: html.Visitor,
+    ast: html.Block, connectedBlocks: html.Block[], visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.DeferredBlock, errors: ParseError[]} {
   const errors: ParseError[] = [];
-  const [primaryBlock, ...secondaryBlocks] = ast.blocks;
+  const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
   const {triggers, prefetchTriggers} =
-      parsePrimaryTriggers(primaryBlock.parameters, bindingParser, errors);
-  const {placeholder, loading, error} = parseSecondaryBlocks(secondaryBlocks, errors, visitor);
+      parsePrimaryTriggers(ast.parameters, bindingParser, errors, placeholder);
 
-  return {
-    node: new t.DeferredBlock(
-        html.visitAll(visitor, primaryBlock.children), triggers, prefetchTriggers, placeholder,
-        loading, error, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan),
-    errors,
-  };
+  // The `defer` block has a main span encompassing all of the connected branches as well. For the
+  // span of only the first "main" branch, use `mainSourceSpan`.
+  let lastEndSourceSpan = ast.endSourceSpan;
+  let endOfLastSourceSpan = ast.sourceSpan.end;
+  if (connectedBlocks.length > 0) {
+    const lastConnectedBlock = connectedBlocks[connectedBlocks.length - 1];
+    lastEndSourceSpan = lastConnectedBlock.endSourceSpan;
+    endOfLastSourceSpan = lastConnectedBlock.sourceSpan.end;
+  }
+
+  const mainDeferredSourceSpan = new ParseSourceSpan(ast.sourceSpan.start, endOfLastSourceSpan);
+
+  const node = new t.DeferredBlock(
+      html.visitAll(visitor, ast.children, ast.children), triggers, prefetchTriggers, placeholder,
+      loading, error, mainDeferredSourceSpan, ast.sourceSpan, ast.startSourceSpan,
+      lastEndSourceSpan);
+
+  return {node, errors};
 }
 
-function parseSecondaryBlocks(blocks: html.Block[], errors: ParseError[], visitor: html.Visitor) {
+function parseConnectedBlocks(
+    connectedBlocks: html.Block[], errors: ParseError[], visitor: html.Visitor) {
   let placeholder: t.DeferredBlockPlaceholder|null = null;
   let loading: t.DeferredBlockLoading|null = null;
   let error: t.DeferredBlockError|null = null;
 
-  for (const block of blocks) {
+  for (const block of connectedBlocks) {
     try {
+      if (!isConnectedDeferLoopBlock(block.name)) {
+        errors.push(new ParseError(block.startSourceSpan, `Unrecognized block "@${block.name}"`));
+        break;
+      }
+
       switch (block.name) {
-        case SecondaryDeferredBlockType.PLACEHOLDER:
+        case 'placeholder':
           if (placeholder !== null) {
             errors.push(new ParseError(
-                block.startSourceSpan,
-                `"defer" block can only have one "${
-                    SecondaryDeferredBlockType.PLACEHOLDER}" block`));
+                block.startSourceSpan, `@defer block can only have one @placeholder block`));
           } else {
             placeholder = parsePlaceholderBlock(block, visitor);
           }
           break;
 
-        case SecondaryDeferredBlockType.LOADING:
+        case 'loading':
           if (loading !== null) {
             errors.push(new ParseError(
-                block.startSourceSpan,
-                `"defer" block can only have one "${SecondaryDeferredBlockType.LOADING}" block`));
+                block.startSourceSpan, `@defer block can only have one @loading block`));
           } else {
             loading = parseLoadingBlock(block, visitor);
           }
           break;
 
-        case SecondaryDeferredBlockType.ERROR:
+        case 'error':
           if (error !== null) {
             errors.push(new ParseError(
-                block.startSourceSpan,
-                `"defer" block can only have one "${SecondaryDeferredBlockType.ERROR}" block`));
+                block.startSourceSpan, `@defer block can only have one @error block`));
           } else {
             error = parseErrorBlock(block, visitor);
           }
-          break;
-
-        default:
-          errors.push(new ParseError(block.startSourceSpan, `Unrecognized block "${block.name}"`));
           break;
       }
     } catch (e) {
@@ -113,7 +123,7 @@ function parsePlaceholderBlock(ast: html.Block, visitor: html.Visitor): t.Deferr
   for (const param of ast.parameters) {
     if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
       if (minimumTime != null) {
-        throw new Error(`Placeholder block can only have one "minimum" parameter`);
+        throw new Error(`@placeholder block can only have one "minimum" parameter`);
       }
 
       const parsedTime =
@@ -125,14 +135,13 @@ function parsePlaceholderBlock(ast: html.Block, visitor: html.Visitor): t.Deferr
 
       minimumTime = parsedTime;
     } else {
-      throw new Error(`Unrecognized parameter in "${
-          SecondaryDeferredBlockType.PLACEHOLDER}" block: "${param.expression}"`);
+      throw new Error(`Unrecognized parameter in @placeholder block: "${param.expression}"`);
     }
   }
 
   return new t.DeferredBlockPlaceholder(
-      html.visitAll(visitor, ast.children), minimumTime, ast.sourceSpan, ast.startSourceSpan,
-      ast.endSourceSpan);
+      html.visitAll(visitor, ast.children, ast.children), minimumTime, ast.sourceSpan,
+      ast.startSourceSpan, ast.endSourceSpan);
 }
 
 function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBlockLoading {
@@ -142,7 +151,7 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
   for (const param of ast.parameters) {
     if (AFTER_PARAMETER_PATTERN.test(param.expression)) {
       if (afterTime != null) {
-        throw new Error(`Loading block can only have one "after" parameter`);
+        throw new Error(`@loading block can only have one "after" parameter`);
       }
 
       const parsedTime =
@@ -155,7 +164,7 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
       afterTime = parsedTime;
     } else if (MINIMUM_PARAMETER_PATTERN.test(param.expression)) {
       if (minimumTime != null) {
-        throw new Error(`Loading block can only have one "minimum" parameter`);
+        throw new Error(`@loading block can only have one "minimum" parameter`);
       }
 
       const parsedTime =
@@ -167,28 +176,29 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 
       minimumTime = parsedTime;
     } else {
-      throw new Error(`Unrecognized parameter in "${SecondaryDeferredBlockType.LOADING}" block: "${
-          param.expression}"`);
+      throw new Error(`Unrecognized parameter in @loading block: "${param.expression}"`);
     }
   }
 
   return new t.DeferredBlockLoading(
-      html.visitAll(visitor, ast.children), afterTime, minimumTime, ast.sourceSpan,
+      html.visitAll(visitor, ast.children, ast.children), afterTime, minimumTime, ast.sourceSpan,
       ast.startSourceSpan, ast.endSourceSpan);
 }
 
 
 function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBlockError {
   if (ast.parameters.length > 0) {
-    throw new Error(`"${SecondaryDeferredBlockType.ERROR}" block cannot have parameters`);
+    throw new Error(`@error block cannot have parameters`);
   }
 
   return new t.DeferredBlockError(
-      html.visitAll(visitor, ast.children), ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan);
+      html.visitAll(visitor, ast.children, ast.children), ast.sourceSpan, ast.startSourceSpan,
+      ast.endSourceSpan);
 }
 
 function parsePrimaryTriggers(
-    params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[]) {
+    params: html.BlockParameter[], bindingParser: BindingParser, errors: ParseError[],
+    placeholder: t.DeferredBlockPlaceholder|null) {
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
 
@@ -198,11 +208,11 @@ function parsePrimaryTriggers(
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
       parseWhenTrigger(param, bindingParser, triggers, errors);
     } else if (ON_PARAMETER_PATTERN.test(param.expression)) {
-      parseOnTrigger(param, triggers, errors);
+      parseOnTrigger(param, triggers, errors, placeholder);
     } else if (PREFETCH_WHEN_PATTERN.test(param.expression)) {
       parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
-      parseOnTrigger(param, prefetchTriggers, errors);
+      parseOnTrigger(param, prefetchTriggers, errors, placeholder);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }

@@ -80,33 +80,9 @@ export class RouterConfigLoader {
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const moduleFactoryOrRoutes$ = this.loadModuleFactoryOrRoutes(route.loadChildren!);
+    const moduleFactoryOrRoutes$ =
+        loadChildren(route, this.compiler, parentInjector, this.onLoadEndListener);
     const loadRunner = moduleFactoryOrRoutes$.pipe(
-        map((factoryOrRoutes: NgModuleFactory<any>|Routes) => {
-          if (this.onLoadEndListener) {
-            this.onLoadEndListener(route);
-          }
-          // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is no
-          // injector associated with lazy loading a `Route` array.
-          let injector: EnvironmentInjector|undefined;
-          let rawRoutes: Route[];
-          let requireStandaloneComponents = false;
-          if (Array.isArray(factoryOrRoutes)) {
-            rawRoutes = factoryOrRoutes;
-            requireStandaloneComponents = true;
-          } else {
-            injector = factoryOrRoutes.create(parentInjector).injector;
-            // When loading a module that doesn't provide `RouterModule.forChild()` preloader
-            // will get stuck in an infinite loop. The child module's Injector will look to
-            // its parent `Injector` when it doesn't find any ROUTES so it will return routes
-            // for it's parent module instead.
-            rawRoutes = injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional).flat();
-          }
-          const routes = rawRoutes.map(standardizeConfig);
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-              validateConfig(routes, route.path, requireStandaloneComponents);
-          return {routes, injector};
-        }),
         finalize(() => {
           this.childrenLoaders.delete(route);
         }),
@@ -117,21 +93,55 @@ export class RouterConfigLoader {
     this.childrenLoaders.set(route, loader);
     return loader;
   }
+}
 
-  private loadModuleFactoryOrRoutes(loadChildren: LoadChildren):
-      Observable<NgModuleFactory<any>|Routes> {
-    return wrapIntoObservable((loadChildren as LoadChildrenCallback)())
-        .pipe(
-            map(maybeUnwrapDefaultExport),
-            mergeMap((t) => {
-              if (t instanceof NgModuleFactory || Array.isArray(t)) {
-                return of(t);
-              } else {
-                return from(this.compiler.compileModuleAsync(t));
-              }
-            }),
-        );
-  }
+/**
+ * Executes a `route.loadChildren` callback and converts the result to an array of child routes and
+ * an injector if that callback returned a module.
+ *
+ * This function is used for the route discovery during prerendering
+ * in @angular-devkit/build-angular. If there are any updates to the contract here, it will require
+ * an update to the extractor.
+ */
+export function loadChildren(
+    route: Route, compiler: Compiler, parentInjector: Injector,
+    onLoadEndListener?: (r: Route) => void): Observable<LoadedRouterConfig> {
+  return wrapIntoObservable(route.loadChildren!())
+      .pipe(
+          map(maybeUnwrapDefaultExport),
+          mergeMap((t) => {
+            if (t instanceof NgModuleFactory || Array.isArray(t)) {
+              return of(t);
+            } else {
+              return from(compiler.compileModuleAsync(t));
+            }
+          }),
+          map((factoryOrRoutes: NgModuleFactory<any>|Routes) => {
+            if (onLoadEndListener) {
+              onLoadEndListener(route);
+            }
+            // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is
+            // no injector associated with lazy loading a `Route` array.
+            let injector: EnvironmentInjector|undefined;
+            let rawRoutes: Route[];
+            let requireStandaloneComponents = false;
+            if (Array.isArray(factoryOrRoutes)) {
+              rawRoutes = factoryOrRoutes;
+              requireStandaloneComponents = true;
+            } else {
+              injector = factoryOrRoutes.create(parentInjector).injector;
+              // When loading a module that doesn't provide `RouterModule.forChild()` preloader
+              // will get stuck in an infinite loop. The child module's Injector will look to
+              // its parent `Injector` when it doesn't find any ROUTES so it will return routes
+              // for it's parent module instead.
+              rawRoutes = injector.get(ROUTES, [], {optional: true, self: true}).flat();
+            }
+            const routes = rawRoutes.map(standardizeConfig);
+            (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                validateConfig(routes, route.path, requireStandaloneComponents);
+            return {routes, injector};
+          }),
+      );
 }
 
 function isWrappedDefaultExport<T>(value: T|DefaultExport<T>): value is DefaultExport<T> {

@@ -10,10 +10,12 @@ import {resolveForwardRef} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
+import {flatten} from '../../util/array_utils';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
 import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
+import {debugStringifyTypeForError} from '../util/stringify_utils';
 
 import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponentScope} from './api';
 
@@ -24,7 +26,7 @@ import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponen
  *
  * @deprecated For migration purposes only, to be removed soon.
  */
-export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = false;
+export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = true;
 
 /**
  * An implementation of DepsTrackerApi which will be used for JIT and local compilation.
@@ -81,11 +83,16 @@ class DepsTracker implements DepsTrackerApi {
         dependencies: [
           ...scope.compilation.directives,
           ...scope.compilation.pipes,
+          ...scope.compilation.ngModules,
         ]
       };
     } else {
       if (!this.ownerNgModule.has(type)) {
-        return {dependencies: []};
+        throw new RuntimeError(
+            RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
+            `Orphan component found! Trying to render the component ${
+                debugStringifyTypeForError(
+                    type)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid such confusing cases. If this is not possible now, please import the component's NgModule in the NgModule or the standalone component in which you are trying to render this component. Also make sure the way the app is bundled and served always includes the component's NgModule before the component.`);
       }
 
       const scope = this.getNgModuleScope(this.ownerNgModule.get(type)!);
@@ -119,11 +126,8 @@ class DepsTracker implements DepsTrackerApi {
 
   /** @override */
   clearScopeCacheFor(type: Type<any>): void {
-    if (isNgModule(type)) {
-      this.ngModulesScopeCache.delete(type);
-    } else if (isComponent(type)) {
-      this.standaloneComponentsScopeCache.delete(type);
-    }
+    this.ngModulesScopeCache.delete(type as NgModuleType);
+    this.standaloneComponentsScopeCache.delete(type as ComponentType<any>);
   }
 
   /** @override */
@@ -205,6 +209,12 @@ class DepsTracker implements DepsTrackerApi {
         addSet(exportedScope.exported.directives, scope.exported.directives);
         addSet(exportedScope.exported.pipes, scope.exported.pipes);
 
+        // Some test toolings which run in JIT mode depend on this behavior that the exported scope
+        // should also be present in the compilation scope, even though AoT does not support this
+        // and it is also in odds with NgModule metadata definitions. Without this some tests in
+        // Google will fail.
+        addSet(exportedScope.exported.directives, scope.compilation.directives);
+        addSet(exportedScope.exported.pipes, scope.compilation.pipes);
       } else if (isPipe(exported)) {
         scope.exported.pipes.add(exported);
       } else {
@@ -236,10 +246,11 @@ class DepsTracker implements DepsTrackerApi {
         // Standalone components are always able to self-reference.
         directives: new Set([type]),
         pipes: new Set(),
+        ngModules: new Set(),
       },
     };
 
-    for (const rawImport of rawImports ?? []) {
+    for (const rawImport of flatten(rawImports ?? [])) {
       const imported = resolveForwardRef(rawImport) as Type<any>;
 
       try {
@@ -251,6 +262,7 @@ class DepsTracker implements DepsTrackerApi {
       }
 
       if (isNgModule(imported)) {
+        ans.compilation.ngModules.add(imported);
         const importedScope = this.getNgModuleScope(imported);
 
         // Short-circuit if an imported NgModule has corrupted exported scope.

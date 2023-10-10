@@ -5,6 +5,7 @@
 ```ts
 
 import { Observable } from 'rxjs';
+import { SIGNAL } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -33,6 +34,15 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
+    phase?: AfterRenderPhase;
+}
+
+// @public
+export enum AfterRenderPhase {
+    EarlyRead = 0,
+    MixedReadWrite = 2,
+    Read = 3,
+    Write = 1
 }
 
 // @public
@@ -118,6 +128,9 @@ export function asNativeElements(debugEls: DebugElement[]): any;
 
 // @public
 export function assertInInjectionContext(debugFn: Function): void;
+
+// @public
+export function assertNotInReactiveContext(debugFn: Function, extraContext?: string): void;
 
 // @public
 export function assertPlatform(requiredToken: any): PlatformRef;
@@ -218,7 +231,8 @@ export interface Component extends Directive {
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
     standalone?: boolean;
-    styles?: string[];
+    styles?: string | string[];
+    styleUrl?: string;
     styleUrls?: string[];
     template?: string;
     templateUrl?: string;
@@ -561,7 +575,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 export function enableProdMode(): void;
 
 // @public
-export const ENVIRONMENT_INITIALIZER: InjectionToken<() => void>;
+export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 
 // @public
 export abstract class EnvironmentInjector implements Injector {
@@ -1616,7 +1630,6 @@ export abstract class ViewRef extends ChangeDetectorRef {
 // @public
 export interface WritableSignal<T> extends Signal<T> {
     asReadonly(): Signal<T>;
-    mutate(mutatorFn: (value: T) => void): void;
     set(value: T): void;
     update(updateFn: (value: T) => T): void;
 }

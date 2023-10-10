@@ -87,6 +87,7 @@ function first<T>(a: T[], cb: (value: T) => T | undefined): T|undefined {
     const result = cb(value);
     if (result != null) return result;
   }
+  return;
 }
 
 function getEntryFromFiles(parts: string[], files: Entry) {

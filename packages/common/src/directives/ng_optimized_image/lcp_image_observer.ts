@@ -74,7 +74,7 @@ export class LCPImageObserver implements OnDestroy {
       if (!img) return;
       if (!img.priority && !img.alreadyWarnedPriority) {
         img.alreadyWarnedPriority = true;
-        logMissingPriorityWarning(imgSrc);
+        logMissingPriorityError(imgSrc);
       }
       if (img.modified && !img.alreadyWarnedModified) {
         img.alreadyWarnedModified = true;
@@ -118,9 +118,9 @@ export class LCPImageObserver implements OnDestroy {
   }
 }
 
-function logMissingPriorityWarning(ngSrc: string) {
+function logMissingPriorityError(ngSrc: string) {
   const directiveDetails = imgDirectiveDetails(ngSrc);
-  console.warn(formatRuntimeError(
+  console.error(formatRuntimeError(
       RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
       `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
           `element but was not marked "priority". This image should be marked ` +

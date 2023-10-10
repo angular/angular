@@ -1,3 +1,275 @@
+<a name="17.0.0-next.7"></a>
+# 17.0.0-next.7 (2023-10-04)
+## Deprecations
+### core
+- Swapping out the context object for `EmbeddedViewRef`
+  is no longer supported. Support for this was introduced with v12.0.0, but
+  this pattern is rarely used. There is no replacement, but you can use
+  simple assignments in most cases, or `Object.assign , or alternatively
+  still replace the full object by using a `Proxy` (see `NgTemplateOutlet`
+  as an example).
+  
+  Also adds a warning if the deprecated
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e753278faa](https://github.com/angular/angular/commit/e753278faae79a53e235e0d8e03f89555a712d80) | feat | Add the possibility of lazy loading animations code. ([#50738](https://github.com/angular/angular/pull/50738)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dde3fdabbd](https://github.com/angular/angular/commit/dde3fdabbd24b48dd6afd120d23e92a3605eb04d) | feat | upgrade warning to logged error for lazy-loaded LCP images using NgOptimizedImage ([#52004](https://github.com/angular/angular/pull/52004)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a7fa25306f](https://github.com/angular/angular/commit/a7fa25306f8ce47d8aa330531382106efec55a55) | feat | extract api docs for interfaces ([#52006](https://github.com/angular/angular/pull/52006)) |
+| [0eae992c4e](https://github.com/angular/angular/commit/0eae992c4e03b7c9039476e03b72e92d662293df) | fix | allow nullable values in for loop block ([#51997](https://github.com/angular/angular/pull/51997)) |
+| [9acd2ac98b](https://github.com/angular/angular/commit/9acd2ac98bc3b6ffc5a8d6c19f7290d05fe1f896) | fix | enable block syntax in the linker ([#51979](https://github.com/angular/angular/pull/51979)) |
+| [1d871c03a5](https://github.com/angular/angular/commit/1d871c03a523e10bb838cb0f9550595cfbd9d14d) | fix | forward referenced dependencies not identified as deferrable ([#52017](https://github.com/angular/angular/pull/52017)) |
+| [02edb43067](https://github.com/angular/angular/commit/02edb4306736e6f12e87a4164c17eca6cbdfe151) | fix | narrow the type of the aliased if block expression ([#51952](https://github.com/angular/angular/pull/51952)) |
+| [1beef49d80](https://github.com/angular/angular/commit/1beef49d80809fbb0e7c8e95f17096c39ac8940a) | fix | update the minVersion if component uses block syntax ([#51979](https://github.com/angular/angular/pull/51979)) |
+| [e5bca43224](https://github.com/angular/angular/commit/e5bca432248add0a19102f6afeae145f1a33ee8a) | perf | further reduce bundle size using arrow functions ([#52010](https://github.com/angular/angular/pull/52010)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f04d1cdab](https://github.com/angular/angular/commit/4f04d1cdab2fc5217566c0c01b7df10c74a93afa) | feat | add new list reconcilation algorithm ([#51980](https://github.com/angular/angular/pull/51980)) |
+| [43e6fb0606](https://github.com/angular/angular/commit/43e6fb0606e15584dcb4478ad4eaa8e825dda83e) | feat | enable block syntax ([#51994](https://github.com/angular/angular/pull/51994)) |
+| [a54713c831](https://github.com/angular/angular/commit/a54713c8316787eea160cfdb7f2778a087fe59ed) | feat | implement ɵgetInjectorMetadata debug API ([#51900](https://github.com/angular/angular/pull/51900)) |
+| [7d42dc3c02](https://github.com/angular/angular/commit/7d42dc3c023391e12ea607beb227fd4426e1694d) | feat | the new list reconciliation algorithm for built-in for ([#51980](https://github.com/angular/angular/pull/51980)) |
+| [4f69d620d9](https://github.com/angular/angular/commit/4f69d620d94663592780b2875acbc2b1918775f9) | fix | deferred blocks not removing content immediately when animations are enabled ([#51971](https://github.com/angular/angular/pull/51971)) |
+| [9b9e11fcaf](https://github.com/angular/angular/commit/9b9e11fcaf5d8d639ff1d7b8feddb01751b47e14) | refactor | deprecate allowing full context object to be replaced in `EmbeddedViewRef` ([#51887](https://github.com/angular/angular/pull/51887)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08482f2c7d](https://github.com/angular/angular/commit/08482f2c7dcbcd100981dfb266a6e63f64432328) | fix | Retain correct language service when `ts.Project` reloads ([#51912](https://github.com/angular/angular/pull/51912)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc7973f5a5](https://github.com/angular/angular/commit/cc7973f5a5cddbc5288db7d572757819327a40c3) | fix | throw a critical error when handleFetch fails ([#51960](https://github.com/angular/angular/pull/51960)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.8"></a>
+# 16.2.8 (2023-10-04)
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b732961fc3](https://github.com/angular/angular/commit/b732961fc3c6eec3cf5508330cc09d6a0a2d8f9a) | fix | Retain correct language service when `ts.Project` reloads ([#51912](https://github.com/angular/angular/pull/51912)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [966ce9790a](https://github.com/angular/angular/commit/966ce9790aa7c9414bcd35b49621f169d67b5669) | fix | throw a critical error when handleFetch fails ([#51960](https://github.com/angular/angular/pull/51960)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="15.2.10"></a>
+# 15.2.10 (2023-10-04)
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9fe08968b8](https://github.com/angular/angular/commit/9fe08968b84b92da47ce91f5d2860b3aa23d2d2b) | fix | throw a critical error when handleFetch fail ([#51989](https://github.com/angular/angular/pull/51989)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-next.6"></a>
+# 17.0.0-next.6 (2023-09-27)
+## Breaking Changes
+### router
+- Absolute redirects no longer prevent further redirects.
+  Route configurations may need to be adjusted to prevent infinite
+  redirects where additional redirects were previously ignored after an
+  absolute redirect occurred.
+- The `setupTestingRouter` function has been removed. Use
+  `RouterModule.forRoot` or `provideRouter` to setup the `Router` for
+  tests instead.
+## Deprecations
+### animations
+- The `AnimationDriver.NOOP` symbol is deprecated, use `NoopAnimationDriver` instead.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0598613950](https://github.com/angular/angular/commit/0598613950c76f4a13601c6942e30ab4ce1e3b67) | refactor | deprecation of `AnimationDriver.NOOP` ([#51843](https://github.com/angular/angular/pull/51843)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [23bfa10ac8](https://github.com/angular/angular/commit/23bfa10ac809f6b27d32647210c52329f0e4262e) | fix | add diagnostic for inaccessible deferred trigger ([#51922](https://github.com/angular/angular/pull/51922)) |
+| [31295a3cf9](https://github.com/angular/angular/commit/31295a3cf907a61e7115d9039a83a232b263a676) | fix | allocating unnecessary slots in conditional instruction ([#51913](https://github.com/angular/angular/pull/51913)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [377a7abfda](https://github.com/angular/angular/commit/377a7abfda60a6ddd55a41531e3653bcad78b0a2) | fix | bypass static resolving of the component's changeDetection field in local compilation mode ([#51848](https://github.com/angular/angular/pull/51848)) |
+| [f91f222b55](https://github.com/angular/angular/commit/f91f222b55f249089d267c72a9c0ab5b09d7c932) | fix | resolve component encapsulation enum in local compilation mode ([#51848](https://github.com/angular/angular/pull/51848)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c7127b98b5](https://github.com/angular/angular/commit/c7127b98b555449f99e24a81c828ab7b1c6c4a4e) | feat | add schematic to escape block syntax characters ([#51905](https://github.com/angular/angular/pull/51905)) |
+| [3cbb2a8ecf](https://github.com/angular/angular/commit/3cbb2a8ecf202c814c37ab241ce9f57fb574692e) | feat | implement deferred block interaction triggers ([#51830](https://github.com/angular/angular/pull/51830)) |
+| [8be2c48b7c](https://github.com/angular/angular/commit/8be2c48b7cda5e99f3d1efa9f26eb2615fea6a8b) | feat | implement new block syntax ([#51891](https://github.com/angular/angular/pull/51891)) |
+| [687b96186c](https://github.com/angular/angular/commit/687b96186c7da731927e55e714061ea2de718505) | feat | support deferred hover triggers ([#51874](https://github.com/angular/angular/pull/51874)) |
+| [e2e3d69a27](https://github.com/angular/angular/commit/e2e3d69a277990ab79aac7aae43cbdd398e13ed9) | feat | support deferred triggers with implicit triggers ([#51922](https://github.com/angular/angular/pull/51922)) |
+| [16f5fc40a4](https://github.com/angular/angular/commit/16f5fc40a49cee0d29711df1783f297ff30b5c6e) | feat | support deferred viewport triggers ([#51874](https://github.com/angular/angular/pull/51874)) |
+| [dcf18dc74c](https://github.com/angular/angular/commit/dcf18dc74c260253bbf394626beb712a831824f3) | fix | allow toSignal calls in reactive context ([#51831](https://github.com/angular/angular/pull/51831)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3c0577f991](https://github.com/angular/angular/commit/3c0577f99140b75688cb8ae969738325cc871548) | perf | disable styles of removed components instead of removing ([#51808](https://github.com/angular/angular/pull/51808)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [86e91463af](https://github.com/angular/angular/commit/86e91463afc1f3d3d71a669fb2919f2b8bc5a1ca) | feat | Add option to skip the first view transition ([#51825](https://github.com/angular/angular/pull/51825)) |
+| [ce1b915868](https://github.com/angular/angular/commit/ce1b915868e654cdb679e9381db9d3bd3d68d5c4) | fix | Allow redirects after an absolute redirect ([#51731](https://github.com/angular/angular/pull/51731)) |
+| [3c6258c85b](https://github.com/angular/angular/commit/3c6258c85b37535c1178e84509b7c9ed3a1359e4) | fix | Remove deprecated setupTestingRouter function ([#51826](https://github.com/angular/angular/pull/51826)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dcaad169ec](https://github.com/angular/angular/commit/dcaad169ec8bf0a61d032ae1ae68fb90d1face09) | fix | throw a critical error when `handleFetch` fails ([#51885](https://github.com/angular/angular/pull/51885)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.7"></a>
+# 16.2.7 (2023-09-27)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39a3e34e03](https://github.com/angular/angular/commit/39a3e34e035b324bfa1f1a11cf452272c91011c6) | fix | allow toSignal calls in reactive context ([#51831](https://github.com/angular/angular/pull/51831)) ([#51892](https://github.com/angular/angular/pull/51892)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c3d901eacf](https://github.com/angular/angular/commit/c3d901eacfe8d035441e5c990f6e6b2630d592f5) | fix | throw a critical error when `handleFetch` fails ([#51885](https://github.com/angular/angular/pull/51885)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-next.5"></a>
+# 17.0.0-next.5 (2023-09-20)
+## Breaking Changes
+### 
+- Node.js v16 support has been removed and the minimum support version has been bumped to 18.13.0.
+  
+  Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
+### common
+- 
+### core
+- Angular now required `zone.js` version `~0.14.0`
+- Versions of TypeScript older than 5.2 are no longer supported.
+### router
+- `malformedUriErrorHandler` is no longer available in
+  the `RouterModule.forRoot` options. URL parsing errors should instead be
+  handled in the `UrlSerializer.parse` method.
+### zone.js
+- Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
+  
+  The proper way to import `zone.js` and `zone.js/testing` is:
+  ```js
+  import 'zone.js';
+  import 'zone.js/testing';
+  ```
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59aa0634f4](https://github.com/angular/angular/commit/59aa0634f4d4694203f2a69c40017fe5a3962514) | build | remove support for Node.js v16 ([#51755](https://github.com/angular/angular/pull/51755)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe2fd7e1a8](https://github.com/angular/angular/commit/fe2fd7e1a898a4525c219065a6d0908988dfd7e2) | feat | make the warning for lazy-loaded lcp image an error ([#51748](https://github.com/angular/angular/pull/51748)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f6d9a73ab](https://github.com/angular/angular/commit/7f6d9a73ab8b658d0d8148080dfefb2550bee6b4) | feat | expand class api doc extraction ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [c7daf7ea16](https://github.com/angular/angular/commit/c7daf7ea1692391f7cac8f794ed777887a2764af) | feat | extract directive docs info ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [e0b1bb33d7](https://github.com/angular/angular/commit/e0b1bb33d77babe881f77f52cb1b71e345f5696b) | feat | extract doc info for JsDoc ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [b9c70158ab](https://github.com/angular/angular/commit/b9c70158abecd81a5af512c8b4da685851cf159f) | feat | extract docs for accessors, rest params, and types ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [a24ae994a0](https://github.com/angular/angular/commit/a24ae994a0470fdac09a69937fd0580cff6c6d68) | feat | extract docs for top level functions and consts ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [2e41488296](https://github.com/angular/angular/commit/2e41488296879685b19dfba8d78037690347bda3) | feat | extract docs info for enums, pipes, and NgModules ([#51733](https://github.com/angular/angular/pull/51733)) |
+| [34495b3533](https://github.com/angular/angular/commit/34495b35337892ab209d9955ff7fe2897a0c5d41) | feat | extract docs via exports ([#51828](https://github.com/angular/angular/pull/51828)) |
+| [7e82df45c5](https://github.com/angular/angular/commit/7e82df45c5bb72ec3dafaa07dc1eaa5d463b006c) | feat | initial skeleton for API doc extraction ([#51733](https://github.com/angular/angular/pull/51733)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b66330329](https://github.com/angular/angular/commit/5b66330329fd066a7c347f040a330b4c7f2a0a2b) | fix | allow non-array imports for standalone component in local compilation mode ([#51819](https://github.com/angular/angular/pull/51819)) |
+| [19c3dc18d3](https://github.com/angular/angular/commit/19c3dc18d3c0cfd83efec2c8f81b40860d570346) | fix | fix NgModule injector def in local compilation mode when imports/exports are non-array expressions ([#51819](https://github.com/angular/angular/pull/51819)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [81b67aa987](https://github.com/angular/angular/commit/81b67aa98767078aebae22150d3441372772c28f) | feat | add support for zone.js 0.14.0 ([#51774](https://github.com/angular/angular/pull/51774)) |
+| [e23aaa7d75](https://github.com/angular/angular/commit/e23aaa7d75efdd52be4dd7ca9267bc60d36059c2) | feat | drop support for older TypeScript versions ([#51792](https://github.com/angular/angular/pull/51792)) |
+| [5ead7d412d](https://github.com/angular/angular/commit/5ead7d412d847c85176a321e58d12dcdfc0dab67) | fix | ensure a consumer drops all its stale producers ([#51722](https://github.com/angular/angular/pull/51722)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2416a284f](https://github.com/angular/angular/commit/e2416a284ff086752c809689ef74588f02e5f0e4) | feat | Enable go to definition of styleUrl ([#51746](https://github.com/angular/angular/pull/51746)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a20a44c64](https://github.com/angular/angular/commit/5a20a44c64066e47894ca3cbe26327766ca89a42) | fix | ng-add schematics for application builder ([#51777](https://github.com/angular/angular/pull/51777)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0b3e6a41d0](https://github.com/angular/angular/commit/0b3e6a41d025997d2947125d875ac26ecd1b86d9) | fix | Remove malformedUriErrorHandler from `ExtraOptions` ([#51745](https://github.com/angular/angular/pull/51745)) |
+| [c03baed854](https://github.com/angular/angular/commit/c03baed8547c2c1da576307c708d2682dfdf3742) | fix | use DOCUMENT token instead of document directly in view transitions ([#51814](https://github.com/angular/angular/pull/51814)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.6"></a>
+# 16.2.6 (2023-09-20)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82712f80df](https://github.com/angular/angular/commit/82712f80dfc6aed2baf8d8f80c3552a6707c88ff) | fix | ensure a consumer drops all its stale producers ([#51722](https://github.com/angular/angular/pull/51722)) ([#51772](https://github.com/angular/angular/pull/51772)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-next.4"></a>
+# 17.0.0-next.4 (2023-09-13)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59387ee476](https://github.com/angular/angular/commit/59387ee476dff1a893a01fe5cbee3c95b93c0cdb) | feat | support styles and styleUrl as strings ([#51715](https://github.com/angular/angular/pull/51715)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73e4bf2ed2](https://github.com/angular/angular/commit/73e4bf2ed2471faf44a49b591e19a390d5867449) | feat | Add feature to support the View Transitions API ([#51314](https://github.com/angular/angular/pull/51314)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.5"></a>
+# 16.2.5 (2023-09-13)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-next.3"></a>
+# 17.0.0-next.3 (2023-09-06)
+## Breaking Changes
+### core
+- `OnPush` components that are created dynamically now
+  only have their host bindings refreshed and `ngDoCheck run` during change
+  detection if they are dirty.
+  Previously, a bug in the change detection would result in the `OnPush`
+  configuration of dynamically created components to be ignored when
+  executing host bindings and the `ngDoCheck` function. This is
+  rarely encountered but can happen if code has a handle on the
+  `ComponentRef` instance and updates values read in the `OnPush`
+  component template without then calling either `markForCheck` or
+  `detectChanges` on that component's `ChangeDetectorRef`.
+### router
+- `urlHandlingStrategy` has been removed from the Router public API.
+  This should instead be configured through the provideRouter or RouterModule.forRoot APIs.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [40bb45f329](https://github.com/angular/angular/commit/40bb45f3297359866cab39044dba06b3e809b096) | fix | Respect OnPush change detection strategy for dynamically created components ([#51356](https://github.com/angular/angular/pull/51356)) |
+| [88a0af64fd](https://github.com/angular/angular/commit/88a0af64fde58cbf71e8e2a22c39fabb8f0ee8fb) | perf | generate arrow functions for pure function calls ([#51668](https://github.com/angular/angular/pull/51668)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f464e39364](https://github.com/angular/angular/commit/f464e39364da6436fc4b5a703f66fe7dee70818c) | fix | Ensure title observable gets latest values ([#51561](https://github.com/angular/angular/pull/51561)) |
+| [b2aff43621](https://github.com/angular/angular/commit/b2aff4362129feb746856fc3d0f8e73b1927a037) | fix | Remove `urlHandlingStrategy` from public Router properties ([#51631](https://github.com/angular/angular/pull/51631)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.4"></a>
+# 16.2.4 (2023-09-06)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.2"></a>
 # 17.0.0-next.2 (2023-08-30)
 ## Breaking Changes

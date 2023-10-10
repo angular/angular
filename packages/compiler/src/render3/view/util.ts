@@ -262,7 +262,13 @@ export class DefinitionMap<T = any> {
 
   set(key: keyof T, value: o.Expression|null): void {
     if (value) {
-      this.values.push({key: key as string, value, quoted: false});
+      const existing = this.values.find(value => value.key === key);
+
+      if (existing) {
+        existing.value = value;
+      } else {
+        this.values.push({key: key as string, value, quoted: false});
+      }
     }
   }
 

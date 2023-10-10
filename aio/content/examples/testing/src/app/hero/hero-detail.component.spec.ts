@@ -1,18 +1,17 @@
 // #docplaster
-import {provideHttpClient} from '@angular/common/http';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {provideRouter, Router} from '@angular/router';
-import {RouterTestingHarness} from '@angular/router/testing';
+import { HttpClient, HttpHandler, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 
-import {asyncData, click} from '../../testing';
-import {Hero} from '../model/hero';
-import {SharedModule} from '../shared/shared.module';
+import { asyncData, click } from '../../testing';
+import { Hero } from '../model/hero';
+import { sharedImports } from '../shared/shared';
 
-import {HeroDetailComponent} from './hero-detail.component';
-import {HeroDetailService} from './hero-detail.service';
-import {HeroListComponent} from './hero-list.component';
-import {HeroModule} from './hero.module';
+import { HeroDetailComponent } from './hero-detail.component';
+import { HeroDetailService } from './hero-detail.service';
+import { HeroListComponent } from './hero-list.component';
 
 ////// Testing Vars //////
 let component: HeroDetailComponent;
@@ -33,36 +32,44 @@ const testHero = getTestHeroes()[0];
 function overrideSetup() {
   // #docregion hds-spy
   class HeroDetailServiceSpy {
-    testHero: Hero = {...testHero};
+    testHero: Hero = { ...testHero };
 
     /* emit cloned test hero */
-    getHero = jasmine.createSpy('getHero').and.callFake(
-        () => asyncData(Object.assign({}, this.testHero)));
+    getHero = jasmine
+      .createSpy('getHero')
+      .and.callFake(() => asyncData(Object.assign({}, this.testHero)));
 
     /* emit clone of test hero, with changes merged in */
-    saveHero = jasmine.createSpy('saveHero')
-                   .and.callFake((hero: Hero) => asyncData(Object.assign(this.testHero, hero)));
+    saveHero = jasmine
+      .createSpy('saveHero')
+      .and.callFake((hero: Hero) => asyncData(Object.assign(this.testHero, hero)));
   }
 
   // #enddocregion hds-spy
 
   // #docregion setup-override
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [HeroModule],
-          providers: [
-            provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
-            // HeroDetailService at this level is IRRELEVANT!
-            {provide: HeroDetailService, useValue: {}}
-          ]
-        })
-        // #docregion override-component-method
-        .overrideComponent(
-            HeroDetailComponent,
-            {set: {providers: [{provide: HeroDetailService, useClass: HeroDetailServiceSpy}]}})
-        // #enddocregion override-component-method
-        .compileComponents();
+    await TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [HeroDetailComponent, HeroListComponent],
+        providers: [
+          provideRouter([
+            { path: 'heroes', component: HeroListComponent },
+            { path: 'heroes/:id', component: HeroDetailComponent },
+          ]),
+          HttpClient,
+          HttpHandler,
+          // HeroDetailService at this level is IRRELEVANT!
+          { provide: HeroDetailService, useValue: {} },
+        ],
+      }),
+    )
+      // #docregion override-component-method
+      .overrideComponent(HeroDetailComponent, {
+        set: { providers: [{ provide: HeroDetailService, useClass: HeroDetailServiceSpy }] },
+      })
+      // #enddocregion override-component-method
+      .compileComponents();
   });
   // #enddocregion setup-override
 
@@ -81,60 +88,55 @@ function overrideSetup() {
 
   it('should have called `getHero`', () => {
     expect(hdsSpy.getHero.calls.count())
-        .withContext('getHero called once')
-        .toBe(1, 'getHero called once');
+      .withContext('getHero called once')
+      .toBe(1, 'getHero called once');
   });
 
-  it('should display stub hero\'s name', () => {
+  it("should display stub hero's name", () => {
     expect(page.nameDisplay.textContent).toBe(hdsSpy.testHero.name);
   });
 
   it('should save stub hero change', fakeAsync(() => {
-       const origName = hdsSpy.testHero.name;
-       const newName = 'New Name';
+    const origName = hdsSpy.testHero.name;
+    const newName = 'New Name';
 
-       page.nameInput.value = newName;
+    page.nameInput.value = newName;
 
-       page.nameInput.dispatchEvent(new Event('input'));  // tell Angular
+    page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
-       expect(component.hero.name).withContext('component hero has new name').toBe(newName);
-       expect(hdsSpy.testHero.name)
-           .withContext('service hero unchanged before save')
-           .toBe(origName);
+    expect(component.hero.name).withContext('component hero has new name').toBe(newName);
+    expect(hdsSpy.testHero.name).withContext('service hero unchanged before save').toBe(origName);
 
-       click(page.saveBtn);
-       expect(hdsSpy.saveHero.calls.count()).withContext('saveHero called once').toBe(1);
+    click(page.saveBtn);
+    expect(hdsSpy.saveHero.calls.count()).withContext('saveHero called once').toBe(1);
 
-       tick();  // wait for async save to complete
-       expect(hdsSpy.testHero.name)
-           .withContext('service hero has new name after save')
-           .toBe(newName);
-       expect(TestBed.inject(Router).url).toEqual('/heroes');
-     }));
+    tick(); // wait for async save to complete
+    expect(hdsSpy.testHero.name).withContext('service hero has new name after save').toBe(newName);
+    expect(TestBed.inject(Router).url).toEqual('/heroes');
+  }));
 }
 
 ////////////////////
-import {getTestHeroes} from '../model/testing/test-hero.service';
+import { getTestHeroes } from '../model/testing/test-hero.service';
 
 const firstHero = getTestHeroes()[0];
 
 function heroModuleSetup() {
   // #docregion setup-hero-module
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [HeroModule],
-          //  declarations: [ HeroDetailComponent ], // NO!  DOUBLE DECLARATION
-          providers: [
-            provideRouter([
-              {path: 'heroes/:id', component: HeroDetailComponent},
-              {path: 'heroes', component: HeroListComponent},
-            ]),
-            provideHttpClient(),
-            provideHttpClientTesting(),
-          ]
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [HeroDetailComponent, HeroListComponent],
+        providers: [
+          provideRouter([
+            { path: 'heroes/:id', component: HeroDetailComponent },
+            { path: 'heroes', component: HeroListComponent },
+          ]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
+      }),
+    ).compileComponents();
   });
   // #enddocregion setup-hero-module
 
@@ -147,7 +149,7 @@ function heroModuleSetup() {
       await createComponent(expectedHero.id);
     });
     // #docregion selected-tests
-    it('should display that hero\'s name', () => {
+    it("should display that hero's name", () => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
     });
     // #enddocregion route-good-id
@@ -159,15 +161,15 @@ function heroModuleSetup() {
 
     it('should save when click save but not navigate immediately', () => {
       click(page.saveBtn);
-      expect(TestBed.inject(HttpTestingController).expectOne({method: 'PUT', url: 'api/heroes'}));
+      expect(TestBed.inject(HttpTestingController).expectOne({ method: 'PUT', url: 'api/heroes' }));
       expect(TestBed.inject(Router).url).toEqual('/heroes/41');
     });
 
     it('should navigate when click save and save resolves', fakeAsync(() => {
-         click(page.saveBtn);
-         tick();  // wait for async save to complete
-         expect(TestBed.inject(Router).url).toEqual('/heroes/41');
-       }));
+      click(page.saveBtn);
+      tick(); // wait for async save to complete
+      expect(TestBed.inject(Router).url).toEqual('/heroes/41');
+    }));
 
     // #docregion title-case-pipe
     it('should convert hero name to Title Case', () => {
@@ -206,27 +208,27 @@ function heroModuleSetup() {
 }
 
 /////////////////////
-import {FormsModule} from '@angular/forms';
-import {TitleCasePipe} from '../shared/title-case.pipe';
+import { FormsModule } from '@angular/forms';
+import { TitleCasePipe } from '../shared/title-case.pipe';
+import { appConfig } from '../app.config';
 
 function formsModuleSetup() {
   // #docregion setup-forms-module
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [FormsModule],
-          declarations: [HeroDetailComponent, TitleCasePipe],
-          providers: [
-            provideHttpClient(),
-            provideHttpClientTesting(),
-            provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
-          ]
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [FormsModule, HeroDetailComponent, TitleCasePipe],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideRouter([{ path: 'heroes/:id', component: HeroDetailComponent }]),
+        ],
+      }),
+    ).compileComponents();
   });
   // #enddocregion setup-forms-module
 
-  it('should display 1st hero\'s name', async () => {
+  it("should display 1st hero's name", async () => {
     const expectedHero = firstHero;
     await createComponent(expectedHero.id).then(() => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
@@ -239,21 +241,20 @@ function formsModuleSetup() {
 function sharedModuleSetup() {
   // #docregion setup-shared-module
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [SharedModule],
-          declarations: [HeroDetailComponent],
-          providers: [
-            provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
-            provideHttpClient(),
-            provideHttpClientTesting(),
-          ]
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule(
+      Object.assign({}, appConfig, {
+        imports: [HeroDetailComponent, sharedImports],
+        providers: [
+          provideRouter([{ path: 'heroes/:id', component: HeroDetailComponent }]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
+      }),
+    ).compileComponents();
   });
   // #enddocregion setup-shared-module
 
-  it('should display 1st hero\'s name', async () => {
+  it("should display 1st hero's name", async () => {
     const expectedHero = firstHero;
     await createComponent(expectedHero.id).then(() => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
@@ -271,7 +272,7 @@ async function createComponent(id: number) {
   page = new Page();
 
   const request = TestBed.inject(HttpTestingController).expectOne(`api/heroes/?id=${id}`);
-  const hero = getTestHeroes().find(h => h.id === Number(id));
+  const hero = getTestHeroes().find((h) => h.id === Number(id));
   request.flush(hero ? [hero] : []);
   harness.detectChanges();
 }

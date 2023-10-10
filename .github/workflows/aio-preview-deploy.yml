@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
 
       - name: Configure Firebase deploy target
         working-directory: aio/
@@ -34,7 +34,7 @@ jobs:
           npx -y firebase-tools@latest target:clear --project ${{env.PREVIEW_PROJECT}} hosting aio
           npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'aio'

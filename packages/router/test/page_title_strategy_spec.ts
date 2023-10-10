@@ -125,7 +125,7 @@ describe('title strategy', () => {
           this.title$.subscribe(v => this.title = v);
         }
       }
-      const titleResolver: ResolveFn<string> = route => route.queryParams.id;
+      const titleResolver: ResolveFn<string> = route => route.queryParams['id'];
       router.resetConfig([{
         path: 'home',
         title: titleResolver,

@@ -4,12 +4,13 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#for item of items; track item}{{item.name}}{/for}
+      @for (item of items; track item) {
+        {{item.name}}
+      }
     </div>
   `,
 })
 export class MyApp {
   message = 'hello';
   items = [{name: 'one'}, {name: 'two'}, {name: 'three'}];
-  item: any;  // TODO(crisbeto): remove this once template type checking is fully implemented.
 }

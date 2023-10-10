@@ -3,7 +3,9 @@
   "cases": [
     {
       "description": "should handle safe keyed reads inside templates",
-      "inputFiles": ["safe_keyed_read.ts"],
+      "inputFiles": [
+        "safe_keyed_read.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -18,7 +20,9 @@
     },
     {
       "description": "should handle deep safe property reads inside templates",
-      "inputFiles": ["safe_access_deep.ts"],
+      "inputFiles": [
+        "safe_access_deep.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -32,7 +36,9 @@
     },
     {
       "description": "should handle property reads requiring temporary variables",
-      "inputFiles": ["safe_access_temporaries.ts"],
+      "inputFiles": [
+        "safe_access_temporaries.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -48,7 +54,9 @@
     },
     {
       "description": "should handle safe method calls inside templates",
-      "inputFiles": ["safe_method_call.ts"],
+      "inputFiles": [
+        "safe_method_call.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -63,7 +71,9 @@
     },
     {
       "description": "should handle safe calls inside templates",
-      "inputFiles": ["safe_call.ts"],
+      "inputFiles": [
+        "safe_call.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -79,19 +89,21 @@
     },
     {
       "description": "should handle non-null assertions after a safe access",
-      "inputFiles": ["safe_access_non_null.ts"],
+      "inputFiles": [
+        "safe_access_non_null.ts"
+      ],
       "expectations": [
         {
           "files": [
             {
               "expected": "safe_access_non_null_template.js",
+              "templatePipelineExpected": "safe_access_non_null_template.pipeline.js",
               "generated": "safe_access_non_null.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

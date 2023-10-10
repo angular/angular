@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { FlowerService } from './flower.service';
 import { AnimalService } from './animal.service';
+import { ChildComponent } from './child/child.component';
+import { InspectorComponent } from './inspector/inspector.component';
 
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: [ './app.component.css' ]
+  styleUrls: [ './app.component.css' ],
+  imports: [ChildComponent, InspectorComponent]
 })
 // #docregion inject-animal-service
 export class AppComponent  {

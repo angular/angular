@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/sync-test.min",
-  "main": "../../bundles/sync-test.umd.min.js",
-  "fesm2015": "../../fesm2015/sync-test.min.js",
-  "es2015": "../../fesm2015/sync-test.min.js",
-  "module": "../../fesm2015/sync-test.min.js"
-}

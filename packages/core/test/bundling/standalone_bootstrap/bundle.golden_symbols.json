@@ -51,6 +51,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -90,6 +93,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DistinctUntilChangedOperator"
+  },
+  {
     "name": "DistinctUntilChangedSubscriber"
   },
   {
@@ -112,9 +118,6 @@
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
-  },
-  {
-    "name": "EffectManager"
   },
   {
     "name": "ElementRef"
@@ -142,6 +145,9 @@
   },
   {
     "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
   },
   {
     "name": "HAS_TRANSPLANTED_VIEWS"
@@ -246,9 +252,6 @@
     "name": "NG_TEMPLATE_SELECTOR"
   },
   {
-    "name": "NOOP_CLEANUP_FN"
-  },
-  {
     "name": "NOT_FOUND"
   },
   {
@@ -310,9 +313,6 @@
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
-  },
-  {
-    "name": "REACTIVE_NODE"
   },
   {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
@@ -409,9 +409,6 @@
   },
   {
     "name": "ViewRef"
-  },
-  {
-    "name": "WATCH_NODE"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -522,9 +519,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -556,12 +550,6 @@
   },
   {
     "name": "consumerIsLive"
-  },
-  {
-    "name": "consumerMarkDirty"
-  },
-  {
-    "name": "consumerPollProducersForChange"
   },
   {
     "name": "convertToBitFlags"
@@ -609,13 +597,16 @@
     "name": "detectChangesInEmbeddedViews"
   },
   {
-    "name": "detectChangesInView"
+    "name": "detectChangesInViewIfAttached"
   },
   {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "disableStylesheet"
   },
   {
     "name": "empty"
@@ -789,9 +780,6 @@
     "name": "importProvidersFrom"
   },
   {
-    "name": "inNotificationPhase"
-  },
-  {
     "name": "includeViewProviders"
   },
   {
@@ -912,6 +900,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -951,6 +942,9 @@
     "name": "ngZoneApplicationErrorHandlerFactory"
   },
   {
+    "name": "nonNegativeNumber"
+  },
+  {
     "name": "nonNull"
   },
   {
@@ -973,9 +967,6 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
-  },
-  {
-    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"
@@ -1101,10 +1092,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

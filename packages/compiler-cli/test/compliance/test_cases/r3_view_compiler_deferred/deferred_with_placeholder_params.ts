@@ -2,10 +2,11 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    {#defer}
+    @defer {
       <button></button>
-      {:placeholder minimum 2s} <img src="placeholder.gif">
-    {/defer}
+    } @placeholder (minimum 2s) {
+      <img src="placeholder.gif">
+    }
   `,
 })
 export class MyApp {

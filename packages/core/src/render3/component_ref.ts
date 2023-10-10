@@ -27,7 +27,7 @@ import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
 import {AfterRenderEventManager} from './after_render_hooks';
-import {assertComponentType} from './assert';
+import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {getNodeInjectable, NodeInjector} from './di';
@@ -44,7 +44,7 @@ import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, T
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
-import {EffectManager} from './reactivity/effect';
+import {EffectScheduler} from './reactivity/effect';
 import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
@@ -188,14 +188,13 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
-    const effectManager = rootViewInjector.get(EffectManager, null);
-
     const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
 
     const environment: LViewEnvironment = {
       rendererFactory,
       sanitizer,
-      effectManager,
+      // We don't use inline effects (yet).
+      inlineEffectRunner: null,
       afterRenderEventManager,
     };
 
@@ -247,6 +246,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         hostDirectiveDefs = new Map();
         rootComponentDef.findHostDirectiveDefs(rootComponentDef, rootDirectives, hostDirectiveDefs);
         rootDirectives.push(rootComponentDef);
+        ngDevMode && assertNoDuplicateDirectives(rootDirectives);
       } else {
         rootDirectives = [rootComponentDef];
       }

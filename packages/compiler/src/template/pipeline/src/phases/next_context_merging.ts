@@ -76,6 +76,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
             tryToMerge = false;
             break;
         }
+        return;
       });
     }
   }

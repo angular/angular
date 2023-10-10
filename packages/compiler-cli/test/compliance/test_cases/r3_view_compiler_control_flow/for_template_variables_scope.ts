@@ -4,9 +4,9 @@ import {Component} from '@angular/core';
   template: `
     {{$index}} {{$count}} {{$first}} {{$last}}
 
-    {#for item of items; track item}
+    @for (item of items; track item) {
       {{$index}} {{$count}} {{$first}} {{$last}}
-    {/for}
+    }
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `,

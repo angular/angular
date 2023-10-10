@@ -3,11 +3,6 @@
   "cases": [
     {
       "description": "should generate a basic switch block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "switch"
-        ]
-      },
       "inputFiles": [
         "basic_switch.ts"
       ],
@@ -25,11 +20,6 @@
     },
     {
       "description": "should generate a switch block without a default block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "switch"
-        ]
-      },
       "inputFiles": [
         "switch_without_default.ts"
       ],
@@ -43,16 +33,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate nested switch blocks",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "switch"
-        ]
-      },
       "inputFiles": [
         "nested_switch.ts"
       ],
@@ -66,16 +50,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate switch block with a pipe in its expression",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "switch"
-        ]
-      },
       "inputFiles": [
         "switch_with_pipe.ts"
       ],
@@ -94,11 +72,6 @@
     },
     {
       "description": "should generate a basic if block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "basic_if.ts"
       ],
@@ -112,16 +85,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic if/else block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "basic_if_else.ts"
       ],
@@ -135,16 +102,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic if/else if block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "basic_if_else_if.ts"
       ],
@@ -158,16 +119,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a nested if block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "nested_if.ts"
       ],
@@ -181,16 +136,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate an if block using pipes in its conditions",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "if_with_pipe.ts"
       ],
@@ -209,11 +158,6 @@
     },
     {
       "description": "should generate an if block with an aliased expression",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "if_with_alias.ts"
       ],
@@ -227,16 +171,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should expose the alias to nested conditional blocks",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "if_nested_alias.ts"
       ],
@@ -250,16 +188,10 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should expose the alias to nested event listeners",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": [
-          "if"
-        ]
-      },
       "inputFiles": [
         "if_nested_alias_listeners.ts"
       ],
@@ -268,19 +200,16 @@
           "files": [
             {
               "expected": "if_nested_alias_listeners_template.js",
+              "templatePipelineExpected": "if_nested_alias_listeners_template.pipeline.js",
               "generated": "if_nested_alias_listeners.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic for block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "basic_for.ts"
       ],
@@ -299,9 +228,6 @@
     },
     {
       "description": "should generate a for block with an empty block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_with_empty.ts"
       ],
@@ -320,9 +246,6 @@
     },
     {
       "description": "should generate a for block that tracks by index",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_track_by_index.ts"
       ],
@@ -341,9 +264,6 @@
     },
     {
       "description": "should generate a for block that tracks by a field on the item",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_track_by_field.ts"
       ],
@@ -362,9 +282,6 @@
     },
     {
       "description": "should generate a nested for block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "nested_for.ts"
       ],
@@ -383,9 +300,6 @@
     },
     {
       "description": "should generate a for block with template variables",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_template_variables.ts"
       ],
@@ -404,9 +318,6 @@
     },
     {
       "description": "should generate a for block with aliased template variables",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_aliased_template_variables.ts"
       ],
@@ -425,9 +336,6 @@
     },
     {
       "description": "should be able to refer to aliased template variables in nested for blocks",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "nested_for_template_variables.ts"
       ],
@@ -446,9 +354,6 @@
     },
     {
       "description": "should be able to use for loop variables in an event listener",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_template_variables_listener.ts"
       ],
@@ -467,9 +372,6 @@
     },
     {
       "description": "should parenthesize context variables used in an expression",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_variables_expression.ts"
       ],
@@ -488,9 +390,6 @@
     },
     {
       "description": "should implicitly allocate data slots for primary and empty block",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_data_slots.ts"
       ],
@@ -509,9 +408,6 @@
     },
     {
       "description": "should not expose for loop variables to the surrounding scope",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_template_variables_scope.ts"
       ],
@@ -530,9 +426,6 @@
     },
     {
       "description": "should optimize tracking function that calls a method on the component with $index and the item from the root template",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_template_track_method_root.ts"
       ],
@@ -551,9 +444,6 @@
     },
     {
       "description": "should optimize tracking function that calls a method on the component with $index and the item from a nested template",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_template_track_method_nested.ts"
       ],
@@ -572,9 +462,6 @@
     },
     {
       "description": "should reuse identical pure tracking functions",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_pure_track_reuse.ts"
       ],
@@ -593,9 +480,6 @@
     },
     {
       "description": "should reuse identical impure tracking functions",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_impure_track_reuse.ts"
       ],
@@ -614,9 +498,6 @@
     },
     {
       "description": "should preserve object and array literals inside tracking expressions",
-      "angularCompilerOptions": {
-        "_enabledBlockTypes": ["for"]
-      },
       "inputFiles": [
         "for_track_literals.ts"
       ],

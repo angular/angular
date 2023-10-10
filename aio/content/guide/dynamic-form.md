@@ -1,7 +1,7 @@
 # Building dynamic forms
 
 Many forms, such as questionnaires, can be very similar to one another in format and intent.
-To make it faster and easier to generate different versions of such a form, you can create a *dynamic form template* based on metadata that describes the business object model.
+To make it faster and easier to generate different versions of such a form, you can create a _dynamic form template_ based on metadata that describes the business object model.
 Then, use the template to generate new forms automatically, according to changes in the data model.
 
 The technique is particularly useful when you have a type of form whose content must change frequently to meet rapidly changing business and regulatory requirements.
@@ -36,20 +36,21 @@ See the <live-example name="dynamic-form"></live-example>.
 
 Before doing this tutorial, you should have a basic understanding to the following.
 
-*   [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5 programming
-*   Fundamental concepts of [Angular app design](guide/architecture "Introduction to Angular app-design concepts")
-*   Basic knowledge of [reactive forms](guide/reactive-forms "Reactive forms guide")
+* [TypeScript](https://www.typescriptlang.org/ 'The TypeScript language') and HTML5 programming
+* Fundamental concepts of [Angular app design](guide/architecture 'Introduction to Angular app-design concepts')
+* Basic knowledge of [reactive forms](guide/reactive-forms 'Reactive forms guide')
 
 ## Enable reactive forms for your project
 
 Dynamic forms are based on reactive forms.
-To give the application access reactive forms directives, the [root module](guide/bootstrapping "Learn about bootstrapping an app from the root module.") imports `ReactiveFormsModule` from the `@angular/forms` library.
+
+To give the application access reactive forms directives, import `ReactiveFormsModule` from the `@angular/forms` library into the necessary components.
 
 The following code from the example shows the setup in the root module.
 
 <code-tabs>
-    <code-pane header="app.module.ts" path="dynamic-form/src/app/app.module.ts"></code-pane>
-    <code-pane header="main.ts" path="dynamic-form/src/main.ts"></code-pane>
+    <code-pane header="dynamic-form.component.ts" path="dynamic-form/src/app/dynamic-form.component.ts"></code-pane>
+    <code-pane header="dynamic-form-question.component.ts" path="dynamic-form/src/app/dynamic-form-question.component.ts"></code-pane>
 </code-tabs>
 
 <a id="object-model"></a>
@@ -60,7 +61,7 @@ A dynamic form requires an object model that can describe all scenarios needed b
 The example hero-application form is a set of questions &mdash;that is, each control in the form must ask a question and accept an answer.
 
 The data model for this type of form must represent a question.
-The example includes the `DynamicFormQuestionComponent`, which defines a  question as the fundamental object in the model.
+The example includes the `DynamicFormQuestionComponent`, which defines a question as the fundamental object in the model.
 
 The following `QuestionBase` is a base class for a set of controls that can represent the question and its answer in the form.
 
@@ -71,8 +72,8 @@ The following `QuestionBase` is a base class for a set of controls that can repr
 From this base, the example derives two new classes, `TextboxQuestion` and `DropdownQuestion`, that represent different control types.
 When you create the form template in the next step, you instantiate these specific question types in order to render the appropriate controls dynamically.
 
-| Control type                    | Details |
-|:---                             |:---     |
+| Control type                    | Details                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `TextboxQuestion` control type  | Presents a question and lets users enter input. <code-example header="src/app/question-textbox.ts" path="dynamic-form/src/app/question-textbox.ts"></code-example> The `TextboxQuestion` control type is represented in a form template using an `<input>` element. The `type` attribute of the element is defined based on the `type` field specified in the `options` argument \(for example `text`, `email`, `url`\). |
 | `DropdownQuestion` control type | Presents a list of choices in a select box. <code-example header="src/app/question-dropdown.ts" path="dynamic-form/src/app/question-dropdown.ts"></code-example>                                                                                                                                                                                                                                                         |
 
@@ -92,7 +93,7 @@ The dynamic form itself is represented by a container component, which you add i
 Each question is represented in the form component's template by an `<app-question>` tag, which matches an instance of `DynamicFormQuestionComponent`.
 
 The `DynamicFormQuestionComponent` is responsible for rendering the details of an individual question based on values in the data-bound question object.
-The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective "API reference") to connect the template HTML to the underlying control objects.
+The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective 'API reference') to connect the template HTML to the underlying control objects.
 The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
 
 <code-tabs>
@@ -103,7 +104,7 @@ The `DynamicFormQuestionComponent` creates form groups and populates them with c
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
 You only have two types of questions at this point but you can imagine many more.
 The `ngSwitch` statement in the template determines which type of question to display.
-The switch uses directives with the [`formControlName`](api/forms/FormControlName "FormControlName directive API reference") and [`formGroup`](api/forms/FormGroupDirective "FormGroupDirective API reference") selectors.
+The switch uses directives with the [`formControlName`](api/forms/FormControlName 'FormControlName directive API reference') and [`formGroup`](api/forms/FormGroupDirective 'FormGroupDirective API reference') selectors.
 Both directives are defined in `ReactiveFormsModule`.
 
 <a id="questionnaire-data"></a>
@@ -140,15 +141,15 @@ To display an instance of the dynamic form, the `AppComponent` shell template pa
 <code-example header="app.component.ts" path="dynamic-form/src/app/app.component.ts"></code-example>
 
 The example provides a model for a job application for heroes, but there are no references to any specific hero question other than the objects returned by `QuestionService`.
-This separation of model and data lets you repurpose the components for any type of survey, as long as it's compatible with the *question* object model.
+This separation of model and data lets you repurpose the components for any type of survey, as long as it's compatible with the _question_ object model.
 
 ### Ensuring valid data
 
 The form template uses dynamic data binding of metadata to render the form without making any hardcoded assumptions about specific questions.
 It adds both control metadata and validation criteria dynamically.
 
-To ensure valid input, the *Save* button is disabled until the form is in a valid state.
-When the form is valid, click *Save* and the application renders the current form values as JSON.
+To ensure valid input, the _Save_ button is disabled until the form is in a valid state.
+When the form is valid, click _Save_ and the application renders the current form values as JSON.
 
 The following figure shows the final form.
 
@@ -160,10 +161,10 @@ The following figure shows the final form.
 
 ## Next steps
 
-| Steps                                           | Details |
-|:---                                             |:---     |
-| Different types of forms and control collection | This tutorial shows how to build a questionnaire, which is just one kind of dynamic form. The example uses `FormGroup` to collect a set of controls. For an example of a different type of dynamic form, see the section [Creating dynamic forms](guide/reactive-forms#creating-dynamic-forms "Create dynamic forms with arrays") in the Reactive Forms guide. That example also shows how to use `FormArray` instead of `FormGroup` to collect a set of controls. |
-| Validating user input                           | The section [Validating form input](guide/reactive-forms#validating-form-input "Basic input validation") introduces the basics of how input validation works in reactive forms. <br /> The [Form validation guide](guide/form-validation "Form validation guide") covers the topic in more depth.                                                                                                                                                                 |
+| Steps                                           | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| :---------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Different types of forms and control collection | This tutorial shows how to build a questionnaire, which is just one kind of dynamic form. The example uses `FormGroup` to collect a set of controls. For an example of a different type of dynamic form, see the section [Creating dynamic forms](guide/reactive-forms#creating-dynamic-forms 'Create dynamic forms with arrays') in the Reactive Forms guide. That example also shows how to use `FormArray` instead of `FormGroup` to collect a set of controls. |
+| Validating user input                           | The section [Validating form input](guide/reactive-forms#validating-form-input 'Basic input validation') introduces the basics of how input validation works in reactive forms. <br /> The [Form validation guide](guide/form-validation 'Form validation guide') covers the topic in more depth.                                                                                                                                                                  |
 
 <!-- links -->
 
@@ -171,4 +172,4 @@ The following figure shows the final form.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-30

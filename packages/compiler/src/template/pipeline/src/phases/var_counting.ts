@@ -17,11 +17,18 @@ export function phaseVarCounting(job: CompilationJob): void {
   // First, count the vars used in each view, and update the view-level counter.
   for (const unit of job.units) {
     let varCount = 0;
+
+    // Count variables on top-level ops first. Don't explore nested expressions just yet.
     for (const op of unit.ops()) {
       if (ir.hasConsumesVarsTrait(op)) {
         varCount += varsUsedByOp(op);
       }
+    }
 
+    // Count variables on expressions inside ops. We do this later because some of these expressions
+    // might be conditional (e.g. `pipeBinding` inside of a ternary), and we don't want to interfere
+    // with indices for top-level binding slots (e.g. `property`).
+    for (const op of unit.ops()) {
       ir.visitExpressionsInOp(op, expr => {
         if (!ir.isIrExpression(expr)) {
           return;
@@ -88,6 +95,9 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
     case ir.OpKind.InterpolateText:
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.interpolation.expressions.length;
+    case ir.OpKind.I18nExpression:
+    case ir.OpKind.Conditional:
+      return 1;
     default:
       throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
   }

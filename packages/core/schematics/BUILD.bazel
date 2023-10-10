@@ -17,8 +17,7 @@ pkg_npm(
     validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
-        "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
-        "//packages/core/schematics/migrations/remove-module-id:bundle",
+        "//packages/core/schematics/migrations/block-template-entities:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
     ],
 )

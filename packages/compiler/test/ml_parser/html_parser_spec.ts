@@ -240,23 +240,6 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
           expect(parsed.errors).toEqual([]);
         });
-
-        it('should treat prematurely terminated interpolation as text', () => {
-          const {errors, rootNodes} =
-              parser.parse('<div><span>x {{ expr }<!---->} y</span><div></div></div>', 'TestComp');
-          expect(humanizeNodes(rootNodes, true)).toEqual([
-            [
-              html.Element, 'div', 0, '<div><span>x {{ expr }<!---->} y</span><div></div></div>',
-              '<div>', '</div>'
-            ],
-            [html.Element, 'span', 1, '<span>x {{ expr }<!---->} y</span>', '<span>', '</span>'],
-            [html.Text, 'x {{ expr }', 2, ['x '], ['{{', ' expr }'], [''], 'x {{ expr }'],
-            [html.Comment, '', 2, '<!---->'],
-            [html.Text, '} y', 2, ['} y'], '} y'],
-            [html.Element, 'div', 1, '<div></div>', '<div>', '</div>'],
-          ]);
-          expect(errors).toEqual([]);
-        });
       });
 
       describe('attributes', () => {
@@ -760,284 +743,254 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
       });
 
       describe('blocks', () => {
-        // TODO(crisbeto): temporary utility while blocks are disabled by default.
-        const options = {tokenizeBlocks: true};
-
-        function humanizeBlocks(input: string): any[] {
-          return humanizeDom(parser.parse(input, 'TestComp', options));
-        }
-
-        it('should parse a block group', () => {
-          expect(humanizeBlocks('{#foo a b; c d}hello{/foo}')).toEqual([
-            [html.BlockGroup, 0],
-            [html.Block, 'foo', 1],
+        it('should parse a block', () => {
+          expect(humanizeDom(parser.parse('@foo (a b; c d){hello}', 'TestComp'))).toEqual([
+            [html.Block, 'foo', 0],
             [html.BlockParameter, 'a b'],
             [html.BlockParameter, 'c d'],
-            [html.Text, 'hello', 2, ['hello']],
+            [html.Text, 'hello', 1, ['hello']],
           ]);
         });
 
-        it('should parse a block group with an HTML element in the primary block', () => {
-          expect(humanizeBlocks('{#defer}<my-cmp/>{/defer}')).toEqual([
-            [html.BlockGroup, 0],
-            [html.Block, 'defer', 1],
-            [html.Element, 'my-cmp', 2],
+        it('should parse a block with an HTML element', () => {
+          expect(humanizeDom(parser.parse('@defer {<my-cmp/>}', 'TestComp'))).toEqual([
+            [html.Block, 'defer', 0],
+            [html.Element, 'my-cmp', 1],
           ]);
         });
 
-        it('should parse a block group with blocks', () => {
-          expect(humanizeBlocks(
-                     '{#defer when isVisible()}<my-cmp/>' +
-                     '{:loading after 100ms}Loading...' +
-                     '{:placeholder minimum 50ms}Placeholder' +
-                     '{/defer}'))
+        it('should parse a block containing mixed plain text and HTML', () => {
+          expect(humanizeDom(parser.parse(
+                     '@switch (expr) {' +
+                         '@case (1) {hello<my-cmp/>there}' +
+                         '@case (two) {<p>Two...</p>}' +
+                         '@case (isThree(3)) {T<strong>htr<i>e</i>e</strong>!}' +
+                         '}',
+                     'TestComp')))
               .toEqual([
-                [html.BlockGroup, 0],
-                [html.Block, 'defer', 1],
-                [html.BlockParameter, 'when isVisible()'],
-                [html.Element, 'my-cmp', 2],
-                [html.Block, 'loading', 1],
-                [html.BlockParameter, 'after 100ms'],
-                [html.Text, 'Loading...', 2, ['Loading...']],
-                [html.Block, 'placeholder', 1],
-                [html.BlockParameter, 'minimum 50ms'],
-                [html.Text, 'Placeholder', 2, ['Placeholder']],
-              ]);
-        });
-
-        it('should parse a block group with blocks containing mixed plain text and HTML', () => {
-          expect(humanizeBlocks(
-                     '{#defer when isVisible()}hello<my-cmp/>there' +
-                         '{:loading after 100ms}<p>Loading...</p>' +
-                         '{:placeholder minimum 50ms}P<strong>laceh<i>ol</i>de</strong>r' +
-                         '{/defer}',
-                     ))
-              .toEqual([
-                [html.BlockGroup, 0],
-                [html.Block, 'defer', 1],
-                [html.BlockParameter, 'when isVisible()'],
+                [html.Block, 'switch', 0],
+                [html.BlockParameter, 'expr'],
+                [html.Block, 'case', 1],
+                [html.BlockParameter, '1'],
                 [html.Text, 'hello', 2, ['hello']],
                 [html.Element, 'my-cmp', 2],
                 [html.Text, 'there', 2, ['there']],
-                [html.Block, 'loading', 1],
-                [html.BlockParameter, 'after 100ms'],
+                [html.Block, 'case', 1],
+                [html.BlockParameter, 'two'],
                 [html.Element, 'p', 2],
-                [html.Text, 'Loading...', 3, ['Loading...']],
-                [html.Block, 'placeholder', 1],
-                [html.BlockParameter, 'minimum 50ms'],
-                [html.Text, 'P', 2, ['P']],
+                [html.Text, 'Two...', 3, ['Two...']],
+                [html.Block, 'case', 1],
+                [html.BlockParameter, 'isThree(3)'],
+                [html.Text, 'T', 2, ['T']],
                 [html.Element, 'strong', 2],
-                [html.Text, 'laceh', 3, ['laceh']],
+                [html.Text, 'htr', 3, ['htr']],
                 [html.Element, 'i', 3],
-                [html.Text, 'ol', 4, ['ol']],
-                [html.Text, 'de', 3, ['de']],
-                [html.Text, 'r', 2, ['r']],
+                [html.Text, 'e', 4, ['e']],
+                [html.Text, 'e', 3, ['e']],
+                [html.Text, '!', 2, ['!']],
               ]);
         });
 
-        it('should parse nested block groups', () => {
+        it('should parse nested blocks', () => {
           // clang-format off
           const markup = `<root-sibling-one/>` +
-            `{#root}` +
+            `@root {` +
               `<outer-child-one/>` +
               `<outer-child-two>` +
-                `{#child}` +
-                  `{:innerChild}` +
+                `@child (childParam === 1) {` +
+                  `@innerChild (innerChild1 === foo) {` +
                     `<inner-child-one/>` +
-                    `{#grandchild}` +
-                      `{:innerGrandChild}` +
+                    `@grandChild {` +
+                      `@innerGrandChild {` +
                         `<inner-grand-child-one/>` +
-                      `{:innerGrandChild}` +
+                      `}` +
+                      `@innerGrandChild {` +
                         `<inner-grand-child-two/>` +
-                  `{/grandchild}` +
-                  `{:innerChild}` +
-                  `<inner-child-two/>` +
-                `{/child}` +
+                      `}` +
+                    `}` +
+                  `}` +
+                  `@innerChild {` +
+                    `<inner-child-two/>` +
+                  `}` +
+                `}` +
               `</outer-child-two>` +
-              `{:outerChild}` +
+              `@outerChild (outerChild1; outerChild2) {` +
                 `<outer-child-three/>` +
-            `{/root} <root-sibling-two/>`;
+              `}` +
+            `} <root-sibling-two/>`;
           // clang-format on
 
-          expect(humanizeBlocks(markup)).toEqual([
+          expect(humanizeDom(parser.parse(markup, 'TestComp'))).toEqual([
             [html.Element, 'root-sibling-one', 0],
-            [html.BlockGroup, 0],
-            [html.Block, 'root', 1],
-            [html.Element, 'outer-child-one', 2],
-            [html.Element, 'outer-child-two', 2],
-            [html.BlockGroup, 3],
-            [html.Block, 'child', 4],
-            [html.Block, 'innerChild', 4],
-            [html.Element, 'inner-child-one', 5],
-            [html.BlockGroup, 5],
-            [html.Block, 'grandchild', 6],
-            [html.Block, 'innerGrandChild', 6],
-            [html.Element, 'inner-grand-child-one', 7],
-            [html.Block, 'innerGrandChild', 6],
-            [html.Element, 'inner-grand-child-two', 7],
-            [html.Block, 'innerChild', 4],
-            [html.Element, 'inner-child-two', 5],
+            [html.Block, 'root', 0],
+            [html.Element, 'outer-child-one', 1],
+            [html.Element, 'outer-child-two', 1],
+            [html.Block, 'child', 2],
+            [html.BlockParameter, 'childParam === 1'],
+            [html.Block, 'innerChild', 3],
+            [html.BlockParameter, 'innerChild1 === foo'],
+            [html.Element, 'inner-child-one', 4],
+            [html.Block, 'grandChild', 4],
+            [html.Block, 'innerGrandChild', 5],
+            [html.Element, 'inner-grand-child-one', 6],
+            [html.Block, 'innerGrandChild', 5],
+            [html.Element, 'inner-grand-child-two', 6],
+            [html.Block, 'innerChild', 3],
+            [html.Element, 'inner-child-two', 4],
             [html.Block, 'outerChild', 1],
+            [html.BlockParameter, 'outerChild1'],
+            [html.BlockParameter, 'outerChild2'],
             [html.Element, 'outer-child-three', 2],
             [html.Text, ' ', 0, [' ']],
             [html.Element, 'root-sibling-two', 0],
           ]);
         });
 
-        it('should infer namespace through block group boundary', () => {
-          expect(humanizeBlocks('<svg>{#if cond}<circle/>{/if}</svg>')).toEqual([
-            [html.Element, ':svg:svg', 0],
-            [html.BlockGroup, 1],
-            [html.Block, 'if', 2],
-            [html.BlockParameter, 'cond'],
-            [html.Element, ':svg:circle', 3],
-          ]);
-        });
-
-        it('should create an implicit empty block if there is a block at the root', () => {
-          expect(humanizeBlocks(
-                     '{#switch cond}' +
-                     '{:case a}' +
-                     'a case' +
-                     '{:case b}' +
-                     'b case' +
-                     '{:default}' +
-                     'no case' +
-                     '{/switch}'))
+        it('should infer namespace through block boundary', () => {
+          expect(humanizeDom(parser.parse('<svg>@if (cond) {<circle/>}</svg>', 'TestComp')))
               .toEqual([
-                [html.BlockGroup, 0],
-                [html.Block, 'switch', 1],
+                [html.Element, ':svg:svg', 0],
+                [html.Block, 'if', 1],
                 [html.BlockParameter, 'cond'],
-                [html.Block, 'case', 1],
-                [html.BlockParameter, 'a'],
-                [html.Text, 'a case', 2, ['a case']],
-                [html.Block, 'case', 1],
-                [html.BlockParameter, 'b'],
-                [html.Text, 'b case', 2, ['b case']],
-                [html.Block, 'default', 1],
-                [html.Text, 'no case', 2, ['no case']],
+                [html.Element, ':svg:circle', 2],
               ]);
         });
 
-        it('should parse a block group with empty blocks', () => {
-          expect(humanizeBlocks('{#foo}{:a}{:b}{:c}{/foo}')).toEqual([
-            [html.BlockGroup, 0],
-            [html.Block, 'foo', 1],
-            [html.Block, 'a', 1],
-            [html.Block, 'b', 1],
-            [html.Block, 'c', 1],
+        it('should parse an empty block', () => {
+          expect(humanizeDom(parser.parse('@foo{}', 'TestComp'))).toEqual([
+            [html.Block, 'foo', 0],
           ]);
         });
 
-        it('should parse a block group with void elements', () => {
-          expect(humanizeBlocks('{#foo}<br>{:bar}<img>{/foo}')).toEqual([
-            [html.BlockGroup, 0],
-            [html.Block, 'foo', 1],
-            [html.Element, 'br', 2],
-            [html.Block, 'bar', 1],
-            [html.Element, 'img', 2],
+        it('should parse a block with void elements', () => {
+          expect(humanizeDom(parser.parse('@foo {<br>}', 'TestComp'))).toEqual([
+            [html.Block, 'foo', 0],
+            [html.Element, 'br', 1],
           ]);
         });
 
-        it('should close void elements used right before a block group', () => {
-          expect(humanizeBlocks('<img>{#foo}hello{/foo}')).toEqual([
+        it('should close void elements used right before a block', () => {
+          expect(humanizeDom(parser.parse('<img>@foo {hello}', 'TestComp'))).toEqual([
             [html.Element, 'img', 0],
-            [html.BlockGroup, 0],
-            [html.Block, 'foo', 1],
-            [html.Text, 'hello', 2, ['hello']],
+            [html.Block, 'foo', 0],
+            [html.Text, 'hello', 1, ['hello']],
           ]);
+        });
+
+        it('should report an unclosed block', () => {
+          const errors = parser.parse('@foo {hello', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([['foo', 'Unclosed block "foo"', '0:0']]);
         });
 
         it('should report an unexpected block close', () => {
-          const errors = parser.parse('hello{/foo}', 'TestComp', options).errors;
+          const errors = parser.parse('hello}', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([[
-            'foo', 'Unexpected closing block "foo". The block may have been closed earlier.', '0:5'
+            null,
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+            '0:5'
           ]]);
         });
 
-        it('should report unclosed tags inside of a block group', () => {
-          const errors = parser.parse('{#foo}<strong>hello{/foo}', 'TestComp', options).errors;
+        it('should report unclosed tags inside of a block', () => {
+          const errors = parser.parse('@foo {<strong>hello}', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([[
-            'foo',
-            'Unexpected closing block "foo". There is an unclosed "strong" HTML tag named that may have to be closed first.',
+            null,
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:19'
           ]]);
         });
 
-        it('should report block used at the root', () => {
-          const errors = parser.parse('{:foo}hello', 'TestComp', options).errors;
-          expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([
-            ['foo', 'Blocks can only be placed inside of block groups.', '0:0']
-          ]);
-        });
-
-        it('should report block used inside of an HTML element', () => {
-          const errors =
-              parser.parse('{#group}<div>{:foo}hello</div>{/group}', 'TestComp', options).errors;
-          expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([
-            ['foo', 'Blocks can only be placed inside of block groups.', '0:13']
-          ]);
-        });
-
         it('should report an unexpected closing tag inside a block', () => {
-          const errors =
-              parser.parse('<div>{#if cond}hello</div>{/if}', 'TestComp', options).errors;
+          const errors = parser.parse('<div>@if (cond) {hello</div>}', 'TestComp').errors;
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
             [
               'div',
               'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-              '0:20'
+              '0:22'
             ],
             [
-              'if', 'Unexpected closing block "if". The block may have been closed earlier.', '0:26'
+              null,
+              'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+              '0:28'
             ],
           ]);
         });
 
-        it('should store the source locations of block groups and blocks', () => {
-          const markup = '{#defer when isVisible()}<div>hello</div>world' +
-              '{:loading after 100ms}Loading...' +
-              '{:placeholder minimum 50ms}Placeholde<strong>r</strong>' +
-              '{/defer}';
+        it('should store the source locations of blocks', () => {
+          const markup = '@switch (expr) {' +
+              '@case (1) {<div>hello</div>world}' +
+              '@case (two) {Two}' +
+              '@case (isThree(3)) {Placeholde<strong>r</strong>}' +
+              '}';
 
-          expect(humanizeDomSourceSpans(parser.parse(markup, 'TestComp', options))).toEqual([
-            [html.BlockGroup, 0, markup, '{#defer when isVisible()}', '{/defer}'],
+          expect(humanizeDomSourceSpans(parser.parse(markup, 'TestComp'))).toEqual([
             [
-              html.Block, 'defer', 1, '{#defer when isVisible()}<div>hello</div>world',
-              '{#defer when isVisible()}', ''
+              html.Block, 'switch', 0,
+              '@switch (expr) {@case (1) {<div>hello</div>world}@case (two) {Two}@case (isThree(3)) {Placeholde<strong>r</strong>}}',
+              '@switch (expr) {', '}'
             ],
-            [html.BlockParameter, 'when isVisible()', 'when isVisible()'],
+            [html.BlockParameter, 'expr', 'expr'],
+            [html.Block, 'case', 1, '@case (1) {<div>hello</div>world}', '@case (1) {', '}'],
+            [html.BlockParameter, '1', '1'],
             [html.Element, 'div', 2, '<div>hello</div>', '<div>', '</div>'],
             [html.Text, 'hello', 3, ['hello'], 'hello'],
             [html.Text, 'world', 2, ['world'], 'world'],
+            [html.Block, 'case', 1, '@case (two) {Two}', '@case (two) {', '}'],
+            [html.BlockParameter, 'two', 'two'],
+            [html.Text, 'Two', 2, ['Two'], 'Two'],
             [
-              html.Block, 'loading', 1, '{:loading after 100ms}Loading...',
-              '{:loading after 100ms}', ''
+              html.Block, 'case', 1, '@case (isThree(3)) {Placeholde<strong>r</strong>}',
+              '@case (isThree(3)) {', '}'
             ],
-            [html.BlockParameter, 'after 100ms', 'after 100ms'],
-            [html.Text, 'Loading...', 2, ['Loading...'], 'Loading...'],
-            [
-              html.Block, 'placeholder', 1,
-              '{:placeholder minimum 50ms}Placeholde<strong>r</strong>',
-              '{:placeholder minimum 50ms}', ''
-            ],
-            [html.BlockParameter, 'minimum 50ms', 'minimum 50ms'],
+            [html.BlockParameter, 'isThree(3)', 'isThree(3)'],
             [html.Text, 'Placeholde', 2, ['Placeholde'], 'Placeholde'],
             [html.Element, 'strong', 2, '<strong>r</strong>', '<strong>', '</strong>'],
             [html.Text, 'r', 3, ['r'], 'r'],
           ]);
+        });
+
+        it('should parse an incomplete block with no parameters', () => {
+          const result = parser.parse('Use the @Input() decorator', 'TestComp');
+
+          expect(humanizeNodes(result.rootNodes, true)).toEqual([
+            [html.Text, 'Use the ', 0, ['Use the '], 'Use the '],
+            [html.Block, 'Input', 0, '@Input() ', '@Input() ', null],
+            [html.Text, 'decorator', 0, ['decorator'], 'decorator'],
+          ]);
+
+          expect(humanizeErrors(result.errors)).toEqual([[
+            'Input',
+            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:8'
+          ]]);
+        });
+
+        it('should parse an incomplete block with no parameters', () => {
+          const result = parser.parse('Use @Input({alias: "foo"}) to alias your input', 'TestComp');
+
+          expect(humanizeNodes(result.rootNodes, true)).toEqual([
+            [html.Text, 'Use ', 0, ['Use '], 'Use '],
+            [html.Block, 'Input', 0, '@Input({alias: "foo"}) ', '@Input({alias: "foo"}) ', null],
+            [html.BlockParameter, '{alias: "foo"}', '{alias: "foo"}'],
+            [html.Text, 'to alias your input', 0, ['to alias your input'], 'to alias your input'],
+          ]);
+
+          expect(humanizeErrors(result.errors)).toEqual([[
+            'Input',
+            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:4'
+          ]]);
         });
       });
 
       describe('source spans', () => {
         it('should store the location', () => {
           expect(humanizeDomSourceSpans(parser.parse(
-                     '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
+                     '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', ' TestComp')))
               .toEqual([
                 [
                   html.Element, 'div', 0,
@@ -1254,9 +1207,6 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               html.visitAll(this, expansion.cases);
             }
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {}
-            visitBlockGroup(group: html.BlockGroup, context: any) {
-              html.visitAll(this, group.blocks);
-            }
             visitBlock(block: html.Block, context: any) {
               html.visitAll(this, block.parameters);
               html.visitAll(this, block.children);
@@ -1292,9 +1242,6 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               throw Error('Unexpected');
             }
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-              throw Error('Unexpected');
-            }
-            visitBlockGroup(group: html.BlockGroup, context: any) {
               throw Error('Unexpected');
             }
             visitBlock(block: html.Block, context: any) {

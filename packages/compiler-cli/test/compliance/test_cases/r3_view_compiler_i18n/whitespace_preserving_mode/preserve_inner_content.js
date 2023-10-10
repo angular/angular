@@ -1,4 +1,4 @@
-consts: function() {
+consts: () => {
   // NOTE: Keeping raw content (avoiding `i18nMsg`) to illustrate message layout in case of whitespace preserving mode.
   let $I18N_0$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -6,12 +6,12 @@ consts: function() {
        * @suppress {msgDescriptions}
        */
       const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n    Some text\n    {$startTagSpan}Text inside span{$closeTagSpan}\n  ", {
-        "startTagSpan": "\uFFFD#3\uFFFD",
-        "closeTagSpan": "\uFFFD/#3\uFFFD"
+        "closeTagSpan": "\uFFFD/#3\uFFFD",
+        "startTagSpan": "\uFFFD#3\uFFFD"
       }, {
         original_code: {
-          "startTagSpan": "<span>",
-          "closeTagSpan": "</span>"
+          "closeTagSpan": "</span>",
+          "startTagSpan": "<span>"
         }
       });
       $I18N_0$ = $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$;

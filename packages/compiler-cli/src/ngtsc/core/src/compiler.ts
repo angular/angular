@@ -12,6 +12,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {InjectableClassRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
+import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
@@ -254,7 +255,6 @@ export class NgCompiler {
   private moduleResolver: ModuleResolver;
   private resourceManager: AdapterResourceLoader;
   private cycleAnalyzer: CycleAnalyzer;
-  private enabledBlockTypes: Set<string>;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
@@ -321,8 +321,7 @@ export class NgCompiler {
       private livePerfRecorder: ActivePerfRecorder,
   ) {
     this.enableTemplateTypeChecker =
-        enableTemplateTypeChecker || (options._enableTemplateTypeChecker ?? false);
-    this.enabledBlockTypes = new Set(options._enabledBlockTypes ?? []);
+        enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -657,6 +656,32 @@ export class NgCompiler {
   }
 
   /**
+   * Gets information for the current program that may be used to generate API
+   * reference documentation. This includes Angular-specific information, such
+   * as component inputs and outputs.
+   *
+   * @param entryPoint Path to the entry point for the package for which API
+   *     docs should be extracted.
+   */
+  getApiDocumentation(entryPoint: string): DocEntry[] {
+    const compilation = this.ensureAnalyzed();
+    const checker = this.inputProgram.getTypeChecker();
+    const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
+
+    const entryPointSourceFile = this.inputProgram.getSourceFiles().find(sourceFile => {
+      // TODO: this will need to be more specific than `.includes`, but the exact path comparison
+      //     will be easier to figure out when the pipeline is running end-to-end.
+      return sourceFile.fileName.includes(entryPoint);
+    });
+
+    if (!entryPointSourceFile) {
+      throw new Error(`Entry point "${entryPoint}" not found in program sources.`);
+    }
+
+    return docsExtractor.extractAll(entryPointSourceFile);
+  }
+
+  /**
    * Collect i18n messages into the `Xi18nContext`.
    */
   xi18n(ctx: Xi18nContext): void {
@@ -922,7 +947,7 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.adapter.unifiedModulesHost === null || !this.options._useHostForImportGeneration) {
+    if (this.adapter.unifiedModulesHost === null || !this.options['_useHostForImportGeneration']) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -1045,8 +1070,8 @@ export class NgCompiler {
         CycleHandlingStrategy.Error;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
-    const supportJitMode = this.options.supportJitMode ?? true;
-    const supportTestBed = this.options.supportTestBed ?? true;
+    const supportJitMode = this.options['supportJitMode'] ?? true;
+    const supportTestBed = this.options['supportTestBed'] ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1068,11 +1093,11 @@ export class NgCompiler {
           this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
-          this.options.i18nNormalizeLineEndingsInICUs === true, this.enabledBlockTypes,
-          this.moduleResolver, this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
-          referencesRegistry, this.incrementalCompilation.depGraph, injectableRegistry,
-          semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder,
-          hostDirectivesResolver, supportTestBed, compilationMode, deferredSymbolsTracker),
+          this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
+          this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
+          this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
+          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
+          supportTestBed, compilationMode, deferredSymbolsTracker),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).

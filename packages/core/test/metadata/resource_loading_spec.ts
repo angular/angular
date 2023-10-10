@@ -49,6 +49,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
   describe('resolution', () => {
     const URLS: {[url: string]: Promise<string>} = {
       'test://content': Promise.resolve('content'),
+      'test://style': Promise.resolve('style'),
       'test://style1': Promise.resolve('style1'),
       'test://style2': Promise.resolve('style2'),
     };
@@ -121,6 +122,49 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
 
       compileComponent(MyComponent2, {templateUrl: 'test://template'});
       expect(isComponentResourceResolutionQueueEmpty()).toBe(false);
+    });
+
+    it('should resolve styles passed in as a string', async () => {
+      const MyComponent: ComponentType<any> = (class MyComponent {}) as any;
+      const metadata: Component = {template: '', styles: 'existing'};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual('existing');
+      expect(resourceFetchCount).toBe(0);
+    });
+
+    it('should resolve styleUrl', async () => {
+      const MyComponent: ComponentType<any> = (class MyComponent {}) as any;
+      const metadata: Component = {template: '', styleUrl: 'test://style'};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.styleUrl).toBe(undefined);
+      expect(metadata.styles).toEqual(['style']);
+      expect(resourceFetchCount).toBe(1);
+    });
+
+    it('should resolve both styles passed in as a string together with styleUrl', async () => {
+      const MyComponent: ComponentType<any> = (class MyComponent {}) as any;
+      const metadata: Component = {template: '', styleUrl: 'test://style', styles: 'existing'};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual(['existing', 'style']);
+      expect(resourceFetchCount).toBe(1);
+    });
+
+    it('should throw if both styleUrls and styleUrl are passed in', async () => {
+      const MyComponent: ComponentType<any> = (class MyComponent {}) as any;
+      const metadata:
+          Component = {template: '', styleUrl: 'test://style1', styleUrls: ['test://style2']};
+      compileComponent(MyComponent, metadata);
+
+      expect(() => resolveComponentResources(testResolver))
+          .toThrowError(/@Component cannot define both `styleUrl` and `styleUrls`/);
     });
   });
 

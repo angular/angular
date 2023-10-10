@@ -5,7 +5,7 @@ function MyApp_For_3_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $item_r1$ = ctx.$implicit;
-    $r3$.ɵɵtextInterpolate($item_r1$.name);
+    $r3$.ɵɵtextInterpolate1(" ", $item_r1$.name, " ");
   }
 }
 …

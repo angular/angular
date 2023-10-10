@@ -11,13 +11,13 @@
           "files": [
             {
               "expected": "nested_template_context_template.js",
+              "templatePipelineExpected": "nested_template_context.pipeline.js",
               "generated": "nested_template_context.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should correctly bind to context in nested template with many bindings",
@@ -80,13 +80,13 @@
           "files": [
             {
               "expected": "ng_for_parent_context_variables_template.js",
+              "templatePipelineExpected": "ng_for_parent_context_variables.pipeline.js",
               "generated": "ng_for_parent_context_variables.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should correctly skip contexts as needed",
@@ -234,8 +234,7 @@
             ]
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create unique listener function names even for similar nested template structures",

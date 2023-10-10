@@ -7,16 +7,16 @@
  */
 
 import {DOCUMENT, XhrFactory} from '@angular/common';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, JsonpClientBackend} from '@angular/common/http';
+import {FetchBackend, HTTP_INTERCEPTORS, HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpXhrBackend, JsonpClientBackend} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {createEnvironmentInjector, EnvironmentInjector, inject, InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable} from 'rxjs';
 
-import {HttpInterceptorFn} from '../src/interceptor';
-import {provideHttpClient, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
+import {HttpInterceptorFn, resetFetchBackendWarningFlag} from '../src/interceptor';
+import {provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
 
-describe('provideHttp', () => {
+describe('provideHttpClient', () => {
   beforeEach(() => {
     setCookie('');
     TestBed.resetTestingModule();
@@ -385,6 +385,92 @@ describe('provideHttp', () => {
       const req = TestBed.inject(HttpTestingController).expectOne('/test');
       expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
       req.flush('');
+    });
+  });
+
+  describe('fetch support', () => {
+    it('withFetch', () => {
+      resetFetchBackendWarningFlag();
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          // Setting this flag to verify that there are no
+          // `console.warn` produced for cases when `fetch`
+          // is enabled and we are running in a browser.
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          provideHttpClient(withFetch()),
+        ]
+      });
+      const fetchBackend = TestBed.inject(HttpBackend);
+      expect(fetchBackend).toBeInstanceOf(FetchBackend);
+
+      // Make sure there are no warnings produced.
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+    });
+
+    it('withFetch should always override the backend', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withFetch()),
+          // This emulates a situation when `provideHttpClient()` is used
+          // later in a different part of an app. We want to make sure that
+          // the `FetchBackend` is enabled in that case as well.
+          {provide: HttpBackend, useClass: HttpXhrBackend},
+        ]
+      });
+
+      const handler = TestBed.inject(HttpHandler);
+      expect((handler as any).backend).toBeInstanceOf(FetchBackend);
+    });
+
+    it('should not warn if fetch is not configured when running in a browser', () => {
+      resetFetchBackendWarningFlag();
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          // Setting this flag to verify that there are no
+          // `console.warn` produced for cases when `fetch`
+          // is enabled and we are running in a browser.
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          provideHttpClient(),
+        ]
+      });
+
+      TestBed.inject(HttpHandler);
+
+      // Make sure there are no warnings produced.
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+    });
+
+    it('should warn during SSR if fetch is not configured', () => {
+      resetFetchBackendWarningFlag();
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          // Setting this flag to verify that there is a
+          // `console.warn` produced in case `fetch` is not
+          // enabled while running code on the server.
+          {provide: PLATFORM_ID, useValue: 'server'},
+          provideHttpClient(),
+        ]
+      });
+
+      TestBed.inject(HttpHandler);
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toContain(
+              'NG02801: Angular detected that `HttpClient` is not configured to use `fetch` APIs.');
     });
   });
 });

@@ -12,7 +12,7 @@ import {setProfiler} from '../profiler';
 
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
-import {getDependenciesFromInjectable, getInjectorProviders, getInjectorResolutionPath} from './injector_discovery_utils';
+import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders, getInjectorResolutionPath} from './injector_discovery_utils';
 
 
 
@@ -48,6 +48,7 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('ɵgetDependenciesFromInjectable', getDependenciesFromInjectable);
     publishGlobalUtil('ɵgetInjectorProviders', getInjectorProviders);
     publishGlobalUtil('ɵgetInjectorResolutionPath', getInjectorResolutionPath);
+    publishGlobalUtil('ɵgetInjectorMetadata', getInjectorMetadata);
     /**
      * Warning: this function is *INTERNAL* and should not be relied upon in application's code.
      * The contract of the function might be changed in any release and/or the function can be

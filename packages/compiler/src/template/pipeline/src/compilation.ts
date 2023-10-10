@@ -82,6 +82,12 @@ export class ComponentCompilationJob extends CompilationJob {
   readonly views = new Map<ir.XrefId, ViewCompilationUnit>();
 
   /**
+   * Causes ngContentSelectors to be emitted, for content projection slots in the view. Possibly a
+   * reference into the constant pool.
+   */
+  public contentSelectors: o.Expression|null = null;
+
+  /**
    * Add a `ViewCompilation` for a new embedded view to this compilation.
    */
   allocateView(parent: ir.XrefId): ViewCompilationUnit {
@@ -214,9 +220,9 @@ export class HostBindingCompilationJob extends CompilationJob {
 
   override kind = CompilationJobKind.Host;
 
-  readonly fnSuffix: string = 'HostBindings';
+  override readonly fnSuffix: string = 'HostBindings';
 
-  readonly root: HostBindingCompilationUnit;
+  override readonly root: HostBindingCompilationUnit;
 
   override get units(): Iterable<HostBindingCompilationUnit> {
     return [this.root];

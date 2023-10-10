@@ -39,6 +39,12 @@ export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => v
 export type ContentQueriesFunction<T> =
     <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
 
+export interface ClassDebugInfo {
+  className: string;
+  filePath?: string;
+  lineNumber?: number;
+}
+
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
  * should be executed.
@@ -226,6 +232,12 @@ export interface DirectiveDef<T> {
   readonly features: DirectiveDefFeature[]|null;
 
   /**
+   * Info related to debugging/troubleshooting for this component. This info is only available in
+   * dev mode.
+   */
+  debugInfo: ClassDebugInfo|null;
+
+  /**
    * Function that will add the host directives to the list of matches during directive matching.
    * Patched onto the definition by the `HostDirectivesFeature`.
    * @param currentDef Definition that has been matched.
@@ -321,7 +333,10 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Defines arbitrary developer-defined data to be stored on a renderer instance.
    * This is useful for renderers that delegate to other renderers.
    */
-  readonly data: {[kind: string]: any};
+  readonly data: {
+    [kind: string]: any,
+    animation?: any[],
+  };
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
@@ -485,6 +500,8 @@ export type DirectiveDefListOrFactory = (() => DirectiveDefList)|DirectiveDefLis
 
 export type DirectiveDefList = (DirectiveDef<any>|ComponentDef<any>)[];
 
+export type DependencyDef = DirectiveDef<unknown>|ComponentDef<unknown>|PipeDef<unknown>;
+
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeList;
 
 export type DirectiveTypeList =
@@ -541,6 +558,13 @@ export interface NgModuleScopeInfoFromDecorator {
    * module.
    */
   exports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+
+  /**
+   * The set of components that are bootstrapped when this module is bootstrapped. This field is
+   * only available in local compilation mode. In full compilation mode bootstrap info is passed
+   * directly to the module def runtime after statically analyzed and resolved.
+   */
+  bootstrap?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 }
 
 /**
@@ -549,4 +573,4 @@ export interface NgModuleScopeInfoFromDecorator {
  *  - standalone component annotation imports field
  */
 export type RawScopeInfoFromDecorator =
-    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>);
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>)|any[];

@@ -14,7 +14,7 @@
       );
 
       .actions {
-        .mat-button {
+        [mat-button] {
           color: if($is-dark-theme, c.$blue, c.$lightblue);
 
           .mat-button-focus-overlay {

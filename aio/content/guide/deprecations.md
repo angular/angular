@@ -129,6 +129,7 @@ v16 - v19
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
 |:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/animations` | `AnimationDriver.NOOP` | v17 | v19 |
 | `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
 
 ### Deprecated features with no planned removal version
@@ -149,6 +150,14 @@ This section contains a complete list all deprecated APIs, with details to help 
 In the [API reference section](api) of this site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [Status: deprecated](api?status=deprecated).
 
 </div>
+
+<a id="animations"></a>
+
+### &commat;angular/animations
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Details |
+|:---                                                                                           |:---                                                 |:---                   |:---     |
+| [AnimationDriver.NOOP](api/animations/browser/AnimationDriver#NOOP) | `NoopAnimationDriver` | v17 | Create a new  `NoopAnimationDriver` directly instead of calling `AnimationDriver.NOOP`
 
 <a id="common"></a>
 
@@ -206,7 +215,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 |:---                                        |:---                               |:---                   |:---     |
 | [`RouterLinkWithHref` directive](api/router/RouterLinkWithHref) | Use `RouterLink` instead. | v15                   | The `RouterLinkWithHref` directive code was merged into `RouterLink`. Now the `RouterLink` directive can be used for all elements that have `routerLink` attribute. |
 | [`provideRoutes` function](api/router/provideRoutes) | Use `ROUTES` `InjectionToken` instead. | v15                   | The `provideRoutes` helper function is minimally useful and can be unintentionally used instead of `provideRouter` due to similar spelling. |
-| [`setupTestingRouter` function](api/router/testing/setupTestingRouter) | Use `provideRouter` or `RouterModule` instead. | v15.1                   | The `setupTestingRouter` function is not necessary. The `Router` is initialized based on the DI configuration in tests as it would be in production. |
 | [class and `InjectionToken` guards and resolvers](api/router/DeprecatedGuard) | Use plain JavaScript functions instead. | v15.2                   | Functional guards are simpler and more powerful than class and token-based guards. |
 
 
@@ -436,7 +444,6 @@ available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `errorHandler`
 
 The following options are deprecated in entirely:
-* `malformedUriErrorHandler` - URI parsing errors should be handled in the `UrlSerializer` instead.
 * `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
 <a id="router-can-load"></a>

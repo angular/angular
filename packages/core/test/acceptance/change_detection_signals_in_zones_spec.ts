@@ -7,10 +7,8 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, signal, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
-import {signal} from '../../src/signals';
 
 describe('CheckAlways components', () => {
   it('can read a signal', () => {
@@ -27,9 +25,41 @@ describe('CheckAlways components', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent.trim()).toEqual('initial');
 
-    fixture.componentInstance.value.set('new');
+    instance.value.set('new');
     fixture.detectChanges();
     expect(instance.value()).toBe('new');
+  });
+
+  it('should properly remove stale dependencies from the signal graph', () => {
+    @Component({
+      template: `{{show() ? name() + ' aged ' + age() : 'anonymous'}}`,
+      standalone: true,
+    })
+    class CheckAlwaysCmp {
+      name = signal('John');
+      age = signal(25);
+      show = signal(true);
+    }
+
+    const fixture = TestBed.createComponent(CheckAlwaysCmp);
+    const instance = fixture.componentInstance;
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toEqual('John aged 25');
+
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toEqual('anonymous');
+
+    instance.name.set('Bob');
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toEqual('anonymous');
+
+    instance.show.set(true);
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toEqual('Bob aged 25');
   });
 
   it('is not "shielded" by a non-dirty OnPush parent', () => {
@@ -87,7 +117,7 @@ describe('OnPush components with signals', () => {
     // Should not be dirty, should not execute template
     expect(instance.numTemplateExecutions).toBe(1);
 
-    fixture.componentInstance.value.set('new');
+    instance.value.set('new');
     fixture.detectChanges();
     expect(instance.numTemplateExecutions).toBe(2);
     expect(instance.value()).toBe('new');

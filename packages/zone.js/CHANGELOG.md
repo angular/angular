@@ -1,3 +1,42 @@
+# [0.14.0](https://github.com/angular/angular/compare/zone.js-0.13.3...zone.js-0.14.0) (2023-09-14)
+
+
+### Features
+
+* **zone.js:** remove legacy files and access to deep imports ([#51752](https://github.com/angular/angular/issues/51752)) ([a8efc60](https://github.com/angular/angular/commit/a8efc605ea9c3cf03d85b5c567218202e304fef9))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
+
+The proper way to import `zone.js` and `zone.js/testing` is:
+```js
+import 'zone.js';
+import 'zone.js/testing';
+```
+
+
+
+## [0.13.3](https://github.com/angular/angular/compare/zone.js-0.13.2...zone.js-0.13.3) (2023-09-12)
+
+
+### Bug Fixes
+
+* **zone.js:** rename `typings` conditional export to `types` ([#51737](https://github.com/angular/angular/issues/51737)) ([74755c4](https://github.com/angular/angular/commit/74755c4b5e6d4d62d2c81f35e6152bb8649fbb5c))
+* **zone.js:** temporary allow deep imports ([#51737](https://github.com/angular/angular/issues/51737)) ([e86d6db](https://github.com/angular/angular/commit/e86d6dba27997cb2cad13c43ac5e94eeb7a67725))
+
+
+
+## [0.13.2](https://github.com/angular/angular/compare/zone.js-0.13.1...zone.js-0.13.2) (2023-09-07)
+
+
+### Bug Fixes
+
+* **zone.js:** add conditional exports to zone.js package ([#51652](https://github.com/angular/angular/issues/51652)) ([4798ec4](https://github.com/angular/angular/commit/4798ec41668d47fd5e1504c61d96d5e56dcff345))
+
+
+
 ## [v0.13.1](https://github.com/angular/angular/compare/zone.js-0.13.0...zone.js-v0.13.1) (2023-06-09)
 
 

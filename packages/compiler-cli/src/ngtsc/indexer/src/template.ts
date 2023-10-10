@@ -270,6 +270,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    block.item.visit(this);
+    this.visitAll(Object.values(block.contextVariables));
     this.visitExpression(block.expression);
     this.visitAll(block.children);
     block.empty?.visit(this);
@@ -285,6 +287,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
   override visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
     block.expression && this.visitExpression(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAll(block.children);
   }
 

@@ -8,6 +8,7 @@
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
+import {flatten} from '../util/array_utils';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
 
@@ -50,6 +51,11 @@ export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDeco
     ngModuleDef.imports = convertToTypeArray(scope.imports || EMPTY_ARRAY);
     ngModuleDef.exports = convertToTypeArray(scope.exports || EMPTY_ARRAY);
 
+    if (scope.bootstrap) {
+      // This only happens in local compilation mode.
+      ngModuleDef.bootstrap = convertToTypeArray(scope.bootstrap);
+    }
+
     depsTracker.registerNgModule(type, scope);
   });
 }
@@ -60,10 +66,12 @@ function convertToTypeArray(values: Type<any>[]|(() => Type<any>[])|
     return values;
   }
 
-  if (values.some(isForwardRef)) {
-    return () => values.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
+  const flattenValues = flatten(values);
+
+  if (flattenValues.some(isForwardRef)) {
+    return () => flattenValues.map(resolveForwardRef).map(maybeUnwrapModuleWithProviders);
   } else {
-    return values.map(maybeUnwrapModuleWithProviders);
+    return flattenValues.map(maybeUnwrapModuleWithProviders);
   }
 }
 

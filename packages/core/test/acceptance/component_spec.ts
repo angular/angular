@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, NgIf} from '@angular/common';
-import {ApplicationRef, Component, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, forwardRef, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, forwardRef, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetClassDebugInfo, ɵsetDocument, ɵɵdefineComponent} from '@angular/core';
 import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1014,6 +1014,23 @@ describe('component', () => {
         expect(reflectComponentType(ADirective)).toBe(null);
         expect(reflectComponentType(AnInjectiable)).toBe(null);
       });
+    });
+  });
+
+  it('should attach debug info to component using ɵsetClassDebugInfo runtime', () => {
+    class Comp {
+      static ɵcmp = ɵɵdefineComponent({type: Comp, decls: 0, vars: 0, template: () => ''});
+    }
+    ɵsetClassDebugInfo(Comp, {
+      className: 'Comp',
+      filePath: 'comp.ts',
+      lineNumber: 11,
+    });
+
+    expect(Comp.ɵcmp.debugInfo).toEqual({
+      className: 'Comp',
+      filePath: 'comp.ts',
+      lineNumber: 11,
     });
   });
 });

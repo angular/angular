@@ -7,7 +7,9 @@ import { addMatchers } from '../../testing';
 import { TestHeroService } from '../model/testing/test-hero.service';
 
 class FakeRouter {
-  navigateByUrl(url: string) { return url;  }
+  navigateByUrl(url: string) {
+    return url;
+  }
 }
 
 describe('DashboardComponent class only', () => {
@@ -23,9 +25,7 @@ describe('DashboardComponent class only', () => {
   });
 
   it('should NOT have heroes before calling OnInit', () => {
-    expect(comp.heroes.length)
-      .withContext('should not have heroes before OnInit')
-      .toBe(0);
+    expect(comp.heroes.length).withContext('should not have heroes before OnInit').toBe(0);
   });
 
   it('should NOT have heroes immediately after OnInit', () => {
@@ -40,26 +40,23 @@ describe('DashboardComponent class only', () => {
     heroService.lastResult // the one from getHeroes
       .subscribe({
         next: () => {
-        // throw new Error('deliberate error'); // see it fail gracefully
+          // throw new Error('deliberate error'); // see it fail gracefully
           expect(comp.heroes.length)
             .withContext('should have heroes after service promise resolves')
             .toBeGreaterThan(0);
           done();
         },
-        error: done.fail
+        error: done.fail,
       });
   });
 
   it('should tell ROUTER to navigate by hero id', () => {
-    const hero: Hero = {id: 42, name: 'Abbracadabra' };
+    const hero: Hero = { id: 42, name: 'Abbracadabra' };
     const spy = spyOn(router, 'navigateByUrl');
 
     comp.gotoDetail(hero);
 
     const navArgs = spy.calls.mostRecent().args[0];
-    expect(navArgs)
-      .withContext('should nav to HeroDetail for Hero 42')
-      .toBe('/heroes/42');
+    expect(navArgs).withContext('should nav to HeroDetail for Hero 42').toBe('/heroes/42');
   });
-
 });

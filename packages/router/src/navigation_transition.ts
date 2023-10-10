@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Location} from '@angular/common';
 import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
@@ -30,6 +31,7 @@ import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
+import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
 
 
 
@@ -244,7 +246,6 @@ export interface NavigationTransition {
   currentUrlTree: UrlTree;
   extractedUrl: UrlTree;
   currentRawUrl: UrlTree;
-  currentBrowserUrl: UrlTree;
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
@@ -297,12 +298,14 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
+  private readonly location = inject(Location);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
+  private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
 
   navigationId = 0;
   get hasRequestedNavigation() {
@@ -333,8 +336,8 @@ export class NavigationTransitions {
   handleNavigationRequest(
       request: Pick<
           NavigationTransition,
-          'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'currentBrowserUrl'|'rawUrl'|
-          'extras'|'resolve'|'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
+          'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|'extras'|'resolve'|
+          'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
     const id = ++this.navigationId;
     this.transitions?.next({...this.transitions.value, ...request, id});
   }
@@ -346,7 +349,6 @@ export class NavigationTransitions {
       id: 0,
       currentUrlTree: initialUrlTree,
       currentRawUrl: initialUrlTree,
-      currentBrowserUrl: initialUrlTree,
       extractedUrl: this.urlHandlingStrategy.extract(initialUrlTree),
       urlAfterRedirects: this.urlHandlingStrategy.extract(initialUrlTree),
       rawUrl: initialUrlTree,
@@ -393,15 +395,8 @@ export class NavigationTransitions {
                            };
                          }),
                          switchMap(t => {
-                           const browserUrlTree = t.currentBrowserUrl.toString();
                            const urlTransition = !router.navigated ||
-                               t.extractedUrl.toString() !== browserUrlTree ||
-                               // Navigations which succeed or ones which fail and are cleaned up
-                               // correctly should result in `browserUrlTree` and `currentUrlTree`
-                               // matching. If this is not the case, assume something went wrong and
-                               // try processing the URL again.
-                               browserUrlTree !== t.currentUrlTree.toString();
-
+                               this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
 
                            const onSameUrlNavigation =
                                t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
@@ -609,6 +604,17 @@ export class NavigationTransitions {
 
                          switchTap(() => this.afterPreactivation()),
 
+                         switchMap(() => {
+                           const viewTransitionStarted =
+                               this.createViewTransition?.(this.environmentInjector);
+
+                           // If view transitions are enabled, block the navigation until the view
+                           // transition callback starts. Otherwise, continue immediately.
+                           return viewTransitionStarted ?
+                               from(viewTransitionStarted).pipe(map(() => overallTransitionState)) :
+                               of(overallTransitionState);
+                         }),
+
                          map((t: NavigationTransition) => {
                            const targetRouterState = createRouterState(
                                router.routeReuseStrategy, t.targetSnapshot!, t.currentRouterState);
@@ -725,6 +731,36 @@ export class NavigationTransitions {
         new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
     this.events.next(navCancel);
     t.resolve(false);
+  }
+
+  /**
+   * @returns Whether we're navigating to somewhere that is not what the Router is
+   * currently set to.
+   */
+  private isUpdatingInternalState() {
+    // TODO(atscott): The serializer should likely be used instead of
+    // `UrlTree.toString()`. Custom serializers are often written to handle
+    // things better than the default one (objects, for example will be
+    // [Object object] with the custom serializer and be "the same" when they
+    // aren't).
+    // (Same for isUpdatedBrowserUrl)
+    return this.currentTransition?.extractedUrl.toString() !==
+        this.currentTransition?.currentUrlTree.toString();
+  }
+
+  /**
+   * @returns Whether we're updating the browser URL to something new (navigation is going
+   * to somewhere not displayed in the URL bar and we will update the URL
+   * bar if navigation succeeds).
+   */
+  private isUpdatedBrowserUrl() {
+    // The extracted URL is the part of the URL that this application cares about. `extract` may
+    // return only part of the browser URL and that part may have not changed even if some other
+    // portion of the URL did.
+    const extractedBrowserUrl =
+        this.urlHandlingStrategy.extract(this.urlSerializer.parse(this.location.path(true)));
+    return extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
+        !this.currentTransition?.extras.skipLocationChange;
   }
 }
 

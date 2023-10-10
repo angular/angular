@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {EventEmitter, ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {asyncValidatorsDroppedWithOptsWarning, missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors';
@@ -797,7 +797,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * marks all direct ancestors. Default is false.
    */
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as {touched: boolean}).touched = true;
+    (this as Writable<this>).touched = true;
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsTouched(opts);
@@ -830,7 +830,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * marks all direct ancestors. Default is false.
    */
   markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as {touched: boolean}).touched = false;
+    (this as Writable<this>).touched = false;
     this._pendingTouched = false;
 
     this._forEachChild((control: AbstractControl) => {
@@ -856,7 +856,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * marks all direct ancestors. Default is false.
    */
   markAsDirty(opts: {onlySelf?: boolean} = {}): void {
-    (this as {pristine: boolean}).pristine = false;
+    (this as Writable<this>).pristine = false;
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsDirty(opts);
@@ -880,7 +880,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * marks all direct ancestors. Default is false.
    */
   markAsPristine(opts: {onlySelf?: boolean} = {}): void {
-    (this as {pristine: boolean}).pristine = true;
+    (this as Writable<this>).pristine = true;
     this._pendingDirty = false;
 
     this._forEachChild((control: AbstractControl) => {
@@ -909,7 +909,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    (this as {status: FormControlStatus}).status = PENDING;
+    (this as Writable<this>).status = PENDING;
 
     if (opts.emitEvent !== false) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
@@ -942,8 +942,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-    (this as {status: FormControlStatus}).status = DISABLED;
-    (this as {errors: ValidationErrors | null}).errors = null;
+    (this as Writable<this>).status = DISABLED;
+    (this as Writable<this>).errors = null;
     this._forEachChild((control: AbstractControl) => {
       control.disable({...opts, onlySelf: true});
     });
@@ -981,7 +981,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-    (this as {status: FormControlStatus}).status = VALID;
+    (this as Writable<this>).status = VALID;
     this._forEachChild((control: AbstractControl) => {
       control.enable({...opts, onlySelf: true});
     });
@@ -1054,8 +1054,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
     if (this.enabled) {
       this._cancelExistingSubscription();
-      (this as {errors: ValidationErrors | null}).errors = this._runValidator();
-      (this as {status: FormControlStatus}).status = this._calculateStatus();
+      (this as Writable<this>).errors = this._runValidator();
+      (this as Writable<this>).status = this._calculateStatus();
 
       if (this.status === VALID || this.status === PENDING) {
         this._runAsyncValidator(opts.emitEvent);
@@ -1079,7 +1079,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   private _setInitialStatus() {
-    (this as {status: FormControlStatus}).status = this._allControlsDisabled() ? DISABLED : VALID;
+    (this as Writable<this>).status = this._allControlsDisabled() ? DISABLED : VALID;
   }
 
   private _runValidator(): ValidationErrors|null {
@@ -1088,7 +1088,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   private _runAsyncValidator(emitEvent?: boolean): void {
     if (this.asyncValidator) {
-      (this as {status: FormControlStatus}).status = PENDING;
+      (this as Writable<this>).status = PENDING;
       this._hasOwnPendingAsyncValidator = true;
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors|null) => {
@@ -1137,7 +1137,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * ```
    */
   setErrors(errors: ValidationErrors|null, opts: {emitEvent?: boolean} = {}): void {
-    (this as {errors: ValidationErrors | null}).errors = errors;
+    (this as Writable<this>).errors = errors;
     this._updateControlsErrors(opts.emitEvent !== false);
   }
 
@@ -1279,7 +1279,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _updateControlsErrors(emitEvent: boolean): void {
-    (this as {status: FormControlStatus}).status = this._calculateStatus();
+    (this as Writable<this>).status = this._calculateStatus();
 
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
@@ -1292,8 +1292,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _initObservables() {
-    (this as {valueChanges: Observable<TValue>}).valueChanges = new EventEmitter();
-    (this as {statusChanges: Observable<FormControlStatus>}).statusChanges = new EventEmitter();
+    (this as Writable<this>).valueChanges = new EventEmitter();
+    (this as Writable<this>).statusChanges = new EventEmitter();
   }
 
 
@@ -1337,7 +1337,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _updatePristine(opts: {onlySelf?: boolean} = {}): void {
-    (this as {pristine: boolean}).pristine = !this._anyControlsDirty();
+    (this as Writable<this>).pristine = !this._anyControlsDirty();
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updatePristine(opts);
@@ -1346,7 +1346,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _updateTouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as {touched: boolean}).touched = this._anyControlsTouched();
+    (this as Writable<this>).touched = this._anyControlsTouched();
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updateTouched(opts);

@@ -15,10 +15,19 @@
     "name": "AbsoluteRedirect"
   },
   {
+    "name": "ActivateRoutes"
+  },
+  {
     "name": "ActivatedRoute"
   },
   {
     "name": "ActivatedRouteSnapshot"
+  },
+  {
+    "name": "ActivationEnd"
+  },
+  {
+    "name": "ActivationStart"
   },
   {
     "name": "AfterRenderEventManager"
@@ -31,6 +40,9 @@
   },
   {
     "name": "ApplicationRef"
+  },
+  {
+    "name": "ApplyRedirects"
   },
   {
     "name": "ArgumentOutOfRangeError"
@@ -75,6 +87,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CREATE_VIEW_TRANSITION"
+  },
+  {
     "name": "CSP_NONCE"
   },
   {
@@ -90,10 +105,19 @@
     "name": "CatchSubscriber"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
     "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "ChildActivationEnd"
+  },
+  {
+    "name": "ChildActivationStart"
   },
   {
     "name": "ChildrenOutletContexts"
@@ -168,6 +192,9 @@
     "name": "DefaultUrlSerializer"
   },
   {
+    "name": "DistinctUntilChangedOperator"
+  },
+  {
     "name": "DistinctUntilChangedSubscriber"
   },
   {
@@ -196,9 +223,6 @@
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
-  },
-  {
-    "name": "EffectManager"
   },
   {
     "name": "ElementRef"
@@ -247,6 +271,9 @@
   },
   {
     "name": "GuardsCheckStart"
+  },
+  {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
   },
   {
     "name": "HAS_TRANSPLANTED_VIEWS"
@@ -336,6 +363,9 @@
     "name": "MapSubscriber"
   },
   {
+    "name": "MapToOperator"
+  },
+  {
     "name": "MapToSubscriber"
   },
   {
@@ -343,6 +373,9 @@
   },
   {
     "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "ModuleWithComponentFactories"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -394,9 +427,6 @@
   },
   {
     "name": "NONE"
-  },
-  {
-    "name": "NOOP_CLEANUP_FN"
   },
   {
     "name": "NOT_FOUND"
@@ -462,6 +492,9 @@
     "name": "NgZoneChangeDetectionScheduler"
   },
   {
+    "name": "NoLeftoversInUrl"
+  },
+  {
     "name": "NoMatch"
   },
   {
@@ -486,6 +519,9 @@
     "name": "OuterSubscriber"
   },
   {
+    "name": "OutletContext"
+  },
+  {
     "name": "OutletInjector"
   },
   {
@@ -502,6 +538,9 @@
   },
   {
     "name": "PRIMARY_OUTLET"
+  },
+  {
+    "name": "ParamsAsMap"
   },
   {
     "name": "PathLocationStrategy"
@@ -534,9 +573,6 @@
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
   },
   {
-    "name": "REACTIVE_NODE"
-  },
-  {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
@@ -550,6 +586,9 @@
   },
   {
     "name": "ROUTES"
+  },
+  {
+    "name": "Recognizer"
   },
   {
     "name": "RedirectRequest"
@@ -577,6 +616,12 @@
   },
   {
     "name": "RootViewRef"
+  },
+  {
+    "name": "RouteConfigLoadEnd"
+  },
+  {
+    "name": "RouteConfigLoadStart"
   },
   {
     "name": "RouteReuseStrategy"
@@ -631,6 +676,9 @@
   },
   {
     "name": "Sanitizer"
+  },
+  {
+    "name": "ScanOperator"
   },
   {
     "name": "ScanSubscriber"
@@ -690,6 +738,9 @@
     "name": "TQueries_"
   },
   {
+    "name": "TQueryMetadata_"
+  },
+  {
     "name": "TQuery_"
   },
   {
@@ -709,6 +760,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeUntilOperator"
   },
   {
     "name": "TakeUntilSubscriber"
@@ -780,9 +834,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "WATCH_NODE"
-  },
-  {
     "name": "XSS_SECURITY_URL"
   },
   {
@@ -847,9 +898,6 @@
   },
   {
     "name": "_wrapInTimeout"
-  },
-  {
-    "name": "absoluteRedirect"
   },
   {
     "name": "activeConsumer"
@@ -936,9 +984,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -988,12 +1033,6 @@
   },
   {
     "name": "consumerIsLive"
-  },
-  {
-    "name": "consumerMarkDirty"
-  },
-  {
-    "name": "consumerPollProducersForChange"
   },
   {
     "name": "containsSegmentGroup"
@@ -1074,6 +1113,9 @@
     "name": "createUrlTreeFromSegmentGroup"
   },
   {
+    "name": "createWildcardMatchResult"
+  },
+  {
     "name": "currentConsumer"
   },
   {
@@ -1101,9 +1143,6 @@
     "name": "defaultIfEmpty"
   },
   {
-    "name": "defaultMalformedUriErrorHandler"
-  },
-  {
     "name": "defaultUrlMatcher"
   },
   {
@@ -1128,13 +1167,16 @@
     "name": "detectChangesInEmbeddedViews"
   },
   {
-    "name": "detectChangesInView"
+    "name": "detectChangesInViewIfAttached"
   },
   {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "disableStylesheet"
   },
   {
     "name": "dispatch"
@@ -1284,9 +1326,6 @@
     "name": "getDOM"
   },
   {
-    "name": "getData"
-  },
-  {
     "name": "getDataKeys"
   },
   {
@@ -1401,9 +1440,6 @@
     "name": "getReactiveLViewConsumer"
   },
   {
-    "name": "getResolve"
-  },
-  {
     "name": "getSanitizer"
   },
   {
@@ -1462,9 +1498,6 @@
   },
   {
     "name": "importProvidersFrom"
-  },
-  {
-    "name": "inNotificationPhase"
   },
   {
     "name": "includeViewProviders"
@@ -1534,9 +1567,6 @@
   },
   {
     "name": "isArrayLike"
-  },
-  {
-    "name": "isBrowserTriggeredNavigation"
   },
   {
     "name": "isCommandWithOutlets"
@@ -1671,6 +1701,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -1758,6 +1791,9 @@
     "name": "nodeChildrenAsMap"
   },
   {
+    "name": "nonNegativeNumber"
+  },
+  {
     "name": "nonNull"
   },
   {
@@ -1806,16 +1842,10 @@
     "name": "producerRemoveLiveConsumerAtIndex"
   },
   {
-    "name": "producerUpdateValueVersion"
-  },
-  {
     "name": "profiler"
   },
   {
     "name": "provideZoneChangeDetection"
-  },
-  {
-    "name": "recognize2"
   },
   {
     "name": "redirectIfUrlTree"
@@ -1858,9 +1888,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"
@@ -2043,6 +2070,9 @@
     "name": "unwrapSafeValue"
   },
   {
+    "name": "updateAncestorTraversalFlagsOnAttach"
+  },
+  {
     "name": "updateMicroTaskStatus"
   },
   {
@@ -2052,10 +2082,10 @@
     "name": "updateSegmentGroupChildren"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

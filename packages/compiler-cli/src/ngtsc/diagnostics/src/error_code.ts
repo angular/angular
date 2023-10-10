@@ -113,6 +113,8 @@ export enum ErrorCode {
    */
   CONFLICTING_INPUT_TRANSFORM = 2020,
 
+  /** Raised when a component has both `styleUrls` and `styleUrl`. */
+  COMPONENT_INVALID_STYLE_URLS = 2021,
 
   SYMBOL_NOT_EXPORTED = 3001,
   /**
@@ -257,6 +259,32 @@ export enum ErrorCode {
    * A directive usage isn't binding to one or more required inputs.
    */
   MISSING_REQUIRED_INPUTS = 8008,
+
+  /**
+   * The tracking expression of a `for` loop block is accessing a variable that is unavailable,
+   * for example:
+   *
+   * ```
+   * <ng-template let-ref>
+   *   @for (item of items; track ref) {}
+   * </ng-template>
+   * ```
+   */
+  ILLEGAL_FOR_LOOP_TRACK_ACCESS = 8009,
+
+  /**
+   * The trigger of a `defer` block cannot access its trigger element,
+   * either because it doesn't exist or it's in a different view.
+   *
+   * ```
+   * @defer (on interaction(trigger)) {...}
+   *
+   * <ng-template>
+   *   <button #trigger></button>
+   * </ng-template>
+   * ```
+   */
+  INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT = 8010,
 
   /**
    * A two way binding in a template has an incorrect syntax,

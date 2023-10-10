@@ -25,9 +25,9 @@ if (typeof __karma__ !== 'undefined') {
     entryPoint = (__karma__ as any).config.entrypoint;
   }
 } else if (typeof process !== 'undefined') {
-  (window as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] = process.env.errorpolicy;
-  if (process.env.entrypoint) {
-    entryPoint = process.env.entrypoint;
+  (window as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] = process.env['errorpolicy'];
+  if (process.env['entrypoint']) {
+    entryPoint = process.env['entrypoint'];
   }
 }
 

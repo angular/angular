@@ -9,10 +9,10 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#defer}Deferred content{/defer}
+      @defer {Deferred content}
       <p>Content after defer block</p>
     </div>
   `, isInline: true });
@@ -22,7 +22,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#defer}Deferred content{/defer}
+      @defer {Deferred content}
       <p>Content after defer block</p>
     </div>
   `,
@@ -51,15 +51,18 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     <div>
       {{message}}
-      {#defer}
+      @defer {
         <button></button>
-        {:loading} {{loadingMessage}}
-        {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <i>sad</i>
-      {/defer}
+      } @loading {
+        {{loadingMessage}}
+      } @placeholder {
+        <img src="loading.gif">
+      } @error {
+        Calendar failed to load <i>sad</i>
+      }
     </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -68,12 +71,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       {{message}}
-      {#defer}
+      @defer {
         <button></button>
-        {:loading} {{loadingMessage}}
-        {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <i>sad</i>
-      {/defer}
+      } @loading {
+        {{loadingMessage}}
+      } @placeholder {
+        <img src="loading.gif">
+      } @error {
+        Calendar failed to load <i>sad</i>
+      }
     </div>
   `,
                 }]
@@ -98,20 +104,22 @@ import * as i0 from "@angular/core";
 export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#defer}
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @defer {
       <button></button>
-      {:placeholder minimum 2s} <img src="placeholder.gif">
-    {/defer}
+    } @placeholder (minimum 2s) {
+      <img src="placeholder.gif">
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#defer}
+    @defer {
       <button></button>
-      {:placeholder minimum 2s} <img src="placeholder.gif">
-    {/defer}
+    } @placeholder (minimum 2s) {
+      <img src="placeholder.gif">
+    }
   `,
                 }]
         }] });
@@ -133,20 +141,22 @@ import * as i0 from "@angular/core";
 export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-    {#defer}
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @defer {
       <button></button>
-      {:loading minimum 2s; after 500ms} <img src="loading.gif">
-    {/defer}
+    } @loading(minimum 2s; after 500ms) {
+      <img src="loading.gif">
+    }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
-    {#defer}
+    @defer {
       <button></button>
-      {:loading minimum 2s; after 500ms} <img src="loading.gif">
-    {/defer}
+    } @loading(minimum 2s; after 500ms) {
+      <img src="loading.gif">
+    }
   `,
                 }]
         }] });
@@ -192,13 +202,14 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -207,10 +218,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `,
                     standalone: true,
@@ -319,13 +331,14 @@ import * as i0 from "@angular/core";
 export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -334,10 +347,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `,
                     standalone: true,
@@ -369,24 +383,34 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
-      on interaction(button); on viewport(button)}
-    {{message}}
-    {:placeholder}<button #button>Click me</button>
-  {/defer}
+    @defer (
+      when isVisible() || isReady;
+      on idle, timer(1337);
+      on immediate, hover(button);
+      on interaction(button);
+      on viewport(button)) {
+        {{message}}
+      } @placeholder {
+        <button #button>Click me</button>
+      }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
     {{message}}
-    {#defer when isVisible() || isReady; on idle, timer(1337); on immediate, hover;
-      on interaction(button); on viewport(button)}
-    {{message}}
-    {:placeholder}<button #button>Click me</button>
-  {/defer}
+    @defer (
+      when isVisible() || isReady;
+      on idle, timer(1337);
+      on immediate, hover(button);
+      on interaction(button);
+      on viewport(button)) {
+        {{message}}
+      } @placeholder {
+        <button #button>Click me</button>
+      }
   `,
                 }]
         }] });
@@ -418,24 +442,34 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
-      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
-    {{message}}
-    {:placeholder}<button #button>Click me</button>
-  {/defer}
+    @defer (
+      prefetch when isVisible() || isReady;
+      prefetch on idle, timer(1337);
+      prefetch on immediate, hover(button);
+      prefetch on interaction(button);
+      prefetch on viewport(button)) {
+        {{message}}
+      } @placeholder {
+        <button #button>Click me</button>
+      }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
     {{message}}
-    {#defer prefetch when isVisible() || isReady; prefetch on idle, timer(1337);
-      prefetch on immediate, hover; prefetch on interaction(button); prefetch on viewport(button)}
-    {{message}}
-    {:placeholder}<button #button>Click me</button>
-  {/defer}
+    @defer (
+      prefetch when isVisible() || isReady;
+      prefetch on idle, timer(1337);
+      prefetch on immediate, hover(button);
+      prefetch on interaction(button);
+      prefetch on viewport(button)) {
+        {{message}}
+      } @placeholder {
+        <button #button>Click me</button>
+      }
   `,
                 }]
         }] });
@@ -478,16 +512,20 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    {#defer when isVisible() && (isReady | testPipe)}Hello{/defer}
-  `, isInline: true });
+    @defer (when isVisible() && (isReady | testPipe)) {
+      Hello
+    }
+  `, isInline: true, dependencies: [{ kind: "pipe", type: TestPipe, name: "testPipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
                     template: `
     {{message}}
-    {#defer when isVisible() && (isReady | testPipe)}Hello{/defer}
+    @defer (when isVisible() && (isReady | testPipe)) {
+      Hello
+    }
   `,
                     standalone: true,
                     imports: [TestPipe],
@@ -509,5 +547,199 @@ export declare class MyApp {
     isVisible(): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_same_view_trigger.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    {{message}}
+    @defer (on interaction(button); prefetch on interaction(button)) {}
+
+    <div>
+      <div>
+        <div>
+          <button #button>Click me</button>
+        </div>
+      </div>
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{message}}
+    @defer (on interaction(button); prefetch on interaction(button)) {}
+
+    <div>
+      <div>
+        <div>
+          <button #button>Click me</button>
+        </div>
+      </div>
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_same_view_trigger.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_parent_view_trigger.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    <ng-template>
+      {{message}}
+      <button #button>Click me</button>
+
+      <ng-template>
+        <ng-template>
+          @defer (on interaction(button); prefetch on interaction(button)) {}
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <ng-template>
+      {{message}}
+      <button #button>Click me</button>
+
+      <ng-template>
+        <ng-template>
+          @defer (on interaction(button); prefetch on interaction(button)) {}
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_parent_view_trigger.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_placeholder_trigger.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    {{message}}
+    @defer (on interaction(button); prefetch on interaction(button)) {
+      Main
+    } @placeholder {
+      <div>
+        <div>
+          <button #button>Click me</button>
+        </div>
+      </div>
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{message}}
+    @defer (on interaction(button); prefetch on interaction(button)) {
+      Main
+    } @placeholder {
+      <div>
+        <div>
+          <button #button>Click me</button>
+        </div>
+      </div>
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_interaction_placeholder_trigger.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_implicit_triggers.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @defer (on hover, interaction, viewport; prefetch on hover, interaction, viewport) {
+      {{message}}
+    } @placeholder {
+      <button>Click me</button>
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @defer (on hover, interaction, viewport; prefetch on hover, interaction, viewport) {
+      {{message}}
+    } @placeholder {
+      <button>Click me</button>
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_implicit_triggers.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
 

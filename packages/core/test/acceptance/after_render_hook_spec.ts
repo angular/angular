@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderRef, ChangeDetectorRef, Component, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
@@ -162,7 +162,16 @@ describe('after render hooks', () => {
       });
 
       it('should throw if called recursively', () => {
-        @Component({selector: 'comp'})
+        class RethrowErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            throw error;
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+        })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -247,6 +256,113 @@ describe('after render hooks', () => {
         expect(zoneLog).toEqual([]);
         fixture.detectChanges();
         expect(zoneLog).toEqual([false]);
+      });
+
+      it('should propagate errors to the ErrorHandler', () => {
+        const log: string[] = [];
+
+        class FakeErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            log.push((error as Error).message);
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+        })
+        class Comp {
+          constructor() {
+            afterRender(() => {
+              log.push('pass 1');
+            });
+
+            afterRender(() => {
+              throw new Error('fail 1');
+            });
+
+            afterRender(() => {
+              log.push('pass 2');
+            });
+
+            afterRender(() => {
+              throw new Error('fail 2');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
+      });
+
+      it('should run callbacks in the correct phase and order', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
+        class Root {
+        }
+
+        @Component({selector: 'comp-a'})
+        class CompA {
+          constructor() {
+            afterRender(() => {
+              log.push('early-read-1');
+            }, {phase: AfterRenderPhase.EarlyRead});
+
+            afterRender(() => {
+              log.push('write-1');
+            }, {phase: AfterRenderPhase.Write});
+
+            afterRender(() => {
+              log.push('mixed-read-write-1');
+            }, {phase: AfterRenderPhase.MixedReadWrite});
+
+            afterRender(() => {
+              log.push('read-1');
+            }, {phase: AfterRenderPhase.Read});
+          }
+        }
+
+        @Component({selector: 'comp-b'})
+        class CompB {
+          constructor() {
+            afterRender(() => {
+              log.push('read-2');
+            }, {phase: AfterRenderPhase.Read});
+
+            afterRender(() => {
+              log.push('mixed-read-write-2');
+            }, {phase: AfterRenderPhase.MixedReadWrite});
+
+            afterRender(() => {
+              log.push('write-2');
+            }, {phase: AfterRenderPhase.Write});
+
+            afterRender(() => {
+              log.push('early-read-2');
+            }, {phase: AfterRenderPhase.EarlyRead});
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, CompA, CompB],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Root);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual([
+          'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
+          'mixed-read-write-2', 'read-1', 'read-2'
+        ]);
       });
     });
 
@@ -390,7 +506,16 @@ describe('after render hooks', () => {
       });
 
       it('should throw if called recursively', () => {
-        @Component({selector: 'comp'})
+        class RethrowErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            throw error;
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
+        })
         class Comp {
           changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -476,6 +601,113 @@ describe('after render hooks', () => {
         expect(zoneLog).toEqual([]);
         fixture.detectChanges();
         expect(zoneLog).toEqual([false]);
+      });
+
+      it('should propagate errors to the ErrorHandler', () => {
+        const log: string[] = [];
+
+        class FakeErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            log.push((error as Error).message);
+          }
+        }
+
+        @Component({
+          selector: 'comp',
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+        })
+        class Comp {
+          constructor() {
+            afterNextRender(() => {
+              log.push('pass 1');
+            });
+
+            afterNextRender(() => {
+              throw new Error('fail 1');
+            });
+
+            afterNextRender(() => {
+              log.push('pass 2');
+            });
+
+            afterNextRender(() => {
+              throw new Error('fail 2');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
+      });
+
+      it('should run callbacks in the correct phase and order', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
+        class Root {
+        }
+
+        @Component({selector: 'comp-a'})
+        class CompA {
+          constructor() {
+            afterNextRender(() => {
+              log.push('early-read-1');
+            }, {phase: AfterRenderPhase.EarlyRead});
+
+            afterNextRender(() => {
+              log.push('write-1');
+            }, {phase: AfterRenderPhase.Write});
+
+            afterNextRender(() => {
+              log.push('mixed-read-write-1');
+            }, {phase: AfterRenderPhase.MixedReadWrite});
+
+            afterNextRender(() => {
+              log.push('read-1');
+            }, {phase: AfterRenderPhase.Read});
+          }
+        }
+
+        @Component({selector: 'comp-b'})
+        class CompB {
+          constructor() {
+            afterNextRender(() => {
+              log.push('read-2');
+            }, {phase: AfterRenderPhase.Read});
+
+            afterNextRender(() => {
+              log.push('mixed-read-write-2');
+            }, {phase: AfterRenderPhase.MixedReadWrite});
+
+            afterNextRender(() => {
+              log.push('write-2');
+            }, {phase: AfterRenderPhase.Write});
+
+            afterNextRender(() => {
+              log.push('early-read-2');
+            }, {phase: AfterRenderPhase.EarlyRead});
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, CompA, CompB],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Root);
+
+        expect(log).toEqual([]);
+        fixture.detectChanges();
+        expect(log).toEqual([
+          'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
+          'mixed-read-write-2', 'read-1', 'read-2'
+        ]);
       });
     });
   });

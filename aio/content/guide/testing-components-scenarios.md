@@ -309,7 +309,7 @@ The test must become *asynchronous*.
 #### Async test with `fakeAsync()`
 
 To use `fakeAsync()` functionality, you must import `zone.js/testing` in your test setup file.
-If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
+If you created your project with the Angular CLI, `zone-testing` has already been added for you.
 
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
 
@@ -483,7 +483,7 @@ Then you can assert that the quote element displays the expected text.
 #### Async test with `waitForAsync()`
 
 To use `waitForAsync()` functionality, you must import `zone.js/testing` in your test setup file.
-If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
+If you created your project with the Angular CLI, `zone-testing` has already been added for you.
 
 Here's the previous `fakeAsync()` test, re-written with the `waitForAsync()` utility.
 
@@ -1315,4 +1315,4 @@ Explore the options and combinations on your own.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-07

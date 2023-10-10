@@ -105,6 +105,7 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|unde
   if (ngDevMode) {
     throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, getPipeNotFoundErrorMessage(name));
   }
+  return;
 }
 
 /**
@@ -154,18 +155,18 @@ function getPipeNotFoundErrorMessage(name: string) {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space
+ * @param offset the binding offset
  * @param v1 1st argument to {@link PipeTransform#transform}.
  *
  * @codeGenApi
  */
-export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
+export function ɵɵpipeBind1(index: number, offset: number, v1: any): any {
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return isPure(lView, adjustedIndex) ?
       pureFunction1Internal(
-          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
+          lView, getBindingRoot(), offset, pipeInstance.transform, v1, pipeInstance) :
       pipeInstance.transform(v1);
 }
 

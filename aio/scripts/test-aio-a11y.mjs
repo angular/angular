@@ -21,15 +21,15 @@ sh.set('-e');
 
 // Constants
 const MIN_SCORES_PER_PAGE = {
-  '': 98,
-  'api': 98,
-  'api/core/Directive': 95,
-  'cli': 95,
-  'cli/add': 98,
-  'docs': 97,
+  '': 96,
+  'api': 96,
+  'api/core/Directive': 96,
+  'cli': 96,
+  'cli/add': 96,
+  'docs': 96,
   'guide/docs-style-guide': 97,
-  'start/start-routing': 95,
-  'tutorial': 97,
+  'start/start-routing': 96,
+  'tutorial': 96,
 };
 
 const auditScriptPath = path.resolve(process.env.AUDIT_SCRIPT_PATH);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Injector, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Injector, Input, OnChanges, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -57,30 +57,57 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
-  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['ngTemplateOutlet'] || changes['ngTemplateOutletInjector']) {
+    if (this._shouldRecreateView(changes)) {
       const viewContainerRef = this._viewContainerRef;
 
       if (this._viewRef) {
         viewContainerRef.remove(viewContainerRef.indexOf(this._viewRef));
       }
 
-      if (this.ngTemplateOutlet) {
-        const {
-          ngTemplateOutlet: template,
-          ngTemplateOutletContext: context,
-          ngTemplateOutletInjector: injector,
-        } = this;
-        this._viewRef =
-            viewContainerRef.createEmbeddedView(
-                template, context, injector ? {injector} : undefined) as EmbeddedViewRef<C>;
-      } else {
+      // If there is no outlet, clear the destroyed view ref.
+      if (!this.ngTemplateOutlet) {
         this._viewRef = null;
+        return;
       }
-    } else if (
-        this._viewRef && changes['ngTemplateOutletContext'] && this.ngTemplateOutletContext) {
-      this._viewRef.context = this.ngTemplateOutletContext;
+
+      // Create a context forward `Proxy` that will always bind to the user-specified context,
+      // without having to destroy and re-create views whenever the context changes.
+      const viewContext = this._createContextForwardProxy();
+      this._viewRef = viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, viewContext, {
+        injector: this.ngTemplateOutletInjector ?? undefined,
+      });
     }
+  }
+
+  /**
+   * We need to re-create existing embedded view if either is true:
+   * - the outlet changed.
+   * - the injector changed.
+   */
+  private _shouldRecreateView(changes: SimpleChanges): boolean {
+    return !!changes['ngTemplateOutlet'] || !!changes['ngTemplateOutletInjector'];
+  }
+
+  /**
+   * For a given outlet instance, we create a proxy object that delegates
+   * to the user-specified context. This allows changing, or swapping out
+   * the context object completely without having to destroy/re-create the view.
+   */
+  private _createContextForwardProxy(): C {
+    return <C>new Proxy({}, {
+      set: (_target, prop, newValue) => {
+        if (!this.ngTemplateOutletContext) {
+          return false;
+        }
+        return Reflect.set(this.ngTemplateOutletContext, prop, newValue);
+      },
+      get: (_target, prop, receiver) => {
+        if (!this.ngTemplateOutletContext) {
+          return undefined;
+        }
+        return Reflect.get(this.ngTemplateOutletContext, prop, receiver);
+      },
+    });
   }
 }

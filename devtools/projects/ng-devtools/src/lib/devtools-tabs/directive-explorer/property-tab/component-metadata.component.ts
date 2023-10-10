@@ -37,6 +37,7 @@ export class ComponentMetadataComponent {
     if (encapsulationIndex !== undefined) {
       return this.viewEncapsulationModes[encapsulationIndex];
     }
+    return undefined;
   }
 
   get changeDetectionStrategy(): string|undefined {

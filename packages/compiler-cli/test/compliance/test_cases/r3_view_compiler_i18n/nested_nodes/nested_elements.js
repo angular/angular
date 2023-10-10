@@ -1,8 +1,8 @@
 decls: 9,
 vars: 5,
-consts: function() {
-  __i18nMsg__(' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]], {original_code: {'interpolation': '{{ one }}', 'startTagSpan': '<span>', 'closeTagSpan': '</span>'}}, {})
-  __i18nMsgWithPostprocess__(' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`], ['startTagSpan', String.raw`\uFFFD#8\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`], ['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`]], {original_code: {'interpolation': '{{ two | uppercase }}', 'startTagDiv': '<div>', 'startTagSpan': '<span>', 'interpolation_1': '{{ nestedInBlockTwo }}', 'closeTagSpan': '</span>', 'closeTagDiv': '</div>'}}, {}, [])
+consts: () => {
+  __i18nMsg__(' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}', [['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagSpan', String.raw`\uFFFD#2\uFFFD`]], {original_code: {'closeTagSpan': '</span>', 'interpolation': '{{ one }}', 'startTagSpan': '<span>'}}, {})
+  __i18nMsgWithPostprocess__(' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}', [['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`], ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`], ['startTagSpan', String.raw`\uFFFD#8\uFFFD`]], {original_code: {'closeTagDiv': '</div>', 'closeTagSpan': '</span>', 'interpolation': '{{ two | uppercase }}', 'interpolation_1': '{{ nestedInBlockTwo }}', 'startTagDiv': '<div>', 'startTagSpan': '<span>'}}, {}, [])
   return [
     $i18n_0$,
     $i18n_1$

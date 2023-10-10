@@ -6,21 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {from, Observable, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Observable, of, throwError} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
-import {LoadedRouterConfig, Route, Routes} from './models';
+import {LoadedRouterConfig, Route} from './models';
 import {navigationCancelingError} from './navigation_canceling_error';
-import {runCanLoadGuards} from './operators/check_guards';
-import {RouterConfigLoader} from './router_config_loader';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
-import {isEmptyError} from './utils/type_guards';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 
 
 export class NoMatch {
@@ -31,8 +25,10 @@ export class NoMatch {
   }
 }
 
-export class AbsoluteRedirect {
-  constructor(public urlTree: UrlTree) {}
+export class AbsoluteRedirect extends Error {
+  constructor(public urlTree: UrlTree) {
+    super();
+  }
 }
 
 export function noMatch(segmentGroup: UrlSegmentGroup): Observable<any> {
@@ -88,8 +84,12 @@ export class ApplyRedirects {
 
   applyRedirectCommands(
       segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
-    return this.applyRedirectCreateUrlTree(
+    const newTree = this.applyRedirectCreateUrlTree(
         redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
+    if (redirectTo.startsWith('/')) {
+      throw new AbsoluteRedirect(newTree);
+    }
+    return newTree;
   }
 
   applyRedirectCreateUrlTree(

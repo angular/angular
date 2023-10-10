@@ -14,7 +14,7 @@ import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, ENVI
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, provideRouter, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
+import {Event, NavigationEnd, provideRouter, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by

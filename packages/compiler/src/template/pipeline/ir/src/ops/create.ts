@@ -9,9 +9,9 @@
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, OpKind} from '../enums';
+import {BindingKind, DeferSecondaryKind, OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -20,22 +20,24 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|
-    ExtractedAttributeOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
+export type CreateOp =
+    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
+    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
+    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
+    DeferOp|DeferSecondaryBlockOp|DeferOnOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
 
 /**
  * An operation representing the creation of an element or container.
  */
 export type ElementOrContainerOps =
-    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp;
+    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp|ProjectionOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
  */
 const elementContainerOpKinds = new Set([
-  OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template
+  OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template,
+  OpKind.Projection
 ]);
 
 /**
@@ -96,11 +98,6 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   nonBindable: boolean;
 
-  /**
-   * The i18n metadata associated with this element.
-   */
-  i18n?: i18n.I18nMeta;
-
   sourceSpan: ParseSourceSpan;
 }
 
@@ -123,13 +120,18 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
  */
 export interface ElementStartOp extends ElementOpBase {
   kind: OpKind.ElementStart;
+
+  /**
+   * The i18n placeholder data associated with this element.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder;
 }
 
 /**
  * Create an `ElementStartOp`.
  */
 export function createElementStartOp(
-    tag: string, xref: XrefId, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
+    tag: string, xref: XrefId, namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|undefined,
     sourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
@@ -139,7 +141,7 @@ export function createElementStartOp(
     localRefs: [],
     nonBindable: false,
     namespace,
-    i18n,
+    i18nPlaceholder,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -151,6 +153,11 @@ export function createElementStartOp(
  */
 export interface ElementOp extends ElementOpBase {
   kind: OpKind.Element;
+
+  /**
+   * The i18n placeholder data associated with this element.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder;
 }
 
 /**
@@ -170,25 +177,38 @@ export interface TemplateOp extends ElementOpBase {
    * not yet been counted.
    */
   vars: number|null;
+
+  /**
+   * Whether or not this template was automatically created for use with block syntax (control flow
+   * or defer). This will eventually cause the emitted template instruction to use fewer arguments,
+   * since several of the default arguments are unnecessary for blocks.
+   */
+  block: boolean;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder;
 }
 
 /**
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, namespace: Namespace, i18n: i18n.I18nMeta|undefined,
-    sourceSpan: ParseSourceSpan): TemplateOp {
+    xref: XrefId, tag: string, namespace: Namespace, generatedInBlock: boolean,
+    i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
     attributes: null,
     tag,
+    block: generatedInBlock,
     decls: null,
     vars: null,
     localRefs: [],
     nonBindable: false,
     namespace,
-    i18n,
+    i18nPlaceholder,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -274,8 +294,8 @@ export function createDisableBindingsOp(xref: XrefId): DisableBindingsOp {
 }
 
 /**
- * Logical operation causing binding to be re-enabled after visiting descendants of a non-bindable
- * container.
+ * Logical operation causing binding to be re-enabled after visiting descendants of a
+ * non-bindable container.
  */
 export interface EnableBindingsOp extends Op<CreateOp> {
   kind: OpKind.EnableBindings;
@@ -374,6 +394,8 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
    * The animation phase of the listener.
    */
   animationPhase: string|null;
+
+  sourceSpan: ParseSourceSpan;
 }
 
 /**
@@ -381,7 +403,7 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
  */
 export function createListenerOp(
     target: XrefId, name: string, tag: string|null, animationPhase: string|null,
-    hostListener: boolean): ListenerOp {
+    hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
   return {
     kind: OpKind.Listener,
     target,
@@ -393,6 +415,7 @@ export function createListenerOp(
     consumesDollarEvent: false,
     isAnimationListener: animationPhase !== null,
     animationPhase: animationPhase,
+    sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
   };
@@ -440,6 +463,54 @@ export function createNamespaceOp(namespace: Namespace): NamespaceOp {
 }
 
 /**
+ * An op that creates a content projection slot.
+ */
+export interface ProjectionDefOp extends Op<CreateOp> {
+  kind: OpKind.ProjectionDef;
+
+  // The parsed selector information for this projection def.
+  def: o.Expression|null;
+}
+
+export function createProjectionDefOp(def: o.Expression|null): ProjectionDefOp {
+  return {
+    kind: OpKind.ProjectionDef,
+    def,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a content projection slot.
+ */
+export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait, ElementOrContainerOpBase {
+  kind: OpKind.Projection;
+
+  xref: XrefId;
+
+  slot: number|null;
+
+  projectionSlotIndex: number;
+
+  selector: string;
+}
+
+export function createProjectionOp(xref: XrefId, selector: string): ProjectionOp {
+  return {
+    kind: OpKind.Projection,
+    xref,
+    selector,
+    projectionSlotIndex: 0,
+    attributes: null,
+    localRefs: [],
+    nonBindable: false,
+    sourceSpan: null!,  // TODO
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+  };
+}
+
+/**
  * Represents an attribute that has been extracted for inclusion in the consts array.
  */
 export interface ExtractedAttributeOp extends Op<CreateOp> {
@@ -479,6 +550,103 @@ export function createExtractedAttributeOp(
     name,
     expression,
     ...NEW_OP,
+  };
+}
+
+export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait, UsesSlotIndexTrait {
+  kind: OpKind.Defer;
+
+  /**
+   * The xref of this defer op.
+   */
+  xref: XrefId;
+
+  /**
+   * The xref of the main view. This will be associated with `slot`.
+   */
+  target: XrefId;
+
+  /**
+   * Secondary loading block associated with this defer op.
+   */
+  loading: DeferSecondaryBlockOp|null;
+
+  /**
+   * Secondary placeholder block associated with this defer op.
+   */
+  placeholder: DeferSecondaryBlockOp|null;
+
+  /**
+   * Secondary error block associated with this defer op.
+   */
+  error: DeferSecondaryBlockOp|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferOp(xref: XrefId, main: XrefId, sourceSpan: ParseSourceSpan): DeferOp {
+  return {
+    kind: OpKind.Defer,
+    xref,
+    target: main,
+    loading: null,
+    placeholder: null,
+    error: null,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
+    ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
+export interface DeferSecondaryBlockOp extends Op<CreateOp>, UsesSlotIndexTrait, HasConstTrait {
+  kind: OpKind.DeferSecondaryBlock;
+
+  /**
+   * The xref of the corresponding defer op.
+   */
+  deferOp: XrefId;
+
+  /**
+   * Which kind of secondary block this op represents.
+   */
+  secondaryBlockKind: DeferSecondaryKind;
+
+  /**
+   * The xref of the secondary view. This will be associated with `slot`.
+   */
+  target: XrefId;
+}
+
+export function createDeferSecondaryOp(
+    deferOp: XrefId, secondaryView: XrefId,
+    secondaryBlockKind: DeferSecondaryKind): DeferSecondaryBlockOp {
+  return {
+    kind: OpKind.DeferSecondaryBlock,
+    deferOp,
+    target: secondaryView,
+    secondaryBlockKind,
+    constValue: null,
+    makeExpression: literalOrArrayLiteral,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
+    ...TRAIT_HAS_CONST,
+  };
+}
+
+export interface DeferOnOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.DeferOn;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferOnOp(xref: XrefId, sourceSpan: ParseSourceSpan): DeferOnOp {
+  return {
+    kind: OpKind.DeferOn,
+    xref,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
   };
 }
 
@@ -523,25 +691,34 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   /**
    * `XrefId` allocated for this i18n block.
-   *
-   * This ID is used to reference this element from other IR structures.
    */
   xref: XrefId;
 
   /**
-   * The i18n metadata associated with this op.
+   * A reference to the root i18n block that this one belongs to. For a a root i18n block, this is
+   * the same as xref.
    */
-  i18n: i18n.I18nMeta;
+  root: XrefId;
 
   /**
-   * Map of values to use for tag name placeholders in the i18n message.
+   * The i18n metadata associated with this op.
    */
-  tagNameParams: {[placeholder: string]: o.Expression};
+  message: i18n.Message;
+
+  /**
+   * Map of values to use for named placeholders in the i18n message.
+   */
+  params: Map<string, o.Expression>;
 
   /**
    * The index in the consts array where the message i18n message is stored.
    */
   messageIndex: ConstIndex|null;
+
+  /**
+   * The index of this sub-block in the i18n message. For a root i18n block, this is null.
+   */
+  subTemplateIndex: number|null;
 }
 
 /**
@@ -561,13 +738,15 @@ export interface I18nStartOp extends I18nOpBase {
 /**
  * Create an `I18nStartOp`.
  */
-export function createI18nStartOp(xref: XrefId, i18n: i18n.I18nMeta): I18nStartOp {
+export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: XrefId): I18nStartOp {
   return {
     kind: OpKind.I18nStart,
     xref,
-    i18n,
-    tagNameParams: {},
+    root: root ?? xref,
+    message,
+    params: new Map(),
     messageIndex: null,
+    subTemplateIndex: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
@@ -601,3 +780,10 @@ export function createI18nEndOp(xref: XrefId): I18nEndOp {
  * component.
  */
 export type ConstIndex = number&{__brand: 'ConstIndex'};
+
+export function literalOrArrayLiteral(value: any): o.Expression {
+  if (Array.isArray(value)) {
+    return o.literalArr(value.map(literalOrArrayLiteral));
+  }
+  return o.literal(value, o.INFERRED_TYPE);
+}

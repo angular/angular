@@ -19,6 +19,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
+    ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = 602,
+    // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
     BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
@@ -50,6 +52,8 @@ export const enum RuntimeErrorCode {
     HYDRATION_NODE_MISMATCH = -500,
     // (undocumented)
     HYDRATION_STABLE_TIMEDOUT = -506,
+    // (undocumented)
+    IMAGE_PERFORMANCE_WARNING = -913,
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
@@ -116,6 +120,8 @@ export const enum RuntimeErrorCode {
     REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
+    // (undocumented)
+    RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
     // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)

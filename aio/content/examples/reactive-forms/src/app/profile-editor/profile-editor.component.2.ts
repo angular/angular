@@ -10,12 +10,13 @@ import { FormArray } from '@angular/forms';
 // #enddocregion form-builder-imports, form-array-imports
 
 @Component({
+  standalone: true,
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
-  styleUrls: ['./profile-editor.component.css']
+  styleUrls: ['./profile-editor.component.css'],
 })
 export class ProfileEditorComponent {
-// #docregion formgroup-compare
+  // #docregion formgroup-compare
   profileForm = this.fb.group({
     firstName: [''],
     lastName: [''],
@@ -23,36 +24,34 @@ export class ProfileEditorComponent {
       street: [''],
       city: [''],
       state: [''],
-      zip: ['']
+      zip: [''],
     }),
-// #enddocregion form-builder, formgroup-compare
-    aliases: this.fb.array([
-      this.fb.control('')
-    ])
-// #docregion form-builder, formgroup-compare
+    // #enddocregion form-builder, formgroup-compare
+    aliases: this.fb.array([this.fb.control('')]),
+    // #docregion form-builder, formgroup-compare
   });
-// #enddocregion form-builder, formgroup-compare
+  // #enddocregion form-builder, formgroup-compare
   get aliases() {
     return this.profileForm.get('aliases') as FormArray;
   }
 
-// #docregion inject-form-builder, form-builder
+  // #docregion inject-form-builder, form-builder
 
-  constructor(private fb: FormBuilder) { }
-// #enddocregion inject-form-builder, form-builder
+  constructor(private fb: FormBuilder) {}
+  // #enddocregion inject-form-builder, form-builder
 
   updateProfile() {
     this.profileForm.patchValue({
       firstName: 'Nancy',
       address: {
-        street: '123 Drew Street'
-      }
+        street: '123 Drew Street',
+      },
     });
   }
 
   addAlias() {
     this.aliases.push(this.fb.control(''));
   }
-// #docregion form-builder
+  // #docregion form-builder
 }
 // #enddocregion form-builder

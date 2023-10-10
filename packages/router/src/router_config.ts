@@ -204,6 +204,16 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
   bindToComponentInputs?: boolean;
 
   /**
+   * When true, enables view transitions in the Router by running the route activation and
+   * deactivation inside of `document.startViewTransition`.
+   *
+   * @see https://developer.chrome.com/docs/web-platform/view-transitions/
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
+   * @experimental
+   */
+  enableViewTransitions?: boolean;
+
+  /**
    * A custom error handler for failed navigations.
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
@@ -227,21 +237,6 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * it restores scroll position.
    */
   scrollOffset?: [number, number]|(() => [number, number]);
-
-  /**
-   * A custom handler for malformed URI errors. The handler is invoked when `encodedURI` contains
-   * invalid character sequences.
-   * The default implementation is to redirect to the root URL, dropping
-   * any path or parameter information. The function takes three parameters:
-   *
-   * - `'URIError'` - Error thrown when parsing a bad URL.
-   * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
-   * - `'url'` -  The malformed URL that caused the URIError
-   *
-   * @deprecated URI parsing errors should be handled in the `UrlSerializer` instead.
-   * */
-  malformedUriErrorHandler?:
-      (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
 }
 
 /**

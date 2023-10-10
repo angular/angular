@@ -146,6 +146,21 @@ export enum OpKind {
   ExtractedAttribute,
 
   /**
+   * An operation that configures a `@defer` block.
+   */
+  Defer,
+
+  /**
+   * An IR operation that provides secondary templates of a `@defer` block.
+   */
+  DeferSecondaryBlock,
+
+  /**
+   * An operation that controls when a `@defer` loads.
+   */
+  DeferOn,
+
+  /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
   ExtractedMessage,
@@ -159,6 +174,16 @@ export enum OpKind {
    * A namespace change, which causes the subsequent elements to be processed as either HTML or SVG.
    */
   Namespace,
+
+  /**
+   * Configure a content projeciton definition for the view.
+   */
+  ProjectionDef,
+
+  /**
+   * Create a content projection slot.
+   */
+  Projection,
 
   /**
    * The start of an i18n block.
@@ -175,7 +200,15 @@ export enum OpKind {
    */
   I18nEnd,
 
-  // TODO: Add Host Listeners, and possibly other host ops also.
+  /**
+   * An expression in an i18n message.
+   */
+  I18nExpression,
+
+  /**
+   * An instruction that applies a set of i18n expressions.
+   */
+  I18nApply,
 }
 
 /**
@@ -286,6 +319,11 @@ export enum ExpressionKind {
    * An expression that will cause a literal slot index to be emitted.
    */
   SlotLiteralExpr,
+
+  /**
+   * A test expression for a conditional op.
+   */
+  ConditionalCase,
 }
 
 /**
@@ -310,8 +348,8 @@ export enum SemanticVariableKind {
 
 /**
  * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
- * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost of
- * producing quirky or larger code in some cases.
+ * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost
+ * of producing quirky or larger code in some cases.
  */
 export enum CompatibilityMode {
   Normal,
@@ -328,6 +366,15 @@ export enum SanitizerFn {
   Url,
   ResourceUrl,
   IframeAttribute,
+}
+
+/**
+ * Enumeration of the different kinds of `@defer` secondary blocks.
+ */
+export enum DeferSecondaryKind {
+  Loading,
+  Placeholder,
+  Error,
 }
 
 /**

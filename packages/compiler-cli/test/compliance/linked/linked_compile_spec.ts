@@ -32,7 +32,7 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
   const linkerPlugin = createEs2015LinkerPlugin({
     fileSystem,
     logger,
-    sourceMapping: test.compilerOptions?.sourceMap === true,
+    sourceMapping: test.compilerOptions?.['sourceMap'] === true,
     ...test.angularCompilerOptions
   });
   const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');

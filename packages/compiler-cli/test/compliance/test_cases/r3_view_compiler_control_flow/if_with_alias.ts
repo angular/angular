@@ -4,13 +4,13 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#if value(); as alias}{{value()}} as {{alias}}{/if}
+      @if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
     </div>
   `,
 })
 export class MyApp {
   message = 'hello';
   value = () => 1;
-  // TODO(crisbeto): remove this once template type checking is fully implemented.
-  alias: any;
 }

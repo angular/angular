@@ -7,9 +7,11 @@
  */
 
 import {SecurityContext} from '../../../../../core';
+import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
+import type {ConditionalCaseExpr} from '../expression';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
@@ -22,7 +24,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -39,7 +41,15 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
    */
   target: XrefId;
 
+  /**
+   * The interpolated value.
+   */
   interpolation: Interpolation;
+
+  /**
+   * The i18n placeholders associated with this interpolation.
+   */
+  i18nPlaceholders: i18n.Placeholder[];
 
   sourceSpan: ParseSourceSpan;
 }
@@ -48,11 +58,13 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, sourceSpan: ParseSourceSpan): InterpolateTextOp {
+    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: i18n.Placeholder[],
+    sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
     interpolation,
+    i18nPlaceholders,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -102,7 +114,7 @@ export interface BindingOp extends Op<UpdateOp> {
   securityContext: SecurityContext;
 
   /**
-   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs ot be
+   * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`). This needs to be
    * tracked for compatiblity with `TemplateDefinitionBuilder` which treats `style` and `class`
    * TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
@@ -462,7 +474,7 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
  * Logical operation representing a conditional expression in the update IR.
  */
 export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
-                                       UsesSlotIndexTrait {
+                                       UsesSlotIndexTrait, ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -474,24 +486,30 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   /**
    * The slot of the target, to be populated during slot allocation.
    */
-  slot: number|null;
+  targetSlot: number|null;
 
   /**
-   * The main test expression.
+   * The main test expression (for a switch), or `null` (for an if, which has no test expression).
    */
-  test: o.Expression;
+  test: o.Expression|null;
 
   /**
    * Each possible embedded view that could be displayed has a condition (or is default). This
    * structure maps each view xref to its corresponding condition.
    */
-  conditions: Array<[XrefId, o.Expression|null]>;
+  conditions: Array<ConditionalCaseExpr>;
 
   /**
-   * After processing, this will be a single collapsed Joost-expression that evaluates to the right
-   * slot..
+   * After processing, this will be a single collapsed Joost-expression that evaluates the
+   * conditions, and yields the slot number of the template which should be displayed.
    */
   processed: o.Expression|null;
+
+  /**
+   * Control flow conditionals can accept a context value (this is a result of specifying an alias).
+   * This expression will be passed to the conditional instruction's context parameter.
+   */
+  contextValue: o.Expression|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -500,16 +518,96 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, test: o.Expression, sourceSpan: ParseSourceSpan): ConditionalOp {
+    target: XrefId, test: o.Expression|null, conditions: Array<ConditionalCaseExpr>,
+    sourceSpan: ParseSourceSpan): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
     test,
-    conditions: [],
+    conditions,
     processed: null,
     sourceSpan,
+    contextValue: null,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+  };
+}
+
+/**
+ * An op that represents an expression in an i18n message.
+ */
+export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                          DependsOnSlotContextOpTrait {
+  kind: OpKind.I18nExpression;
+
+  /**
+   * The i18n block that this expression belongs to.
+   */
+  owner: XrefId;
+
+  /**
+   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
+   * block. This is necessary so that we run all lifecycle hooks.
+   */
+  target: XrefId;
+
+  /**
+   * The expression value.
+   */
+  expression: o.Expression;
+
+  /**
+   * The i18n placeholder associated with this expression.
+   */
+  i18nPlaceholder: i18n.Placeholder;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create an i18n expression op.
+ */
+export function createI18nExpressionOp(
+    owner: XrefId, expression: o.Expression, i18nPlaceholder: i18n.Placeholder,
+    sourceSpan: ParseSourceSpan): I18nExpressionOp {
+  return {
+    kind: OpKind.I18nExpression,
+    owner,
+    target: owner,
+    expression,
+    i18nPlaceholder,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_VARS,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+  };
+}
+
+/**
+ * An op that represents applying a set of i18n expressions.
+ */
+export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
+  kind: OpKind.I18nApply;
+
+  /**
+   * The i18n block to which expressions are applied.
+   */
+  target: XrefId;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Creates an op to apply i18n expression ops.
+ */
+export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
+  return {
+    kind: OpKind.I18nApply,
+    target,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
   };
 }

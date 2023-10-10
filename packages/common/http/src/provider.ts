@@ -11,7 +11,7 @@ import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders, 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
-import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory, PRIMARY_HTTP_BACKEND} from './interceptor';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
@@ -56,6 +56,19 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * protection of outgoing requests. Additional configuration options can be provided by passing
  * feature functions to `provideHttpClient`. For example, HTTP interceptors can be added using the
  * `withInterceptors(...)` feature.
+ *
+ * <div class="alert is-helpful">
+ *
+ * It's strongly recommended to enable
+ * [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for applications that use
+ * Server-Side Rendering for better performance and compatibility. To enable `fetch`, add
+ * `withFetch()` feature to the `provideHttpClient()` call at the root of the application:
+ *
+ * ```
+ * provideHttpClient(withFetch());
+ * ```
+ *
+ * </div>
  *
  * @see {@link withInterceptors}
  * @see {@link withInterceptorsFromDi}
@@ -261,5 +274,6 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},
+    {provide: PRIMARY_HTTP_BACKEND, useExisting: FetchBackend},
   ]);
 }

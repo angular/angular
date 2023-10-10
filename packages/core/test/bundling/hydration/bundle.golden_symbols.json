@@ -45,7 +45,7 @@
     "name": "BrowserXhr"
   },
   {
-    "name": "CACHE_STATE"
+    "name": "CACHE_OPTIONS"
   },
   {
     "name": "CIRCULAR"
@@ -61,6 +61,9 @@
   },
   {
     "name": "CSP_NONCE"
+  },
+  {
+    "name": "ChainedInjector"
   },
   {
     "name": "ChangeDetectionStrategy"
@@ -114,7 +117,13 @@
     "name": "DefaultIfEmptySubscriber"
   },
   {
+    "name": "DistinctUntilChangedOperator"
+  },
+  {
     "name": "DistinctUntilChangedSubscriber"
+  },
+  {
+    "name": "DoOperator"
   },
   {
     "name": "DomAdapter"
@@ -139,9 +148,6 @@
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
-  },
-  {
-    "name": "EffectManager"
   },
   {
     "name": "ElementRef"
@@ -178,6 +184,9 @@
   },
   {
     "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
   },
   {
     "name": "HAS_TRANSPLANTED_VIEWS"
@@ -312,9 +321,6 @@
     "name": "NODES"
   },
   {
-    "name": "NOOP_CLEANUP_FN"
-  },
-  {
     "name": "NOT_FOUND"
   },
   {
@@ -382,9 +388,6 @@
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
-  },
-  {
-    "name": "REACTIVE_NODE"
   },
   {
     "name": "REFERENCE_NODE_BODY"
@@ -513,9 +516,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "WATCH_NODE"
-  },
-  {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
@@ -639,9 +639,6 @@
     "name": "clearElementContents"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -673,12 +670,6 @@
   },
   {
     "name": "consumerIsLive"
-  },
-  {
-    "name": "consumerMarkDirty"
-  },
-  {
-    "name": "consumerPollProducersForChange"
   },
   {
     "name": "convertToBitFlags"
@@ -735,13 +726,16 @@
     "name": "detectChangesInEmbeddedViews"
   },
   {
-    "name": "detectChangesInView"
+    "name": "detectChangesInViewIfAttached"
   },
   {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "disableStylesheet"
   },
   {
     "name": "empty"
@@ -831,10 +825,10 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getFirstLContainer"
+    "name": "getFilteredHeaders"
   },
   {
-    "name": "getHeadersMap"
+    "name": "getFirstLContainer"
   },
   {
     "name": "getInjectableDef"
@@ -946,9 +940,6 @@
   },
   {
     "name": "importProvidersFrom"
-  },
-  {
-    "name": "inNotificationPhase"
   },
   {
     "name": "includeViewProviders"
@@ -1104,6 +1095,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -1149,6 +1143,9 @@
     "name": "ngZoneApplicationErrorHandlerFactory"
   },
   {
+    "name": "nonNegativeNumber"
+  },
+  {
     "name": "nonNull"
   },
   {
@@ -1173,16 +1170,13 @@
     "name": "onLeave"
   },
   {
-    "name": "populateDehydratedViewsInContainerImpl"
+    "name": "populateDehydratedViewsInLContainerImpl"
   },
   {
     "name": "processInjectorTypesWithProviders"
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
-  },
-  {
-    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"
@@ -1329,13 +1323,19 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
-  },
-  {
     "name": "urlParsingNode"
   },
   {
+    "name": "viewAttachedToChangeDetector"
+  },
+  {
     "name": "walkProviderTree"
+  },
+  {
+    "name": "whenStable"
+  },
+  {
+    "name": "whenStableStore"
   },
   {
     "name": "writeDirectClass"

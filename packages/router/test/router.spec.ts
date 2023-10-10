@@ -87,15 +87,15 @@ describe('Router', () => {
 
     it('should be idempotent', inject([Router, Location], (r: Router, location: Location) => {
          r.setUpLocationChangeListener();
-         const a = (<any>r).locationSubscription;
+         const a = (<any>r).nonRouterCurrentEntryChangeSubscription;
          r.setUpLocationChangeListener();
-         const b = (<any>r).locationSubscription;
+         const b = (<any>r).nonRouterCurrentEntryChangeSubscription;
 
          expect(a).toBe(b);
 
          r.dispose();
          r.setUpLocationChangeListener();
-         const c = (<any>r).locationSubscription;
+         const c = (<any>r).nonRouterCurrentEntryChangeSubscription;
 
          expect(c).not.toBe(b);
        }));

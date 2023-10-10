@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {AfterViewInit, Component, ContentChildren, createComponent, destroyPlatform, effect, EnvironmentInjector, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -16,83 +16,6 @@ import {withBody} from '@angular/private/testing';
 describe('effects', () => {
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
-
-  it('created in the constructor should run during change detection',
-     withBody('<test-cmp></test-cmp>', async () => {
-       const log: string[] = [];
-       @Component({
-         selector: 'test-cmp',
-         standalone: true,
-         template: '',
-       })
-       class Cmp {
-         constructor() {
-           log.push('B');
-
-           effect(() => {
-             log.push('E');
-           });
-         }
-
-         ngDoCheck() {
-           log.push('C');
-         }
-       }
-
-       await bootstrapApplication(Cmp);
-
-       expect(log).toEqual([
-         // B: component bootstrapped
-         'B',
-         // E: effect runs during change detection
-         'E',
-         // C: change detection was observed (first round from `ApplicationRef.tick` called
-         // manually)
-         'C',
-         // C: second change detection happens (from zone becoming stable)
-         'C',
-       ]);
-     }));
-
-  it('created in ngOnInit should run during change detection',
-     withBody('<test-cmp></test-cmp>', async () => {
-       const log: string[] = [];
-       @Component({
-         selector: 'test-cmp',
-         standalone: true,
-         template: '',
-       })
-       class Cmp {
-         private injector = inject(Injector);
-
-         constructor() {
-           log.push('B');
-         }
-
-         ngOnInit() {
-           effect(() => {
-             log.push('E');
-           }, {injector: this.injector});
-         }
-
-         ngDoCheck() {
-           log.push('C');
-         }
-       }
-
-       await bootstrapApplication(Cmp);
-
-       expect(log).toEqual([
-         // B: component bootstrapped
-         'B',
-         // ngDoCheck runs before ngOnInit
-         'C',
-         // E: effect runs during change detection
-         'E',
-         // C: second change detection happens (from zone becoming stable)
-         'C',
-       ]);
-     }));
 
   it('should run effects in the zone in which they get created',
      withBody('<test-cmp></test-cmp>', async () => {
@@ -120,6 +43,28 @@ describe('effects', () => {
 
        expect(log).not.toEqual(['angular', 'angular']);
      }));
+
+  it('should propagate errors to the ErrorHandler', () => {
+    let run = false;
+
+    let lastError: any = null;
+    class FakeErrorHandler extends ErrorHandler {
+      override handleError(error: any): void {
+        lastError = error;
+      }
+    }
+
+    const injector = createEnvironmentInjector(
+        [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
+        TestBed.inject(EnvironmentInjector));
+    effect(() => {
+      run = true;
+      throw new Error('fail!');
+    }, {injector});
+    expect(() => TestBed.flushEffects()).not.toThrow();
+    expect(run).toBeTrue();
+    expect(lastError.message).toBe('fail!');
+  });
 
   it('should run effect cleanup function on destroy', async () => {
     let counterLog: number[] = [];
@@ -179,6 +124,11 @@ describe('effects', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
+    // Effects don't run during change detection.
+    expect(didRun).toBeFalse();
+
+    TestBed.flushEffects();
+
     expect(didRun).toBeTrue();
   });
 
@@ -201,24 +151,13 @@ describe('effects', () => {
        await bootstrapApplication(Cmp);
      }));
 
-  it('should allow writing to signals within effects when option set',
-     withBody('<test-cmp></test-cmp>', async () => {
-       @Component({
-         selector: 'test-cmp',
-         standalone: true,
-         template: '',
-       })
-       class Cmp {
-         counter = signal(0);
-         constructor() {
-           effect(() => {
-             expect(() => this.counter.set(1)).not.toThrow();
-           }, {allowSignalWrites: true});
-         }
-       }
+  it('should allow writing to signals within effects when option set', () => {
+    const counter = signal(0);
 
-       await bootstrapApplication(Cmp);
-     }));
+    effect(() => counter.set(1), {allowSignalWrites: true, injector: TestBed.inject(Injector)});
+    TestBed.flushEffects();
+    expect(counter()).toBe(1);
+  });
 
   it('should allow writing to signals in ngOnChanges', () => {
     @Component({
@@ -231,8 +170,8 @@ describe('effects', () => {
       @Input() in : string|undefined;
 
       ngOnChanges(changes: SimpleChanges): void {
-        if (changes.in) {
-          this.inSignal.set(changes.in.currentValue);
+        if (changes['in']) {
+          this.inSignal.set(changes['in'].currentValue);
         }
       }
     }
@@ -339,7 +278,7 @@ describe('effects', () => {
     expect(fixture.nativeElement.textContent).toBe('1');
   });
 
-  it('should not execute query setters in the reactive context', () => {
+  it('should not execute query setters in the reactive context', async () => {
     const state = signal('initial');
 
     @Component({
@@ -382,14 +321,16 @@ describe('effects', () => {
 
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
+
     expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
 
     state.set('changed');
     fixture.detectChanges();
+
     expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
   });
 
-  it('should allow toObservable subscription in template (with async pipe)', () => {
+  it('should allow toObservable subscription in template (with async pipe)', async () => {
     @Component({
       selector: 'test-cmp',
       standalone: true,
@@ -403,6 +344,8 @@ describe('effects', () => {
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges(true)).not.toThrow();
     fixture.detectChanges();
+    fixture.detectChanges();
+
     expect(fixture.nativeElement.textContent).toBe('0');
   });
 });

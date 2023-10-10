@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {consumerAfterComputation, consumerBeforeComputation, setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -14,15 +16,15 @@ import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
+import {Writable} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {consumerAfterComputation, consumerBeforeComputation, setActiveConsumer} from '../../signals';
 import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
-import {assertFirstCreatePass, assertFirstUpdatePass, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
+import {assertFirstCreatePass, assertFirstUpdatePass, assertLView, assertNoDuplicateDirectives, assertTNodeForLView, assertTNodeForTView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
@@ -1129,6 +1131,7 @@ function findDirectiveDefMatches(
       }
     }
   }
+  ngDevMode && matches !== null && assertNoDuplicateDirectives(matches);
   return matches === null ? null : [matches, hostDirectiveDefs];
 }
 
@@ -1216,7 +1219,7 @@ export function configureViewWithDirective<T>(
       assertGreaterThanOrEqual(directiveIndex, HEADER_OFFSET, 'Must be in Expando section');
   tView.data[directiveIndex] = def;
   const directiveFactory =
-      def.factory || ((def as {factory: Function}).factory = getFactoryDef(def.type, true));
+      def.factory || ((def as Writable<DirectiveDef<T>>).factory = getFactoryDef(def.type, true));
   // Even though `directiveFactory` will already be using `ɵɵdirectiveInject` in its generated code,
   // we also want to support `inject()` directly from the directive constructor context so we set
   // `ɵɵdirectiveInject` as the inject implementation here too.
@@ -1411,8 +1414,8 @@ export function createLContainer(
     false,        // has transplanted views
     currentView,  // parent
     null,         // next
-    0,            // transplanted views to refresh count
     tNode,        // t_host
+    false,        // has child views to refresh
     native,       // native,
     null,         // view refs
     null,         // moved views

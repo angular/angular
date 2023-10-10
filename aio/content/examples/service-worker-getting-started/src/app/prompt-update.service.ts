@@ -10,7 +10,7 @@ function promptUser(event: VersionReadyEvent): boolean {
 }
 
 // #docregion sw-version-ready
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class PromptUpdateService {
 
   constructor(swUpdate: SwUpdate) {

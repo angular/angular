@@ -47,7 +47,7 @@ const graphql = unauthenticatedGraphql.defaults({
   headers: {
     // TODO(josephperrott): Remove reference to TOKEN environment variable as part of larger
     // effort to migrate to expecting tokens via GITHUB_ACCESS_TOKEN environment variables.
-    authorization: `token ${process.env.TOKEN || process.env.GITHUB_ACCESS_TOKEN}`,
+    authorization: `token ${process.env['TOKEN'] || process.env['GITHUB_ACCESS_TOKEN']}`,
   }
 });
 

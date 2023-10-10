@@ -292,10 +292,6 @@ class _Visitor implements html.Visitor {
     throw new Error('unreachable code');
   }
 
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    html.visitAll(this, group.blocks, context);
-  }
-
   visitBlock(block: html.Block, context: any) {
     html.visitAll(this, block.children, context);
   }

@@ -9,8 +9,9 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
+import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
-import {ConsumesVarsTrait, TRAIT_USES_SLOT_INDEX, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -23,7 +24,7 @@ export type Expression =
     LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
     ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
     PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr;
+    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -91,7 +92,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
 
   readonly[UsesSlotIndex] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
 
   constructor(readonly target: XrefId, readonly offset: number) {
     super();
@@ -111,7 +112,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
 
   override clone(): ReferenceExpr {
     const expr = new ReferenceExpr(this.target, this.offset);
-    expr.slot = this.slot;
+    expr.targetSlot = this.targetSlot;
     return expr;
   }
 }
@@ -419,7 +420,7 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
   varOffset: number|null = null;
 
   constructor(readonly target: XrefId, readonly name: string, readonly args: o.Expression[]) {
@@ -449,7 +450,7 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
 
   override clone() {
     const r = new PipeBindingExpr(this.target, this.name, this.args.map(a => a.clone()));
-    r.slot = this.slot;
+    r.targetSlot = this.targetSlot;
     r.varOffset = this.varOffset;
     return r;
   }
@@ -463,7 +464,7 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
   varOffset: number|null = null;
 
   constructor(
@@ -491,7 +492,7 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
 
   override clone(): PipeBindingVariadicExpr {
     const r = new PipeBindingVariadicExpr(this.target, this.name, this.args.clone(), this.numArgs);
-    r.slot = this.slot;
+    r.targetSlot = this.targetSlot;
     r.varOffset = this.varOffset;
     return r;
   }
@@ -534,8 +535,9 @@ export class SafePropertyReadExpr extends ExpressionBase {
 export class SafeKeyedReadExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafeKeyedRead;
 
-  constructor(public receiver: o.Expression, public index: o.Expression) {
-    super();
+  constructor(
+      public receiver: o.Expression, public index: o.Expression, sourceSpan: ParseSourceSpan|null) {
+    super(sourceSpan);
   }
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
@@ -558,7 +560,7 @@ export class SafeKeyedReadExpr extends ExpressionBase {
   }
 
   override clone(): SafeKeyedReadExpr {
-    return new SafeKeyedReadExpr(this.receiver.clone(), this.index.clone());
+    return new SafeKeyedReadExpr(this.receiver.clone(), this.index.clone(), this.sourceSpan);
   }
 }
 
@@ -734,7 +736,7 @@ export class SanitizerExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
-export class SlotLiteralExpr extends ExpressionBase {
+export class SlotLiteralExpr extends ExpressionBase implements UsesSlotIndexTrait {
   override readonly kind = ExpressionKind.SlotLiteralExpr;
   readonly[UsesSlotIndex] = true;
 
@@ -742,12 +744,13 @@ export class SlotLiteralExpr extends ExpressionBase {
     super();
   }
 
-  slot: number|null = null;
+  targetSlot: number|null = null;
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof SlotLiteralExpr && e.target === this.target && e.slot === this.slot;
+    return e instanceof SlotLiteralExpr && e.target === this.target &&
+        e.targetSlot === this.targetSlot;
   }
 
   override isConstant() {
@@ -755,10 +758,52 @@ export class SlotLiteralExpr extends ExpressionBase {
   }
 
   override clone(): SlotLiteralExpr {
-    return new SlotLiteralExpr(this.target);
+    const copy = new SlotLiteralExpr(this.target);
+    copy.targetSlot = this.targetSlot;
+    return copy;
   }
 
   override transformInternalExpressions(): void {}
+}
+
+export class ConditionalCaseExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ConditionalCase;
+
+  /**
+   * Create an expression for one branch of a conditional.
+   * @param expr The expression to be tested for this case. Might be null, as in an `else` case.
+   * @param target The Xref of the view to be displayed if this condition is true.
+   */
+  constructor(
+      public expr: o.Expression|null, readonly target: XrefId,
+      readonly alias: t.Variable|null = null) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+    if (this.expr !== null) {
+      this.expr.visitExpression(visitor, context);
+    }
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof ConditionalCaseExpr && e.expr === this.expr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): ConditionalCaseExpr {
+    return new ConditionalCaseExpr(this.expr, this.target);
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    if (this.expr !== null) {
+      this.expr = transformExpressionsInExpression(this.expr, transform, flags);
+    }
+  }
 }
 
 /**
@@ -816,6 +861,9 @@ export function transformExpressionsInOp(
       op.sanitizer =
           op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
+    case OpKind.I18nExpression:
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
+      break;
     case OpKind.InterpolateText:
       transformExpressionsInInterpolation(op.interpolation, transform, flags);
       break;
@@ -827,14 +875,17 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Conditional:
       for (const condition of op.conditions) {
-        if (condition[1] === null) {
+        if (condition.expr === null) {
           // This is a default case.
           continue;
         }
-        condition[1] = transformExpressionsInExpression(condition[1]!, transform, flags);
+        condition.expr = transformExpressionsInExpression(condition.expr, transform, flags);
       }
       if (op.processed !== null) {
         op.processed = transformExpressionsInExpression(op.processed, transform, flags);
+      }
+      if (op.contextValue !== null) {
+        op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
     case OpKind.Listener:
@@ -852,16 +903,20 @@ export function transformExpressionsInOp(
         transformExpressionsInStatement(statement, transform, flags);
       }
       break;
+    case OpKind.I18n:
     case OpKind.I18nStart:
-      for (const placeholder in op.tagNameParams) {
-        op.tagNameParams[placeholder] =
-            transformExpressionsInExpression(op.tagNameParams[placeholder], transform, flags);
+      for (const [placeholder, expression] of op.params) {
+        op.params.set(placeholder, transformExpressionsInExpression(expression, transform, flags));
       }
       break;
+    case OpKind.Defer:
+    case OpKind.DeferSecondaryBlock:
+    case OpKind.DeferOn:
+    case OpKind.Projection:
+    case OpKind.ProjectionDef:
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
-    case OpKind.I18n:
     case OpKind.I18nEnd:
     case OpKind.Container:
     case OpKind.ContainerStart:
@@ -873,6 +928,7 @@ export function transformExpressionsInOp(
     case OpKind.Pipe:
     case OpKind.Advance:
     case OpKind.Namespace:
+    case OpKind.I18nApply:
       // These operations contain no expressions.
       break;
     default:
