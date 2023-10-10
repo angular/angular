@@ -17,7 +17,7 @@ import * as t from './r3_ast';
 const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+(.*)/;
 
 /** Pattern for the tracking expression in a for loop block. */
-const FOR_LOOP_TRACK_PATTERN = /^track\s+(.*)/;
+const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;
 
 /** Pattern for the `as` expression in a conditional block. */
 const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
@@ -26,7 +26,7 @@ const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 
 /** Pattern used to identify a `let` parameter. */
-const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
+const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
 
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
