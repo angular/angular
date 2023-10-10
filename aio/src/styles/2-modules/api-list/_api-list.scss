@@ -108,6 +108,7 @@ aio-api-list {
       }
 
       li {
+        font-family: "Roboto Mono", monospace;
         @include mixins.font-size(14);
         margin: 8px 0;
         @include mixins.line-height(14);
