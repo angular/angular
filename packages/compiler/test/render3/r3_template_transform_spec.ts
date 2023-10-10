@@ -1383,12 +1383,20 @@ describe('R3 template transform', () => {
       });
 
       it('should report if a block different from "case" and "default" is used in a switch', () => {
-        expect(() => parse(`
-          @switch (cond) {
-            @case (x()) {X case}
-            @foo {Foo}
-          }
-        `)).toThrowError(/@switch block can only contain @case and @default blocks/);
+        const result = parse(
+            `
+              @switch (cond) {
+                @case (x()) {X case}
+                @foo {Foo}
+              }
+            `,
+            {ignoreError: true});
+
+        const switchNode = result.nodes[0] as t.SwitchBlock;
+        expect(result.errors.map(e => e.msg)).toEqual([
+          '@switch block can only contain @case and @default blocks'
+        ]);
+        expect(switchNode.unknownBlocks.map(b => b.name)).toEqual(['foo']);
       });
 
       it('should report if @case or @default is used outside of a switch block', () => {

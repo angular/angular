@@ -54,11 +54,6 @@ export function createIfBlock(
     bindingParser: BindingParser): {node: t.IfBlock|null, errors: ParseError[]} {
   const errors: ParseError[] = validateIfConnectedBlocks(connectedBlocks);
   const branches: t.IfBlockBranch[] = [];
-
-  if (errors.length > 0) {
-    return {node: null, errors};
-  }
-
   const mainBlockParams = parseConditionalBlockParameters(ast, errors, bindingParser);
 
   if (mainBlockParams !== null) {
@@ -67,19 +62,18 @@ export function createIfBlock(
         mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan));
   }
 
-  // Assumes that the structure is valid since we validated it above.
   for (const block of connectedBlocks) {
-    const children = html.visitAll(visitor, block.children, block.children);
-
     if (ELSE_IF_PATTERN.test(block.name)) {
       const params = parseConditionalBlockParameters(block, errors, bindingParser);
 
       if (params !== null) {
+        const children = html.visitAll(visitor, block.children, block.children);
         branches.push(new t.IfBlockBranch(
             params.expression, children, params.expressionAlias, block.sourceSpan,
             block.startSourceSpan, block.endSourceSpan));
       }
     } else if (block.name === 'else') {
+      const children = html.visitAll(visitor, block.children, block.children);
       branches.push(new t.IfBlockBranch(
           null, children, null, block.sourceSpan, block.startSourceSpan, block.endSourceSpan));
     }
@@ -155,18 +149,21 @@ export function createSwitchBlock(
     ast: html.Block, visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.SwitchBlock|null, errors: ParseError[]} {
   const errors = validateSwitchBlock(ast);
-
-  if (errors.length > 0) {
-    return {node: null, errors};
-  }
-
-  const primaryExpression = parseBlockParameterToBinding(ast.parameters[0], bindingParser);
+  const primaryExpression = ast.parameters.length > 0 ?
+      parseBlockParameterToBinding(ast.parameters[0], bindingParser) :
+      bindingParser.parseBinding('', false, ast.sourceSpan, 0);
   const cases: t.SwitchBlockCase[] = [];
+  const unknownBlocks: t.UnknownBlock[] = [];
   let defaultCase: t.SwitchBlockCase|null = null;
 
   // Here we assume that all the blocks are valid given that we validated them above.
   for (const node of ast.children) {
     if (!(node instanceof html.Block)) {
+      continue;
+    }
+
+    if ((node.name !== 'case' || node.parameters.length === 0) && node.name !== 'default') {
+      unknownBlocks.push(new t.UnknownBlock(node.name, node.sourceSpan));
       continue;
     }
 
@@ -191,7 +188,8 @@ export function createSwitchBlock(
 
   return {
     node: new t.SwitchBlock(
-        primaryExpression, cases, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan),
+        primaryExpression, cases, unknownBlocks, ast.sourceSpan, ast.startSourceSpan,
+        ast.endSourceSpan),
     errors
   };
 }

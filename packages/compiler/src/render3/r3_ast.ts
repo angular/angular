@@ -241,7 +241,12 @@ export class DeferredBlock implements Node {
 
 export class SwitchBlock implements Node {
   constructor(
-      public expression: AST, public cases: SwitchBlockCase[], public sourceSpan: ParseSourceSpan,
+      public expression: AST, public cases: SwitchBlockCase[],
+      /**
+       * These blocks are only captured to allow for autocompletion in the language service. They
+       * aren't meant to be processed in any other way.
+       */
+      public unknownBlocks: UnknownBlock[], public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
