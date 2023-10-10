@@ -9,7 +9,7 @@
 import {AST, ASTWithSource, BindingPipe, BindingType, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, PotentialDirective, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent, DeferredBlock, TextAttribute, UnknownBlock} from '@angular/compiler/src/render3/r3_ast';
+import {BoundEvent, DeferredBlock, SwitchBlock, TextAttribute, UnknownBlock} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
 import {addAttributeCompletionEntries, AsciiSortPriority, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
@@ -130,15 +130,18 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         length: this.node.name.length,
       }
     };
-    const completionEntries: ts.CompletionEntry[] = [
-      ...blocksWithParens, ...blocksWithoutParens
-    ].map(name => ({
-            name,
-            sortText: `${AsciiSortPriority.First}${name}`,
-            insertText: buildBlockSnippet(useSnippet, name, blocksWithParens.includes(name)),
-            isSnippet: useSnippet || undefined,
-            ...partialCompletionEntryWholeBlock,
-          }));
+    let competionKeywords: string[] = [...blocksWithParens, ...blocksWithoutParens];
+    if (this.nodeParent instanceof SwitchBlock) {
+      competionKeywords = ['case', 'default'];
+    }
+    const completionEntries: ts.CompletionEntry[] = competionKeywords.map(
+        name => ({
+          name,
+          sortText: `${AsciiSortPriority.First}${name}`,
+          insertText: buildBlockSnippet(useSnippet, name, blocksWithParens.includes(name)),
+          isSnippet: useSnippet || undefined,
+          ...partialCompletionEntryWholeBlock,
+        }));
 
     // Return the completions.
     const completionInfo: ts.CompletionInfo = {
