@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, NgZone, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -247,6 +247,38 @@ describe('@defer', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.outerHTML).toContain('<my-lazy-cmp>Hi!</my-lazy-cmp>');
+  });
+
+  it('should be able to use pipes injecting ChangeDetectorRef in defer blocks', async () => {
+    @Pipe({name: 'test', standalone: true})
+    class TestPipe implements PipeTransform {
+      changeDetectorRef = inject(ChangeDetectorRef);
+
+      transform(value: any) {
+        return value;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      imports: [TestPipe],
+      template: `@defer (when isVisible | test; prefetch when isVisible | test) {Hello}`
+    })
+    class MyCmp {
+      isVisible = false;
+    }
+
+    const fixture = TestBed.createComponent(MyCmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('');
+
+    fixture.componentInstance.isVisible = true;
+    fixture.detectChanges();
+    await allPendingDynamicImports();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Hello');
   });
 
   describe('with OnPush', () => {

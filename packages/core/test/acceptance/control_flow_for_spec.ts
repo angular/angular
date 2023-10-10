@@ -7,7 +7,7 @@
  */
 
 
-import {Component} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow - for', () => {
@@ -94,6 +94,30 @@ describe('control flow - for', () => {
     fixture.componentInstance.items = undefined;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('Empty');
+  });
+
+  it('should be able to use pipes injecting ChangeDetectorRef in for loop blocks', () => {
+    @Pipe({name: 'test', standalone: true})
+    class TestPipe implements PipeTransform {
+      changeDetectorRef = inject(ChangeDetectorRef);
+
+      transform(value: any) {
+        return value;
+      }
+    }
+
+    @Component({
+      template: '@for (item of items | test; track item;) {{{item}}|}',
+      imports: [TestPipe],
+      standalone: true
+    })
+    class TestComponent {
+      items = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('1|2|3|');
   });
 
   describe('trackBy', () => {
