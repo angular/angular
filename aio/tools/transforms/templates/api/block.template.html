@@ -1,0 +1,13 @@
+{% extends 'export-base.template.html' -%}
+
+{% block overview %}
+  {% if doc.syntax %}
+    <h2>Syntax</h2>
+    {$ doc.syntax | marked $}
+  {% endif %}
+{% endblock %}
+
+{% block details %}
+  {% include "includes/description.html" %}
+{% endblock %}
+
