@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Pipe, PipeTransform} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
@@ -105,5 +105,34 @@ describe('control flow - switch', () => {
     fixture.componentInstance.case = 2;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('case 2');
+  });
+
+  it('should be able to use pipes injecting ChangeDetectorRef in switch blocks', () => {
+    @Pipe({name: 'test', standalone: true})
+    class TestPipe implements PipeTransform {
+      changeDetectorRef = inject(ChangeDetectorRef);
+
+      transform(value: any) {
+        return value;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: `
+        @switch (case | test) {
+          @case (0 | test) {Zero}
+          @case (1 | test) {One}
+        }
+      `,
+      imports: [TestPipe],
+    })
+    class TestComponent {
+      case = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('One');
   });
 });

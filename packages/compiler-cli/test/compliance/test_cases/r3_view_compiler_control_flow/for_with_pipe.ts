@@ -11,23 +11,15 @@ export class TestPipe {
   template: `
     <div>
       {{message}}
-      @switch (value() | test) {
-        @case (0 | test) {
-          case 0
-        }
-        @case (1 | test) {
-          case 1
-        }
-        @default {
-          default
-        }
+      @for (item of items | test; track item) {
+        {{item}}
       }
     </div>
   `,
   standalone: true,
-  imports: [TestPipe]
+  imports: [TestPipe],
 })
 export class MyApp {
   message = 'hello';
-  value = () => 1;
+  items = [1, 2, 3];
 }
