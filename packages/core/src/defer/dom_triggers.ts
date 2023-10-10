@@ -7,11 +7,12 @@
  */
 
 import type {Injector} from '../di';
-import {afterRender} from '../render3/after_render_hooks';
+import {internalAfterNextRender} from '../render3/after_render_hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
-import {FLAGS, HEADER_OFFSET, INJECTOR, LView, LViewFlags} from '../render3/interfaces/view';
+import {isDestroyed} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, INJECTOR, LView} from '../render3/interfaces/view';
 import {getNativeByIndex, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../render3/util/view_utils';
 import {assertElement, assertEqual} from '../util/assert';
 import {NgZone} from '../zone';
@@ -83,13 +84,12 @@ export function onInteraction(
     entry = new DeferEventEntry();
     interactionTriggers.set(trigger, entry);
 
-    // Ensure that the handler runs in the NgZone since it gets
-    // registered in `afterRender` which runs outside.
-    injector.get(NgZone).run(() => {
-      for (const name of interactionEventNames) {
-        trigger.addEventListener(name, entry!.listener, eventListenerOptions);
-      }
-    });
+    // Ensure that the handler runs in the NgZone
+    ngDevMode && NgZone.assertInAngularZone();
+
+    for (const name of interactionEventNames) {
+      trigger.addEventListener(name, entry!.listener, eventListenerOptions);
+    }
   }
 
   entry.callbacks.add(callback);
@@ -122,13 +122,13 @@ export function onHover(
   if (!entry) {
     entry = new DeferEventEntry();
     hoverTriggers.set(trigger, entry);
-    // Ensure that the handler runs in the NgZone since it gets
-    // registered in `afterRender` which runs outside.
-    injector.get(NgZone).run(() => {
-      for (const name of hoverEventNames) {
-        trigger.addEventListener(name, entry!.listener, eventListenerOptions);
-      }
-    });
+
+    // Ensure that the handler runs in the NgZone
+    ngDevMode && NgZone.assertInAngularZone();
+
+    for (const name of hoverEventNames) {
+      trigger.addEventListener(name, entry!.listener, eventListenerOptions);
+    }
   }
 
   entry.callbacks.add(callback);
@@ -262,31 +262,31 @@ export function registerDomTrigger(
     registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
     callback: VoidFunction) {
   const injector = initialLView[INJECTOR]!;
+  function pollDomTrigger() {
+    // If the initial view was destroyed, we don't need to do anything.
+    if (isDestroyed(initialLView)) {
+      return;
+    }
 
-  // Assumption: the `afterRender` reference should be destroyed
-  // automatically so we don't need to keep track of it.
-  const afterRenderRef = afterRender(() => {
     const lDetails = getLDeferBlockDetails(initialLView, tNode);
     const renderedState = lDetails[DEFER_BLOCK_STATE];
 
     // If the block was loaded before the trigger was resolved, we don't need to do anything.
     if (renderedState !== DeferBlockInternalState.Initial &&
         renderedState !== DeferBlockState.Placeholder) {
-      afterRenderRef.destroy();
       return;
     }
 
     const triggerLView = getTriggerLView(initialLView, tNode, walkUpTimes);
 
     // Keep polling until we resolve the trigger's LView.
-    // `afterRender` should stop automatically if the view is destroyed.
     if (!triggerLView) {
+      internalAfterNextRender(pollDomTrigger, {injector});
       return;
     }
 
     // It's possible that the trigger's view was destroyed before we resolved the trigger element.
-    if (triggerLView[FLAGS] & LViewFlags.Destroyed) {
-      afterRenderRef.destroy();
+    if (isDestroyed(triggerLView)) {
       return;
     }
 
@@ -301,7 +301,6 @@ export function registerDomTrigger(
       cleanup();
     }, injector);
 
-    afterRenderRef.destroy();
     storeLViewOnDestroy(triggerLView, cleanup);
 
     // Since the trigger and deferred block might be in different
@@ -309,5 +308,8 @@ export function registerDomTrigger(
     if (initialLView !== triggerLView) {
       storeLViewOnDestroy(initialLView, cleanup);
     }
-  }, {injector});
+  }
+
+  // Begin polling for the trigger.
+  internalAfterNextRender(pollDomTrigger, {injector});
 }

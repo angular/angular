@@ -119,6 +119,40 @@ export interface AfterRenderRef {
 }
 
 /**
+ * Options passed to `internalAfterNextRender`.
+ */
+export interface InternalAfterNextRenderOptions {
+  /**
+   * The `Injector` to use during creation.
+   *
+   * If this is not provided, the current injection context will be used instead (via `inject`).
+   */
+  injector?: Injector;
+}
+
+/**
+ * Register a callback to run once before any userspace `afterRender` or
+ * `afterNextRender` callbacks.
+ *
+ * This function should almost always be used instead of `afterRender` or
+ * `afterNextRender` for implementing framework functionality. Consider:
+ *
+ *   1.) `AfterRenderPhase.EarlyRead` is intended to be used for implementing
+ *       custom layout. If the framework itself mutates the DOM after *any*
+ *       `AfterRenderPhase.EarlyRead` callbacks are run, the phase can no
+ *       longer reliably serve its purpose.
+ *
+ *   2.) Importing `afterRender` in the framework can reduce the ability for it
+ *       to be tree-shaken, and the framework shouldn't need much of the behavior.
+ */
+export function internalAfterNextRender(
+    callback: VoidFunction, options?: InternalAfterNextRenderOptions) {
+  const injector = options?.injector ?? inject(Injector);
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
+  afterRenderEventManager.internalCallbacks.push(callback);
+}
+
+/**
  * Register a callback to be invoked each time the application
  * finishes rendering.
  *
@@ -398,6 +432,9 @@ export class AfterRenderEventManager {
   /* @internal */
   handler: AfterRenderCallbackHandler|null = null;
 
+  /* @internal */
+  internalCallbacks: VoidFunction[] = [];
+
   /**
    * Mark the beginning of a render operation (i.e. CD cycle).
    * Throws if called while executing callbacks.
@@ -416,6 +453,13 @@ export class AfterRenderEventManager {
     this.renderDepth--;
 
     if (this.renderDepth === 0) {
+      // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
+      // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
+      // can still be tree-shaken unless used by the application.
+      for (const callback of this.internalCallbacks) {
+        callback();
+      }
+      this.internalCallbacks.length = 0;
       this.handler?.execute();
     }
   }
@@ -423,6 +467,7 @@ export class AfterRenderEventManager {
   ngOnDestroy() {
     this.handler?.destroy();
     this.handler = null;
+    this.internalCallbacks.length = 0;
   }
 
   /** @nocollapse */
