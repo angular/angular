@@ -19,7 +19,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
  * @publicApi
  */
 export function assertNotInReactiveContext(debugFn: Function, extraContext?: string): void {
-  // Taking a `Function` instead of a string name here prevents the unminified name of the function
+  // Taking a `Function` instead of a string name here prevents the un-minified name of the function
   // from being retained in the bundle regardless of minification.
   if (getActiveConsumer() !== null) {
     throw new RuntimeError(
