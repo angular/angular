@@ -513,6 +513,24 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate an for loop block using a pipe in its expression",
+      "inputFiles": [
+        "for_with_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_with_pipe_template.js",
+              "generated": "for_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
