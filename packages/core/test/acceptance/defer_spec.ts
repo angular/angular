@@ -3642,5 +3642,44 @@ describe('@defer', () => {
 
          expect(loadingFnInvokedTimes).toBe(1);
        }));
+
+    it('should load deferred content in a loop', fakeAsync(() => {
+         @Component({
+           standalone: true,
+           template: `
+              @for (item of items; track item) {
+                @defer (on viewport) {d{{item}} }
+                @placeholder {<button>p{{item}} </button>}
+              }
+           `
+         })
+         class MyCmp {
+           items = [1, 2, 3, 4, 5, 6];
+         }
+
+         const fixture = TestBed.createComponent(MyCmp);
+         fixture.detectChanges();
+         const buttons = Array.from<Element>(fixture.nativeElement.querySelectorAll('button'));
+         const items = fixture.componentInstance.items;
+
+         // None of the blocks are loaded yet.
+         expect(fixture.nativeElement.textContent.trim()).toBe('p1 p2 p3 p4 p5 p6');
+
+         // First half of the blocks is loaded.
+         for (let i = 0; i < items.length / 2; i++) {
+           MockIntersectionObserver.invokeCallbacksForElement(buttons[i], true);
+           fixture.detectChanges();
+           flush();
+         }
+         expect(fixture.nativeElement.textContent.trim()).toBe('d1 d2 d3 p4 p5 p6');
+
+         // Second half of the blocks is loaded.
+         for (let i = items.length / 2; i < items.length; i++) {
+           MockIntersectionObserver.invokeCallbacksForElement(buttons[i], true);
+           fixture.detectChanges();
+           flush();
+         }
+         expect(fixture.nativeElement.textContent.trim()).toBe('d1 d2 d3 d4 d5 d6');
+       }));
   });
 });

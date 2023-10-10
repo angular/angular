@@ -176,6 +176,11 @@ class DeferIntersectionManager {
     entry.callbacks.add(callback);
 
     return () => {
+      // It's possible that a different cleanup callback fully removed this element already.
+      if (!this.viewportTriggers.has(trigger)) {
+        return;
+      }
+
       entry!.callbacks.delete(callback);
 
       if (entry!.callbacks.size === 0) {
