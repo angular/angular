@@ -1484,6 +1484,28 @@ describe('type check blocks', () => {
       expect(tcb(TEMPLATE)).toContain('{ "" + ((this).default()); }');
     });
 
+    it('should generate a guard expression for a listener inside a switch case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            <button (click)="one()"></button>
+          }
+          @case (2) {
+            <button (click)="two()"></button>
+          }
+          @default {
+            <button (click)="default()"></button>
+          }
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if (((this).expr) === 1) (this).one();`);
+      expect(result).toContain(`if (((this).expr) === 2) (this).two();`);
+      expect(result).toContain(`if (((this).expr) !== 1 && ((this).expr) !== 2) (this).default();`);
+    });
+
     it('should generate a switch block inside a template', () => {
       const TEMPLATE = `
         <ng-template let-expr="exp">
