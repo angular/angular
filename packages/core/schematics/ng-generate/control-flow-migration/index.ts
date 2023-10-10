@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
-import {analyze, AnalyzedFile, migrateTemplate} from './util';
+import {AnalyzedFile} from './types';
+import {analyze, migrateTemplate} from './util';
 
 export default function(): Rule {
-  return async (tree: Tree) => {
+  return async (tree: Tree, context: SchematicContext) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
@@ -24,6 +25,8 @@ export default function(): Rule {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot run the control flow migration.');
     }
+
+    context.logger.warn('IMPORTANT! This migration is in developer preview. Use with caution.');
 
     for (const tsconfigPath of allPaths) {
       runControlFlowMigration(tree, tsconfigPath, basePath);
