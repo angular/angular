@@ -19,7 +19,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
-    ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = 602,
+    ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
