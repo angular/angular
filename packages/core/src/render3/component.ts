@@ -110,6 +110,7 @@ export interface ComponentMirror<C> {
   get inputs(): ReadonlyArray<{
     readonly propName: string,
     readonly templateName: string,
+    readonly required?: boolean,
     readonly transform?: (value: any) => any,
   }>;
   /**
@@ -186,6 +187,7 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
     get inputs(): ReadonlyArray<{
       propName: string,
       templateName: string,
+      required?: boolean,
       transform?: (value: any) => any,
     }> {
       return factory.inputs;

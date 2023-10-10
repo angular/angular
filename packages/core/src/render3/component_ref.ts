@@ -121,6 +121,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override get inputs(): {
     propName: string,
     templateName: string,
+    required?: boolean,
     transform?: (value: any) => any,
   }[] {
     const componentDef = this.componentDef;

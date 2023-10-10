@@ -109,6 +109,7 @@ export abstract class ComponentFactory<C> {
   abstract get inputs(): {
     propName: string,
     templateName: string,
+    required?: boolean,
     transform?: (value: any) => any,
   }[];
   /**
