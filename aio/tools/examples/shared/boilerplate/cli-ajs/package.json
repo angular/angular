@@ -34,7 +34,7 @@
     "@angular/compiler-cli": "17.0.0-next.7",
     "@types/angular": "^1.8.4",
     "@types/angular-route": "^1.7.2",
-    "@types/jasmine": "~4.3.0",
+    "@types/jasmine": "~5.1.0",
     "@types/node": "^16.11.35",
     "jasmine-core": "~5.1.0",
     "jasmine-marbles": "~0.9.2",
