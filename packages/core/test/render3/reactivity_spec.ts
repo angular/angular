@@ -391,7 +391,13 @@ describe('effects', () => {
 
       TestBed.configureTestingModule({
         providers: [
-          {provide: ErrorHandler, useClass: ThrowErrorHandler},
+          {
+            provide: ErrorHandler, useClass: class extends ErrorHandler{
+              override handleError(e: Error) {
+                throw e;
+              }
+            },
+          },
         ]
       });
       TestBed.createComponent(Cmp);
@@ -401,10 +407,3 @@ describe('effects', () => {
     });
   });
 });
-
-/** Error handler that throws the error without logging it manually. */
-class ThrowErrorHandler extends ErrorHandler {
-  override handleError(e: Error) {
-    throw e;
-  }
-}
