@@ -227,10 +227,8 @@ export function ɵɵrepeater(
   }
 
   // handle empty blocks
-  // PERF: maybe I could skip allocation of memory for the empty block? Isn't it the "fix" on the
-  // compiler side that we've been discussing? Talk to K & D!
-  const bindingIndex = nextBindingIndex();
   if (metadata.hasEmptyBlock) {
+    const bindingIndex = nextBindingIndex();
     const isCollectionEmpty = lContainer.length - CONTAINER_HEADER_OFFSET === 0;
     if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
       const emptyTemplateIndex = metadataSlotIdx + 2;
