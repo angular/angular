@@ -16,7 +16,7 @@ import {RuntimeErrorCode} from './errors';
 import {Data, LoadedRouterConfig, ResolveData, Route, Routes} from './models';
 import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
-import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
+import {ActivatedRouteSnapshot, getInherited, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {last} from './utils/collection';
@@ -83,7 +83,7 @@ export class Recognizer {
       // We don't want to do this here so reassign them to the original.
       tree.queryParams = this.urlTree.queryParams;
       routeState.url = this.urlSerializer.serialize(tree);
-      this.inheritParamsAndData(routeState._root);
+      this.inheritParamsAndData(routeState._root, null);
       return {state: routeState, tree};
     }));
   }
@@ -105,14 +105,15 @@ export class Recognizer {
     }));
   }
 
-  inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
+  inheritParamsAndData(
+      routeNode: TreeNode<ActivatedRouteSnapshot>, parent: ActivatedRouteSnapshot|null): void {
     const route = routeNode.value;
+    const i = getInherited(route, parent, this.paramsInheritanceStrategy);
 
-    const i = inheritedParamsDataResolve(route, this.paramsInheritanceStrategy);
     route.params = Object.freeze(i.params);
     route.data = Object.freeze(i.data);
 
-    routeNode.children.forEach(n => this.inheritParamsAndData(n));
+    routeNode.children.forEach(n => this.inheritParamsAndData(n, route));
   }
 
   processSegmentGroup(
