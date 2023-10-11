@@ -1,3 +1,12 @@
+<a name="16.2.9"></a>
+# 16.2.9 (2023-10-11)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51a5baace3](https://github.com/angular/angular/commit/51a5baace3b1eee130fa911327773066139cc68e) | fix | reset() call with null values on nested group ([#48830](https://github.com/angular/angular/pull/48830)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.8"></a>
 # 16.2.8 (2023-10-04)
 ### language-service
