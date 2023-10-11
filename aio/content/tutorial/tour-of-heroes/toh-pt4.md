@@ -197,7 +197,7 @@ Now it returns an `Observable<Hero[]>`.
 
 You need to adjust your application to work with that change to `HeroesComponent`.
 
-Find the `getHeroes` method and replace it with the following code. the new code is shown side-by-side with the current version for comparison.
+Find the `getHeroes` method and replace it with the following code. The new code is shown side-by-side with the current version for comparison.
 
 <code-tabs>
     <code-pane header="heroes.component.ts (Observable)" path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes"></code-pane>
