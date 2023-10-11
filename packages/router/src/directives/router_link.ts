@@ -171,7 +171,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input() relativeTo?: ActivatedRoute|null;
 
-  private _commands: any[]|null = null;
+  private commands: any[]|null = null;
 
   /** Whether a host element is an `<a>` tag. */
   private isAnchorElement: boolean;
@@ -346,13 +346,6 @@ export class RouterLink implements OnChanges, OnDestroy {
       preserveFragment: this.preserveFragment,
     });
   }
-  get commands(): any[]|null {
-    return this._commands;
-  }
-  set commands(value: any[]|null) {
-    this._commands = value;
-  }
-
 }
 
 /**
