@@ -410,35 +410,25 @@ describe('change detection for transplanted views', () => {
          expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
        });
 
-    it('updates only the declaration view when there is a change to declaration and declaration is marked dirty',
-       () => {
-         appComponent.declaration.name = 'new name';
-         appComponent.declaration.changeDetectorRef.markForCheck();
-         fixture.detectChanges(false);
+    it('updates the declaration view when there is a change to either declaration or insertion', () => {
+      appComponent.declaration.name = 'new name';
+      appComponent.declaration.changeDetectorRef.markForCheck();
+      fixture.detectChanges(false);
 
-         const expectedContent =
-             'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(new name)';
-         expect(fixture.nativeElement.textContent).toEqual(expectedContent);
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
+      const expectedContent =
+          'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(new name)';
+      expect(fixture.nativeElement.textContent).toEqual(expectedContent);
+      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
+    });
 
-         // Note here that this second change detection should not be necessary, but is because of
-         // the backwards reference not being fully supported. The assertions below should be true
-         // after the first CD.
-         fixture.detectChanges(false);
-         expect(fixture.nativeElement.textContent)
-             .toEqual(
-                 'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(new name)');
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
-       });
-
-    it('should not update when there is a change to insertion and declaration is marked dirty', () => {
+    it('should update when there is a change to insertion and declaration is marked dirty', () => {
       appComponent.insertion.name = 'new name';
       appComponent.declaration.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
       expect(fixture.nativeElement.textContent)
           .toEqual(
               'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)');
-      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
+      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
     });
 
     it('should update insertion view and template when there is a change to insertion and insertion marked dirty',
@@ -462,8 +452,9 @@ describe('change detection for transplanted views', () => {
       appComponent.insertion.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
       expect(appComponent.declaration.transplantedViewRefreshCount)
-          .withContext('Should refresh once because backwards references are not rechecked')
-          .toEqual(1);
+          .withContext(
+              'Should refresh twice because insertion executes and then declaration marks transplanted view dirty again')
+          .toEqual(2);
     });
   });
 
@@ -653,7 +644,8 @@ describe('change detection for transplanted views', () => {
       // Detach view, manually call `detectChanges`, and verify the template was refreshed
       component.rootViewContainerRef.detach();
       viewRef.detectChanges();
-      expect(component.templateExecutions).toEqual(1);
+      // This view is a backwards reference so it's refreshed twice
+      expect(component.templateExecutions).toEqual(2);
     });
 
     it('should work when change detecting detached transplanted view already marked for refresh',
@@ -669,7 +661,8 @@ describe('change detection for transplanted views', () => {
            // should not affect parent counters.
            viewRef.detectChanges();
          }).not.toThrow();
-         expect(component.templateExecutions).toEqual(1);
+         // This view is a backwards reference so it's refreshed twice
+         expect(component.templateExecutions).toEqual(2);
        });
 
     it('should work when re-inserting a previously detached transplanted view marked for refresh',
@@ -689,7 +682,10 @@ describe('change detection for transplanted views', () => {
            // the counter, this would fail when attempted to decrement.
            fixture.detectChanges(false);
          }).not.toThrow();
-         expect(component.templateExecutions).toBeGreaterThan(0);
+         // The transplanted view gets refreshed twice because it's actually inserted "backwards"
+         // The view is defined in AppComponent but inserted in its ViewContainerRef (as an
+         // embedded view in AppComponent's host view).
+         expect(component.templateExecutions).toEqual(2);
        });
 
     it('should work when detaching an attached transplanted view with the refresh flag', () => {

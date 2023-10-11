@@ -243,6 +243,9 @@
     "name": "MATH_ML_NAMESPACE"
   },
   {
+    "name": "MAXIMUM_REFRESH_RERUNS"
+  },
+  {
     "name": "MINIMUM_SLOT"
   },
   {
@@ -751,6 +754,9 @@
   },
   {
     "name": "detectChangesInEmbeddedViews"
+  },
+  {
+    "name": "detectChangesInView"
   },
   {
     "name": "detectChangesInViewIfAttached"
