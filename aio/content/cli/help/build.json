@@ -148,7 +148,7 @@
     {
       "name": "output-path",
       "type": "string",
-      "description": "The full path for the new output directory, relative to the current workspace.\nBy default, writes output to a folder named dist/ in the current project."
+      "description": "The full path for the new output directory, relative to the current workspace."
     },
     {
       "name": "poll",
