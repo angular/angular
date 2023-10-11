@@ -242,3 +242,33 @@ jobs:
       - run: yarn --cwd packages/zone.js closuretest
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
+
+  bazel-saucelabs:
+    # TODO: Replace legacy job with Bazel saucelabs job.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest-4-cores
+    env:
+      JOBS: 2
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@031962443584a0ac5cbd9d1c1b78b241453e4702
+        with:
+          cache-node-modules: true
+          # Checking out the pull request commit is intended here as we need to run the changed code tests.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@031962443584a0ac5cbd9d1c1b78b241453e4702
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@031962443584a0ac5cbd9d1c1b78b241453e4702
+      - name: Set up Sauce Tunnel Daemon
+        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
+        env:
+          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+          SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      - name: Run all saucelabs bazel tests
+        run: |
+          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
+          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
