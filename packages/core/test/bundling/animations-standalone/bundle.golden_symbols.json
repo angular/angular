@@ -819,6 +819,9 @@
     "name": "detectChangesInEmbeddedViews"
   },
   {
+    "name": "detectChangesInView"
+  },
+  {
     "name": "detectChangesInViewIfAttached"
   },
   {
