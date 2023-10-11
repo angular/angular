@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injector, ɵɵdefineInjectable} from '../di';
+import type {Injector} from '../di';
 import {afterRender} from '../render3/after_render_hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
@@ -31,15 +31,24 @@ const hoverTriggers = new WeakMap<Element, DeferEventEntry>();
 /** Keeps track of the currently-registered `on interaction` triggers. */
 const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 
+/** Currently-registered `viewport` triggers. */
+const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
+
 /** Names of the events considered as interaction events. */
 const interactionEventNames = ['click', 'keydown'] as const;
 
 /** Names of the events considered as hover events. */
-const hoverEventNames = ['mouseenter', 'focusin'];
+const hoverEventNames = ['mouseenter', 'focusin'] as const;
+
+/** `IntersectionObserver` used to observe `viewport` triggers. */
+let intersectionObserver: IntersectionObserver|null = null;
+
+/** Number of elements currently observed with `viewport` triggers. */
+let observedViewportElements = 0;
 
 /** Object keeping track of registered callbacks for a deferred block trigger. */
 class DeferEventEntry {
-  callbacks = new Set<() => void>();
+  callbacks = new Set<VoidFunction>();
 
   listener = () => {
     for (const callback of this.callbacks) {
@@ -60,7 +69,7 @@ export function onInteraction(
 
   // If this is the first entry for this element, add the listeners.
   if (!entry) {
-    // Note that using managing events centrally like this lends itself well to using global
+    // Note that managing events centrally like this lends itself well to using global
     // event delegation. It currently does delegation at the element level, rather than the
     // document level, because:
     // 1. Global delegation is the most effective when there are a lot of events being registered
@@ -145,75 +154,48 @@ export function onHover(
  */
 export function onViewport(
     trigger: Element, callback: VoidFunction, injector: Injector): VoidFunction {
-  return injector.get(DeferIntersectionManager).register(trigger, callback);
-}
+  const ngZone = injector.get(NgZone);
+  let entry = viewportTriggers.get(trigger);
 
-/** Keeps track of the registered `viewport` triggers. */
-class DeferIntersectionManager {
-  /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: DeferIntersectionManager,
-    providedIn: 'root',
-    factory: () => new DeferIntersectionManager(inject(NgZone)),
+  intersectionObserver = intersectionObserver || ngZone.runOutsideAngular(() => {
+    return new IntersectionObserver(entries => {
+      for (const current of entries) {
+        // Only invoke the callbacks if the specific element is intersecting.
+        if (current.isIntersecting && viewportTriggers.has(current.target)) {
+          ngZone.run(viewportTriggers.get(current.target)!.listener);
+        }
+      }
+    });
   });
 
-  /** `IntersectionObserver` used to observe `viewport` triggers. */
-  private intersectionObserver: IntersectionObserver|null = null;
-
-  /** Number of elements currently observed with `viewport` triggers. */
-  private observedViewportElements = 0;
-
-  /** Currently-registered `viewport` triggers. */
-  private viewportTriggers = new WeakMap<Element, DeferEventEntry>();
-
-  constructor(private ngZone: NgZone) {}
-
-  register(trigger: Element, callback: VoidFunction): VoidFunction {
-    let entry = this.viewportTriggers.get(trigger);
-
-    if (!this.intersectionObserver) {
-      this.intersectionObserver =
-          this.ngZone.runOutsideAngular(() => new IntersectionObserver(this.intersectionCallback));
-    }
-
-    if (!entry) {
-      entry = new DeferEventEntry();
-      this.ngZone.runOutsideAngular(() => this.intersectionObserver!.observe(trigger));
-      this.viewportTriggers.set(trigger, entry);
-      this.observedViewportElements++;
-    }
-
-    entry.callbacks.add(callback);
-
-    return () => {
-      // It's possible that a different cleanup callback fully removed this element already.
-      if (!this.viewportTriggers.has(trigger)) {
-        return;
-      }
-
-      entry!.callbacks.delete(callback);
-
-      if (entry!.callbacks.size === 0) {
-        this.intersectionObserver?.unobserve(trigger);
-        this.viewportTriggers.delete(trigger);
-        this.observedViewportElements--;
-      }
-
-      if (this.observedViewportElements === 0) {
-        this.intersectionObserver?.disconnect();
-        this.intersectionObserver = null;
-      }
-    };
+  if (!entry) {
+    entry = new DeferEventEntry();
+    ngZone.runOutsideAngular(() => intersectionObserver!.observe(trigger));
+    viewportTriggers.set(trigger, entry);
+    observedViewportElements++;
   }
 
-  private intersectionCallback: IntersectionObserverCallback = entries => {
-    for (const current of entries) {
-      // Only invoke the callbacks if the specific element is intersecting.
-      if (current.isIntersecting && this.viewportTriggers.has(current.target)) {
-        this.ngZone.run(this.viewportTriggers.get(current.target)!.listener);
-      }
+  entry.callbacks.add(callback);
+
+  return () => {
+    // It's possible that a different cleanup callback fully removed this element already.
+    if (!viewportTriggers.has(trigger)) {
+      return;
     }
-  }
+
+    entry!.callbacks.delete(callback);
+
+    if (entry!.callbacks.size === 0) {
+      intersectionObserver?.unobserve(trigger);
+      viewportTriggers.delete(trigger);
+      observedViewportElements--;
+    }
+
+    if (observedViewportElements === 0) {
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
+    }
+  };
 }
 
 /**
