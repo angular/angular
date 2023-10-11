@@ -25,7 +25,7 @@ function MyApp_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵelementStart(0, "div");
     $r3$.ɵɵtext(1);
-    $r3$.ɵɵrepeaterCreate(2, MyApp_For_3_Template, 3, 2, $r3$.ɵɵrepeaterTrackByIdentity);
+    $r3$.ɵɵrepeaterCreate(2, MyApp_For_3_Template, 3, 1, $r3$.ɵɵrepeaterTrackByIdentity);
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {

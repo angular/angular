@@ -1471,11 +1471,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const primaryData = this.prepareEmbeddedTemplateFn(
         block.children, '_For',
         [block.item, block.contextVariables.$index, block.contextVariables.$count]);
-    const emptyData = block.empty === null ?
-        null :
-        this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
     const {expression: trackByExpression, usesComponentInstance: trackByUsesComponentInstance} =
         this.createTrackByFunction(block);
+    let emptyData: TemplateData|null = null;
+
+    if (block.empty !== null) {
+      emptyData = this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
+      // Allocate an extra slot for the empty block tracking.
+      this.allocateBindingSlots(null);
+    }
 
     this.registerComputedLoopVariables(block, primaryData.scope);
 
@@ -1503,8 +1507,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Note: the expression needs to be processed *after* the template,
     // otherwise pipes injecting some symbols won't work (see #52102).
+    // Note: we don't allocate binding slots for this expression,
+    // because its value isn't stored in the LView.
     const value = block.expression.visit(this._valueConverter);
-    this.allocateBindingSlots(value);
 
     // `repeater(0, iterable)`
     this.updateInstruction(
