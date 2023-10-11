@@ -6,122 +6,133 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {provideRouter, Router} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
 import {EMPTY, interval, NEVER, of} from 'rxjs';
-import {TestScheduler} from 'rxjs/testing';
-
-import {resolveData} from '../../src/operators/resolve_data';
 
 describe('resolveData operator', () => {
-  let testScheduler: TestScheduler;
-  let injector: EnvironmentInjector;
-
-  beforeEach(() => {
+  it('should take only the first emitted value of every resolver', async () => {
     TestBed.configureTestingModule({
-      providers: [
-        {provide: 'resolveTwo', useValue: (a: any, b: any) => of(2)},
-        {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
-        {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
-        {provide: 'resolveInterval', useValue: (a: any, b: any) => interval()},
-        {provide: 'resolveNever', useValue: (a: any, b: any) => NEVER},
-      ]
+      providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => interval()}}])]
     });
-  });
-  beforeEach(() => {
-    testScheduler = new TestScheduler(assertDeepEquals);
-  });
-  beforeEach(() => {
-    injector = TestBed.inject(EnvironmentInjector);
+    await RouterTestingHarness.create('/');
+    expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({e1: 0});
   });
 
-  it('should re-emit updated value from source after all resolvers emit and complete', () => {
-    testScheduler.run(({hot, cold, expectObservable}) => {
-      const transition: any = createTransition({e1: 'resolveTwo'}, {e2: 'resolveFour'});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-(t|)';
-      const outputTransition = deepClone(transition);
-      outputTransition.guards.canActivateChecks[0].route._resolvedData = {e1: 2};
-      outputTransition.guards.canActivateChecks[1].route._resolvedData = {e2: 4};
+  it('should cancel navigation if a resolver does not complete', async () => {
+    TestBed.configureTestingModule(
+        {providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => EMPTY}}])]});
+    await RouterTestingHarness.create('/a');
+    expect(TestBed.inject(Router).url).toEqual('/');
+  });
 
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected, {
-        t: outputTransition
-      });
+  it('should cancel navigation if 1 of 2 resolvers does not emit', async () => {
+    TestBed.configureTestingModule({
+      providers:
+          [provideRouter([{path: '**', children: [], resolve: {e0: () => of(0), e1: () => EMPTY}}])]
     });
+    await RouterTestingHarness.create('/a');
+    expect(TestBed.inject(Router).url).toEqual('/');
   });
 
-  it('should take only the first emitted value of every resolver', () => {
-    testScheduler.run(({cold, expectObservable}) => {
-      const transition: any = createTransition({e1: 'resolveInterval'});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-(t|)';
-      const outputTransition = deepClone(transition);
-      outputTransition.guards.canActivateChecks[0].route._resolvedData = {e1: 0};
-
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected, {
-        t: outputTransition
-      });
+  it('should complete instantly if at least one resolver doesn\'t emit', async () => {
+    TestBed.configureTestingModule({
+      providers:
+          [provideRouter([{path: '**', children: [], resolve: {e0: () => EMPTY, e1: () => NEVER}}])]
     });
+    await RouterTestingHarness.create('/a');
+    expect(TestBed.inject(Router).url).toEqual('/');
   });
 
-  it('should re-emit value from source when there are no resolvers', () => {
-    testScheduler.run(({hot, cold, expectObservable}) => {
-      const transition: any = createTransition({});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-(t|)';
-      const outputTransition = deepClone(transition);
-      outputTransition.guards.canActivateChecks[0].route._resolvedData = {};
+  it('should update children inherited data when resolvers run', async () => {
+    let value = 0;
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{
+        path: 'a',
+        children: [{path: 'b', children: []}],
+        resolve: {d0: () => ++value},
+        runGuardsAndResolvers: 'always',
+      }])]
+    });
+    const harness = await RouterTestingHarness.create('/a/b');
+    expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({d0: 1});
+    expect(TestBed.inject(Router).routerState.root.firstChild?.firstChild?.snapshot.data).toEqual({
+      d0: 1
+    });
 
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected, {
-        t: outputTransition
-      });
+    await harness.navigateByUrl('/a/b#new');
+    expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({d0: 2});
+    expect(TestBed.inject(Router).routerState.root.firstChild?.firstChild?.snapshot.data).toEqual({
+      d0: 2
     });
   });
 
-  it('should not emit when there\'s one resolver that doesn\'t emit', () => {
-    testScheduler.run(({hot, cold, expectObservable}) => {
-      const transition: any = createTransition({e2: 'resolveEmpty'});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-|';
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected);
+  it('should have correct data when parent resolver runs but data is not inherited', async () => {
+    @Component({template: ''})
+    class Empty {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{
+        path: 'a',
+        component: Empty,
+        data: {parent: 'parent'},
+        resolve: {other: () => 'other'},
+        children: [{
+          path: 'b',
+          data: {child: 'child'},
+          component: Empty,
+        }]
+      }])]
     });
+    await RouterTestingHarness.create('/a/b');
+    const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
+    expect(rootSnapshot.data).toEqual({parent: 'parent', other: 'other'});
+    expect(rootSnapshot.firstChild!.data).toEqual({child: 'child'});
   });
 
-  it('should not emit if at least one resolver doesn\'t emit', () => {
-    testScheduler.run(({hot, cold, expectObservable}) => {
-      const transition: any = createTransition({e1: 'resolveTwo'}, {e2: 'resolveEmpty'});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-|';
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected);
+  it('should have static title when there is a resolver', async () => {
+    @Component({template: ''})
+    class Empty {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{
+        path: 'a',
+        title: 'a title',
+        component: Empty,
+        resolve: {other: () => 'other'},
+        children: [{
+          path: 'b',
+          title: 'b title',
+          component: Empty,
+          resolve: {otherb: () => 'other b'},
+        }]
+      }])]
     });
+    await RouterTestingHarness.create('/a/b');
+    const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
+    expect(rootSnapshot.title).toBe('a title');
+    expect(rootSnapshot.firstChild!.title).toBe('b title');
   });
 
-  it('should complete instantly if at least one resolver doesn\'t emit', () => {
-    testScheduler.run(({cold, expectObservable}) => {
-      const transition: any = createTransition({e1: 'resolveEmpty', e2: 'resolveNever'});
-      const source = cold('-(t|)', {t: deepClone(transition)});
-      const expected = '-|';
-      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected);
+  it('should inherit resolved data from parent of parent route', async () => {
+    @Component({template: ''})
+    class Empty {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{
+        path: 'a',
+        resolve: {aResolve: () => 'a'},
+        children:
+            [{path: 'b', resolve: {bResolve: () => 'b'}, children: [{path: 'c', component: Empty}]}]
+      }])]
     });
+    await RouterTestingHarness.create('/a/b/c');
+    const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
+    expect(rootSnapshot.firstChild!.firstChild!.data).toEqual({bResolve: 'b', aResolve: 'a'});
   });
 });
-
-function assertDeepEquals(a: any, b: any) {
-  return expect(a).toEqual(b);
-}
-
-function createTransition(...resolvers: {[key: string]: string}[]) {
-  return {
-    targetSnapshot: {},
-    guards: {
-      canActivateChecks:
-          resolvers.map(resolver => ({
-                          route: {_resolve: resolver, pathFromRoot: [{url: '/'}], data: {}},
-                        })),
-    },
-  };
-}
-
-function deepClone<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj)) as T;
-}

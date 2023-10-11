@@ -1263,6 +1263,9 @@
     "name": "first"
   },
   {
+    "name": "flattenRouteTree"
+  },
+  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -1348,6 +1351,9 @@
   },
   {
     "name": "getIdxOfMatchingSelector"
+  },
+  {
+    "name": "getInherited"
   },
   {
     "name": "getInjectableDef"
@@ -1504,9 +1510,6 @@
   },
   {
     "name": "incrementInitPhaseFlags"
-  },
-  {
-    "name": "inheritedParamsDataResolve"
   },
   {
     "name": "initFeatures"
@@ -1885,6 +1888,9 @@
   },
   {
     "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"

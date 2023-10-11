@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
-import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {equalSegments, UrlSegment, UrlTree} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -229,47 +229,52 @@ export type Inherited = {
 
 /**
  * Returns the inherited params, data, and resolve for a given route.
- * By default, this only inherits values up to the nearest path-less or component-less route.
- * @internal
+ *
+ * By default, we do not inherit parent data unless the current route is path-less or the parent
+ * route is component-less.
  */
-export function inheritedParamsDataResolve(
-    route: ActivatedRouteSnapshot,
+export function getInherited(
+    route: ActivatedRouteSnapshot, parent: ActivatedRouteSnapshot|null,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'): Inherited {
-  const pathFromRoot = route.pathFromRoot;
-
-  let inheritingStartingFrom = 0;
-  if (paramsInheritanceStrategy !== 'always') {
-    inheritingStartingFrom = pathFromRoot.length - 1;
-
-    while (inheritingStartingFrom >= 1) {
-      const current = pathFromRoot[inheritingStartingFrom];
-      const parent = pathFromRoot[inheritingStartingFrom - 1];
-      // current route is an empty path => inherits its parent's params and data
-      if (current.routeConfig && current.routeConfig.path === '') {
-        inheritingStartingFrom--;
-
-        // parent is componentless => current route should inherit its params and data
-      } else if (!parent.component && parent.routeConfig?.loadComponent === undefined) {
-        inheritingStartingFrom--;
-
-      } else {
-        break;
+  let inherited: Inherited;
+  const {routeConfig} = route;
+  if (parent !== null &&
+      (paramsInheritanceStrategy === 'always' ||
+       // inherit parent data if route is empty path
+       routeConfig?.path === '' ||
+       // inherit parent data if parent was componentless
+       (!parent.component && !parent.routeConfig?.loadComponent))) {
+    inherited = {
+      params: {...parent.params, ...route.params},
+      data: {...parent.data, ...route.data},
+      resolve: {
+        // Snapshots are created with data inherited from parent and guards (i.e. canActivate) can
+        // change data because it's not frozen...
+        // This first line could be deleted chose to break/disallow mutating the `data` object in
+        // guards.
+        // Note that data from parents still override this mutated data so anyone relying on this
+        // might be surprised that it doesn't work if parent data is inherited but otherwise does.
+        ...route.data,
+        // Ensure inherited resolved data overrides inherited static data
+        ...parent.data,
+        // static data from the current route overrides any inherited data
+        ...routeConfig?.data,
+        // resolved data from current route overrides everything
+        ...route._resolvedData,
       }
-    }
+    };
+  } else {
+    inherited = {
+      params: route.params,
+      data: route.data,
+      resolve: {...route.data, ...(route._resolvedData ?? {})}
+    };
   }
 
-  return flattenInherited(pathFromRoot.slice(inheritingStartingFrom));
-}
-
-/** @internal */
-function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
-  return pathFromRoot.reduce((res, curr) => {
-    const params = {...res.params, ...curr.params};
-    const data = {...res.data, ...curr.data};
-    const resolve =
-        {...curr.data, ...res.resolve, ...curr.routeConfig?.data, ...curr._resolvedData};
-    return {params, data, resolve};
-  }, {params: {}, data: {}, resolve: {}});
+  if (routeConfig && hasStaticTitle(routeConfig)) {
+    inherited.resolve[RouteTitleKey] = routeConfig.title;
+  }
+  return inherited;
 }
 
 /**
@@ -492,4 +497,8 @@ export function equalParamsAndUrlSegments(
 
   return equalUrlParams && !parentsMismatch &&
       (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent!));
+}
+
+export function hasStaticTitle(config: Route) {
+  return typeof config.title === 'string' || config.title === null;
 }
