@@ -279,6 +279,9 @@
     "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
+    "name": "HistoryStateManager"
+  },
+  {
     "name": "INITIAL_NAVIGATION"
   },
   {
@@ -2140,6 +2143,9 @@
   },
   {
     "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵgetInheritedFactory"
   },
   {
     "name": "ɵɵinject"

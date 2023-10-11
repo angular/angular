@@ -10,63 +10,97 @@ import {Location} from '@angular/common';
 import {inject, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
-import {BeforeActivateRoutes, Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, PrivateRouterEvents, RoutesRecognized} from './events';
-import {isBrowserTriggeredNavigation, Navigation, RestoredState} from './navigation_transition';
-import {ROUTER_CONFIGURATION} from './router_config';
-import {createEmptyState, RouterState} from './router_state';
-import {UrlHandlingStrategy} from './url_handling_strategy';
-import {UrlSerializer, UrlTree} from './url_tree';
+import {BeforeActivateRoutes, Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, PrivateRouterEvents, RoutesRecognized,} from '../events';
+import {Navigation, RestoredState} from '../navigation_transition';
+import {ROUTER_CONFIGURATION} from '../router_config';
+import {createEmptyState, RouterState} from '../router_state';
+import {UrlHandlingStrategy} from '../url_handling_strategy';
+import {UrlSerializer, UrlTree} from '../url_tree';
 
+@Injectable({providedIn: 'root', useFactory: () => inject(HistoryStateManager)})
+export abstract class StateManager {
+  /**
+   * Returns the currently activated `UrlTree`.
+   *
+   * This `UrlTree` shows only URLs that the `Router` is configured to handle (through
+   * `UrlHandlingStrategy`).
+   *
+   * The value is set after finding the route config tree to activate but before activating the
+   * route.
+   */
+  abstract getCurrentUrlTree(): UrlTree;
 
+  /**
+   * Returns a `UrlTree` that is represents what the browser is actually showing.
+   *
+   * In the life of a navigation transition:
+   * 1. When a navigation begins, the raw `UrlTree` is updated to the full URL that's being
+   * navigated to.
+   * 2. During a navigation, redirects are applied, which might only apply to _part_ of the URL (due
+   * to `UrlHandlingStrategy`).
+   * 3. Just before activation, the raw `UrlTree` is updated to include the redirects on top of the
+   * original raw URL.
+   *
+   * Note that this is _only_ here to support `UrlHandlingStrategy.extract` and
+   * `UrlHandlingStrategy.shouldProcessUrl`. Without those APIs, the current `UrlTree` would not
+   * deviated from the raw `UrlTree`.
+   *
+   * For `extract`, a raw `UrlTree` is needed because `extract` may only return part
+   * of the navigation URL. Thus, the current `UrlTree` may only represent _part_ of the browser
+   * URL. When a navigation gets cancelled and the router needs to reset the URL or a new navigation
+   * occurs, it needs to know the _whole_ browser URL, not just the part handled by
+   * `UrlHandlingStrategy`.
+   * For `shouldProcessUrl`, when the return is `false`, the router ignores the navigation but
+   * still updates the raw `UrlTree` with the assumption that the navigation was caused by the
+   * location change listener due to a URL update by the AngularJS router. In this case, the router
+   * still need to know what the browser's URL is for future navigations.
+   */
+  abstract getRawUrlTree(): UrlTree;
+
+  /** Returns the current state stored by the browser for the current history entry. */
+  abstract restoredState(): RestoredState|null|undefined;
+
+  /** Returns the current RouterState. */
+  abstract getRouterState(): RouterState;
+
+  /**
+   * Registers a listener that is called whenever the current history entry changes by some API
+   * outside the Router. This includes user-activated changes like back buttons and link clicks, but
+   * also includes programmatic APIs called by non-Router JavaScript.
+   */
+  abstract registerNonRouterCurrentEntryChangeListener(
+      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike;
+
+  /**
+   * Handles a navigation event sent from the Router. These are typically events that indicate a
+   * navigation has started, progressed, been cancelled, or finished.
+   */
+  abstract handleRouterEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation): void;
+}
 
 @Injectable({providedIn: 'root'})
-export class StateManager {
+export class HistoryStateManager extends StateManager {
   private readonly location = inject(Location);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly canceledNavigationResolution =
       this.options.canceledNavigationResolution || 'replace';
 
-  // These are currently writable via the Router public API but are deprecated and should be made
-  // `private readonly` in the future.
-  urlHandlingStrategy = inject(UrlHandlingStrategy);
-  urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
+  private urlHandlingStrategy = inject(UrlHandlingStrategy);
+  private urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
 
-  /**
-   * Represents the activated `UrlTree` that the `Router` is configured to handle (through
-   * `UrlHandlingStrategy`). That is, after we find the route config tree that we're going to
-   * activate, run guards, and are just about to activate the route, we set the currentUrlTree.
-   * @internal
-   */
-  currentUrlTree = new UrlTree();
-  /**
-   * Meant to represent the entire browser url after a successful navigation. In the life of a
-   * navigation transition:
-   * 1. The rawUrl represents the full URL that's being navigated to
-   * 2. We apply redirects, which might only apply to _part_ of the URL (due to
-   * `UrlHandlingStrategy`).
-   * 3. Right before activation (because we assume activation will succeed), we update the
-   * rawUrlTree to be a combination of the urlAfterRedirects (again, this might only apply to part
-   * of the initial url) and the rawUrl of the transition (which was the original navigation url in
-   * its full form).
-   * @internal
-   *
-   * Note that this is _only_ here to support `UrlHandlingStrategy.extract` and
-   * `UrlHandlingStrategy.shouldProcessUrl`. If those didn't exist, we could get by with
-   * `currentUrlTree` alone. If a new Router were to be provided (i.e. one that works with the
-   * browser navigation API), we should think about whether this complexity should be carried over.
-   *
-   * - extract: `rawUrlTree` is needed because `extract` may only return part
-   * of the navigation URL. Thus, `currentUrlTree` may only represent _part_ of the browser URL.
-   * When a navigation gets cancelled and we need to reset the URL or a new navigation occurs, we
-   * need to know the _whole_ browser URL, not just the part handled by UrlHandlingStrategy.
-   * - shouldProcessUrl: When this returns `false`, the router just ignores the navigation but still
-   * updates the `rawUrlTree` with the assumption that the navigation was caused by the location
-   * change listener due to a URL update by the AngularJS router. In this case, we still need to
-   * know what the browser's URL is for future navigations.
-   *
-   */
-  rawUrlTree = this.currentUrlTree;
+  private currentUrlTree = new UrlTree();
+
+  override getCurrentUrlTree() {
+    return this.currentUrlTree;
+  }
+
+  private rawUrlTree = this.currentUrlTree;
+
+  override getRawUrlTree() {
+    return this.rawUrlTree;
+  }
+
   /**
    * The id of the currently active page in the router.
    * Updated to the transition's target id on a successful navigation.
@@ -76,10 +110,9 @@ export class StateManager {
    * page.
    */
   private currentPageId: number = 0;
-  lastSuccessfulId: number = -1;
+  private lastSuccessfulId: number = -1;
 
-  /** Returns the current state from the browser. */
-  restoredState(): RestoredState|null|undefined {
+  override restoredState(): RestoredState|null|undefined {
     return this.location.getState() as RestoredState | null | undefined;
   }
 
@@ -95,7 +128,12 @@ export class StateManager {
     return this.restoredState()?.ɵrouterPageId ?? this.currentPageId;
   }
 
-  routerState = createEmptyState(this.currentUrlTree, null);
+  private routerState = createEmptyState(this.currentUrlTree, null);
+
+  override getRouterState() {
+    return this.routerState;
+  }
+
   private stateMemento = this.createStateMemento();
 
   private createStateMemento() {
@@ -106,8 +144,8 @@ export class StateManager {
     };
   }
 
-  nonRouterCurrentEntryChange(listener: (url: string, state: RestoredState|null|undefined) => void):
-      SubscriptionLike {
+  override registerNonRouterCurrentEntryChangeListener(
+      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike {
     return this.location.subscribe(event => {
       if (event['type'] === 'popstate') {
         listener(event['url']!, event.state as RestoredState | null | undefined);
@@ -115,7 +153,7 @@ export class StateManager {
     });
   }
 
-  handleNavigationEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation) {
+  override handleRouterEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation) {
     if (e instanceof NavigationStart) {
       this.stateMemento = this.createStateMemento();
     } else if (e instanceof NavigationSkipped) {
@@ -173,9 +211,8 @@ export class StateManager {
   /**
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
-   * @internal
    */
-  restoreHistory(navigation: Navigation, restoringFromCaughtError = false) {
+  private restoreHistory(navigation: Navigation, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
       const currentBrowserPageId = this.browserPageId;
       const targetPagePosition = this.currentPageId - currentBrowserPageId;
