@@ -16,7 +16,6 @@ import {RuntimeErrorCode} from './errors';
  * @see {@link HydrationFeature}
  *
  * @publicApi
- * @developerPreview
  */
 export const enum HydrationFeatureKind {
   NoHttpTransferCache,
@@ -27,7 +26,6 @@ export const enum HydrationFeatureKind {
  * Helper type to represent a Hydration feature.
  *
  * @publicApi
- * @developerPreview
  */
 export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
   ɵkind: FeatureKind;
@@ -48,7 +46,6 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * server and other one on the browser.
  *
  * @publicApi
- * @developerPreview
  */
 export function withNoHttpTransferCache():
     HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
@@ -64,7 +61,6 @@ export function withNoHttpTransferCache():
  * particular request should be cached.
  *
  * @publicApi
- * @developerPreview
  */
 export function withHttpTransferCacheOptions(
     options: HttpTransferCacheOptions,
@@ -144,7 +140,6 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * @returns A set of providers to enable hydration.
  *
  * @publicApi
- * @developerPreview
  */
 export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]):
     EnvironmentProviders {
