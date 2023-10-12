@@ -159,7 +159,7 @@ export function migrateTemplate(template: string): string|null {
   }
 
   for (const [_, t] of visitor.templates) {
-    if (t.count === 2) {
+    if (t.count < 2) {
       result = result.replace(t.contents, '');
     }
   }
@@ -255,6 +255,9 @@ function buildIfElseBlock(
   offset = offset + etm.preOffset(startBlock.length) +
       etm.postOffset(mainBlock.length + postBlock.length);
 
+  // decrease usage count of elseTmpl
+  elseTmpl.count--;
+
   return {tmpl: updatedTmpl, offset};
 }
 
@@ -278,6 +281,10 @@ function buildIfThenElseBlock(
   const updatedTmpl = tmplStart + ifThenElseBlock + tmplEnd;
 
   offset = offset + etm.preOffset(startBlock.length) + etm.postOffset(postBlock.length);
+
+  // decrease usage count of thenTmpl and elseTmpl
+  thenTmpl.count--;
+  elseTmpl.count--;
 
   return {tmpl: updatedTmpl, offset};
 }
