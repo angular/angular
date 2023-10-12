@@ -282,12 +282,64 @@ describe('completions', () => {
   });
 
   describe('for blocks', () => {
-    it('at top level', () => {
-      const {templateFile} = setup(`@`, ``);
-      templateFile.moveCursorToText('@¦');
-      const completions = templateFile.getCompletionsAtPosition();
-      expectContain(
-          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK), ['if']);
+    const completionPrefixes = ['@', '@i'];
+
+    describe(`at top level`, () => {
+      for (const completionPrefix of completionPrefixes) {
+        it(`in empty file (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`${completionPrefix}`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+
+        it(`after text (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`foo ${completionPrefix}`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+
+        it(`before text (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`${completionPrefix} foo`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+
+        it(`after newline with text on preceding line (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`foo\n${completionPrefix}`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+
+        it(`before newline with text on newline (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`${completionPrefix}\nfoo`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+
+        it(`in a practical case, on its own line (with prefix ${completionPrefix})`, () => {
+          const {templateFile} = setup(`<div></div>\n  ${completionPrefix}\n<span></span>`, ``);
+          templateFile.moveCursorToText(`${completionPrefix}¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+              ['if']);
+        });
+      }
     });
 
     it('inside if', () => {

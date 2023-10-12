@@ -315,7 +315,8 @@ export class IfBlockBranch implements Node {
 }
 
 export class UnknownBlock implements Node {
-  constructor(public name: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitUnknownBlock(this);

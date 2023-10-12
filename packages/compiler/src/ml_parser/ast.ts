@@ -89,8 +89,8 @@ export class Comment implements BaseNode {
 export class Block implements BaseNode {
   constructor(
       public name: string, public parameters: BlockParameter[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null = null) {}
+      public sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null = null) {}
 
   visit(visitor: Visitor, context: any) {
     return visitor.visitBlock(this, context);
