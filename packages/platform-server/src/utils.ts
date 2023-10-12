@@ -182,7 +182,6 @@ export async function renderModule<T>(moduleType: Type<T>, options: {
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
  * @publicApi
- * @developerPreview
  */
 export async function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
   document?: string|Document,
