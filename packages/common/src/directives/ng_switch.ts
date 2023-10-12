@@ -144,7 +144,7 @@ export class NgSwitch {
               `Previously the case value "${
                   stringifyValue(value)}" matched switch expression value "${
                   stringifyValue(
-                      this._ngSwitch)}", but this is no longer the case with the stricter equality check.` +
+                      this._ngSwitch)}", but this is no longer the case with the stricter equality check. ` +
               'Your comparison results return different results using === vs. == and you should adjust your ngSwitch expression and / or values to conform with the strict equality requirements.'));
     }
     this._lastCasesMatched = this._lastCasesMatched || matched;
