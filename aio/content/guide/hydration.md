@@ -1,11 +1,5 @@
 # Hydration
 
-<div class="alert is-important">
-
-The hydration feature is available for [developer preview](/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
-</div>
-
 ## What is hydration
 
 Hydration is the process that restores the server side rendered application on the client. This includes things like reusing the server rendered DOM structures, persisting the application state, transferring application data that was retrieved already by the server, and other processes.
