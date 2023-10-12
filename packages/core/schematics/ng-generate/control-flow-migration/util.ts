@@ -169,7 +169,8 @@ export function migrateTemplate(template: string): string|null {
 
 function migrateNgFor(
     etm: ElementToMigrate, tmpl: string, offset: number): {tmpl: string, offset: number} {
-  const aliasRegexp = /=\s+(count|index|first|last|even|odd)/gm;
+  const aliasWithEqualRegexp = /=\s+(count|index|first|last|even|odd)/gm;
+  const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
 
   const parts = etm.attr.value.split(';');
@@ -187,9 +188,19 @@ function migrateNgFor(
       trackBy = `${trackByFn}($index, ${loopVar})`;
     }
     // aliases
-    if (part.match(aliasRegexp)) {
+    // declared with `let myIndex = index`
+    if (part.match(aliasWithEqualRegexp)) {
+      // 'let myIndex = index' -> ['let myIndex', 'index']
       const aliasParts = part.split('=');
+      // -> 'let myIndex = $index'
       aliases.push(` ${aliasParts[0].trim()} = $${aliasParts[1].trim()}`);
+    }
+    // declared with `index as myIndex`
+    if (part.match(aliasWithAsRegexp)) {
+      // 'index    as   myIndex' -> ['index', 'myIndex']
+      const aliasParts = part.split(/\s+as\s+/);
+      // -> 'let myIndex = $index'
+      aliases.push(` let ${aliasParts[1].trim()} = $${aliasParts[0].trim()}`);
     }
   }
 
