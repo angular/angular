@@ -41,7 +41,6 @@ function getResponseUrl(response: Response): string|null {
  * @see {@link HttpHandler}
  *
  * @publicApi
- * @developerPreview
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {
