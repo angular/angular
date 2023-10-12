@@ -91,7 +91,7 @@ class _Expander implements html.Visitor {
   visitBlock(block: html.Block, context: any) {
     return new html.Block(
         block.name, block.parameters, html.visitAll(this, block.children), block.sourceSpan,
-        block.startSourceSpan, block.endSourceSpan);
+        block.nameSpan, block.startSourceSpan, block.endSourceSpan);
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {

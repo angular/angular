@@ -380,6 +380,14 @@ class TemplateTargetVisitor implements t.Visitor {
       // nodes.
       return;
     }
+    if (last instanceof t.UnknownBlock && isWithin(this.position, last.nameSpan)) {
+      // Autocompletions such as `@\nfoo`, where a newline follows a bare `@`, would not work
+      // because the language service visitor sees us inside the subsequent text node. We deal with
+      // this with using a special-case: if we are completing inside the name span, we don't
+      // continue to the subsequent text node.
+      return;
+    }
+
     if (isTemplateNodeWithKeyAndValue(node) && !isWithinKeyValue(this.position, node)) {
       // If cursor is within source span but not within key span or value span,
       // do not return the node.

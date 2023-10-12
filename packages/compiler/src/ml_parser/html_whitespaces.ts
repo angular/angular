@@ -101,7 +101,7 @@ export class WhitespaceVisitor implements html.Visitor {
   visitBlock(block: html.Block, context: any): any {
     return new html.Block(
         block.name, block.parameters, visitAllWithSiblings(this, block.children), block.sourceSpan,
-        block.startSourceSpan, block.endSourceSpan);
+        block.nameSpan, block.startSourceSpan, block.endSourceSpan);
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
