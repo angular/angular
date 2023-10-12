@@ -18,12 +18,6 @@ export interface ReactiveLViewConsumer extends ReactiveNode {
   lView: LView|null;
 }
 
-export function setLViewForConsumer(node: ReactiveLViewConsumer, lView: LView): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      assertEqual(node.lView, null, 'Consumer already associated with a view.');
-  node.lView = lView;
-}
-
 /**
  * Create a new template consumer pointing at the specified LView.
  * Sometimes, a previously created consumer may be reused, in order to save on allocations. In that
