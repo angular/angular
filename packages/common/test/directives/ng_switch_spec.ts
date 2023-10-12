@@ -124,7 +124,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         expect(consoleWarnSpy.calls.argsFor(0)[0])
             .toBe(
                 'NG02001: As of Angular v17 the NgSwitch directive uses strict equality comparison === instead of == to match different cases. ' +
-                `Previously the case value "1" matched switch expression value "'1'", but this is no longer the case with the stricter equality check.` +
+                `Previously the case value "1" matched switch expression value "'1'", but this is no longer the case with the stricter equality check. ` +
                 'Your comparison results return different results using === vs. == and you should adjust your ngSwitch expression and / or values to conform with the strict equality requirements.');
 
 
