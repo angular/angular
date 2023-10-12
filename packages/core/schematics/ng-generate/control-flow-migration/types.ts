@@ -30,6 +30,14 @@ const casesToMigrate = [
 type Range = [start: number, end?: number];
 
 /**
+ * Represents an error that happened during migration
+ */
+export type MigrateError = {
+  type: string,
+  error: unknown,
+};
+
+/**
  * Represents an element with a migratable attribute
  */
 export class ElementToMigrate {
@@ -65,15 +73,15 @@ export class ElementToMigrate {
   }
 
   length(): number {
-    return this.el.sourceSpan.end.offset - this.el.sourceSpan.start.offset;
+    return this.el.sourceSpan?.end.offset - this.el.sourceSpan?.start.offset;
   }
 
   openLength(): number {
-    return this.el.children[0].sourceSpan.start.offset - this.el.sourceSpan.start.offset;
+    return this.el.children[0]?.sourceSpan.start.offset - this.el.sourceSpan?.start.offset;
   }
 
   closeLength(): number {
-    return this.el.sourceSpan.end.offset - this.el.children[0].sourceSpan.end.offset;
+    return this.el.sourceSpan?.end.offset - this.el.children[0]?.sourceSpan.end.offset;
   }
 
   preOffset(newOffset: number): number {
@@ -97,9 +105,12 @@ export class Template {
 
   generateContents(tmpl: string) {
     this.contents = tmpl.slice(this.el.sourceSpan.start.offset, this.el.sourceSpan.end.offset + 1);
-    this.children = tmpl.slice(
-        this.el.children[0].sourceSpan.start.offset,
-        this.el.children[this.el.children.length - 1].sourceSpan.end.offset);
+    this.children = '';
+    if (this.el.children.length > 0) {
+      this.children = tmpl.slice(
+          this.el.children[0].sourceSpan.start.offset,
+          this.el.children[this.el.children.length - 1].sourceSpan.end.offset);
+    }
   }
 }
 
