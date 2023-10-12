@@ -73,7 +73,6 @@ function printHydrationStats(injector: Injector) {
   const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
       `and ${ngDevMode!.hydratedNodes} node(s), ` +
       `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
-      `Note: this feature is in Developer Preview mode. ` +
       `Learn more at https://angular.io/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
