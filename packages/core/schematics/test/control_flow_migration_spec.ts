@@ -336,6 +336,33 @@ describe('control flow migration', () => {
         `<ng-container *ngTemplateOutlet="elseBlock"></ng-container>`,
       ].join('\n'));
     });
+
+    it('should not remove ng-templates used by other directives', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template #blockUsedElsewhere><div>Block</div></ng-template>`,
+        `<ng-container *ngTemplateOutlet="blockUsedElsewhere"></ng-container>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<ng-template #blockUsedElsewhere><div>Block</div></ng-template>`,
+        `<ng-container *ngTemplateOutlet="blockUsedElsewhere"></ng-container>`,
+      ].join('\n'));
+    });
   });
 
   describe('ngFor', () => {
