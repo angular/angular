@@ -9,7 +9,7 @@ import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, Prop
 
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -21,7 +21,7 @@ interface HTMLNode extends TmplAstNode {
   name?: string;
 }
 
-type ExpressionIdentifier = PropertyIdentifier;
+type ExpressionIdentifier = PropertyIdentifier|MethodIdentifier;
 type TmplTarget = TmplAstReference|TmplAstVariable;
 type TargetIdentifier = ReferenceIdentifier|VariableIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
