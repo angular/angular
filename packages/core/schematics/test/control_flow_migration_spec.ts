@@ -363,6 +363,90 @@ describe('control flow migration', () => {
         `<ng-container *ngTemplateOutlet="blockUsedElsewhere"></ng-container>`,
       ].join('\n'));
     });
+
+    it('should migrate if with alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `);
+
+      writeFile(
+          '/comp.html', [`<div *ngIf="user$ | async as user">{{ user.name }}</div>`].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+          [`@if (user$ | async; as user) {<div>{{ user.name }}</div>}`].join('\n'));
+    });
+
+    it('should migrate if/else with alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<div *ngIf="user$ | async as user; else noUserBlock">{{ user.name }}</div>`,
+        `<ng-template #noUserBlock>No user</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (user$ | async; as user) {<div>{{ user.name }}</div>} @else {No user}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate if/then/else with alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-container *ngIf="user$ | async as user; then userBlock; else noUserBlock">Ignored</ng-container>`,
+        `<ng-template #userBlock>User</ng-template>`,
+        `<ng-template #noUserBlock>No user</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (user$ | async; as user) {User} @else {No user}`,
+        `</div>`,
+      ].join('\n'));
+    });
   });
 
   describe('ngFor', () => {

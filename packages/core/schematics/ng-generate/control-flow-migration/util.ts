@@ -252,7 +252,9 @@ function migrateNgIf(
 
 function buildIfBlock(
     etm: ElementToMigrate, tmpl: string, offset: number): {tmpl: string, offset: number} {
-  const condition = etm.attr.value;
+  // includes the mandatory semicolon before as
+  const condition = etm.attr.value.replace(' as ', '; as ');
+
   const startBlock = `@if (${condition}) {`;
 
   const ifBlock = startBlock + getMainBlock(etm, tmpl, offset) + `}`;
@@ -266,7 +268,8 @@ function buildIfBlock(
 function buildIfElseBlock(
     etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string, elseString: string,
     offset: number): {tmpl: string, offset: number} {
-  const condition = etm.getCondition(elseString);
+  // includes the mandatory semicolon before as
+  const condition = etm.getCondition(elseString).replace(' as ', '; as ');
 
   const elseTmpl = ngTemplates.get(`#${etm.getTemplateName(elseString)}`)!;
   const startBlock = `@if (${condition}) {`;
@@ -291,7 +294,7 @@ function buildIfElseBlock(
 function buildIfThenElseBlock(
     etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string, thenString: string,
     elseString: string, offset: number): {tmpl: string, offset: number} {
-  const condition = etm.getCondition(thenString);
+  const condition = etm.getCondition(thenString).replace(' as ', '; as ');
 
   const startBlock = `@if (${condition}) {`;
   const elseBlock = `} @else {`;
