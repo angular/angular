@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -279,6 +279,74 @@ describe('@defer', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('Hello');
+  });
+
+  it('should preserve execution order of dependencies', async () => {
+    // Important note: the framework does *NOT* guarantee an exact order
+    // in which directives are instantiated. Directives should not depend
+    // on the order in which other directives are invoked. This test just
+    // verifies that the order does not change when a particular part of
+    // code is wrapped using the `@defer` block.
+    const logs: string[] = [];
+    @Directive({
+      standalone: true,
+      selector: '[dirA]',
+    })
+    class DirA {
+      constructor(@Attribute('mode') mode: string) {
+        logs.push(`DirA.${mode}`);
+      }
+    }
+
+    @Directive({
+      standalone: true,
+      selector: '[dirB]',
+    })
+    class DirB {
+      constructor(@Attribute('mode') mode: string) {
+        logs.push(`DirB.${mode}`);
+      }
+    }
+
+    @Directive({
+      standalone: true,
+      selector: '[dirC]',
+    })
+    class DirC {
+      constructor(@Attribute('mode') mode: string) {
+        logs.push(`DirC.${mode}`);
+      }
+    }
+
+    @Component({
+      standalone: true,
+      // Directive order is intentional here (different from the order
+      // in which they are defined on the host element).
+      imports: [DirC, DirB, DirA],
+      template: `
+        @defer (when isVisible) {
+          <div mode="defer" dirA dirB dirC></div>
+        }
+        <div mode="eager" dirA dirB dirC></div>
+      `
+    })
+    class MyCmp {
+      isVisible = true;
+    }
+
+    const fixture = TestBed.createComponent(MyCmp);
+    fixture.detectChanges();
+    await allPendingDynamicImports();
+    fixture.detectChanges();
+
+    const actual = {defer: [], eager: []};
+    for (const log of logs) {
+      const [dir, category] = log.split('.');
+      (actual as {[key: string]: string[]})[category].push(dir);
+    }
+
+    // Expect that in both cases we have the same order.
+    expect(actual.defer).toEqual(actual.eager);
   });
 
   describe('with OnPush', () => {
