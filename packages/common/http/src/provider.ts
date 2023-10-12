@@ -260,7 +260,6 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * Note: The Fetch API doesn't support progress report on uploads.
  *
  * @publicApi
- * @developerPreview
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof fetch !== 'function') {
