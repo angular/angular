@@ -383,7 +383,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         }
 
         result = {
-          node: new t.UnknownBlock(block.name, block.sourceSpan),
+          node: new t.UnknownBlock(block.name, block.sourceSpan, block.nameSpan),
           errors: [new ParseError(block.sourceSpan, errorMessage)],
         };
         break;
