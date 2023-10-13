@@ -15,7 +15,6 @@ import {TrackByFunction} from '../change_detection';
  */
 export abstract class LiveCollection<T, V> {
   abstract get length(): number;
-  abstract at(index: number): T;
   abstract key(index: number): unknown;
   abstract attach(index: number, item: T): void;
   abstract detach(index: number): T;
