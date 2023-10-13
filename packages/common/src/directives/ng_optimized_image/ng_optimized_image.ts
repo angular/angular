@@ -302,6 +302,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   /** @nodoc */
   ngOnInit() {
+    performance.mark('mark_use_counter', {'detail': {'feature': 'NgOptimizedImage'}});
+
     if (ngDevMode) {
       const ngZone = this.injector.get(NgZone);
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
