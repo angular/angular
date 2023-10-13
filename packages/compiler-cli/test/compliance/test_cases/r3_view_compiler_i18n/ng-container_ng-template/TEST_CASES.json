@@ -169,13 +169,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "structural_directives.js",
+              "expected": "structural_directives.template.js",
+              "templatePipelineExpected": "structural_directives.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
