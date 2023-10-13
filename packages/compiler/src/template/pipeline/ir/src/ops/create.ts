@@ -107,7 +107,7 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
   /**
    * The HTML tag name for this element.
    */
-  tag: string;
+  tag: string|null;
 
   /**
    * The namespace of this element, which controls the preceding namespace instruction.
@@ -195,7 +195,7 @@ export interface TemplateOp extends ElementOpBase {
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string, namespace: Namespace, generatedInBlock: boolean,
+    xref: XrefId, tag: string|null, namespace: Namespace, generatedInBlock: boolean,
     i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,

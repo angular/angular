@@ -337,6 +337,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle structural directive on ng-template",
+      "inputFiles": [
+        "template_with_structural_directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

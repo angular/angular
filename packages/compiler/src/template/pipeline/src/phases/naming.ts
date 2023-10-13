@@ -9,7 +9,7 @@
 import {sanitizeIdentifier} from '../../../../parse_util';
 import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit, HostBindingCompilationUnit} from '../compilation';
+import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
 import {prefixWithNamespace} from '../conversion';
 
 /**
@@ -73,9 +73,8 @@ function addNamesToView(
         if (op.slot === null) {
           throw new Error(`Expected slot to be assigned`);
         }
-        addNamesToView(
-            childView, `${baseName}_${prefixWithNamespace(op.tag, op.namespace)}_${op.slot}`, state,
-            compatibility);
+        const tagToken = op.tag === null ? '' : '_' + prefixWithNamespace(op.tag, op.namespace);
+        addNamesToView(childView, `${baseName}${tagToken}_${op.slot}`, state, compatibility);
         break;
       case ir.OpKind.StyleProp:
         op.name = normalizeStylePropName(op.name);
