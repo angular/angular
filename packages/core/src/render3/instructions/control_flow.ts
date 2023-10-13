@@ -101,7 +101,9 @@ export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
 }
 
 class RepeaterMetadata {
-  constructor(public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>) {}
+  constructor(
+      public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>,
+      public liveCollection?: LiveCollectionLContainerImpl) {}
 }
 
 /**
@@ -197,6 +199,10 @@ class LiveCollectionLContainerImpl extends
     this.getLView(index)[CONTEXT].$implicit = value;
   }
 
+  reset() {
+    this.needsIndexUpdate = false;
+  }
+
   updateIndexes() {
     if (this.needsIndexUpdate) {
       for (let i = 0; i < this.length; i++) {
@@ -225,11 +231,18 @@ export function ɵɵrepeater(
   const hostLView = getLView();
   const hostTView = hostLView[TVIEW];
   const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
-  const containerIndex = metadataSlotIdx + 1;
-  const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
-  const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
 
-  const liveCollection = new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
+  if (metadata.liveCollection === undefined) {
+    const containerIndex = metadataSlotIdx + 1;
+    const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
+    metadata.liveCollection =
+        new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
+  } else {
+    metadata.liveCollection.reset();
+  }
+
+  const liveCollection = metadata.liveCollection;
   reconcile(liveCollection, collection, metadata.trackByFn);
 
   // moves in the container might caused context's index to get out of order, re-adjust if needed
@@ -238,7 +251,7 @@ export function ɵɵrepeater(
   // handle empty blocks
   if (metadata.hasEmptyBlock) {
     const bindingIndex = nextBindingIndex();
-    const isCollectionEmpty = lContainer.length - CONTAINER_HEADER_OFFSET === 0;
+    const isCollectionEmpty = liveCollection.length === 0;
     if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
       const emptyTemplateIndex = metadataSlotIdx + 2;
       const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
