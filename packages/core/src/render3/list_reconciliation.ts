@@ -46,6 +46,20 @@ export abstract class LiveCollection<T, V> {
   }
 }
 
+function valuesMatching<V>(
+    liveIdx: number, liveValue: V, newIdx: number, newValue: V,
+    trackBy: TrackByFunction<V>): number {
+  if (liveIdx === newIdx && Object.is(liveValue, newValue)) {
+    // matching and no value identity to update
+    return 1;
+  } else if (Object.is(trackBy(liveIdx, liveValue), trackBy(newIdx, newValue))) {
+    // matching but requires value identity update
+    return -1;
+  }
+
+  return 0;
+}
+
 /**
  * The live collection reconciliation algorithm that perform various in-place operations, so it
  * reflects the content of the new (incoming) collection.
@@ -84,11 +98,13 @@ export function reconcile<T, V>(
     while (liveStartIdx <= liveEndIdx && liveStartIdx <= newEndIdx) {
       // compare from the beginning
       const liveStartValue = liveCollection.at(liveStartIdx);
-      const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
       const newStartValue = newCollection[liveStartIdx];
-      const newStartKey = trackByFn(liveStartIdx, newStartValue);
-      if (Object.is(liveStartKey, newStartKey)) {
-        liveCollection.updateValue(liveStartIdx, newStartValue);
+      const isStartMatching =
+          valuesMatching(liveStartIdx, liveStartValue, liveStartIdx, newStartValue, trackByFn);
+      if (isStartMatching !== 0) {
+        if (isStartMatching < 0) {
+          liveCollection.updateValue(liveStartIdx, newStartValue);
+        }
         liveStartIdx++;
         continue;
       }
@@ -96,22 +112,28 @@ export function reconcile<T, V>(
       // compare from the end
       // TODO(perf): do _all_ the matching from the end
       const liveEndValue = liveCollection.at(liveEndIdx);
-      const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
-      const newEndItem = newCollection[newEndIdx];
-      const newEndKey = trackByFn(newEndIdx, newEndItem);
-      if (Object.is(liveEndKey, newEndKey)) {
-        liveCollection.updateValue(liveEndIdx, newEndItem);
+      const newEndValue = newCollection[newEndIdx];
+      const isEndMatching =
+          valuesMatching(liveEndIdx, liveEndValue, newEndIdx, newEndValue, trackByFn);
+      if (isEndMatching !== 0) {
+        if (isEndMatching < 0) {
+          liveCollection.updateValue(liveEndIdx, newEndValue);
+        }
         liveEndIdx--;
         newEndIdx--;
         continue;
       }
 
       // Detect swap / moves:
+      const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
+      const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
+      const newStartKey = trackByFn(liveStartIdx, newStartValue);
+      const newEndKey = trackByFn(newEndIdx, newEndValue);
       if (Object.is(newStartKey, liveEndKey) && Object.is(newEndKey, liveStartKey)) {
         // swap on both ends;
         liveCollection.swap(liveStartIdx, liveEndIdx);
         liveCollection.updateValue(liveStartIdx, newStartValue);
-        liveCollection.updateValue(liveEndIdx, newEndItem);
+        liveCollection.updateValue(liveEndIdx, newEndValue);
         newEndIdx--;
         liveStartIdx++;
         liveEndIdx--;
@@ -164,13 +186,17 @@ export function reconcile<T, V>(
     const newCollectionIterator = newCollection[Symbol.iterator]();
     let newIterationResult = newCollectionIterator.next();
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
+      const liveValue = liveCollection.at(liveStartIdx);
       const newValue = newIterationResult.value;
       const newKey = trackByFn(liveStartIdx, newValue);
-      const liveValue = liveCollection.at(liveStartIdx);
       const liveKey = trackByFn(liveStartIdx, liveValue);
-      if (Object.is(liveKey, newKey)) {
-        // found a match - move on
-        liveCollection.updateValue(liveStartIdx, newValue);
+      const isStartMatching =
+          valuesMatching(liveStartIdx, liveValue, liveStartIdx, newValue, trackByFn);
+      if (isStartMatching !== 0) {
+        // found a match - move on, but update value
+        if (isStartMatching < 0) {
+          liveCollection.updateValue(liveStartIdx, newValue);
+        }
         liveStartIdx++;
         newIterationResult = newCollectionIterator.next();
       } else {
