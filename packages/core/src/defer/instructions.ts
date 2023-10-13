@@ -39,8 +39,7 @@ import {addDepsToRegistry, assertDeferredDependenciesLoaded, getLDeferBlockDetai
  * implementation.
  */
 export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
-    new InjectionToken<DeferBlockDependencyInterceptor>(
-        ngDevMode ? 'DEFER_BLOCK_DEPENDENCY_INTERCEPTOR' : '');
+    new InjectionToken<DeferBlockDependencyInterceptor>('DEFER_BLOCK_DEPENDENCY_INTERCEPTOR');
 
 /**
  * **INTERNAL**, token used for configuring defer block behavior.
@@ -611,13 +610,17 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
   // Switch from NOT_STARTED -> IN_PROGRESS state.
   tDetails.loadingState = DeferDependenciesLoadingState.IN_PROGRESS;
 
-  // Check if dependency function interceptor is configured.
-  const deferDependencyInterceptor =
-      injector.get(DEFER_BLOCK_DEPENDENCY_INTERCEPTOR, null, {optional: true});
+  let dependenciesFn = tDetails.dependencyResolverFn;
 
-  const dependenciesFn = deferDependencyInterceptor ?
-      deferDependencyInterceptor.intercept(tDetails.dependencyResolverFn) :
-      tDetails.dependencyResolverFn;
+  if (ngDevMode) {
+    // Check if dependency function interceptor is configured.
+    const deferDependencyInterceptor =
+        injector.get(DEFER_BLOCK_DEPENDENCY_INTERCEPTOR, null, {optional: true});
+
+    if (deferDependencyInterceptor) {
+      dependenciesFn = deferDependencyInterceptor.intercept(dependenciesFn);
+    }
+  }
 
   // The `dependenciesFn` might be `null` when all dependencies within
   // a given defer block were eagerly references elsewhere in a file,
