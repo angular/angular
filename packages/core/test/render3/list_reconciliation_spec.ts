@@ -44,27 +44,22 @@ class LoggingLiveCollection<T, V> extends LiveCollection<T, V> {
   get length(): number {
     return this.arr.length;
   }
-  at(index: number): T {
-    this.operations.at++;
-    const item = this.arr.at(index);
-    assertDefined(item, `Invalid index ${index} - item was undefined`);
-    return item;
-  }
-  key(index: number): unknown {
+
+  override key(index: number): unknown {
     this.operations.key++;
-    return this.trackByFn(index, this.itemFactory.unwrap(this.at(index)));
+    return this.trackByFn(index, this.itemFactory.unwrap(this.getItem(index)));
   }
-  attach(index: number, item: T): void {
+  override attach(index: number, item: T): void {
     this.logs.push(['attach', index, item]);
     this.arr.splice(index, 0, item);
   }
-  detach(index: number): T {
-    const item = this.at(index);
+  override detach(index: number): T {
+    const item = this.getItem(index);
     this.logs.push(['detach', index, item]);
     this.arr.splice(index, 1);
     return item;
   }
-  create(index: number, value: V): T {
+  override create(index: number, value: V): T {
     this.logs.push(['create', index, value]);
     return this.itemFactory.create(index, value);
   }
@@ -72,7 +67,7 @@ class LoggingLiveCollection<T, V> extends LiveCollection<T, V> {
     this.logs.push(['destroy', item]);
   }
   override updateValue(index: number, value: V): void {
-    this.itemFactory.update(this.at(index), index, value);
+    this.itemFactory.update(this.getItem(index), index, value);
   }
 
   getCollection() {
@@ -85,6 +80,13 @@ class LoggingLiveCollection<T, V> extends LiveCollection<T, V> {
 
   clearLogs() {
     this.logs = [];
+  }
+
+  private getItem(index: number): T {
+    this.operations.at++;
+    const item = this.arr.at(index);
+    assertDefined(item, `Invalid index ${index} - item was undefined`);
+    return item;
   }
 }
 
