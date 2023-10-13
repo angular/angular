@@ -15,7 +15,7 @@ import {NgtscTestEnvironment} from '../env';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc enum docs extraction', () => {

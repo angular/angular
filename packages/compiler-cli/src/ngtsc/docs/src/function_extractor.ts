@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EntryType, FunctionEntry, ParameterEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
-import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
 import ts from 'typescript';
 
+import {EntryType, FunctionEntry, ParameterEntry} from './entities';
+import {extractGenerics} from './generics_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
+export type FunctionLike = ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature;
+
 export class FunctionExtractor {
-  constructor(
-      private declaration: ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature,
-      private typeChecker: ts.TypeChecker,
-  ) {}
+  constructor(private declaration: FunctionLike, private typeChecker: ts.TypeChecker) {}
 
   extract(): FunctionEntry {
     // TODO: is there any real situation in which the signature would not be available here?
@@ -33,6 +33,7 @@ export class FunctionExtractor {
       name: this.declaration.name!.getText(),
       returnType,
       entryType: EntryType.Function,
+      generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
       rawComment: extractRawJsDoc(this.declaration),
