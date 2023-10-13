@@ -168,11 +168,17 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     if (ngDevMode && (typeof ngJitMode === 'undefined' || ngJitMode) &&
         this.componentDef.debugInfo?.forbidOrphanRendering) {
       if (depsTracker.isOrphanComponent(this.componentType)) {
-        throw new RuntimeError(
+        const err = new RuntimeError(
             RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
             `Orphan component found! Trying to render the component ${
                 debugStringifyTypeForError(
                     this.componentType)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid this error. If this is not possible now, import the component's NgModule in the appropriate NgModule, or the standalone component in which you are trying to render this component. If this is a lazy import, load the NgModule lazily as well and use its module injector.`);
+
+        // In some settings the thrown error is swallowed, so we log it manually here to make sure
+        // it shows up in the console and/or logs.
+        console.error(`Rendering component failed with the error: ${err.message}`);
+
+        throw err;
       }
     }
 
