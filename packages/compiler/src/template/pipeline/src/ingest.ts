@@ -204,8 +204,10 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
     childView.contextVariables.set(name, value);
   }
 
-  // If there is an i18n message associated with this template, insert i18n start and end ops.
-  if (tmpl.i18n instanceof i18n.Message) {
+  // If this is a plain template and there is an i18n message associated with it, insert i18n start
+  // and end ops. For structural directive templates, the i18n ops will be added when ingesting the
+  // element/template the directive is placed on.
+  if (isPlainTemplate(tmpl) && tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
     ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
@@ -484,18 +486,36 @@ function convertAst(
 }
 
 /**
+ * Checks whether the given template is a plain ng-template (as opposed to another kind of template
+ * such as a structural directive template or control flow template). This is checked based on the
+ * tagName. We can expect that only plain ng-templates will come through with a tagName of
+ * 'ng-template'.
+ *
+ * Here are some of the cases we expect:
+ *
+ * | Angular HTML                       | Template tagName   |
+ * | ---------------------------------- | ------------------ |
+ * | `<ng-template>`                    | 'ng-template'      |
+ * | `<div *ngIf="true">`               | 'div'              |
+ * | `<svg><ng-template>`               | 'svg:ng-template'  |
+ * | `@if (true) {`                     | 'Conditional'      |
+ * | `<ng-template *ngIf>` (plain)      | 'ng-template'      |
+ * | `<ng-template *ngIf>` (structural) | null               |
+ */
+function isPlainTemplate(tmpl: t.Template) {
+  return splitNsName(tmpl.tagName ?? '')[1] === 'ng-template';
+}
+
+/**
  * Process all of the bindings on an element-like structure in the template AST and convert them
  * to their IR representation.
  */
 function ingestBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   let flags: BindingFlags = BindingFlags.None;
-  const isPlainTemplate =
-      element instanceof t.Template && splitNsName(element.tagName ?? '')[1] === 'ng-template';
-
   if (element instanceof t.Template) {
     flags |= BindingFlags.OnNgTemplateElement;
-    if (isPlainTemplate) {
+    if (element instanceof t.Template && isPlainTemplate(element)) {
       flags |= BindingFlags.BindingTargetsTemplate;
     }
 
@@ -536,7 +556,7 @@ function ingestBindings(
       }
     }
 
-    if (element instanceof t.Template && !isPlainTemplate) {
+    if (element instanceof t.Template && !isPlainTemplate(element)) {
       unit.create.push(
           ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
       continue;
