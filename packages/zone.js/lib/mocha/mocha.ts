@@ -151,6 +151,11 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return mochaOriginal.beforeEach.apply(this, wrapTestInZone(arguments));
   };
 
+  global.beforeEach(() => {
+    const proxyZoneSpec = ProxyZoneSpec.get();
+    proxyZoneSpec && proxyZoneSpec.resetDelegate();
+  });
+
   ((originalRunTest, originalRun) => {
     Mocha.Runner.prototype.runTest = function(fn: Function) {
       Zone.current.scheduleMicroTask('mocha.forceTask', () => {
