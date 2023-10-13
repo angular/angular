@@ -15,7 +15,7 @@ import {TrackByFunction} from '../change_detection';
  */
 export abstract class LiveCollection<T, V> {
   abstract get length(): number;
-  abstract key(index: number): unknown;
+  abstract at(index: number): V;
   abstract attach(index: number, item: T): void;
   abstract detach(index: number): T;
   abstract create(index: number, value: V): T;
@@ -83,7 +83,8 @@ export function reconcile<T, V>(
 
     while (liveStartIdx <= liveEndIdx && liveStartIdx <= newEndIdx) {
       // compare from the beginning
-      const liveStartKey = liveCollection.key(liveStartIdx);
+      const liveStartValue = liveCollection.at(liveStartIdx);
+      const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
       const newStartValue = newCollection[liveStartIdx];
       const newStartKey = trackByFn(liveStartIdx, newStartValue);
       if (Object.is(liveStartKey, newStartKey)) {
@@ -94,7 +95,8 @@ export function reconcile<T, V>(
 
       // compare from the end
       // TODO(perf): do _all_ the matching from the end
-      const liveEndKey = liveCollection.key(liveEndIdx);
+      const liveEndValue = liveCollection.at(liveEndIdx);
+      const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
       const newEndItem = newCollection[newEndIdx];
       const newEndKey = trackByFn(newEndIdx, newEndItem);
       if (Object.is(liveEndKey, newEndKey)) {
@@ -126,7 +128,8 @@ export function reconcile<T, V>(
       // Fallback to the slow path: we need to learn more about the content of the live and new
       // collections.
       detachedItems ??= new MultiMap();
-      liveKeysInTheFuture ??= initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx);
+      liveKeysInTheFuture ??=
+          initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
       // Check if I'm inserting a previously detached item: if so, attach it here
       if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newStartKey)) {
@@ -163,7 +166,8 @@ export function reconcile<T, V>(
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const newValue = newIterationResult.value;
       const newKey = trackByFn(liveStartIdx, newValue);
-      const liveKey = liveCollection.key(liveStartIdx);
+      const liveValue = liveCollection.at(liveStartIdx);
+      const liveKey = trackByFn(liveStartIdx, liveValue);
       if (Object.is(liveKey, newKey)) {
         // found a match - move on
         liveCollection.updateValue(liveStartIdx, newValue);
@@ -171,7 +175,8 @@ export function reconcile<T, V>(
         newIterationResult = newCollectionIterator.next();
       } else {
         detachedItems ??= new MultiMap();
-        liveKeysInTheFuture ??= initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx);
+        liveKeysInTheFuture ??=
+            initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
         // Check if I'm inserting a previously detached item: if so, attach it here
         if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newKey)) {
@@ -235,10 +240,11 @@ function createOrAttach<T, V>(
 }
 
 function initLiveItemsInTheFuture<T>(
-    liveCollection: LiveCollection<unknown, unknown>, start: number, end: number): Set<unknown> {
+    liveCollection: LiveCollection<unknown, unknown>, start: number, end: number,
+    trackByFn: TrackByFunction<unknown>): Set<unknown> {
   const keys = new Set();
   for (let i = start; i <= end; i++) {
-    keys.add(liveCollection.key(i));
+    keys.add(trackByFn(i, liveCollection.at(i)));
   }
   return keys;
 }

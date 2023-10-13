@@ -153,7 +153,7 @@ export function ɵɵrepeaterCreate(
 }
 
 class LiveCollectionLContainerImpl extends
-    LiveCollection<LView<RepeaterContext<unknown>>, RepeaterContext<unknown>> {
+    LiveCollection<LView<RepeaterContext<unknown>>, unknown> {
   /**
    Property indicating if indexes in the repeater context need to be updated following the live
    collection changes. Index updates are necessary if and only if views are inserted / removed in
@@ -161,16 +161,15 @@ class LiveCollectionLContainerImpl extends
  */
   private needsIndexUpdate = false;
   constructor(
-      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode,
-      private trackByFn: TrackByFunction<unknown>) {
+      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode) {
     super();
   }
 
   override get length(): number {
     return this.lContainer.length - CONTAINER_HEADER_OFFSET;
   }
-  override key(index: number): unknown {
-    return this.trackByFn(index, this.getLView(index)[CONTEXT].$implicit);
+  override at(index: number): unknown {
+    return this.getLView(index)[CONTEXT].$implicit;
   }
   override attach(index: number, lView: LView<RepeaterContext<unknown>>): void {
     const dehydratedView = lView[HYDRATION] as DehydratedContainerView;
@@ -230,8 +229,7 @@ export function ɵɵrepeater(
   const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
   const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
 
-  const liveCollection = new LiveCollectionLContainerImpl(
-      lContainer, hostLView, itemTemplateTNode, metadata.trackByFn);
+  const liveCollection = new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
   reconcile(liveCollection, collection, metadata.trackByFn);
 
   // moves in the container might caused context's index to get out of order, re-adjust if needed
