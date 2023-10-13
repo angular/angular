@@ -966,6 +966,9 @@
     "name": "getTView"
   },
   {
+    "name": "getVirtualInstructionIndex"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -1482,6 +1485,12 @@
     "name": "init_innerSubscribe"
   },
   {
+    "name": "init_input"
+  },
+  {
+    "name": "init_input_signal"
+  },
+  {
     "name": "init_input_transforms_feature"
   },
   {
@@ -1686,6 +1695,9 @@
     "name": "init_operators"
   },
   {
+    "name": "init_output"
+  },
+  {
     "name": "init_partial"
   },
   {
@@ -1713,6 +1725,9 @@
     "name": "init_property2"
   },
   {
+    "name": "init_property_create"
+  },
+  {
     "name": "init_property_interpolation"
   },
   {
@@ -1732,6 +1747,9 @@
   },
   {
     "name": "init_pure_function"
+  },
+  {
+    "name": "init_queries"
   },
   {
     "name": "init_query"
