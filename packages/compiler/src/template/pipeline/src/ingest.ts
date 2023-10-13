@@ -191,10 +191,9 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   }
 
   const i18nPlaceholder = tmpl.i18n instanceof i18n.TagPlaceholder ? tmpl.i18n : undefined;
-  // TODO: validate the fallback tag name here.
   const tplOp = ir.createTemplateOp(
-      childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
-      false, i18nPlaceholder, tmpl.startSourceSpan);
+      childView.xref, tagNameWithoutNamespace, namespaceForKey(namespacePrefix), false,
+      i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);

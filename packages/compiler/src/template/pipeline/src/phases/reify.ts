@@ -50,14 +50,14 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.elementStart(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.slot!, op.tag!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
             op,
             ng.element(
-                op.slot!, op.tag, op.attributes as number | null, op.localRefs as number | null,
+                op.slot!, op.tag!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
       case ir.OpKind.ElementEnd:
@@ -98,7 +98,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op,
             ng.template(
                 op.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
-                op.block ? null : op.tag, op.attributes as number, op.sourceSpan),
+                op.block ? null : op.tag, op.attributes, op.sourceSpan),
         );
         break;
       case ir.OpKind.DisableBindings:

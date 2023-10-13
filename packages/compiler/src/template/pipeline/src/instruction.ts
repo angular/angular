@@ -75,7 +75,7 @@ export function template(
     slot: number, templateFnRef: o.Expression, decls: number, vars: number, tag: string|null,
     constIndex: number|null, sourceSpan: ParseSourceSpan): ir.CreateOp {
   const args = [o.literal(slot), templateFnRef, o.literal(decls), o.literal(vars)];
-  if (tag !== null) {
+  if (tag !== null || constIndex !== null) {
     args.push(o.literal(tag));
     if (constIndex !== null) {
       args.push(o.literal(constIndex));
