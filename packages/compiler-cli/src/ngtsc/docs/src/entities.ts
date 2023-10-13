@@ -43,9 +43,17 @@ export enum MemberTags {
   Output = 'output',
 }
 
+/** Documentation entity for single JsDoc tag. */
 export interface JsDocTagEntry {
   name: string;
   comment: string;
+}
+
+/** Documentation entity for single generic parameter. */
+export interface GenericEntry {
+  name: string;
+  constraint: string|undefined;
+  default: string|undefined;
 }
 
 /** Base type for all documentation entities. */
@@ -69,6 +77,7 @@ export type TypeAliasEntry = ConstantEntry;
 export interface ClassEntry extends DocEntry {
   isAbstract: boolean;
   members: MemberEntry[];
+  generics: GenericEntry[];
 }
 
 // From an API doc perspective, class and interfaces are identical.
@@ -97,6 +106,7 @@ export interface PipeEntry extends ClassEntry {
 export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
+  generics: GenericEntry[];
 }
 
 /** Sub-entry for a single class or enum member. */

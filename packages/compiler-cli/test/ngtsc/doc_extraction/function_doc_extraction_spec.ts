@@ -15,7 +15,7 @@ import {NgtscTestEnvironment} from '../env';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc function docs extraction', () => {
@@ -112,6 +112,23 @@ runInEachFileSystem(os => {
       expect(numberOverloadEntry.params.length).toBe(1);
       expect(numberOverloadEntry.params[0].type).toBe('number');
       expect(numberOverloadEntry.returnType).toBe('number');
+    });
+
+    it('should extract function generics', () => {
+      env.write('index.ts', `
+        export function save<T>(data: T) { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const [functionEntry] = docs as FunctionEntry[];
+      expect(functionEntry.generics.length).toBe(1);
+
+      const [genericEntry] = functionEntry.generics;
+      expect(genericEntry.name).toBe('T');
+      expect(genericEntry.constraint).toBeUndefined();
+      expect(genericEntry.default).toBeUndefined();
     });
   });
 });
