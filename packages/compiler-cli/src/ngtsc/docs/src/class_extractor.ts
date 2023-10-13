@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
-import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -16,6 +14,9 @@ import {ClassDeclaration} from '../../reflection';
 
 import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
 import {isAngularPrivateName} from './filters';
+import {FunctionExtractor} from './function_extractor';
+import {extractGenerics} from './generics_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
 // For the purpose of extraction, we can largely treat properties and accessors the same.
@@ -53,6 +54,7 @@ class ClassExtractor {
       entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
                                                                EntryType.UndecoratedClass,
       members: this.extractAllClassMembers(this.declaration),
+      generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
       rawComment: extractRawJsDoc(this.declaration),

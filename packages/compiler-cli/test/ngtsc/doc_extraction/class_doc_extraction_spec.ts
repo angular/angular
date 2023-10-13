@@ -15,7 +15,7 @@ import {NgtscTestEnvironment} from '../env';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc class docs extraction', () => {
@@ -295,6 +295,91 @@ runInEachFileSystem(os => {
 
       expect(resetEntry.name).toBe('reset');
       expect(resetEntry.memberTags).toContain(MemberTags.Abstract);
+    });
+
+    it('should extract class generic parameters', () => {
+      env.write('index.ts', `
+        export class UserProfile<T> {
+          constructor(public name: T) { }
+        }
+
+        export class TwinProfile<U, V> {
+          constructor(public name: U, age: V) { }
+        }
+
+        export class AdminProfile<X extends String> {
+          constructor(public name: X) { }
+        }
+
+        export class BotProfile<Q = string> {
+          constructor(public name: Q) { }
+        }
+
+        export class ExecProfile<W extends String = string> {
+          constructor(public name: W) { }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(5);
+
+      const [
+        userProfileEntry,
+        twinProfileEntry,
+        adminProfileEntry,
+        botProfileEntry,
+        execProfileEntry,
+      ] = docs as ClassEntry[];
+
+      expect(userProfileEntry.generics.length).toBe(1);
+      expect(twinProfileEntry.generics.length).toBe(2);
+      expect(adminProfileEntry.generics.length).toBe(1);
+      expect(botProfileEntry.generics.length).toBe(1);
+      expect(execProfileEntry.generics.length).toBe(1);
+
+      const [userProfileGenericEntry] = userProfileEntry.generics;
+      expect(userProfileGenericEntry.name).toBe('T');
+      expect(userProfileGenericEntry.constraint).toBeUndefined();
+      expect(userProfileGenericEntry.default).toBeUndefined();
+
+      const [nameGenericEntry, ageGenericEntry] = twinProfileEntry.generics;
+      expect(nameGenericEntry.name).toBe('U');
+      expect(nameGenericEntry.constraint).toBeUndefined();
+      expect(nameGenericEntry.default).toBeUndefined();
+      expect(ageGenericEntry.name).toBe('V');
+      expect(ageGenericEntry.constraint).toBeUndefined();
+      expect(ageGenericEntry.default).toBeUndefined();
+
+      const [adminProfileGenericEntry] = adminProfileEntry.generics;
+      expect(adminProfileGenericEntry.name).toBe('X');
+      expect(adminProfileGenericEntry.constraint).toBe('String');
+      expect(adminProfileGenericEntry.default).toBeUndefined();
+
+      const [botProfileGenericEntry] = botProfileEntry.generics;
+      expect(botProfileGenericEntry.name).toBe('Q');
+      expect(botProfileGenericEntry.constraint).toBeUndefined();
+      expect(botProfileGenericEntry.default).toBe('string');
+
+      const [execProfileGenericEntry] = execProfileEntry.generics;
+      expect(execProfileGenericEntry.name).toBe('W');
+      expect(execProfileGenericEntry.constraint).toBe('String');
+      expect(execProfileGenericEntry.default).toBe('string');
+    });
+
+    it('should extract method generic parameters', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          save<T>(data: T): void { }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      const [genericEntry] = (classEntry.members[0] as MethodEntry).generics;
+
+      expect(genericEntry.name).toBe('T');
+      expect(genericEntry.constraint).toBeUndefined();
+      expect(genericEntry.default).toBeUndefined();
     });
   });
 });
