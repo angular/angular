@@ -169,11 +169,8 @@ class LiveCollectionLContainerImpl extends
   override get length(): number {
     return this.lContainer.length - CONTAINER_HEADER_OFFSET;
   }
-  override at(index: number): LView<RepeaterContext<unknown>> {
-    return getExistingLViewFromLContainer(this.lContainer, index);
-  }
   override key(index: number): unknown {
-    return this.trackByFn(index, this.at(index)[CONTEXT].$implicit);
+    return this.trackByFn(index, this.getLView(index)[CONTEXT].$implicit);
   }
   override attach(index: number, lView: LView<RepeaterContext<unknown>>): void {
     const dehydratedView = lView[HYDRATION] as DehydratedContainerView;
@@ -198,15 +195,19 @@ class LiveCollectionLContainerImpl extends
     destroyLView(lView[TVIEW], lView);
   }
   override updateValue(index: number, value: unknown): void {
-    this.at(index)[CONTEXT].$implicit = value;
+    this.getLView(index)[CONTEXT].$implicit = value;
   }
 
   updateIndexes() {
     if (this.needsIndexUpdate) {
       for (let i = 0; i < this.length; i++) {
-        this.at(i)[CONTEXT].$index = i;
+        this.getLView(i)[CONTEXT].$index = i;
       }
     }
+  }
+
+  private getLView(index: number): LView<RepeaterContext<unknown>> {
+    return getExistingLViewFromLContainer(this.lContainer, index);
   }
 }
 
