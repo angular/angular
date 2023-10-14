@@ -77,9 +77,8 @@ export function extractDirectiveMetadata(
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated fields.
   const inputsFromMeta = parseInputsArray(clazz, directive, evaluator, reflector, refEmitter);
-  const inputsFromFields = parseInputFields(
-      clazz, filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), evaluator,
-      reflector, refEmitter);
+  const inputsFromFields =
+      parseInputFields(clazz, members, evaluator, reflector, refEmitter, coreModule);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
@@ -684,46 +683,130 @@ function parseInputsArray(
   return inputs;
 }
 
+
+function tryGetDecoratorOnMember(
+    member: ClassMember, decoratorName: string, coreModule: string|undefined): Decorator|null {
+  if (member.isStatic || member.decorators === null) {
+    return null;
+  }
+
+  for (const decorator of member.decorators) {
+    if (decorator.import === null || decorator.import.name !== decoratorName) {
+      continue;
+    } else if (coreModule !== undefined && decorator.import.from !== coreModule) {
+      continue;
+    }
+
+    return decorator;
+  }
+
+  return null;
+}
+
+function tryGetFunctionInitializerOfMember(
+    member: ClassMember, functionName: string, reflector: ReflectionHost,
+    coreModule: string|undefined): ts.CallExpression|null {
+  if (member.value === null || !ts.isCallExpression(member.value)) {
+    return null;
+  }
+
+  const receiver = member.value.expression;
+  let target: ts.Identifier;
+  if (ts.isIdentifier(receiver)) {
+    // target()
+    target = receiver;
+  } else if (
+      ts.isPropertyAccessExpression(receiver) && ts.isIdentifier(receiver.expression) &&
+      ts.isIdentifier(receiver.name)) {
+    target = receiver.name;
+  } else {
+    return null;
+  }
+
+  const decl = reflector.getDeclarationOfIdentifier(target);
+  if (decl === null || !ts.isFunctionDeclaration(decl.node) || decl.node.name === undefined) {
+    // The initializer isn't a declared, named function.
+    return null;
+  }
+
+  if (coreModule !== undefined && decl.viaModule !== coreModule) {
+    // The initializer is a function, but in the wrong module.
+    return null;
+  }
+
+  if (decl.node.name.text !== functionName) {
+    // The initializer isn't the right function.
+    return null;
+  }
+
+  return member.value;
+}
+
 /** Parses the class members that are decorated as inputs. */
 function parseInputFields(
-    clazz: ClassDeclaration, inputMembers: {member: ClassMember, decorators: Decorator[]}[],
-    evaluator: PartialEvaluator, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter): Record<string, InputMapping> {
+    clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter,
+    coreModule: string|undefined): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
-  parseDecoratedFields(inputMembers, evaluator, (classPropertyName, options, decorator) => {
+  for (const member of members) {
+    if (member.isStatic) {
+      continue;
+    }
+
+    const classPropertyName = member.name;
     let bindingPropertyName: string;
     let required = false;
     let transform: InputTransform|null = null;
 
-    if (options === null) {
+    const initFn = tryGetFunctionInitializerOfMember(member, 'input', reflector, coreModule);
+    const decorator = tryGetDecoratorOnMember(member, 'Input', coreModule);
+    if (initFn !== null) {
       bindingPropertyName = classPropertyName;
-    } else if (typeof options === 'string') {
-      bindingPropertyName = options;
-    } else if (options instanceof Map) {
-      const aliasInConfig = options.get('alias');
-      bindingPropertyName = typeof aliasInConfig === 'string' ? aliasInConfig : classPropertyName;
-      required = options.get('required') === true;
+      // TODO: aliasing, required, etc.
+    } else if (decorator !== null) {
+      if (decorator.args !== null && decorator.args.length > 1) {
+        throw new FatalDiagnosticError(
+            ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+            `@${decorator.name} can have at most one argument, got ${
+                decorator.args.length} argument(s)`);
+      }
 
-      if (options.has('transform')) {
-        const transformValue = options.get('transform');
+      const options = decorator.args !== null && decorator.args.length === 1 ?
+          evaluator.evaluate(decorator.args[0]) :
+          null;
 
-        if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
-          throw createValueHasWrongTypeError(
-              decorator.node, transformValue, `Input transform must be a function`);
+      if (options === null) {
+        bindingPropertyName = classPropertyName;
+      } else if (typeof options === 'string') {
+        bindingPropertyName = options;
+      } else if (options instanceof Map) {
+        const aliasInConfig = options.get('alias');
+        bindingPropertyName = typeof aliasInConfig === 'string' ? aliasInConfig : classPropertyName;
+        required = options.get('required') === true;
+
+        if (options.has('transform')) {
+          const transformValue = options.get('transform');
+
+          if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
+            throw createValueHasWrongTypeError(
+                decorator.node, transformValue, `Input transform must be a function`);
+          }
+
+          transform = parseInputTransformFunction(
+              clazz, classPropertyName, transformValue, reflector, refEmitter);
         }
-
-        transform = parseInputTransformFunction(
-            clazz, classPropertyName, transformValue, reflector, refEmitter);
+      } else {
+        throw createValueHasWrongTypeError(
+            decorator.node, options,
+            `@${decorator.name} decorator argument must resolve to a string or an object literal`);
       }
     } else {
-      throw createValueHasWrongTypeError(
-          decorator.node, options,
-          `@${decorator.name} decorator argument must resolve to a string or an object literal`);
+      continue;
     }
 
     inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required, transform};
-  });
+  }
 
   return inputs;
 }
