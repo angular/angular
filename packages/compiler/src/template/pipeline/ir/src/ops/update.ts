@@ -24,7 +24,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -561,7 +561,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The i18n placeholder associated with this expression.
    */
-  i18nPlaceholder: i18n.Placeholder;
+  i18nPlaceholder: string;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -570,7 +570,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    owner: XrefId, expression: o.Expression, i18nPlaceholder: i18n.Placeholder,
+    owner: XrefId, expression: o.Expression, i18nPlaceholder: string,
     sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
@@ -609,5 +609,31 @@ export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): 
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
+/**
+ * An op that represents updating an ICU expression.
+ */
+export interface IcuUpdateOp extends Op<UpdateOp> {
+  kind: OpKind.IcuUpdate;
+
+  /**
+   * The ID of the ICU being updated.
+   */
+  xref: XrefId;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Creates an op to update an ICU expression.
+ */
+export function createIcuUpdateOp(xref: XrefId, sourceSpan: ParseSourceSpan): IcuUpdateOp {
+  return {
+    kind: OpKind.IcuUpdate,
+    xref,
+    sourceSpan,
+    ...NEW_OP,
   };
 }
