@@ -85,7 +85,7 @@
           ]
         }
       ],
-      "skipForTemplatePipeline": true
+      "focusTest": true
     },
     {
       "description": "should handle self-closing tags as content",
