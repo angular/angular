@@ -142,6 +142,24 @@ To declare the styles within the component, add a `styles` property to the `@Com
 
 The `styles` property takes an array of strings that contain the CSS rule declarations.
 
+## Adding the component to Module or Marking it as standalone
+
+Once you've defined and styled your Angular component, it's essential to either include it within a module or designate it as standalone. This will enable Angular to recognize and utilize the component in the context of your application.
+
+### Adding the component to Module
+
+To integrate a component into a module, incorporate it into the `declarations` array found in the `@NgModule` decorator.
+
+<code-example path="component-overview/src/app/component-overview/component-overview.component.4.ts" region="module"></code-example>
+
+### Marking the component as standalone
+
+There might be instances where a component is required to operate independently, without being part of a specific module. In such cases, you can mark the component as standalone. To do this, append the `standalone` flag to the `@Component` decorator.
+
+<code-example path="component-overview/src/app/component-overview/component-overview.component.4.ts" region="standalone"></code-example>
+
+With these steps completed, your Angular component is ready for integration and use within your application. Remember to always refer to the Angular documentation and follow best practices to ensure the efficient and smooth functioning of your components.
+
 ## Next steps
 
 *   For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components)
