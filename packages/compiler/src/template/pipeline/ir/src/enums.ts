@@ -209,6 +209,16 @@ export enum OpKind {
    * An instruction that applies a set of i18n expressions.
    */
   I18nApply,
+
+  /**
+   * An instruction to create an ICU expression.
+   */
+  Icu,
+
+  /**
+   * An instruction to update an ICU expression.
+   */
+  IcuUpdate,
 }
 
 /**

@@ -290,7 +290,7 @@ function resolvePlaceholders(
         if (!i18nOp) {
           throw Error('Cannot find corresponding i18nStart for i18nExpr');
         }
-        addParam(params, i18nOp, op.i18nPlaceholder.name, index++, i18nOp.subTemplateIndex);
+        addParam(params, i18nOp, op.i18nPlaceholder, index++, i18nOp.subTemplateIndex);
         i18nBlockPlaceholderIndices.set(op.owner, index);
       }
     }
