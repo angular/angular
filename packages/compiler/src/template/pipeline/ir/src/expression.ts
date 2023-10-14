@@ -929,6 +929,8 @@ export function transformExpressionsInOp(
     case OpKind.Advance:
     case OpKind.Namespace:
     case OpKind.I18nApply:
+    case OpKind.Icu:
+    case OpKind.IcuUpdate:
       // These operations contain no expressions.
       break;
     default:

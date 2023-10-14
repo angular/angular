@@ -129,6 +129,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestSwitchBlock(unit, node);
     } else if (node instanceof t.DeferredBlock) {
       ingestDeferBlock(unit, node);
+    } else if (node instanceof t.Icu) {
+      ingestIcu(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -381,6 +383,16 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Add all ops to the view.
   unit.create.push(deferOnOp);
+}
+
+function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
+  if (icu.i18n instanceof i18n.Message) {
+    const xref = unit.job.allocateXrefId();
+    unit.create.push(ir.createIcuOp(xref, icu.i18n, null!));
+    unit.update.push(ir.createIcuUpdateOp(xref, null!));
+  } else {
+    throw Error(`Unhandled i18n metadata type for ICU: ${icu.i18n?.constructor.name}`);
+  }
 }
 
 /**
