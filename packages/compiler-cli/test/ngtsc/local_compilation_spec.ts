@@ -504,7 +504,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone component factory',
@@ -539,7 +539,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainComponent.ɵfac = function MainComponent_Factory(t) { return new (t || MainComponent)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into directive factory',
@@ -577,7 +577,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone directive factory',
@@ -610,7 +610,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
+                   `MainDirective.ɵfac = function MainDirective_Factory(t) { return new (t || MainDirective)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into pipe factory',
@@ -647,7 +647,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(i1.SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(i2.SomeService3, 16), i0.ɵɵdirectiveInject(i3.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into standalone pipe factory',
@@ -681,7 +681,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(SomeWhere3.SomeService3, 16), i0.ɵɵdirectiveInject(SomeWhere4.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
+                   `MainPipe.ɵfac = function MainPipe_Factory(t) { return new (t || MainPipe)(i0.ɵɵdirectiveInject(i1.SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(i2.SomeService3, 16), i0.ɵɵdirectiveInject(i3.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into injectable factory',
@@ -714,7 +714,7 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainService.ɵfac = function MainService_Factory(t) { return new (t || MainService)(i0.ɵɵinject(i1.SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(i2.SomeService3), i0.ɵɵinject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
          });
 
       it('should include injector types with all possible import/injection styles into ng module factory',
@@ -746,7 +746,183 @@ runInEachFileSystem(() => {
 
            expect(jsContents)
                .toContain(
-                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(SomeWhere3.SomeService3), i0.ɵɵinject(SomeWhere4.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+                   `MainModule.ɵfac = function MainModule_Factory(t) { return new (t || MainModule)(i0.ɵɵinject(i1.SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(i2.SomeService3), i0.ɵɵinject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`);
+         });
+
+      it('should generate invalid factory for injectable when type parameter types are used as token',
+         () => {
+           env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+
+          @Injectable()
+          export class MainService<S> {         
+            constructor(
+              private someService1: S,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainService.ɵfac = function MainService_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+         });
+
+      it('should generate invalid factory for injectable when when token is imported as type',
+         () => {
+           env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+          import {type MyService} from './somewhere';
+
+          @Injectable()
+          export class MainService {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MainService.ɵfac = function MainService_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+         });
+
+      it('should generate invalid factory for injectable when when token is a type', () => {
+        env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+
+          type MyService = {a:string};
+
+          @Injectable()
+          export class MainService {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                `MainService.ɵfac = function MainService_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+      });
+
+      it('should generate invalid factory for injectable when when token is an interface', () => {
+        env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+
+          interface MyService {a:string}
+
+          @Injectable()
+          export class MainService {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                `MainService.ɵfac = function MainService_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+      });
+
+      it('should generate invalid factory for directive without selector type parameter types are used as token',
+         () => {
+           env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive()
+          export class MyDirective<S> {         
+            constructor(
+              private myService: S,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MyDirective.ɵfac = function MyDirective_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+         });
+
+      it('should generate invalid factory for directive without selector when token is imported as type',
+         () => {
+           env.write('test.ts', `
+          import {Directive} from '@angular/core';
+          import {type MyService} from './somewhere';
+
+          @Directive()
+          export class MyDirective {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MyDirective.ɵfac = function MyDirective_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+         });
+
+      it('should generate invalid factory for directive without selector when token is a type',
+         () => {
+           env.write('test.ts', `
+          import {Directive} from '@angular/core';
+          
+          type MyService = {a:string};
+
+          @Directive()
+          export class MyDirective {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MyDirective.ɵfac = function MyDirective_Factory(t) { i0.ɵɵinvalidFactory(); };`);
+         });
+
+      it('should generate invalid factory for directive without selector when token is an interface',
+         () => {
+           env.write('test.ts', `
+          import {Directive} from '@angular/core';
+          
+          interface MyService {a:string}
+
+          @Directive()
+          export class MyDirective {         
+            constructor(
+              private myService: MyService,
+              ) {}  
+          }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   `MyDirective.ɵfac = function MyDirective_Factory(t) { i0.ɵɵinvalidFactory(); };`);
          });
     });
 
