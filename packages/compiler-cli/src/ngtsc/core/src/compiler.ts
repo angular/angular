@@ -940,9 +940,30 @@ export class NgCompiler {
   }
 
   private makeCompilation(): LazyCompilationState {
+    const isCore = isAngularCorePackage(this.inputProgram);
+
+    // Note: If this compilation builds `@angular/core`, we always build in full compilation
+    // mode. Code inside the core package is always compatible with itself, so it does not
+    // make sense to go through the indirection of partial compilation
+    let compilationMode: CompilationMode = CompilationMode.FULL;
+    if (!isCore) {
+      switch (this.options.compilationMode) {
+        case 'full':
+          compilationMode = CompilationMode.FULL;
+          break;
+        case 'partial':
+          compilationMode = CompilationMode.PARTIAL;
+          break;
+        case 'experimental-local':
+          compilationMode = CompilationMode.LOCAL;
+          break;
+      }
+    }
+
     const checker = this.inputProgram.getTypeChecker();
 
-    const reflector = new TypeScriptReflectionHost(checker);
+    const reflector =
+        new TypeScriptReflectionHost(checker, compilationMode === CompilationMode.LOCAL);
 
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
@@ -1000,8 +1021,6 @@ export class NgCompiler {
       aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
-    const isCore = isAngularCorePackage(this.inputProgram);
-
     const evaluator =
         new PartialEvaluator(reflector, checker, this.incrementalCompilation.depGraph);
     const dtsReader = new DtsMetadataReader(checker, reflector);
@@ -1043,24 +1062,6 @@ export class NgCompiler {
     const resourceRegistry = new ResourceRegistry();
 
     const deferredSymbolsTracker = new DeferredSymbolTracker(this.inputProgram.getTypeChecker());
-
-    // Note: If this compilation builds `@angular/core`, we always build in full compilation
-    // mode. Code inside the core package is always compatible with itself, so it does not
-    // make sense to go through the indirection of partial compilation
-    let compilationMode: CompilationMode = CompilationMode.FULL;
-    if (!isCore) {
-      switch (this.options.compilationMode) {
-        case 'full':
-          compilationMode = CompilationMode.FULL;
-          break;
-        case 'partial':
-          compilationMode = CompilationMode.PARTIAL;
-          break;
-        case 'experimental-local':
-          compilationMode = CompilationMode.LOCAL;
-          break;
-      }
-    }
 
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.

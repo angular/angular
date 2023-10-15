@@ -24,7 +24,8 @@ import {NgModuleDecoratorHandler} from '../src/handler';
 
 function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
   const checker = program.getTypeChecker();
-  const reflectionHost = new TypeScriptReflectionHost(checker);
+  const reflectionHost =
+      new TypeScriptReflectionHost(checker, compilationMode === CompilationMode.LOCAL);
   const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
   const referencesRegistry = new NoopReferencesRegistry();
   const metaRegistry = new LocalMetadataRegistry();
