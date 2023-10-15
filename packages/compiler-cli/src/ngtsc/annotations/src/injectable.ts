@@ -72,8 +72,7 @@ export class InjectableDecoratorHandler implements
       analysis: {
         meta,
         ctorDeps: extractInjectableCtorDeps(
-            node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps,
-            this.compilationMode),
+            node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps),
         classMetadata: this.includeClassMetadata ?
             extractClassMetadata(node, this.reflector, this.isCore) :
             null,
@@ -258,8 +257,7 @@ function getProviderExpression(
 
 function extractInjectableCtorDeps(
     clazz: ClassDeclaration, meta: R3InjectableMetadata, decorator: Decorator,
-    reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean,
-    compilationMode: CompilationMode) {
+    reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
@@ -277,15 +275,15 @@ function extractInjectableCtorDeps(
     // constructor signature does not work for DI then a factory definition (ɵfac) that throws is
     // generated.
     if (strictCtorDeps && !isAbstractClassDeclaration(clazz)) {
-      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore, compilationMode);
+      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
     } else {
-      ctorDeps = unwrapConstructorDependencies(
-          getConstructorDependencies(clazz, reflector, isCore, compilationMode));
+      ctorDeps =
+          unwrapConstructorDependencies(getConstructorDependencies(clazz, reflector, isCore));
     }
 
     return ctorDeps;
   } else if (decorator.args.length === 1) {
-    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore, compilationMode);
+    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
 
     if (strictCtorDeps && !isAbstractClassDeclaration(clazz) && requiresValidCtor(meta)) {
       // Since use* was not provided for a concrete class, validate the deps according to
