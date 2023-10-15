@@ -17,7 +17,7 @@ import {isNamedClassDeclaration} from './util';
  */
 
 export class TypeScriptReflectionHost implements ReflectionHost {
-  constructor(protected checker: ts.TypeChecker) {}
+  constructor(protected checker: ts.TypeChecker, private readonly isLocalCompilation = false) {}
 
   getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     const decorators =
@@ -77,7 +77,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         }
       }
 
-      const typeValueReference = typeToValue(typeNode, this.checker);
+      const typeValueReference = typeToValue(typeNode, this.checker, this.isLocalCompilation);
 
       return {
         name,
