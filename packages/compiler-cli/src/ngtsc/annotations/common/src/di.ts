@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {ClassDeclaration, CtorParameter, ReflectionHost, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind,} from '../../../reflection';
-import {CompilationMode} from '../../../transform';
 
 import {isAngularCore, valueReferenceToExpression} from './util';
+
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
@@ -29,8 +29,7 @@ export interface ConstructorDepError {
 }
 
 export function getConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean,
-    compilationMode: CompilationMode): ConstructorDeps|null {
+    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean): ConstructorDeps|null {
   const deps: R3DependencyMetadata[] = [];
   const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
@@ -126,10 +125,10 @@ export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3Dep
 }
 
 export function getValidConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean,
-    compilationMode: CompilationMode): R3DependencyMetadata[]|null {
+    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
+    null {
   return validateConstructorDependencies(
-      clazz, getConstructorDependencies(clazz, reflector, isCore, compilationMode));
+      clazz, getConstructorDependencies(clazz, reflector, isCore));
 }
 
 /**
