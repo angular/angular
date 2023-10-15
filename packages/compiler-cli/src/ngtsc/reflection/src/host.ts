@@ -238,7 +238,8 @@ export interface ImportedTypeValueReference {
    */
   nestedPath: string[]|null;
 
-  valueDeclaration: DeclarationNode;
+  // This field can be null in local compilation mode when resolving is not possible.
+  valueDeclaration: DeclarationNode|null;
 }
 
 /**
