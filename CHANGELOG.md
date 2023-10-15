@@ -6,7 +6,7 @@
   migrating from the previously used ==. NgSwitch expressions and / or
   individual condition values need adjusting to this stricter equality
   check. The added warning message should help pinpointing NgSwitch
-  usages where adjustements are needed.
+  usages where adjustments are needed.
 ### core
 - The  `mutate` method was removed from the `WritableSignal` interface and completely
   dropped from the public API surface. As an alternative please use the update method and
