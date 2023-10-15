@@ -141,6 +141,31 @@ This lets the Angular Language Service provide diagnostics and completions in `.
 
 Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help &gt; Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
+### Neovim
+
+1. [Setup coc.nvim](https://github.com/neoclide/coc.nvim)
+
+2. [Configure the Angular Language Service](https://github.com/iamcco/coc-angular/issues/70#issuecomment-1616340751)
+
+```
+{
+  "languageserver": {
+    "angular": {
+      "command": "ngserver",
+      "args": [
+        "--stdio",
+        "--tsProbeLocations",
+        "/usr/local/lib/node_modules/typescript/lib",
+        "--ngProbeLocations",
+        "/usr/local/lib/node_modules/@angular/language-server/bin"
+      ],
+      "filetypes": ["ts", "typescript", "html"],
+      "trace.server.verbosity": "verbose"
+    }
+  }
+}
+```
+
 ## How the Language Service works
 
 When you use an editor with a language service, the editor starts a separate language-service process and communicates with it through an [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), using the [Language Server Protocol](https://microsoft.github.io/language-server-protocol).
