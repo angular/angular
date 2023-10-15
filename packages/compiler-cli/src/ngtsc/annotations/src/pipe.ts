@@ -135,8 +135,7 @@ export class PipeDecoratorHandler implements
           type,
           typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
           pipeName,
-          deps: getValidConstructorDependencies(
-              clazz, this.reflector, this.isCore, this.compilationMode),
+          deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore),
           pure,
           isStandalone,
         },

@@ -156,7 +156,7 @@ export function extractDirectiveMetadata(
     exportAs = resolved.split(',').map(part => part.trim());
   }
 
-  const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore, compilationMode);
+  const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
 
   // Non-abstract directives (those with a selector) require valid constructor dependencies, whereas
   // abstract directives are allowed to have invalid dependencies, given that a subclass may call

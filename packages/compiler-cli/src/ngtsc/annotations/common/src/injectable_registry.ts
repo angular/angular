@@ -9,7 +9,6 @@ import {R3DependencyMetadata} from '@angular/compiler';
 
 import {hasInjectableFields} from '../../../metadata';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
-import {CompilationMode} from '../../../transform';
 
 import {getConstructorDependencies, unwrapConstructorDependencies} from './di';
 
@@ -43,8 +42,7 @@ export class InjectableClassRegistry {
       return null;
     }
 
-    const ctorDeps =
-        getConstructorDependencies(declaration, this.host, this.isCore, CompilationMode.FULL);
+    const ctorDeps = getConstructorDependencies(declaration, this.host, this.isCore);
     const meta: InjectableMeta = {
       ctorDeps: unwrapConstructorDependencies(ctorDeps),
     };
