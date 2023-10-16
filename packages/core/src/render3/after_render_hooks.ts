@@ -224,6 +224,8 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
     return NOOP_AFTER_RENDER_REF;
   }
 
+  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterRender'}});
+
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
@@ -297,6 +299,8 @@ export function afterNextRender(
   if (!isPlatformBrowser(injector)) {
     return NOOP_AFTER_RENDER_REF;
   }
+
+  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterNextRender'}});
 
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
