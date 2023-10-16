@@ -691,13 +691,8 @@ function populateDehydratedViewsInLContainerImpl(
 
   const hydrationInfo = hostLView[HYDRATION];
   const noOffsetIndex = tNode.index - HEADER_OFFSET;
-
-  // TODO(akushnir): this should really be a single condition, refactor the code
-  // to use `hasInSkipHydrationBlockFlag` logic inside `isInSkipHydrationBlock`.
-  const skipHydration = isInSkipHydrationBlock(tNode) || hasInSkipHydrationBlockFlag(tNode);
-
-  const isNodeCreationMode =
-      !hydrationInfo || skipHydration || isDisconnectedNode(hydrationInfo, noOffsetIndex);
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock(tNode) ||
+      isDisconnectedNode(hydrationInfo, noOffsetIndex);
 
   // Regular creation mode.
   if (isNodeCreationMode) {
