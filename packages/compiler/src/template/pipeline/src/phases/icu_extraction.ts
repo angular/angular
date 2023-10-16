@@ -52,7 +52,8 @@ export function phaseIcuExtraction(job: CompilationJob): void {
               op,
               ir.createI18nExpressionOp(
                   i18nBlockId, new ir.LexicalReadExpr(icuNode.expression),
-                  icuNode.expressionPlaceholder, null!));
+                  icuNode.expressionPlaceholder, ir.I18nParamResolutionTime.Postproccessing,
+                  null!));
           break;
       }
     }

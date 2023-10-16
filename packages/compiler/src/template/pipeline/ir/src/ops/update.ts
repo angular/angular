@@ -10,7 +10,7 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, OpKind} from '../enums';
+import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
@@ -563,6 +563,11 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   i18nPlaceholder: string;
 
+  /**
+   * The time that this expression is resolved.
+   */
+  resolutionTime: I18nParamResolutionTime;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -571,13 +576,14 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  */
 export function createI18nExpressionOp(
     owner: XrefId, expression: o.Expression, i18nPlaceholder: string,
-    sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    resolutionTime: I18nParamResolutionTime, sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     owner,
     target: owner,
     expression,
     i18nPlaceholder,
+    resolutionTime,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,

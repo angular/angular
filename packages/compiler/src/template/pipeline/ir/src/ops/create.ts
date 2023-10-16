@@ -706,9 +706,15 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   message: i18n.Message;
 
   /**
-   * Map of values to use for named placeholders in the i18n message.
+   * Map of values to use for named placeholders in the i18n message. (Resolved at message creation)
    */
   params: Map<string, o.Expression>;
+
+  /**
+   * Map of values to use for named placeholders in the i18n message. (Resolved during
+   * post-porcessing)
+   */
+  postprocessingParams: Map<string, o.Expression>;
 
   /**
    * The index in the consts array where the message i18n message is stored.
@@ -750,6 +756,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
     root: root ?? xref,
     message,
     params: new Map(),
+    postprocessingParams: new Map(),
     messageIndex: null,
     subTemplateIndex: null,
     needsPostprocessing: false,

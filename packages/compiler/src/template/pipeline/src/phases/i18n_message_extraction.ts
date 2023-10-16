@@ -46,9 +46,20 @@ export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
           // `goog.getMsg` call
           const closureVar = i18nGenerateClosureVar(
               job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
-          const transformFn = op.needsPostprocessing ?
-              (expr: o.ReadVarExpr) => o.importExpr(Identifiers.i18nPostprocess).callFn([expr]) :
-              undefined;
+          let transformFn = undefined;
+
+          // If nescessary, add a post-processing step and resolve any placeholder params that are
+          // set in post-processing.
+          if (op.needsPostprocessing) {
+            const extraTransformFnParams: o.Expression[] = [];
+            if (op.postprocessingParams.size > 0) {
+              extraTransformFnParams.push(o.literalMap([...op.postprocessingParams.entries()].map(
+                  ([key, value]) => ({key, value, quoted: true}))));
+            }
+            transformFn = (expr: o.ReadVarExpr) =>
+                o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
+          }
+
           const statements =
               getTranslationDeclStmts(op.message, mainVar, closureVar, params, transformFn);
           unit.create.push(ir.createExtractedMessageOp(op.xref, mainVar, statements));
