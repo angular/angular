@@ -227,6 +227,12 @@ export type Inherited = {
   resolve: Data,
 };
 
+/**
+ * Returns the inherited params, data, and resolve for a given route.
+ *
+ * By default, we do not inherit parent data unless the current route is path-less or the parent
+ * route is component-less.
+ */
 export function getInherited(
     route: ActivatedRouteSnapshot, parent: ActivatedRouteSnapshot|null,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'): Inherited {
