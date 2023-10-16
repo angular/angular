@@ -43,7 +43,7 @@ import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
-import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
+import {getReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
@@ -82,18 +82,17 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         consumer.dirty = false;
         const prevConsumer = consumerBeforeComputation(consumer);
+        consumer.isRunning = true;
         try {
           const context = lView[directiveIdx];
           hostBindingFn(RenderFlags.Update, context);
         } finally {
           consumerAfterComputation(consumer, prevConsumer);
+          consumer.isRunning = false;
         }
       }
     }
   } finally {
-    if (lView[REACTIVE_HOST_BINDING_CONSUMER] === null) {
-      commitLViewConsumerIfHasProducers(lView, REACTIVE_HOST_BINDING_CONSUMER);
-    }
     setSelectedIndex(-1);
   }
 }
@@ -275,15 +274,14 @@ export function executeTemplate<T>(
     try {
       if (effectiveConsumer !== null) {
         effectiveConsumer.dirty = false;
+        effectiveConsumer.isRunning = true;
       }
       templateFn(rf, context);
     } finally {
       consumerAfterComputation(effectiveConsumer, prevConsumer);
+      effectiveConsumer && (effectiveConsumer.isRunning = false);
     }
   } finally {
-    if (isUpdatePhase && lView[REACTIVE_TEMPLATE_CONSUMER] === null) {
-      commitLViewConsumerIfHasProducers(lView, REACTIVE_TEMPLATE_CONSUMER);
-    }
     setSelectedIndex(prevSelectedIndex);
 
     const postHookType =

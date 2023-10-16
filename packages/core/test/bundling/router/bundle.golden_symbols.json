@@ -999,9 +999,6 @@
     "name": "combineLatest"
   },
   {
-    "name": "commitLViewConsumerIfHasProducers"
-  },
-  {
     "name": "compare"
   },
   {
@@ -1081,9 +1078,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createLViewConsumer"
   },
   {
     "name": "createNewSegmentChildren"
@@ -1396,9 +1390,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"

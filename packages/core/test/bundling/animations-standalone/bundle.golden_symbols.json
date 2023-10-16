@@ -714,9 +714,6 @@
     "name": "collectNativeNodesInLContainer"
   },
   {
-    "name": "commitLViewConsumerIfHasProducers"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -778,9 +775,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createLViewConsumer"
   },
   {
     "name": "createNodeInjector"
@@ -967,9 +961,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
