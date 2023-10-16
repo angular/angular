@@ -155,4 +155,8 @@ Here are the code files discussed on this page.
   to make the `hero` property available for binding
   by the external `HeroesComponent`.
 
+## Next steps
+
+*  [4. Add services](tutorial/tour-of-heroes/toh-pt4)
+
 @reviewed 2023-08-30

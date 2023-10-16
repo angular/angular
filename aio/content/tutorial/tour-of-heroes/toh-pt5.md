@@ -490,4 +490,8 @@ Here are the code files discussed on this page.
 *   You used router link parameters to navigate to the detail view of a user-selected hero
 *   You shared the `HeroService` with other components
 
+## Next steps
+
+*  [6. Get data from a server](tutorial/tour-of-heroes/toh-pt6)
+
 @reviewed 2022-02-28

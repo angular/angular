@@ -152,4 +152,8 @@ Here are the code files discussed on this page.
 *   You learned that Angular components display data
 *   You used the double curly braces of interpolation to display the application title
 
+## Next steps
+
+*  [1. The hero editor](tutorial/tour-of-heroes/toh-pt1)
+
 @reviewed 2023-08-30
