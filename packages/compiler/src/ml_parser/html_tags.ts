@@ -75,7 +75,7 @@ let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   if (!TAG_DEFINITIONS) {
     DEFAULT_TAG_DEFINITION = new HtmlTagDefinition({canSelfClose: true});
-    TAG_DEFINITIONS = {
+    TAG_DEFINITIONS = Object.assign(Object.create(null), {
       'base': new HtmlTagDefinition({isVoid: true}),
       'meta': new HtmlTagDefinition({isVoid: true}),
       'area': new HtmlTagDefinition({isVoid: true}),
@@ -142,10 +142,10 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       }),
       'textarea': new HtmlTagDefinition(
           {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
-    };
+    });
 
     new DomElementSchemaRegistry().allKnownElementNames().forEach(knownTagName => {
-      if (!TAG_DEFINITIONS.hasOwnProperty(knownTagName) && getNsPrefix(knownTagName) === null) {
+      if (!TAG_DEFINITIONS[knownTagName] && getNsPrefix(knownTagName) === null) {
         TAG_DEFINITIONS[knownTagName] = new HtmlTagDefinition({canSelfClose: false});
       }
     });
