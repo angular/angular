@@ -525,9 +525,6 @@
     "name": "collectNativeNodesInLContainer"
   },
   {
-    "name": "commitLViewConsumerIfHasProducers"
-  },
-  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -565,9 +562,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createLViewConsumer"
   },
   {
     "name": "createNodeInjector"
@@ -718,9 +712,6 @@
   },
   {
     "name": "getNullInjector"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
