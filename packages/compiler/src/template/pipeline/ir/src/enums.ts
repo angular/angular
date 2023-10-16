@@ -426,3 +426,18 @@ export enum BindingKind {
    */
   Animation,
 }
+
+/**
+ * Enumeration of possible times i18n params can be resolved.
+ */
+export enum I18nParamResolutionTime {
+  /**
+   * Param is resolved at message creation time.
+   */
+  Creation,
+
+  /**
+   * Param is resolved during post-processing.
+   */
+  Postproccessing
+}
