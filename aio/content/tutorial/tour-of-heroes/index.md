@@ -102,4 +102,8 @@ Here's the application in action:
 
 </div>
 
+## Next steps
+
+*  [Create a new project](tutorial/tour-of-heroes/toh-pt0)
+
 @reviewed 2022-05-16
