@@ -97,6 +97,11 @@ interface I18nPlaceholderValue {
    * Flags associated with the value.
    */
   flags: I18nParamValueFlags;
+
+  /**
+   * The time when the placeholder value is resolved.
+   */
+  resolutionTime: ir.I18nParamResolutionTime;
 }
 
 /**
@@ -110,9 +115,9 @@ class I18nPlaceholderParams {
    */
   addValue(
       placeholder: string, value: string|number, subTemplateIndex: number|null,
-      flags: I18nParamValueFlags) {
+      resolutionTime: ir.I18nParamResolutionTime, flags: I18nParamValueFlags) {
     const placeholderValues = this.values.get(placeholder) ?? [];
-    placeholderValues.push({value, subTemplateIndex, flags});
+    placeholderValues.push({value, subTemplateIndex, resolutionTime, flags});
     this.values.set(placeholder, placeholderValues);
   }
 
@@ -121,12 +126,27 @@ class I18nPlaceholderParams {
    */
   saveToOp(op: ir.I18nStartOp) {
     for (const [placeholder, placeholderValues] of this.values) {
-      // We need to run post-processing for any 1i8n ops that contain parameters with more than one
-      // value.
-      if (placeholderValues.length > 1) {
+      // We need to run post-processing for any 1i8n ops that contain parameters with more than
+      // one value, even if there are no parameters resolved at post-processing time.
+      const creationValues = placeholderValues.filter(
+          ({resolutionTime}) => resolutionTime === ir.I18nParamResolutionTime.Creation);
+      if (creationValues.length > 1) {
         op.needsPostprocessing = true;
       }
-      op.params.set(placeholder, o.literal(this.serializeValues(placeholderValues)));
+
+      // Save creation time params to op.
+      const serializedCreationValues = this.serializeValues(creationValues);
+      if (serializedCreationValues !== null) {
+        op.params.set(placeholder, o.literal(serializedCreationValues));
+      }
+
+      // Save post-processing time params to op.
+      const serializedPostprocessingValues = this.serializeValues(placeholderValues.filter(
+          ({resolutionTime}) => resolutionTime === ir.I18nParamResolutionTime.Postproccessing));
+      if (serializedPostprocessingValues !== null) {
+        op.needsPostprocessing = true;
+        op.postprocessingParams.set(placeholder, o.literal(serializedPostprocessingValues));
+      }
     }
   }
 
@@ -151,6 +171,9 @@ class I18nPlaceholderParams {
    * Serializes a list of i18n placeholder values.
    */
   private serializeValues(values: I18nPlaceholderValue[]) {
+    if (values.length === 0) {
+      return null;
+    }
     const serializedValues = values.map(value => this.serializeValue(value));
     return serializedValues.length === 1 ?
         serializedValues[0] :
@@ -202,7 +225,7 @@ export function phaseResolveI18nPlaceholders(job: ComponentCompilationJob) {
   for (const op of i18nOps.values()) {
     if (op.xref === op.root) {
       for (const placeholder in op.message.placeholders) {
-        if (!op.params.has(placeholder)) {
+        if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
           throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
         }
       }
@@ -246,7 +269,8 @@ function resolvePlaceholders(
               flags |= I18nParamValueFlags.CloseTag;
             }
             addParam(
-                params, currentI18nOp, startName, op.slot!, currentI18nOp.subTemplateIndex, flags);
+                params, currentI18nOp, startName, op.slot!, currentI18nOp.subTemplateIndex,
+                ir.I18nParamResolutionTime.Creation, flags);
           }
           break;
         case ir.OpKind.ElementEnd:
@@ -260,6 +284,7 @@ function resolvePlaceholders(
             if (closeName !== '') {
               addParam(
                   params, currentI18nOp, closeName, startOp.slot!, currentI18nOp.subTemplateIndex,
+                  ir.I18nParamResolutionTime.Creation,
                   I18nParamValueFlags.ElementTag | I18nParamValueFlags.CloseTag);
             }
           }
@@ -272,9 +297,10 @@ function resolvePlaceholders(
             const subTemplateIndex = getSubTemplateIndexForTemplateTag(job, currentI18nOp, op);
             addParam(
                 params, currentI18nOp, op.i18nPlaceholder.startName, op.slot!, subTemplateIndex,
-                I18nParamValueFlags.TemplateTag);
+                ir.I18nParamResolutionTime.Creation, I18nParamValueFlags.TemplateTag);
             addParam(
                 params, currentI18nOp, op.i18nPlaceholder.closeName, op.slot!, subTemplateIndex,
+                ir.I18nParamResolutionTime.Creation,
                 I18nParamValueFlags.TemplateTag | I18nParamValueFlags.CloseTag);
           }
           break;
@@ -290,7 +316,9 @@ function resolvePlaceholders(
         if (!i18nOp) {
           throw Error('Cannot find corresponding i18nStart for i18nExpr');
         }
-        addParam(params, i18nOp, op.i18nPlaceholder, index++, i18nOp.subTemplateIndex);
+        addParam(
+            params, i18nOp, op.i18nPlaceholder, index++, i18nOp.subTemplateIndex,
+            op.resolutionTime);
         i18nBlockPlaceholderIndices.set(op.owner, index);
       }
     }
@@ -302,10 +330,10 @@ function resolvePlaceholders(
  */
 function addParam(
     params: Map<ir.XrefId, I18nPlaceholderParams>, i18nOp: ir.I18nStartOp, placeholder: string,
-    value: string|number, subTemplateIndex: number|null,
+    value: string|number, subTemplateIndex: number|null, resolutionTime: ir.I18nParamResolutionTime,
     flags: I18nParamValueFlags = I18nParamValueFlags.None) {
   const i18nOpParams = params.get(i18nOp.xref) || new I18nPlaceholderParams();
-  i18nOpParams.addValue(placeholder, value, subTemplateIndex, flags);
+  i18nOpParams.addValue(placeholder, value, subTemplateIndex, resolutionTime, flags);
   params.set(i18nOp.xref, i18nOpParams);
 }
 
