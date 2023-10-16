@@ -221,4 +221,8 @@ Here are the code files discussed on this page.
 *   You imported the `FormsModule` in the `AppModule` so that Angular would recognize and apply the `ngModel` directive.
 *   You learned the importance of declaring components in the `AppModule`.
 
+## Next steps
+
+*  [2. Display a list](tutorial/tour-of-heroes/toh-pt2)
+
 @reviewed 2022-02-28
