@@ -240,6 +240,12 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
           expect(parsed.errors).toEqual([]);
         });
+
+        it('should parse element with JavaScript keyword tag name', () => {
+          expect(humanizeDom(parser.parse('<constructor></constructor>', 'TestComp'))).toEqual([
+            [html.Element, 'constructor', 0]
+          ]);
+        });
       });
 
       describe('attributes', () => {
