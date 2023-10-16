@@ -366,4 +366,8 @@ Here are the code files discussed on this page.
 *   You created a `MessageService` for loosely coupled communication between classes.
 *   The `HeroService` injected into a component is created with another injected service, `MessageService`.
 
+## Next steps
+
+*  [5. Add navigation](tutorial/tour-of-heroes/toh-pt5)
+
 @reviewed 2022-02-28

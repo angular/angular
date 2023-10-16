@@ -206,4 +206,8 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 * You used `*ngIf` to conditionally include or exclude a block of HTML.
 * You can toggle a CSS style class with a `class` binding.
 
+## Next steps
+
+*  [3. Create a feature component](tutorial/tour-of-heroes/toh-pt3)
+
 @reviewed 2023-08-30
