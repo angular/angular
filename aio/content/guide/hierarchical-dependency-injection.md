@@ -827,7 +827,7 @@ Here is the `viewProviders` array in the `<app-child>` class and `@Host()` in th
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
-  standone: true,
+  standalone: true,
   selector: 'app-child',
   &hellip;
   viewProviders:
