@@ -202,7 +202,7 @@ One of the most common scenarios that developers encounter is the desire to show
 Similar to JavaScript's `if` control block, Angular provides a built-in `ngIf` directive to control whether an element will render if the expression returns a truthy value.
 
 ```html
-<section class="admin-controls" *ngIf="hasAdminPrivliges">
+<section class="admin-controls" *ngIf="hasAdminPrivileges">
   The content you are looking for is here.
 </section>
 ```
