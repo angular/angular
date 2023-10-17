@@ -894,9 +894,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "disableStylesheet"
-  },
-  {
     "name": "documentElement"
   },
   {
@@ -1330,9 +1327,6 @@
   },
   {
     "name": "noSideEffects"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
