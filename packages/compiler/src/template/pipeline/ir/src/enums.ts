@@ -432,12 +432,14 @@ export enum BindingKind {
  */
 export enum I18nParamResolutionTime {
   /**
-   * Param is resolved at message creation time.
+   * Param is resolved at message creation time. Most params should be resolved at message creation
+   * time. However, ICU params need to be handled in post-processing.
    */
   Creation,
 
   /**
-   * Param is resolved during post-processing.
+   * Param is resolved during post-processing. This should be used for params who's value comes from
+   * an ICU.
    */
   Postproccessing
 }
