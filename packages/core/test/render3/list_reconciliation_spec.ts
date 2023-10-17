@@ -261,19 +261,21 @@ describe('list reconciliation', () => {
     });
 
     it('should create / reuse duplicated items as needed', () => {
-      const pc = new LoggingLiveCollection([1, 1, 2, 3]);
-      reconcile(pc, [2, 3, 1, 1, 1, 4], trackByIdentity);
+      const trackByKey = (idx: number, item: {k: number}) => item.k;
+      const pc =
+          new LoggingLiveCollection<{k: number}, {k: number}>([{k: 1}, {k: 1}, {k: 2}, {k: 3}]);
+      reconcile(pc, [{k: 2}, {k: 3}, {k: 1}, {k: 1}, {k: 1}, {k: 4}], trackByKey);
 
-      expect(pc.getCollection()).toEqual([2, 3, 1, 1, 1, 4]);
+      expect(pc.getCollection()).toEqual([{k: 2}, {k: 3}, {k: 1}, {k: 1}, {k: 1}, {k: 4}]);
       expect(pc.getLogs()).toEqual([
-        ['detach', 0, 1],
-        ['detach', 0, 1],
-        ['attach', 2, 1],
-        ['attach', 3, 1],
-        ['create', 4, 1],
-        ['attach', 4, 1],
-        ['create', 5, 4],
-        ['attach', 5, 4],
+        ['detach', 0, {k: 1}],
+        ['detach', 0, {k: 1}],
+        ['attach', 2, {k: 1}],
+        ['attach', 3, {k: 1}],
+        ['create', 4, {k: 1}],
+        ['attach', 4, {k: 1}],
+        ['create', 5, {k: 4}],
+        ['attach', 5, {k: 4}],
       ]);
     });
   });
