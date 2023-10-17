@@ -61,171 +61,171 @@ function runNgZoneNoLog(fn: () => any) {
   }
 }
 
-{
-  describe('NgZone', () => {
-    function createZone(enableLongStackTrace: boolean) {
-      return new NgZone({enableLongStackTrace: enableLongStackTrace});
-    }
 
+describe('NgZone', () => {
+  function createZone(enableLongStackTrace: boolean) {
+    return new NgZone({enableLongStackTrace: enableLongStackTrace});
+  }
+
+  beforeEach(() => {
+    _log = new Log();
+    _errors = [];
+    _traces = [];
+  });
+
+  describe('long stack trace', () => {
     beforeEach(() => {
-      _log = new Log();
-      _errors = [];
-      _traces = [];
+      _zone = createZone(true);
+      logOnUnstable();
+      logOnMicrotaskEmpty();
+      logOnStable();
+      logOnError();
     });
 
-    describe('long stack trace', () => {
-      beforeEach(() => {
-        _zone = createZone(true);
-        logOnUnstable();
-        logOnMicrotaskEmpty();
-        logOnStable();
-        logOnError();
-      });
+    commonTests();
 
-      commonTests();
+    it('should produce long stack traces', done => {
+      macroTask(() => {
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
-      it('should produce long stack traces', done => {
-        macroTask(() => {
-          let resolve: (result: any) => void;
-          const promise: Promise<any> = new Promise((res) => {
-            resolve = res;
-          });
-
-          _zone.run(() => {
+        _zone.run(() => {
+          setTimeout(() => {
             setTimeout(() => {
-              setTimeout(() => {
-                resolve(null);
-                throw new Error('ccc');
-              }, 0);
+              resolve(null);
+              throw new Error('ccc');
             }, 0);
-          });
+          }, 0);
+        });
 
-          promise.then((_) => {
-            expect(_traces.length).toBe(1);
-            expect(_traces[0].length).toBeGreaterThan(1);
-            done();
-          });
+        promise.then((_) => {
+          expect(_traces.length).toBe(1);
+          expect(_traces[0].length).toBeGreaterThan(1);
+          done();
         });
       });
+    });
 
-      it('should produce long stack traces (when using microtasks)', done => {
-        macroTask(() => {
-          let resolve: (result: any) => void;
-          const promise: Promise<any> = new Promise((res) => {
-            resolve = res;
-          });
+    it('should produce long stack traces (when using microtasks)', done => {
+      macroTask(() => {
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
-          _zone.run(() => {
+        _zone.run(() => {
+          queueMicrotask(() => {
             queueMicrotask(() => {
-              queueMicrotask(() => {
-                resolve(null);
-                throw new Error('ddd');
-              });
+              resolve(null);
+              throw new Error('ddd');
             });
           });
+        });
 
-          promise.then((_) => {
-            expect(_traces.length).toBe(1);
-            expect(_traces[0].length).toBeGreaterThan(1);
-            done();
-          });
+        promise.then((_) => {
+          expect(_traces.length).toBe(1);
+          expect(_traces[0].length).toBeGreaterThan(1);
+          done();
         });
       });
     });
+  });
 
-    describe('short stack trace', () => {
-      beforeEach(() => {
-        _zone = createZone(false);
-        logOnUnstable();
-        logOnMicrotaskEmpty();
-        logOnStable();
-        logOnError();
-      });
+  describe('short stack trace', () => {
+    beforeEach(() => {
+      _zone = createZone(false);
+      logOnUnstable();
+      logOnMicrotaskEmpty();
+      logOnStable();
+      logOnError();
+    });
 
-      commonTests();
+    commonTests();
 
-      it('should disable long stack traces', done => {
-        macroTask(() => {
-          let resolve: (result: any) => void;
-          const promise: Promise<any> = new Promise((res) => {
-            resolve = res;
-          });
+    it('should disable long stack traces', done => {
+      macroTask(() => {
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
-          _zone.run(() => {
+        _zone.run(() => {
+          setTimeout(() => {
             setTimeout(() => {
-              setTimeout(() => {
-                resolve(null);
-                throw new Error('ccc');
-              }, 0);
+              resolve(null);
+              throw new Error('ccc');
             }, 0);
-          });
+          }, 0);
+        });
 
-          promise.then((_) => {
-            expect(_traces.length).toBe(1);
-            if (_traces[0] != null) {
-              // some browsers don't have stack traces.
-              expect(_traces[0].indexOf('---')).toEqual(-1);
-            }
-            done();
-          });
+        promise.then((_) => {
+          expect(_traces.length).toBe(1);
+          if (_traces[0] != null) {
+            // some browsers don't have stack traces.
+            expect(_traces[0].indexOf('---')).toEqual(-1);
+          }
+          done();
         });
       });
     });
   });
+});
 
-  describe('NoopNgZone', () => {
-    const ngZone = new NoopNgZone();
+describe('NoopNgZone', () => {
+  const ngZone = new NoopNgZone();
 
-    it('should run', () => {
-      let runs = false;
-      ngZone.run(() => {
-        ngZone.runGuarded(() => {
-          ngZone.runOutsideAngular(() => {
-            runs = true;
-          });
+  it('should run', () => {
+    let runs = false;
+    ngZone.run(() => {
+      ngZone.runGuarded(() => {
+        ngZone.runOutsideAngular(() => {
+          runs = true;
         });
       });
-      expect(runs).toBe(true);
     });
+    expect(runs).toBe(true);
+  });
 
-    it('should run with this context and arguments', () => {
-      let runs = false;
-      let applyThisArray: any[] = [];
-      let applyArgsArray: any[] = [];
-      const testContext = {};
-      const testArgs = ['args'];
-      ngZone.run(function(this: any, arg: any) {
+  it('should run with this context and arguments', () => {
+    let runs = false;
+    let applyThisArray: any[] = [];
+    let applyArgsArray: any[] = [];
+    const testContext = {};
+    const testArgs = ['args'];
+    ngZone.run(function(this: any, arg: any) {
+      applyThisArray.push(this);
+      applyArgsArray.push([arg]);
+      ngZone.runGuarded(function(this: any, argGuarded: any) {
         applyThisArray.push(this);
-        applyArgsArray.push([arg]);
-        ngZone.runGuarded(function(this: any, argGuarded: any) {
+        applyArgsArray.push([argGuarded]);
+        ngZone.runOutsideAngular(function(this: any, argOutsideAngular: any) {
           applyThisArray.push(this);
-          applyArgsArray.push([argGuarded]);
-          ngZone.runOutsideAngular(function(this: any, argOutsideAngular: any) {
-            applyThisArray.push(this);
-            applyArgsArray.push([argOutsideAngular]);
-            runs = true;
-          });
-        }, this, [arg]);
-      }, testContext, testArgs);
-      expect(runs).toBe(true);
-      expect(applyThisArray.length).toBe(3);
-      expect(applyArgsArray.length).toBe(3);
-      expect(applyThisArray[0]).toBe(testContext);
-      expect(applyThisArray[1]).toBe(testContext);
-      expect(applyThisArray[2]).not.toBe(testContext);
-      expect(applyArgsArray[0]).toEqual(testArgs);
-      expect(applyArgsArray[1]).toEqual(testArgs);
-      expect(applyArgsArray[2]).toEqual([undefined]);
-    });
-
-    it('should have EventEmitter instances', () => {
-      expect(ngZone.onError instanceof EventEmitter).toBe(true);
-      expect(ngZone.onStable instanceof EventEmitter).toBe(true);
-      expect(ngZone.onUnstable instanceof EventEmitter).toBe(true);
-      expect(ngZone.onMicrotaskEmpty instanceof EventEmitter).toBe(true);
-    });
+          applyArgsArray.push([argOutsideAngular]);
+          runs = true;
+        });
+      }, this, [arg]);
+    }, testContext, testArgs);
+    expect(runs).toBe(true);
+    expect(applyThisArray.length).toBe(3);
+    expect(applyArgsArray.length).toBe(3);
+    expect(applyThisArray[0]).toBe(testContext);
+    expect(applyThisArray[1]).toBe(testContext);
+    expect(applyThisArray[2]).not.toBe(testContext);
+    expect(applyArgsArray[0]).toEqual(testArgs);
+    expect(applyArgsArray[1]).toEqual(testArgs);
+    expect(applyArgsArray[2]).toEqual([undefined]);
   });
-}
+
+  it('should have EventEmitter instances', () => {
+    expect(ngZone.onError instanceof EventEmitter).toBe(true);
+    expect(ngZone.onStable instanceof EventEmitter).toBe(true);
+    expect(ngZone.onUnstable instanceof EventEmitter).toBe(true);
+    expect(ngZone.onMicrotaskEmpty instanceof EventEmitter).toBe(true);
+  });
+});
+
 
 function commonTests() {
   describe('hasPendingMicrotasks', () => {

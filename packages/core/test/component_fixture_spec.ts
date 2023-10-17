@@ -114,210 +114,209 @@ class NestedAsyncTimeoutComp {
   }
 }
 
-{
-  describe('ComponentFixture', () => {
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [
-          AutoDetectComp, AsyncComp, AsyncTimeoutComp, NestedAsyncTimeoutComp, AsyncChangeComp,
-          MyIfComp, SimpleComp, AsyncChildComp
-        ]
-      });
-    }));
-
-    it('should auto detect changes if autoDetectChanges is called', () => {
-      const componentFixture = TestBed.createComponent(AutoDetectComp);
-      expect(componentFixture.ngZone).not.toBeNull();
-      componentFixture.autoDetectChanges();
-      expect(componentFixture.nativeElement).toHaveText('1');
-
-      const element = componentFixture.debugElement.children[0];
-      dispatchEvent(element.nativeElement, 'click');
-
-      expect(componentFixture.isStable()).toBe(true);
-      expect(componentFixture.nativeElement).toHaveText('11');
+describe('ComponentFixture', () => {
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [
+        AutoDetectComp, AsyncComp, AsyncTimeoutComp, NestedAsyncTimeoutComp, AsyncChangeComp,
+        MyIfComp, SimpleComp, AsyncChildComp
+      ]
     });
+  }));
 
-    it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
-       withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
-         const componentFixture = TestBed.createComponent(AutoDetectComp);
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should auto detect changes if autoDetectChanges is called', () => {
+    const componentFixture = TestBed.createComponent(AutoDetectComp);
+    expect(componentFixture.ngZone).not.toBeNull();
+    componentFixture.autoDetectChanges();
+    expect(componentFixture.nativeElement).toHaveText('1');
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+    const element = componentFixture.debugElement.children[0];
+    dispatchEvent(element.nativeElement, 'click');
 
+    expect(componentFixture.isStable()).toBe(true);
+    expect(componentFixture.nativeElement).toHaveText('11');
+  });
+
+  it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
+     withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
+       const componentFixture = TestBed.createComponent(AutoDetectComp);
+       expect(componentFixture.nativeElement).toHaveText('1');
+
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+
+       expect(componentFixture.nativeElement).toHaveText('11');
+     }));
+
+  it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncComp);
+       componentFixture.autoDetectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
+
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
+
+       // Component is updated asynchronously. Wait for the fixture to become stable
+       // before checking for new value.
+       expect(componentFixture.isStable()).toBe(false);
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
          expect(componentFixture.nativeElement).toHaveText('11');
-       }));
+       });
+     }));
 
-    it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncComp);
-         componentFixture.autoDetectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncComp);
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
+       componentFixture.detectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-         // Component is updated asynchronously. Wait for the fixture to become stable
-         // before checking for new value.
-         expect(componentFixture.isStable()).toBe(false);
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-    it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncComp);
-
+       // Component is updated asynchronously. Wait for the fixture to become stable
+       // before checking.
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
          componentFixture.detectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
+         expect(componentFixture.nativeElement).toHaveText('11');
+       });
+     }));
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should wait for macroTask(setTimeout) while checking for whenStable ' +
+         '(autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+       componentFixture.autoDetectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-         // Component is updated asynchronously. Wait for the fixture to become stable
-         // before checking.
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-    it('should wait for macroTask(setTimeout) while checking for whenStable ' +
-           '(autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
-         componentFixture.autoDetectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
+       // Component is updated asynchronously. Wait for the fixture to become
+       // stable before checking for new value.
+       expect(componentFixture.isStable()).toBe(false);
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
+         expect(componentFixture.nativeElement).toHaveText('11');
+       });
+     }));
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should wait for macroTask(setTimeout) while checking for whenStable ' +
+         '(no autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+       componentFixture.detectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-         // Component is updated asynchronously. Wait for the fixture to become
-         // stable before checking for new value.
-         expect(componentFixture.isStable()).toBe(false);
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-    it('should wait for macroTask(setTimeout) while checking for whenStable ' +
-           '(no autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+       // Component is updated asynchronously. Wait for the fixture to become
+       // stable before checking for new value.
+       expect(componentFixture.isStable()).toBe(false);
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
          componentFixture.detectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
+         expect(componentFixture.nativeElement).toHaveText('11');
+       });
+     }));
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
+         '(autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
 
-         // Component is updated asynchronously. Wait for the fixture to become
-         // stable before checking for new value.
-         expect(componentFixture.isStable()).toBe(false);
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
+       componentFixture.autoDetectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-    it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
-           '(autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-         componentFixture.autoDetectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
+       // Component is updated asynchronously. Wait for the fixture to become
+       // stable before checking for new value.
+       expect(componentFixture.isStable()).toBe(false);
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
+         expect(componentFixture.nativeElement).toHaveText('11');
+       });
+     }));
 
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
+  it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
+         '(no autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+       componentFixture.detectChanges();
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-         // Component is updated asynchronously. Wait for the fixture to become
-         // stable before checking for new value.
-         expect(componentFixture.isStable()).toBe(false);
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
+       const element = componentFixture.debugElement.children[0];
+       dispatchEvent(element.nativeElement, 'click');
+       expect(componentFixture.nativeElement).toHaveText('1');
 
-    it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
-           '(no autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+       // Component is updated asynchronously. Wait for the fixture to become
+       // stable before checking for new value.
+       expect(componentFixture.isStable()).toBe(false);
+       componentFixture.whenStable().then((waited) => {
+         expect(waited).toBe(true);
          componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('11');
+       });
+     }));
+
+  it('should stabilize after async task in change detection (autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncChangeComp);
+
+       componentFixture.autoDetectChanges();
+       componentFixture.whenStable().then((_) => {
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
 
-         // Component is updated asynchronously. Wait for the fixture to become
-         // stable before checking for new value.
-         expect(componentFixture.isStable()).toBe(false);
-         componentFixture.whenStable().then((waited) => {
-           expect(waited).toBe(true);
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
-
-    it('should stabilize after async task in change detection (autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncChangeComp);
-
-         componentFixture.autoDetectChanges();
          componentFixture.whenStable().then((_) => {
-           expect(componentFixture.nativeElement).toHaveText('1');
-
-           const element = componentFixture.debugElement.children[0];
-           dispatchEvent(element.nativeElement, 'click');
-
-           componentFixture.whenStable().then((_) => {
-             expect(componentFixture.nativeElement).toHaveText('11');
-           });
+           expect(componentFixture.nativeElement).toHaveText('11');
          });
-       }));
+       });
+     }));
 
-    it('should stabilize after async task in change detection(no autoDetectChanges)',
-       waitForAsync(() => {
-         const componentFixture = TestBed.createComponent(AsyncChangeComp);
+  it('should stabilize after async task in change detection(no autoDetectChanges)',
+     waitForAsync(() => {
+       const componentFixture = TestBed.createComponent(AsyncChangeComp);
+       componentFixture.detectChanges();
+       componentFixture.whenStable().then((_) => {
+         // Run detectChanges again so that stabilized value is reflected in the
+         // DOM.
          componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('1');
+
+         const element = componentFixture.debugElement.children[0];
+         dispatchEvent(element.nativeElement, 'click');
+         componentFixture.detectChanges();
+
          componentFixture.whenStable().then((_) => {
-           // Run detectChanges again so that stabilized value is reflected in the
-           // DOM.
+           // Run detectChanges again so that stabilized value is reflected in
+           // the DOM.
            componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('1');
-
-           const element = componentFixture.debugElement.children[0];
-           dispatchEvent(element.nativeElement, 'click');
-           componentFixture.detectChanges();
-
-           componentFixture.whenStable().then((_) => {
-             // Run detectChanges again so that stabilized value is reflected in
-             // the DOM.
-             componentFixture.detectChanges();
-             expect(componentFixture.nativeElement).toHaveText('11');
-           });
+           expect(componentFixture.nativeElement).toHaveText('11');
          });
-       }));
+       });
+     }));
 
-    describe('defer', () => {
-      it('should return all defer blocks in the component', async () => {
-        @Component({
-          selector: 'defer-comp',
-          standalone: true,
-          imports: [DeferredComp, SecondDeferredComp],
-          template: `<div>
+  describe('defer', () => {
+    it('should return all defer blocks in the component', async () => {
+      @Component({
+        selector: 'defer-comp',
+        standalone: true,
+        imports: [DeferredComp, SecondDeferredComp],
+        template: `<div>
             @defer (on immediate) {
               <DeferredComp />
             }
@@ -325,47 +324,46 @@ class NestedAsyncTimeoutComp {
               <SecondDeferredComp />
             }
           </div>`
-        })
-        class DeferComp {
-        }
+      })
+      class DeferComp {
+      }
 
-        const componentFixture = TestBed.createComponent(DeferComp);
-        const deferBlocks = await componentFixture.getDeferBlocks();
-        expect(deferBlocks.length).toBe(2);
-      });
-    });
-
-    describe('No NgZone', () => {
-      beforeEach(() => {
-        TestBed.configureTestingModule(
-            {providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]});
-      });
-
-      it('calling autoDetectChanges raises an error', () => {
-        const componentFixture = TestBed.createComponent(SimpleComp);
-        expect(() => {
-          componentFixture.autoDetectChanges();
-        }).toThrowError(/Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set/);
-      });
-
-      it('should instantiate a component with valid DOM', waitForAsync(() => {
-           const componentFixture = TestBed.createComponent(SimpleComp);
-
-           expect(componentFixture.ngZone).toBeNull();
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('Original Simple');
-         }));
-
-      it('should allow changing members of the component', waitForAsync(() => {
-           const componentFixture = TestBed.createComponent(MyIfComp);
-
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('MyIf()');
-
-           componentFixture.componentInstance.showMore = true;
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
-         }));
+      const componentFixture = TestBed.createComponent(DeferComp);
+      const deferBlocks = await componentFixture.getDeferBlocks();
+      expect(deferBlocks.length).toBe(2);
     });
   });
-}
+
+  describe('No NgZone', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]});
+    });
+
+    it('calling autoDetectChanges raises an error', () => {
+      const componentFixture = TestBed.createComponent(SimpleComp);
+      expect(() => {
+        componentFixture.autoDetectChanges();
+      }).toThrowError(/Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set/);
+    });
+
+    it('should instantiate a component with valid DOM', waitForAsync(() => {
+         const componentFixture = TestBed.createComponent(SimpleComp);
+
+         expect(componentFixture.ngZone).toBeNull();
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('Original Simple');
+       }));
+
+    it('should allow changing members of the component', waitForAsync(() => {
+         const componentFixture = TestBed.createComponent(MyIfComp);
+
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('MyIf()');
+
+         componentFixture.componentInstance.showMore = true;
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
+       }));
+  });
+});
