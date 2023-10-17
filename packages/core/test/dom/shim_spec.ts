@@ -10,17 +10,15 @@
 // serve the file if there isn't at least one import.
 import '@angular/core/testing';
 
-{
-  describe('Shim', () => {
-    it('should provide correct function.name ', () => {
-      const functionWithoutName = identity(() => function() {});
-      function foo() {}
+describe('Shim', () => {
+  it('should provide correct function.name ', () => {
+    const functionWithoutName = identity(() => function() {});
+    function foo() {}
 
-      expect(functionWithoutName.name).toBeFalsy();
-      expect(foo.name).toEqual('foo');
-    });
+    expect(functionWithoutName.name).toBeFalsy();
+    expect(foo.name).toEqual('foo');
   });
-}
+});
 
 function identity<T>(a: T): T {
   return a;

@@ -11,50 +11,48 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-{
-  describe('integration tests', () => {
-    let fixture: ComponentFixture<TestComponent>;
+describe('integration tests', () => {
+  let fixture: ComponentFixture<TestComponent>;
 
-    describe('directives', () => {
-      it('should support dotted selectors', waitForAsync(() => {
-           @Directive({selector: '[dot.name]'})
-           class MyDir {
-             @Input('dot.name') value!: string;
-           }
+  describe('directives', () => {
+    it('should support dotted selectors', waitForAsync(() => {
+         @Directive({selector: '[dot.name]'})
+         class MyDir {
+           @Input('dot.name') value!: string;
+         }
 
-           TestBed.configureTestingModule({
-             declarations: [
-               MyDir,
-               TestComponent,
-             ],
-           });
+         TestBed.configureTestingModule({
+           declarations: [
+             MyDir,
+             TestComponent,
+           ],
+         });
 
-           const template = `<div [dot.name]="'foo'"></div>`;
-           fixture = createTestComponent(template);
-           fixture.detectChanges();
-           const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
-           expect(myDir.value).toEqual('foo');
-         }));
-    });
-
-    describe('ng-container', () => {
-      it('should work regardless the namespace', waitForAsync(() => {
-           @Component({
-             selector: 'comp',
-             template:
-                 '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
-           })
-           class MyCmp {
-           }
-
-           const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
-           f.detectChanges();
-
-           expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
-         }));
-    });
+         const template = `<div [dot.name]="'foo'"></div>`;
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+         expect(myDir.value).toEqual('foo');
+       }));
   });
-}
+
+  describe('ng-container', () => {
+    it('should work regardless the namespace', waitForAsync(() => {
+         @Component({
+           selector: 'comp',
+           template:
+               '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
+         })
+         class MyCmp {
+         }
+
+         const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+         f.detectChanges();
+
+         expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+       }));
+  });
+});
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
