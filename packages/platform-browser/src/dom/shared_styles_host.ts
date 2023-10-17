@@ -139,6 +139,7 @@ export class SharedStylesHost implements OnDestroy {
     if (existingStyleElement) {
       return existingStyleElement;
     }
+
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
@@ -166,6 +167,8 @@ export class SharedStylesHost implements OnDestroy {
         styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
       }
 
+      host.appendChild(styleEl);
+
       return styleEl;
     }
   }
@@ -174,8 +177,6 @@ export class SharedStylesHost implements OnDestroy {
     const styleRef = this.styleRef;
     const styleResult = styleRef.get(style)!;  // This will always be defined in `changeUsageCount`
     const styleEl = this.getStyleElement(host, style, styleResult.elements);
-
-    host.appendChild(styleEl);
 
     if (styleResult.usage === 0) {
       disableStylesheet(styleEl);
