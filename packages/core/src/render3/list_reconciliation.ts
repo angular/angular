@@ -7,6 +7,7 @@
  */
 
 import {TrackByFunction} from '../change_detection';
+import {assertNotSame} from '../util/assert';
 
 /**
  * A type representing the live collection to be reconciled with any new (incoming) collection. This
@@ -86,7 +87,7 @@ function valuesMatching<V>(
 export function reconcile<T, V>(
     liveCollection: LiveCollection<T, V>, newCollection: Iterable<V>|undefined|null,
     trackByFn: TrackByFunction<V>): void {
-  let detachedItems: MultiMap<unknown, T>|undefined = undefined;
+  let detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined = undefined;
   let liveKeysInTheFuture: Set<unknown>|undefined = undefined;
 
   let liveStartIdx = 0;
@@ -148,7 +149,7 @@ export function reconcile<T, V>(
 
       // Fallback to the slow path: we need to learn more about the content of the live and new
       // collections.
-      detachedItems ??= new MultiMap();
+      detachedItems ??= new UniqueValueMultiKeyMap();
       liveKeysInTheFuture ??=
           initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
@@ -197,7 +198,7 @@ export function reconcile<T, V>(
         liveStartIdx++;
         newIterationResult = newCollectionIterator.next();
       } else {
-        detachedItems ??= new MultiMap();
+        detachedItems ??= new UniqueValueMultiKeyMap();
         liveKeysInTheFuture ??=
             initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
@@ -246,8 +247,9 @@ export function reconcile<T, V>(
 }
 
 function attachPreviouslyDetached<T, V>(
-    prevCollection: LiveCollection<T, V>, detachedItems: MultiMap<unknown, T>|undefined,
-    index: number, key: unknown): boolean {
+    prevCollection: LiveCollection<T, V>,
+    detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined, index: number,
+    key: unknown): boolean {
   if (detachedItems !== undefined && detachedItems.has(key)) {
     prevCollection.attach(index, detachedItems.get(key)!);
     detachedItems.delete(key);
@@ -257,7 +259,8 @@ function attachPreviouslyDetached<T, V>(
 }
 
 function createOrAttach<T, V>(
-    liveCollection: LiveCollection<T, V>, detachedItems: MultiMap<unknown, T>|undefined,
+    liveCollection: LiveCollection<T, V>,
+    detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined,
     trackByFn: TrackByFunction<unknown>, index: number, value: V) {
   if (!attachPreviouslyDetached(liveCollection, detachedItems, index, trackByFn(index, value))) {
     const newItem = liveCollection.create(index, value);
@@ -277,43 +280,78 @@ function initLiveItemsInTheFuture<T>(
   return keys;
 }
 
-class MultiMap<K, V> {
-  private map = new Map<K, Array<V>>();
+/**
+ * A specific, partial implementation of the Map interface with the following characteristics:
+ * - allows multiple values for a given key;
+ * - maintain FIFO order for multiple values corresponding to a given key;
+ * - assumes that all values are unique.
+ *
+ * The implementation aims at having the minimal overhead for cases where keys are _not_ duplicated
+ * (the most common case in the list reconciliation algorithm). To achieve this, the first value for
+ * a given key is stored in a regular map. Then, when more values are set for a given key, we
+ * maintain a form of linked list in a separate map. To maintain this linked list we assume that all
+ * values (in the entire collection) are unique.
+ */
+export class UniqueValueMultiKeyMap<K, V> {
+  // A map from a key to the first value corresponding to this key.
+  private kvMap = new Map<K, V>();
+  // A map that acts as a linked list of values - each value maps to the next value in this "linked
+  // list" (this only works if values are unique). Allocated lazily to avoid memory consumption when
+  // there are no duplicated values.
+  private _vMap: Map<V, V>|undefined = undefined;
 
   has(key: K): boolean {
-    const listOfKeys = this.map.get(key);
-    return listOfKeys !== undefined && listOfKeys.length > 0;
+    return this.kvMap.has(key);
   }
 
   delete(key: K): boolean {
-    const listOfKeys = this.map.get(key);
-    if (listOfKeys !== undefined) {
-      listOfKeys.shift();
-      return true;
+    if (!this.has(key)) return false;
+
+    const value = this.kvMap.get(key)!;
+    if (this._vMap !== undefined && this._vMap.has(value)) {
+      this.kvMap.set(key, this._vMap.get(value)!);
+      this._vMap.delete(value);
+    } else {
+      this.kvMap.delete(key);
     }
-    return false;
+
+    return true;
   }
 
   get(key: K): V|undefined {
-    const listOfKeys = this.map.get(key);
-    return listOfKeys !== undefined && listOfKeys.length > 0 ? listOfKeys[0] : undefined;
+    return this.kvMap.get(key);
   }
 
   set(key: K, value: V): void {
-    // if value is array, they we always store it as [value].
-    if (!this.map.has(key)) {
-      this.map.set(key, [value]);
-      return;
+    if (this.kvMap.has(key)) {
+      let prevValue = this.kvMap.get(key)!;
+      ngDevMode &&
+          assertNotSame(
+              prevValue, value, `Detected a duplicated value ${value} for the key ${key}`);
+
+      if (this._vMap === undefined) {
+        this._vMap = new Map();
+      }
+
+      const vMap = this._vMap;
+      while (vMap.has(prevValue)) {
+        prevValue = vMap.get(prevValue)!;
+      }
+      vMap.set(prevValue, value);
+    } else {
+      this.kvMap.set(key, value);
     }
-    // THINK: this allows duplicate values, but I guess this is fine?
-    // Is the existing key an array or not?
-    this.map.get(key)?.push(value);
   }
 
   forEach(cb: (v: V, k: K) => void) {
-    for (const [key, values] of this.map) {
-      for (const value of values) {
-        cb(value, key);
+    for (let [key, value] of this.kvMap) {
+      cb(value, key);
+      if (this._vMap !== undefined) {
+        const vMap = this._vMap;
+        while (vMap.has(value)) {
+          value = vMap.get(value)!;
+          cb(value, key);
+        }
       }
     }
   }
