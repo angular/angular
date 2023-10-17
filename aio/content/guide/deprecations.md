@@ -425,7 +425,7 @@ They should all be configured using other methods, all of which have been
 documented.
 
 The following strategies are meant to be configured by registering the
-application strategy in DI via the `providers` in the configuration of `boostrapApplication()` for a "Standalone" app or 
+application strategy in DI via the `providers` in the configuration of `bootstrapApplication()` for a "Standalone" app or 
 in the root `app.module` of an NgModule app:
 * `routeReuseStrategy`
 

@@ -20,7 +20,7 @@ export interface WritableSignal<T> extends Signal<T> {
   set(value: T): void;
 
   /**
-   * Update the value of the signal based on itfs current value, and
+   * Update the value of the signal based on its current value, and
    * notify any dependents.
    */
   update(updateFn: (value: T) => T): void;

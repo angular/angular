@@ -374,7 +374,7 @@ Either way, the procedure to update your branch is the same.
 
     </code-example>
 
-    If you have any un-commited changes, [Commit your changes on your local computer](#commit-your-changes-on-your-local-computer) before you continue.
+    If you have any un-committed changes, [Commit your changes on your local computer](#commit-your-changes-on-your-local-computer) before you continue.
 
 1.  Rebase your branch to add the changes in your branch to the current content in the `main` branch.
 
@@ -471,7 +471,7 @@ Because both branches include commits 1-7, they now have the same content.
 
 ### Merging your work into a changed main branch
 
-Being able to `fast-foward` a merge is simple.
+Being able to `fast-forward` a merge is simple.
 Unfortunately, in a repo like `angular/angular` that has many contributors, the main branch is changing frequently.
 A more likely scenario is illustrated here, where the `main` branch changed while you're working on your changes in the `working` branch.
 The resulting branches could be imagined as the following illustration.

@@ -105,7 +105,7 @@ class MockDomAnimation implements Animation {
   }
   currentTime: number = 0;
 
-  // Other properties to ensure conformnce to interface
+  // Other properties to ensure conformance to interface
   effect: AnimationEffect|null = null;
   finished: Promise<Animation> = Promise.resolve({} as any);
   id: string = '';

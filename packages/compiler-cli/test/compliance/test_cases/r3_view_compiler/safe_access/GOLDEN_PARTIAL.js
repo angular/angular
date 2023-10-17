@@ -134,7 +134,7 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
-  <span>Safe Propery with Calls: {{ p()?.a()?.b()?.c()?.d() }}</span>
+  <span>Safe Property with Calls: {{ p()?.a()?.b()?.c()?.d() }}</span>
   <span>Safe and Unsafe Property with Calls: {{ p?.a()?.b().c().d()?.e()?.f?.g.h?.i()?.j()?.k().l }}</span>
   <span>Nested Safe with Calls: {{ f1()?.[f2()?.a]?.b }}</span>
   <span>Deep Nested Safe with Calls: {{ f1()?.[f2()?.f3()?.[f4()?.f5()]]?.f6() }}</span>
@@ -143,7 +143,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     template: `
-  <span>Safe Propery with Calls: {{ p()?.a()?.b()?.c()?.d() }}</span>
+  <span>Safe Property with Calls: {{ p()?.a()?.b()?.c()?.d() }}</span>
   <span>Safe and Unsafe Property with Calls: {{ p?.a()?.b().c().d()?.e()?.f?.g.h?.i()?.j()?.k().l }}</span>
   <span>Nested Safe with Calls: {{ f1()?.[f2()?.a]?.b }}</span>
   <span>Deep Nested Safe with Calls: {{ f1()?.[f2()?.f3()?.[f4()?.f5()]]?.f6() }}</span>
