@@ -828,9 +828,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "disableStylesheet"
-  },
-  {
     "name": "documentElement"
   },
   {
@@ -1258,9 +1255,6 @@
   },
   {
     "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
