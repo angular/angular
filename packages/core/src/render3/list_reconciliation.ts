@@ -124,24 +124,23 @@ export function reconcile<T, V>(
         continue;
       }
 
-      // Detect swap / moves:
+      // Detect swap and moves:
       const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
       const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
       const newStartKey = trackByFn(liveStartIdx, newStartValue);
-      const newEndKey = trackByFn(newEndIdx, newEndValue);
-      if (Object.is(newStartKey, liveEndKey) && Object.is(newEndKey, liveStartKey)) {
-        // swap on both ends;
-        liveCollection.swap(liveStartIdx, liveEndIdx);
-        liveCollection.updateValue(liveStartIdx, newStartValue);
-        liveCollection.updateValue(liveEndIdx, newEndValue);
-        newEndIdx--;
-        liveStartIdx++;
-        liveEndIdx--;
-        continue;
-      } else if (Object.is(newStartKey, liveEndKey)) {
-        // the new item is the same as the live item with the end pointer - this is a move forward
-        // to an earlier index;
-        liveCollection.move(liveEndIdx, liveStartIdx);
+      if (Object.is(newStartKey, liveEndKey)) {
+        const newEndKey = trackByFn(newEndIdx, newEndValue);
+        // detect swap on both ends;
+        if (Object.is(newEndKey, liveStartKey)) {
+          liveCollection.swap(liveStartIdx, liveEndIdx);
+          liveCollection.updateValue(liveEndIdx, newEndValue);
+          newEndIdx--;
+          liveEndIdx--;
+        } else {
+          // the new item is the same as the live item with the end pointer - this is a move forward
+          // to an earlier index;
+          liveCollection.move(liveEndIdx, liveStartIdx);
+        }
         liveCollection.updateValue(liveStartIdx, newStartValue);
         liveStartIdx++;
         continue;
@@ -188,8 +187,6 @@ export function reconcile<T, V>(
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const liveValue = liveCollection.at(liveStartIdx);
       const newValue = newIterationResult.value;
-      const newKey = trackByFn(liveStartIdx, newValue);
-      const liveKey = trackByFn(liveStartIdx, liveValue);
       const isStartMatching =
           valuesMatching(liveStartIdx, liveValue, liveStartIdx, newValue, trackByFn);
       if (isStartMatching !== 0) {
@@ -205,6 +202,7 @@ export function reconcile<T, V>(
             initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
         // Check if I'm inserting a previously detached item: if so, attach it here
+        const newKey = trackByFn(liveStartIdx, newValue);
         if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newKey)) {
           liveCollection.updateValue(liveStartIdx, newValue);
           liveStartIdx++;
@@ -217,6 +215,7 @@ export function reconcile<T, V>(
           newIterationResult = newCollectionIterator.next();
         } else {
           // it is a move forward - detach the current item without advancing in collections
+          const liveKey = trackByFn(liveStartIdx, liveValue);
           detachedItems.set(liveKey, liveCollection.detach(liveStartIdx));
           liveEndIdx--;
         }
