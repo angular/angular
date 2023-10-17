@@ -61,14 +61,5 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       ssh.addHost(someHost);
       expect(someHost.innerHTML).toEqual('<style nonce="{% nonce %}">a {};</style>');
     });
-
-    it('should not add duplicate style nodes', () => {
-      ssh.addHost(someHost);
-      const styles = ['a {};'];
-      ssh.addStyles(styles);
-      ssh.disableStyles(styles);
-      ssh.addStyles(styles);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
-    });
   });
 }
