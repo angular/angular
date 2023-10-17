@@ -72,7 +72,7 @@ describe('ScrollService', () => {
     scrollServiceInstances.forEach(instance => instance.ngOnDestroy());
   });
 
-  it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
+  it('should debounce `updateScrollPositionInHistory()`', fakeAsync(() => {
        const updateScrollPositionInHistorySpy =
            spyOn(scrollService, 'updateScrollPositionInHistory');
 

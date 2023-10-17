@@ -922,7 +922,7 @@ describe('AppComponent', () => {
     });
 
     describe('initial rendering', () => {
-      const originialReducedMotion = AppComponent.reducedMotion;
+      const originalReducedMotion = AppComponent.reducedMotion;
 
       beforeEach(() => {
         jasmine.clock().install();
@@ -931,7 +931,7 @@ describe('AppComponent', () => {
 
       afterEach(() => {
         jasmine.clock().uninstall();
-        AppComponent.reducedMotion = originialReducedMotion;
+        AppComponent.reducedMotion = originalReducedMotion;
       });
 
       it('should initially disable Angular animations until a document is rendered', () => {
@@ -1056,7 +1056,7 @@ describe('AppComponent', () => {
     });
 
     describe('disableAnimations', () => {
-      const originialReducedMotion = AppComponent.reducedMotion;
+      const originalReducedMotion = AppComponent.reducedMotion;
 
       beforeEach(() => {
         jasmine.clock().install();
@@ -1065,7 +1065,7 @@ describe('AppComponent', () => {
 
       afterEach(() => {
         jasmine.clock().uninstall();
-        AppComponent.reducedMotion = originialReducedMotion;
+        AppComponent.reducedMotion = originalReducedMotion;
       });
 
       it('should initially be true', () => {

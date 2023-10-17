@@ -80,7 +80,7 @@ describe('FetchBackend', async () => {
 
   it('should be able to retry', ((done) => {
        const handle = backend.handle(TEST_POST);
-       // Skippin both HttpSentEvent (from the 1st subscription + retry)
+       // Skipping both HttpSentEvent (from the 1st subscription + retry)
        handle.pipe(retry(1), skip(2)).subscribe((response) => {
          expect(response.type).toBe(HttpEventType.Response);
          expect((response as HttpResponse<any>).body).toBe('some response');
@@ -458,13 +458,13 @@ class MockFetchResponse {
   private sub$ = new Subject<any>();
   public stream = new ReadableStream({
 
-    start: (controler) => {
+    start: (controller) => {
       this.sub$.subscribe({
         next: (val) => {
-          controler.enqueue(new TextEncoder().encode(val));
+          controller.enqueue(new TextEncoder().encode(val));
         },
         complete: () => {
-          controler.close();
+          controller.close();
         }
       });
     },

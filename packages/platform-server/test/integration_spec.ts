@@ -28,7 +28,7 @@ const APP_CONFIG: ApplicationConfig = {
   ]
 };
 
-function getStandaloneBoostrapFn(
+function getStandaloneBootstrapFn(
     component: Type<unknown>, providers: Array<Provider|EnvironmentProviders> = []): () =>
     Promise<ApplicationRef> {
   return () => bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}));
@@ -245,7 +245,7 @@ function createMyAsyncServerApp(standalone: boolean) {
 }
 
 const MyAsyncServerApp = createMyAsyncServerApp(false);
-const MyAsyncServerAppStandalone = getStandaloneBoostrapFn(createMyAsyncServerApp(true));
+const MyAsyncServerAppStandalone = getStandaloneBootstrapFn(createMyAsyncServerApp(true));
 
 @NgModule({
   declarations: [MyAsyncServerApp],
@@ -267,7 +267,7 @@ function createSVGComponent(standalone: boolean) {
 }
 
 const SVGComponent = createSVGComponent(false);
-const SVGComponentStandalone = getStandaloneBoostrapFn(createSVGComponent(true));
+const SVGComponentStandalone = getStandaloneBootstrapFn(createSVGComponent(true));
 
 @NgModule({
   declarations: [SVGComponent],
@@ -309,7 +309,7 @@ function createMyAnimationApp(standalone: boolean) {
 }
 
 const MyAnimationApp = createMyAnimationApp(false);
-const MyAnimationAppStandalone = getStandaloneBoostrapFn(createMyAnimationApp(true));
+const MyAnimationAppStandalone = getStandaloneBootstrapFn(createMyAnimationApp(true));
 
 @NgModule({
   declarations: [MyAnimationApp],
@@ -332,7 +332,7 @@ function createMyStylesApp(standalone: boolean) {
 }
 
 const MyStylesApp = createMyStylesApp(false);
-const MyStylesAppStandalone = getStandaloneBoostrapFn(createMyStylesApp(true));
+const MyStylesAppStandalone = getStandaloneBootstrapFn(createMyStylesApp(true));
 
 @NgModule(
     {declarations: [MyStylesApp], imports: [BrowserModule, ServerModule], bootstrap: [MyStylesApp]})
@@ -355,7 +355,7 @@ function createMyTransferStateApp(standalone: boolean) {
 }
 
 const MyTransferStateApp = createMyTransferStateApp(false);
-const MyTransferStateAppStandalone = getStandaloneBoostrapFn(createMyTransferStateApp(true));
+const MyTransferStateAppStandalone = getStandaloneBootstrapFn(createMyTransferStateApp(true));
 
 
 @NgModule({
@@ -415,7 +415,7 @@ function createShadowDomEncapsulationApp(standalone: boolean) {
 
 const ShadowDomEncapsulationApp = createShadowDomEncapsulationApp(false);
 const ShadowDomEncapsulationAppStandalone =
-    getStandaloneBoostrapFn(createShadowDomEncapsulationApp(true));
+    getStandaloneBootstrapFn(createShadowDomEncapsulationApp(true));
 
 @NgModule({
   declarations: [ShadowDomEncapsulationApp],
@@ -447,7 +447,8 @@ function createFalseAttributesComponents(standalone: boolean) {
 }
 
 const [MyHostComponent, MyChildComponent] = createFalseAttributesComponents(false);
-const MyHostComponentStandalone = getStandaloneBoostrapFn(createFalseAttributesComponents(true)[0]);
+const MyHostComponentStandalone =
+    getStandaloneBootstrapFn(createFalseAttributesComponents(true)[0]);
 
 @NgModule({
   declarations: [MyHostComponent, MyChildComponent],
@@ -470,7 +471,7 @@ function createMyInputComponent(standalone: boolean) {
 }
 
 const MyInputComponent = createMyInputComponent(false);
-const MyInputComponentStandalone = getStandaloneBoostrapFn(createMyInputComponent(true));
+const MyInputComponentStandalone = getStandaloneBootstrapFn(createMyInputComponent(true));
 
 @NgModule({
   declarations: [MyInputComponent],
@@ -494,7 +495,7 @@ function createHTMLTypesApp(standalone: boolean) {
 }
 
 const HTMLTypesApp = createHTMLTypesApp(false);
-const HTMLTypesAppStandalone = getStandaloneBoostrapFn(createHTMLTypesApp(true));
+const HTMLTypesAppStandalone = getStandaloneBootstrapFn(createHTMLTypesApp(true));
 
 @NgModule({
   declarations: [HTMLTypesApp],
@@ -517,7 +518,7 @@ function createMyHiddenComponent(standalone: boolean) {
 }
 
 const MyHiddenComponent = createMyHiddenComponent(false);
-const MyHiddenComponentStandalone = getStandaloneBoostrapFn(createMyHiddenComponent(true));
+const MyHiddenComponentStandalone = getStandaloneBootstrapFn(createMyHiddenComponent(true));
 
 @NgModule({
   declarations: [MyHiddenComponent],
@@ -932,7 +933,7 @@ describe('platform-server integration', () => {
         }
 
         const bootstrap = renderApplication(
-            getStandaloneBoostrapFn(SimpleApp, [provideClientHydration()]), {document: doc});
+            getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]), {document: doc});
         // HttpClient cache and DOM hydration are enabled by default.
         const output = await bootstrap;
         expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
@@ -986,7 +987,7 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, RenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, RenderHookProviders), options) :
             renderModule(RenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1000,7 +1001,8 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, MultiRenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, MultiRenderHookProviders),
+                options) :
             renderModule(MultiRenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1014,7 +1016,8 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncRenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
+                options) :
             renderModule(AsyncRenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1028,7 +1031,7 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
                 options) :
             renderModule(AsyncMultiRenderHookModule, options);
         const output = await bootstrap;
@@ -1044,7 +1047,7 @@ describe('platform-server integration', () => {
          async () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(getStandaloneBoostrapFn(PendingTasksAppStandalone), options) :
+               renderApplication(getStandaloneBootstrapFn(PendingTasksAppStandalone), options) :
                renderModule(PendingTasksAppModule, options);
            const output = await bootstrap;
            expect(output).toBe(

@@ -217,7 +217,7 @@ describe('BrowserAnimationBuilder', () => {
 
   describe('without Animations enabled', () => {
     beforeEach(() => {
-      // We need to reset the test environement because
+      // We need to reset the test environment because
       // browser_tests.init.ts inits the environment with the NoopAnimationsModule
       TestBed.resetTestEnvironment();
       TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
