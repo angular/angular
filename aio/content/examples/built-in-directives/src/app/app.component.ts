@@ -22,7 +22,7 @@ import {StoutItemComponent} from './item-switch.component';
   imports: [
     CommonModule, // <-- import into the component
     // #enddocregion import-common-module
-    FormsModule, // <--- import into the omponent
+    FormsModule, // <--- import into the component
     // #enddocregion import-forms-module
     ItemDetailComponent,
     ItemSwitchComponents,

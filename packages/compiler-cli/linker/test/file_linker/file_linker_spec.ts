@@ -167,7 +167,7 @@ describe('FileLinker', () => {
       const {fileLinker} = createFileLinker();
       spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
 
-      // Here we use the `core` idenfifier for `ngImport` to trigger the use of a shared scope for
+      // Here we use the `core` identifier for `ngImport` to trigger the use of a shared scope for
       // constant statements.
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: factory.createIdentifier('core')},

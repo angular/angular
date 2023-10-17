@@ -69,7 +69,7 @@ You're more likely interested in doing something with the values. Pass in a meth
 
 <code-example header="Subscribe to emitted values" path="observables/src/subscribing.ts" region="next-param"></code-example>
 
-Passing a `next()` function into `subcribe` is a convenient syntax for this most typical case. If you also need to know when the observable emits an error or completes, you'll have to pass in an `Observer` instead.
+Passing a `next()` function into `subscribe` is a convenient syntax for this most typical case. If you also need to know when the observable emits an error or completes, you'll have to pass in an `Observer` instead.
 
 ## Defining observers
 

@@ -374,7 +374,7 @@ Either way, the procedure to update your branch is the same.
 
     </code-example>
 
-    If you have any un-commited changes, [Commit your changes on your local computer](#commit-your-changes-on-your-local-computer) before you continue.
+    If you have any un-committed changes, [Commit your changes on your local computer](#commit-your-changes-on-your-local-computer) before you continue.
 
 1.  Rebase your branch to add the changes in your branch to the current content in the `main` branch.
 

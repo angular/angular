@@ -378,7 +378,7 @@ describe('standalone components, directives, and pipes', () => {
        expect(fixture.nativeElement.textContent).toBe('Inner(NodeOverrideService)');
      });
 
-  it('should consult ambient providers before environement injector when inserting a component dynamically',
+  it('should consult ambient providers before environment injector when inserting a component dynamically',
      () => {
        class Service {
          constructor(readonly value = 'Service') {}
@@ -426,7 +426,7 @@ describe('standalone components, directives, and pipes', () => {
        fixture.detectChanges();
 
        // The Service (an ambient provider) gets injected here as the standalone injector is a child
-       // of the user-created environement injector.
+       // of the user-created environment injector.
        expect(fixture.nativeElement.textContent).toBe('Inner(Service)');
      });
 

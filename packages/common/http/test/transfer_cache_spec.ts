@@ -297,7 +297,7 @@ describe('TransferCache', () => {
         expect(response.headers.keys().length).toBe(2);
       });
 
-      it('should cache without headers because overriden', () => {
+      it('should cache without headers because overridden', () => {
         //  nothing specified, should use global options = callback => include + headers
         makeRequestAndExpectOne(
             '/include?foo=1', 'foo',
