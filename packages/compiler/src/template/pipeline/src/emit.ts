@@ -60,6 +60,7 @@ import {phaseStyleBindingSpecialization} from './phases/style_binding_specializa
 import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
+import {phaseWrapIcus} from './phases/wrap_icus';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -79,6 +80,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
   {kind: Kind.Both, fn: phaseBindingSpecialization},
   {kind: Kind.Tmpl, fn: phasePropagateI18nBlocks},
+  {kind: Kind.Tmpl, fn: phaseWrapIcus},
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
