@@ -10,15 +10,12 @@ import {ɵɵdefineInjectable} from '../di';
 import {INJECTOR, LView} from '../render3/interfaces/view';
 import {arrayInsert2, arraySplice} from '../util/array_utils';
 
-import {wrapWithLViewCleanup} from './utils';
-
 /**
  * Returns a function that captures a provided delay.
  * Invoking the returned function schedules a trigger.
  */
 export function onTimer(delay: number) {
-  return (callback: VoidFunction, lView: LView, withLViewCleanup: boolean) =>
-             scheduleTimerTrigger(delay, callback, lView, withLViewCleanup);
+  return (callback: VoidFunction, lView: LView) => scheduleTimerTrigger(delay, callback, lView);
 }
 
 /**
@@ -27,18 +24,12 @@ export function onTimer(delay: number) {
  * @param delay A number of ms to wait until firing a callback.
  * @param callback A function to be invoked after a timeout.
  * @param lView LView that hosts an instance of a defer block.
- * @param withLViewCleanup A flag that indicates whether a scheduled callback
- *           should be cancelled in case an LView is destroyed before a callback
- *           was invoked.
  */
-export function scheduleTimerTrigger(
-    delay: number, callback: VoidFunction, lView: LView, withLViewCleanup: boolean) {
+export function scheduleTimerTrigger(delay: number, callback: VoidFunction, lView: LView) {
   const injector = lView[INJECTOR]!;
   const scheduler = injector.get(TimerScheduler);
   const cleanupFn = () => scheduler.remove(callback);
-  const wrappedCallback =
-      withLViewCleanup ? wrapWithLViewCleanup(callback, lView, cleanupFn) : callback;
-  scheduler.add(delay, wrappedCallback);
+  scheduler.add(delay, callback);
   return cleanupFn;
 }
 
@@ -77,11 +68,16 @@ export class TimerScheduler {
   }
 
   remove(callback: VoidFunction) {
-    const callbackIndex = this.removeFromQueue(this.current, callback);
+    const {current, deferred} = this;
+    const callbackIndex = this.removeFromQueue(current, callback);
     if (callbackIndex === -1) {
       // Try cleaning up deferred queue only in case
       // we didn't find a callback in the "current" queue.
-      this.removeFromQueue(this.deferred, callback);
+      this.removeFromQueue(deferred, callback);
+    }
+    // If the last callback was removed and there is a pending timeout - cancel it.
+    if (current.length === 0 && deferred.length === 0) {
+      this.clearTimeout();
     }
   }
 
@@ -120,32 +116,41 @@ export class TimerScheduler {
 
   private scheduleTimer() {
     const callback = () => {
-      clearTimeout(this.timeoutId!);
-      this.timeoutId = null;
+      this.clearTimeout();
 
       this.executingCallbacks = true;
 
-      // Invoke callbacks that were scheduled to run
-      // before the current time.
-      let now = Date.now();
-      let lastCallbackIndex: number|null = null;
-      for (let i = 0; i < this.current.length; i += 2) {
-        const invokeAt = this.current[i] as number;
-        const callback = this.current[i + 1] as VoidFunction;
+      // Clone the current state of the queue, since it might be altered
+      // as we invoke callbacks.
+      const current = [...this.current];
+
+      // Invoke callbacks that were scheduled to run before the current time.
+      const now = Date.now();
+      for (let i = 0; i < current.length; i += 2) {
+        const invokeAt = current[i] as number;
+        const callback = current[i + 1] as VoidFunction;
         if (invokeAt <= now) {
           callback();
-          // Point at the invoked callback function, which is located
-          // after the timestamp.
+        } else {
+          // We've reached a timer that should not be invoked yet.
+          break;
+        }
+      }
+      // The state of the queue might've changed after callbacks invocation,
+      // run the cleanup logic based on the *current* state of the queue.
+      let lastCallbackIndex = -1;
+      for (let i = 0; i < this.current.length; i += 2) {
+        const invokeAt = this.current[i] as number;
+        if (invokeAt <= now) {
+          // Add +1 to account for a callback function that
+          // goes after the timestamp in events array.
           lastCallbackIndex = i + 1;
         } else {
           // We've reached a timer that should not be invoked yet.
           break;
         }
       }
-      if (lastCallbackIndex !== null) {
-        // If last callback index is `null` - no callbacks were invoked,
-        // so no cleanup is needed. Otherwise, remove invoked callbacks
-        // from the queue.
+      if (lastCallbackIndex >= 0) {
         arraySplice(this.current, 0, lastCallbackIndex + 1);
       }
 
@@ -176,18 +181,16 @@ export class TimerScheduler {
       // First element in the queue points at the timestamp
       // of the first (earliest) event.
       const invokeAt = this.current[0] as number;
-      if (!this.timeoutId ||
+      if (this.timeoutId === null ||
           // Reschedule a timer in case a queue contains an item with
           // an earlier timestamp and the delta is more than an average
           // frame duration.
           (this.invokeTimerAt && (this.invokeTimerAt - invokeAt > FRAME_DURATION_MS))) {
-        if (this.timeoutId !== null) {
-          // There was a timeout already, but an earlier event was added
-          // into the queue. In this case we drop an old timer and setup
-          // a new one with an updated (smaller) timeout.
-          clearTimeout(this.timeoutId);
-          this.timeoutId = null;
-        }
+        // There was a timeout already, but an earlier event was added
+        // into the queue. In this case we drop an old timer and setup
+        // a new one with an updated (smaller) timeout.
+        this.clearTimeout();
+
         const timeout = Math.max(invokeAt - now, FRAME_DURATION_MS);
         this.invokeTimerAt = invokeAt;
         this.timeoutId = setTimeout(callback, timeout) as unknown as number;
@@ -195,11 +198,15 @@ export class TimerScheduler {
     }
   }
 
-  ngOnDestroy() {
+  private clearTimeout() {
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
+  }
+
+  ngOnDestroy() {
+    this.clearTimeout();
     this.current.length = 0;
     this.deferred.length = 0;
   }

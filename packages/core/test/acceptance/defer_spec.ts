@@ -1183,8 +1183,18 @@ describe('@defer', () => {
      * and when it's cancelled. This is needed to keep track of calls
      * made to `requestIdleCallback` and `cancelIdleCallback` APIs.
      */
-    let idleCallbacksRequested = 0;
-    const onIdleCallbackQueue: IdleRequestCallback[] = [];
+    let id = 0;
+    let idleCallbacksRequested: number;
+    let idleCallbacksInvoked: number;
+    let idleCallbacksCancelled: number;
+    const onIdleCallbackQueue: Map<number, IdleRequestCallback> = new Map();
+
+    function resetCounters() {
+      idleCallbacksRequested = 0;
+      idleCallbacksInvoked = 0;
+      idleCallbacksCancelled = 0;
+    }
+    resetCounters();
 
     let nativeRequestIdleCallback: (callback: IdleRequestCallback, options?: IdleRequestOptions) =>
         number;
@@ -1192,23 +1202,25 @@ describe('@defer', () => {
 
     const mockRequestIdleCallback =
         (callback: IdleRequestCallback, options?: IdleRequestOptions): number => {
-          onIdleCallbackQueue.push(callback);
+          onIdleCallbackQueue.set(id, callback);
           expect(idleCallbacksRequested).toBe(0);
           expect(NgZone.isInAngularZone()).toBe(true);
           idleCallbacksRequested++;
-          return 0;
+          return id++;
         };
 
     const mockCancelIdleCallback = (id: number) => {
-      expect(idleCallbacksRequested).toBe(1);
+      onIdleCallbackQueue.delete(id);
       idleCallbacksRequested--;
+      idleCallbacksCancelled++;
     };
 
     const triggerIdleCallbacks = () => {
-      for (const callback of onIdleCallbackQueue) {
+      for (const [_, callback] of onIdleCallbackQueue) {
+        idleCallbacksInvoked++;
         callback(null!);
       }
-      onIdleCallbackQueue.length = 0;  // empty the queue
+      onIdleCallbackQueue.clear();
     };
 
     beforeEach(() => {
@@ -1216,12 +1228,14 @@ describe('@defer', () => {
       nativeCancelIdleCallback = globalThis.cancelIdleCallback;
       globalThis.requestIdleCallback = mockRequestIdleCallback;
       globalThis.cancelIdleCallback = mockCancelIdleCallback;
+      resetCounters();
     });
 
     afterEach(() => {
       globalThis.requestIdleCallback = nativeRequestIdleCallback;
       globalThis.cancelIdleCallback = nativeCancelIdleCallback;
-      onIdleCallbackQueue.length = 0;  // clear the queue
+      onIdleCallbackQueue.clear();
+      resetCounters();
     });
 
     it('should be able to prefetch resources', async () => {
@@ -2056,6 +2070,45 @@ describe('@defer', () => {
 
       // We loaded a nested block dependency, expect counter to be 2.
       expect(loadingFnInvokedTimes).toBe(2);
+    });
+
+    it('should clear idle handlers when defer block is triggered', async () => {
+      @Component({
+        standalone: true,
+        selector: 'root-app',
+        template: `
+          @defer (when isVisible; on idle; prefetch on idle) {
+            Hello world!
+          }
+        `
+      })
+      class RootCmp {
+        isVisible = false;
+      }
+
+      TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      // Expecting that an idle callback was requested.
+      expect(idleCallbacksRequested).toBe(1);
+      expect(idleCallbacksInvoked).toBe(0);
+      expect(idleCallbacksCancelled).toBe(0);
+
+      // Trigger defer block.
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expecting that an idle callback was cancelled and never invoked.
+      expect(idleCallbacksRequested).toBe(0);
+      expect(idleCallbacksInvoked).toBe(0);
+      expect(idleCallbacksCancelled).toBe(1);
     });
   });
 
@@ -3190,74 +3243,56 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(1);
     });
 
-    it('should trigger prefetching and rendering based on `on timer` condition', async () => {
-      @Component({
-        selector: 'nested-cmp',
-        standalone: true,
-        template: 'Rendering {{ block }} block.',
-      })
-      class NestedCmp {
-        @Input() block!: string;
-      }
+    it('should trigger prefetching and rendering based on `on timer` condition', fakeAsync(() => {
+         const {fixture} = createFixture(`
+            @defer (on timer(200ms); prefetch on timer(100ms)) {
+              <nested-cmp [block]="'Main'" />
+            } @placeholder {
+              Placeholder
+            }
+          `);
 
-      @Component({
-        standalone: true,
-        selector: 'root-app',
-        imports: [NestedCmp],
-        template: `
-          @defer (on timer(200ms); prefetch on timer(100ms)) {
-            <nested-cmp [block]="'primary'" />
-          } @placeholder {
-            Placeholder
-          }
-        `
-      })
-      class RootCmp {
-      }
+         verifyTimeline(
+             fixture,
+             [50, 'Placeholder'],
+             [150, 'Placeholder'],
+             [250, 'Main'],
+         );
+       }));
 
-      let loadingFnInvokedTimes = 0;
-      const deferDepsInterceptor = {
-        intercept() {
-          return () => {
-            loadingFnInvokedTimes++;
-            return [dynamicImportOf(NestedCmp)];
-          };
-        }
-      };
+    it('should clear timeout callbacks when defer block is triggered', fakeAsync(() => {
+         const setSpy = spyOn(globalThis, 'setTimeout');
+         const clearSpy = spyOn(globalThis, 'clearTimeout');
 
-      TestBed.configureTestingModule({
-        providers: [
-          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
-        ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
-      });
+         @Component({
+           standalone: true,
+           selector: 'root-app',
+           template: `
+              @defer (when isVisible; on timer(200ms); prefetch on timer(100ms)) {
+                Hello world!
+              }
+            `
+         })
+         class RootCmp {
+           isVisible = false;
+         }
 
-      clearDirectiveDefs(RootCmp);
+         TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
+         clearDirectiveDefs(RootCmp);
 
-      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+         const fixture = TestBed.createComponent(RootCmp);
+         fixture.detectChanges();
 
-      // Make sure loading function is not yet invoked.
-      expect(loadingFnInvokedTimes).toBe(0);
+         // Trigger defer block
+         fixture.componentInstance.isVisible = true;
+         fixture.detectChanges();
 
-      await timer(110);
-      await allPendingDynamicImports();  // fetching dependencies of the defer block
-      fixture.detectChanges();
-
-      // Expect that the loading resources function was invoked once.
-      expect(loadingFnInvokedTimes).toBe(1);
-
-      await timer(110);
-      fixture.detectChanges();
-
-      // Verify primary blocks content.
-      expect(fixture.nativeElement.outerHTML).toContain('Rendering primary block');
-
-      // Make sure the loading function wasn't invoked again (count remains `1`).
-      expect(loadingFnInvokedTimes).toBe(1);
-    });
+         // The `clearTimeout` was called synchronously, because the `when`
+         // condition was triggered, which resulted in timers cleanup.
+         expect(setSpy).toHaveBeenCalledTimes(2);
+         expect(clearSpy).toHaveBeenCalledTimes(2);
+       }));
   });
 
   describe('viewport triggers', () => {
@@ -3749,5 +3784,97 @@ describe('@defer', () => {
          }
          expect(fixture.nativeElement.textContent.trim()).toBe('d1 d2 d3 d4 d5 d6');
        }));
+  });
+
+  describe('DOM-based events cleanup', () => {
+    it('should unbind `interaction` trigger events when the deferred block is loaded', async () => {
+      @Component({
+        standalone: true,
+        template: `
+          @defer (
+            when isVisible;
+            on interaction(trigger);
+            prefetch on interaction(prefetchTrigger)
+          ) { Main content }
+          <button #trigger></button>
+          <div #prefetchTrigger></div>
+        `
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      const triggerSpy = spyOn(button, 'removeEventListener');
+      const div = fixture.nativeElement.querySelector('div');
+      const prefetchSpy = spyOn(div, 'removeEventListener');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify that trigger element is cleaned up.
+      expect(triggerSpy).toHaveBeenCalledTimes(2);
+      expect(triggerSpy).toHaveBeenCalledWith('click', jasmine.any(Function), jasmine.any(Object));
+      expect(triggerSpy)
+          .toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
+
+      // Verify that prefetch trigger element is cleaned up.
+      expect(prefetchSpy).toHaveBeenCalledTimes(2);
+      expect(prefetchSpy).toHaveBeenCalledWith('click', jasmine.any(Function), jasmine.any(Object));
+      expect(prefetchSpy)
+          .toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
+    });
+
+    it('should unbind `hover` trigger events when the deferred block is loaded', async () => {
+      @Component({
+        standalone: true,
+        template: `
+          @defer (
+            when isVisible;
+            on hover(trigger);
+            prefetch on hover(prefetchTrigger)
+          ) { Main content }
+          <button #trigger></button>
+          <div #prefetchTrigger></div>
+        `
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      const triggerSpy = spyOn(button, 'removeEventListener');
+      const div = fixture.nativeElement.querySelector('div');
+      const prefetchSpy = spyOn(div, 'removeEventListener');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify that trigger element is cleaned up.
+      expect(triggerSpy).toHaveBeenCalledTimes(2);
+      expect(triggerSpy)
+          .toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(triggerSpy)
+          .toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
+
+      // Verify that prefetch trigger element is cleaned up.
+      expect(prefetchSpy).toHaveBeenCalledTimes(2);
+      expect(prefetchSpy)
+          .toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(prefetchSpy)
+          .toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
+    });
   });
 });

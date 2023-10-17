@@ -6,72 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵɵdefineInjectable} from '../di';
-
-import {TDeferBlockDetails} from './interfaces';
+import {LDeferBlockDetails, PREFETCH_TRIGGER_CLEANUP_FNS, TRIGGER_CLEANUP_FNS, TriggerType} from './interfaces';
 
 /**
  * Registers a cleanup function associated with a prefetching trigger
- * of a given defer block.
+ * or a regular trigger of a defer block.
  */
-export function registerTDetailsCleanup(
-    injector: Injector, tDetails: TDeferBlockDetails, key: string, cleanupFn: VoidFunction) {
-  injector.get(DeferBlockCleanupManager).add(tDetails, key, cleanupFn);
+export function storeTriggerCleanupFn(
+    type: TriggerType, lDetails: LDeferBlockDetails, cleanupFn: VoidFunction) {
+  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
+  if (lDetails[key] === null) {
+    lDetails[key] = [];
+  }
+  lDetails[key]!.push(cleanupFn);
 }
+
 /**
- * Invokes all registered prefetch cleanup triggers
- * and removes all cleanup functions afterwards.
+ * Invokes registered cleanup functions either for prefetch or for regular triggers.
  */
-export function invokeTDetailsCleanup(injector: Injector, tDetails: TDeferBlockDetails) {
-  injector.get(DeferBlockCleanupManager).cleanup(tDetails);
+export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlockDetails) {
+  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
+  const cleanupFns = lDetails[key];
+  if (cleanupFns !== null) {
+    for (const cleanupFn of cleanupFns) {
+      cleanupFn();
+    }
+    lDetails[key] = null;
+  }
 }
+
 /**
- * Internal service to keep track of cleanup functions associated
- * with defer blocks. This class is used to manage cleanup functions
- * created for prefetching triggers.
+ * Invokes registered cleanup functions for both prefetch and regular triggers.
  */
-export class DeferBlockCleanupManager {
-  private blocks = new Map<TDeferBlockDetails, Map<string, VoidFunction[]>>();
-
-  add(tDetails: TDeferBlockDetails, key: string, callback: VoidFunction) {
-    if (!this.blocks.has(tDetails)) {
-      this.blocks.set(tDetails, new Map());
-    }
-    const block = this.blocks.get(tDetails)!;
-    if (!block.has(key)) {
-      block.set(key, []);
-    }
-    const callbacks = block.get(key)!;
-    callbacks.push(callback);
-  }
-
-  has(tDetails: TDeferBlockDetails, key: string): boolean {
-    return !!this.blocks.get(tDetails)?.has(key);
-  }
-
-  cleanup(tDetails: TDeferBlockDetails) {
-    const block = this.blocks.get(tDetails);
-    if (block) {
-      for (const callbacks of Object.values(block)) {
-        for (const callback of callbacks) {
-          callback();
-        }
-      }
-      this.blocks.delete(tDetails);
-    }
-  }
-
-  ngOnDestroy() {
-    for (const [block] of this.blocks) {
-      this.cleanup(block);
-    }
-    this.blocks.clear();
-  }
-
-  /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: DeferBlockCleanupManager,
-    providedIn: 'root',
-    factory: () => new DeferBlockCleanupManager(),
-  });
+export function invokeAllTriggerCleanupFns(lDetails: LDeferBlockDetails) {
+  invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);
+  invokeTriggerCleanupFns(TriggerType.Regular, lDetails);
 }
