@@ -6,7 +6,7 @@ The directive ensures that the loading of the [Largest Contentful Paint (LCP)](h
 
 *   Automatically setting the `fetchpriority` attribute on the `<img>` tag
 *   Lazy loading other images by default
-*   Asserting that there is a corresponding preconnect link tag in the document head
+*   Automatically generating a preconnect link tag in the document head
 *   Automatically generating a `srcset` attribute
 *   Generating a [preload hint](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if app is using SSR
 
@@ -115,9 +115,11 @@ If the `height` and `width` attribute on the image are preventing you from sizin
 
 NgOptimizedImage includes a number of features designed to improve loading performance in your app. These features are described in this section.
 
-### Add resource hints
+### Resource hints
 
-You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch) for your image origin to ensure that the LCP image loads as quickly as possible. Always put resource hints in the `<head>` of the document.
+A [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch) for your image origin ensures that the LCP image loads as quickly as possible.
+
+Preconnect links are automatically generated for domains provided as an argument to a [loader](#configuring-an-image-loader-for-ngoptimizedimage). If an image origin cannot be automatically identified, and no preconnect link is detected for the LCP image, `NgOptimizedImage` will warn during development. In that case, you should manually add a resource hint to `index.html`. Within the `<head>` of the document, add a `link` tag with `rel="preload"`, as shown below:
 
 <code-example format="html" language="html">
 
@@ -125,15 +127,15 @@ You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-pr
 
 </code-example>
 
-By default, if you use a loader for a third-party image service, the `NgOptimizedImage` directive will warn during development if it detects that there is no `preconnect` resource hint for the origin that serves the LCP image.
-
-To disable these warnings, inject the `PRECONNECT_CHECK_BLOCKLIST` token:
+To disable preconnect warnings, inject the `PRECONNECT_CHECK_BLOCKLIST` token:
 
 <code-example format="typescript" language="typescript">
 
 providers: [
   {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://your-domain.com'}
 ],
+
+See more information on automatic preconnect generation [here](#why-is-a-preconnect-element-not-being-generated-for-my-image-domain).
 
 </code-example>
 
@@ -336,6 +338,17 @@ The `ngSrc` attribute was chosen as the trigger for NgOptimizedImage due to tech
 The [image loaders](#configuring-an-image-loader-for-ngoptimizedimage) provider pattern is designed to be as simple as possible for the common use case of having only a single image CDN used within a component. However, it's still very possible to manage multiple image CDNs using a single provider.
 
 To do this, we recommend writing a [custom image loader](#custom-loaders) which uses the [`loaderParams` property](#the-loaderparams-property) to pass a flag that specifies which image CDN should be used, and then invokes the appropriate loader based on that flag.
+
+### Why is a preconnect element not being generated for my image domain?
+Preconnect generation is performed based on static analysis of your application. That means that the image domain must be directly included in the loader parameter, as in the following example:
+
+<code-example format="typescript" language="typescript">
+providers: [
+  provideImgixLoader('https://my.base.url/'),
+],
+</code-example>
+
+If you use a variable to pass the domain string to the loader, or you're not using a loader, the static analysis will not be able to identify the domain, and no preconnect link will be generated. In this case you should manually add a preconnect link to the document head, as [described above.](#resource-hints).
 
 <!-- links -->
 
