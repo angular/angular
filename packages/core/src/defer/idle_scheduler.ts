@@ -10,24 +10,17 @@ import {inject, ɵɵdefineInjectable} from '../di';
 import {INJECTOR, LView} from '../render3/interfaces/view';
 import {NgZone} from '../zone';
 
-import {wrapWithLViewCleanup} from './utils';
-
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
  *
  * @param callback A function to be invoked when a browser becomes idle.
  * @param lView LView that hosts an instance of a defer block.
- * @param withLViewCleanup A flag that indicates whether a scheduled callback
- *           should be cancelled in case an LView is destroyed before a callback
- *           was invoked.
  */
-export function onIdle(callback: VoidFunction, lView: LView, withLViewCleanup: boolean) {
+export function onIdle(callback: VoidFunction, lView: LView) {
   const injector = lView[INJECTOR]!;
   const scheduler = injector.get(IdleScheduler);
   const cleanupFn = () => scheduler.remove(callback);
-  const wrappedCallback =
-      withLViewCleanup ? wrapWithLViewCleanup(callback, lView, cleanupFn) : callback;
-  scheduler.add(wrappedCallback);
+  scheduler.add(callback);
   return cleanupFn;
 }
 
@@ -64,8 +57,8 @@ export class IdleScheduler {
 
   ngZone = inject(NgZone);
 
-  requestIdleCallback = _requestIdleCallback().bind(globalThis);
-  cancelIdleCallback = _cancelIdleCallback().bind(globalThis);
+  requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
+  cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
 
   add(callback: VoidFunction) {
     const target = this.executingCallbacks ? this.deferred : this.current;
@@ -76,14 +69,21 @@ export class IdleScheduler {
   }
 
   remove(callback: VoidFunction) {
-    this.current.delete(callback);
-    this.deferred.delete(callback);
+    const {current, deferred} = this;
+
+    current.delete(callback);
+    deferred.delete(callback);
+
+    // If the last callback was removed and there is a pending
+    // idle callback - cancel it.
+    if (current.size === 0 && deferred.size === 0) {
+      this.cancelIdleCallback();
+    }
   }
 
   private scheduleIdleCallback() {
     const callback = () => {
-      this.cancelIdleCallback(this.idleId!);
-      this.idleId = null;
+      this.cancelIdleCallback();
 
       this.executingCallbacks = true;
 
@@ -107,14 +107,18 @@ export class IdleScheduler {
     };
     // Ensure that the callback runs in the NgZone since
     // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallback(() => this.ngZone.run(callback)) as number;
+    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+  }
+
+  private cancelIdleCallback() {
+    if (this.idleId !== null) {
+      this.cancelIdleCallbackFn(this.idleId);
+      this.idleId = null;
+    }
   }
 
   ngOnDestroy() {
-    if (this.idleId !== null) {
-      this.cancelIdleCallback(this.idleId);
-      this.idleId = null;
-    }
+    this.cancelIdleCallback();
     this.current.clear();
     this.deferred.clear();
   }
