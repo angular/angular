@@ -11,9 +11,8 @@ import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
-{
-  describe('XMB serializer', () => {
-    const HTML = `
+describe('XMB serializer', () => {
+  const HTML = `
 <p>not translatable</p>
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
 <!-- i18n -->{ count, plural, =0 {<p>test</p>}}<!-- /i18n -->
@@ -25,7 +24,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 <p i18n>multi
 lines</p>`;
 
-    const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
+  const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>
@@ -61,20 +60,20 @@ lines</msg>
 </messagebundle>
 `;
 
-    it('should write a valid xmb file', () => {
-      expect(toXmb(HTML, 'file.ts')).toEqual(XMB);
-      // the locale is not specified in the xmb file
-      expect(toXmb(HTML, 'file.ts', 'fr')).toEqual(XMB);
-    });
-
-    it('should throw when trying to load an xmb file', () => {
-      expect(() => {
-        const serializer = new Xmb();
-        serializer.load(XMB, 'url');
-      }).toThrowError(/Unsupported/);
-    });
+  it('should write a valid xmb file', () => {
+    expect(toXmb(HTML, 'file.ts')).toEqual(XMB);
+    // the locale is not specified in the xmb file
+    expect(toXmb(HTML, 'file.ts', 'fr')).toEqual(XMB);
   });
-}
+
+  it('should throw when trying to load an xmb file', () => {
+    expect(() => {
+      const serializer = new Xmb();
+      serializer.load(XMB, 'url');
+    }).toThrowError(/Unsupported/);
+  });
+});
+
 
 function toXmb(html: string, url: string, locale: string|null = null): string {
   const catalog = new MessageBundle(new HtmlParser, [], {}, locale);

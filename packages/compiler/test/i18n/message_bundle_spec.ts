@@ -13,35 +13,33 @@ import {Serializer} from '../../src/i18n/serializers/serializer';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
-{
-  describe('MessageBundle', () => {
-    describe('Messages', () => {
-      let messages: MessageBundle;
+describe('MessageBundle', () => {
+  describe('Messages', () => {
+    let messages: MessageBundle;
 
-      beforeEach(() => {
-        messages = new MessageBundle(new HtmlParser, [], {});
-      });
+    beforeEach(() => {
+      messages = new MessageBundle(new HtmlParser, [], {});
+    });
 
-      it('should extract the message to the catalog', () => {
-        messages.updateFromTemplate(
-            '<p i18n="m|d">Translate Me</p>', 'url', DEFAULT_INTERPOLATION_CONFIG);
-        expect(humanizeMessages(messages)).toEqual([
-          'Translate Me (m|d)',
-        ]);
-      });
+    it('should extract the message to the catalog', () => {
+      messages.updateFromTemplate(
+          '<p i18n="m|d">Translate Me</p>', 'url', DEFAULT_INTERPOLATION_CONFIG);
+      expect(humanizeMessages(messages)).toEqual([
+        'Translate Me (m|d)',
+      ]);
+    });
 
-      it('should extract and dedup messages', () => {
-        messages.updateFromTemplate(
-            '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
-            'url', DEFAULT_INTERPOLATION_CONFIG);
-        expect(humanizeMessages(messages)).toEqual([
-          'Translate Me (m|d)',
-          'Translate Me (|)',
-        ]);
-      });
+    it('should extract and dedup messages', () => {
+      messages.updateFromTemplate(
+          '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
+          'url', DEFAULT_INTERPOLATION_CONFIG);
+      expect(humanizeMessages(messages)).toEqual([
+        'Translate Me (m|d)',
+        'Translate Me (|)',
+      ]);
     });
   });
-}
+});
 
 class _TestSerializer extends Serializer {
   override write(messages: i18n.Message[]): string {

@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-{
-  describe('util', () => {
-    it('should schedule a microtask and not call an async timeout', (done) => {
-      let count = 0;
-      queueMicrotask(() => count++);
 
-      expect(count).toEqual(0);
-      queueMicrotask(() => {
-        expect(count).toEqual(1);
-        done();
-      });
-      expect(count).toEqual(0);
+describe('util', () => {
+  it('should schedule a microtask and not call an async timeout', (done) => {
+    let count = 0;
+    queueMicrotask(() => count++);
+
+    expect(count).toEqual(0);
+    queueMicrotask(() => {
+      expect(count).toEqual(1);
+      done();
     });
+    expect(count).toEqual(0);
   });
-}
+});
