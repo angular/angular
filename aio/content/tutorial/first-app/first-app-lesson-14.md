@@ -153,7 +153,7 @@ The data source has been configured, the next step is to update your web app to 
 
     1.  Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
         
-        <code-example anguage="javascript" format="javascript">
+        <code-example language="javascript" format="javascript">
         url = 'http://localhost:3000/locations';
         </code-example>
 

@@ -41,7 +41,7 @@ withEachNg1Version(() => {
            const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
            const ngZone: NgZone = upgrade.ngZone;
 
-           // Wrap in a setTimeout to ensure all boostrap operations have completed.
+           // Wrap in a setTimeout to ensure all bootstrap operations have completed.
            setTimeout(
                // Run inside the Angular zone, so that operations such as emitting
                // `onMicrotaskEmpty` do not trigger entering/existing the zone (and thus another

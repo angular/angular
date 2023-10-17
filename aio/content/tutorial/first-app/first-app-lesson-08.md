@@ -36,7 +36,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 1.  Update the `<app-housing-location>` tag in the template code to this:
     <code-example header="Add ngFor to HomeComponent template" path="first-app-lesson-08/src/app/home/home.component.ts" region="add-ngFor"></code-example>
 
-    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it refered to the property on the `HomeComponent` class.
+    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `HomeComponent` class.
 
 1.  Save all changes.
 

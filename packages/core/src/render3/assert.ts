@@ -152,7 +152,7 @@ export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[])
   for (const current of directives) {
     if (seenDirectives.has(current)) {
       throw new RuntimeError(
-          RuntimeErrorCode.DUPLICATE_DIRECTITVE,
+          RuntimeErrorCode.DUPLICATE_DIRECTIVE,
           `Directive ${current.type.name} matches multiple times on the same element. ` +
               `Directives can only match an element once.`);
     }

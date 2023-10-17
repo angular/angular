@@ -31,7 +31,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DEFER_LOADING_FAILED = 750,
     // (undocumented)
-    DUPLICATE_DIRECTITVE = 309,
+    DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)

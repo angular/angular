@@ -43,7 +43,7 @@ describe('EmitScope', () => {
       expect(generate(def)).toEqual('function () { testFn(); return function foo() { }; }()');
     });
 
-    it('should use the `ngImport` idenfifier for imports when translating', () => {
+    it('should use the `ngImport` identifier for imports when translating', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
