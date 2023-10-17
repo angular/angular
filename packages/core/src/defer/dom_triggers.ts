@@ -16,8 +16,9 @@ import {HEADER_OFFSET, INJECTOR, LView} from '../render3/interfaces/view';
 import {getNativeByIndex, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../render3/util/view_utils';
 import {assertElement, assertEqual} from '../util/assert';
 import {NgZone} from '../zone';
+import {storeTriggerCleanupFn} from './cleanup';
 
-import {DEFER_BLOCK_STATE, DeferBlockInternalState, DeferBlockState} from './interfaces';
+import {DEFER_BLOCK_STATE, DeferBlockInternalState, DeferBlockState, TriggerType} from './interfaces';
 import {getLDeferBlockDetails} from './utils';
 
 /** Configuration object used to register passive and capturing events. */
@@ -62,10 +63,8 @@ class DeferEventEntry {
  * Registers an interaction trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger is interacted with.
- * @param injector Injector that can be used by the trigger to resolve DI tokens.
  */
-export function onInteraction(
-    trigger: Element, callback: VoidFunction, injector: Injector): VoidFunction {
+export function onInteraction(trigger: Element, callback: VoidFunction): VoidFunction {
   let entry = interactionTriggers.get(trigger);
 
   // If this is the first entry for this element, add the listeners.
@@ -112,10 +111,8 @@ export function onInteraction(
  * Registers a hover trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger is hovered over.
- * @param injector Injector that can be used by the trigger to resolve DI tokens.
  */
-export function onHover(
-    trigger: Element, callback: VoidFunction, injector: Injector): VoidFunction {
+export function onHover(trigger: Element, callback: VoidFunction): VoidFunction {
   let entry = hoverTriggers.get(trigger);
 
   // If this is the first entry for this element, add the listener.
@@ -256,11 +253,12 @@ export function getTriggerElement(triggerLView: LView, triggerIndex: number): El
  * @param registerFn Function that will register the DOM events.
  * @param callback Callback to be invoked when the trigger receives the event that should render
  *     the deferred block.
+ * @param type Trigger type to distinguish between regular and prefetch triggers.
  */
 export function registerDomTrigger(
     initialLView: LView, tNode: TNode, triggerIndex: number, walkUpTimes: number|undefined,
     registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
-    callback: VoidFunction) {
+    callback: VoidFunction, type: TriggerType) {
   const injector = initialLView[INJECTOR]!;
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
@@ -290,24 +288,24 @@ export function registerDomTrigger(
       return;
     }
 
-    // TODO: add integration with `DeferBlockCleanupManager`.
     const element = getTriggerElement(triggerLView, triggerIndex);
     const cleanup = registerFn(element, () => {
-      callback();
-      removeLViewOnDestroy(triggerLView, cleanup);
       if (initialLView !== triggerLView) {
-        removeLViewOnDestroy(initialLView, cleanup);
+        removeLViewOnDestroy(triggerLView, cleanup);
       }
-      cleanup();
+      callback();
     }, injector);
 
-    storeLViewOnDestroy(triggerLView, cleanup);
-
-    // Since the trigger and deferred block might be in different
-    // views, we have to register the callback in both locations.
+    // The trigger and deferred block might be in different LViews.
+    // For the main LView the cleanup would happen as a part of
+    // `storeTriggerCleanupFn` logic. For trigger LView we register
+    // a cleanup function there to remove event handlers in case an
+    // LView gets destroyed before a trigger is invoked.
     if (initialLView !== triggerLView) {
-      storeLViewOnDestroy(initialLView, cleanup);
+      storeLViewOnDestroy(triggerLView, cleanup);
     }
+
+    storeTriggerCleanupFn(type, lDetails, cleanup);
   }
 
   // Begin polling for the trigger.

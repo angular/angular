@@ -10,24 +10,11 @@ import {assertIndexInDeclRange} from '../render3/assert';
 import {DependencyDef} from '../render3/interfaces/definition';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {HEADER_OFFSET, LView, TVIEW, TView} from '../render3/interfaces/view';
-import {getTNode, removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
+import {getTNode} from '../render3/util/view_utils';
 import {assertEqual, throwError} from '../util/assert';
 
 import {DeferBlockState, DeferDependenciesLoadingState, LDeferBlockDetails, LOADING_AFTER_SLOT, MINIMUM_SLOT, TDeferBlockDetails} from './interfaces';
 
-/**
- * Wraps a given callback into a logic that registers a cleanup function
- * in the LView cleanup slot, to be invoked when an LView is destroyed.
- */
-export function wrapWithLViewCleanup(
-    callback: VoidFunction, lView: LView, cleanup: VoidFunction): VoidFunction {
-  const wrappedCallback = () => {
-    callback();
-    removeLViewOnDestroy(lView, cleanup);
-  };
-  storeLViewOnDestroy(lView, cleanup);
-  return wrappedCallback;
-}
 
 /**
  * Calculates a data slot index for defer block info (either static or

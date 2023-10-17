@@ -33,7 +33,7 @@ export class DeferBlockFixture {
           `but there was no @${stateAsString.toLowerCase()} block defined in a template.`);
     }
     if (state === DeferBlockState.Complete) {
-      await triggerResourceLoading(this.block.tDetails, this.block.lView);
+      await triggerResourceLoading(this.block.tDetails, this.block.lView, this.block.tNode);
     }
     renderDeferBlockState(state, this.block.tNode, this.block.lContainer);
     this.componentFixture.detectChanges();

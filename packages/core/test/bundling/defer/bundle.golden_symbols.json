@@ -123,9 +123,6 @@
     "name": "DeferBlockBehavior"
   },
   {
-    "name": "DeferBlockCleanupManager"
-  },
-  {
     "name": "DeferBlockInternalState"
   },
   {
@@ -384,6 +381,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PREFETCH_TRIGGER_CLEANUP_FNS"
+  },
+  {
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
@@ -481,6 +481,9 @@
   },
   {
     "name": "TRACKED_LVIEWS"
+  },
+  {
+    "name": "TRIGGER_CLEANUP_FNS"
   },
   {
     "name": "TYPE"
@@ -2019,10 +2022,16 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeAllTriggerCleanupFns"
+  },
+  {
     "name": "invokeDirectivesHostBindings"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "invokeTriggerCleanupFns"
   },
   {
     "name": "isArray"
@@ -2328,6 +2337,9 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "storeLViewOnDestroy"
+  },
+  {
     "name": "stringify"
   },
   {
@@ -2392,6 +2404,9 @@
   },
   {
     "name": "ɵɵStandaloneFeature"
+  },
+  {
+    "name": "ɵɵdefer"
   },
   {
     "name": "ɵɵdeferWhen"

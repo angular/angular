@@ -15,15 +15,18 @@ import type {DependencyType} from '../render3/interfaces/definition';
 export type DependencyResolverFn = () => Array<Promise<DependencyType>>;
 
 /**
- * Enumerates all `on` triggers of a defer block.
+ * Defines types of defer block triggers.
  */
-export const enum DeferBlockTriggers {
-  OnIdle,
-  OnTimer,
-  OnImmediate,
-  OnHover,
-  OnInteraction,
-  OnViewport,
+export const enum TriggerType {
+  /**
+   * Represents regular triggers (e.g. `@defer (on idle) { ... }`).
+   */
+  Regular,
+
+  /**
+   * Represents prefetch triggers (e.g. `@defer (prefetch on idle) { ... }`).
+   */
+  Prefetch,
 }
 
 /**
@@ -147,6 +150,8 @@ export const NEXT_DEFER_BLOCK_STATE = 0;
 export const DEFER_BLOCK_STATE = 1;
 export const STATE_IS_FROZEN_UNTIL = 2;
 export const LOADING_AFTER_CLEANUP_FN = 3;
+export const TRIGGER_CLEANUP_FNS = 4;
+export const PREFETCH_TRIGGER_CLEANUP_FNS = 5;
 
 /**
  * Describes instance-specific defer block data.
@@ -178,6 +183,16 @@ export interface LDeferBlockDetails extends Array<unknown> {
    * the loading block has the `after` parameter configured.
    */
   [LOADING_AFTER_CLEANUP_FN]: VoidFunction|null;
+
+  /**
+   * List of cleanup functions for regular triggers.
+   */
+  [TRIGGER_CLEANUP_FNS]: VoidFunction[]|null;
+
+  /**
+   * List of cleanup functions for prefetch triggers.
+   */
+  [PREFETCH_TRIGGER_CLEANUP_FNS]: VoidFunction[]|null;
 }
 
 /**
