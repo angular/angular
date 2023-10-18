@@ -65,6 +65,28 @@ function addNamesToView(
       case ir.OpKind.Variable:
         varNames.set(op.xref, getVariableName(op.variable, state));
         break;
+      case ir.OpKind.RepeaterCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (op.slot === null) {
+          throw new Error(`Expected slot to be assigned`);
+        }
+        if (op.emptyView !== null) {
+          const emptyView = unit.job.views.get(op.emptyView)!;
+          // Repeater empty view function is at slot +2 (metadata is in the first slot).
+          addNamesToView(
+              emptyView,
+              `${baseName}_${prefixWithNamespace(`${op.tag}Empty`, op.namespace)}_${op.slot + 2}`,
+              state, compatibility);
+        }
+        const repeaterToken =
+            op.tag === null ? '' : '_' + prefixWithNamespace(op.tag, op.namespace);
+        // Repeater primary view function is at slot +1 (metadata is in the first slot).
+        addNamesToView(
+            unit.job.views.get(op.xref)!, `${baseName}${repeaterToken}_${op.slot + 1}`, state,
+            compatibility);
+        break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
@@ -112,10 +134,12 @@ function getVariableName(variable: ir.SemanticVariable, state: {index: number}):
         variable.name = `ctx_r${state.index++}`;
         break;
       case ir.SemanticVariableKind.Identifier:
-        variable.name = `${variable.identifier}_${state.index++}`;
+        // TODO: Prefix increment and `_r` for compatiblity only.
+        variable.name = `${variable.identifier}_r${++state.index}`;
         break;
       default:
-        variable.name = `_r${state.index++}`;
+        // TODO: Prefix increment for compatibility only.
+        variable.name = `_r${++state.index}`;
         break;
     }
   }

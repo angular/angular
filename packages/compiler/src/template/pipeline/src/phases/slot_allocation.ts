@@ -58,14 +58,14 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
   // propagate the number of slots used for each view into the operation which declares it.
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind === ir.OpKind.Template) {
+      if (op.kind === ir.OpKind.Template || op.kind === ir.OpKind.RepeaterCreate) {
         // Record the number of slots used by the view this `ir.TemplateOp` declares in the
         // operation itself, so it can be emitted later.
         const childView = job.views.get(op.xref)!;
         op.decls = childView.decls;
       }
 
-      if (ir.hasUsesSlotIndexTrait(op) && op.targetSlot === null) {
+      if (ir.hasUsesSlotIndexTrait(op) && op.target !== null && op.targetSlot === null) {
         if (!slotMap.has(op.target)) {
           // We do expect to find a slot allocated for everything which might be referenced.
           throw new Error(

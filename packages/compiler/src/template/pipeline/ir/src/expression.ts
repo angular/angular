@@ -903,6 +903,12 @@ export function transformExpressionsInOp(
         transformExpressionsInStatement(statement, transform, flags);
       }
       break;
+    case OpKind.RepeaterCreate:
+      op.trackBy = transformExpressionsInExpression(op.trackBy, transform, flags);
+      break;
+    case OpKind.Repeater:
+      op.collection = transformExpressionsInExpression(op.collection, transform, flags);
+      break;
     case OpKind.I18n:
     case OpKind.I18nStart:
       for (const [placeholder, expression] of op.params) {
