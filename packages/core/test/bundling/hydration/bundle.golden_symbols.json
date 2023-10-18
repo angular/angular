@@ -426,6 +426,9 @@
     "name": "SKIP_HYDRATION_ATTR_NAME"
   },
   {
+    "name": "SKIP_HYDRATION_ATTR_NAME_LOWER_CASE"
+  },
+  {
     "name": "SafeSubscriber"
   },
   {

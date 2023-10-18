@@ -15,12 +15,13 @@ import {RElement} from '../render3/interfaces/renderer_dom';
  */
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 
+/** Lowercase name of the `ngSkipHydration` attribute used for case-insensitive comparisons. */
+const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = 'ngskiphydration';
+
 /**
  * Helper function to check if a given TNode has the 'ngSkipHydration' attribute.
  */
 export function hasSkipHydrationAttrOnTNode(tNode: TNode): boolean {
-  const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
-
   const attrs = tNode.mergedAttrs;
   if (attrs === null) return false;
   // only ever look at the attribute name and skip the values
