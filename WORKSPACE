@@ -80,7 +80,7 @@ yarn_install(
         "//:.yarnrc",
         "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-680aab4562e5bb684518ca496cb449a6c447601d.patch",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-b2cec2dcba358f9dc7111800a3d65738f57abe8f.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",

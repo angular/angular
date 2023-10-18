@@ -26,14 +26,6 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@angular-devkit/architect@0.1700.0-rc.1":
-  version "0.1700.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1700.0-rc.1.tgz#56b25ffbb0fc1f434cade20973f8f06f379c8ac4"
-  integrity sha512-5af9IjVi4m87hQV3ElSC73Sano25CLe36rK9omQ48vS+Jf1b8j89pHSZiCHUp3Ch7nsAayqCKnBPbqLbhnWsZg==
-  dependencies:
-    "@angular-devkit/core" "17.0.0-rc.1"
-    rxjs "7.8.1"
-
 "@angular-devkit/architect@0.1700.0-rc.2":
   version "0.1700.0-rc.2"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1700.0-rc.2.tgz#ef76ae4441f6862d7796cf40c57aa794fda4df70"
@@ -41,78 +33,6 @@
   dependencies:
     "@angular-devkit/core" "17.0.0-rc.2"
     rxjs "7.8.1"
-
-"@angular-devkit/build-angular@17.0.0-rc.1":
-  version "17.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-17.0.0-rc.1.tgz#421fdf04a6ff1e69a042cee87a2d5d22891078f7"
-  integrity sha512-lG7Z7mSgSOAlupYwWZZCGAn3bDCbeCgUFAS7YZgAhnRNsc1cuGMgA/FEQE1urJzHCdVfiYYoNipdT5vZPgCVfA==
-  dependencies:
-    "@ampproject/remapping" "2.2.1"
-    "@angular-devkit/architect" "0.1700.0-rc.1"
-    "@angular-devkit/build-webpack" "0.1700.0-rc.1"
-    "@angular-devkit/core" "17.0.0-rc.1"
-    "@babel/core" "7.23.2"
-    "@babel/generator" "7.23.0"
-    "@babel/helper-annotate-as-pure" "7.22.5"
-    "@babel/helper-split-export-declaration" "7.22.6"
-    "@babel/plugin-transform-async-generator-functions" "7.23.2"
-    "@babel/plugin-transform-async-to-generator" "7.22.5"
-    "@babel/plugin-transform-runtime" "7.23.2"
-    "@babel/preset-env" "7.23.2"
-    "@babel/runtime" "7.23.2"
-    "@discoveryjs/json-ext" "0.5.7"
-    "@ngtools/webpack" "17.0.0-rc.1"
-    "@vitejs/plugin-basic-ssl" "1.0.1"
-    ansi-colors "4.1.3"
-    autoprefixer "10.4.16"
-    babel-loader "9.1.3"
-    babel-plugin-istanbul "6.1.1"
-    browser-sync "2.29.3"
-    browserslist "^4.21.5"
-    chokidar "3.5.3"
-    copy-webpack-plugin "11.0.0"
-    critters "0.0.20"
-    css-loader "6.8.1"
-    esbuild-wasm "0.19.5"
-    fast-glob "3.3.1"
-    http-proxy-middleware "2.0.6"
-    https-proxy-agent "7.0.2"
-    inquirer "8.2.6"
-    jsonc-parser "3.2.0"
-    karma-source-map-support "1.4.0"
-    less "4.2.0"
-    less-loader "11.1.0"
-    license-webpack-plugin "4.0.2"
-    loader-utils "3.2.1"
-    magic-string "0.30.5"
-    mini-css-extract-plugin "2.7.6"
-    mrmime "1.0.1"
-    open "8.4.2"
-    ora "5.4.1"
-    parse5-html-rewriting-stream "7.0.0"
-    picomatch "2.3.1"
-    piscina "4.1.0"
-    postcss "8.4.31"
-    postcss-loader "7.3.3"
-    resolve-url-loader "5.0.0"
-    rxjs "7.8.1"
-    sass "1.69.4"
-    sass-loader "13.3.2"
-    semver "7.5.4"
-    source-map-loader "4.0.1"
-    source-map-support "0.5.21"
-    terser "5.22.0"
-    text-table "0.2.0"
-    tree-kill "1.2.2"
-    tslib "2.6.2"
-    vite "4.5.0"
-    webpack "5.89.0"
-    webpack-dev-middleware "6.1.1"
-    webpack-dev-server "4.15.1"
-    webpack-merge "5.10.0"
-    webpack-subresource-integrity "5.1.0"
-  optionalDependencies:
-    esbuild "0.19.5"
 
 "@angular-devkit/build-angular@17.0.0-rc.2":
   version "17.0.0-rc.2"
@@ -196,14 +116,6 @@
     typescript "3.2.4"
     webpack-sources "1.3.0"
 
-"@angular-devkit/build-webpack@0.1700.0-rc.1":
-  version "0.1700.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1700.0-rc.1.tgz#f9e428669b83d9d3ead1f453352433cde6ed71a2"
-  integrity sha512-ff4vlgDPYdsTMeIQgEOHuk6kuom26VMfJ8t3TUd8NMygk/AXvTG9aytjUqs3JK0NVfYLtw7QQmLOc4TbQjfzCg==
-  dependencies:
-    "@angular-devkit/architect" "0.1700.0-rc.1"
-    rxjs "7.8.1"
-
 "@angular-devkit/build-webpack@0.1700.0-rc.2":
   version "0.1700.0-rc.2"
   resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1700.0-rc.2.tgz#6fa9906ccea28d37a5161a511a903d73e1fa7556"
@@ -211,18 +123,6 @@
   dependencies:
     "@angular-devkit/architect" "0.1700.0-rc.2"
     rxjs "7.8.1"
-
-"@angular-devkit/core@17.0.0-rc.1":
-  version "17.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-17.0.0-rc.1.tgz#645b31d33c0f70035fd17a21a51e381da0220b18"
-  integrity sha512-Z/ON+qo9q+ixDCubpHz2jPMV7D26lvG5esB8vKKjF/Vtz4YpEpJSa+xzKXDfnrwriswxQwbbbfIUH0i1a1wS8w==
-  dependencies:
-    ajv "8.12.0"
-    ajv-formats "2.1.1"
-    jsonc-parser "3.2.0"
-    picomatch "2.3.1"
-    rxjs "7.8.1"
-    source-map "0.7.4"
 
 "@angular-devkit/core@17.0.0-rc.2":
   version "17.0.0-rc.2"
@@ -255,12 +155,11 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8fa10a4dc43b9780f09c99f11d805e733107ed70":
-  version "0.0.0-1173ab9b7174e4ec6ff3a3455226ca75594edaa0"
-  uid "8fa10a4dc43b9780f09c99f11d805e733107ed70"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8fa10a4dc43b9780f09c99f11d805e733107ed70"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#cf8da67c048dde33354eb64e18b60eced1f62ea6":
+  version "0.0.0-b2cec2dcba358f9dc7111800a3d65738f57abe8f"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#cf8da67c048dde33354eb64e18b60eced1f62ea6"
   dependencies:
-    "@angular-devkit/build-angular" "17.0.0-rc.1"
+    "@angular-devkit/build-angular" "17.0.0-rc.2"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
     "@babel/helper-annotate-as-pure" "^7.18.6"
@@ -272,7 +171,7 @@
     "@bazel/runfiles" "5.8.1"
     "@bazel/terser" "5.8.1"
     "@bazel/typescript" "5.8.1"
-    "@microsoft/api-extractor" "7.38.0"
+    "@microsoft/api-extractor" "7.38.1"
     "@types/browser-sync" "^2.26.3"
     "@types/marked" "^5.0.1"
     "@types/node" "16.10.9"
@@ -395,7 +294,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#c773500c56bada879d4a5a4169a04bdb039262d1":
   version "0.0.0-1173ab9b7174e4ec6ff3a3455226ca75594edaa0"
-  uid c773500c56bada879d4a5a4169a04bdb039262d1
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c773500c56bada879d4a5a4169a04bdb039262d1"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -2618,7 +2516,25 @@
     "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.61.0"
 
-"@microsoft/api-extractor@7.38.0", "@microsoft/api-extractor@^7.24.2":
+"@microsoft/api-extractor@7.38.1":
+  version "7.38.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.38.1.tgz#1bccfae8b8d95c667d35aee085322c84ae1d2639"
+  integrity sha512-Hxu/RrVpItQ4dzeMyfwlk4lGQFsXMoMS7bYU9YUrpW16hH04PXLRiTXJz77WhBiSGNtTuufz2xh6hWyXhC9JuQ==
+  dependencies:
+    "@microsoft/api-extractor-model" "7.28.2"
+    "@microsoft/tsdoc" "0.14.2"
+    "@microsoft/tsdoc-config" "~0.16.1"
+    "@rushstack/node-core-library" "3.61.0"
+    "@rushstack/rig-package" "0.5.1"
+    "@rushstack/ts-command-line" "4.17.0"
+    colors "~1.2.1"
+    lodash "~4.17.15"
+    resolve "~1.22.1"
+    semver "~7.5.4"
+    source-map "~0.6.1"
+    typescript "~5.0.4"
+
+"@microsoft/api-extractor@^7.24.2":
   version "7.38.0"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.38.0.tgz#e72546d6766b3866578a462b040f71b17779e1c5"
   integrity sha512-e1LhZYnfw+JEebuY2bzhw0imDCl1nwjSThTrQqBXl40hrVo6xm3j/1EpUr89QyzgjqmAwek2ZkIVZbrhaR+cqg==
@@ -2650,11 +2566,6 @@
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz#c3ec604a0b54b9a9b87e9735dfc59e1a5da6a5fb"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
-
-"@ngtools/webpack@17.0.0-rc.1":
-  version "17.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-17.0.0-rc.1.tgz#4206aed2b1d2f12c653a3983eb7db6744d895a08"
-  integrity sha512-MpYm91TR2UkcTghKbFiUJSWviAJVo9FV2bFqZo1zNfUFcXWLipQR/E6XyUMx/kj2MlcNL2DdKoX7pRyS6U1Q7Q==
 
 "@ngtools/webpack@17.0.0-rc.2":
   version "17.0.0-rc.2"
@@ -2978,6 +2889,16 @@
   version "4.16.1"
   resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.16.1.tgz#3537bbc323f77c8646646465c579b992d39feb16"
   integrity sha512-+OCsD553GYVLEmz12yiFjMOzuPeCiZ3f8wTiFHL30ZVXexTyPmgjwXEhg2K2P0a2lVf+8YBy7WtPoflB2Fp8/A==
+  dependencies:
+    "@types/argparse" "1.0.38"
+    argparse "~1.0.9"
+    colors "~1.2.1"
+    string-argv "~0.3.1"
+
+"@rushstack/ts-command-line@4.17.0":
+  version "4.17.0"
+  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.17.0.tgz#da99fc18b847a060329967228413f010155d98e7"
+  integrity sha512-1S0sXuEpZlzKTfvUqNs7Rg4leVkeLJc4Dn9cm+pSIn35a0Ztp5GxPN2gabD2G4RrQoQcJLLyVu+twzrJl1C0eA==
   dependencies:
     "@types/argparse" "1.0.38"
     argparse "~1.0.9"
@@ -6924,8 +6845,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658":
-  version "2.1.6+git"
-  uid "9e7881d2ac1e5977cefbc557f935931ec23f6658"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658"
 
 domutils@^3.0.1:
@@ -9221,27 +9141,6 @@ ini@^1.3.4, ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-inquirer@8.2.6, inquirer@^8.2.0:
-  version "8.2.6"
-  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.2.6.tgz#733b74888195d8d400a67ac332011b5fae5ea562"
-  integrity sha512-M1WuAmb7pn9zdFRtQYk26ZBoY043Sse0wVDdk4Bppr+JOXyQYybdtvK+l9wUibhtjdjvtoiNy8tk+EgsYIUqKg==
-  dependencies:
-    ansi-escapes "^4.2.1"
-    chalk "^4.1.1"
-    cli-cursor "^3.1.0"
-    cli-width "^3.0.0"
-    external-editor "^3.0.3"
-    figures "^3.0.0"
-    lodash "^4.17.21"
-    mute-stream "0.0.8"
-    ora "^5.4.1"
-    run-async "^2.4.0"
-    rxjs "^7.5.5"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-    through "^2.3.6"
-    wrap-ansi "^6.0.1"
-
 inquirer@9.2.11, inquirer@^9.2.7:
   version "9.2.11"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-9.2.11.tgz#e9003755c233a414fceda1891c23bd622cad4a95"
@@ -9262,6 +9161,27 @@ inquirer@9.2.11, inquirer@^9.2.7:
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
     wrap-ansi "^6.2.0"
+
+inquirer@^8.2.0:
+  version "8.2.6"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.2.6.tgz#733b74888195d8d400a67ac332011b5fae5ea562"
+  integrity sha512-M1WuAmb7pn9zdFRtQYk26ZBoY043Sse0wVDdk4Bppr+JOXyQYybdtvK+l9wUibhtjdjvtoiNy8tk+EgsYIUqKg==
+  dependencies:
+    ansi-escapes "^4.2.1"
+    chalk "^4.1.1"
+    cli-cursor "^3.1.0"
+    cli-width "^3.0.0"
+    external-editor "^3.0.3"
+    figures "^3.0.0"
+    lodash "^4.17.21"
+    mute-stream "0.0.8"
+    ora "^5.4.1"
+    run-async "^2.4.0"
+    rxjs "^7.5.5"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+    through "^2.3.6"
+    wrap-ansi "^6.0.1"
 
 install-artifact-from-github@^1.3.3:
   version "1.3.3"
@@ -13381,15 +13301,6 @@ sass-lookup@^3.0.0:
   dependencies:
     commander "^2.16.0"
 
-sass@1.69.4:
-  version "1.69.4"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.69.4.tgz#10c735f55e3ea0b7742c6efa940bce30e07fbca2"
-  integrity sha512-+qEreVhqAy8o++aQfCJwp0sklr2xyEzkm9Pp/Igu9wNPoe7EZEQ8X/MBvvXggI2ql607cxKg/RKOwDj6pp2XDA==
-  dependencies:
-    chokidar ">=3.0.0 <4.0.0"
-    immutable "^4.0.0"
-    source-map-js ">=0.6.2 <2.0.0"
-
 sass@1.69.5:
   version "1.69.5"
   resolved "https://registry.yarnpkg.com/sass/-/sass-1.69.5.tgz#23e18d1c757a35f2e52cc81871060b9ad653dfde"
@@ -13459,6 +13370,7 @@ select-hose@^2.0.0:
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
 "selenium-webdriver4@npm:selenium-webdriver@4.14.0", selenium-webdriver@4.14.0:
+  name selenium-webdriver4
   version "4.14.0"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.14.0.tgz#d39917cd7c1bb30f753c1f668158f37d1905fafc"
   integrity sha512-637rs8anqMKHbWxcBZpyG3Gcs+rBUtAUiqk0O/knUqH4Paj3MFUZrz88/pVGOLNryEVy2z92fZomT8p1ENl1gA==
