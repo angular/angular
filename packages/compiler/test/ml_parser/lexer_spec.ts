@@ -1479,6 +1479,71 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });
+
+      it('should produce an understandable error when an if block is missing the "@" start character',
+         () => {
+           expect(tokenizeAndHumanizeErrors(
+                      `if (1) { hello }`, {tokenizeBlocks: true, tokenizeExpansionForms: true}))
+               .toEqual([[
+                 TokenType.EXPANSION_FORM_START,
+                 `Invalid ICU expression preceded by known control flow name. Are you missing an "@" character at the beginning of the block name?`,
+                 '0:7',
+               ]]);
+         });
+
+      it('should produce an ICU error when a if block without parameters is missing the "@" start character',
+         () => {
+           expect(tokenizeAndHumanizeErrors(
+                      `if { hello }`, {tokenizeBlocks: true, tokenizeExpansionForms: true}))
+               .toEqual([[
+                 TokenType.RAW_TEXT,
+                 `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+                 '0:12',
+               ]]);
+         });
+
+      it('should produce missing @ character error when parameters are not required', () => {
+        expect(tokenizeAndHumanizeErrors(
+                   `defer { hello } placeholder { <div></div> }`,
+                   {tokenizeBlocks: true, tokenizeExpansionForms: true}))
+            .toEqual([[
+              TokenType.EXPANSION_FORM_START,
+              `Invalid ICU expression preceded by known control flow name. Are you missing an "@" character at the beginning of the block name?`,
+              '0:6',
+            ]]);
+      });
+
+      it('should produce missing @ character error when block parameters are multiline', () => {
+        expect(tokenizeAndHumanizeErrors(
+                   `for (item of items;
+                             track $index) { 
+                          {{item}} 
+                        }`,
+                   {tokenizeBlocks: true, tokenizeExpansionForms: true}))
+            .toEqual([[
+              TokenType.EXPANSION_FORM_START,
+              `Invalid ICU expression preceded by known control flow name. Are you missing an "@" character at the beginning of the block name?`,
+              '1:43',
+            ]]);
+      });
+
+      it('should produce missing @ character error when block body open is on a new line', () => {
+        expect(tokenizeAndHumanizeErrors(
+                   `@if (1)
+                       {
+                        yes
+                       }
+                       else 
+                       {
+                        no
+                       }`,
+                   {tokenizeBlocks: true, tokenizeExpansionForms: true}))
+            .toEqual([[
+              TokenType.EXPANSION_FORM_START,
+              `Invalid ICU expression preceded by known control flow name. Are you missing an "@" character at the beginning of the block name?`,
+              '5:23',
+            ]]);
+      });
     });
 
     describe('unicode characters', () => {

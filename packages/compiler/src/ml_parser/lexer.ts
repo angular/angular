@@ -12,7 +12,7 @@ import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../pa
 import {NAMED_ENTITIES} from './entities';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import {TagContentType, TagDefinition} from './tags';
-import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
+import {ExpansionFormStartToken, IncompleteTagOpenToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
 
 export class TokenError extends ParseError {
   constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {
@@ -389,7 +389,17 @@ class _Tokenizer {
 
   private handleError(e: any) {
     if (e instanceof CursorError) {
-      e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
+      if (this.isLikelyControlFlowMissingAtCharacter()) {
+        const expansionStartToken =
+            this.tokens[this.tokens.length - 1] as unknown as ExpansionFormStartToken;
+        const error = new TokenError(
+            'Invalid ICU expression preceded by known control flow name. ' +
+                'Are you missing an "@" character at the beginning of the block name?',
+            expansionStartToken.type, expansionStartToken.sourceSpan);
+        e = new _ControlFlowError(error);
+      } else {
+        e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
+      }
     }
     if (e instanceof _ControlFlowError) {
       this.errors.push(e.error);
@@ -977,6 +987,23 @@ class _Tokenizer {
     return this._expansionCaseStack.length > 0 &&
         this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
         TokenType.EXPANSION_FORM_START;
+  }
+
+  private isLikelyControlFlowMissingAtCharacter(): boolean {
+    const isExpansionPrecededByText = this.tokens.length >= 2 &&
+        this.tokens[this.tokens.length - 1].type === TokenType.EXPANSION_FORM_START &&
+        this.tokens[this.tokens.length - 2].type === TokenType.TEXT;
+    if (!isExpansionPrecededByText) {
+      return false;
+    }
+
+    const textToken = this.tokens[this.tokens.length - 2] as TextToken;
+    const lastPartText = textToken.parts[textToken.parts.length - 1].trim();
+    const matchesBlocksWithNoParameters =
+        lastPartText.match(/(else|defer|placeholder|error|loading|default|empty)$/);
+    const matchesBlocksRequiringParameters =
+        lastPartText.match(/(if|else if|defer|case|switch|for)\s*\(.*\)$/s);
+    return !!matchesBlocksRequiringParameters?.length || !!matchesBlocksWithNoParameters?.length;
   }
 
   private isExpansionFormStart(): boolean {
