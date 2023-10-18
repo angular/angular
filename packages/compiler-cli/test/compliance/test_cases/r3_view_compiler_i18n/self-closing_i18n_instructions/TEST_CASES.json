@@ -27,8 +27,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should be generated within <ng-container> and <ng-template> blocks",
