@@ -177,7 +177,8 @@ function generateVariablesInScopeForView(
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
     newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
+        view.job.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr(),
+        ir.VariableFlags.None));
   }
 
   // Add variables for all context variables available in this scope's view.
@@ -187,13 +188,15 @@ function generateVariablesInScopeForView(
     const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
     // Add the variable declaration.
     newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), scope.contextVariables.get(name)!, variable));
+        view.job.allocateXrefId(), scope.contextVariables.get(name)!, variable,
+        ir.VariableFlags.None));
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
+        view.job.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset),
+        ir.VariableFlags.None));
   }
 
   if (scope.parent !== null) {
