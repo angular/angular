@@ -40,6 +40,37 @@ index afe4e5c..095a8f0 100755
      ],
      entry_point = "bin.mjs",
      # Note: Using the linker here as we need it for ESM. The linker is not
+diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
+index 26563a7..f7bc080 100755
+--- a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
++++ b/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
+@@ -15,7 +15,7 @@ esbuild_esm_bundle(
+     target = "es2022",
+     deps = [
+         ":generate_api_manifest_lib",
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler-cli",
+     ],
+ )
+
+@@ -25,7 +25,7 @@ ts_library(
+     devmode_module = "commonjs",
+     tsconfig = "@npm//@angular/build-tooling:tsconfig.json",
+     deps = [
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler-cli",
+         "@npm//@bazel/runfiles",
+         "@npm//@types/node",
+     ],
+@@ -36,7 +36,7 @@ nodejs_binary(
+     name = "generate_api_manifest",
+     data = [
+         ":bin",
+-        "@npm//@angular/compiler-cli",
++        "@angular//packages/compiler-cli",
+     ],
+     entry_point = "bin.mjs",
+     # Note: Using the linker here as we need it for ESM. The linker is not
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 index 850265d..68146c8 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel

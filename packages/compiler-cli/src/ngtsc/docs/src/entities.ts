@@ -8,7 +8,7 @@
 
 /** Type of top-level documentation entry. */
 export enum EntryType {
-  Block = 'Block',
+  Block = 'block',
   Component = 'component',
   Constant = 'constant',
   Decorator = 'decorator',
