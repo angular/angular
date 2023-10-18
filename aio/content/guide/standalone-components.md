@@ -174,7 +174,7 @@ export default [
   {path: 'home', component: AdminHomeComponent},
   {path: 'users', component: AdminUsersComponent},
   // ...
-] as Route[];
+] satisfies Route[];
 ```
 
 ### Providing services to a subset of routes
