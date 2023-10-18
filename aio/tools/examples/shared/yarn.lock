@@ -2160,10 +2160,10 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-5.1.0.tgz#581b2f7393942a56acd3542fe168c803d7d588d6"
   integrity sha512-XOV0KsqXNX2gUSqk05RWeolIMgaAQ7+l/ozOBoQ8NGwLg+E7J9vgagODtNgfim4jCzEUP0oJ3gnXeC+Zv+Xi1A==
 
-"@types/jquery@3.5.20":
-  version "3.5.20"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.20.tgz#a23eece847591c7aaa47c52d6910052af473df4e"
-  integrity sha512-UI+EGhgYD4LdSZ8gaiziFqXYIIB38VQSDsnAs8jL/div7FGrzrShx4HKCykVzk3tPfiIlusdNP9Wi3G60LCF2Q==
+"@types/jquery@3.5.23":
+  version "3.5.23"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.23.tgz#f99f08533ad5a5c4cb1d0dc131ecf5e2a73eb182"
+  integrity sha512-LwtD05mlY8iPF/1aB8dOZaYhRDothbHA7csnAxhyqMnQxj90Fo3J4nPhmHiA0OMTwHhjwZdE1Lpd6UK+b+C6Bw==
   dependencies:
     "@types/sizzle" "*"
 
