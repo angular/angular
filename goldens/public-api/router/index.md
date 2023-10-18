@@ -409,7 +409,7 @@ export interface Navigation {
 
 // @public
 export interface NavigationBehaviorOptions {
-    onSameUrlNavigation?: Extract<OnSameUrlNavigation, 'reload'>;
+    onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
     state?: {
