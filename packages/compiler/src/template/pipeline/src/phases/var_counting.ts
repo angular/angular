@@ -53,7 +53,7 @@ export function phaseVarCounting(job: CompilationJob): void {
     // an embedded view).
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind !== ir.OpKind.Template) {
+        if (op.kind !== ir.OpKind.Template && op.kind !== ir.OpKind.RepeaterCreate) {
           continue;
         }
 

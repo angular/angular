@@ -20,24 +20,24 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp =
-    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
-    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
-    DeferOp|DeferSecondaryBlockOp|DeferOnOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp|IcuOp;
+export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
+    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
+    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferSecondaryBlockOp|DeferOnOp|RepeaterCreateOp|
+    ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp|IcuOp;
 
 /**
  * An operation representing the creation of an element or container.
  */
 export type ElementOrContainerOps =
-    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp|ProjectionOp;
+    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp|ProjectionOp|RepeaterCreateOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
  */
 const elementContainerOpKinds = new Set([
   OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template,
-  OpKind.Projection
+  OpKind.Projection, OpKind.RepeaterCreate
 ]);
 
 /**
@@ -102,7 +102,7 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
-  kind: OpKind.Element|OpKind.ElementStart|OpKind.Template;
+  kind: OpKind.Element|OpKind.ElementStart|OpKind.Template|OpKind.RepeaterCreate;
 
   /**
    * The HTML tag name for this element.
@@ -212,6 +212,62 @@ export function createTemplateOp(
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a repeater (e.g. a for loop).
+ */
+export interface RepeaterCreateOp extends ElementOpBase {
+  kind: OpKind.RepeaterCreate;
+
+  /**
+   * The number of declaration slots used by this repeater's template, or `null` if slots have not
+   * yet been assigned.
+   */
+  decls: number|null;
+
+  /**
+   * The number of binding variable slots used by this repeater's, or `null` if binding variables
+   * have not yet been counted.
+   */
+  vars: number|null;
+
+  /**
+   * The Xref of the empty view function. (For the primary view function, use the `xref` property).
+   */
+  emptyView: XrefId|null;
+
+  /**
+   * The trackBy function to use while iterating
+   */
+  trackBy: o.Expression;
+
+  trackByUsesComponentInstance: boolean;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createRepeaterCreateOp(
+    primaryView: XrefId, emptyView: XrefId|null, trackBy: o.Expression,
+    sourceSpan: ParseSourceSpan): RepeaterCreateOp {
+  return {
+    kind: OpKind.RepeaterCreate,
+    attributes: null,
+    xref: primaryView,
+    emptyView,
+    trackBy,
+    tag: 'For',
+    namespace: Namespace.HTML,
+    trackByUsesComponentInstance: false,
+    nonBindable: false,
+    localRefs: [],
+    decls: null,
+    vars: null,
+    sourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+    numSlotsUsed: emptyView === null ? 2 : 3,
   };
 }
 

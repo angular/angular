@@ -164,6 +164,43 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace<ir.CreateOp>(
             op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes));
         break;
+      case ir.OpKind.RepeaterCreate:
+        if (op.slot === null) {
+          throw new Error('No slot was assigned for repeater instruction');
+        }
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        const repeaterView = unit.job.views.get(op.xref)!;
+        if (repeaterView.fnName === null) {
+          throw new Error(`AssertionError: expected repeater primary view to have been named`);
+        }
+
+        let emptyViewFnName: string|null = null;
+        let emptyDecls: number|null = null;
+        let emptyVars: number|null = null;
+        if (op.emptyView !== null) {
+          const emptyView = unit.job.views.get(op.emptyView);
+          if (emptyView === undefined) {
+            throw new Error(
+                'AssertionError: repeater had empty view xref, but empty view was not found');
+          }
+          if (emptyView.fnName === null || emptyView.decls === null || emptyView.vars === null) {
+            throw new Error(
+                `AssertionError: expected repeater empty view to have been named and counted`);
+          }
+          emptyViewFnName = emptyView.fnName;
+          emptyDecls = emptyView.decls;
+          emptyVars = emptyView.vars;
+        }
+
+        ir.OpList.replace(
+            op,
+            ng.repeaterCreate(
+                op.slot, repeaterView.fnName, op.decls!, op.vars!, op.trackBy,
+                op.trackByUsesComponentInstance, emptyViewFnName, emptyDecls, emptyVars,
+                op.sourceSpan));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -279,6 +316,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         }
         ir.OpList.replace(
             op, ng.conditional(op.targetSlot, op.processed, op.contextValue, op.sourceSpan));
+        break;
+      case ir.OpKind.Repeater:
+        ir.OpList.replace(op, ng.repeater(op.targetSlot!, op.collection, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

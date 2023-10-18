@@ -43,6 +43,7 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|nu
   for (const op of view.create) {
     switch (op.kind) {
       case ir.OpKind.Template:
+      case ir.OpKind.RepeaterCreate:
         // Descend into child embedded views.
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);
         break;

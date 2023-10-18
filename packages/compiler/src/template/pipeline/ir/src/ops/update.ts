@@ -13,7 +13,7 @@ import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {Op, XrefId} from '../operations';
-import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
@@ -24,7 +24,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp|RepeaterOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -535,6 +535,34 @@ export function createConditionalOp(
   };
 }
 
+export interface RepeaterOp extends Op<UpdateOp>, UsesSlotIndexTrait {
+  kind: OpKind.Repeater;
+
+  /**
+   * The RepeaterCreate op associated with this repeater.
+   */
+  target: XrefId;
+
+  /**
+   * The collection provided to the for loop as its expression.
+   */
+  collection: o.Expression;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createRepeaterOp(
+    repeaterCreate: XrefId, collection: o.Expression, sourceSpan: ParseSourceSpan): RepeaterOp {
+  return {
+    kind: OpKind.Repeater,
+    target: repeaterCreate,
+    collection,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
 /**
  * An op that represents an expression in an i18n message.
  */
@@ -571,6 +599,8 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   sourceSpan: ParseSourceSpan;
 }
 
+
+
 /**
  * Create an i18n expression op.
  */
@@ -598,7 +628,7 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
   kind: OpKind.I18nApply;
 
   /**
-   * The i18n block to which expressions are applied.
+   * The i18n block to which expressions are applied
    */
   target: XrefId;
 
@@ -606,7 +636,7 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
 }
 
 /**
- * Creates an op to apply i18n expression ops.
+ *Creates an op to apply i18n expression ops
  */
 export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
