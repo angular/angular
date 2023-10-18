@@ -13,7 +13,7 @@ jobs:
       statuses: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: angular/dev-infra/github-actions/google-internal-tests@031962443584a0ac5cbd9d1c1b78b241453e4702
         with:
           run-tests-guide-url: http://go/angular-g3sync-start
