@@ -1231,7 +1231,7 @@ export interface NavigationBehaviorOptions {
    * @see {@link OnSameUrlNavigation}
    * @see {@link RouterConfigOptions}
    */
-  onSameUrlNavigation?: Extract<OnSameUrlNavigation, 'reload'>;
+  onSameUrlNavigation?: OnSameUrlNavigation;
 
   /**
    * When true, navigates without pushing a new state into history.

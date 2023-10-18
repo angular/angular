@@ -115,6 +115,33 @@ describe('Integration', () => {
       ]);
     });
 
+    it('should override default onSameUrlNavigation with extras', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'})),
+        ]
+      });
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
+
+      const events: (NavigationStart|NavigationEnd)[] = [];
+      router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+
+      await router.navigateByUrl('/simple');
+      await router.navigateByUrl('/simple');
+      expectEvents(events, [
+        [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
+        [NavigationEnd, '/simple']
+      ]);
+
+      events.length = 0;
+      await router.navigateByUrl('/simple', {onSameUrlNavigation: 'ignore'});
+      expectEvents(events, []);
+    });
+
     it('should ignore empty paths in relative links',
        fakeAsync(inject([Router], (router: Router) => {
          router.resetConfig([{
