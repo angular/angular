@@ -45,14 +45,13 @@ runInEachFileSystem(() => {
              expect(diags.length).toBe(1);
              expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
              expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE));
+             expect(diags[0].messageText).toContain(`The \`*${directive}\` directive was used`);
              expect(diags[0].messageText)
-                 .toBe(
-                     `The \`*${directive}\` directive was used in the template, ` +
-                     `but neither the \`${
-                         correspondingImport}\` directive nor the \`CommonModule\` was imported. ` +
-                     `Please make sure that either the \`${
-                         correspondingImport}\` directive or the \`CommonModule\` ` +
-                     `is included in the \`@Component.imports\` array of this component.`);
+                 .toContain(`neither the \`${
+                     correspondingImport
+                         .directive}\` directive nor the \`CommonModule\` was imported. `);
+             expect(diags[0].messageText)
+                 .toContain(`Use Angular's built-in control flow ${correspondingImport?.builtIn}`);
              expect(getSourceCodeForDiagnostic(diags[0])).toBe(directive);
            });
 
