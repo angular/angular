@@ -41,6 +41,7 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
     }
   }
 
+  // TODO: Use the new pool method `getSharedFunctionReference`
   toSharedConstantDeclaration(declName: string, keyExpr: o.Expression): o.Statement {
     const fnParams: o.FnParam[] = [];
     for (let idx = 0; idx < this.numArgs; idx++) {

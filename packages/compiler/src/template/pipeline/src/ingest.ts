@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {Identifiers} from '../../../render3/r3_identifiers';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
@@ -131,6 +132,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestDeferBlock(unit, node);
     } else if (node instanceof t.Icu) {
       ingestIcu(unit, node);
+    } else if (node instanceof t.ForLoopBlock) {
+      ingestForBlock(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -396,6 +399,92 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
 }
 
 /**
+ * Ingest an `@for` block into the given `ViewCompilation`.
+ */
+function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): void {
+  const repeaterView = unit.job.allocateView(unit.xref);
+  repeaterView.contextVariables.set(forBlock.item.name, forBlock.item.value);
+  repeaterView.contextVariables.set(
+      forBlock.contextVariables.$index.name, forBlock.contextVariables.$index.value);
+  repeaterView.contextVariables.set(
+      forBlock.contextVariables.$count.name, forBlock.contextVariables.$count.value);
+
+  const trackBy = createTrackByFunction(unit.job, forBlock);
+
+  ingestNodes(repeaterView, forBlock.children);
+
+  let emptyView: ViewCompilationUnit|null = null;
+  if (forBlock.empty !== null) {
+    emptyView = unit.job.allocateView(unit.xref);
+    ingestNodes(emptyView, forBlock.empty.children);
+  }
+
+  const repeaterCreate = ir.createRepeaterCreateOp(
+      repeaterView.xref, emptyView?.xref ?? null, trackBy, forBlock.sourceSpan);
+  unit.create.push(repeaterCreate);
+
+  const expression = convertAst(
+      forBlock.expression, unit.job,
+      convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
+  const repeater = ir.createRepeaterOp(repeaterCreate.xref, expression, forBlock.sourceSpan);
+  unit.update.push(repeater);
+}
+
+function createTrackByFunction(job: CompilationJob, block: t.ForLoopBlock): o.Expression {
+  const optimized = optimizeTrackByFunction(job, block);
+  if (optimized !== null) {
+    return optimized;
+  }
+
+  const convertedTrackSpan = convertSourceSpan(block.trackBy.span, block.sourceSpan);
+  const trackFn = convertAst(block.trackBy, job, convertedTrackSpan);
+
+  // TODO: extract the trackBy function to the constant pool, possibly via pure function.
+  // conet fn = new o.ArrowFunctionExpr([], trackFn);
+  // const poolFn = job.pool.getSharedFunctionReference(fn, '_forTrack');
+  // const pureFunction = new ir.PureFunctionExpr(trackFn, []);
+
+  return trackFn;
+}
+
+function optimizeTrackByFunction(job: CompilationJob, block: t.ForLoopBlock): o.Expression|null {
+  const indexLocalName = block.contextVariables.$index.name;
+  const itemName = block.item.name;
+  const ast = block.trackBy.ast;
+
+  const sourceSpan = convertSourceSpan(block.trackBy.span, block.sourceSpan);
+
+  // Top-level access of `$index` uses the built in `repeaterTrackByIndex`.
+  if (ast instanceof e.PropertyRead && ast.receiver instanceof e.ImplicitReceiver &&
+      ast.name === indexLocalName) {
+    return o.importExpr(Identifiers.repeaterTrackByIndex, null, sourceSpan);
+  }
+
+  // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
+  if (ast instanceof e.PropertyRead && ast.receiver instanceof e.ImplicitReceiver &&
+      ast.name === itemName) {
+    return o.importExpr(Identifiers.repeaterTrackByIdentity);
+  }
+
+  // Top-level calls in the form of `fn($index, item)` can be passed in directly.
+  if (ast instanceof e.Call && ast.receiver instanceof e.PropertyRead &&
+      ast.receiver.receiver instanceof e.ImplicitReceiver && ast.args.length === 2) {
+    const firstIsIndex = ast.args[0] instanceof e.PropertyRead &&
+        ast.args[0].receiver instanceof e.ImplicitReceiver && ast.args[0].name === indexLocalName;
+    const secondIsItem = ast.args[1] instanceof e.PropertyRead &&
+        ast.args[1].receiver instanceof e.ImplicitReceiver && ast.args[1].name === itemName;
+
+    if (firstIsIndex && secondIsItem) {
+      // TODO: generate `componentInstance()` when not in the top-level context.
+      return new ir.LexicalReadExpr(ast.receiver.name);
+    }
+  }
+
+  // The trackBy function could not be optimized.
+  return null;
+}
+
+/**
  * Convert a template AST expression into an output AST expression.
  */
 function convertAst(
@@ -452,7 +541,8 @@ function convertAst(
   } else if (ast instanceof e.LiteralMap) {
     const entries = ast.keys.map((key, idx) => {
       const value = ast.values[idx];
-      // TODO: should literals have source maps, or do we just map the whole surrounding expression?
+      // TODO: should literals have source maps, or do we just map the whole surrounding
+      // expression?
       return new o.LiteralMapEntry(key.key, convertAst(value, job, baseSourceSpan), key.quoted);
     });
     return new o.LiteralMapExpr(entries, undefined, convertSourceSpan(ast.span, baseSourceSpan));

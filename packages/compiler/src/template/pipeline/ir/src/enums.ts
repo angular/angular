@@ -186,6 +186,16 @@ export enum OpKind {
   Projection,
 
   /**
+   * Create a repeater creation instruction op.
+   */
+  RepeaterCreate,
+
+  /**
+   * An update up for a repeater.
+   */
+  Repeater,
+
+  /**
    * The start of an i18n block.
    */
   I18nStart,
