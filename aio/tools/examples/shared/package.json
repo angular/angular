@@ -58,7 +58,7 @@
     "@types/angular-route": "^1.7.2",
     "@types/express": "^4.17.13",
     "@types/jasmine": "~5.1.0",
-    "@types/jquery": "3.5.20",
+    "@types/jquery": "3.5.23",
     "@types/node": "^16.11.35",
     "canonical-path": "1.0.0",
     "concurrently": "^8.0.0",
