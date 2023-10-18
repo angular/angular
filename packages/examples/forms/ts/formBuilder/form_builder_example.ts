@@ -30,10 +30,10 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 export class FormBuilderComp {
   form: FormGroup;
 
-  constructor(@Inject(FormBuilder) fb: FormBuilder) {
-    this.form = fb.group(
+  constructor(@Inject(FormBuilder) formBuilder: FormBuilder) {
+    this.form = formBuilder.group(
         {
-          name: fb.group({
+          name: formBuilder.group({
             first: ['Nancy', Validators.minLength(2)],
             last: 'Drew',
           }),
@@ -53,8 +53,8 @@ export class FormBuilderComp {
 export class DisabledFormControlComponent {
   control: FormControl;
 
-  constructor(private fb: FormBuilder) {
-    this.control = fb.control({value: 'my val', disabled: true});
+  constructor(private formBuilder: FormBuilder) {
+    this.control = formBuilder.control({value: 'my val', disabled: true});
   }
 }
 // #enddocregion disabled-control

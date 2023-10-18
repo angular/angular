@@ -17,17 +17,17 @@ import { FormArray } from '@angular/forms';
 })
 export class ProfileEditorComponent {
   // #docregion formgroup-compare
-  profileForm = this.fb.group({
+  profileForm = this.formBuilder.group({
     firstName: [''],
     lastName: [''],
-    address: this.fb.group({
+    address: this.formBuilder.group({
       street: [''],
       city: [''],
       state: [''],
       zip: [''],
     }),
     // #enddocregion form-builder, formgroup-compare
-    aliases: this.fb.array([this.fb.control('')]),
+    aliases: this.formBuilder.array([this.formBuilder.control('')]),
     // #docregion form-builder, formgroup-compare
   });
   // #enddocregion form-builder, formgroup-compare
@@ -37,7 +37,7 @@ export class ProfileEditorComponent {
 
   // #docregion inject-form-builder, form-builder
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder) {}
   // #enddocregion inject-form-builder, form-builder
 
   updateProfile() {
@@ -50,7 +50,7 @@ export class ProfileEditorComponent {
   }
 
   addAlias() {
-    this.aliases.push(this.fb.control(''));
+    this.aliases.push(this.formBuilder.control(''));
   }
   // #docregion form-builder
 }
