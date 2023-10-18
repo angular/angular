@@ -1,3 +1,36 @@
+<a name="17.0.0-rc.0"></a>
+# 17.0.0-rc.0 (2023-10-18)
+## Deprecations
+### core
+- NgProbeToken
+  
+  The `NgProbeToken` is not used internally since the transition from View Engine to Ivy. The token has no utility and can be removed from applications and libraries.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65b460448e](https://github.com/angular/angular/commit/65b460448ec5fdcee5aecca0cdc3cf498b0832cb) | fix | missing space in ngSwitch equality warning ([#52180](https://github.com/angular/angular/pull/52180)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [073ebfe09e](https://github.com/angular/angular/commit/073ebfe09eccd5d01d27fcc46fc5d4465c1851ff) | fix | apply style on :host attributes in prod builds. ([#49118](https://github.com/angular/angular/pull/49118)) |
+| [81a287a79a](https://github.com/angular/angular/commit/81a287a79afc16d43c0fd24d7aea54be4414940a) | fix | avoid error in template parser for tag names that can occur in object prototype ([#52225](https://github.com/angular/angular/pull/52225)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99e7629159](https://github.com/angular/angular/commit/99e7629159afbb8550957a265c5bd75f7e13f052) | fix | do not remove used ng-template nodes in control flow migration ([#52186](https://github.com/angular/angular/pull/52186)) |
+| [ffe9b1fcc2](https://github.com/angular/angular/commit/ffe9b1fcc2ecb8dc0d36c7f9228ac1a052554eef) | fix | handle for alias with as in control flow migration ([#52183](https://github.com/angular/angular/pull/52183)) |
+| [e5720edb46](https://github.com/angular/angular/commit/e5720edb460a1bb51475c78d3bd442da52991a46) | fix | handle if alias in control flow migration ([#52181](https://github.com/angular/angular/pull/52181)) |
+| [8e4a7ab52b](https://github.com/angular/angular/commit/8e4a7ab52bc85172efd12e42304e1b8da446ff75) | perf | avoid repeated access to LContainer and trackBy calculation ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [1032c1e1a5](https://github.com/angular/angular/commit/1032c1e1a5f5de28f38ede1786cf973f8e8b7a53) | perf | cache LiveCollectionLContainerImpl ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [37d627dbd4](https://github.com/angular/angular/commit/37d627dbd4083662b103de2e28102e6ff31a9192) | perf | minimze trackBy calculations ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [ba9fc2419e](https://github.com/angular/angular/commit/ba9fc2419eee0d72c573463016a872a4b69f71c1) | refactor | deprecate the `NgProbeToken` ([#51396](https://github.com/angular/angular/pull/51396)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c9cde3ab10](https://github.com/angular/angular/commit/c9cde3ab103699bc3f941d8176ee0b0373fcf7e0) | perf | only append style element on creation ([#52237](https://github.com/angular/angular/pull/52237)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.10"></a>
 # 16.2.10 (2023-10-18)
 
