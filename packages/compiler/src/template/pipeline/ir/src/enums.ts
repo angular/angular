@@ -336,6 +336,16 @@ export enum ExpressionKind {
   ConditionalCase,
 }
 
+export enum VariableFlags {
+  None = 0b0000,
+
+  /**
+   * Always inline this variable, regardless of the number of times it's used.
+   * An `AlwaysInline` variable may not depend on context, because doing so may cause side effects
+   * that are illegal when multi-inlined. (The optimizer will enforce this constraint.)
+   */
+  AlwaysInline = 0b0001,
+}
 /**
  * Distinguishes between different kinds of `SemanticVariable`s.
  */
