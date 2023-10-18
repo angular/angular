@@ -70,7 +70,7 @@ export abstract class InMemoryBackendConfigArgs {
    */
   host?: string;
   /**
-   * false (default) should pass unrecognized request URL through to original backend; true: 404
+   * true, should pass unrecognized request URL through to original backend; false (default): 404
    */
   passThruUnknownUrl?: boolean;
   /**
