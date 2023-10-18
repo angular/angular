@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Provider, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {afterNextRender, Directive, ElementRef, EnvironmentInjector, forwardRef, Host, inject, Input, OnDestroy, Optional, Provider, Renderer2, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -117,6 +117,43 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
+  private _injector = inject(EnvironmentInjector);
+  private _queuedWrite = false;
+
+  /**
+   * This is needed to efficiently set the select value when adding/removing options. If
+   * writeValue is instead called for every added/removed option, this results in exponentially
+   * more _compareValue calls than the number of option elements (issue #41330).
+   *
+   * Secondly, calling writeValue when rendering individual option elements instead of after they
+   * are all rendered caused an issue in Safari and IE 11 where the first option element failed
+   * to be deselected when no option matched the select ngModel. This was because Angular would
+   * set the select element's value property before appending the option's child text node to the
+   * DOM (issue #14505).
+   *
+   * Finally, this approach is necessary to avoid an issue with delayed element removal when
+   * using the animations module (in all browsers). Otherwise when a selected option is removed
+   * (so no option matches the ngModel anymore), Angular would change the select element value
+   * before actually removing the option from the DOM. Then when the option is finally removed
+   * from the DOM, the browser would change the select value to that of the first option, even
+   * though it doesn't match the ngModel (issue #18430).
+   *
+   * @internal
+   */
+  _writeValueAfterRender(): void {
+    if (this._queuedWrite) {
+      return;
+    }
+
+    this._queuedWrite = true;
+
+    runInInjectionContext(this._injector, () => {
+      afterNextRender(() => {
+        this._queuedWrite = false;
+        this.writeValue(this.value);
+      });
+    });
+  }
 
   /**
    * Sets the "value" property on the select element.
@@ -195,7 +232,7 @@ export class NgSelectOption implements OnDestroy {
     if (this._select == null) return;
     this._select._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
-    this._select.writeValue(this._select.value);
+    this._select._writeValueAfterRender();
   }
 
   /**
@@ -206,7 +243,7 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (this._select) this._select.writeValue(this._select.value);
+    if (this._select) this._select._writeValueAfterRender();
   }
 
   /** @internal */
@@ -218,7 +255,7 @@ export class NgSelectOption implements OnDestroy {
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
-      this._select.writeValue(this._select.value);
+      this._select._writeValueAfterRender();
     }
   }
 }
