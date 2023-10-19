@@ -206,7 +206,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   ingestNodes(childView, tmpl.children);
 
   for (const {name, value} of tmpl.variables) {
-    childView.contextVariables.set(name, value);
+    childView.contextVariables.set(name, value !== '' ? value : '$implicit');
   }
 
   // If this is a plain template and there is an i18n message associated with it, insert i18n start
