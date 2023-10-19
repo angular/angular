@@ -197,9 +197,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.repeaterCreate(
-                op.slot, repeaterView.fnName, op.decls!, op.vars!, op.trackBy,
-                op.trackByUsesComponentInstance, emptyViewFnName, emptyDecls, emptyVars,
-                op.sourceSpan));
+                op.slot, repeaterView.fnName, op.decls!, op.vars!, op.trackByFn!,
+                op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
