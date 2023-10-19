@@ -239,31 +239,58 @@ export interface RepeaterCreateOp extends ElementOpBase {
   emptyView: XrefId|null;
 
   /**
-   * The trackBy function to use while iterating
+   * The track expression to use while iterating.
    */
-  trackBy: o.Expression;
+  track: o.Expression;
 
-  trackByUsesComponentInstance: boolean;
+  /**
+   * `null` initially, then an `o.Expression`. Might be a track expression, or might be a reference
+   * into the constant pool.
+   */
+  trackByFn: o.Expression|null;
+
+  /**
+   * Context variables avaialable in this block.
+   */
+  varNames: RepeaterVarNames;
+
+  /**
+   * Whether the repeater track function relies on the component instance.
+   */
+  usesComponentInstance: boolean;
 
   sourceSpan: ParseSourceSpan;
 }
 
+// TODO: add source spans?
+export interface RepeaterVarNames {
+  $index: string;
+  $count: string;
+  $first: string;
+  $last: string;
+  $even: string;
+  $odd: string;
+  $implicit: string;
+}
+
 export function createRepeaterCreateOp(
-    primaryView: XrefId, emptyView: XrefId|null, trackBy: o.Expression,
+    primaryView: XrefId, emptyView: XrefId|null, track: o.Expression, varNames: RepeaterVarNames,
     sourceSpan: ParseSourceSpan): RepeaterCreateOp {
   return {
     kind: OpKind.RepeaterCreate,
     attributes: null,
     xref: primaryView,
     emptyView,
-    trackBy,
+    track,
+    trackByFn: null,
     tag: 'For',
     namespace: Namespace.HTML,
-    trackByUsesComponentInstance: false,
     nonBindable: false,
     localRefs: [],
     decls: null,
     vars: null,
+    varNames,
+    usesComponentInstance: false,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,

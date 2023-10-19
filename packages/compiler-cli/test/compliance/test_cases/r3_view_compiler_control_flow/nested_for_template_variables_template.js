@@ -3,9 +3,9 @@ function MyApp_For_3_For_2_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $count_r7 = ctx.$count;
-    const outerCount_r3 = $r3$.ɵɵnextContext().$count;
-    $r3$.ɵɵtextInterpolate2(" Outer: ", outerCount_r3, " Inner: ", $count_r7, " ");
+    const $count_r7$ = ctx.$count;
+    const $outerCount_r3$ = $r3$.ɵɵnextContext().$count;
+    $r3$.ɵɵtextInterpolate2(" Outer: ", $outerCount_r3$, " Inner: ", $count_r7$, " ");
   }
 }
 
@@ -15,9 +15,9 @@ function MyApp_For_3_Template(rf, ctx) {
     $r3$.ɵɵrepeaterCreate(1, MyApp_For_3_For_2_Template, 1, 2, $r3$.ɵɵrepeaterTrackByIdentity);
   }
   if (rf & 2) {
-    const item_r1 = ctx.$implicit;
-    $r3$.ɵɵtextInterpolate1(" ", item_r1.name, " ");
-    $r3$.ɵɵrepeater(1, item_r1.subItems);
+    const $item_r1$ = ctx.$implicit;
+    $r3$.ɵɵtextInterpolate1(" ", $item_r1$.name, " ");
+    $r3$.ɵɵrepeater(1, $item_r1$.subItems);
   }
 }
 …

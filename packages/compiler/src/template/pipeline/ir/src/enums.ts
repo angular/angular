@@ -246,6 +246,11 @@ export enum ExpressionKind {
   Context,
 
   /**
+   * A reference to the view context, for use inside a track function.
+   */
+  TrackContext,
+
+  /**
    * Read of a variable declared in a `VariableOp`.
    */
   ReadVariable,
@@ -344,6 +349,12 @@ export enum ExpressionKind {
    * A test expression for a conditional op.
    */
   ConditionalCase,
+
+  /**
+   * A variable for use inside a repeater, providing one of the ambiently-available context
+   * properties ($even, $first, etc.).
+   */
+  DerivedRepeaterVar,
 }
 
 export enum VariableFlags {

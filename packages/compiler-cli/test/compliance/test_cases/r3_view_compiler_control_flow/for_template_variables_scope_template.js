@@ -3,9 +3,9 @@ function MyApp_For_2_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $index_r2 = ctx.$index;
-    const $count_r3 = ctx.$count;
-    $r3$.ɵɵtextInterpolate4(" ", $index_r2, " ", $count_r3, " ", $index_r2 === 0, " ", $index_r2 === $count_r3 - 1, " ");
+    const $index_r2$ = ctx.$index;
+    const $count_r3$ = ctx.$count;
+    $r3$.ɵɵtextInterpolate4(" ", $index_r2$, " ", $count_r3$, " ", $index_r2$ === 0, " ", $index_r2$ === $count_r3$ - 1, " ");
   }
 }
 …

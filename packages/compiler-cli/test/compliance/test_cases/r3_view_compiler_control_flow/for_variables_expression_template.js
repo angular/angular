@@ -3,7 +3,7 @@ function MyApp_For_1_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $index_r2 = ctx.$index;
-    $r3$.ɵɵtextInterpolate1(" ", ($index_r2 % 2 !== 0) + "", " ");
+    const $index_r2$ = ctx.$index;
+    $r3$.ɵɵtextInterpolate1(" ", ($index_r2$ % 2 !== 0) + "", " ");
   }
 }
