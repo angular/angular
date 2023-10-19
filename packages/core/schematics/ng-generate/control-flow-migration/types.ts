@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, RecursiveVisitor} from '@angular/compiler';
+import {Attribute, Element, RecursiveVisitor} from '../../../../compiler';
 
 export const ngif = '*ngIf';
 export const boundngif = '[ngIf]';
