@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
+import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
@@ -50,11 +50,6 @@ function appendSsrContentIntegrityMarker(doc: Document) {
 function appendServerContextInfo(applicationRef: ApplicationRef) {
   const injector = applicationRef.injector;
   let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
-  const features = injector.get(ENABLED_SSR_FEATURES);
-  if (features.size > 0) {
-    // Append features information into the server context value.
-    serverContext += `|${Array.from(features).join(',')}`;
-  }
   applicationRef.components.forEach(componentRef => {
     const renderer = componentRef.injector.get(Renderer2);
     const element = componentRef.location.nativeElement;

@@ -141,9 +141,6 @@
     "name": "EMPTY_PAYLOAD"
   },
   {
-    "name": "ENABLED_SSR_FEATURES"
-  },
-  {
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
