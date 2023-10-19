@@ -292,13 +292,13 @@
           "files": [
             {
               "expected": "embedded_view_listener_context_template.js",
+              "templatePipelineExpected": "embedded_view_listener_context_template.pipeline.js",
               "generated": "embedded_view_listener_context.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
