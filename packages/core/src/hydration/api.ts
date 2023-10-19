@@ -7,7 +7,6 @@
  */
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application_ref';
-import {ENABLED_SSR_FEATURES} from '../application_tokens';
 import {Console} from '../console';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
@@ -137,7 +136,7 @@ export function withDomHydration(): EnvironmentProviders {
           }
         }
         if (isEnabled) {
-          inject(ENABLED_SSR_FEATURES).add('hydration');
+          performance.mark('mark_use_counter', {detail: {feature: 'NgHydration'}});
         }
         return isEnabled;
       },
