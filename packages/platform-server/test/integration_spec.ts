@@ -707,6 +707,58 @@ describe('platform-server integration', () => {
         location.pushState(null, 'Test', '/foo#bar');
       });
     });
+
+    describe('Legacy (Remove once url normalization is removed)', () => {
+      it('parses and returns pathname without a slash', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('');
+        expect(location.protocol).toBe('');
+        expect(location.port).toBe('');
+        expect(location.pathname).toBe('deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+      it('port is set to 443 when using https protocol', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'https://test.com:443/deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('test.com');
+        expect(location.protocol).toBe('https:');
+        expect(location.port).toBe('443');
+        expect(location.pathname).toBe('/deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+
+      it('port is set to 80 when using http protocol', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com:80/deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('test.com');
+        expect(location.protocol).toBe('http:');
+        expect(location.port).toBe('80');
+        expect(location.pathname).toBe('/deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+    });
   });
 
   describe('render', () => {

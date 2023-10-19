@@ -9,19 +9,45 @@
 import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
-import * as url from 'url';
 
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
-function parseUrl(urlStr: string) {
-  const parsedUrl = url.parse(urlStr);
+const RESOLVE_PROTOCOL = 'resolve:';
+
+function parseUrl(urlStr: string): {
+  hostname: string,
+  protocol: string,
+  port: string,
+  pathname: string,
+  search: string,
+  hash: string,
+} {
+  let {hostname, protocol, port, pathname, search, hash} = new URL(urlStr, RESOLVE_PROTOCOL + '//');
+
+  /**
+   * TODO(alanagius): Remove the below in version 18.
+   * The following are done to maintain the same behaviour as `url.parse`.
+   * The main differences are;
+   *  - `pathname` is always suffixed with a `/`.
+   *  - `port` is empty when `http:` protocol and port in url is `80`
+   *  - `port` is empty when `https:` protocol and port in url is `443`
+   */
+  if (protocol !== RESOLVE_PROTOCOL && port === '' && /\:(80|443)/.test(urlStr)) {
+    port = protocol === 'http:' ? '80' : '443';
+  }
+
+  if (protocol === RESOLVE_PROTOCOL && urlStr.charAt(0) !== '/') {
+    pathname = pathname.slice(1);  // Remove leading slash.
+  }
+  // END TODO
+
   return {
-    hostname: parsedUrl.hostname || '',
-    protocol: parsedUrl.protocol || '',
-    port: parsedUrl.port || '',
-    pathname: parsedUrl.pathname || '',
-    search: parsedUrl.search || '',
-    hash: parsedUrl.hash || '',
+    hostname,
+    protocol: protocol === RESOLVE_PROTOCOL ? '' : protocol,
+    port,
+    pathname,
+    search,
+    hash,
   };
 }
 
