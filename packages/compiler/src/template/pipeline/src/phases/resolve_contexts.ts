@@ -45,6 +45,11 @@ function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|i
     }
   }
 
+  if (view === view.job.root) {
+    // Prefer `ctx` of the root view to any variables which happen to contain the root context.
+    scope.set(view.xref, o.variable('ctx'));
+  }
+
   for (const op of ops) {
     ir.transformExpressionsInOp(op, expr => {
       if (expr instanceof ir.ContextExpr) {
