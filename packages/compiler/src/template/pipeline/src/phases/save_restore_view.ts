@@ -19,7 +19,7 @@ export function phaseSaveRestoreView(job: ComponentCompilationJob): void {
             name: null,
             view: view.xref,
           },
-          new ir.GetCurrentViewExpr()),
+          new ir.GetCurrentViewExpr(), ir.VariableFlags.None),
     ]);
 
     for (const op of view.create) {
@@ -56,7 +56,7 @@ function addSaveRestoreViewOperationToListener(unit: ViewCompilationUnit, op: ir
           name: null,
           view: unit.xref,
         },
-        new ir.RestoreViewExpr(unit.xref)),
+        new ir.RestoreViewExpr(unit.xref), ir.VariableFlags.None),
   ]);
 
   // The "restore view" operation in listeners requires a call to `resetView` to reset the

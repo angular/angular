@@ -71,6 +71,8 @@ interface Scope {
 
   contextVariables: Map<string, ir.SemanticVariable>;
 
+  aliases: Set<ir.AliasVariable>;
+
   /**
    * Local references collected from elements within the view.
    */
@@ -122,6 +124,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
       view: view.xref,
     },
     contextVariables: new Map<string, ir.SemanticVariable>(),
+    aliases: view.aliases,
     references: [],
     parent,
   };
@@ -182,7 +185,8 @@ function generateVariablesInScopeForView(
   }
 
   // Add variables for all context variables available in this scope's view.
-  for (const [name, value] of view.job.views.get(scope.view)!.contextVariables) {
+  const scopeView = view.job.views.get(scope.view)!;
+  for (const [name, value] of scopeView.contextVariables) {
     const context = new ir.ContextExpr(scope.view);
     // We either read the context, or, if the variable is CTX_REF, use the context directly.
     const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
@@ -190,6 +194,11 @@ function generateVariablesInScopeForView(
     newOps.push(ir.createVariableOp(
         view.job.allocateXrefId(), scope.contextVariables.get(name)!, variable,
         ir.VariableFlags.None));
+  }
+
+  for (const alias of scopeView.aliases) {
+    newOps.push(ir.createVariableOp(
+        view.job.allocateXrefId(), alias, alias.expression.clone(), ir.VariableFlags.AlwaysInline));
   }
 
   // Add variables for all local references declared for elements in this scope.

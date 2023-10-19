@@ -203,6 +203,12 @@ export class ViewCompilationUnit extends CompilationUnit {
   readonly contextVariables = new Map<string, string>();
 
   /**
+   * Set of aliases available within this view. An alias is a variable whose provided expression is
+   * inlined at every location it is used. It may also depend on context variables, by name.
+   */
+  readonly aliases = new Set<ir.AliasVariable>();
+
+  /**
    * Number of declaration slots used within this view, or `null` if slots have not yet been
    * allocated.
    */
