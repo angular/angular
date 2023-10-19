@@ -403,13 +403,29 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
  */
 function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): void {
   const repeaterView = unit.job.allocateView(unit.xref);
+
+  const createRepeaterAlias = (ident: string, repeaterVar: ir.DerivedRepeaterVarIdentity) => {
+    repeaterView.aliases.add({
+      kind: ir.SemanticVariableKind.Alias,
+      name: null,
+      identifier: ident,
+      expression: new ir.DerivedRepeaterVarExpr(repeaterView.xref, repeaterVar),
+    });
+  };
+
+  // Set all the context variables and aliases available in the repeater.
   repeaterView.contextVariables.set(forBlock.item.name, forBlock.item.value);
   repeaterView.contextVariables.set(
       forBlock.contextVariables.$index.name, forBlock.contextVariables.$index.value);
   repeaterView.contextVariables.set(
       forBlock.contextVariables.$count.name, forBlock.contextVariables.$count.value);
+  createRepeaterAlias(forBlock.contextVariables.$first.name, ir.DerivedRepeaterVarIdentity.First);
+  createRepeaterAlias(forBlock.contextVariables.$last.name, ir.DerivedRepeaterVarIdentity.Last);
+  createRepeaterAlias(forBlock.contextVariables.$even.name, ir.DerivedRepeaterVarIdentity.Even);
+  createRepeaterAlias(forBlock.contextVariables.$odd.name, ir.DerivedRepeaterVarIdentity.Odd);
 
-  const trackBy = createTrackByFunction(unit.job, forBlock);
+  const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
+  const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
 
   ingestNodes(repeaterView, forBlock.children);
 
@@ -419,8 +435,18 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     ingestNodes(emptyView, forBlock.empty.children);
   }
 
+  const varNames: ir.RepeaterVarNames = {
+    $index: forBlock.contextVariables.$index.name,
+    $count: forBlock.contextVariables.$count.name,
+    $first: forBlock.contextVariables.$first.name,
+    $last: forBlock.contextVariables.$last.name,
+    $even: forBlock.contextVariables.$even.name,
+    $odd: forBlock.contextVariables.$odd.name,
+    $implicit: forBlock.item.name,
+  };
+
   const repeaterCreate = ir.createRepeaterCreateOp(
-      repeaterView.xref, emptyView?.xref ?? null, trackBy, forBlock.sourceSpan);
+      repeaterView.xref, emptyView?.xref ?? null, track, varNames, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(
@@ -428,60 +454,6 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
       convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
   const repeater = ir.createRepeaterOp(repeaterCreate.xref, expression, forBlock.sourceSpan);
   unit.update.push(repeater);
-}
-
-function createTrackByFunction(job: CompilationJob, block: t.ForLoopBlock): o.Expression {
-  const optimized = optimizeTrackByFunction(job, block);
-  if (optimized !== null) {
-    return optimized;
-  }
-
-  const convertedTrackSpan = convertSourceSpan(block.trackBy.span, block.sourceSpan);
-  const trackFn = convertAst(block.trackBy, job, convertedTrackSpan);
-
-  // TODO: extract the trackBy function to the constant pool, possibly via pure function.
-  // conet fn = new o.ArrowFunctionExpr([], trackFn);
-  // const poolFn = job.pool.getSharedFunctionReference(fn, '_forTrack');
-  // const pureFunction = new ir.PureFunctionExpr(trackFn, []);
-
-  return trackFn;
-}
-
-function optimizeTrackByFunction(job: CompilationJob, block: t.ForLoopBlock): o.Expression|null {
-  const indexLocalName = block.contextVariables.$index.name;
-  const itemName = block.item.name;
-  const ast = block.trackBy.ast;
-
-  const sourceSpan = convertSourceSpan(block.trackBy.span, block.sourceSpan);
-
-  // Top-level access of `$index` uses the built in `repeaterTrackByIndex`.
-  if (ast instanceof e.PropertyRead && ast.receiver instanceof e.ImplicitReceiver &&
-      ast.name === indexLocalName) {
-    return o.importExpr(Identifiers.repeaterTrackByIndex, null, sourceSpan);
-  }
-
-  // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
-  if (ast instanceof e.PropertyRead && ast.receiver instanceof e.ImplicitReceiver &&
-      ast.name === itemName) {
-    return o.importExpr(Identifiers.repeaterTrackByIdentity);
-  }
-
-  // Top-level calls in the form of `fn($index, item)` can be passed in directly.
-  if (ast instanceof e.Call && ast.receiver instanceof e.PropertyRead &&
-      ast.receiver.receiver instanceof e.ImplicitReceiver && ast.args.length === 2) {
-    const firstIsIndex = ast.args[0] instanceof e.PropertyRead &&
-        ast.args[0].receiver instanceof e.ImplicitReceiver && ast.args[0].name === indexLocalName;
-    const secondIsItem = ast.args[1] instanceof e.PropertyRead &&
-        ast.args[1].receiver instanceof e.ImplicitReceiver && ast.args[1].name === itemName;
-
-    if (firstIsIndex && secondIsItem) {
-      // TODO: generate `componentInstance()` when not in the top-level context.
-      return new ir.LexicalReadExpr(ast.receiver.name);
-    }
-  }
-
-  // The trackBy function could not be optimized.
-  return null;
 }
 
 /**
