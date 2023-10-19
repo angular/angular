@@ -20,11 +20,11 @@ import {Interpolation, type UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
+    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
+    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
+    SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -69,8 +69,11 @@ export class LexicalReadExpr extends ExpressionBase {
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): void {}
 
-  override isEquivalent(): boolean {
-    return false;
+  override isEquivalent(other: LexicalReadExpr): boolean {
+    // We assume that the lexical reads are in the same context, which must be true for parent
+    // expressions to be equivalent.
+    // TODO: is this generally safe?
+    return this.name === other.name;
   }
 
   override isConstant(): boolean {
@@ -141,6 +144,33 @@ export class ContextExpr extends ExpressionBase {
 
   override clone(): ContextExpr {
     return new ContextExpr(this.view);
+  }
+}
+
+/**
+ * A reference to the current view context inside a track function.
+ */
+export class TrackContextExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.TrackContext;
+
+  constructor(readonly view: XrefId) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof TrackContextExpr && e.view === this.view;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): TrackContextExpr {
+    return new TrackContextExpr(this.view);
   }
 }
 
@@ -806,6 +836,39 @@ export class ConditionalCaseExpr extends ExpressionBase {
   }
 }
 
+export enum DerivedRepeaterVarIdentity {
+  First,
+  Last,
+  Even,
+  Odd,
+}
+
+export class DerivedRepeaterVarExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.DerivedRepeaterVar;
+
+  constructor(readonly xref: XrefId, readonly identity: DerivedRepeaterVarIdentity) {
+    super();
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {}
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any) {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof DerivedRepeaterVarExpr && e.identity === this.identity &&
+        e.xref === this.xref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override clone(): o.Expression {
+    return new DerivedRepeaterVarExpr(this.xref, this.identity);
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -904,7 +967,10 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.RepeaterCreate:
-      op.trackBy = transformExpressionsInExpression(op.trackBy, transform, flags);
+      op.track = transformExpressionsInExpression(op.track, transform, flags);
+      if (op.trackByFn !== null) {
+        op.trackByFn = transformExpressionsInExpression(op.trackByFn, transform, flags);
+      }
       break;
     case OpKind.Repeater:
       op.collection = transformExpressionsInExpression(op.collection, transform, flags);

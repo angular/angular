@@ -1,4 +1,5 @@
 /**
+ *
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -23,6 +24,7 @@ import {phaseConditionals} from './phases/conditionals';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
+import {phaseRepeaterDerivedVars} from './phases/repeater_derived_vars';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
@@ -61,6 +63,9 @@ import {phaseTemporaryVariables} from './phases/temporary_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseWrapIcus} from './phases/wrap_icus';
+import {phaseTrackVariables} from './phases/track_variables';
+import {phaseTrackFnGeneration} from './phases/track_fn_generation';
+import {phaseTrackFnOptimization} from './phases/track_fn_optimization';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -96,7 +101,10 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
   {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
   {kind: Kind.Both, fn: phaseResolveDollarEvent},
+  {kind: Kind.Tmpl, fn: phaseRepeaterDerivedVars},
+  {kind: Kind.Tmpl, fn: phaseTrackVariables},
   {kind: Kind.Both, fn: phaseResolveNames},
+  {kind: Kind.Tmpl, fn: phaseTrackFnOptimization},
   {kind: Kind.Both, fn: phaseResolveContexts},
   {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
   {kind: Kind.Tmpl, fn: phaseLocalRefs},
@@ -105,6 +113,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseTemporaryVariables},
   {kind: Kind.Tmpl, fn: phaseSlotAllocation},
   {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
+  {kind: Kind.Tmpl, fn: phaseTrackFnGeneration},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
   {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
   {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
