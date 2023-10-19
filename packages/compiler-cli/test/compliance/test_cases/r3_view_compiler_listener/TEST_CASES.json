@@ -62,6 +62,7 @@
           "files": [
             {
               "expected": "local_ref_before_listener_template.js",
+              "templatePipelineExpected": "local_ref_before_listener.pipeline.js",
               "generated": "local_ref_before_listener.js"
             }
           ],
@@ -76,8 +77,7 @@
           ],
           "failureMessage": "Incorrect factory"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners on the same element",
