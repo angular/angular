@@ -107,7 +107,7 @@ interface OpInfo {
 function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
   const vars = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp|ir.UpdateOp>>();
   for (const op of ops) {
-    if (op.kind === ir.OpKind.Variable) {
+    if (op.kind === ir.OpKind.Variable && op.flags & ir.VariableFlags.AlwaysInline) {
       ir.visitExpressionsInOp(op, expr => {
         if (ir.isIrExpression(expr) && fencesForIrExpression(expr) !== Fence.None) {
           throw new Error(`AssertionError: A context-sensitive variable was marked AlwaysInline`);
