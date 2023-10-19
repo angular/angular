@@ -14,6 +14,12 @@
       "version": "17.0.0",
       "description": "Updates `TransferState`, `makeStateKey`, `StateKey` imports from `@angular/platform-browser` to `@angular/core`.",
       "factory": "./migrations/transfer-state/bundle"
+    },
+    "control-flow": {
+      "version": "17.0.0",
+      "description": "Converts the entire application to block control flow syntax",
+      "optional": true,
+      "factory": "./ng-generate/control-flow-migration/bundle"
     }
   }
 }
