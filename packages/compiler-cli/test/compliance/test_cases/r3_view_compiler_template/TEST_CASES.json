@@ -155,8 +155,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should allow directive inputs as an interpolated prop on <ng-template>",
