@@ -226,7 +226,7 @@ NG8008: Required input item from component ItemDetailMetadataComponent must be s
 
 ### Configuring the child component input with transform functions
 
-To transform an `Input` property from string to boolean to a child component while passing values from parent component. first import `booleanAttribute` and then decorate the property with `@Input({ transform: booleanAttribute })`, as in the following example:
+To transform an `Input` property from string to boolean to a child component while passing values from parent component. First import `booleanAttribute` and then decorate the property with `@Input({ transform: booleanAttribute })`, as in the following example:
 
 <code-example header="src/app/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata.component.ts" region="use-input-metadata-boolean-transform"></code-example>
 
