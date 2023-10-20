@@ -531,8 +531,6 @@ const TEXT_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const PROPERTY_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    // TODO: Can we save code size by collapsing singleton property interpolations into a plain
-    // property instruction, as we do with attributes?
     Identifiers.propertyInterpolate,
     Identifiers.propertyInterpolate1,
     Identifiers.propertyInterpolate2,
