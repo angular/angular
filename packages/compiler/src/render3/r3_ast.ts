@@ -118,7 +118,9 @@ export class Element implements Node {
 }
 
 export abstract class DeferredTrigger implements Node {
-  constructor(public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public nameSpan: ParseSourceSpan|null, public sourceSpan: ParseSourceSpan,
+      public prefetchSpan: ParseSourceSpan|null, public whenOrOnSourceSpan: ParseSourceSpan) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredTrigger(this);
@@ -126,8 +128,12 @@ export abstract class DeferredTrigger implements Node {
 }
 
 export class BoundDeferredTrigger extends DeferredTrigger {
-  constructor(public value: AST, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+      public value: AST, sourceSpan: ParseSourceSpan, prefetchSpan: ParseSourceSpan|null,
+      whenSourceSpan: ParseSourceSpan) {
+    // BoundDeferredTrigger is for 'when' triggers. These aren't really "triggers" and don't have a
+    // nameSpan. Trigger names are the built in event triggers like hover, interaction, etc.
+    super(/** nameSpan */ null, sourceSpan, prefetchSpan, whenSourceSpan);
   }
 }
 
@@ -136,33 +142,42 @@ export class IdleDeferredTrigger extends DeferredTrigger {}
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
 
 export class HoverDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+      public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class TimerDeferredTrigger extends DeferredTrigger {
-  constructor(public delay: number, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+      public delay: number, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class InteractionDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+      public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class ViewportDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+      public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class DeferredBlockPlaceholder implements Node {
   constructor(
-      public children: Node[], public minimumTime: number|null, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public children: Node[], public minimumTime: number|null, public nameSpan: ParseSourceSpan,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockPlaceholder(this);
@@ -172,8 +187,8 @@ export class DeferredBlockPlaceholder implements Node {
 export class DeferredBlockLoading implements Node {
   constructor(
       public children: Node[], public afterTime: number|null, public minimumTime: number|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockLoading(this);
@@ -182,7 +197,7 @@ export class DeferredBlockLoading implements Node {
 
 export class DeferredBlockError implements Node {
   constructor(
-      public children: Node[], public sourceSpan: ParseSourceSpan,
+      public children: Node[], public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -210,8 +225,9 @@ export class DeferredBlock implements Node {
       public children: Node[], triggers: DeferredBlockTriggers,
       prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
-      public sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {
+      public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
+      public mainBlockSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null) {
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
     // We cache the keys since we know that they won't change and we
@@ -273,10 +289,10 @@ export type ForLoopBlockContext =
 export class ForLoopBlock implements Node {
   constructor(
       public item: Variable, public expression: ASTWithSource, public trackBy: ASTWithSource,
-      public contextVariables: ForLoopBlockContext, public children: Node[],
-      public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
-      public mainBlockSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public trackKeywordSpan: ParseSourceSpan, public contextVariables: ForLoopBlockContext,
+      public children: Node[], public empty: ForLoopBlockEmpty|null,
+      public sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
@@ -286,7 +302,8 @@ export class ForLoopBlock implements Node {
 export class ForLoopBlockEmpty implements Node {
   constructor(
       public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null,
+      public nameSpan: ParseSourceSpan) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlockEmpty(this);
@@ -495,4 +512,15 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
     }
   }
   return result;
+}
+
+export type BlockNode = IfBlockBranch|ForLoopBlockEmpty|ForLoopBlock|SwitchBlockCase|SwitchBlock|
+    DeferredBlockError|DeferredBlockPlaceholder|DeferredBlockLoading;
+
+export function isBlockNode(node: Node): node is BlockNode {
+  return node instanceof IfBlockBranch || node instanceof ForLoopBlockEmpty ||
+      node instanceof ForLoopBlock || node instanceof SwitchBlockCase ||
+      node instanceof SwitchBlock || node instanceof DeferredBlockError ||
+      node instanceof DeferredBlockPlaceholder || node instanceof DeferredBlockLoading ||
+      node instanceof DeferredBlock;
 }

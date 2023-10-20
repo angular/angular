@@ -15,7 +15,7 @@ import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expr
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import ts from 'typescript';
 
-import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
+import {ALIAS_NAME, createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 
 export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
@@ -401,4 +401,28 @@ export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * Construct a QuickInfo object taking into account its container and type.
+ * @param name Name of the QuickInfo target
+ * @param kind component, directive, pipe, etc.
+ * @param textSpan span of the target
+ * @param containerName either the Symbol's container or the NgModule that contains the directive
+ * @param type user-friendly name of the type
+ * @param documentation docstring or comment
+ */
+export function createQuickInfo(
+    name: string, kind: DisplayInfoKind, textSpan: ts.TextSpan, containerName?: string,
+    type?: string, documentation?: ts.SymbolDisplayPart[], tags?: ts.JSDocTagInfo[]): ts.QuickInfo {
+  const displayParts = createDisplayParts(name, kind, containerName, type);
+
+  return {
+    kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
+    kindModifiers: ts.ScriptElementKindModifier.none,
+    textSpan: textSpan,
+    displayParts,
+    documentation,
+    tags,
+  };
 }

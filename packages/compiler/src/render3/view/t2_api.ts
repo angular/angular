@@ -213,5 +213,5 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * @param block Block that the trigger belongs to.
    * @param trigger Trigger whose target is being looked up.
    */
-  getDeferredTriggerTarget(block: DeferredTrigger, trigger: DeferredTrigger): Element|null;
+  getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null;
 }
