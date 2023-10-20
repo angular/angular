@@ -88,6 +88,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
+  {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Tmpl, fn: phaseConditionals},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
@@ -127,7 +128,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseEmptyElements},
   {kind: Kind.Tmpl, fn: phaseNonbindable},
   {kind: Kind.Both, fn: phasePureFunctionExtraction},
-  {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Both, fn: phaseReify},
   {kind: Kind.Both, fn: phaseChaining},
 ];
