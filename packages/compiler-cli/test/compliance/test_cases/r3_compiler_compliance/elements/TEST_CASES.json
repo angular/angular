@@ -194,8 +194,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reserve slots for pure functions in host binding function",
