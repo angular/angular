@@ -522,6 +522,148 @@ describe('quick info', () => {
       });
     });
 
+    describe('blocks', () => {
+      describe('defer & friends', () => {
+        it('defer', () => {
+          expectQuickInfo({
+            templateOverride: `@de¦fer { } @placeholder { <input /> }`,
+            expectedSpanText: '@defer ',
+            expectedDisplayString: '(block) @defer'
+          });
+        });
+
+        it('defer with condition', () => {
+          expectQuickInfo({
+            templateOverride: `@de¦fer (on immediate) { } @placeholder { <input /> }`,
+            expectedSpanText: '@defer ',
+            expectedDisplayString: '(block) @defer'
+          });
+        });
+
+        it('placeholder', () => {
+          expectQuickInfo({
+            templateOverride: `@defer { } @pla¦ceholder { <input /> }`,
+            expectedSpanText: '@placeholder ',
+            expectedDisplayString: '(block) @placeholder'
+          });
+        });
+
+        it('loading', () => {
+          expectQuickInfo({
+            templateOverride: `@defer { } @loadin¦g { <input /> }`,
+            expectedSpanText: '@loading ',
+            expectedDisplayString: '(block) @loading'
+          });
+        });
+
+        it('error', () => {
+          expectQuickInfo({
+            templateOverride: `@defer { } @erro¦r { <input /> }`,
+            expectedSpanText: '@error ',
+            expectedDisplayString: '(block) @error'
+          });
+        });
+
+        describe('triggers', () => {
+          it('viewport', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on vie¦wport(x)) { } <div #x></div>`,
+              expectedSpanText: 'viewport',
+              expectedDisplayString: '(trigger) viewport'
+            });
+          });
+
+          it('immediate', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on imme¦diate) {}`,
+              expectedSpanText: 'immediate',
+              expectedDisplayString: '(trigger) immediate'
+            });
+          });
+
+          it('idle', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on i¦dle) { } `,
+              expectedSpanText: 'idle',
+              expectedDisplayString: '(trigger) idle'
+            });
+          });
+
+          it('hover', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on hov¦er(x)) { } <div #x></div> `,
+              expectedSpanText: 'hover',
+              expectedDisplayString: '(trigger) hover'
+            });
+          });
+
+          it('timer', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on tim¦er(100)) { } `,
+              expectedSpanText: 'timer',
+              expectedDisplayString: '(trigger) timer'
+            });
+          });
+
+          it('interaction', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on interactio¦n(x)) { } <div #x></div>`,
+              expectedSpanText: 'interaction',
+              expectedDisplayString: '(trigger) interaction'
+            });
+          });
+
+          it('when', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (whe¦n title) { } <div #x></div>`,
+              expectedSpanText: 'when',
+              expectedDisplayString: '(keyword) when'
+            });
+          });
+
+          it('prefetch (when)', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (prefet¦ch when title) { }`,
+              expectedSpanText: 'prefetch',
+              expectedDisplayString: '(keyword) prefetch'
+            });
+          });
+
+          it('on', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (o¦n immediate) { } `,
+              expectedSpanText: 'on',
+              expectedDisplayString: '(keyword) on'
+            });
+          });
+
+          it('prefetch (on)', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (prefet¦ch on immediate) { }`,
+              expectedSpanText: 'prefetch',
+              expectedDisplayString: '(keyword) prefetch'
+            });
+          });
+        });
+      });
+
+      it('empty', () => {
+        expectQuickInfo({
+          templateOverride: `@for (name of constNames; track $index) {} @em¦pty {}`,
+          expectedSpanText: '@empty ',
+          expectedDisplayString: '(block) @empty'
+        });
+      });
+
+      it('track keyword', () => {
+        expectQuickInfo({
+          templateOverride: `@for (name of constNames; tr¦ack $index) {}`,
+          expectedSpanText: 'track',
+          expectedDisplayString: '(keyword) track'
+        });
+      });
+    });
+
     it('should work for object literal with shorthand property declarations', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();

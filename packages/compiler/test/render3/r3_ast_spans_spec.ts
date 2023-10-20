@@ -628,13 +628,13 @@ describe('R3 AST source spans', () => {
           '}'
         ],
         ['BoundDeferredTrigger', 'when isVisible() && foo'],
-        ['HoverDeferredTrigger', 'hover(button)'],
+        ['HoverDeferredTrigger', 'on hover(button)'],
         ['TimerDeferredTrigger', 'timer(10s)'],
         ['IdleDeferredTrigger', 'idle'],
         ['ImmediateDeferredTrigger', 'immediate'],
         ['InteractionDeferredTrigger', 'interaction(button)'],
         ['ViewportDeferredTrigger', 'viewport(container)'],
-        ['ImmediateDeferredTrigger', 'immediate'],
+        ['ImmediateDeferredTrigger', 'prefetch on immediate'],
         ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
         [
           'Element', '<calendar-cmp [date]="current"/>', '<calendar-cmp [date]="current"/>',
