@@ -39,7 +39,14 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
             ir.OpKind[updateOp.kind]}`);
       }
 
-      addPipeToCreationBlock(unit, updateOp.target, expr);
+      if (unit.job.compatibility) {
+        addPipeToCreationBlock(unit, updateOp.target, expr);
+      } else {
+        // When not in compatibility mode, we just add the pipe to the end of the create block. This
+        // is not only simpler and faster, but allows more chaining opportunities for other
+        // instructions.
+        unit.create.push(ir.createPipeOp(expr.target, expr.name));
+      }
     });
   }
 }
