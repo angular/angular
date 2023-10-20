@@ -8,11 +8,8 @@
 
 import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
 
-import {RuntimeError} from '../errors';
-import {assertDefined} from '../util/assert';
-
-import {markViewDirty} from './instructions/mark_view_dirty';
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
+import {markViewDirtyFromSignal} from './util/view_utils';
 
 let currentConsumer: ReactiveLViewConsumer|null = null;
 export interface ReactiveLViewConsumer extends ReactiveNode {
@@ -43,7 +40,7 @@ const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'|'slot'> 
           ` in ExpressionChangedAfterItHasBeenChecked errors or future updates not working` +
           ` entirely.`);
     }
-    markViewDirty(node.lView);
+    markViewDirtyFromSignal(node.lView);
   },
   consumerOnSignalRead(this: ReactiveLViewConsumer): void {
     if (currentConsumer !== this) {
