@@ -37,7 +37,6 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
       if (op.kind !== ir.OpKind.Binding) {
         continue;
       }
-
       switch (op.bindingKind) {
         case ir.BindingKind.Attribute:
           if (op.name === 'ngNonBindable') {
