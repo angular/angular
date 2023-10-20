@@ -570,6 +570,51 @@ describe('control flow migration', () => {
         `</div>`,
       ].join('\n'));
     });
+
+    it('should migrate a nested class', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        function foo() {
+          @Component({
+            imports: [NgIf],
+            template: \`<div><span *ngIf="toggle">This should be hidden</span></div>\`
+          })
+          class Comp {
+            toggle = false;
+          }
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<div>@if (toggle) {<span>This should be hidden</span>}</div>`');
+    });
+
+    it('should migrate a nested class', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+        function foo() {
+          @Component({
+            imports: [NgIf],
+            template: \`<div><span *ngIf="toggle">This should be hidden</span></div>\`
+          })
+          class Comp {
+            toggle = false;
+          }
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<div>@if (toggle) {<span>This should be hidden</span>}</div>`');
+    });
   });
 
   describe('ngFor', () => {
@@ -870,6 +915,59 @@ describe('control flow migration', () => {
       expect(content).toContain(
           'template: `@for (item of items; track item) {<ng-container [bindMe]="stuff"><p>{{item.text}}</p></ng-container>}`');
     });
+
+    it('should migrate a nested class', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        function foo() {
+          @Component({
+            imports: [NgFor],
+            template: \`<ul><li *ngFor="let item of items">{{item.text}}</li></ul>\`
+          })
+          class Comp {
+            items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+          }
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (item of items; track item) {<li>{{item.text}}</li>}</ul>`');
+    });
+
+    it('should migrate a nested class', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+        function foo() {
+          @Component({
+            imports: [NgFor],
+            template: \`<ul><li *ngFor="let item of items">{{item.text}}</li></ul>\`
+          })
+          class Comp {
+            items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+          }
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (item of items; track item) {<li>{{item.text}}</li>}</ul>`');
+    });
   });
 
   describe('ngSwitch', () => {
@@ -1130,6 +1228,32 @@ describe('control flow migration', () => {
 
       expect(content).toContain(
           'template: `<div>@switch (testOpts) { @case (1) { <p>Option 1</p> } @case (2) { <p>Option 2</p> } @default { <p>Option 3</p> }}</div>');
+    });
+
+    it('should migrate a nested class', async () => {
+      writeFile(
+          '/comp.ts',
+          `
+        import {Component} from '@angular/core';
+        import {ngSwitch, ngSwitchCase} from '@angular/common';
+        function foo() {
+          @Component({
+            template: \`<div [ngSwitch]="testOpts">` +
+              `<p *ngSwitchCase="1">Option 1</p>` +
+              `<p *ngSwitchCase="2">Option 2</p>` +
+              `</div>\`
+          })
+          class Comp {
+            testOpts = "1";
+          }
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<div>@switch (testOpts) { @case (1) { <p>Option 1</p> } @case (2) { <p>Option 2</p> }}</div>`');
     });
   });
 

@@ -18,11 +18,7 @@ import {AnalyzedFile, boundngif, CaseCollector, ElementCollector, ElementToMigra
  * @param analyzedFiles Map in which to store the results.
  */
 export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>) {
-  for (const node of sourceFile.statements) {
-    if (!ts.isClassDeclaration(node)) {
-      continue;
-    }
-
+  forEachClass(sourceFile, node => {
     // Note: we have a utility to resolve the Angular decorators from a class declaration already.
     // We don't use it here, because it requires access to the type checker which makes it more
     // time-consuming to run internally.
@@ -38,7 +34,7 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
         null;
 
     if (!metadata) {
-      continue;
+      return;
     }
 
     for (const prop of metadata.properties) {
@@ -64,7 +60,7 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
           break;
       }
     }
-  }
+  });
 }
 
 /**
@@ -481,4 +477,14 @@ function getSwitchCaseBlock(
   let valEnd = etm.attr.valueSpan!.end.offset + 1 - offset + shift;
   return `${lbString}@case (${etm.attr.value}) {${lbString}${lbSpaces}${
       tmpl.slice(elStart, attrStart) + tmpl.slice(valEnd, elEnd)}${lbString}}`;
+}
+
+/** Executes a callback on each class declaration in a file. */
+function forEachClass(sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration) => void) {
+  sourceFile.forEachChild(function walk(node) {
+    if (ts.isClassDeclaration(node)) {
+      callback(node);
+    }
+    node.forEachChild(walk);
+  });
 }
