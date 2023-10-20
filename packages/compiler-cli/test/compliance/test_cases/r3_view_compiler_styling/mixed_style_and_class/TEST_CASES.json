@@ -33,8 +33,7 @@
           "failureMessage": "Incorrect template",
           "files": ["pipe_bindings_slots.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should always generate advance() statements before any styling instructions",
