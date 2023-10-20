@@ -198,8 +198,7 @@
           ],
           "failureMessage": "Incorrect outer template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create unique template function names even for similar nested template structures",

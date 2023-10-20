@@ -13,8 +13,10 @@ import {CompilationJob} from '../compilation';
 
 /**
  * Attribute interpolations of the form `[attr.foo]="{{foo}}""` should be "collapsed" into a plain
- * attribute instruction, instead of an `attributeInterpolate` instruction. We should also do this
- * for property instructions, when not in compatibility mode.
+ * attribute instruction, instead of an `attributeInterpolate` instruction.
+ *
+ * (We cannot do this for singleton property interpolations, because `propertyInterpolate`
+ * stringifies its expression.)
  *
  * The reification step is also capable of performing this transformation, but doing it early in the
  * pipeline allows other phases to accurately know what instruction will be emitted.
@@ -22,8 +24,7 @@ import {CompilationJob} from '../compilation';
 export function phaseCollapseSingletonInterpolations(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      const eligibleOpKind =
-          op.kind === ir.OpKind.Attribute || (!job.compatibility && op.kind === ir.OpKind.Property);
+      const eligibleOpKind = op.kind === ir.OpKind.Attribute;
       if (eligibleOpKind && op.expression instanceof ir.Interpolation &&
           op.expression.strings.length === 2 &&
           op.expression.strings.every((s: string) => s === '')) {
