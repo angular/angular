@@ -12,13 +12,14 @@ import type {CompilationUnit} from '../compilation';
 /**
  * Gets a map of all elements in the given view by their xref id.
  */
-export function getElementsByXrefId(unit: CompilationUnit) {
-  const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
+export function createOpXrefMap(unit: CompilationUnit):
+    Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp> {
+  const map = new Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>();
   for (const op of unit.create) {
-    if (!ir.isElementOrContainerOp(op)) {
+    if (!ir.hasConsumesSlotTrait(op)) {
       continue;
     }
-    elements.set(op.xref, op);
+    map.set(op.xref, op);
   }
-  return elements;
+  return map;
 }

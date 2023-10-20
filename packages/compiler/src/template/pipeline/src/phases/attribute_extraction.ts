@@ -9,7 +9,7 @@
 
 import * as ir from '../../ir';
 import {type CompilationJob, type CompilationUnit, CompilationJobKind} from '../compilation';
-import {getElementsByXrefId} from '../util/elements';
+import {createOpXrefMap} from '../util/elements';
 
 /**
  * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
@@ -17,7 +17,7 @@ import {getElementsByXrefId} from '../util/elements';
  */
 export function phaseAttributeExtraction(job: CompilationJob): void {
   for (const unit of job.units) {
-    const elements = getElementsByXrefId(unit);
+    const elements = createOpXrefMap(unit);
     for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Attribute:
@@ -67,7 +67,8 @@ export function phaseAttributeExtraction(job: CompilationJob): void {
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+    elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>,
+    xref: ir.XrefId): ir.ConsumesSlotOpTrait&ir.CreateOp {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -79,7 +80,8 @@ function lookupElement(
  * Extracts an attribute binding.
  */
 function extractAttributeOp(
-    unit: CompilationUnit, op: ir.AttributeOp, elements: Map<ir.XrefId, ir.ElementOrContainerOps>) {
+    unit: CompilationUnit, op: ir.AttributeOp,
+    elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>) {
   if (op.expression instanceof ir.Interpolation) {
     return;
   }
