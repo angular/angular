@@ -13,7 +13,6 @@ import * as ir from '../ir';
 
 import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 
-import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
 import {phaseApplyI18nExpressions} from './phases/apply_i18n_expressions';
 import {phaseAssignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
@@ -128,7 +127,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseEmptyElements},
   {kind: Kind.Tmpl, fn: phaseNonbindable},
   {kind: Kind.Both, fn: phasePureFunctionExtraction},
-  {kind: Kind.Tmpl, fn: phaseAlignPipeVariadicVarOffset},
   {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Both, fn: phaseReify},
   {kind: Kind.Both, fn: phaseChaining},

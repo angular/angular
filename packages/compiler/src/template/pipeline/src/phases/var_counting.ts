@@ -34,6 +34,14 @@ export function phaseVarCounting(job: CompilationJob): void {
           return;
         }
 
+        // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
+        // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
+        // assigning offsets in two passes instead of one, only in compatibility mode.
+        if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            expr instanceof ir.PureFunctionExpr) {
+          return;
+        }
+
         // Some expressions require knowledge of the number of variable slots consumed.
         if (ir.hasUsesVarOffsetTrait(expr)) {
           expr.varOffset = varCount;
@@ -43,6 +51,26 @@ export function phaseVarCounting(job: CompilationJob): void {
           varCount += varsUsedByIrExpression(expr);
         }
       });
+    }
+
+    // Compatiblity mode pass for pure function offsets (as explained above).
+    if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+      for (const op of unit.ops()) {
+        ir.visitExpressionsInOp(op, expr => {
+          if (!ir.isIrExpression(expr) || !(expr instanceof ir.PureFunctionExpr)) {
+            return;
+          }
+
+          // Some expressions require knowledge of the number of variable slots consumed.
+          if (ir.hasUsesVarOffsetTrait(expr)) {
+            expr.varOffset = varCount;
+          }
+
+          if (ir.hasConsumesVarsTrait(expr)) {
+            varCount += varsUsedByIrExpression(expr);
+          }
+        });
+      }
     }
 
     unit.vars = varCount;
