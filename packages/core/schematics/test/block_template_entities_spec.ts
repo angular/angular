@@ -276,4 +276,23 @@ describe('Block template entities migration', () => {
 
     expect(content).toBe('My email is admin&#64;test.com');
   });
+
+  it('should migrate a component that is not at the top level', async () => {
+    writeFile('/comp.ts', `
+      import {Component} from '@angular/core';
+
+      function foo() {
+        @Component({
+          template: \`<div><span>My email is admin@test.com</span></div><h1>This is a brace }</h1>\`
+        })
+        class Comp {}
+      }
+    `);
+
+    await runMigration();
+    const content = tree.readContent('/comp.ts');
+
+    expect(content).toContain(
+        'template: `<div><span>My email is admin&#64;test.com</span></div><h1>This is a brace &#125;</h1>`');
+  });
 });
