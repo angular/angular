@@ -105,7 +105,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.
       slots = 1;
-      if (op.expression instanceof ir.Interpolation) {
+      if (op.expression instanceof ir.Interpolation && !isSingletonInterpolation(op.expression)) {
         slots += op.expression.expressions.length;
       }
       return slots;
@@ -143,4 +143,14 @@ export function varsUsedByIrExpression(expr: ir.Expression&ir.ConsumesVarsTrait)
       throw new Error(
           `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`);
   }
+}
+
+function isSingletonInterpolation(expr: ir.Interpolation): boolean {
+  if (expr.expressions.length !== 1 || expr.strings.length !== 2) {
+    return false;
+  }
+  if (expr.strings[0] !== '' || expr.strings[1] !== '') {
+    return false;
+  }
+  return true;
 }
