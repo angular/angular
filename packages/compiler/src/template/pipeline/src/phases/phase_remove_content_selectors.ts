@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
-import {getElementsByXrefId} from '../util/elements';
+import {createOpXrefMap} from '../util/elements';
 
 /**
  * Attributes of `ng-content` named 'select' are specifically removed, because they control which
@@ -17,15 +17,15 @@ import {getElementsByXrefId} from '../util/elements';
  */
 export function phaseRemoveContentSelectors(job: CompilationJob): void {
   for (const unit of job.units) {
-    const elements = getElementsByXrefId(unit);
+    const elements = createOpXrefMap(unit);
     for (const op of unit.update) {
       switch (op.kind) {
         case ir.OpKind.Binding:
-          const target = lookupElement(elements, op.target);
+          const target = lookupInXrefMap(elements, op.target);
           if (op.name.toLowerCase() === 'select' && target.kind === ir.OpKind.Projection) {
             ir.OpList.remove<ir.UpdateOp>(op);
           }
-          continue;
+          break;
       }
     }
   }
@@ -34,11 +34,11 @@ export function phaseRemoveContentSelectors(job: CompilationJob): void {
 /**
  * Looks up an element in the given map by xref ID.
  */
-function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
-  const el = elements.get(xref);
+function lookupInXrefMap(map: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>, xref: ir.XrefId):
+    ir.ConsumesSlotOpTrait&ir.CreateOp {
+  const el = map.get(xref);
   if (el === undefined) {
-    throw new Error('All attributes should have an element-like target.');
+    throw new Error('All attributes should have an slottable target.');
   }
   return el;
 }

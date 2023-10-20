@@ -10,7 +10,7 @@ import {SecurityContext} from '../../../../core';
 import {isIframeSecuritySensitiveAttr} from '../../../../schema/dom_security_schema';
 import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
-import {getElementsByXrefId} from '../util/elements';
+import {createOpXrefMap} from '../util/elements';
 
 /**
  * Mapping of security contexts to sanitizer function for that context.
@@ -26,7 +26,7 @@ const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
  */
 export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
-    const elements = getElementsByXrefId(unit);
+    const elements = createOpXrefMap(unit);
     let sanitizerFn: ir.SanitizerFn|null;
     for (const op of unit.update) {
       switch (op.kind) {
@@ -40,7 +40,7 @@ export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
           // <iframe>).
           if (op.sanitizer === null) {
             const ownerOp = elements.get(op.target);
-            if (ownerOp === undefined) {
+            if (ownerOp === undefined || !ir.isElementOrContainerOp(ownerOp)) {
               throw Error('Property should have an element-like owner');
             }
             if (isIframeElement(ownerOp) && isIframeSecuritySensitiveAttr(op.name)) {

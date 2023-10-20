@@ -141,8 +141,7 @@
             "ng_content_with_structural_dir.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
