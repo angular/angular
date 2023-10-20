@@ -58,32 +58,38 @@ export function phaseOrdering(job: CompilationJob) {
     // still have ops pulled at the end, put them back in the correct order.
 
     // Create mode:
-    let opsToOrder = [];
-    for (const op of unit.create) {
-      if (handledOpKinds.has(op.kind)) {
-        opsToOrder.push(op);
-        ir.OpList.remove(op);
-      } else {
-        ir.OpList.insertBefore(reorder(opsToOrder, CREATE_ORDERING), op);
-        opsToOrder = [];
-      }
-    }
-    unit.create.push(reorder(opsToOrder, CREATE_ORDERING));
+    orderWithin(unit.create, CREATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
 
 
     // Update mode:
-    opsToOrder = [];
-    for (const op of unit.update) {
-      if (handledOpKinds.has(op.kind)) {
-        opsToOrder.push(op);
-        ir.OpList.remove(op);
-      } else {
-        ir.OpList.insertBefore(reorder(opsToOrder, UPDATE_ORDERING), op);
-        opsToOrder = [];
-      }
-    }
-    unit.update.push(reorder(opsToOrder, UPDATE_ORDERING));
+    orderWithin(unit.update, UPDATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
   }
+}
+
+/**
+ * Order all the ops within the specified group.
+ */
+function orderWithin(
+    opList: ir.OpList<ir.CreateOp|ir.UpdateOp>, ordering: Array<Rule<ir.CreateOp|ir.UpdateOp>>) {
+  let opsToOrder = [];
+  // Only reorder ops that target the same xref; do not mix ops that target different xrefs.
+  let firstTargetInGroup: ir.XrefId|null = null;
+  for (const op of opList) {
+    const currentTarget = ir.hasDependsOnSlotContextTrait(op) ? op.target : null;
+    if (!handledOpKinds.has(op.kind) ||
+        (currentTarget !== firstTargetInGroup &&
+         (firstTargetInGroup !== null && currentTarget !== null))) {
+      ir.OpList.insertBefore(reorder(opsToOrder, ordering), op);
+      opsToOrder = [];
+      firstTargetInGroup = null;
+    }
+    if (handledOpKinds.has(op.kind)) {
+      opsToOrder.push(op);
+      ir.OpList.remove(op);
+      firstTargetInGroup = currentTarget ?? firstTargetInGroup;
+    }
+  }
+  opList.push(reorder(opsToOrder, ordering));
 }
 
 /**
