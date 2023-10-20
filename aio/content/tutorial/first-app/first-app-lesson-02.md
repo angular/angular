@@ -65,18 +65,26 @@ In this step, you add the new component, `HomeComponent` to your app's root comp
 
 In the **Edit** pane of your IDE:
 
-1.  Open `app.component.ts` in the editor.
-1.  In `app.component.ts`, import `HomeComponent` by adding this line to the file level imports.
+1.  Open `app.module.ts` in the editor.
+1.  In `app.module.ts`, import `HomeComponent` by adding this line to the file level imports.
 
-    <code-example header="Import HomeComponent in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="import-home"></code-example>
+    <code-example header="Import HomeComponent in src/app/app.module.ts" path="first-app-lesson-02/src/app/app.modulet.ts" region="import-home">
+    import { HomeComponent } from './home/home.component';
+    </code-example>
 
-1.  In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
+1.  In `app.module.ts`, in `@NgModule`, update the `imports` and `export` array property and add `HomeComponent`.
 
-    <code-example header="Replace in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="app-metadata-imports"></code-example>
-1.  In `app.component.ts`, in `@Component`, update the `template` property to include the following HTML code.
+    <code-example header="Replace in src/app/app.module.ts" path="first-app-lesson-02/src/app/app.module.ts" region="app-metadata-imports">
+    imports: [
+    BrowserModule,
+    HomeComponent
+  ],
+  exports: [HomeComponent]
+  </code-example>
+1.  In `app.component.html`, update to include the following HTML code.
 
     <code-example header="Replace in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="app-metadata-template"></code-example>
-1.  Save your changes to  `app.component.ts`.
+1.  Save your changes to  `app.module.ts`.
 1.  If `ng serve` is running, the app should update.
     If `ng serve` is not running, start it again.
     *Hello world* in your app should change to *home works!* from the `HomeComponent`.
