@@ -87,9 +87,9 @@ In your IDE:
     Then, save the changes you just made to `index.html`.
 
 1.  Next, open  `first-app/src/app/app.component.ts`.
-1.  In `app.component.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
+1.  In `app.component.html`, remove all the contents by adding <h1>Hello Home!</h1>.
 
-    <code-example header="Replace in src/app/app.component.ts" path="first-app-lesson-01/src/app/app.component.ts" region="app-comp-template"></code-example>
+    <code-example header="Replace in src/app/app.component.html" path="first-app-lesson-01/src/app/app.component.html" region="app-comp-template"></code-example>
 
 1.  In `app.component.ts`, in the `AppComponent` class definition, replace the `title` line with this code to change the component title.
 
