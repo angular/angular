@@ -1,63 +1,65 @@
-# Prerendering static pages
+# Prerendering (SSG)
 
-Angular Universal lets you prerender the pages of your application.
-Prerendering is the process where a dynamic page is processed at build time generating static HTML.
+Prerendering, commonly referred to as Static Site Generation (SSG), represents the method by which pages are rendered to static HTML files during the build process.
+
+ndering maintains the same performance benefits of [server-side rendering (SSR)](/guide/universal/#why-do-it). But achieves a reduced Time to First Byte (TTFB), ultimately enhancing user experience. The key distinction lies in its approach that pages are served as static content, and there is no request-based rendering.
+
+When the data necessary for server-side rendering remains consistent across all users, the strategy of prerendering emerges as a valuable alternative. Rather than dynamically rendering pages for each user request, prerendering takes a proactive approach by rendering them in advance.
 
 ## How to prerender a page
 
-To prerender a static page make sure to add Server-Side Rendering (SSR) capabilities to your application.
-For more information see the [universal guide](guide/universal).
-Once SSR is added, run the following command:
+To prerender a static page, add SSR capabilities to your application with the following Angular CLI command:
 
 <code-example format="shell" language="shell">
 
-npm run prerender
+ng add &commat;angular/ssr
 
 </code-example>
 
-### Build options for prerendering
+<div class="alert is-helpful">
 
-When you add prerendering to your application, the following build options are available:
+To create an application with prerendering capabilities from the beginning use the [ng new --ssr](cli/new) command.
 
-| Options         | Details |
-|:---             |:---     |
-| `browserTarget` | Specify the target to build.                                                                                                                       |
-| `serverTarget`  | Specify the Server target to use for prerendering the application.                                                                                 |
-| `routes`        | Define an array of extra routes to prerender.                                                                                                 |
-| `guessRoutes`   | Whether builder should extract routes and guess which paths to render. Defaults to `true`.                                                          |
-| `routesFile`    | Specify a file that contains a list of all routes to prerender, separated by newlines. This option is useful if you have a large number of routes. |
-| `numProcesses`  | Specify the number of CPUs to be used while running the prerendering command.                                                                      |
+</div>
 
-### Prerendering dynamic routes
-
-You can prerender dynamic routes.
-An example of a dynamic route is `product/:id`, where `id` is dynamically provided.
-
-To prerender dynamic routes, choose one from the following options:
-
-*   Provide extra routes in the command line
-*   Provide routes using a file
-*   Prerender specific routes
-
-#### Provide extra routes in the command line
-
-While running the prerender command, you can provide extra routes.
-For example:
+Once SSR is added, you can generate the static pages by running the build command:
 
 <code-example format="shell" language="shell">
 
-ng run &lt;app-name&gt;:prerender --routes /product/1 /product/2
+ng build
 
 </code-example>
 
-#### Providing extra routes using a file
+### Build options for prerender
 
-You can provide routes using a file to create static pages.
-This method is useful if you have a large number of routes to create. For example, product details for an e-commerce application, which might come from an external source, like a Database or Content Management System (CMS).
+The application builder `prerender` option can be either a Boolean or an Object for more fine-tuned configuration.
+When the option is `false`, no prerendering is done. When it's is `true`, all options use the default value. When it's is an Object, each option can be individually configured.
 
-To provide routes using a file, use the `--routes-file` option with the name of a `.txt` file containing the routes.
+| Options          | Details                                                                                                                                                                   | Default Value |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------ |
+| `discoverRoutes` | Whether the builder should process the Angular Router configuration to find all unparameterized routes and prerender them.                                                | `true`        |
+| `routesFile`     | The path to a file that contains a list of all routes to prerender, separated by newlines. This option is useful if you want to prerender routes with parameterized URLs. |               |
 
-For example, you could create this file by using a script to extract IDs from a database and save them to a `routes.txt` file:
+<code-example format="json" language="json">
+
+&hellip;
+"architect": {
+  "build": {
+    "builder": "&commat;angular-devkit/build-angular:application",
+      "options": {
+        "prerender": {
+          "discoverRoutes": false
+        },
+       },
+&hellip;
+
+</code-example>
+
+### Prerendering parameterized routes
+
+You can prerender parameterized routes using the `routesFile` option. An example of a parameterized route is `product/:id`, where `id` is dynamically provided. To specify these routes, they should be listed in a text file, with each route on a separate line.
+
+For an app with a large number of parameterized routes, consider generating this file using a script before running `ng build`.
 
 <code-example language="none" header="routes.txt">
 
@@ -66,24 +68,24 @@ For example, you could create this file by using a script to extract IDs from a 
 
 </code-example>
 
-When your `.txt` file is ready, run the following command to prerender the static files with dynamic values:
+With routes specified in the `routes.txt` file, use the `routesFile` option to configure the builder to prerender the product routes.
 
-<code-example format="shell" language="shell">
+<code-example format="json" language="json">
 
-ng run &lt;app-name&gt;:prerender --routes-file routes.txt
-
-</code-example>
-
-#### Prerendering specific routes
-
-You can also pass specific routes to the prerender command.
-If you choose this option, make sure to turn off the `guessRoutes` option.
-
-<code-example format="shell" language="shell">
-
-ng run &lt;app-name&gt;:prerender --no-guess-routes --routes /product/1 /product/2
+&hellip;
+"architect": {
+  "build": {
+    "builder": "&commat;angular-devkit/build-angular:application",
+      "options": {
+        "prerender": {
+          "routesFile": "routes.txt"
+        },
+      },
+&hellip;
 
 </code-example>
+
+This configures `ng build` to prerender `/products/1` and `/products/555` at build time.
 
 <!-- links -->
 
@@ -91,4 +93,4 @@ ng run &lt;app-name&gt;:prerender --no-guess-routes --routes /product/1 /product
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-23
