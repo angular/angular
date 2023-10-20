@@ -13,6 +13,14 @@ function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
   return (op: ir.UpdateOp) => op.kind === kind;
 }
 
+function kindWithInterpolationTest(
+    kind: ir.OpKind.Attribute|ir.OpKind.Property|ir.OpKind.HostProperty,
+    interpolation: boolean): (op: ir.UpdateOp) => boolean {
+  return (op: ir.UpdateOp) => {
+    return op.kind === kind && interpolation === op.expression instanceof ir.Interpolation;
+  };
+}
+
 interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
   test: (op: T) => boolean;
   transform?: (ops: Array<T>) => Array<T>;
@@ -20,7 +28,7 @@ interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
 
 /**
  * Defines the groups based on `OpKind` that ops will be divided into, for the various create
- * binding kinds. Ops will be collected into groups, then optionally transformed, before recombining
+ * op kinds. Ops will be collected into groups, then optionally transformed, before recombining
  * the groups in the order defined here.
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
@@ -29,18 +37,20 @@ const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
 ];
 
 /**
- * As above, but for update ops.
+ * Defines the groups based on `OpKind` that ops will be divided into, for the various update
+ * op kinds.
  */
 const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
-  {test: op => op.kind === ir.OpKind.HostProperty && op.expression instanceof ir.Interpolation},
-  {test: op => op.kind === ir.OpKind.HostProperty && !(op.expression instanceof ir.Interpolation)},
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
   {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
   {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
   {test: kindTest(ir.OpKind.StyleProp)},
   {test: kindTest(ir.OpKind.ClassProp)},
-  {test: op => op.kind === ir.OpKind.Property && op.expression instanceof ir.Interpolation},
-  {test: op => op.kind === ir.OpKind.Property && !(op.expression instanceof ir.Interpolation)},
-  {test: kindTest(ir.OpKind.Attribute)},
+  {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.Attribute, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.Property, false)},
+  {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
 ];
 
 /**
