@@ -25,6 +25,7 @@ export const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.tex
 export enum DisplayInfoKind {
   ATTRIBUTE = 'attribute',
   BLOCK = 'block',
+  TRIGGER = 'trigger',
   COMPONENT = 'component',
   DIRECTIVE = 'directive',
   EVENT = 'event',
@@ -35,6 +36,7 @@ export enum DisplayInfoKind {
   PROPERTY = 'property',
   METHOD = 'method',
   TEMPLATE = 'template',
+  KEYWORD = 'keyword',
 }
 
 export interface DisplayInfo {

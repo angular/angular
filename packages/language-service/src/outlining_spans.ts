@@ -48,9 +48,7 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
 }
 
 class BlockVisitor extends t.RecursiveVisitor {
-  readonly blocks = [] as
-      Array<t.IfBlockBranch|t.ForLoopBlockEmpty|t.ForLoopBlock|t.SwitchBlockCase|t.SwitchBlock|
-            t.DeferredBlockError|t.DeferredBlockPlaceholder|t.DeferredBlockLoading>;
+  readonly blocks = [] as Array<t.BlockNode>;
 
   static getBlockSpans(templateNodes: t.Node[]): ts.OutliningSpan[] {
     const visitor = new BlockVisitor();
@@ -78,11 +76,9 @@ class BlockVisitor extends t.RecursiveVisitor {
   }
 
   visit(node: t.Node) {
-    if (node instanceof t.IfBlockBranch || node instanceof t.ForLoopBlockEmpty ||
-        node instanceof t.ForLoopBlock || node instanceof t.SwitchBlockCase ||
-        node instanceof t.SwitchBlock || node instanceof t.DeferredBlockError ||
-        node instanceof t.DeferredBlockPlaceholder || node instanceof t.DeferredBlockLoading ||
-        node instanceof t.DeferredBlock) {
+    if (node instanceof t.BlockNode
+        // Omit `IfBlock` because we include the branches individually
+        && !(node instanceof t.IfBlock)) {
       this.blocks.push(node);
     }
   }

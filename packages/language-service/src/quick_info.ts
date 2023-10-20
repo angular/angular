@@ -5,23 +5,31 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, Call, ImplicitReceiver, PropertyRead, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {BlockNode, DeferredTrigger} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
-import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';
+import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './display_parts';
+import {createDollarAnyQuickInfo, createNgTemplateQuickInfo, createQuickInfoForBuiltIn, isDollarAny} from './quick_info_built_ins';
+import {TemplateTarget} from './template_target';
+import {createQuickInfo, filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';
 
 export class QuickInfoBuilder {
   private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
+  private readonly parent = this.positionDetails.parent;
 
   constructor(
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
       private readonly component: ts.ClassDeclaration, private node: TmplAstNode|AST,
-      private parent: TmplAstNode|AST|null) {}
+      private readonly positionDetails: TemplateTarget) {}
 
   get(): ts.QuickInfo|undefined {
+    if (this.node instanceof DeferredTrigger || this.node instanceof BlockNode) {
+      return createQuickInfoForBuiltIn(this.node, this.positionDetails.position);
+    }
+
     const symbol =
         this.compiler.getTemplateTypeChecker().getSymbolOfNode(this.node, this.component);
     if (symbol !== null) {
@@ -193,64 +201,4 @@ function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: DisplayInfoKind): ts
 
 function displayPartsEqual(a: {text: string, kind: string}, b: {text: string, kind: string}) {
   return a.text === b.text && a.kind === b.kind;
-}
-
-function isDollarAny(node: TmplAstNode|AST): node is Call {
-  return node instanceof Call && node.receiver instanceof PropertyRead &&
-      node.receiver.receiver instanceof ImplicitReceiver &&
-      !(node.receiver.receiver instanceof ThisReceiver) && node.receiver.name === '$any' &&
-      node.args.length === 1;
-}
-
-function createDollarAnyQuickInfo(node: Call): ts.QuickInfo {
-  return createQuickInfo(
-      '$any',
-      DisplayInfoKind.METHOD,
-      getTextSpanOfNode(node.receiver),
-      /** containerName */ undefined,
-      'any',
-      [{
-        kind: SYMBOL_TEXT,
-        text: 'function to cast an expression to the `any` type',
-      }],
-  );
-}
-
-// TODO(atscott): Create special `ts.QuickInfo` for `ng-template` and `ng-container` as well.
-function createNgTemplateQuickInfo(node: TmplAstNode|AST): ts.QuickInfo {
-  return createQuickInfo(
-      'ng-template',
-      DisplayInfoKind.TEMPLATE,
-      getTextSpanOfNode(node),
-      /** containerName */ undefined,
-      /** type */ undefined,
-      [{
-        kind: SYMBOL_TEXT,
-        text:
-            'The `<ng-template>` is an Angular element for rendering HTML. It is never displayed directly.',
-      }],
-  );
-}
-
-/**
- * Construct a QuickInfo object taking into account its container and type.
- * @param name Name of the QuickInfo target
- * @param kind component, directive, pipe, etc.
- * @param textSpan span of the target
- * @param containerName either the Symbol's container or the NgModule that contains the directive
- * @param type user-friendly name of the type
- * @param documentation docstring or comment
- */
-export function createQuickInfo(
-    name: string, kind: DisplayInfoKind, textSpan: ts.TextSpan, containerName?: string,
-    type?: string, documentation?: ts.SymbolDisplayPart[]): ts.QuickInfo {
-  const displayParts = createDisplayParts(name, kind, containerName, type);
-
-  return {
-    kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
-    kindModifiers: ts.ScriptElementKindModifier.none,
-    textSpan: textSpan,
-    displayParts,
-    documentation,
-  };
 }

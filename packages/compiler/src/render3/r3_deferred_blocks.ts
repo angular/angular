@@ -48,8 +48,7 @@ export function createDeferredBlock(
   const {triggers, prefetchTriggers} =
       parsePrimaryTriggers(ast.parameters, bindingParser, errors, placeholder);
 
-  // The `defer` block has a main span encompassing all of the connected branches as well. For the
-  // span of only the first "main" branch, use `mainSourceSpan`.
+  // The `defer` block has a main span encompassing all of the connected branches as well.
   let lastEndSourceSpan = ast.endSourceSpan;
   let endOfLastSourceSpan = ast.sourceSpan.end;
   if (connectedBlocks.length > 0) {
@@ -58,12 +57,13 @@ export function createDeferredBlock(
     endOfLastSourceSpan = lastConnectedBlock.sourceSpan.end;
   }
 
-  const mainDeferredSourceSpan = new ParseSourceSpan(ast.sourceSpan.start, endOfLastSourceSpan);
+  const sourceSpanWithConnectedBlocks =
+      new ParseSourceSpan(ast.sourceSpan.start, endOfLastSourceSpan);
 
   const node = new t.DeferredBlock(
       html.visitAll(visitor, ast.children, ast.children), triggers, prefetchTriggers, placeholder,
-      loading, error, mainDeferredSourceSpan, ast.sourceSpan, ast.startSourceSpan,
-      lastEndSourceSpan);
+      loading, error, ast.nameSpan, sourceSpanWithConnectedBlocks, ast.sourceSpan,
+      ast.startSourceSpan, lastEndSourceSpan);
 
   return {node, errors};
 }
@@ -140,7 +140,7 @@ function parsePlaceholderBlock(ast: html.Block, visitor: html.Visitor): t.Deferr
   }
 
   return new t.DeferredBlockPlaceholder(
-      html.visitAll(visitor, ast.children, ast.children), minimumTime, ast.sourceSpan,
+      html.visitAll(visitor, ast.children, ast.children), minimumTime, ast.nameSpan, ast.sourceSpan,
       ast.startSourceSpan, ast.endSourceSpan);
 }
 
@@ -181,8 +181,8 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
   }
 
   return new t.DeferredBlockLoading(
-      html.visitAll(visitor, ast.children, ast.children), afterTime, minimumTime, ast.sourceSpan,
-      ast.startSourceSpan, ast.endSourceSpan);
+      html.visitAll(visitor, ast.children, ast.children), afterTime, minimumTime, ast.nameSpan,
+      ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan);
 }
 
 
@@ -192,8 +192,8 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
   }
 
   return new t.DeferredBlockError(
-      html.visitAll(visitor, ast.children, ast.children), ast.sourceSpan, ast.startSourceSpan,
-      ast.endSourceSpan);
+      html.visitAll(visitor, ast.children, ast.children), ast.nameSpan, ast.sourceSpan,
+      ast.startSourceSpan, ast.endSourceSpan);
 }
 
 function parsePrimaryTriggers(
