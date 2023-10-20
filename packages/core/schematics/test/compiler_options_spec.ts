@@ -25,7 +25,7 @@ describe('Compiler options migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematic('migration-v17-compiler-options', {}, tree);
+    return runner.runSchematic('compiler-options', {}, tree);
   }
 
   beforeEach(() => {

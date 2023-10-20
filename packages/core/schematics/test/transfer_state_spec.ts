@@ -25,7 +25,7 @@ describe('TransferState migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematic('migration-transfer-state', {}, tree);
+    return runner.runSchematic('transfer-state', {}, tree);
   }
 
   beforeEach(() => {
