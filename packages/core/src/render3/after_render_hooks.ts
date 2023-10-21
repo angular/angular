@@ -148,6 +148,11 @@ export interface InternalAfterNextRenderOptions {
 export function internalAfterNextRender(
     callback: VoidFunction, options?: InternalAfterNextRenderOptions) {
   const injector = options?.injector ?? inject(Injector);
+
+  // Similarly to the public `afterNextRender` function, an internal one
+  // is only invoked in a browser.
+  if (!isPlatformBrowser(injector)) return;
+
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   afterRenderEventManager.internalCallbacks.push(callback);
 }
