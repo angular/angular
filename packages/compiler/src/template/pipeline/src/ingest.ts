@@ -223,7 +223,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
-  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector);
+  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector, content.sourceSpan);
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,

@@ -162,7 +162,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           throw new Error('No slot was assigned for project instruction');
         }
         ir.OpList.replace<ir.CreateOp>(
-            op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes));
+            op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes, op.sourceSpan));
         break;
       case ir.OpKind.RepeaterCreate:
         if (op.slot === null) {
