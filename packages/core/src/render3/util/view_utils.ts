@@ -221,10 +221,6 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  */
 export function markAncestorsForTraversal(lView: LView) {
   let parent = lView[PARENT];
-  if (parent === null) {
-    return;
-  }
-
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
     // is to avoid needlessly traversing all the way to the root when the marker already exists.
