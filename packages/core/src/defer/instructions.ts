@@ -432,9 +432,14 @@ function scheduleDelayedPrefetching(
  * @param newState New state that should be applied to the defer block.
  * @param tNode TNode that represents a defer block.
  * @param lContainer Represents an instance of a defer block.
+ * @param skipTimerScheduling Indicates that `@loading` and `@placeholder` block
+ *   should be rendered immediately, even if they have `after` or `minimum` config
+ *   options setup. This flag to needed for testing APIs to transition defer block
+ *   between states via `DeferFixture.render` method.
  */
 export function renderDeferBlockState(
-    newState: DeferBlockState, tNode: TNode, lContainer: LContainer): void {
+    newState: DeferBlockState, tNode: TNode, lContainer: LContainer,
+    skipTimerScheduling = false): void {
   const hostLView = lContainer[PARENT];
   const hostTView = hostLView[TVIEW];
 
@@ -454,9 +459,10 @@ export function renderDeferBlockState(
   if (isValidStateChange(currentState, newState) &&
       isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState)) {
     const tDetails = getTDeferBlockDetails(hostTView, tNode);
-    const needsScheduling = getLoadingBlockAfter(tDetails) !== null ||
-        getMinimumDurationForState(tDetails, DeferBlockState.Loading) !== null ||
-        getMinimumDurationForState(tDetails, DeferBlockState.Placeholder);
+    const needsScheduling = !skipTimerScheduling &&
+        (getLoadingBlockAfter(tDetails) !== null ||
+         getMinimumDurationForState(tDetails, DeferBlockState.Loading) !== null ||
+         getMinimumDurationForState(tDetails, DeferBlockState.Placeholder));
 
     if (ngDevMode && needsScheduling) {
       assertDefined(
