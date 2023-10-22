@@ -35,7 +35,10 @@ export class DeferBlockFixture {
     if (state === DeferBlockState.Complete) {
       await triggerResourceLoading(this.block.tDetails, this.block.lView, this.block.tNode);
     }
-    renderDeferBlockState(state, this.block.tNode, this.block.lContainer);
+    // If the `render` method is used explicitly - skip timer-based scheduling for
+    // `@placeholder` and `@loading` blocks and render them immediately.
+    const skipTimerScheduling = true;
+    renderDeferBlockState(state, this.block.tNode, this.block.lContainer, skipTimerScheduling);
     this.componentFixture.detectChanges();
     return this.componentFixture.whenStable();
   }
