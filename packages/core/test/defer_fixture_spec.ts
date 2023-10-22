@@ -338,6 +338,48 @@ describe('DeferFixture', () => {
     }
   });
 
+  it('should transition between states when `after` and `minimum` are used', async () => {
+    @Component({
+      selector: 'defer-comp',
+      standalone: true,
+      imports: [SecondDeferredComp],
+      template: `
+        <div>
+          @defer (on immediate) {
+            Main content
+          } @loading (after 1s) {
+            Loading
+          } @placeholder (minimum 2s) {
+            Placeholder
+          }
+        </div>
+      `
+    })
+    class DeferComp {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [
+        DeferComp,
+        SecondDeferredComp,
+      ],
+      providers: COMMON_PROVIDERS,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+
+    const componentFixture = TestBed.createComponent(DeferComp);
+    const deferBlock = (await componentFixture.getDeferBlocks())[0];
+
+    await deferBlock.render(DeferBlockState.Placeholder);
+    expect(componentFixture.nativeElement.outerHTML).toContain('Placeholder');
+
+    await deferBlock.render(DeferBlockState.Loading);
+    expect(componentFixture.nativeElement.outerHTML).toContain('Loading');
+
+    await deferBlock.render(DeferBlockState.Complete);
+    expect(componentFixture.nativeElement.outerHTML).toContain('Main');
+  });
+
   it('should get child defer blocks', async () => {
     @Component({
       selector: 'deferred-comp',
