@@ -63,13 +63,15 @@ You develop apps in the context of an Angular [**workspace**](guide/glossary#wor
 
 To create a new workspace and initial starter app:
 
-1.  Run the CLI command `ng new` and provide the name `my-app`, as shown here:
+1.  Run the CLI command `ng new` and provide the name `my-app`. Also, include the '--standalone' flag at the end, as the rest of the tutorial assumes you've done so:
 
     <code-example format="shell" language="shell">
 
-    ng new my-app
+    ng new my-app --standalone
 
     </code-example>
+
+    Note: If you wish to not register a git repostiry straight away for your project, please include the '--skip-git' flag at the end.
 
 1.  The `ng new` command prompts you for information about features to include in the initial app.
     Accept the defaults by pressing the Enter or Return key.
