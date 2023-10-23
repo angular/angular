@@ -960,12 +960,6 @@ export function transformExpressionsInOp(
       op.expression =
           op.expression && transformExpressionsInExpression(op.expression, transform, flags);
       break;
-    case OpKind.ExtractedMessage:
-      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
-      for (const statement of op.statements) {
-        transformExpressionsInStatement(statement, transform, flags);
-      }
-      break;
     case OpKind.RepeaterCreate:
       op.track = transformExpressionsInExpression(op.track, transform, flags);
       if (op.trackByFn !== null) {
@@ -975,34 +969,31 @@ export function transformExpressionsInOp(
     case OpKind.Repeater:
       op.collection = transformExpressionsInExpression(op.collection, transform, flags);
       break;
-    case OpKind.I18n:
-    case OpKind.I18nStart:
-      for (const [placeholder, expression] of op.params) {
-        op.params.set(placeholder, transformExpressionsInExpression(expression, transform, flags));
-      }
-      break;
-    case OpKind.Defer:
-    case OpKind.DeferSecondaryBlock:
-    case OpKind.DeferOn:
-    case OpKind.Projection:
-    case OpKind.ProjectionDef:
-    case OpKind.Element:
-    case OpKind.ElementStart:
-    case OpKind.ElementEnd:
-    case OpKind.I18nEnd:
-    case OpKind.Container:
-    case OpKind.ContainerStart:
-    case OpKind.ContainerEnd:
-    case OpKind.Template:
-    case OpKind.DisableBindings:
-    case OpKind.EnableBindings:
-    case OpKind.Text:
-    case OpKind.Pipe:
     case OpKind.Advance:
-    case OpKind.Namespace:
+    case OpKind.Container:
+    case OpKind.ContainerEnd:
+    case OpKind.ContainerStart:
+    case OpKind.Defer:
+    case OpKind.DeferOn:
+    case OpKind.DeferSecondaryBlock:
+    case OpKind.DisableBindings:
+    case OpKind.Element:
+    case OpKind.ElementEnd:
+    case OpKind.ElementStart:
+    case OpKind.EnableBindings:
+    case OpKind.ExtractedMessage:
+    case OpKind.I18n:
     case OpKind.I18nApply:
+    case OpKind.I18nEnd:
+    case OpKind.I18nStart:
     case OpKind.Icu:
     case OpKind.IcuUpdate:
+    case OpKind.Namespace:
+    case OpKind.Pipe:
+    case OpKind.Projection:
+    case OpKind.ProjectionDef:
+    case OpKind.Template:
+    case OpKind.Text:
       // These operations contain no expressions.
       break;
     default:
