@@ -9,7 +9,7 @@
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, DeferSecondaryKind, OpKind} from '../enums';
+import {BindingKind, DeferSecondaryKind, I18nParamValueFlags, OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
 import {ConsumesSlotOpTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
@@ -740,6 +740,27 @@ export function createDeferOnOp(xref: XrefId, sourceSpan: ParseSourceSpan): Defe
 }
 
 /**
+ * Represents a single value in an i18n param map. Each placeholder in the map may have multiple of
+ * these values associated with it.
+ */
+export interface I18nParamValue {
+  /**
+   * The value.
+   */
+  value: string|number;
+
+  /**
+   * The sub-template index associated with the value.
+   */
+  subTemplateIndex: number|null;
+
+  /**
+   * Flags associated with the value.
+   */
+  flags: I18nParamValueFlags;
+}
+
+/**
  * Represents an i18n message that has been extracted for inclusion in the consts array.
  */
 export interface ExtractedMessageOp extends Op<CreateOp> {
@@ -751,26 +772,61 @@ export interface ExtractedMessageOp extends Op<CreateOp> {
   owner: XrefId;
 
   /**
-   * The message expression.
+   * The i18n message represented by this op.
    */
-  expression: o.Expression;
+  message: i18n.Message;
 
   /**
-   * The statements to construct the message.
+   * Whether this op represents a root message (as opposed to a partial message for a sub-template
+   * in a root message).
    */
-  statements: o.Statement[];
+  isRoot: boolean;
+
+  /**
+   * The param map, with placeholders represented as an array of value objects for easy
+   * manipulation.
+   */
+  params: Map<string, I18nParamValue[]>;
+
+  /**
+   * The post-processing param map, with placeholders represented as an array of value objects for
+   * easy manipulation.
+   */
+  postprocessingParams: Map<string, I18nParamValue[]>;
+
+  /**
+   * Whether this message needs post-processing.
+   */
+  needsPostprocessing: boolean;
+
+  /**
+   * The param map, with placeholders represented as an `Expression` to facilitate extraction to the
+   * const arry.
+   */
+  formattedParams: Map<string, o.Expression>|null;
+
+  /**
+   * The post-processing param map, with placeholders represented as an `Expression` to facilitate
+   * extraction to the const arry.
+   */
+  formattedPostprocessingParams: Map<string, o.Expression>|null;
 }
 
 /**
  * Create an `ExtractedMessageOp`.
  */
 export function createExtractedMessageOp(
-    owner: XrefId, expression: o.Expression, statements: o.Statement[]): ExtractedMessageOp {
+    owner: XrefId, message: i18n.Message, isRoot: boolean): ExtractedMessageOp {
   return {
     kind: OpKind.ExtractedMessage,
     owner,
-    expression,
-    statements,
+    message,
+    isRoot,
+    params: new Map(),
+    postprocessingParams: new Map(),
+    needsPostprocessing: false,
+    formattedParams: null,
+    formattedPostprocessingParams: null,
     ...NEW_OP,
   };
 }
@@ -795,17 +851,6 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   message: i18n.Message;
 
   /**
-   * Map of values to use for named placeholders in the i18n message. (Resolved at message creation)
-   */
-  params: Map<string, o.Expression>;
-
-  /**
-   * Map of values to use for named placeholders in the i18n message. (Resolved during
-   * post-porcessing)
-   */
-  postprocessingParams: Map<string, o.Expression>;
-
-  /**
    * The index in the consts array where the message i18n message is stored.
    */
   messageIndex: ConstIndex|null;
@@ -814,11 +859,6 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * The index of this sub-block in the i18n message. For a root i18n block, this is null.
    */
   subTemplateIndex: number|null;
-
-  /**
-   * Whether the i18n message requires postprocessing.
-   */
-  needsPostprocessing: boolean;
 }
 
 /**
@@ -844,11 +884,8 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
     xref,
     root: root ?? xref,
     message,
-    params: new Map(),
-    postprocessingParams: new Map(),
     messageIndex: null,
     subTemplateIndex: null,
-    needsPostprocessing: false,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
