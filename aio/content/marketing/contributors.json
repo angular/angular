@@ -108,6 +108,13 @@
     "bio": "SDE III @cisco | GDE for Angular | Microsoft MVP | Author | Speaker | Passionate Programmer",
     "groups": ["GDE"]
   },
+  "ankitasood": {
+    "name": "Ankita Sood",
+    "picture": "ankita.jpg",
+    "groups": ["GDE"],
+    "twitter": "guacamoleankita",
+    "bio": "Ankita is an Angular developer, mentor and speaker. She is passionate about all things Angular and Design."
+  },
   "antoniocardenas": {
     "name": "Antonio Cardenas",
     "picture": "antonio-cardenas.jpg",
