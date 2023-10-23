@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, ErrorHandler, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -862,6 +862,156 @@ describe('@defer', () => {
       // Verify that queries work within an error block.
       expect(fixture.componentInstance.cmps.length).toBe(1);
       expect(fixture.componentInstance.cmps.get(0)?.block).toBe('error');
+    });
+
+    it('should report an error to the ErrorHandler if no `@error` block is defined', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        standalone: true,
+        template: 'NestedCmp',
+      })
+      class NestedCmp {
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder
+          }
+        `
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [failedDynamicImport()];
+        }
+      };
+
+      const reportedErrors: Error[] = [];
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+            useValue: deferDepsInterceptor,
+          },
+          {
+            provide: ErrorHandler, useClass: class extends ErrorHandler{
+              override handleError(error: Error) {
+                reportedErrors.push(error);
+              }
+            },
+          },
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Loading');
+
+      // Wait for dependencies to load.
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify that there was an error reported to the `ErrorHandler`.
+      expect(reportedErrors.length).toBe(1);
+      expect(reportedErrors[0].message).toContain('NG0750');
+      expect(reportedErrors[0].message).toContain(`(used in the 'MyCmp' component template)`);
+    });
+
+    it('should not render `@error` block if loaded component has errors', async () => {
+      @Component({
+        selector: 'cmp-with-error',
+        standalone: true,
+        template: 'CmpWithError',
+      })
+      class CmpWithError {
+        constructor() {
+          throw new Error('CmpWithError produced an error');
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'simple-app',
+        imports: [CmpWithError],
+        template: `
+          @defer (when isVisible) {
+            <cmp-with-error />
+          } @loading {
+            Loading...
+          } @error {
+            Error
+          } @placeholder {
+            Placeholder
+          }
+        `
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(CmpWithError)];
+        }
+      };
+
+      const reportedErrors: Error[] = [];
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+            useValue: deferDepsInterceptor,
+          },
+          {
+            provide: ErrorHandler, useClass: class extends ErrorHandler{
+              override handleError(error: Error) {
+                reportedErrors.push(error);
+              }
+            },
+          },
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Loading');
+
+      // Wait for dependencies to load.
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect an error to be reported to the `ErrorHandler`.
+      expect(reportedErrors.length).toBe(1);
+      expect(reportedErrors[0].message).toBe('CmpWithError produced an error');
+
+      // Expect that the `@loading` UI is removed, but the `@error` is *not* rendered,
+      // because it was a component initialization error, not resource loading issue.
+      expect(fixture.nativeElement.textContent).toBe('');
     });
   });
 

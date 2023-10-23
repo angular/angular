@@ -7,12 +7,15 @@
  */
 
 import {InjectionToken, Injector} from '../di';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
+import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
+import {handleError} from '../render3/instructions/shared';
 import {ɵɵtemplate} from '../render3/instructions/template';
 import {LContainer} from '../render3/interfaces/container';
 import {DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
@@ -465,7 +468,11 @@ export function renderDeferBlockState(
 
     const applyStateFn =
         needsScheduling ? applyDeferBlockStateWithSchedulingImpl! : applyDeferBlockState;
-    applyStateFn(newState, lDetails, lContainer, tNode, hostLView);
+    try {
+      applyStateFn(newState, lDetails, lContainer, tNode, hostLView);
+    } catch (error: unknown) {
+      handleError(hostLView, error);
+    }
   }
 }
 
@@ -667,6 +674,17 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
 
     if (failed) {
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
+
+      if (tDetails.errorTmplIndex === null) {
+        const templateLocation = getTemplateLocationDetails(lView);
+        const error = new RuntimeError(
+            RuntimeErrorCode.DEFER_LOADING_FAILED,
+            ngDevMode &&
+                'Loading dependencies for `@defer` block failed, ' +
+                    `but no \`@error\` block was configured${templateLocation}. ` +
+                    'Consider using the `@error` block to render an error state.');
+        handleError(lView, error);
+      }
     } else {
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
 

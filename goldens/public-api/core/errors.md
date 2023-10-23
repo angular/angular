@@ -29,6 +29,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
+    DEFER_LOADING_FAILED = 750,
+    // (undocumented)
     DUPLICATE_DIRECTITVE = 309,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,
