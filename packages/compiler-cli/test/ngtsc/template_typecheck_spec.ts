@@ -4294,6 +4294,31 @@ suppress
         ]);
       });
 
+      it('should produce a diagnostic if @switch and @case have different types', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @switch (expr) {
+                @case (1) {
+                  {{expr}}
+                }
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expr = true;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `This comparison appears to be unintentional because the types 'boolean' and 'number' have no overlap.`,
+        ]);
+      });
+
       it('should narrow the type in listener inside switch cases with expressions', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';

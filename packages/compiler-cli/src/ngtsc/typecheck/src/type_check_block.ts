@@ -1327,12 +1327,15 @@ class TcbSwitchOp extends TcbOp {
   }
 
   override execute(): null {
-    const expression = tcbExpression(this.block.expression, this.tcb, this.scope);
-
     // Since we'll use the expression in multiple comparisons, we don't want to
     // log the same diagnostic more than once. Ignore this expression since we already
     // produced a `TcbExpressionOp`.
-    markIgnoreDiagnostics(expression);
+    const comparisonExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    markIgnoreDiagnostics(comparisonExpression);
+
+    // Wrap the comparisson expression in parentheses so we don't ignore
+    // diagnostics when comparing incompatible types (see #52315).
+    const expression = ts.factory.createParenthesizedExpression(comparisonExpression);
     const root = this.generateCase(0, expression, null);
 
     if (root !== undefined) {
