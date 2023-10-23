@@ -963,6 +963,9 @@
     "name": "getTView"
   },
   {
+    "name": "handleError"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -2362,6 +2365,9 @@
   },
   {
     "name": "switchMap"
+  },
+  {
+    "name": "throwError"
   },
   {
     "name": "throwProviderNotFoundError"
