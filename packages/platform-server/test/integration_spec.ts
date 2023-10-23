@@ -11,7 +11,7 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgModuleRef, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
@@ -1140,6 +1140,43 @@ describe('platform-server integration', () => {
         const http = ref.injector.get(HttpClient);
         ref.injector.get(NgZone).run(() => {
           http.get<string>('http://localhost/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
+        });
+      });
+    });
+
+    describe(`given 'url' is provided in 'INITIAL_CONFIG'`, () => {
+      let mock: HttpTestingController;
+      let ref: NgModuleRef<HttpInterceptorExampleModule>;
+      let http: HttpClient;
+
+      beforeEach(async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost:4000/foo'}
+        }]);
+
+        ref = await platform.bootstrapModule(HttpInterceptorExampleModule);
+        mock = ref.injector.get(HttpTestingController);
+        http = ref.injector.get(HttpClient);
+      });
+
+      it('should resolve relative request URLs to absolute', async () => {
+        ref.injector.get(NgZone).run(() => {
+          http.get('/testing').subscribe(body => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost:4000/testing').flush('success!');
+        });
+      });
+
+      it(`should not replace the baseUrl of a request when it's absolute`, async () => {
+        ref.injector.get(NgZone).run(() => {
+          http.get('http://localhost/testing').subscribe(body => {
             NgZone.assertInAngularZone();
             expect(body).toEqual('success!');
           });
