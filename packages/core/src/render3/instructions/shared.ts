@@ -1387,15 +1387,14 @@ export function createLContainer(
   const lContainer: LContainer = [
     hostNative,   // host native
     true,         // Boolean `true` in this position signifies that this is an `LContainer`
-    false,        // has transplanted views
+    0,            // flags
     currentView,  // parent
     null,         // next
     tNode,        // t_host
-    false,        // has child views to refresh
+    null,         // dehydrated views
     native,       // native,
     null,         // view refs
     null,         // moved views
-    null,         // dehydrated views
   ];
   ngDevMode &&
       assertEqual(

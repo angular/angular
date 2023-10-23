@@ -10,8 +10,7 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
-import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
-
+import {FLAGS, HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 /**
@@ -27,27 +26,13 @@ export const TYPE = 1;
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 
-/**
- * Flag to signify that this `LContainer` may have transplanted views which need to be change
- * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
- *
- * This flag, once set, is never unset for the `LContainer`. This means that when unset we can skip
- * a lot of work in `refreshEmbeddedViews`. But when set we still need to verify
- * that the `MOVED_VIEWS` are transplanted and on-push.
- */
-export const HAS_TRANSPLANTED_VIEWS = 2;
-
-// PARENT and NEXT are indices 3 and 4
+// FLAGS, PARENT, NEXT, and T_HOST are indices 2, 3, 4, and 5
 // As we already have these constants in LView, we don't need to re-create them.
 
-// T_HOST is index 5
-// We already have this constants in LView, we don't need to re-create it.
-
-export const HAS_CHILD_VIEWS_TO_REFRESH = 6;
+export const DEHYDRATED_VIEWS = 6;
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
 export const MOVED_VIEWS = 9;
-export const DEHYDRATED_VIEWS = 10;
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -55,7 +40,7 @@ export const DEHYDRATED_VIEWS = 10;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 11;
+export const CONTAINER_HEADER_OFFSET = 10;
 
 /**
  * The state associated with a container.
@@ -80,13 +65,8 @@ export interface LContainer extends Array<any> {
    */
   [TYPE]: true;
 
-  /**
-   * Flag to signify that this `LContainer` may have transplanted views which need to be change
-   * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
-   *
-   * This flag, once set, is never unset for the `LContainer`.
-   */
-  [HAS_TRANSPLANTED_VIEWS]: boolean;
+  /** Flags for this container. See LContainerFlags for more info. */
+  [FLAGS]: LContainerFlags;
 
   /**
    * Access to the parent view is necessary so we can propagate back
@@ -99,12 +79,6 @@ export interface LContainer extends Array<any> {
    * view with the same parent, so we can remove listeners efficiently.
    */
   [NEXT]: LView|LContainer|null;
-
-  /**
-   * Indicates that this LContainer has a view underneath it that needs to be refreshed during
-   * change detection.
-   */
-  [HAS_CHILD_VIEWS_TO_REFRESH]: boolean;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
@@ -142,4 +116,21 @@ export interface LContainer extends Array<any> {
    * logic finishes.
    */
   [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;
+}
+
+/** Flags associated with an LContainer (saved in LContainer[FLAGS]) */
+export enum LContainerFlags {
+  None = 0,
+  /**
+   * Flag to signify that this `LContainer` may have transplanted views which need to be change
+   * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
+   *
+   * This flag, once set, is never unset for the `LContainer`.
+   */
+  HasTransplantedViews = 1 << 1,
+  /**
+   * Indicates that this LContainer has a view underneath it that needs to be refreshed during
+   * change detection.
+   */
+  HasChildViewsToRefresh = 1 << 2,
 }

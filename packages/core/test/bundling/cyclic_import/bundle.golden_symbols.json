@@ -165,12 +165,6 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
-  },
-  {
-    "name": "HAS_TRANSPLANTED_VIEWS"
-  },
-  {
     "name": "INJECTOR2"
   },
   {
@@ -196,6 +190,9 @@
   },
   {
     "name": "KeyEventsPlugin"
+  },
+  {
+    "name": "LContainerFlags"
   },
   {
     "name": "LOCALE_ID2"
