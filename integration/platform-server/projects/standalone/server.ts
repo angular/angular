@@ -38,10 +38,12 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
+  const { protocol, originalUrl, baseUrl, headers } = req;
+
   renderApplication(bootstrap, {
     document: indexHtml,
-    url: req.url,
-    platformProviders: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
+    url: `${protocol}://${headers.host}${originalUrl}`,
+    platformProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
     res.send(response);
   });

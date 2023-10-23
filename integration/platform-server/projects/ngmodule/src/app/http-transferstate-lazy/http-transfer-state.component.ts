@@ -29,7 +29,7 @@ export class TransferStateComponent implements OnInit {
 
   ngOnInit(): void {
     // Test that HTTP cache works when HTTP call is made in a lifecycle hook.
-    this.httpClient.get<any>('http://localhost:4206/api-2').subscribe((response) => {
+    this.httpClient.get<any>('/api-2').subscribe((response) => {
       this.responseTwo = response.data;
     });
   }
