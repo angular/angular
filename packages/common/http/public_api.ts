@@ -21,3 +21,6 @@ export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, 
 export {HttpTransferCacheOptions, withHttpTransferCache as ɵwithHttpTransferCache} from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
+
+// Private exports
+export * from './src/private_export';
