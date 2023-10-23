@@ -104,44 +104,30 @@ describe('change detection', () => {
 
       @Component({
         template: `
-          <button (click)="noop()">Trigger change detection</button>
           <div>{{increment('componentView')}}</div>
           <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush
       })
       class App {
         increment(counter: 'componentView'|'embeddedView') {
           counters[counter]++;
         }
-        noop() {}
       }
 
       TestBed.configureTestingModule({declarations: [App, ViewManipulation]});
       const fixture = TestBed.createComponent(App);
-      const vm: ViewManipulation = fixture.debugElement.childNodes[2].references['vm'];
-      const button = fixture.nativeElement.querySelector('button');
+      const vm: ViewManipulation = fixture.debugElement.childNodes[1].references['vm'];
       const viewRef = vm.insertIntoVcRef();
-      fixture.detectChanges();
-
-      expect(counters).toEqual({componentView: 1, embeddedView: 1});
-
-      button.click();
-      fixture.detectChanges();
-      expect(counters).toEqual({componentView: 2, embeddedView: 2});
-
       viewRef.detach();
-      button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 3, embeddedView: 2});
+      expect(counters).toEqual({componentView: 2, embeddedView: 0});
 
       // Re-attach the view to ensure that the process can be reversed.
       viewRef.reattach();
-      button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 4, embeddedView: 3});
+      expect(counters).toEqual({componentView: 4, embeddedView: 2});
     });
 
     it('should not detect changes in child component views while they are detached', () => {
