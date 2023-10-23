@@ -58,7 +58,7 @@ export abstract class LocationStrategy {
  * with a base href value, so that the DI framework can supply the dependency anywhere in the app.
  *
  * ```typescript
- * import {Component, NgModule} from '@angular/core';
+ * import {NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *
  * @NgModule({
