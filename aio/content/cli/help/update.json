@@ -31,7 +31,7 @@
     {
       "name": "from",
       "type": "string",
-      "description": "Version from which to migrate from. Only available with a single package being updated, and only with 'migrate-only'."
+      "description": "Version from which to migrate from. Only available when a single package is updated, and only with 'migrate-only'."
     },
     {
       "name": "help",
@@ -46,7 +46,7 @@
     {
       "name": "name",
       "type": "string",
-      "description": "The name of the migration to run. Only available with a single package being updated, and only with 'migrate-only' option."
+      "description": "The name of the migration to run. Only available when a single package is updated."
     },
     {
       "name": "next",
@@ -71,7 +71,7 @@
     {
       "name": "to",
       "type": "string",
-      "description": "Version up to which to apply migrations. Only available with a single package being updated, and only with 'migrate-only' option. Requires 'from' to be specified. Default to the installed version detected."
+      "description": "Version up to which to apply migrations. Only available when a single package is updated, and only with 'migrate-only' option. Requires 'from' to be specified. Default to the installed version detected."
     },
     {
       "name": "verbose",
