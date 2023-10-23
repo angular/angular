@@ -18,7 +18,7 @@ import {escapeCommentText} from '../util/dom';
 import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, MOVED_VIEWS, NATIVE} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {unregisterLView} from './interfaces/lview_tracking';
@@ -298,7 +298,7 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
     // At this point the declaration-component is not same as insertion-component; this means that
     // this is a transplanted view. Mark the declared lView as having transplanted views so that
     // those views can participate in CD.
-    declarationContainer[HAS_TRANSPLANTED_VIEWS] = true;
+    declarationContainer[FLAGS] |= LContainerFlags.HasTransplantedViews;
   }
   if (movedViews === null) {
     declarationContainer[MOVED_VIEWS] = [lView];

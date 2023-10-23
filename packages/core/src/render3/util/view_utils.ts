@@ -9,7 +9,7 @@
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
-import {HAS_CHILD_VIEWS_TO_REFRESH, LContainer, TYPE} from '../interfaces/container';
+import {LContainer, LContainerFlags, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
@@ -224,13 +224,13 @@ export function markAncestorsForTraversal(lView: LView) {
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
     // is to avoid needlessly traversing all the way to the root when the marker already exists.
-    if ((isLContainer(parent) && parent[HAS_CHILD_VIEWS_TO_REFRESH] ||
+    if ((isLContainer(parent) && (parent[FLAGS] & LContainerFlags.HasChildViewsToRefresh) ||
          (isLView(parent) && parent[FLAGS] & LViewFlags.HasChildViewsToRefresh))) {
       break;
     }
 
     if (isLContainer(parent)) {
-      parent[HAS_CHILD_VIEWS_TO_REFRESH] = true;
+      parent[FLAGS] |= LContainerFlags.HasChildViewsToRefresh;
     } else {
       parent[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
       if (!viewAttachedToChangeDetector(parent)) {
