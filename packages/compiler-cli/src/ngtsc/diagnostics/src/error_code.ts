@@ -388,6 +388,11 @@ export enum ErrorCode {
   INTERPOLATED_SIGNAL_NOT_INVOKED = 8109,
 
   /**
+   * Templates should use the new control flow (without structural directives)
+   */
+  USES_DIRECTIVE_CONTROL_FLOW = 8110,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

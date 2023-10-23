@@ -16,16 +16,14 @@ import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_c
 import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
+import {factory as usesDirectiveControlFlowFactory} from './checks/uses_directive_control_flow';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
 export const ALL_DIAGNOSTIC_FACTORIES:
     readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[] = [
-      invalidBananaInBoxFactory,
-      nullishCoalescingNotNullableFactory,
-      optionalChainNotNullableFactory,
-      missingControlFlowDirectiveFactory,
-      textAttributeNotBindingFactory,
-      missingNgForOfLetFactory,
-      suffixNotSupportedFactory,
+      invalidBananaInBoxFactory, nullishCoalescingNotNullableFactory,
+      optionalChainNotNullableFactory, missingControlFlowDirectiveFactory,
+      textAttributeNotBindingFactory, missingNgForOfLetFactory, suffixNotSupportedFactory,
+      usesDirectiveControlFlowFactory
     ];
