@@ -62,6 +62,5 @@ export const SERVER_HTTP_PROVIDERS: Provider[] = [
     provide: HTTP_ROOT_INTERCEPTOR_FNS,
     useValue: relativeUrlsTransformerInterceptorFn,
     multi: true,
-    deps: [PlatformLocation]
   },
 ];
