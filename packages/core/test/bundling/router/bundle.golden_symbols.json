@@ -276,12 +276,6 @@
     "name": "GuardsCheckStart"
   },
   {
-    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
-  },
-  {
-    "name": "HAS_TRANSPLANTED_VIEWS"
-  },
-  {
     "name": "HistoryStateManager"
   },
   {
@@ -325,6 +319,9 @@
   },
   {
     "name": "ItemComponent"
+  },
+  {
+    "name": "LContainerFlags"
   },
   {
     "name": "LOCALE_ID2"
