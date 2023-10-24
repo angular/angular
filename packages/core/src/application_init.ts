@@ -108,7 +108,7 @@ import {isPromise, isSubscribable} from './util/lang';
  * ```
  *
  * ### Example with standalone application
- *
+ * ```
  *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
  *   return () => httpClient.get("https://someUrl.com/api/user")
  *     .pipe(
@@ -127,6 +127,7 @@ import {isPromise, isSubscribable} from './util/lang';
  *     },
  *   ],
  * });
+ * ```
  *
  * @publicApi
  */
