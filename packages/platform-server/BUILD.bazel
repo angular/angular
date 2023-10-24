@@ -25,7 +25,6 @@ ng_module(
         "//packages/platform-browser/animations",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/node",
-        "@npm//domino",
         "@npm//rxjs",
         "@npm//xhr2",
     ],
