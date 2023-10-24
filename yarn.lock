@@ -3172,6 +3172,11 @@
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-5.0.7.tgz#471bad8be0d911ed04d115863402920f3a84079c"
   integrity sha512-adBosR2GntaQQiuHnfRN9HtxYpoHHJBcdyz7VSXhjpSAmtvIfu/S1fjTqwuIx/Ypba6LCZdfWIqPYx2BR5TneQ==
 
+"@types/dom-navigation@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/dom-navigation/-/dom-navigation-1.0.2.tgz#b8aad644eaddb65f2c7d87b582e6773fd68e06bd"
+  integrity sha512-5OchCMi8lg4FYeDG6cW+IpBn8iTKbgdGbC0Nj6er01tiw0c4WOUnTEQXSu1OqnfK13k+oaFvNQ8QAju5+2uiBw==
+
 "@types/dom-view-transitions@^1.0.1":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@types/dom-view-transitions/-/dom-view-transitions-1.0.3.tgz#d69fd4512de1c2aa8e01321d5e734b7e447a097c"
