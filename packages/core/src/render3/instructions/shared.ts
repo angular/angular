@@ -43,7 +43,6 @@ import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
-import {getReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
@@ -67,7 +66,6 @@ import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './el
 export function processHostBindingOpCodes(tView: TView, lView: LView): void {
   const hostBindingOpCodes = tView.hostBindingOpCodes;
   if (hostBindingOpCodes === null) return;
-  const consumer = getReactiveLViewConsumer(lView, REACTIVE_HOST_BINDING_CONSUMER);
   try {
     for (let i = 0; i < hostBindingOpCodes.length; i++) {
       const opCode = hostBindingOpCodes[i] as number;
@@ -80,14 +78,8 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         const bindingRootIndx = hostBindingOpCodes[++i] as number;
         const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
-        consumer.dirty = false;
-        const prevConsumer = consumerBeforeComputation(consumer);
-        try {
-          const context = lView[directiveIdx];
-          hostBindingFn(RenderFlags.Update, context);
-        } finally {
-          consumerAfterComputation(consumer, prevConsumer);
-        }
+        const context = lView[directiveIdx];
+        hostBindingFn(RenderFlags.Update, context);
       }
     }
   } finally {
@@ -253,7 +245,6 @@ export function allocExpando(
 
 export function executeTemplate<T>(
     tView: TView, lView: LView<T>, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
-  const consumer = getReactiveLViewConsumer(lView, REACTIVE_TEMPLATE_CONSUMER);
   const prevSelectedIndex = getSelectedIndex();
   const isUpdatePhase = rf & RenderFlags.Update;
   try {
@@ -267,16 +258,7 @@ export function executeTemplate<T>(
     const preHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
-    const effectiveConsumer = isUpdatePhase ? consumer : null;
-    const prevConsumer = consumerBeforeComputation(effectiveConsumer);
-    try {
-      if (effectiveConsumer !== null) {
-        effectiveConsumer.dirty = false;
-      }
-      templateFn(rf, context);
-    } finally {
-      consumerAfterComputation(effectiveConsumer, prevConsumer);
-    }
+    templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
 
@@ -1426,17 +1408,23 @@ export function createLContainer(
 export function refreshContentQueries(tView: TView, lView: LView): void {
   const contentQueries = tView.contentQueries;
   if (contentQueries !== null) {
-    for (let i = 0; i < contentQueries.length; i += 2) {
-      const queryStartIdx = contentQueries[i];
-      const directiveDefIdx = contentQueries[i + 1];
-      if (directiveDefIdx !== -1) {
-        const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-        ngDevMode && assertDefined(directiveDef, 'DirectiveDef not found.');
-        ngDevMode &&
-            assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
-        setCurrentQueryIndex(queryStartIdx);
-        directiveDef.contentQueries!(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      for (let i = 0; i < contentQueries.length; i += 2) {
+        const queryStartIdx = contentQueries[i];
+        const directiveDefIdx = contentQueries[i + 1];
+        if (directiveDefIdx !== -1) {
+          const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
+          ngDevMode && assertDefined(directiveDef, 'DirectiveDef not found.');
+          ngDevMode &&
+              assertDefined(
+                  directiveDef.contentQueries, 'contentQueries function should be defined');
+          setCurrentQueryIndex(queryStartIdx);
+          directiveDef.contentQueries!(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
+        }
       }
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
   }
 }

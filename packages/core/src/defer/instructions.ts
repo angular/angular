@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {InjectionToken, Injector} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
@@ -179,21 +181,26 @@ export function ɵɵdeferWhen(rawValue: unknown) {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
-    const value = Boolean(rawValue);  // handle truthy or falsy values
-    const tNode = getSelectedTNode();
-    const lDetails = getLDeferBlockDetails(lView, tNode);
-    const renderedState = lDetails[DEFER_BLOCK_STATE];
-    if (value === false && renderedState === DeferBlockInternalState.Initial) {
-      // If nothing is rendered yet, render a placeholder (if defined).
-      renderPlaceholder(lView, tNode);
-    } else if (
-        value === true &&
-        (renderedState === DeferBlockInternalState.Initial ||
-         renderedState === DeferBlockState.Placeholder)) {
-      // The `when` condition has changed to `true`, trigger defer block loading
-      // if the block is either in initial (nothing is rendered) or a placeholder
-      // state.
-      triggerDeferBlock(lView, tNode);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      const value = Boolean(rawValue);  // handle truthy or falsy values
+      const tNode = getSelectedTNode();
+      const lDetails = getLDeferBlockDetails(lView, tNode);
+      const renderedState = lDetails[DEFER_BLOCK_STATE];
+      if (value === false && renderedState === DeferBlockInternalState.Initial) {
+        // If nothing is rendered yet, render a placeholder (if defined).
+        renderPlaceholder(lView, tNode);
+      } else if (
+          value === true &&
+          (renderedState === DeferBlockInternalState.Initial ||
+           renderedState === DeferBlockState.Placeholder)) {
+        // The `when` condition has changed to `true`, trigger defer block loading
+        // if the block is either in initial (nothing is rendered) or a placeholder
+        // state.
+        triggerDeferBlock(lView, tNode);
+      }
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
   }
 }
@@ -207,13 +214,18 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
   const bindingIndex = nextBindingIndex();
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
-    const value = Boolean(rawValue);  // handle truthy or falsy values
-    const tView = lView[TVIEW];
-    const tNode = getSelectedTNode();
-    const tDetails = getTDeferBlockDetails(tView, tNode);
-    if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
-      // If loading has not been started yet, trigger it now.
-      triggerPrefetching(tDetails, lView, tNode);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      const value = Boolean(rawValue);  // handle truthy or falsy values
+      const tView = lView[TVIEW];
+      const tNode = getSelectedTNode();
+      const tDetails = getTDeferBlockDetails(tView, tNode);
+      if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+        // If loading has not been started yet, trigger it now.
+        triggerPrefetching(tDetails, lView, tNode);
+      }
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
   }
 }
