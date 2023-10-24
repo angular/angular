@@ -517,6 +517,11 @@
           "tooltip": "How to enable hydration on your server rendered applications."
         },
         {
+          "url": "guide/defer",
+          "title": "Deferred Loading",
+          "tooltip": "How to defer load components, directives, and pipes."
+        },
+        {
           "url": "guide/image-directive",
           "title": "Image optimization",
           "tooltip": "Performant images with the Angular image directive."
