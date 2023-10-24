@@ -1059,15 +1059,15 @@ describe('control flow migration', () => {
       expect(content).toBe([
         `<div>`,
         `@switch (testOpts) {`,
-        `  @case (1) {`,
-        `    <p>Option 1</p>`,
-        `  }`,
-        `  @case (2) {`,
-        `    <p>Option 2</p>`,
-        `  }`,
-        `  @default {`,
-        `    <p>Option 3</p>`,
-        `  }`,
+        `@case (1) {`,
+        `  <p>Option 1</p>`,
+        `}`,
+        `@case (2) {`,
+        `  <p>Option 2</p>`,
+        `}`,
+        `@default {`,
+        `  <p>Option 3</p>`,
+        `}`,
         `}`,
         `</div>`,
       ].join('\n'));
@@ -1112,15 +1112,15 @@ describe('control flow migration', () => {
       expect(content).toBe([
         `<div>`,
         `@switch (testOpts) {`,
-        `  @case (1) {`,
-        `    <p>Option 1</p>`,
-        `  }`,
-        `  @case (2) {`,
-        `    <p>Option 2</p>`,
-        `  }`,
-        `  @default {`,
-        `    <p>Option 3</p>`,
-        `  }`,
+        `@case (1) {`,
+        `  <p>Option 1</p>`,
+        `}`,
+        `@case (2) {`,
+        `  <p>Option 2</p>`,
+        `}`,
+        `@default {`,
+        `  <p>Option 3</p>`,
+        `}`,
         `}`,
         `</div>`,
       ].join('\n'));
@@ -1416,6 +1416,61 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate a switch with for inside case', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgFor, NgIf],
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+          nest = true;
+          again = true;
+          more = true;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div [formGroup]="form">`,
+        `<label [attr.for]="question.key">{{question.label}}</label>`,
+        `<div [ngSwitch]="question.controlType">`,
+        `  <input *ngSwitchCase="'textbox'" [formControlName]="question.key"`,
+        `          [id]="question.key" [type]="question.type">`,
+        `  <select [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key">`,
+        `    <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>`,
+        `  </select>`,
+        `</div>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div [formGroup]="form">`,
+        `<label [attr.for]="question.key">{{question.label}}</label>`,
+        `<div>`,
+        `@switch (question.controlType) {`,
+        `  @case ('textbox') {`,
+        `  <input [formControlName]="question.key"`,
+        `          [id]="question.key" [type]="question.type">`,
+        `}`,
+        `  @case ('dropdown') {`,
+        `  <select [id]="question.key" [formControlName]="question.key">`,
+        `    @for (opt of question.options; track opt) {`,
+        `  <option [value]="opt.key">{{opt.value}}</option>`,
+        `}`,
+        `  </select>`,
+        `}`,
+        `}`,
+        `</div>`,
+        `</div>`,
+      ].join('\n'));
+    });
+
     it('should migrate a simple for inside an if', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -1683,15 +1738,15 @@ describe('control flow migration', () => {
         `<div>`,
         `<div>`,
         `@switch (testOpts) {`,
-        `  @case (1) {`,
-        `    <p>Option 1</p>`,
-        `  }`,
-        `  @case (2) {`,
-        `    <p>Option 2</p>`,
-        `  }`,
-        `  @default {`,
-        `    <p>Option 3</p>`,
-        `  }`,
+        `@case (1) {`,
+        `  <p>Option 1</p>`,
+        `}`,
+        `@case (2) {`,
+        `  <p>Option 2</p>`,
+        `}`,
+        `@default {`,
+        `  <p>Option 3</p>`,
+        `}`,
         `}`,
         `</div>`,
         `</div>`,
@@ -1856,39 +1911,39 @@ describe('control flow migration', () => {
         `class="what"`,
         `>\n`,
         `@switch (currentCase()) {`,
-        `  @case (A) {`,
-        `    <span `,
+        `@case (A) {`,
+        `  <span `,
         `class="case-stuff"`,
         `>`,
         `Case A`,
         `</span>`,
-        `  }`,
-        `  @case (B) {`,
-        `    <span class="b-class">`,
+        `}`,
+        `@case (B) {`,
+        `  <span class="b-class">`,
         `Case B`,
         `</span>`,
-        `  }`,
-        `  @case (C) {`,
-        `    <span `,
+        `}`,
+        `@case (C) {`,
+        `  <span `,
         `class="thing-1"  `,
         `>`,
         `Case C`,
         `</span>`,
-        `  }`,
-        `  @case (D) {`,
-        `    <span `,
+        `}`,
+        `@case (D) {`,
+        `  <span `,
         `class="thing-2"`,
         `>`,
         `Case D`,
         `</span>`,
-        `  }`,
-        `  @case (E) {`,
-        `    <span `,
+        `}`,
+        `@case (E) {`,
+        `  <span `,
         `class="thing-3"  `,
         `>`,
         `Case E`,
         `</span>`,
-        `  }`,
+        `}`,
         `}\n`,
         `<progress [value]="progress()" [max]="ready"></progress>`,
         `</div>`,
