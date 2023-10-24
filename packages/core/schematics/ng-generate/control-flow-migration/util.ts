@@ -10,7 +10,7 @@ import {HtmlParser, Node, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, boundngif, CaseCollector, ElementCollector, ElementToMigrate, MigrateError, nakedngif, ngfor, ngif, ngswitch, Result, Template} from './types';
+import {AnalyzedFile, boundcase, boundngif, ElementCollector, ElementToMigrate, MigrateError, nakedcase, nakeddefault, nakedngif, ngfor, ngif, ngswitch, Result, switchcase, switchdefault, Template} from './types';
 
 /**
  * Analyzes a source file to find file that need to be migrated and the text ranges within them.
@@ -134,10 +134,12 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 
   // start from top of template
   // loop through each element
+  visitor.elements[0].hasLineBreaks = hasLineBreaks;
   let prevElEnd = visitor.elements[0]?.el.sourceSpan.end.offset ?? result.length - 1;
   let nestedQueue: number[] = [prevElEnd];
   for (let i = 1; i < visitor.elements.length; i++) {
     let currEl = visitor.elements[i];
+    currEl.hasLineBreaks = hasLineBreaks;
     currEl.nestCount = getNestedCount(currEl, nestedQueue);
     if (currEl.el.sourceSpan.end.offset !== nestedQueue[nestedQueue.length - 1]) {
       nestedQueue.push(currEl.el.sourceSpan.end.offset);
@@ -165,19 +167,32 @@ export function migrateTemplate(template: string): {migrated: string|null, error
     // these are all migratable nodes
     if (el.attr.name === ngif || el.attr.name === nakedngif || el.attr.name === boundngif) {
       try {
-        migrateResult = migrateNgIf(el, visitor.templates, result, offset, hasLineBreaks);
+        migrateResult = migrateNgIf(el, visitor.templates, result, offset);
       } catch (error: unknown) {
         errors.push({type: ngif, error});
       }
     } else if (el.attr.name === ngfor) {
       try {
-        migrateResult = migrateNgFor(el, result, offset, hasLineBreaks);
+        migrateResult = migrateNgFor(el, result, offset);
       } catch (error: unknown) {
         errors.push({type: ngfor, error});
       }
     } else if (el.attr.name === ngswitch) {
       try {
-        migrateResult = migrateNgSwitch(el, result, offset, hasLineBreaks);
+        migrateResult = migrateNgSwitch(el, result, offset);
+      } catch (error: unknown) {
+        errors.push({type: ngswitch, error});
+      }
+    } else if (
+        el.attr.name === switchcase || el.attr.name === nakedcase || el.attr.name === boundcase) {
+      try {
+        migrateResult = migrateNgSwitchCase(el, result, offset);
+      } catch (error: unknown) {
+        errors.push({type: ngswitch, error});
+      }
+    } else if (el.attr.name === switchdefault || el.attr.name === nakeddefault) {
+      try {
+        migrateResult = migrateNgSwitchDefault(el, result, offset);
       } catch (error: unknown) {
         errors.push({type: ngswitch, error});
       }
@@ -198,26 +213,24 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 }
 
 function migrateNgIf(
-    etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string, offset: number,
-    hasLineBreaks: boolean): Result {
+    etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string,
+    offset: number): Result {
   const matchThen = etm.attr.value.match(/;\s+then/gm);
   const matchElse = etm.attr.value.match(/;\s+else/gm);
 
   if (matchThen && matchThen.length > 0) {
-    return buildIfThenElseBlock(
-        etm, ngTemplates, tmpl, matchThen[0], matchElse![0], offset, hasLineBreaks);
+    return buildIfThenElseBlock(etm, ngTemplates, tmpl, matchThen[0], matchElse![0], offset);
   } else if (matchElse && matchElse.length > 0) {
     // just else
-    return buildIfElseBlock(etm, ngTemplates, tmpl, matchElse[0], offset, hasLineBreaks);
+    return buildIfElseBlock(etm, ngTemplates, tmpl, matchElse[0], offset);
   }
 
-  return buildIfBlock(etm, tmpl, offset, hasLineBreaks);
+  return buildIfBlock(etm, tmpl, offset);
 }
 
-function buildIfBlock(
-    etm: ElementToMigrate, tmpl: string, offset: number, hasLineBreaks: boolean): Result {
+function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   // includes the mandatory semicolon before as
-  const lbString = hasLineBreaks ? lb : '';
+  const lbString = etm.hasLineBreaks ? lb : '';
   const condition = etm.attr.value.replace(' as ', '; as ');
 
   const originals = getOriginals(etm, tmpl, offset);
@@ -239,9 +252,9 @@ function buildIfBlock(
 
 function buildIfElseBlock(
     etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string, elseString: string,
-    offset: number, hasLineBreaks: boolean): Result {
+    offset: number): Result {
   // includes the mandatory semicolon before as
-  const lbString = hasLineBreaks ? lb : '';
+  const lbString = etm.hasLineBreaks ? lb : '';
   const condition = etm.getCondition(elseString).replace(' as ', '; as ');
 
   const originals = getOriginals(etm, tmpl, offset);
@@ -270,9 +283,9 @@ function buildIfElseBlock(
 
 function buildIfThenElseBlock(
     etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string, thenString: string,
-    elseString: string, offset: number, hasLineBreaks: boolean): Result {
+    elseString: string, offset: number): Result {
   const condition = etm.getCondition(thenString).replace(' as ', '; as ');
-  const lbString = hasLineBreaks ? lb : '';
+  const lbString = etm.hasLineBreaks ? lb : '';
 
   const originals = getOriginals(etm, tmpl, offset);
 
@@ -302,13 +315,12 @@ function buildIfThenElseBlock(
   return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
-function migrateNgFor(
-    etm: ElementToMigrate, tmpl: string, offset: number, hasLineBreaks: boolean): Result {
+function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const aliasWithEqualRegexp = /=\s+(count|index|first|last|even|odd)/gm;
   const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
-  const lbString = hasLineBreaks ? lb : '';
-  const lbSpaces = hasLineBreaks ? `${lb}  ` : '';
+  const lbString = etm.hasLineBreaks ? lb : '';
+  const lbSpaces = etm.hasLineBreaks ? `${lb}  ` : '';
   const parts = etm.attr.value.split(';');
 
   const originals = getOriginals(etm, tmpl, offset);
@@ -380,7 +392,8 @@ function getOriginals(
 
 function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
     {start: string, middle: string, end: string} {
-  if (etm.el.name === 'ng-container' && etm.el.attrs.length === 1) {
+  if ((etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
+      etm.el.attrs.length === 1) {
     // this is the case where we're migrating and there's no need to keep the ng-container
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
@@ -389,7 +402,10 @@ function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
   }
 
   const attrStart = etm.attr.keySpan!.start.offset - 1 - offset;
-  const valEnd = etm.attr.valueSpan!.end.offset + 1 - offset;
+  const valEnd =
+      (etm.attr.valueSpan ? (etm.attr.valueSpan.end.offset + 1) : etm.attr.keySpan!.end.offset) -
+      offset;
+
   let childStart = valEnd;
   let childEnd = valEnd;
 
@@ -400,83 +416,80 @@ function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
 
   let start = tmpl.slice(etm.start(offset), attrStart);
   start += tmpl.slice(valEnd, childStart);
+
   const middle = tmpl.slice(childStart, childEnd);
   const end = tmpl.slice(childEnd, etm.end(offset));
 
   return {start, middle, end};
 }
 
-function migrateNgSwitch(
-    etm: ElementToMigrate, tmpl: string, offset: number, hasLineBreaks: boolean): Result {
+function migrateNgSwitch(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  const lbString = etm.hasLineBreaks ? lb : '';
   const condition = etm.attr.value;
-  const startBlock = `@switch (${condition}) {`;
-  const lbString = hasLineBreaks ? lb : '';
 
-  const {openTag, closeTag, children} = getSwitchBlockElements(etm, tmpl, offset);
-  const cases = getSwitchCases(children, tmpl, offset, hasLineBreaks);
-  const switchBlock = openTag + startBlock + cases.join('') + `${lbString}}` + closeTag;
+  const originals = getOriginals(etm, tmpl, offset);
+
+  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+  const startBlock = `${start}${lbString}@switch (${condition}) {`;
+  const endBlock = `}${lbString}${end}`;
+
+  const switchBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + switchBlock + tmpl.slice(etm.end(offset));
-  const pre = etm.length() - switchBlock.length;
 
-  return {tmpl: updatedTmpl, offsets: {pre, post: 0}};
+  // this should be the difference between the starting element up to the start of the closing
+  // element and the mainblock sans }
+  const pre = originals.start.length - startBlock.length;
+  const post = originals.end.length - endBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
-function getSwitchBlockElements(etm: ElementToMigrate, tmpl: string, offset: number) {
-  const attrStart = etm.attr.keySpan!.start.offset - 1 - offset;
-  const valEnd = etm.attr.valueSpan!.end.offset + 1 - offset;
-  const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
-  const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
-  let openTag = (etm.el.name === 'ng-container') ?
-      '' :
-      tmpl.slice(etm.start(offset), attrStart) + tmpl.slice(valEnd, childStart);
-  if (tmpl.slice(childStart, childStart + 1) === lb) {
-    openTag += lb;
-  }
-  let closeTag = (etm.el.name === 'ng-container') ? '' : tmpl.slice(childEnd, etm.end(offset));
-  if (tmpl.slice(childEnd - 1, childEnd) === lb) {
-    closeTag = lb + closeTag;
-  }
-  return {
-    openTag,
-    closeTag,
-    children: etm.el.children,
-  };
+function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  // includes the mandatory semicolon before as
+  const lbString = etm.hasLineBreaks ? lb : '';
+  const lbSpaces = etm.hasLineBreaks ? '  ' : '';
+  const leadingSpace = etm.hasLineBreaks ? '' : ' ';
+  const condition = etm.attr.value;
+
+  const originals = getOriginals(etm, tmpl, offset);
+
+  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+  const startBlock =
+      `${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${lbSpaces}${start}`;
+  const endBlock = `${end}${lbString}${leadingSpace}}`;
+
+  const defaultBlock = startBlock + middle + endBlock;
+  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
+
+  // this should be the difference between the starting element up to the start of the closing
+  // element and the mainblock sans }
+  const pre = originals.start.length - startBlock.length;
+  const post = originals.end.length - endBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
-function getSwitchCases(children: Node[], tmpl: string, offset: number, hasLineBreaks: boolean) {
-  const collector = new CaseCollector();
-  visitAll(collector, children);
-  return collector.elements.map(etm => getSwitchCaseBlock(etm, tmpl, offset, hasLineBreaks));
-}
+function migrateNgSwitchDefault(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  // includes the mandatory semicolon before as
+  const lbString = etm.hasLineBreaks ? lb : '';
+  const lbSpaces = etm.hasLineBreaks ? '  ' : '';
+  const leadingSpace = etm.hasLineBreaks ? '' : ' ';
 
-function getSwitchCaseBlock(
-    etm: ElementToMigrate, tmpl: string, offset: number, hasLineBreaks: boolean): string {
-  let elStart = etm.el.sourceSpan?.start.offset - offset;
-  let elEnd = etm.el.sourceSpan?.end.offset - offset;
-  const lbString = hasLineBreaks ? '\n  ' : ' ';
-  const lbSpaces = hasLineBreaks ? '  ' : '';
-  let shift = 0;
+  const originals = getOriginals(etm, tmpl, offset);
 
-  if ((etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
-      etm.el.attrs.length === 1) {
-    // no need to keep the containers
-    elStart = etm.el.children[0].sourceSpan.start.offset - offset;
-    elEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
-    // account for the `>` that isn't needed
-    shift += 1;
-  }
+  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+  const startBlock = `${leadingSpace}@default {${leadingSpace}${lbString}${lbSpaces}${start}`;
+  const endBlock = `${end}${lbString}${leadingSpace}}`;
 
-  const attrStart = etm.attr.keySpan!.start.offset - 1 - offset + shift;
-  // ngSwitchDefault case has no valueSpan and relies on the end of the key
-  if (etm.attr.name === '*ngSwitchDefault' || etm.attr.name === 'ngSwitchDefault') {
-    const attrEnd = etm.attr.keySpan!.end.offset - offset + shift;
-    return `${lbString}@default {${lbString}${lbSpaces}${
-        tmpl.slice(elStart, attrStart) + tmpl.slice(attrEnd, elEnd)}${lbString}}`;
-  }
-  // ngSwitchCase has a valueSpan
-  let valEnd = etm.attr.valueSpan!.end.offset + 1 - offset + shift;
-  return `${lbString}@case (${etm.attr.value}) {${lbString}${lbSpaces}${
-      tmpl.slice(elStart, attrStart) + tmpl.slice(valEnd, elEnd)}${lbString}}`;
+  const defaultBlock = startBlock + middle + endBlock;
+  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
+
+  // this should be the difference between the starting element up to the start of the closing
+  // element and the mainblock sans }
+  const pre = originals.start.length - startBlock.length;
+  const post = originals.end.length - endBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
 /** Executes a callback on each class declaration in a file. */
