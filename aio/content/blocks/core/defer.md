@@ -55,3 +55,4 @@ Configures prefetching of the defer block used in the `@defer` parameters, but d
 }
 ```
 
+Learn more in the [defer loading guide](guide/defer).

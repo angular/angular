@@ -341,6 +341,7 @@ groups:
           'aio/content/special-elements/**/{*,.*}',
           'aio/content/blocks/**/{*,.*}',
           'aio/content/guide/hydration.md',
+          'aio/content/guide/defer.md',
           'aio/content/guide/signals.md',
           'aio/content/guide/control_flow.md',
           'aio/content/examples/injection-token/**/{*,.*}',
