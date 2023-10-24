@@ -100,6 +100,20 @@ describe('navigateForTest', () => {
        await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
      });
 
+  it('throws an error if navigation fails but expected a component instance', async () => {
+    @Component({standalone: true, template: ''})
+    class TestCmp {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: '**', canActivate: [() => false], component: TestCmp}]),
+      ]
+    });
+    const harness = await RouterTestingHarness.create();
+    await expectAsync(harness.navigateByUrl('/123', TestCmp)).toBeRejected();
+  });
+
   it('waits for redirects using router.navigate', async () => {
     @Component({standalone: true, template: 'test'})
     class TestCmp {
