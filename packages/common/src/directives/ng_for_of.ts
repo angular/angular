@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, TrackByProperty, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -126,6 +126,9 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * To avoid this expensive operation, you can customize the default tracking algorithm.
  * by supplying the `trackBy` option to `NgForOf`.
  * `trackBy` takes a function that has two arguments: `index` and `item`.
+ * Alternatively, you can also pass a string to trackBy, representing a property key,
+ * which will automatically “pluck” values from the items. For example, instead of using
+ * a function defined as `(index, item) => item.id`, you can simply use the string `'id'`.
  * If `trackBy` is given, Angular tracks changes by the return value of the function.
  *
  * @see [Structural Directives](guide/structural-directives)
@@ -165,13 +168,17 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * @see {@link TrackByFunction}
    */
   @Input()
-  set ngForTrackBy(fn: TrackByFunction<T>) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
+  set ngForTrackBy(dfn: TrackByFunction<T> | TrackByProperty<T>) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && dfn != null && typeof dfn !== 'function' && typeof dfn !== 'string') {
       console.warn(
-          `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
+          `trackBy must be a function or a string, but received ${JSON.stringify(dfn)}. ` +
           `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
     }
-    this._trackByFn = fn;
+    if (typeof dfn === 'function') {
+      this._trackByFn = dfn;
+    } else {
+      this._trackByFn = (_, item) => item[dfn];
+    }
   }
 
   get ngForTrackBy(): TrackByFunction<T> {

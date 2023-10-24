@@ -28,6 +28,7 @@ import { Subscribable } from 'rxjs';
 import { SubscriptionLike } from 'rxjs';
 import { TemplateRef } from '@angular/core';
 import { TrackByFunction } from '@angular/core';
+import { TrackByProperty } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
@@ -521,7 +522,7 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     ngDoCheck(): void;
     set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
-    set ngForTrackBy(fn: TrackByFunction<T>);
+    set ngForTrackBy(dfn: TrackByFunction<T> | TrackByProperty<T>);
     // (undocumented)
     get ngForTrackBy(): TrackByFunction<T>;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;

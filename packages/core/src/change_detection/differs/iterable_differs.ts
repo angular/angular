@@ -172,6 +172,18 @@ export interface TrackByFunction<T> {
 }
 
 /**
+ * An alternative way to provide the {@link TrackByFunction} to the {@link NgForOf} directive.
+ *
+ * The string represents a property key, which will automatically “pluck” values from the items.
+ * For example, instead of using a function defined as `(index, item) => item.id`, you can
+ * simply use the string `'id'`.
+ *
+ * @see [`NgForOf#ngForTrackBy`](api/common/NgForOf#ngForTrackBy)
+ * @publicApi
+ */
+export type TrackByProperty<T> = string & keyof T
+
+/**
  * Provides a factory for {@link IterableDiffer}.
  *
  * @publicApi

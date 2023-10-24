@@ -305,7 +305,7 @@ describe('ngFor', () => {
      }));
 
   describe('track by', () => {
-    it('should console.warn if trackBy is not a function', waitForAsync(() => {
+    it('should console.warn if trackBy is not a function or a string', waitForAsync(() => {
          // TODO(vicb): expect a warning message when we have a proper log service
          const template = `<p *ngFor="let item of items; trackBy: value"></p>`;
          fixture = createTestComponent(template);
@@ -336,6 +336,22 @@ describe('ngFor', () => {
     it('should not replace tracked items', waitForAsync(() => {
          const template =
              `<p *ngFor="let item of items; trackBy: trackById; let i=index">{{items[i]}}</p>`;
+         fixture = createTestComponent(template);
+
+         const buildItemList = () => {
+           getComponent().items = [{'id': 'a'}];
+           fixture.detectChanges();
+           return fixture.debugElement.queryAll(By.css('p'))[0];
+         };
+
+         const firstP = buildItemList();
+         const finalP = buildItemList();
+         expect(finalP.nativeElement).toBe(firstP.nativeElement);
+       }));
+
+    it('should not replace tracked items via string', waitForAsync(() => {
+         const template =
+           `<p *ngFor="let item of items; trackBy: trackByIdString; let i=index">{{items[i]}}</p>`;
          fixture = createTestComponent(template);
 
          const buildItemList = () => {
@@ -438,6 +454,7 @@ class TestComponent {
   trackById(index: number, item: any): string {
     return item['id'];
   }
+  trackByIdString = 'id' as const
   trackByIndex(index: number, item: any): number {
     return index;
   }

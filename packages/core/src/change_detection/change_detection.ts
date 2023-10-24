@@ -17,7 +17,7 @@ export {ChangeDetectorRef} from './change_detector_ref';
 export {ChangeDetectionStrategy} from './constants';
 export {DefaultIterableDiffer, DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 export {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-export {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, IterableDiffers, NgIterable, TrackByFunction} from './differs/iterable_differs';
+export {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, IterableDiffers, NgIterable, TrackByFunction, TrackByProperty} from './differs/iterable_differs';
 export {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
 
