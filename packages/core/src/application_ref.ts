@@ -1288,7 +1288,7 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
  * `BootstrapOptions` instead.
  *
  * @usageNotes
- * ```typescript=
+ * ```typescript
  * bootstrapApplication(MyApp, {providers: [
  *   provideZoneChangeDetection({eventCoalescing: true}),
  * ]});
