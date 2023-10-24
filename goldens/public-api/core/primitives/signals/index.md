@@ -105,9 +105,6 @@ export interface SignalGetter<T> extends SignalBaseGetter<T> {
 }
 
 // @public (undocumented)
-export function signalMutateFn<T>(node: SignalNode<T>, mutator: (value: T) => void): void;
-
-// @public (undocumented)
 export interface SignalNode<T> extends ReactiveNode {
     // (undocumented)
     equal: ValueEqualityFn<T>;
