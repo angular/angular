@@ -33,6 +33,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BODY"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -187,6 +190,9 @@
   },
   {
     "name": "HAS_TRANSPLANTED_VIEWS"
+  },
+  {
+    "name": "HEADERS"
   },
   {
     "name": "HTTP_ROOT_INTERCEPTOR_FNS"
@@ -399,6 +405,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "RESPONSE_TYPE"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -424,6 +433,12 @@
   },
   {
     "name": "SKIP_HYDRATION_ATTR_NAME_LOWER_CASE"
+  },
+  {
+    "name": "STATUS"
+  },
+  {
+    "name": "STATUS_TEXT"
   },
   {
     "name": "SafeSubscriber"
@@ -499,6 +514,9 @@
   },
   {
     "name": "TransferState"
+  },
+  {
+    "name": "URL2"
   },
   {
     "name": "USE_VALUE"
