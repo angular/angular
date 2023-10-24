@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {extractEnum} from '@angular/compiler-cli/src/ngtsc/docs/src/enum_extractor';
-import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
 import ts from 'typescript';
 
 import {MetadataReader} from '../../metadata';
@@ -15,8 +13,11 @@ import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflectio
 
 import {extractClass, extractInterface} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
+import {extractorDecorator, isDecoratorDeclaration, isDecoratorOptionsInterface} from './decorator_extractor';
 import {DocEntry} from './entities';
+import {extractEnum} from './enum_extractor';
 import {isAngularPrivateName} from './filters';
+import {FunctionExtractor} from './function_extractor';
 import {extractTypeAlias} from './type_alias_extractor';
 
 type DeclarationWithExportName = readonly[string, ts.Declaration];
@@ -60,7 +61,7 @@ export class DocsExtractor {
       return extractClass(node, this.metadataReader, this.typeChecker);
     }
 
-    if (ts.isInterfaceDeclaration(node)) {
+    if (ts.isInterfaceDeclaration(node) && !isIgnoredInterface(node)) {
       return extractInterface(node, this.typeChecker);
     }
 
@@ -70,7 +71,8 @@ export class DocsExtractor {
     }
 
     if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
-      return extractConstant(node, this.typeChecker);
+      return isDecoratorDeclaration(node) ? extractorDecorator(node, this.typeChecker) :
+                                            extractConstant(node, this.typeChecker);
     }
 
     if (ts.isTypeAliasDeclaration(node)) {
@@ -117,4 +119,14 @@ export class DocsExtractor {
     return exportedDeclarations.sort(
         ([a, declarationA], [b, declarationB]) => declarationA.pos - declarationB.pos);
   }
+}
+
+/** Gets whether an interface should be ignored for docs extraction. */
+function isIgnoredInterface(node: ts.InterfaceDeclaration) {
+  // We filter out all interfaces that end with "Decorator" because we capture their
+  // types as part of the main decorator entry (which are declared as constants).
+  // This approach to dealing with decorators is admittedly fuzzy, but this aspect of
+  // the framework's source code is unlikely to change. We also filter out the interfaces
+  // that contain the decorator options.
+  return node.name.getText().endsWith('Decorator') || isDecoratorOptionsInterface(node);
 }
