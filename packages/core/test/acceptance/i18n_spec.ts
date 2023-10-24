@@ -2488,6 +2488,8 @@ describe('runtime i18n', () => {
 
       // Create embedded view
       q.create();
+      // TODO: investigate why this needs two change detections to work correctly (and fix it)
+      fixture.detectChanges();
       fixture.detectChanges();
       expect(q.query.length).toEqual(1);
       expect(toHtml(fixture.nativeElement))
@@ -2495,6 +2497,7 @@ describe('runtime i18n', () => {
 
       // Disable ng-if
       fixture.componentInstance.visible = false;
+      fixture.detectChanges();
       fixture.detectChanges();
       expect(q.query.length).toEqual(0);
       expect(toHtml(fixture.nativeElement))

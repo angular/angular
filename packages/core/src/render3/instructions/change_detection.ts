@@ -198,14 +198,14 @@ export function refreshView<T>(
     markTransplantedViewsForRefresh(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
-    // Content query results must be refreshed before content hooks are called.
-    if (tView.contentQueries !== null) {
-      refreshContentQueries(tView, lView);
-    }
-
-    // execute content hooks (AfterContentInit, AfterContentChecked)
-    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
+      // Content query results must be refreshed before content hooks are called.
+      if (tView.contentQueries !== null) {
+        refreshContentQueries(tView, lView);
+      }
+
+      // execute content hooks (AfterContentInit, AfterContentChecked)
+      // PERF WARNING: do NOT extract this to a separate function without running benchmarks
       if (hooksInitPhaseCompleted) {
         const contentCheckHooks = tView.contentCheckHooks;
         if (contentCheckHooks !== null) {
@@ -229,17 +229,17 @@ export function refreshView<T>(
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Global);
     }
 
-    // View queries must execute after refreshing child components because a template in this view
-    // could be inserted in a child component. If the view query executes before child component
-    // refresh, the template might not yet be inserted.
-    const viewQuery = tView.viewQuery;
-    if (viewQuery !== null) {
-      executeViewQueryFn<T>(RenderFlags.Update, viewQuery, context);
-    }
-
-    // execute view hooks (AfterViewInit, AfterViewChecked)
-    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
+      // View queries must execute after refreshing child components because a template in this view
+      // could be inserted in a child component. If the view query executes before child component
+      // refresh, the template might not yet be inserted.
+      const viewQuery = tView.viewQuery;
+      if (viewQuery !== null) {
+        executeViewQueryFn<T>(RenderFlags.Update, viewQuery, context);
+      }
+
+      // execute view hooks (AfterViewInit, AfterViewChecked)
+      // PERF WARNING: do NOT extract this to a separate function without running benchmarks
       if (hooksInitPhaseCompleted) {
         const viewCheckHooks = tView.viewCheckHooks;
         if (viewCheckHooks !== null) {
