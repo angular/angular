@@ -35,13 +35,31 @@ export type HttpTransferCacheOptions = {
   includePostRequests?: boolean
 };
 
+/**
+ * Keys within cached response data structure.
+ */
+
+export const BODY = 'b';
+export const HEADERS = 'h';
+export const STATUS = 's';
+export const STATUS_TEXT = 'st';
+export const URL = 'u';
+export const RESPONSE_TYPE = 'rt';
+
+
 interface TransferHttpResponse {
-  body: any;
-  headers: Record<string, string[]>;
-  status?: number;
-  statusText?: string;
-  url?: string;
-  responseType?: HttpRequest<unknown>['responseType'];
+  /** body */
+  [BODY]: any;
+  /** headers */
+  [HEADERS]: Record<string, string[]>;
+  /** status */
+  [STATUS]?: number;
+  /** statusText */
+  [STATUS_TEXT]?: string;
+  /** url */
+  [URL]?: string;
+  /** responseType */
+  [RESPONSE_TYPE]?: HttpRequest<unknown>['responseType'];
 }
 
 interface CacheOptions extends HttpTransferCacheOptions {
@@ -82,22 +100,30 @@ export function transferCacheInterceptorFn(
   }
 
   if (response) {
+    const {
+      [BODY]: undecodedBody,
+      [RESPONSE_TYPE]: responseType,
+      [HEADERS]: httpHeaders,
+      [STATUS]: status,
+      [STATUS_TEXT]: statusText,
+      [URL]: url
+    } = response;
     // Request found in cache. Respond using it.
-    let body: ArrayBuffer|Blob|string|undefined = response.body;
+    let body: ArrayBuffer|Blob|string|undefined = undecodedBody;
 
-    switch (response.responseType) {
+    switch (responseType) {
       case 'arraybuffer':
-        body = new TextEncoder().encode(response.body).buffer;
+        body = new TextEncoder().encode(undecodedBody).buffer;
         break;
       case 'blob':
-        body = new Blob([response.body]);
+        body = new Blob([undecodedBody]);
         break;
     }
 
     // We want to warn users accessing a header provided from the cache
     // That HttpTransferCache alters the headers
     // The warning will be logged a single time by HttpHeaders instance
-    let headers = new HttpHeaders(response.headers);
+    let headers = new HttpHeaders(httpHeaders);
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       // Append extra logic in dev mode to produce a warning when a header
       // that was not transferred to the client is accessed in the code via `get`
@@ -110,9 +136,9 @@ export function transferCacheInterceptorFn(
         new HttpResponse({
           body,
           headers,
-          status: response.status,
-          statusText: response.statusText,
-          url: response.url,
+          status,
+          statusText,
+          url,
         }),
     );
   }
@@ -123,12 +149,12 @@ export function transferCacheInterceptorFn(
       tap((event: HttpEvent<unknown>) => {
         if (event instanceof HttpResponse) {
           transferState.set<TransferHttpResponse>(storeKey, {
-            body: event.body,
-            headers: getFilteredHeaders(event.headers, headersToInclude),
-            status: event.status,
-            statusText: event.statusText,
-            url: event.url || '',
-            responseType: req.responseType,
+            [BODY]: event.body,
+            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
+            [STATUS]: event.status,
+            [STATUS_TEXT]: event.statusText,
+            [URL]: event.url || '',
+            [RESPONSE_TYPE]: req.responseType,
           });
         }
       }),

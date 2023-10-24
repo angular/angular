@@ -14,7 +14,7 @@ import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
-import {withHttpTransferCache} from '../src/transfer_cache';
+import {BODY, HEADERS, RESPONSE_TYPE, STATUS, STATUS_TEXT, URL, withHttpTransferCache} from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 interface RequestParams {
@@ -84,7 +84,7 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test', 'foo');
       const key = makeStateKey('432906284');
       const transferState = TestBed.inject(TransferState);
-      expect(transferState.get(key, null)).toEqual(jasmine.objectContaining({body: 'foo'}));
+      expect(transferState.get(key, null)).toEqual(jasmine.objectContaining({[BODY]: 'foo'}));
     });
 
     it('should stop storing HTTP calls in `TransferState` after application becomes stable',
@@ -101,20 +101,20 @@ describe('TransferCache', () => {
          const transferState = TestBed.inject(TransferState);
          expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
            '3706062792': {
-             'body': 'foo',
-             'headers': {},
-             'status': 200,
-             'statusText': 'OK',
-             'url': '/test-1',
-             'responseType': 'json'
+             [BODY]: 'foo',
+             [HEADERS]: {},
+             [STATUS]: 200,
+             [STATUS_TEXT]: 'OK',
+             [URL]: '/test-1',
+             [RESPONSE_TYPE]: 'json'
            },
            '3706062823': {
-             'body': 'buzz',
-             'headers': {},
-             'status': 200,
-             'statusText': 'OK',
-             'url': '/test-2',
-             'responseType': 'json'
+             [BODY]: 'buzz',
+             [HEADERS]: {},
+             [STATUS]: 200,
+             [STATUS_TEXT]: 'OK',
+             [URL]: '/test-2',
+             [RESPONSE_TYPE]: 'json'
            }
          });
        }));
