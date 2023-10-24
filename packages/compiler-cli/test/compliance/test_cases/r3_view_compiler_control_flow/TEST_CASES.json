@@ -62,13 +62,13 @@
           "files": [
             {
               "expected": "switch_with_pipe_template.js",
-              "generated": "switch_with_pipe.js"
+              "generated": "switch_with_pipe.js",
+              "templatePipelineExpected": "switch_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic if block",
@@ -148,13 +148,13 @@
           "files": [
             {
               "expected": "if_with_pipe_template.js",
-              "generated": "if_with_pipe.js"
+              "generated": "if_with_pipe.js",
+              "templatePipelineExpected": "if_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate an if block with an aliased expression",
