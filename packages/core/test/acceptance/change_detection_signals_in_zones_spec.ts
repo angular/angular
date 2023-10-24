@@ -7,7 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {ChangeDetectionStrategy,inject, ChangeDetectorRef, Component, Directive, Input, signal, untracked, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, signal, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {

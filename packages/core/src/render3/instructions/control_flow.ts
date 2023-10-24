@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {TrackByFunction} from '../../change_detection';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
@@ -48,22 +50,27 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
   const viewInContainerIdx = 0;
 
   if (bindingUpdated(hostLView, bindingIndex, matchingTemplateIndex)) {
-    // The index of the view to show changed - remove the previously displayed one
-    // (it is a noop if there are no active views in a container).
-    removeLViewFromLContainer(lContainer, viewInContainerIdx);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      // The index of the view to show changed - remove the previously displayed one
+      // (it is a noop if there are no active views in a container).
+      removeLViewFromLContainer(lContainer, viewInContainerIdx);
 
-    // Index -1 is a special case where none of the conditions evaluates to
-    // a truthy value and as the consequence we've got no view to show.
-    if (matchingTemplateIndex !== -1) {
-      const templateTNode = getExistingTNode(hostLView[TVIEW], matchingTemplateIndex);
+      // Index -1 is a special case where none of the conditions evaluates to
+      // a truthy value and as the consequence we've got no view to show.
+      if (matchingTemplateIndex !== -1) {
+        const templateTNode = getExistingTNode(hostLView[TVIEW], matchingTemplateIndex);
 
-      const dehydratedView = findMatchingDehydratedView(lContainer, templateTNode.tView!.ssrId);
-      const embeddedLView =
-          createAndRenderEmbeddedLView(hostLView, templateTNode, value, {dehydratedView});
+        const dehydratedView = findMatchingDehydratedView(lContainer, templateTNode.tView!.ssrId);
+        const embeddedLView =
+            createAndRenderEmbeddedLView(hostLView, templateTNode, value, {dehydratedView});
 
-      addLViewToLContainer(
-          lContainer, embeddedLView, viewInContainerIdx,
-          shouldAddViewToDom(templateTNode, dehydratedView));
+        addLViewToLContainer(
+            lContainer, embeddedLView, viewInContainerIdx,
+            shouldAddViewToDom(templateTNode, dehydratedView));
+      }
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
   } else {
     // We might keep displaying the same template but the actual value of the expression could have
@@ -238,46 +245,51 @@ class LiveCollectionLContainerImpl extends
  */
 export function ɵɵrepeater(
     metadataSlotIdx: number, collection: Iterable<unknown>|undefined|null): void {
-  const hostLView = getLView();
-  const hostTView = hostLView[TVIEW];
-  const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
+  const prevConsumer = setActiveConsumer(null);
+  try {
+    const hostLView = getLView();
+    const hostTView = hostLView[TVIEW];
+    const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
 
-  if (metadata.liveCollection === undefined) {
-    const containerIndex = metadataSlotIdx + 1;
-    const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
-    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
-    metadata.liveCollection =
-        new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
-  } else {
-    metadata.liveCollection.reset();
-  }
+    if (metadata.liveCollection === undefined) {
+      const containerIndex = metadataSlotIdx + 1;
+      const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+      const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
+      metadata.liveCollection =
+          new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
+    } else {
+      metadata.liveCollection.reset();
+    }
 
-  const liveCollection = metadata.liveCollection;
-  reconcile(liveCollection, collection, metadata.trackByFn);
+    const liveCollection = metadata.liveCollection;
+    reconcile(liveCollection, collection, metadata.trackByFn);
 
-  // moves in the container might caused context's index to get out of order, re-adjust if needed
-  liveCollection.updateIndexes();
+    // moves in the container might caused context's index to get out of order, re-adjust if needed
+    liveCollection.updateIndexes();
 
-  // handle empty blocks
-  if (metadata.hasEmptyBlock) {
-    const bindingIndex = nextBindingIndex();
-    const isCollectionEmpty = liveCollection.length === 0;
-    if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
-      const emptyTemplateIndex = metadataSlotIdx + 2;
-      const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
-      if (isCollectionEmpty) {
-        const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-        const dehydratedView =
-            findMatchingDehydratedView(lContainerForEmpty, emptyTemplateTNode.tView!.ssrId);
-        const embeddedLView = createAndRenderEmbeddedLView(
-            hostLView, emptyTemplateTNode, undefined, {dehydratedView});
-        addLViewToLContainer(
-            lContainerForEmpty, embeddedLView, 0,
-            shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
-      } else {
-        removeLViewFromLContainer(lContainerForEmpty, 0);
+    // handle empty blocks
+    if (metadata.hasEmptyBlock) {
+      const bindingIndex = nextBindingIndex();
+      const isCollectionEmpty = liveCollection.length === 0;
+      if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
+        const emptyTemplateIndex = metadataSlotIdx + 2;
+        const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
+        if (isCollectionEmpty) {
+          const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
+          const dehydratedView =
+              findMatchingDehydratedView(lContainerForEmpty, emptyTemplateTNode.tView!.ssrId);
+          const embeddedLView = createAndRenderEmbeddedLView(
+              hostLView, emptyTemplateTNode, undefined, {dehydratedView});
+          addLViewToLContainer(
+              lContainerForEmpty, embeddedLView, 0,
+              shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
+        } else {
+          removeLViewFromLContainer(lContainerForEmpty, 0);
+        }
       }
     }
+  } finally {
+    setActiveConsumer(prevConsumer);
   }
 }
 
