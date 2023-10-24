@@ -85,15 +85,15 @@
           "configurations": {
             // #enddocregion build-single-locale
             "production": {
-              "browserTarget": "angular.io-example:build:production"
+              "buildTarget": "angular.io-example:build:production"
             },
             // #enddocregion build-production-french
             "development": {
-              "browserTarget": "angular.io-example:build:development"
+              "buildTarget": "angular.io-example:build:development"
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
-              "browserTarget": "angular.io-example:build:development,fr"
+              "buildTarget": "angular.io-example:build:development,fr"
             }
           },
           // #enddocregion build-single-locale, build-production-french
@@ -104,7 +104,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular.io-example:build"
+            "buildTarget": "angular.io-example:build"
           }
         },
         "test": {

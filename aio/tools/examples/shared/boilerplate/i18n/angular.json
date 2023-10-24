@@ -66,13 +66,13 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "angular.io-example:build:production"
+              "buildTarget": "angular.io-example:build:production"
             },
             "development": {
-              "browserTarget": "angular.io-example:build:development"
+              "buildTarget": "angular.io-example:build:development"
             },
             "fr": {
-              "browserTarget": "angular.io-example:build:fr"
+              "buildTarget": "angular.io-example:build:fr"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular.io-example:build"
+            "buildTarget": "angular.io-example:build"
           }
         },
         "test": {
