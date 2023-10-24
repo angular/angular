@@ -53,14 +53,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "addOneButton:build"
+            "buildTarget": "addOneButton:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "addOneButton:build:production"
+              "buildTarget": "addOneButton:build:production"
             },
             "development": {
-              "browserTarget": "addOneButton:build:development"
+              "buildTarget": "addOneButton:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -68,7 +68,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "addOneButton:build"
+            "buildTarget": "addOneButton:build"
           }
         },
         "test": {
