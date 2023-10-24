@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignal, SIGNAL, SignalGetter, signalMutateFn, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
+import {createSignal, SIGNAL, SignalGetter, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
 
 import {Signal, ValueEqualityFn} from './api';
 
