@@ -58,6 +58,10 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
 
       // Save the resulting aggregate Joost-expression.
       op.processed = test;
+
+      // Clear the original conditions array, since we no longer need it, and don't want it to
+      // affect subsequent phases (e.g. pipe creation).
+      op.conditions = [];
     }
   }
 }
