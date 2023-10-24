@@ -155,8 +155,8 @@ export function migrateTemplate(template: string): {migrated: string|null, error
   let offset = 0;
   let nestLevel = -1;
   let postOffsets: number[] = [];
-  let migrateResult: Result = {tmpl: result, offsets: {pre: 0, post: 0}};
   for (const el of visitor.elements) {
+    let migrateResult: Result = {tmpl: result, offsets: {pre: 0, post: 0}};
     // applies the post offsets after closing
     if (el.nestCount <= nestLevel) {
       const count = nestLevel - el.nestCount;
@@ -189,7 +189,6 @@ export function migrateTemplate(template: string): {migrated: string|null, error
     result = migrateResult.tmpl;
     offset += migrateResult.offsets.pre;
     postOffsets.push(migrateResult.offsets.post);
-    const nm = el.el.name;
     nestLevel = el.nestCount;
   }
 

@@ -1798,7 +1798,66 @@ describe('control flow migration', () => {
     });
   });
 
-  describe('template removal', () => {
+  describe('template', () => {
+    it('should migrate a root level template thats not used in control flow', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: './comp.html'
+        })
+        class DeclareComp {
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div class="content">`,
+        `  <ng-container *ngTemplateOutlet="navigation" />`,
+        `  <ng-container *ngIf="content()">`,
+        `    <div class="class-1"></div>`,
+        `  </ng-container>`,
+        `</div>`,
+        `<ng-template #navigation>`,
+        `  <div class="cont">`,
+        `      <button`,
+        `        *ngIf="shouldShowMe()"`,
+        `        class="holy-classname-batman"`,
+        `      >`,
+        `        Wow...a button!`,
+        `      </button>`,
+        `  </div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+
+      const content = tree.readContent('/comp.html');
+      const result = [
+        `<div class="content">`,
+        `  <ng-container *ngTemplateOutlet="navigation" />`,
+        `  @if (content()) {\n`,
+        `    <div class="class-1"></div>\n  `,
+        `}`,
+        `</div>`,
+        `<ng-template #navigation>`,
+        `  <div class="cont">`,
+        `      @if (shouldShowMe()) {`,
+        `<button\n       `,
+        `        class="holy-classname-batman"`,
+        `      >`,
+        `        Wow...a button!`,
+        `      </button>`,
+        `}`,
+        `  </div>`,
+        `</ng-template>`,
+
+      ].join('\n');
+
+      expect(content).toBe(result);
+    });
+
     it('should not remove a template thats not used in control flow', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
