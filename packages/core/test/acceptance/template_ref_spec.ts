@@ -63,7 +63,9 @@ describe('TemplateRef', () => {
               <menu-content #menu="menuContent">
                 <button>Item one</button>
                 <button>Item two</button>
-                <ng-template [ngIf]="true"><button>Item three</button></ng-template>
+                @if (true) {
+<ng-template><button>Item three</button></ng-template>
+}
               </menu-content>
             `
       })

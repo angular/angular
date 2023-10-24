@@ -523,13 +523,16 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-cmp',
         template: `
-              <div *ngIf="isLogged; else notLoggedIn">
+              @if (isLogged) {
+<div>
                 <span>Logged in</span>
               </div>
-              <ng-template #notLoggedIn i18n>
+} @else {
+
                 <a myDir>Not logged in</a>
-              </ng-template>
-            `,
+              
+}
+                          `,
       })
       class Cmp {
         isLogged = false;
@@ -1125,12 +1128,14 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-app',
         template: `
-            <my-cmp i18n="test" *ngIf="condition">{
+            @if (condition) {
+<my-cmp i18n="test">{
               count,
               plural,
               =1 {ONE}
               other {OTHER}
             }</my-cmp>
+}
           `,
       })
       class App {
@@ -1256,14 +1261,19 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'comp',
         template: `
-        <ng-container [ngSwitch]="visible">
-          <ng-container *ngSwitchCase="isVisible()" i18n>
+        
+@switch (visible) {
+  @case (isVisible()) {
+    <ng-container i18n>
             {type, select, A { A } B { B } other { C }}
           </ng-container>
-          <ng-container *ngSwitchCase="!isVisible()" i18n>
+  }
+  @case (!isVisible()) {
+    <ng-container i18n>
             {type, select, A1 { A1 } B1 { B1 } other { C1 }}
           </ng-container>
-        </ng-container>
+  }
+}
       `,
       })
       class Comp {
@@ -1348,10 +1358,12 @@ describe('runtime i18n', () => {
           }
           </ng-template>
 
-          <div *ngFor="let type of types">
+          @for (type of types; track type) {
+  <div>
             <ng-container *ngTemplateOutlet="myTemp; context: {$implicit: type}">
             </ng-container>
           </div>
+}
         `
       })
       class AppComponent {
@@ -1705,7 +1717,9 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-cmp',
         template: `
-          <button *ngIf="true" i18n-title title="Hello"></button>
+          @if (true) {
+<button i18n-title title="Hello"></button>
+}
         `,
       })
       class Cmp {
@@ -1730,7 +1744,9 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-cmp',
         template: `
-          <div *ngIf="true" i18n-title title="Hello"></div>
+          @if (true) {
+<div i18n-title title="Hello"></div>
+}
         `,
       })
       class Cmp {
@@ -1789,7 +1805,7 @@ describe('runtime i18n', () => {
 
          @Component({
            selector: 'my-app',
-           template: '<ng-template *ngIf="true" i18n-dir dir="Hello {{ name }}"></ng-template>',
+           template: '@if (true) {<ng-template i18n-dir dir="Hello {{ name }}"></ng-template>}',
          })
          class TestComp {
            name = 'Angular';
@@ -2400,7 +2416,9 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-app',
         template: `
-          <app i18n *ngIf="condition">{type, select, A {A} B {B} other {other}}</app>
+          @if (condition) {
+<app i18n>{type, select, A {A} B {B} other {other}}</app>
+}
         `
       })
       class MyApp {
@@ -2615,9 +2633,11 @@ describe('runtime i18n', () => {
     @Component({
       template: `
       <div dialog i18n>
-          <div *ngIf="data">
+          @if (data) {
+<div>
               Some content
           </div>
+}
       </div>
       <button [close]="true">Button label</button>
   `
@@ -2744,7 +2764,8 @@ describe('runtime i18n', () => {
     // NOTE: This test is extracted from g3.
     @Component({
       template: `
-            <h1 class="num-cart-items" i18n *ngIf="true">{
+            @if (true) {
+<h1 class="num-cart-items" i18n>{
               registerItemCount, plural,
               =0 {Your cart}
               =1 {Your cart <span class="item-count">(1 item)</span>}
@@ -2753,7 +2774,8 @@ describe('runtime i18n', () => {
                   registerItemCount
                 }} items)</span>
               }
-          }</h1>`
+          }</h1>
+}`
     })
     class MyApp {
       registerItemCount = 1;
@@ -2846,10 +2868,14 @@ describe('runtime i18n', () => {
     // NOTE: This test is extracted from g3.
     @Component({
       template: `
-      <div *ngFor="let i of [1,2]">
-        <ng-template #tmpl i18n><span *ngIf="true">X</span></ng-template>
+      @for (i of [1,2]; track i) {
+  <div>
+        <ng-template #tmpl i18n><span *@if (true) {
+ngIf=n></ng-te
+}mplate>
         <span [ngTemplateOutlet]="tmpl"></span>
-      </div>`
+      </div>
+}`
     })
     class MyApp {
     }
@@ -2866,7 +2892,8 @@ describe('runtime i18n', () => {
     // NOTE: This test is extracted from g3.
     @Component({
       template: `
-        <ng-container *ngFor="let index of [1, 2]">
+        @for (index of [1, 2]; track index) {
+  
           {{'['}}
           {index, plural, =1 {1} other {*}}
           {index, plural, =1 {one} other {many}}
@@ -2875,9 +2902,11 @@ describe('runtime i18n', () => {
           {{'-'}}
           {index, plural, =1 {first} other {rest}}
           {{']'}}
-        </ng-container>
+        
+}
         /
-        <ng-container *ngFor="let index of [1, 2]" i18n>
+        @for (index of [1, 2]; track index) {
+  <ng-container i18n>
           {{'['}}
           {index, plural, =1 {1} other {*}}
           {index, plural, =1 {one} other {many}}
@@ -2887,6 +2916,7 @@ describe('runtime i18n', () => {
           {index, plural, =1 {first} other {rest}}
           {{']'}}
         </ng-container>
+}
       `
     })
     class MyApp {
@@ -2982,11 +3012,13 @@ describe('runtime i18n', () => {
     @Component({
       template: `
       <ul i18n>
-        <li *ngFor="let item of items">{
+        @for (item of items; track item) {
+  <li>{
           item, plural,
           =1 {<b>one</b>}
           =2 {<i>two</i>}
       },</li>
+}
       </ul>`
     })
     class MyApp {

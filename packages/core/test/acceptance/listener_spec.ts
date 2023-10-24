@@ -554,7 +554,9 @@ describe('event listeners', () => {
       @Component({
         selector: 'my-comp',
         template: `
-          <button *ngIf="visible" (click)="count()">Click me!</button>
+          @if (visible) {
+<button (click)="count()">Click me!</button>
+}
         `,
       })
       class MyComp {
@@ -587,7 +589,9 @@ describe('event listeners', () => {
       @Component({
         selector: 'my-comp',
         template: `
-          <button *ngFor="let button of buttons" (click)="count()">Click me!</button>
+          @for (button of buttons; track button) {
+  <button (click)="count()">Click me!</button>
+}
         `,
       })
       class MyComp {
@@ -620,10 +624,14 @@ describe('event listeners', () => {
       @Component({
         selector: 'my-comp',
         template: `
-          <ng-container *ngIf="isSectionVisible">
+          @if (isSectionVisible) {
+
             Click to submit a form:
-            <button *ngIf="isButtonVisible" (click)="count()">Click me!</button>
-          </ng-container>
+            @if (isButtonVisible) {
+<button (click)="count()">Click me!</button>
+}
+          
+}
         `,
       })
       class MyComp {

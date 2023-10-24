@@ -192,7 +192,9 @@ describe('renderer factory lifecycle', () => {
       imports: [CommonModule],
       template: `
         <div>Root view</div>
-        <div *ngIf="visible">Child view</div>
+        @if (visible) {
+<div>Child view</div>
+}
       `,
     })
     class Comp {
@@ -393,9 +395,15 @@ describe('Renderer2 destruction hooks', () => {
   @Component({
     selector: 'some-component',
     template: `
-      <span *ngIf="isContentVisible">A</span>
-      <span *ngIf="isContentVisible">B</span>
-      <span *ngIf="isContentVisible">C</span>
+      @if (isContentVisible) {
+<span>A</span>
+}
+      @if (isContentVisible) {
+<span>B</span>
+}
+      @if (isContentVisible) {
+<span>C</span>
+}
     `,
   })
   class SimpleApp {
@@ -412,9 +420,15 @@ describe('Renderer2 destruction hooks', () => {
   @Component({
     selector: 'some-component',
     template: `
-      <basic-comp *ngIf="isContentVisible">A</basic-comp>
-      <basic-comp *ngIf="isContentVisible">B</basic-comp>
-      <basic-comp *ngIf="isContentVisible">C</basic-comp>
+      @if (isContentVisible) {
+<basic-comp>A</basic-comp>
+}
+      @if (isContentVisible) {
+<basic-comp>B</basic-comp>
+}
+      @if (isContentVisible) {
+<basic-comp>C</basic-comp>
+}
     `,
   })
   class AppWithComponents {

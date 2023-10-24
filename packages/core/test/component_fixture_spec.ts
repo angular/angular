@@ -38,7 +38,7 @@ class SecondDeferredComp {
 
 @Component({
   selector: 'my-if-comp',
-  template: `MyIf(<span *ngIf="showMore">More</span>)`,
+  template: `MyIf(@if (showMore) {<span>More</span>})`,
 })
 @Injectable()
 class MyIfComp {

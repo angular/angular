@@ -22,7 +22,7 @@ describe('embedded views', () => {
     }
 
     @Component({
-      template: `<child-cmp *ngIf="true" [addItemFn]="addItem.bind(this)"></child-cmp>`,
+      template: `@if (true) {<child-cmp [addItemFn]="addItem.bind(this)"></child-cmp>}`,
     })
     class TestCmp {
       item: string = 'CmpItem';
@@ -44,7 +44,7 @@ describe('embedded views', () => {
   });
 
   it('should resolve template input variables through the implicit receiver', () => {
-    @Component({template: `<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>`})
+    @Component({template: `@if (true) {<ng-template let-a>{{this.a}}</ng-template>}`})
     class TestCmp {
     }
 
@@ -58,9 +58,13 @@ describe('embedded views', () => {
   it('should component instance variables through the implicit receiver', () => {
     @Component({
       template: `
-        <ng-template [ngIf]="true">
-          <ng-template [ngIf]="true">{{this.myProp}}{{myProp}}</ng-template>
-        </ng-template>`
+        @if (true) {
+<ng-template>
+          @if (true) {
+<ng-template>{{this.myProp}}{{myProp}}</ng-template>
+}
+        </ng-template>
+}`
     })
     class TestCmp {
       myProp = 'Hello';

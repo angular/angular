@@ -577,7 +577,7 @@ withEachNg1Version(() => {
 
          @Component({
            selector: 'ng2-outer',
-           template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
+           template: '@if (!destroyIt) {<div><ng1></ng1></div>}',
          })
          class Ng2OuterComponent {
            @Input() destroyIt = false;

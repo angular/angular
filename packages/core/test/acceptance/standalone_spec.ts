@@ -29,7 +29,7 @@ describe('standalone components, directives, and pipes', () => {
       selector: 'tree',
       standalone: true,
       template:
-          `({{level}})<ng-template [ngIf]="level > 0"><tree [level]="level - 1"></tree></ng-template>`,
+          `({{level}})@if (level > 0) {<ng-template><tree [level]="level - 1"></tree></ng-template>}`,
       imports: [CommonModule]
     })
     class TreeCmp {
@@ -434,7 +434,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'cmp-a',
       standalone: true,
-      template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
+      template: '@if (false) {<ng-template><cmp-c></cmp-c></ng-template>}A',
       imports: [forwardRef(() => StandaloneCmpC)],
     })
     class StandaloneCmpA {
@@ -820,7 +820,8 @@ describe('standalone components, directives, and pipes', () => {
          const spy = spyOn(console, 'error');
          @Component({
            standalone: true,
-           template: '<ng-template [ngIf]="true"><unknown-tag></unknown-tag><ng-template>',
+           template:
+               '@if (true) {<ng-template><unknown-tag></unknown-tag><ng-template>}<unknown-tag></unknown-tag><ng-template>',
            imports: [CommonModule],
          })
          class AppCmp {
@@ -978,7 +979,7 @@ describe('standalone components, directives, and pipes', () => {
       @Component({
         selector: 'cmp-a',
         standalone: true,
-        template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
+        template: '@if (false) {<ng-template><cmp-c></cmp-c></ng-template>}A',
         imports: [forwardRef(() => StandaloneCmpC)],
       })
       class StandaloneCmpA {

@@ -748,9 +748,11 @@ describe('platform-server hydration integration', () => {
             selector: 'app',
             imports: [NgIf],
             template: `
-              <ng-container *ngIf="true">
+              @if (true) {
+
                 <div #inner></div>
-              </ng-container>
+              
+}
               <ng-template #outer />
             `,
           })
@@ -790,9 +792,11 @@ describe('platform-server hydration integration', () => {
               imports: [NgIf],
               template: `
               This is a non-empty container:
-              <ng-container *ngIf="true">
+              @if (true) {
+
                 <h1>Hello world!</h1>
-              </ng-container>
+              
+}
               <div>Post-container element</div>
             `,
             })
@@ -851,7 +855,9 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf],
               template: `
-              <h1 *ngIf="true">Hello world!</h1>
+              @if (true) {
+<h1>Hello world!</h1>
+}
             `,
             })
             class SimpleComponent {
@@ -879,7 +885,9 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf],
               template: `
-                <h1 *ngIf="false">Hello world!</h1>
+                @if (false) {
+<h1>Hello world!</h1>
+}
               `,
             })
             class SimpleComponent {
@@ -902,7 +910,9 @@ describe('platform-server hydration integration', () => {
               selector: 'nested-cmp',
               imports: [NgIf],
               template: `
-              <h1 *ngIf="true">Hello World!</h1>
+              @if (true) {
+<h1>Hello World!</h1>
+}
             `,
             })
             class NestedComponent {
@@ -914,7 +924,9 @@ describe('platform-server hydration integration', () => {
               imports: [NgIf, NestedComponent],
               template: `
               This is a component:
-              <nested-cmp *ngIf="true" />
+              @if (true) {
+<nested-cmp />
+}
               <div>Post-container element</div>
             `,
             })
@@ -944,11 +956,17 @@ describe('platform-server hydration integration', () => {
               imports: [NgIf],
               template: `
               This is a non-empty container:
-              <ng-container *ngIf="true">
-                <h1 *ngIf="true">
-                  <span *ngIf="true">Hello world!</span>
+              @if (true) {
+
+                @if (true) {
+<h1>
+                  @if (true) {
+<span>Hello world!</span>
+}
                 </h1>
-              </ng-container>
+}
+              
+}
               <div>Post-container element</div>
             `,
             })
@@ -979,9 +997,13 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
-              <ng-container *ngFor="let item of items">
-                <h1 *ngIf="true">Item #{{ item }}</h1>
-              </ng-container>
+              @for (item of items; track item) {
+  
+                @if (true) {
+<h1>Item #{{ item }}</h1>
+}
+              
+}
               <div>Post-container element</div>
             `,
             })
@@ -1016,9 +1038,13 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
-                <div *ngFor="let item of items">
-                  <h1 *ngIf="true">Item #{{ item }}</h1>
+                @for (item of items; track item) {
+  <div>
+                  @if (true) {
+<h1>Item #{{ item }}</h1>
+}
                 </div>
+}
                 <div>Post-container element</div>
               `,
             })
@@ -1053,7 +1079,9 @@ describe('platform-server hydration integration', () => {
               selector: 'nested-cmp',
               imports: [NgIf],
               template: `
-              <h1 *ngIf="true">Hello World!</h1>
+              @if (true) {
+<h1>Hello World!</h1>
+}
             `,
             })
             class NestedComponent {
@@ -1064,7 +1092,9 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf, NgFor, NestedComponent],
               template: `
-              <nested-cmp *ngFor="let item of items" />
+              @for (item of items; track item) {
+  <nested-cmp />
+}
               <div>Post-container element</div>
             `,
             })
@@ -1099,12 +1129,20 @@ describe('platform-server hydration integration', () => {
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
-                <div *ngFor="let number of numbers">
+                @for (number of numbers; track number) {
+  <div>
                   Number {{ number }}
-                  <ng-container *ngIf="number >= 0 && number < 5">is in [0, 5) range.</ng-container>
-                  <ng-container *ngIf="number >= 5 && number < 8">is in [5, 8) range.</ng-container>
-                  <ng-container *ngIf="number >= 8 && number < 10">is in [8, 10) range.</ng-container>
+                  @if (number >= 0 && number < 5) {
+is in [0, 5) range.
+}
+                  @if (number >= 5 && number < 8) {
+is in [5, 8) range.
+}
+                  @if (number >= 8 && number < 10) {
+is in [8, 10) range.
+}
                 </div>
+}
               `,
             })
             class SimpleComponent {
@@ -1142,7 +1180,9 @@ describe('platform-server hydration integration', () => {
               selector: 'nested-cmp',
               imports: [NgIf],
               template: `
-                <h1 *ngIf="true">Hello World!</h1>
+                @if (true) {
+<h1>Hello World!</h1>
+}
               `,
             })
             class NestedComponent {
@@ -1183,7 +1223,9 @@ describe('platform-server hydration integration', () => {
               selector: 'nested-cmp',
               imports: [NgIf],
               template: `
-                <h1 *ngIf="true">Hello World!</h1>
+                @if (true) {
+<h1>Hello World!</h1>
+}
               `,
             })
             class NestedComponent {
@@ -1225,7 +1267,9 @@ describe('platform-server hydration integration', () => {
               selector: 'nested-cmp',
               imports: [NgIf],
               template: `
-                <h1 *ngIf="true">Hello World!</h1>
+                @if (true) {
+<h1>Hello World!</h1>
+}
               `,
             })
             class NestedComponent {
@@ -1910,7 +1954,9 @@ describe('platform-server hydration integration', () => {
               template: `
                 <ng-template #template>
                   This is a transplanted view!
-                  <div *ngIf="true">With more nested views!</div>
+                  @if (true) {
+<div>With more nested views!</div>
+}
                 </ng-template>
                 <insertion-component [template]="template" />
               `,
@@ -2001,9 +2047,13 @@ describe('platform-server hydration integration', () => {
              imports: [NgIf],
              selector: 'app',
              template: `
-               <main *ngIf="true">
-                 <div *ngIf="true" i18n>Hi!</div>
+               @if (true) {
+<main>
+                 @if (true) {
+<div i18n>Hi!</div>
+}
                </main>
+}
               `,
            })
            class SimpleComponent {
@@ -2058,7 +2108,9 @@ describe('platform-server hydration integration', () => {
              imports: [CommonModule],
              selector: 'app',
              template: `
-              <ng-container *ngIf="true" i18n>Hi!</ng-container>
+              @if (true) {
+<ng-container i18n>Hi!</ng-container>
+}
             `,
            })
            class SimpleComponent {
@@ -2272,7 +2324,7 @@ describe('platform-server hydration integration', () => {
           selector: 'my-placeholder-cmp',
           standalone: true,
           imports: [NgIf],
-          template: '<div *ngIf="true">Hi!</div>',
+          template: '@if (true) {<div>Hi!</div>}',
         })
         class MyPlaceholderCmp {
         }
@@ -2334,7 +2386,7 @@ describe('platform-server hydration integration', () => {
           selector: 'my-placeholder-cmp',
           standalone: true,
           imports: [NgIf],
-          template: '<div *ngIf="true">Hi!</div>',
+          template: '@if (true) {<div>Hi!</div>}',
         })
         class MyPlaceholderCmp {
         }
@@ -2446,7 +2498,7 @@ describe('platform-server hydration integration', () => {
           selector: 'my-placeholder-cmp',
           standalone: true,
           imports: [NgIf],
-          template: '<div *ngIf="true">Hi!</div>',
+          template: '@if (true) {<div>Hi!</div>}',
         })
         class MyPlaceholderCmp {
         }
@@ -2528,7 +2580,7 @@ describe('platform-server hydration integration', () => {
           selector: 'my-placeholder-cmp',
           standalone: true,
           imports: [NgIf],
-          template: '<div *ngIf="true">Hi!</div>',
+          template: '@if (true) {<div>Hi!</div>}',
         })
         class MyPlaceholderCmp {
         }
@@ -2739,7 +2791,9 @@ describe('platform-server hydration integration', () => {
              selector: 'nested',
              imports: [NgIf],
              template: `
-               <ng-container *ngIf="true">Hello world</ng-container>
+               @if (true) {
+Hello world
+}
              `
            })
            class Nested {
@@ -2834,7 +2888,9 @@ describe('platform-server hydration integration', () => {
              imports: [NgIf, Layout],
              template: `
               <layout>
-                <h1 *ngIf="true">Hi!</h1>
+                @if (true) {
+<h1>Hi!</h1>
+}
               </layout>
             `,
            })
@@ -3045,7 +3101,9 @@ describe('platform-server hydration integration', () => {
              selector: 'nested',
              imports: [NgIf],
              template: `
-               <ng-container *ngIf="true">Hello world</ng-container>
+               @if (true) {
+Hello world
+}
              `
            })
            class Nested {
@@ -3663,8 +3721,12 @@ describe('platform-server hydration integration', () => {
           template: `
             <div>
               Hello
-              <ng-container *ngIf="true">Angular</ng-container>
-              <ng-container *ngIf="true">World</ng-container>
+              @if (true) {
+Angular
+}
+              @if (true) {
+World
+}
             </div>
           `,
         })
@@ -3695,8 +3757,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [NgIf],
           template: `
-            <b *ngIf="isServer">This is a SERVER-ONLY content</b>
-            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
+            @if (isServer) {
+<b>This is a SERVER-ONLY content</b>
+}
+            @if (!isServer) {
+<i>This is a CLIENT-ONLY content</i>
+}
           `,
         })
         class SimpleComponent {
@@ -3741,8 +3807,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [NgIf],
           template: `
-            <ng-container *ngIf="isServer">This is a SERVER-ONLY content</ng-container>
-            <ng-container *ngIf="!isServer">This is a CLIENT-ONLY content</ng-container>
+            @if (isServer) {
+This is a SERVER-ONLY content
+}
+            @if (!isServer) {
+This is a CLIENT-ONLY content
+}
           `,
         })
         class SimpleComponent {
@@ -3790,11 +3860,19 @@ describe('platform-server hydration integration', () => {
              imports: [NgIf],
              template: `
                 <ng-template #tmpl>
-                  <span *ngIf="isServer">This is a SERVER-ONLY content (embedded view)</span>
-                  <div *ngIf="!isServer">This is a CLIENT-ONLY content (embedded view)</div>
+                  @if (isServer) {
+<span>This is a SERVER-ONLY content (embedded view)</span>
+}
+                  @if (!isServer) {
+<div>This is a CLIENT-ONLY content (embedded view)</div>
+}
                 </ng-template>
-                <b *ngIf="isServer">This is a SERVER-ONLY content (root component)</b>
-                <i *ngIf="!isServer">This is a CLIENT-ONLY content (root component)</i>
+                @if (isServer) {
+<b>This is a SERVER-ONLY content (root component)</b>
+}
+                @if (!isServer) {
+<i>This is a CLIENT-ONLY content (root component)</i>
+}
               `,
            })
            class SimpleComponent {
@@ -3861,11 +3939,17 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [NgIf],
           template: `
-            <ng-container *ngIf="true">
-              <b *ngIf="isServer">This is a SERVER-ONLY content</b>
+            @if (true) {
+
+              @if (isServer) {
+<b>This is a SERVER-ONLY content</b>
+}
               Outside of the container (must be retained).
-            </ng-container>
-            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
+            
+}
+            @if (!isServer) {
+<i>This is a CLIENT-ONLY content</i>
+}
           `,
         })
         class SimpleComponent {
@@ -3915,10 +3999,14 @@ describe('platform-server hydration integration', () => {
           imports: [NgIf, NgFor],
           template: `
             <div>
-              <span *ngFor="let item of items">
+              @for (item of items; track item) {
+  <span>
                 {{ item }}
-                <b *ngIf="item > 15">is bigger than 15!</b>
+                @if (item > 15) {
+<b>is bigger than 15!</b>
+}
               </span>
+}
               <main>Hi! This is the main content.</main>
             </div>
           `,
@@ -3966,12 +4054,18 @@ describe('platform-server hydration integration', () => {
           selector: 'dynamic',
           template: `
             <span>This is a content of a dynamic component.</span>
-            <b *ngIf="isServer">This is a SERVER-ONLY content</b>
-            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
-            <ng-container *ngIf="isServer">
+            @if (isServer) {
+<b>This is a SERVER-ONLY content</b>
+}
+            @if (!isServer) {
+<i>This is a CLIENT-ONLY content</i>
+}
+            @if (isServer) {
+
               This is also a SERVER-ONLY content, but inside ng-container.
               <b>With some extra tags</b> and some text inside.
-            </ng-container>
+            
+}
           `,
         })
         class DynamicComponent {
@@ -4033,8 +4127,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [NgIf],
           template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            @if (isServer) {
+<span>This is a SERVER-ONLY content</span>
+}
+            @if (!isServer) {
+<span>This is a CLIENT-ONLY content</span>
+}
           `,
         })
         class SimpleComponent {
@@ -4076,8 +4174,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [NgIf],
           template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            @if (isServer) {
+<span>This is a SERVER-ONLY content</span>
+}
+            @if (!isServer) {
+<span>This is a CLIENT-ONLY content</span>
+}
           `,
         })
         class SimpleComponent {
@@ -4274,13 +4376,15 @@ describe('platform-server hydration integration', () => {
           selector: 'projector-cmp',
           imports: [CommonModule],
           template: `
-            <ng-container *ngIf="true">
+            @if (true) {
+
               <ng-content select="[left]"></ng-content>
               <div>
                 <ng-content select="[main]"></ng-content>
               </div>
               <ng-content select="[right]"></ng-content>
-            </ng-container>
+            
+}
           `,
         })
         class ProjectorCmp {
@@ -4321,10 +4425,12 @@ describe('platform-server hydration integration', () => {
              selector: 'projector-cmp',
              imports: [CommonModule],
              template: `
-              <ng-container *ngIf="true">
+              @if (true) {
+
                 <ng-content select="[left]"></ng-content>
                 <ng-content select="[right]"></ng-content>
-              </ng-container>
+              
+}
             `,
            })
            class ProjectorCmp {
@@ -4454,10 +4560,14 @@ describe('platform-server hydration integration', () => {
           selector: 'projector-cmp',
           imports: [CommonModule],
           template: `
-            <ng-container *ngIf="true">
+            @if (true) {
+
               <ng-content select="[left]"></ng-content>
-              <span *ngIf="true">{{ label }}</span>
-            </ng-container>
+              @if (true) {
+<span>{{ label }}</span>
+}
+            
+}
           `,
         })
         class ProjectorCmp {
@@ -4499,10 +4609,14 @@ describe('platform-server hydration integration', () => {
              selector: 'projector-cmp',
              imports: [CommonModule],
              template: `
-              <ng-container *ngIf="true">
+              @if (true) {
+
                 <ng-content select="[left]"></ng-content>
-                <ng-container *ngIf="true">{{ label }}</ng-container>
-              </ng-container>
+                @if (true) {
+{{ label }}
+}
+              
+}
             `,
            })
            class ProjectorCmp {
@@ -4602,10 +4716,12 @@ describe('platform-server hydration integration', () => {
             selector: 'app',
             template: `
               <projector-cmp>
-                <ng-container *ngIf="true">
+                @if (true) {
+
                   <h1>This node is not projected.</h1>
                   <h2>This node is not projected as well.</h2>
-                </ng-container>
+                
+}
               </projector-cmp>
             `,
           })
@@ -4753,7 +4869,9 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           template: `
             <projector-cmp>
-              <h1 *ngIf="visible">Header with an ngIf condition.</h1>
+              @if (visible) {
+<h1>Header with an ngIf condition.</h1>
+}
             </projector-cmp>
           `,
         })
@@ -4796,7 +4914,9 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           template: `
             <projector-cmp>
-              <h1 *ngFor="let item of items">Item {{ item }}</h1>
+              @for (item of items; track item) {
+  <h1>Item {{ item }}</h1>
+}
             </projector-cmp>
           `,
         })
@@ -4932,9 +5052,13 @@ describe('platform-server hydration integration', () => {
           imports: [CommonModule, RootComp, ChildComp],
           template: `
             <root-comp>
-              <ng-container *ngFor="let item of items; last as last">
-                <child-comp *ngIf="!last">{{ item }}|</child-comp>
-              </ng-container>
+              @for (item of items; track item; let last = $last) {
+  
+                @if (!last) {
+<child-comp>{{ item }}|</child-comp>
+}
+              
+}
             </root-comp>
           `
         })
@@ -5070,7 +5194,9 @@ describe('platform-server hydration integration', () => {
           imports: [NgIf],
           template: `
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
-            <ng-content *ngIf="project" />
+            @if (project) {
+<ng-content />
+}
           `,
         })
         class ProjectorCmp {
@@ -5135,7 +5261,9 @@ describe('platform-server hydration integration', () => {
           imports: [NgIf],
           template: `
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
-            <ng-content *ngIf="project" />
+            @if (project) {
+<ng-content />
+}
           `,
         })
         class ProjectorCmp {
@@ -5454,8 +5582,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [CommonModule],
           template: `
-          <b *ngIf="true">Bold text</b>
-          <i *ngIf="false">Italic text</i>
+          @if (true) {
+<b>Bold text</b>
+}
+          @if (false) {
+<i>Italic text</i>
+}
         `,
         })
         class SimpleComponent {
@@ -5491,8 +5623,12 @@ describe('platform-server hydration integration', () => {
           selector: 'nested-cmp',
           imports: [CommonModule],
           template: `
-          <b *ngIf="true">Bold text</b>
-          <i *ngIf="false">Italic text</i>
+          @if (true) {
+<b>Bold text</b>
+}
+          @if (false) {
+<i>Italic text</i>
+}
         `,
         })
         class NestedComponent {
@@ -5538,10 +5674,12 @@ describe('platform-server hydration integration', () => {
           selector: 'app',
           imports: [CommonModule],
           template: `
-          <ng-container *ngIf="true">
+          @if (true) {
+
             <b>Bold text</b>
             <i>Italic text</i>
-          </ng-container>
+          
+}
           <main>Main content</main>
         `,
         })
@@ -5746,13 +5884,17 @@ describe('platform-server hydration integration', () => {
           template: `
             <a>
               <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
-              <ng-content *ngIf="true"></ng-content>
+              @if (true) {
+<ng-content></ng-content>
+}
             </a>
 
             <ng-template #titleTemplate>
-              <ng-container *ngIf="true">
+@if (true) {
+ *ngIf="true">
                 <a>test</a>
-              </ng-container>
+
+}/ng-container>
             </ng-template>
           `,
         })

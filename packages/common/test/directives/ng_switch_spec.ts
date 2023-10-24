@@ -288,19 +288,49 @@ class TestComponent {
 @Component({
   selector: 'complex-cmp',
   template: `
-<div [ngSwitch]="state">
-  <ng-container *ngSwitchCase="'case1'" [ngSwitch]="true">
+<div>
+@switch (state) {
+  @case ('case1') {
+    <ng-container [ngSwitch]="true">
     <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
     <span *ngSwitchDefault>Should never render</span>
   </ng-container>
-  <ng-container *ngSwitchCase="'case2'" [ngSwitch]="true">
-    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="bar"></ng-container>
-    <span *ngSwitchDefault>Should never render</span>
-  </ng-container>
-  <ng-container *ngSwitchDefault [ngSwitch]="false">
-    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
-    <span *ngSwitchDefault>Default</span>
-  </ng-container>
+  }
+  @case (true) {
+    <ng-container [ngTemplateOutlet]="foo"></ng-container>
+  }
+  @default {
+    <span>Should never render</span>
+  }
+  @case ('case2') {
+    <ng-container [ngSwitch]="tru@switch (true) {
+  @case (true) {
+    ="bar"></ng-cngSwitchDefault>Should never render</span
+  }
+  @default {
+    /ng-ccase (true) {
+    <ng-conta
+  }
+}tle@switch (true) {
+  @case (true) {
+    ver render</s
+    <ng-container [ngSwitch]="false">
+  
+  }
+  @default {
+    -contse="true" [ngTemplateOutlet
+  }
+}ine@switch (false) {
+  @case (true) {
+    tainer>
+  }
+ ng-container [ngTemplateOutlet]="foo"></n
+  }
+  @default {
+    taine {
+    <span>De
+  }
+}
 </div>
 
 <ng-template #foo>

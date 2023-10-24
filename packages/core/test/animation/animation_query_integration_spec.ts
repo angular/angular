@@ -293,8 +293,10 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div [@myAnimation]="exp" #parent>
-              <div *ngFor="let item of items" class="item e-{{ item }}">
+              @for (item of items; track item) {
+  <div class="item e-{{ item }}">
               </div>
+}
             </div>
           `,
         animations: [
@@ -635,9 +637,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
           <div [@myAnimation]="exp">
-            <div *ngFor="let item of items" class="item">
+            @for (item of items; track item) {
+  <div class="item">
               {{ item }}
             </div>
+}
           </div>
         `,
         animations: [
@@ -703,9 +707,11 @@ describe('animation query tests', function() {
           selector: 'ani-cmp',
           template: `
           <div [@myAnimation]="exp">
-            <div *ngFor="let item of items" class="item">
+            @for (item of items; track item) {
+  <div class="item">
               {{ item }}
             </div>
+}
           </div>
         `,
           animations: [trigger(
@@ -746,9 +752,11 @@ describe('animation query tests', function() {
       @Component({
         selector: 'ani-cmp',
         template: `
-            <div @parent *ngIf="exp1">
+            @if (exp1) {
+<div @parent>
               <div class="child" [@child]="exp2"></div>
             </div>
+}
           `,
         animations: [
           trigger(
@@ -807,9 +815,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div @myAnimation>
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
         animations: [trigger(
@@ -862,10 +872,14 @@ describe('animation query tests', function() {
            selector: 'ani-cmp',
            template: `
             <div [@myAnimation]="items.length" class="parent" #container>
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
-              <div *ngIf="items.length == 0" class="child">Leave!</div>
+}
+              @if (items.length == 0) {
+<div class="child">Leave!</div>
+}
             </div>
           `,
            animations: [
@@ -926,9 +940,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
         animations: [trigger(
@@ -981,9 +997,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
         animations: [trigger(
@@ -1031,12 +1049,18 @@ describe('animation query tests', function() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="items.length" class="parent">
-              <ng-container *ngFor="let item of items">
+              @for (item of items; track item) {
+  
                 <section>
-                  <div *ngIf="item % 2 == 0">even {{ item }}</div>
-                  <div *ngIf="item % 2 == 1">odd {{ item }}</div>
+                  @if (item % 2 == 0) {
+<div>even {{ item }}</div>
+}
+                  @if (item % 2 == 1) {
+<div>odd {{ item }}</div>
+}
                 </section>
-              </ng-container>
+              
+}
             </div>
           `,
           animations: [trigger(
@@ -1117,9 +1141,11 @@ describe('animation query tests', function() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
           animations: [trigger(
@@ -1184,10 +1210,12 @@ describe('animation query tests', function() {
            selector: 'ani-cmp',
            template: `
             <div [@myAnimation]="exp1" class="ancestor" #ancestor>
-              <div class="parent" *ngIf="exp2" #parent>
+              @if (exp2) {
+<div class="parent" #parent>
                 <div class="child"></div>
                 <div class="child"></div>
               </div>
+}
             </div>
           `,
            animations: [
@@ -1253,9 +1281,11 @@ describe('animation query tests', function() {
            template: `
             <div [@one]="exp1" [@two]="exp2" class="ancestor" #ancestor>
               <header>hello</header>
-              <div class="parent" *ngIf="parentExp" #parent>
+              @if (parentExp) {
+<div class="parent" #parent>
                 <div class="child">child</div>
               </div>
+}
             </div>
           `,
            animations: [
@@ -1341,9 +1371,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
         animations: [trigger(
@@ -1395,9 +1427,11 @@ describe('animation query tests', function() {
         selector: 'ani-cmp',
         template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
         animations: [trigger(
@@ -1448,9 +1482,11 @@ describe('animation query tests', function() {
           selector: 'ani-cmp',
           template: `
             <div [@one]="exp1" [@two]="exp2" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
           animations: [
@@ -1535,9 +1571,11 @@ describe('animation query tests', function() {
            selector: 'ani-cmp',
            template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
            animations: [trigger(
@@ -1587,9 +1625,11 @@ describe('animation query tests', function() {
             selector: 'ani-cmp',
             template: `
             <div [@myAnimation]="exp" class="parent">
-              <div *ngFor="let item of items" class="child">
+              @for (item of items; track item) {
+  <div class="child">
                 {{ item }}
               </div>
+}
             </div>
           `,
             animations: [
@@ -1660,9 +1700,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'child-cmp',
            template: `
-            <div *ngFor="let item of items">
+            @for (item of items; track item) {
+  <div>
               {{ item }}
             </div>
+}
           `
          })
          class ChildCmp {
@@ -1708,9 +1750,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'child-cmp',
            template: `
-            <div *ngFor="let item of items">
+            @for (item of items; track item) {
+  <div>
               {{ item }}
             </div>
+}
           `
          })
          class ChildCmp {
@@ -1742,9 +1786,11 @@ describe('animation query tests', function() {
           selector: 'cmp',
           template: `
              <div [@myAnimation]="exp">
-              <div *ngFor="let item of items" class="item">
+              @for (item of items; track item) {
+  <div class="item">
                 {{ item }}
               </div>
+}
              </div>
           `,
           animations: [
@@ -1791,9 +1837,11 @@ describe('animation query tests', function() {
              selector: 'cmp',
              template: `
              <div [@myAnimation]="exp">
-              <div *ngFor="let item of items" class="item">
+              @for (item of items; track item) {
+  <div class="item">
                 {{ item }}
               </div>
+}
              </div>
           `,
              animations: [
@@ -1916,7 +1964,9 @@ describe('animation query tests', function() {
              selector: 'ani-cmp',
              template: `
             <div #parent class="parent" [@parent]="exp">
-              <div class="item" *ngFor="let item of items" @child></div>
+              @for (item of items; track item) {
+  <div class="item" @child></div>
+}
             </div>
           `,
              animations: [
@@ -2293,9 +2343,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @parent *ngIf="exp" class="parent1" #parent>
+            @if (exp) {
+<div @parent class="parent1" #parent>
               <child-cmp #child @leave (@leave.start)="animateStart($event)"></child-cmp>
             </div>
+}
           `,
            animations: [
              trigger(
@@ -2370,9 +2422,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @myAnimation *ngIf="exp" class="parent">
+            @if (exp) {
+<div @myAnimation class="parent">
               <child-cmp></child-cmp>
             </div>
+}
           `,
            animations: [
              trigger(
@@ -2446,9 +2500,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @myAnimation *ngIf="exp" class="parent">
+            @if (exp) {
+<div @myAnimation class="parent">
               <child-cmp></child-cmp>
             </div>
+}
           `,
            animations: [
              trigger(
@@ -2531,9 +2587,11 @@ describe('animation query tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @parent *ngIf="exp" class="parent">
+            @if (exp) {
+<div @parent class="parent">
               this <div @child>child</div>
             </div>
+}
           `,
            animations: [
              trigger(
@@ -2604,17 +2662,25 @@ describe('animation query tests', function() {
            ],
            template: `
             <section class="container" [@anim]="exp ? 'enter' : 'leave'">
-              <div class="a" *ngIf="exp">
-                <div class="b" *ngIf="exp">
-                  <div class="c" *ngIf="exp">
+              @if (exp) {
+<div class="a">
+                @if (exp) {
+<div class="b">
+                  @if (exp) {
+<div class="c">
                     text
                   </div>
+}
                 </div>
+}
               </div>
+}
               <div>
-                <div class="d" *ngIf="exp">
+                @if (exp) {
+<div class="d">
                   text2
                 </div>
+}
               </div>
             </section>
           `
@@ -2672,17 +2738,29 @@ describe('animation query tests', function() {
         template: `
             <div [@pageAnimation]="status">
               <header>
-                <div *ngIf="!loading" class="title">{{ title }}</div>
-                <div *ngIf="loading" class="loading">loading...</div>
+                @if (!loading) {
+<div class="title">{{ title }}</div>
+}
+                @if (loading) {
+<div class="loading">loading...</div>
+}
               </header>
               <section>
                 <div class="page">
-                  <div *ngIf="page1" class="page1">
-                    <div *ngIf="true">page 1</div>
+                  @if (page1) {
+<div class="page1">
+                    @if (true) {
+<div>page 1</div>
+}
                   </div>
-                  <div *ngIf="page2" class="page2">
-                    <div *ngIf="true">page 2</div>
+}
+                  @if (page2) {
+<div class="page2">
+                    @if (true) {
+<div>page 2</div>
+}
                   </div>
+}
                 </div>
               </section>
             </div>
@@ -2789,11 +2867,13 @@ describe('animation query tests', function() {
                  ])
            ],
            template: `
-            <div data-name="p" class="parent" @parent *ngIf="exp" (@parent.start)="callback($event)" (@parent.done)="callback($event)">
+            @if (exp) {
+<div data-name="p" class="parent" @parent (@parent.start)="callback($event)" (@parent.done)="callback($event)">
               <div data-name="c1" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
               <div data-name="c2" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
               <div data-name="c3" @childWithAnimation (@childWithAnimation.start)="callback($event)" (@childWithAnimation.done)="callback($event)"></div>
             </div>
+}
           `
          })
          class Cmp {
@@ -2888,12 +2968,14 @@ describe('animation query tests', function() {
                  ]),
            ],
            template: `
-            <div *ngIf="!remove"
+            @if (!remove) {
+<div
                  [@parent]="exp"
                  (@parent.start)="track($event)"
                  (@parent.done)="track($event)">
                  <child-cmp #child></child-cmp>
             </div>
+}
           `
          })
          class ParentCmp {
@@ -3257,15 +3339,21 @@ describe('animation query tests', function() {
               ]),
         ],
         template: `
-               <div @parent *ngIf="exp1" class="container">
-                 <div *ngIf="exp2">
+               @if (exp1) {
+<div @parent class="container">
+                 @if (exp2) {
+<div>
                    <div @child>
-                     <div *ngIf="exp3">
+                     @if (exp3) {
+<div>
                        <div class="item"></div>
                      </div>
+}
                    </div>
                  </div>
+}
                </div>
+}
              `
       })
       class Cmp {
@@ -3327,15 +3415,21 @@ describe('animation query tests', function() {
               ]),
         ],
         template: `
-               <div @parent *ngIf="exp1" class="container">
-                 <div *ngIf="exp2">
+               @if (exp1) {
+<div @parent class="container">
+                 @if (exp2) {
+<div>
                    <div @child>
-                     <div *ngIf="exp3">
+                     @if (exp3) {
+<div>
                        <div class="item"></div>
                      </div>
+}
                    </div>
                  </div>
+}
                </div>
+}
              `
       })
       class Cmp {
@@ -3377,7 +3471,9 @@ describe('animation query tests', function() {
            template: `
             <div class="grand-parent" [@grandParentAnimation]="childPresent">
               <div class="parent" [@parentAnimation]="childPresent">
-              <div *ngIf="childPresent" class="child"></div>
+              @if (childPresent) {
+<div class="child"></div>
+}
               </div>
             </div>
           `,
@@ -3421,7 +3517,9 @@ describe('animation query tests', function() {
         selector: 'cmp',
         template: `
           <div class="parent" [@parent]="exp">
-            <div class="child" *ngIf="exp"></div>
+            @if (exp) {
+<div class="child"></div>
+}
           </div>
         `,
         animations: [
@@ -3478,7 +3576,9 @@ describe('animation query tests', function() {
         selector: 'cmp',
         template: `
           <div class="parent" [@parent]="exp">
-            <div class="child" *ngIf="exp"></div>
+            @if (exp) {
+<div class="child"></div>
+}
           </div>
         `,
         animations: [

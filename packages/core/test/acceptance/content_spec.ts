@@ -234,7 +234,7 @@ describe('projection', () => {
   it('should project into dynamic views (with createEmbeddedView)', () => {
     @Component({
       selector: 'child',
-      template: `Before-<ng-template [ngIf]="showing"><ng-content></ng-content></ng-template>-After`
+      template: `Before-@if (showing) {<ng-template><ng-content></ng-content></ng-template>}-After`
     })
     class Child {
       showing = false;
@@ -272,9 +272,11 @@ describe('projection', () => {
       template: `
         <ng-content></ng-content>
         Before-
-        <ng-template [ngIf]="showing">
+        @if (showing) {
+<ng-template>
           <ng-content select="div"></ng-content>
         </ng-template>
+}
         -After`
     })
     class Child {
@@ -384,7 +386,7 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template:
-          `<div *ngFor="let item of [1, 2]; let i = index">({{i}}):<ng-content></ng-content></div>`
+          `@for (item of [1, 2]; track item; let i = $index) {<div>({{i}}):<ng-content></ng-content></div>}`
     })
     class Child {
     }
@@ -417,9 +419,13 @@ describe('projection', () => {
       selector: 'my-app',
       template: `
         <root-comp>
-          <ng-container *ngFor="let item of items; last as last">
-            <nested-comp *ngIf="!last"></nested-comp>
-          </ng-container>
+          @for (item of items; track item; let last = $last) {
+  
+            @if (!last) {
+<nested-comp></nested-comp>
+}
+          
+}
         </root-comp>
       `
     })
@@ -449,11 +455,13 @@ describe('projection', () => {
     @Component({
       selector: 'root-comp',
       template: `
-        <ng-template [ngIf]="show">
+        @if (show) {
+<ng-template>
           <ng-container>
             <ng-content></ng-content>
           </ng-container>
-        </ng-template>`,
+        </ng-template>
+}`,
     })
     class RootComp {
       @Input() show: boolean = true;
@@ -482,7 +490,7 @@ describe('projection', () => {
   it('should handle projection of views with element containers at the root', () => {
     @Component({
       selector: 'root-comp',
-      template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+      template: `@if (show) {<ng-template><ng-content></ng-content></ng-template>}`,
     })
     class RootComp {
       @Input() show: boolean = true;
@@ -568,7 +576,7 @@ describe('projection', () => {
   it('should handle re-projection at the root of an embedded view', () => {
     @Component({
       selector: 'child-comp',
-      template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+      template: `@if (show) {<ng-template><ng-content></ng-content></ng-template>}`,
     })
     class ChildComp {
       @Input() show: boolean = true;
@@ -869,7 +877,7 @@ describe('projection', () => {
       class Child {
       }
 
-      @Component({template: `<child><div *ngIf="value">content</div></child>`})
+      @Component({template: `<child>@if (value) {<div>content</div>}</child>`})
       class Parent {
         value = false;
       }
@@ -903,9 +911,13 @@ describe('projection', () => {
       selector: 'my-app',
       template: `
         <root-comp>
-          <ng-container *ngFor="let item of items; last as last">
-            <child-comp *ngIf="!last">{{ item }}|</child-comp>
-          </ng-container>
+          @for (item of items; track item; let last = $last) {
+  
+            @if (!last) {
+<child-comp>{{ item }}|</child-comp>
+}
+          
+}
         </root-comp>
       `
     })
@@ -1112,7 +1124,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'main-selector',
-        template: '<selector-proj><div x="true" *ngIf="true">Hello world!</div></selector-proj>'
+        template: '<selector-proj>@if (true) {<div x="true">Hello world!</div>}</selector-proj>'
       })
       class SelectorMainComp {
       }
@@ -1141,7 +1153,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'main-selector',
-        template: '<selector-proj><div x="true" *ngIf="true">Hello world!</div></selector-proj>'
+        template: '<selector-proj>@if (true) {<div x="true">Hello world!</div>}</selector-proj>'
       })
       class SelectorMainComp {
       }
@@ -1170,7 +1182,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'main-selector',
-        template: '<selector-proj><div class="x" *ngIf="true">Hello world!</div></selector-proj>'
+        template: '<selector-proj>@if (true) {<div class="x">Hello world!</div>}</selector-proj>'
       })
       class SelectorMainComp {
       }
@@ -1231,9 +1243,15 @@ describe('projection', () => {
         selector: 'root-comp',
         template: `
           <projector-app>
-            <div *ngIf="show" ngProjectAs="foo">as element</div>
-            <div *ngIf="show" ngProjectAs="[foo]">as attribute</div>
-            <div *ngIf="show" ngProjectAs=".foo">as class</div>
+            @if (show) {
+<div ngProjectAs="foo">as element</div>
+}
+            @if (show) {
+<div ngProjectAs="[foo]">as attribute</div>
+}
+            @if (show) {
+<div ngProjectAs=".foo">as class</div>
+}
           </projector-app>
         `,
       })
@@ -1331,7 +1349,7 @@ describe('projection', () => {
 
            @Component({
              selector: 'parent-comp',
-             template: `<child-comp><span *ngIf="true" class="{{'a'}}"></span></child-comp>`
+             template: `<child-comp>@if (true) {<span class="{{'a'}}"></span>}</child-comp>`
            })
            class ParentComp {
            }
@@ -1352,7 +1370,7 @@ describe('projection', () => {
       @Component({
         selector: 'parent-comp',
         template:
-            `<child-comp><span *ngIf="true" id="5" jjj="class" class="{{'a'}}" [title]="'abc'"></span></child-comp>`
+            `<child-comp>@if (true) {<span id="5" jjj="class" class="{{'a'}}" [title]="'abc'"></span>}</child-comp>`
       })
       class ParentComp {
       }

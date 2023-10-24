@@ -2143,7 +2143,7 @@ withEachNg1Version(() => {
            // Define `Ng2Component`
            @Component({
              selector: 'ng2A',
-             template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
+             template: 'ng2A(<ng1>{{ value }} | @if (showB) {<ng2B></ng2B>}</ng1>)'
            })
            class Ng2ComponentA {
              value = 'foo';
@@ -2558,10 +2558,18 @@ withEachNg1Version(() => {
              template: `
                ng2(
                  <ng1>
-                   <content-x><div *ngIf="show">{{ x }}1</div></content-x>
-                   <div *ngIf="!show">{{ y }}1</div>
-                   <content-x><div *ngIf="!show">{{ x }}2</div></content-x>
-                   <div *ngIf="show">{{ y }}2</div>
+                   <content-x>@if (show) {
+<div>{{ x }}1</div>
+}</content-x>
+                   @if (!show) {
+<div>{{ y }}1</div>
+}
+                   <content-x>@if (!show) {
+<div>{{ x }}2</div>
+}</content-x>
+                   @if (show) {
+<div>{{ y }}2</div>
+}
                  </ng1>
                )`
            })
@@ -3402,7 +3410,7 @@ withEachNg1Version(() => {
 
            // Define `Ng2Component`
            @Component(
-               {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
+               {selector: 'ng2', template: '@if (show) {<div><ng1A></ng1A> | <ng1B></ng1B></div>}'})
            class Ng2Component {
              @Input() show: boolean = false;
            }
@@ -3501,7 +3509,7 @@ withEachNg1Version(() => {
 
            // Define `Ng2Component`
            @Component(
-               {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
+               {selector: 'ng2', template: '@if (show) {<div><ng1A></ng1A> | <ng1B></ng1B></div>}'})
            class Ng2Component {
              @Input() show: boolean = false;
            }
@@ -3638,7 +3646,7 @@ withEachNg1Version(() => {
            }
 
            // Define `Ng2Component`
-           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
            class Ng2ComponentA {
              destroyIt = false;
 
@@ -3703,7 +3711,7 @@ withEachNg1Version(() => {
            }
 
            // Define `Ng2Component`
-           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
            class Ng2ComponentA {
              destroyIt = false;
 
@@ -3771,7 +3779,7 @@ withEachNg1Version(() => {
            }
 
            // Define `Ng2Component`
-           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
            class Ng2ComponentA {
              destroyIt = false;
 
@@ -3841,7 +3849,7 @@ withEachNg1Version(() => {
            }
 
            // Define `Ng2Component`
-           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
            class Ng2ComponentA {
              destroyIt = false;
 
@@ -3905,7 +3913,7 @@ withEachNg1Version(() => {
            }
 
            // Define `Ng2Component`
-           @Component({selector: 'ng2', template: '<ng1 *ngIf="doShow"></ng1>'})
+           @Component({selector: 'ng2', template: '@if (doShow) {<ng1></ng1>}'})
            class Ng2Component {
              doShow: boolean = false;
              constructor(@Inject($SCOPE) public $scope: angular.IScope) {

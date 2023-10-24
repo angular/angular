@@ -141,7 +141,7 @@ describe('DestroyRef', () => {
         selector: 'test',
         standalone: true,
         imports: [WithCleanupDirective, NgIf],
-        template: `<ng-template [ngIf]="show"><div withCleanup></div></ng-template>`,
+        template: `@if (show) {<ng-template><div withCleanup></div></ng-template>}`,
       })
       class TestCmp {
         show = true;
@@ -171,7 +171,7 @@ describe('DestroyRef', () => {
       @Component({
         standalone: true,
         imports: [Child, NgIf],
-        template: '<child *ngIf="showChild"></child>',
+        template: '@if (showChild) {<child></child>}',
       })
       class Parent {
         showChild = true;

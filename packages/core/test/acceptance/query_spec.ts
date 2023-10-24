@@ -343,9 +343,11 @@ describe('query logic', () => {
       @Component({
         selector: 'root',
         template: `
-          <ng-container *ngIf="condition">
+          @if (condition) {
+
             <comp-with-view-query></comp-with-view-query>
-          </ng-container>
+          
+}
         `
       })
       class Root {
@@ -717,7 +719,9 @@ describe('query logic', () => {
         selector: 'test-comp',
         template: `
           <shallow-comp>
-            <div *ngIf="showing" #foo></div>
+            @if (showing) {
+<div #foo></div>
+}
           </shallow-comp>
         `
       })
@@ -779,11 +783,13 @@ describe('query logic', () => {
       @Component({
         selector: 'comp',
         template: `
-          <ng-container *ngFor="let item of items">
+          @for (item of items; track item) {
+  
             <div with-content>
               <span #foo></span>
             </div>
-          </ng-container>
+          
+}
         `,
       })
       class Root {
@@ -1301,10 +1307,12 @@ describe('query logic', () => {
         selector: 'test-cmpt',
         template: `
           <needs-target>
-            <ng-container *ngIf="true">
+            @if (true) {
+
               <div targetDir></div>
               <div #target></div>
-            </ng-container>
+            
+}
           </needs-target>
         `,
       })
@@ -2017,9 +2025,11 @@ describe('query logic', () => {
         @Component({
           selector: 'test-comp',
           template: `
-            <ng-template [ngIf]="value">
+            @if (value) {
+<ng-template>
               <div #foo></div>
             </ng-template>
+}
           `
         })
         class TestComponent {
@@ -2354,7 +2364,7 @@ describe('query logic', () => {
       @Component({
         selector: 'test-cmpt',
         template:
-            `<ng-template [ngIf]="true"><ng-template [ngIf]="true"><div parent></div></ng-template></ng-template>`
+            `@if (true) {<ng-template>@if (true) {<ng-template><div parent></div></ng-template>}</ng-template>}`
       })
       class TestCmpt {
         @ViewChildren(Child) instances!: QueryList<Child>;
@@ -2407,7 +2417,9 @@ describe('query logic', () => {
       @Component({
         selector: 'test-cmpt',
         template: `
-          <ng-template [ngIf]="true"><with-multi-provider></with-multi-provider></ng-template>
+          @if (true) {
+<ng-template><with-multi-provider></with-multi-provider></ng-template>
+}
           <with-multi-provider></with-multi-provider>
         `
       })
@@ -2437,9 +2449,11 @@ describe('query logic', () => {
       @Component({
         template: `
           <div group></div>
-          <ng-template [ngIf]="true">
+          @if (true) {
+<ng-template>
             <div undefinedGroup></div>
           </ng-template>
+}
         `
       })
       class App {
@@ -2470,13 +2484,17 @@ describe('query logic', () => {
 
       @Component({
         template: `
-          <ng-template [ngIf]="true">
+          @if (true) {
+<ng-template>
             <div nullGroup></div>
           </ng-template>
+}
           <div group></div>
-          <ng-template [ngIf]="true">
+          @if (true) {
+<ng-template>
             <div undefinedGroup></div>
           </ng-template>
+}
         `
       })
       class App {
@@ -2821,7 +2839,9 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
 @Component({
   selector: 'query-with-changes',
   template: `
-    <div *ngIf="showing" #foo></div>
+    @if (showing) {
+<div #foo></div>
+}
   `
 })
 export class QueryCompWithChanges {
@@ -2834,11 +2854,17 @@ export class QueryCompWithChanges {
   selector: 'query-with-no-changes',
   template: `
     <query-component>
-      <div *ngIf="true" #foo></div>
-      <div *ngIf="showing">
+      @if (true) {
+<div #foo></div>
+}
+      @if (showing) {
+<div>
         Showing me should not change the content of the query
-        <div *ngIf="innerShowing" #foo></div>
+        @if (innerShowing) {
+<div #foo></div>
+}
       </div>
+}
     </query-component>
   `
 })

@@ -64,13 +64,19 @@ describe('discovery utils', () => {
   @Component({
     selector: 'my-app',
     template: `
-      <span (click)="log($event)" *ngIf="spanVisible">{{text}}</span>
+      @if (spanVisible) {
+<span (click)="log($event)">{{text}}</span>
+}
       <div dirA #div #foo="dirA"></div>
       <child></child>
       <child dirA #child></child>
-      <child dirA *ngIf="conditionalChildVisible"></child>
+      @if (conditionalChildVisible) {
+<child dirA></child>
+}
       <ng-container><p></p></ng-container>
-      <b *ngIf="visible">Bold</b>
+      @if (visible) {
+<b>Bold</b>
+}
     `
   })
   class MyApp {

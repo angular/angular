@@ -318,7 +318,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'if-cmp',
         template: `
-          <div *ngIf="exp" [@myAnimation]="exp"></div>
+          @if (exp) {
+<div [@myAnimation]="exp"></div>
+}
         `,
         animations: [trigger(
             'myAnimation',
@@ -584,9 +586,11 @@ describe('animation tests', function() {
          @Component({
            selector: 'if-cmp',
            template: `
-          <div *ngIf="exp">
+          @if (exp) {
+<div>
             <div @myAnimation (@myAnimation.start)="track($event)" (@myAnimation.done)="track($event)"></div>
           </div>
+}
         `,
            animations: [
              trigger('myAnimation', []),
@@ -621,7 +625,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'if-cmp',
         template: `
-          <div *ngIf="exp1" [@myAnimation]="exp2"></div>
+          @if (exp1) {
+<div [@myAnimation]="exp2"></div>
+}
         `,
         animations: [trigger(
             'myAnimation',
@@ -914,7 +920,9 @@ describe('animation tests', function() {
            @Component({
              selector: 'parent-cmp',
              template: `
-             <child-cmp *ngIf="exp"></child-cmp>
+             @if (exp) {
+<child-cmp></child-cmp>
+}
            `
            })
            class ParentCmp {
@@ -964,7 +972,9 @@ describe('animation tests', function() {
            @Component({
              selector: 'parent-cmp',
              template: `
-                <child-cmp *ngIf="exp"></child-cmp>
+                @if (exp) {
+<child-cmp></child-cmp>
+}
               `
            })
            class ParentCmp {
@@ -1010,7 +1020,7 @@ describe('animation tests', function() {
 
       it('should wait for child animations before removing parent', fakeAsync(() => {
            @Component({
-             template: '<child-cmp *ngIf="exp" @parentTrigger></child-cmp>',
+             template: '@if (exp) {<child-cmp @parentTrigger></child-cmp>}',
              animations: [trigger(
                  'parentTrigger', [transition(':leave', [group([query('@*', animateChild())])])])]
            })
@@ -1065,7 +1075,9 @@ describe('animation tests', function() {
                  [transition(
                      ':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))])])],
              template: `
-                <child-cmp *ngIf="exp" @host></child-cmp>
+                @if (exp) {
+<child-cmp @host></child-cmp>
+}
               `
            })
            class ParentCmp {
@@ -1115,7 +1127,9 @@ describe('animation tests', function() {
                              ':leave',
                              [style({height: '100px'}), animate(1000, style({height: '0px'}))])])],
              template: `
-                <child-cmp *ngIf="exp" @host></child-cmp>
+                @if (exp) {
+<child-cmp @host></child-cmp>
+}
               `
            })
            class ParentCmp {
@@ -1172,7 +1186,9 @@ describe('animation tests', function() {
            @Component({
              selector: 'parent-cmp',
              template: `
-                <child-cmp *ngIf="exp"></child-cmp>
+                @if (exp) {
+<child-cmp></child-cmp>
+}
               `
            })
            class ParentCmp {
@@ -1215,7 +1231,9 @@ describe('animation tests', function() {
            @Component({
              selector: 'parent-cmp',
              template: `
-                <child-cmp *ngFor="let item of items"></child-cmp>
+                @for (item of items; track item) {
+  <child-cmp></child-cmp>
+}
               `
            })
            class ParentCmp {
@@ -1467,7 +1485,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @myAnimation *ngIf="exp"></div>
+            @if (exp) {
+<div @myAnimation></div>
+}
           `,
            animations: [trigger(
                'myAnimation',
@@ -1505,7 +1525,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div @myAnimation *ngIf="exp"></div>
+            @if (exp) {
+<div @myAnimation></div>
+}
           `,
            animations: [trigger(
                'myAnimation',
@@ -1544,7 +1566,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'ani-cmp',
         template: `
-            <div *ngFor="let item of items" @myAnimation></div>
+            @for (item of items; track item) {
+  <div @myAnimation></div>
+}
           `,
         animations: [trigger(
             'myAnimation',
@@ -1608,9 +1632,11 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+            @for (item of items; track item) {
+  <div class="item" [@color]="colorExp">
               {{ item }}
             </div>
+}
           `,
            animations: [trigger('color', [state('green', style({backgroundColor: 'green'}))])]
          })
@@ -1659,9 +1685,11 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+            @for (item of items; track item) {
+  <div class="item" [@color]="colorExp">
               {{ item }}
             </div>
+}
           `,
            animations: [trigger(
                'color',
@@ -1719,10 +1747,12 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-          <div *ngFor="let item of items, trackBy: trackItem"
+          @for (item of items, trackBy: trackItem; track item) {
+  <div
                @myAnimation (@myAnimation.start)="cb($event)">
             item{{ item }}
           </div>
+}
         `,
            animations: [trigger('myAnimation', [])]
          })
@@ -1783,7 +1813,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div *ngIf="exp" class="ng-if" [@trig1]="exp2" @trig2></div>
+            @if (exp) {
+<div class="ng-if" [@trig1]="exp2" @trig2></div>
+}
           `,
            animations: [
              trigger('trig1', [transition('state => void', [animate(1000, style({opacity: 0}))])]),
@@ -1838,7 +1870,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'ani-cmp',
         template: `
-            <div *ngIf="exp" [@myAnimation]="exp"></div>
+            @if (exp) {
+<div [@myAnimation]="exp"></div>
+}
           `,
         animations: [
           trigger(
@@ -1883,9 +1917,11 @@ describe('animation tests', function() {
       @Component({
         selector: 'ani-cmp',
         template: `
-            <div *ngIf="exp" class="parent" >
+            @if (exp) {
+<div class="parent" >
               <div [@myAnimation]="exp2"></div>
             </div>
+}
           `,
         animations:
             [trigger('myAnimation', [transition('a => b', [animate(1000, style({width: '0px'}))])])]
@@ -1919,10 +1955,12 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div *ngIf="exp1" @parent>
+            @if (exp1) {
+<div @parent>
               <div [@child]="exp2" class="child1"></div>
               <div [@child]="exp2" class="child2"></div>
             </div>
+}
           `,
            animations: [
              trigger(
@@ -2027,7 +2065,9 @@ describe('animation tests', function() {
            selector: 'ani-cmp',
            template: `
             <div #parent [@parent]="exp1" class="parent">
-              <div #child *ngIf="exp2" class="child"></div>
+              @if (exp2) {
+<div #child class="child"></div>
+}
             </div>
           `,
            animations: [trigger(
@@ -2081,10 +2121,16 @@ describe('animation tests', function() {
          @Component({
            selector: 'ani-cmp',
            template: `
-            <div #parent *ngIf="exp1" @parent class="parent">
-              <div #child1 *ngIf="exp2" class="child1"></div>
-              <div #child2 *ngIf="exp2" class="child2"></div>
+            @if (exp1) {
+<div #parent @parent class="parent">
+              @if (exp2) {
+<div #child1 class="child1"></div>
+}
+              @if (exp2) {
+<div #child2 class="child2"></div>
+}
             </div>
+}
           `,
            animations: [trigger(
                'parent',
@@ -2482,7 +2528,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'outer-cmp',
         template: `
-            <div *ngIf="exp" @outer></div>
+            @if (exp) {
+<div @outer></div>
+}
             <inner-cmp #inner></inner-cmp>
           `,
         animations: [trigger(
@@ -2507,7 +2555,9 @@ describe('animation tests', function() {
       @Component({
         selector: 'inner-cmp',
         template: `
-            <div *ngIf="exp" @inner></div>
+            @if (exp) {
+<div @inner></div>
+}
           `,
         animations: [trigger('inner', [transition(
                                           ':enter',
@@ -2636,11 +2686,13 @@ describe('animation tests', function() {
       @Component({
         selector: 'if-cmp',
         template: `
-                <div *ngFor="let item of items" [class]="'class-' + item.value">
+                @for (item of items; track item) {
+  <div [class]="'class-' + item.value">
                   <div [@myAnimation]="item.count">
                     {{ item.value }}
                   </div>
                 </div>
+}
               `,
         animations: [
           trigger(
@@ -2725,7 +2777,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'if-cmp',
            template: `
-          <div *ngIf="exp" [@myAnimation]="exp" (@myAnimation.start)="callback($event)"></div>
+          @if (exp) {
+<div [@myAnimation]="exp" (@myAnimation.start)="callback($event)"></div>
+}
         `,
            animations: [trigger(
                'myAnimation',
@@ -2763,7 +2817,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'if-cmp',
            template: `
-          <div *ngIf="exp" [@myAnimation123]="exp" (@myAnimation123.done)="callback($event)"></div>
+          @if (exp) {
+<div [@myAnimation123]="exp" (@myAnimation123.done)="callback($event)"></div>
+}
         `,
            animations: [trigger(
                'myAnimation123',
@@ -2935,7 +2991,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'if-cmp',
            template: `
-               <div *ngIf="exp" @foo @bar>123</div>
+               @if (exp) {
+<div @foo @bar>123</div>
+}
              `,
            animations: [
              trigger(
@@ -3068,7 +3126,9 @@ describe('animation tests', function() {
          @Component({
            selector: 'my-cmp',
            template: `
-              <div *ngIf="exp" @myAnimation (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
+              @if (exp) {
+<div @myAnimation (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
+}
             `,
            animations: [trigger('myAnimation', [])]
          })
@@ -3200,13 +3260,15 @@ describe('animation tests', function() {
            selector: 'my-cmp',
            template: `
               <div class="parent" [@parent]="exp" (@parent.done)="cb('all','done', $event)">
-                <div *ngFor="let item of items"
+                @for (item of items; track item) {
+  <div
                      class="item item-{{ item }}"
                      @child
                      (@child.start)="cb('c-' + item, 'start', $event)"
                      (@child.done)="cb('c-' + item, 'done', $event)">
                   {{ item }}
                 </div>
+}
               </div>
             `,
            animations: [
@@ -3498,7 +3560,9 @@ describe('animation tests', function() {
           selector: 'if-cmp',
           template: `
               <div [@.disabled]="disableExp" #parent>
-                <div *ngIf="exp" @myAnimation></div>
+                @if (exp) {
+<div @myAnimation></div>
+}
               </div>
             `,
           animations: [
@@ -3718,7 +3782,9 @@ describe('animation tests', function() {
              template: `
               <div [@.disabled]="disableExp" #container>
                 <div [@parent]="exp" (@parent.done)="onDone($event)">
-                  <div class="item" *ngFor="let item of items" @child (@child.done)="onDone($event)"></div>
+                  @for (item of items; track item) {
+  <div class="item" @child (@child.done)="onDone($event)"></div>
+}
                 </div>
               </div>
                 `
@@ -3877,8 +3943,10 @@ describe('animation tests', function() {
       @Component({
         selector: 'cmp',
         template: `
-         <div @anim *ngIf="exp">
+         @if (exp) {
+<div @anim>
          </div>
+}
        `,
         animations: [
           trigger('anim', [transition(
@@ -3923,8 +3991,10 @@ describe('animation tests', function() {
       @Component({
         selector: 'cmp',
         template: `
-         <div @anim *ngIf="exp">
+         @if (exp) {
+<div @anim>
          </div>
+}
        `,
         animations: [
           trigger('anim', [transition(
@@ -3967,8 +4037,10 @@ describe('animation tests', function() {
       @Component({
         selector: 'cmp',
         template: `
-         <div @anim *ngIf="exp">
+         @if (exp) {
+<div @anim>
          </div>
+}
        `,
         animations: [
           trigger('anim', [transition(
@@ -4013,8 +4085,10 @@ describe('animation tests', function() {
       @Component({
         selector: 'cmp',
         template: `
-         <div @anim *ngIf="exp">
+         @if (exp) {
+<div @anim>
          </div>
+}
        `,
         animations: [
           trigger('anim', [transition(
@@ -4063,8 +4137,10 @@ describe('animation tests', function() {
          @Component({
            selector: 'cmp',
            template: `
-         <div @anim *ngIf="exp">
+         @if (exp) {
+<div @anim>
          </div>
+}
        `,
            animations: [
              trigger('anim', [transition(
@@ -4193,9 +4269,13 @@ describe('animation tests', function() {
     @Component({
       selector: 'cmp',
       template: `
-       <div @parent *ngIf="exp">
-         <div @child *ngIf="exp"></div>
+       @if (exp) {
+<div @parent>
+         @if (exp) {
+<div @child></div>
+}
        </div>
+}
      `,
       animations: [
         trigger('parent', [transition(
@@ -4252,7 +4332,7 @@ describe('animation tests', function() {
   it('should keep (transition from/to) styles defined in different timelines', () => {
     @Component({
       selector: 'cmp',
-      template: '<div @animation *ngIf="exp"></div>',
+      template: '@if (exp) {<div @animation></div>}',
       animations: [trigger(
           'animation',
           [transition(':enter', [group([
@@ -4362,9 +4442,13 @@ describe('animation tests', function() {
       @Component({
         selector: 'cmp',
         template: `
-          <div *ngIf="exp" [@myAnimation]="exp">
-            <p *ngIf="exp"></p>
+          @if (exp) {
+<div [@myAnimation]="exp">
+            @if (exp) {
+<p></p>
+}
           </div>
+}
         `,
         animations: [trigger('myAnimation', [transition('void => *', triggerAnimationData)])]
       })

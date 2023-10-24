@@ -123,7 +123,9 @@ describe('@angular/common integration', () => {
         selector: 'app-toggle',
         template: `<button (click)="toggle()">Toggle List</button>
          <ul>
-            <li *ngFor="let item of items">{{item}}</li>
+            @for (item of items; track item) {
+  <li>{{item}}</li>
+}
          </ul>`
       })
       class ToggleComponent {
@@ -173,9 +175,13 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `<ul>
-          <li *ngFor="let row of items">
-            <span *ngFor="let cell of row.data">{{cell}} - {{ row.value }} - {{ items.length }}</span>
+          @for (row of items; track row) {
+  <li>
+            @for (cell of row.data; track cell) {
+  <span>{{cell}} - {{ row.value }} - {{ items.length }}</span>
+}
           </li>
+}
        </ul>`
       })
       class MultiLevelComponent {
@@ -231,12 +237,16 @@ describe('@angular/common integration', () => {
     it('should support multiple levels of embedded templates with listeners', () => {
       @Component({
         selector: 'app-multi',
-        template: `<div *ngFor="let row of items">
-          <p *ngFor="let cell of row.data">
+        template: `@for (row of items; track row) {
+  <div>
+          @for (cell of row.data; track cell) {
+  <p>
             <span (click)="onClick(row.value, name)"></span>
             {{ row.value }} - {{ name }}
           </p>
-        </div>`
+}
+        </div>
+}`
       })
       class MultiLevelWithListenerComponent {
         items: any[] = [{data: ['1'], value: 'first'}];
@@ -271,11 +281,17 @@ describe('@angular/common integration', () => {
     it('should support skipping contexts', () => {
       @Component({
         selector: 'app-multi',
-        template: `<div *ngFor="let row of items">
-           <div *ngFor="let cell of row">
-              <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
+        template: `@for (row of items; track row) {
+  <div>
+           @for (cell of row; track cell) {
+  <div>
+              @for (span of cell.data; track span) {
+  <span>{{ cell.value }} - {{ name }}</span>
+}
            </div>
-        </div>`
+}
+        </div>
+}`
       })
       class SkippingContextComponent {
         name = 'app';
@@ -310,23 +326,41 @@ describe('@angular/common integration', () => {
     it('should support context for 9+ levels of embedded templates', () => {
       @Component({
         selector: 'app-multi',
-        template: `<div *ngFor="let item0 of items">
-            <span *ngFor="let item1 of item0.data">
-               <span *ngFor="let item2 of item1.data">
-                   <span *ngFor="let item3 of item2.data">
-                       <span *ngFor="let item4 of item3.data">
-                           <span *ngFor="let item5 of item4.data">
-                               <span *ngFor="let item6 of item5.data">
-                                   <span *ngFor="let item7 of item6.data">
-                                       <span *ngFor="let item8 of item7.data">{{ item8 }}.{{ item7.value }}.{{ item6.value }}.{{ item5.value }}.{{ item4.value }}.{{ item3.value }}.{{ item2.value }}.{{ item1.value }}.{{ item0.value }}.{{ value }}</span>
+        template: `@for (item0 of items; track item0) {
+  <div>
+            @for (item1 of item0.data; track item1) {
+  <span>
+               @for (item2 of item1.data; track item2) {
+  <span>
+                   @for (item3 of item2.data; track item3) {
+  <span>
+                       @for (item4 of item3.data; track item4) {
+  <span>
+                           @for (item5 of item4.data; track item5) {
+  <span>
+                               @for (item6 of item5.data; track item6) {
+  <span>
+                                   @for (item7 of item6.data; track item7) {
+  <span>
+                                       @for (item8 of item7.data; track item8) {
+  <span>{{ item8 }}.{{ item7.value }}.{{ item6.value }}.{{ item5.value }}.{{ item4.value }}.{{ item3.value }}.{{ item2.value }}.{{ item1.value }}.{{ item0.value }}.{{ value }}</span>
+}
                                    </span>
+}
                                </span>
+}
                            </span>
+}
                        </span>
+}
                    </span>
+}
                </span>
+}
             </span>
-         </div>`
+}
+         </div>
+}`
       })
       class NineLevelsComponent {
         value = 'App';
@@ -428,8 +462,12 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `
-          <div *ngIf="showing">{{ valueOne }}</div>
-          <div *ngIf="showing">{{ valueTwo }}</div>
+          @if (showing) {
+<div>{{ valueOne }}</div>
+}
+          @if (showing) {
+<div>{{ valueTwo }}</div>
+}
         `
       })
       class SimpleConditionComponent {
@@ -457,11 +495,17 @@ describe('@angular/common integration', () => {
     it('should handle nested ngIfs with no intermediate context vars', () => {
       @Component({
         selector: 'app-multi',
-        template: `<div *ngIf="showing">
-          <div *ngIf="outerShowing">
-              <div *ngIf="innerShowing">{{ name }}</div>
+        template: `@if (showing) {
+<div>
+          @if (outerShowing) {
+<div>
+              @if (innerShowing) {
+<div>{{ name }}</div>
+}
             </div>
+}
           </div>
+}
         `
       })
       class NestedConditionsComponent {

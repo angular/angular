@@ -111,7 +111,7 @@ class EventsComp {
 @Component({
   selector: 'cond-content-comp',
   viewProviders: [Logger],
-  template: `<div class="child" message="child" *ngIf="myBool"><ng-content></ng-content></div>`,
+  template: `@if (myBool) {<div class="child" message="child"><ng-content></ng-content></div>}`,
 })
 class ConditionalContentComp {
   myBool: boolean = false;
@@ -135,9 +135,13 @@ class ConditionalParentComp {
 @Component({
   selector: 'using-for',
   viewProviders: [Logger],
-  template: `<span *ngFor="let thing of stuff" [innerHtml]="thing"></span>
+  template: `@for (thing of stuff; track thing) {
+  <span [innerHtml]="thing"></span>
+}
             <ul message="list">
-              <li *ngFor="let item of stuff" [innerHtml]="item"></li>
+              @for (item of stuff; track item) {
+  <li [innerHtml]="item"></li>
+}
             </ul>`,
 })
 class UsingFor {
@@ -1229,7 +1233,7 @@ describe('debug element', () => {
     }
 
     @Component({
-      template: '<cancel-button *ngIf="visible" (cancel)="cancel()"></cancel-button>',
+      template: '@if (visible) {<cancel-button (cancel)="cancel()"></cancel-button>}',
     })
     class App {
       visible = true;

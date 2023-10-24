@@ -92,7 +92,7 @@ function noopAnimationTests() {
        @Component({
          selector: 'my-cmp',
          template:
-             '<div *ngIf="exp" @myAnimation (@myAnimation.start)="onStart($event)" (@myAnimation.done)="onDone($event)"></div>',
+             '@if (exp) {<div @myAnimation (@myAnimation.start)="onStart($event)" (@myAnimation.done)="onDone($event)"></div>}',
          animations: [trigger(
              'myAnimation',
              [transition(

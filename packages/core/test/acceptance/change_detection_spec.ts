@@ -662,7 +662,7 @@ describe('change detection', () => {
       });
 
       it('should check the host component when called from EmbeddedViewRef', () => {
-        @Component({template: '{{ name }}<div *ngIf="showing" dir></div>'})
+        @Component({template: '{{ name }}@if (showing) {<div dir></div>}'})
         class MyApp {
           @ViewChild(Dir) dir!: Dir;
           showing = true;
@@ -772,7 +772,9 @@ describe('change detection', () => {
         @Component({
           selector: 'app',
           template: `
-            <div *ngIf="visible" #ref>Visible text</div>
+            @if (visible) {
+<div #ref>Visible text</div>
+}
           `
         })
         class App {
@@ -1098,7 +1100,7 @@ describe('change detection', () => {
 
       it('should ensure OnPush components in embedded views are checked', () => {
         @Component({
-          template: '{{ value }} - <on-push-comp *ngIf="showing"></on-push-comp>',
+          template: '{{ value }} - @if (showing) {<on-push-comp></on-push-comp>}',
           changeDetection: ChangeDetectionStrategy.OnPush
         })
         class EmbeddedViewParent {
@@ -1241,7 +1243,7 @@ describe('change detection', () => {
       });
 
       it('should throw if bindings in embedded view have changed', () => {
-        @Component({template: '<span *ngIf="showing">{{ showing }}</span>'})
+        @Component({template: '@if (showing) {<span>{{ showing }}</span>}'})
         class EmbeddedViewApp {
           showing = true;
           constructor(public cdr: ChangeDetectorRef) {}

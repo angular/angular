@@ -326,11 +326,19 @@ class TestCmp {
 @Component({
   selector: 'some-app',
   template: `
-    <cmp-emulated *ngIf="!componentOneInstanceHidden && showEmulatedComponents"></cmp-emulated>
-    <cmp-emulated *ngIf="!componentTwoInstanceHidden && showEmulatedComponents"></cmp-emulated>
+    @if (!componentOneInstanceHidden && showEmulatedComponents) {
+<cmp-emulated></cmp-emulated>
+}
+    @if (!componentTwoInstanceHidden && showEmulatedComponents) {
+<cmp-emulated></cmp-emulated>
+}
 
-    <cmp-none *ngIf="!componentOneInstanceHidden && !showEmulatedComponents"></cmp-none>
-    <cmp-none *ngIf="!componentTwoInstanceHidden && !showEmulatedComponents"></cmp-none>
+    @if (!componentOneInstanceHidden && !showEmulatedComponents) {
+<cmp-none></cmp-none>
+}
+    @if (!componentTwoInstanceHidden && !showEmulatedComponents) {
+<cmp-none></cmp-none>
+}
   `,
 })
 export class SomeAppForCleanUp {

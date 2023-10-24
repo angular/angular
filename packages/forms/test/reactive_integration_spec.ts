@@ -698,10 +698,14 @@ describe('reactive forms integration tests', () => {
         @Component({
           template: `
               <form [formGroup]="form">
-                <input formControlName="name" id="standalone-id" *ngIf="!showAsGroup">
-                <ng-container formGroupName="name" *ngIf="showAsGroup">
+                @if (!showAsGroup) {
+<input formControlName="name" id="standalone-id">
+}
+                @if (showAsGroup) {
+<ng-container formGroupName="name">
                   <input formControlName="control" id="inside-group-id">
                 </ng-container>
+}
               </form>
             `
         })
@@ -757,10 +761,14 @@ describe('reactive forms integration tests', () => {
         @Component({
           template: `
               <form [formGroup]="form">
-                <input formControlName="name" id="standalone-id" *ngIf="!showAsArray">
-                <ng-container formArrayName="name" *ngIf="showAsArray">
+                @if (!showAsArray) {
+<input formControlName="name" id="standalone-id">
+}
+                @if (showAsArray) {
+<ng-container formArrayName="name">
                   <input formControlName="0" id="inside-array-id">
                 </ng-container>
+}
               </form>
             `
         })
@@ -816,12 +824,16 @@ describe('reactive forms integration tests', () => {
         @Component({
           template: `
               <form [formGroup]="form">
-                <ng-container formGroupName="name" *ngIf="!showAsArray">
+                @if (!showAsArray) {
+<ng-container formGroupName="name">
                   <input formControlName="control" id="inside-group-id">
                 </ng-container>
-                <ng-container formArrayName="name" *ngIf="showAsArray">
+}
+                @if (showAsArray) {
+<ng-container formArrayName="name">
                   <input formControlName="0" id="inside-array-id">
                 </ng-container>
+}
               </form>
             `
         })
@@ -4035,7 +4047,9 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a>
+            @if (visible) {
+<input type="text" [formControl]="control" cva-a validators-a>
+}
           `
       })
       class App {
@@ -4111,7 +4125,9 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <input type="text" [formControl]="control" cva-a validators-a *ngIf="visible">
+            @if (visible) {
+<input type="text" [formControl]="control" cva-a validators-a>
+}
             <input type="text" [formControl]="control" cva-b>
           `
       })
@@ -4185,7 +4201,9 @@ describe('reactive forms integration tests', () => {
         selector: 'app',
         template: `
             <div [formGroup]="group">
-              <input type="text" formControlName="control" cva-a validators-a *ngIf="visible">
+              @if (visible) {
+<input type="text" formControlName="control" cva-a validators-a>
+}
               <input type="text" formControlName="control" cva-b>
             </div>
           `
@@ -4263,11 +4281,13 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <ng-container *ngIf="visible">
+            @if (visible) {
+
               <div [formGroup]="group" validators-b>
                 <input type="text" [formControl]="control" cva-a validators-a>
               </div>
-            </ng-container>
+            
+}
           `
       })
       class App {
@@ -4367,7 +4387,9 @@ describe('reactive forms integration tests', () => {
         selector: 'app',
         template: `
             <div [formGroup]="group" validators-b>
-              <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a>
+              @if (visible) {
+<input type="text" [formControl]="control" cva-a validators-a>
+}
             </div>
           `
       })
@@ -4446,11 +4468,15 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <div [formGroup]="group" validators-b *ngIf="visible">
-              <ng-container *ngFor="let login of logins">
+            @if (visible) {
+<div [formGroup]="group" validators-b>
+              @for (login of logins; track login) {
+  
                 <input type="radio" [value]="login" [formControl]="control" cva-a validators-a>
-              </ng-container>
+              
+}
             </div>
+}
           `
       })
       class App {
@@ -4559,7 +4585,9 @@ describe('reactive forms integration tests', () => {
         template: `
             <div [formGroup]="group" validators-c>
               <ng-container formArrayName="arr" validators-b>
-                <input *ngIf="visible" type="text" formControlName="0" cva-a validators-a>
+                @if (visible) {
+<input type="text" formControlName="0" cva-a validators-a>
+}
               </ng-container>
             </div>
           `
@@ -4656,9 +4684,11 @@ describe('reactive forms integration tests', () => {
         selector: 'app',
         template: `
             <div [formGroup]="group" validators-c>
-              <ng-container *ngIf="visible" formArrayName="arr" validators-b>
+              @if (visible) {
+<ng-container formArrayName="arr" validators-b>
                 <input type="text" formControlName="0" cva-a validators-a>
               </ng-container>
+}
             </div>
           `
       })
@@ -4778,11 +4808,13 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <div [formGroup]="group" validators-c *ngIf="visible">
+            @if (visible) {
+<div [formGroup]="group" validators-c>
               <ng-container formArrayName="arr" validators-b>
                 <input type="text" formControlName="0" cva-a validators-a>
               </ng-container>
             </div>
+}
           `
       })
       class App {
@@ -4908,11 +4940,15 @@ describe('reactive forms integration tests', () => {
         selector: 'app',
         template: `
             <div [formGroup]="group" validators-c>
-              <ng-container formArrayName="arr" validators-b *ngIf="visible">
-                <ng-container *ngFor="let i of ids">
+              @if (visible) {
+<ng-container formArrayName="arr" validators-b>
+                @for (i of ids; track i) {
+  
                   <input type="text" [formControlName]="i" cva-a validators-a>
-                </ng-container>
+                
+}
               </ng-container>
+}
             </div>
           `
       })
@@ -5052,9 +5088,11 @@ describe('reactive forms integration tests', () => {
         selector: 'app',
         template: `
             <div [formGroup]="root" validators-c>
-              <ng-container formGroupName="group" validators-b *ngIf="visible">
+              @if (visible) {
+<ng-container formGroupName="group" validators-b>
                 <input type="text" formControlName="control" cva-a validators-a>
               </ng-container>
+}
             </div>
           `
       })
@@ -5147,11 +5185,13 @@ describe('reactive forms integration tests', () => {
       @Component({
         selector: 'app',
         template: `
-            <div [formGroup]="root" validators-c *ngIf="visible">
+            @if (visible) {
+<div [formGroup]="root" validators-c>
               <ng-container formGroupName="group" validators-b>
                 <input type="text" formControlName="control" cva-a validators-a>
               </ng-container>
             </div>
+}
           `
       })
       class App {
@@ -5334,7 +5374,9 @@ class FormGroupComp {
         <input formControlName="login">
         <input formControlName="password">
       </div>
-      <input *ngIf="form.contains('email')" formControlName="email">
+      @if (form.contains('email')) {
+<input formControlName="email">
+}
     </form>`
 })
 class NestedFormGroupNameComp {
@@ -5346,9 +5388,11 @@ class NestedFormGroupNameComp {
   template: `
     <form [formGroup]="form">
       <div formArrayName="cities">
-        <div *ngFor="let city of cityArray.controls; let i=index">
+        @for (city of cityArray.controls; track city) {
+  <div>
           <input [formControlName]="i">
         </div>
+}
       </div>
      </form>`
 })
@@ -5376,10 +5420,12 @@ class NestedFormArrayNameComp {
   template: `
      <div [formGroup]="form">
       <div formArrayName="cities">
-        <div *ngFor="let city of cityArray.controls; let i=index" [formGroupName]="i">
+        @for (city of cityArray.controls; track city) {
+  <div [formGroupName]="i">
           <input formControlName="town">
           <input formControlName="state">
         </div>
+}
       </div>
      </div>`
 })
@@ -5531,9 +5577,11 @@ class MultipleFormControls {
   selector: 'ngfor-form-controls-with-validators',
   template: `
     <div [formGroup]="form">
-      <ng-container *ngFor="let login of logins">
+      @for (login of logins; track login) {
+  
         <input type="radio" formControlName="login" [value]="login" validators-a>
-      </ng-container>
+      
+}
     </div>
   `
 })

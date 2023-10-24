@@ -784,9 +784,11 @@ describe('pipe', () => {
           it('should throw an error if a pipe is not found inside an inline template', () => {
             @Component({
               template: `
-            <ng-container *ngIf="true">
+            @if (true) {
+
               {{ value | testMissingPipe }}
-            </ng-container>`,
+            
+}`,
               standalone: componentIsStandalone,
               ...(componentIsStandalone ? {imports: [CommonModule]} : {}),
             })
@@ -848,9 +850,11 @@ describe('pipe', () => {
                @Component({
                  template: `
               <app-test-child>
-                <ng-container *ngIf="true">
+                @if (true) {
+
                   {{ value | testMissingPipe }}
-                </ng-container>
+                
+}
               </app-test-child>`,
                  standalone: componentIsStandalone,
                  ...(componentIsStandalone ? {imports: [TestChildComponent, CommonModule]} : {}),
@@ -892,7 +896,7 @@ describe('pipe', () => {
           it('should throw an error if a pipe is not found inside a structural directive input',
              () => {
                @Component({
-                 template: '<div *ngIf="isVisible | testMissingPipe"></div>',
+                 template: '@if (isVisible | testMissingPipe) {<div></div>}',
                  standalone: componentIsStandalone,
                  ...(componentIsStandalone ? {imports: [CommonModule]} : {})
                })

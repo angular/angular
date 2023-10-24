@@ -487,7 +487,7 @@ describe('providers', () => {
 
       @Component({
         selector: 'app',
-        template: '<comp-with-provider *ngIf="condition"></comp-with-provider>',
+        template: '@if (condition) {<comp-with-provider></comp-with-provider>}',
       })
       class App {
         condition = true;
@@ -717,9 +717,11 @@ describe('providers', () => {
       @Component({
         template: `
           <div>
-            <ng-container *ngFor="let item of items">
+            @for (item of items; track item) {
+  
               <repeated></repeated>
-            </ng-container>
+            
+}
           </div>
         `,
         providers: [

@@ -982,7 +982,9 @@ describe('ViewContainerRef', () => {
     it('should not throw when view removes another view upon removal', () => {
       @Component({
         template: `
-          <div *ngIf="visible" [template]="parent">I host a template</div>
+          @if (visible) {
+<div [template]="parent">I host a template</div>
+}
           <ng-template #parent>
               <div [template]="child">I host a child template</div>
           </ng-template>
@@ -1781,7 +1783,9 @@ describe('ViewContainerRef', () => {
     it('should insert elements in the proper order when template root is an ng-container', () => {
       @Component({
         template: `
-          <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+          @for (item of items; track item) {
+  |{{ item }}|
+}
         `
       })
       class App {
@@ -1816,7 +1820,9 @@ describe('ViewContainerRef', () => {
          @Component({
            template: `
               <ng-container>
-                <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+                @for (item of items; track item) {
+  |{{ item }}|
+}
               </ng-container>
             `
          })
@@ -1851,7 +1857,9 @@ describe('ViewContainerRef', () => {
        () => {
          @Component({
            template: `
-            <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
+            @for (item of items; track item) {
+  <ng-container>|{{ item }}|</ng-container>
+}
           `
          })
          class App {
@@ -1886,7 +1894,9 @@ describe('ViewContainerRef', () => {
          @Component({
            template: `
             <ng-container>
-              <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
+              @for (item of items; track item) {
+  <ng-container>|{{ item }}|</ng-container>
+}
             </ng-container>
           `
          })
@@ -1921,7 +1931,9 @@ describe('ViewContainerRef', () => {
        () => {
          @Component({
            template: `
-          <ng-container *ngFor="let item of items">{count, select, other {|{{ item }}|}}</ng-container>
+          @for (item of items; track item) {
+  {count, select, other {|{{ item }}|}}
+}
         `
          })
          class App {
@@ -2237,7 +2249,7 @@ describe('ViewContainerRef', () => {
     it('should project the ViewContainerRef content along its host, in a view', () => {
       @Component({
         selector: 'child-with-view',
-        template: `Before (inside)-<ng-content *ngIf="show"></ng-content>-After (inside)`
+        template: `Before (inside)-@if (show) {<ng-content></ng-content>}-After (inside)`
       })
       class ChildWithView {
         show: boolean = true;
@@ -2280,7 +2292,7 @@ describe('ViewContainerRef', () => {
     it('should handle empty re-projection into the root of a view', () => {
       @Component({
         selector: 'root-comp',
-        template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+        template: `@if (show) {<ng-template><ng-content></ng-content></ng-template>}`,
       })
       class RootComp {
         @Input() show: boolean = true;

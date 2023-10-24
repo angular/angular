@@ -1561,7 +1561,9 @@ describe('styling', () => {
         selector: 'app',
         template: `
           <div class="my-class" [ngClass]="classMap" test-dir>
-            <div *ngIf="showing" child-dir>Hello</div>
+            @if (showing) {
+<div child-dir>Hello</div>
+}
           </div>
         `
       })
@@ -2397,10 +2399,12 @@ describe('styling', () => {
   it('should evaluate initial style/class values on a list of elements that changes', () => {
     @Component({
       template: `
-            <div *ngFor="let item of items"
+            @for (item of items; track item) {
+  <div
                   class="initial-class item-{{ item }}">
               {{ item }}
             </div>
+}
           `
     })
     class Cmp {
@@ -2451,9 +2455,11 @@ describe('styling', () => {
        @Component({
          template: `
             <header class="header">header</header>
-            <div *ngFor="let item of items" class="item item-{{ item }}">
+            @for (item of items; track item) {
+  <div class="item item-{{ item }}">
               {{ item }}
             </div>
+}
             <footer class="footer">footer</footer>
           `
        })
@@ -2575,14 +2581,16 @@ describe('styling', () => {
 
     @Component({
       template: `
-                <div
+                @for (item of items; track item; let i = $index) {
+  <div
                   class="item"
-                  *ngFor="let item of items; let i = index"
+                 
                   [style.color]="c"
                   [style.height.px]="h * i"
                   some-dir-with-styling>
                   {{ item }}
                 </div>
+}
                 <section [style.width.px]="w"></section>
                 <p [style.height.px]="h"></p>
               `
@@ -3584,7 +3592,8 @@ describe('styling', () => {
     }
 
     @Component({
-      template: `<comp-with-classes class="inline" *ngFor="let item of items"></comp-with-classes>`
+      template:
+          `@for (item of items; track item) {<comp-with-classes class="inline"></comp-with-classes>}`
     })
     class MyComp {
       items = [1, 2, 3];
@@ -3751,7 +3760,7 @@ describe('styling', () => {
         hostClass = {'bar': true};
       }
 
-      @Component({template: `<my-cmp *ngFor="let i of [1,2]" host-styling></my-cmp>`})
+      @Component({template: `@for (i of [1,2]; track i) {<my-cmp host-styling></my-cmp>}`})
       class MyApp {
         // When the first view in the list gets CD-ed, everything works.
         // When the second view gets CD-ed, the styling has already created the data structures

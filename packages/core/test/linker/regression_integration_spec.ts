@@ -269,7 +269,7 @@ describe('regressions', () => {
   });
 
   it('should not recreate ViewContainerRefs in queries', () => {
-    @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
+    @Component({template: '<div #vc></div>@if (show) {<div #vc></div>}'})
     class MyComp {
       @ViewChildren('vc', {read: ViewContainerRef}) viewContainers!: QueryList<ViewContainerRef>;
 
@@ -511,21 +511,21 @@ class CountingPipe implements PipeTransform {
 
 @Component({
   selector: 'left',
-  template: `L<right *ngIf="false"></right>`,
+  template: `L@if (false) {<right></right>}`,
 })
 class LeftComp {
 }
 
 @Component({
   selector: 'right',
-  template: `R<left *ngIf="false"></left>`,
+  template: `R@if (false) {<left></left>}`,
 })
 class RightComp {
 }
 
 @Component({
   selector: 'fakeRecursiveComp',
-  template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
+  template: `[@if (false) {<left></left>}@if (false) {<right></right>}]`,
 })
 export class FakeRecursiveComp {
 }

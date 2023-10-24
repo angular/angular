@@ -352,8 +352,12 @@ describe('property bindings', () => {
       @Component({
         template: `
           <button idDir [id]="id1">Click me</button>
-          <button *ngIf="condition" [id]="id2">Click me too (2)</button>
-          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
+          @if (condition) {
+<button [id]="id2">Click me too (2)</button>
+}
+          @if (!condition) {
+<button otherDir [id]="id3">Click me too (3)</button>
+}
         `
       })
       class App {
@@ -531,8 +535,12 @@ describe('property bindings', () => {
       @Component({
         template: `
           <div role="listbox" myDir></div>
-          <div role="button" myDirB *ngIf="condition"></div>
-          <div role="menu" *ngIf="!condition"></div>
+          @if (condition) {
+<div role="button" myDirB></div>
+}
+          @if (!condition) {
+<div role="menu"></div>
+}
         `,
       })
       class App {
@@ -574,7 +582,9 @@ describe('property bindings', () => {
 
       @Component({
         template: `
-          <comp *ngFor="let i of [0, 1]"></comp>
+          @for (i of [0, 1]; track i) {
+  <comp></comp>
+}
         `
       })
       class App {

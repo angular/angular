@@ -37,7 +37,7 @@ class MockChildComp {
 class ParentComp {
 }
 
-@Component({selector: 'my-if-comp', template: `MyIf(<span *ngIf="showMore">More</span>)`})
+@Component({selector: 'my-if-comp', template: `MyIf(@if (showMore) {<span>More</span>})`})
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;

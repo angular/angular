@@ -2162,7 +2162,7 @@ class EventCmp {
   host: {'(click)': 'true'},
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:
-      '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>'
+      '{{field}}<div (click)="noop()"></div>@if (true) {<div (click)="noop()"></div>}<event-cmp></event-cmp>'
 })
 class PushCmp {
   numberOfChecks: number;
@@ -2511,7 +2511,7 @@ class ToolbarViewContainer {
 
 @Component({
   selector: 'toolbar',
-  template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
+  template: 'TOOLBAR(@for ( part of query; track  part) {<div [toolbarVc]="part"></div>})',
 })
 class ToolbarComponent {
   @ContentChildren(ToolbarPart) query!: QueryList<ToolbarPart>;
@@ -2713,7 +2713,7 @@ class DirectiveThrowingAnError {
 
 @Component({
   selector: 'component-with-template',
-  template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`
+  template: `No View Decorator: @for (item of items; track item) {<div>{{item}}</div>}`
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];

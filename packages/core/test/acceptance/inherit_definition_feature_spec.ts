@@ -386,7 +386,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -427,7 +427,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -468,7 +468,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -509,7 +509,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -550,7 +550,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -591,7 +591,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -632,7 +632,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -943,7 +943,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -984,7 +984,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1025,7 +1025,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1066,7 +1066,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1107,7 +1107,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1148,7 +1148,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1189,7 +1189,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1510,7 +1510,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1551,7 +1551,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1592,7 +1592,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1633,7 +1633,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1674,7 +1674,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1715,7 +1715,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -1756,7 +1756,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<p *ngIf="showing" subDir></p>`,
+          template: `@if (showing) {<p subDir></p>}`,
         })
         class App {
           showing = true;
@@ -2112,7 +2112,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2153,7 +2153,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2195,7 +2195,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2237,7 +2237,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2279,7 +2279,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2321,7 +2321,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2363,7 +2363,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2666,7 +2666,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2708,7 +2708,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2750,7 +2750,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2792,7 +2792,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2834,7 +2834,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2876,7 +2876,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -2918,7 +2918,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3186,7 +3186,9 @@ describe('inheritance', () => {
         selector: 'my-comp',
         template: `
           <ul>
-            <li child-dir *ngFor="let item of items">{{item}}</li>
+            @for (item of items; track item) {
+  <li child-dir>{{item}}</li>
+}
           </ul>
         `,
       })
@@ -3284,7 +3286,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3325,7 +3327,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3367,7 +3369,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3409,7 +3411,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3451,7 +3453,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3493,7 +3495,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3535,7 +3537,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3826,7 +3828,9 @@ describe('inheritance', () => {
         selector: 'my-comp',
         template: `
           <ul>
-            <li child-dir *ngFor="let item of items">{{item}}</li>
+            @for (item of items; track item) {
+  <li child-dir>{{item}}</li>
+}
           </ul>
         `,
       })
@@ -3926,7 +3930,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -3968,7 +3972,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4010,7 +4014,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4052,7 +4056,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4094,7 +4098,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4136,7 +4140,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4178,7 +4182,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4546,7 +4550,9 @@ describe('inheritance', () => {
         selector: 'my-comp',
         template: `
           <ul>
-            <li child-dir *ngFor="let item of items">{{item}}</li>
+            @for (item of items; track item) {
+  <li child-dir>{{item}}</li>
+}
           </ul>
         `,
       })
@@ -4721,7 +4727,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4763,7 +4769,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4805,7 +4811,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4847,7 +4853,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4889,7 +4895,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4931,7 +4937,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -4973,7 +4979,7 @@ describe('inheritance', () => {
         }
 
         @Component({
-          template: `<my-comp *ngIf="showing"></my-comp>`,
+          template: `@if (showing) {<my-comp></my-comp>}`,
         })
         class App {
           showing = true;
@@ -5340,7 +5346,9 @@ describe('inheritance', () => {
         selector: 'my-comp',
         template: `
           <ul>
-            <li child-dir *ngFor="let item of items">{{item}}</li>
+            @for (item of items; track item) {
+  <li child-dir>{{item}}</li>
+}
           </ul>
         `,
       })

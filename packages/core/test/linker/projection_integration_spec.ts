@@ -249,7 +249,7 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template:
-          `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`
+          `<ng-content></ng-content>(@if (showing) {<ng-template><ng-content select="div"></ng-content></ng-template>})`
     })
     class Child {
       @Input() showing!: boolean;

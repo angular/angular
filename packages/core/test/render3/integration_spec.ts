@@ -82,10 +82,12 @@ describe('element discovery', () => {
       standalone: true,
       template: `
         <section>
-          <ng-container *ngIf="true">
+          @if (true) {
+
             <div><p></p></div>
             <div></div>
-          </ng-container>
+          
+}
         </section>
       `,
     })

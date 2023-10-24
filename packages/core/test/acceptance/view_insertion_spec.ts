@@ -190,7 +190,9 @@ describe('view insertion', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
       @Component({
         template: `
-                  <ng-template #subContainer><div class="dynamic" *ngIf="true">test</div></ng-template>
+                  <ng-template #subContainer>@if (true) {
+<div class="dynamic">test</div>
+}</ng-template>
                   <div #container></div>
                 `
       })
@@ -599,10 +601,12 @@ describe('view insertion', () => {
           <ng-template #parameterListItem let-parameter="parameter">
             {{parameter}}
           </ng-template>
-          <ng-container *ngFor="let parameter of items;"
+          @for (parameter of items; track parameter) {
+  <ng-container
             [ngTemplateOutlet]="parameterListItem"
             [ngTemplateOutletContext]="{parameter:parameter}">
           </ng-container>
+}
         `
       })
       class AppComponent {

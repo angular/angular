@@ -404,7 +404,7 @@ describe('component', () => {
     it('should not throw if a standalone component imports itself', () => {
       @Component({
         selector: 'comp',
-        template: '<comp *ngIf="recurse"/>hello',
+        template: '@if (recurse) {<comp/>}hello',
         standalone: true,
         imports: [Comp, NgIf]
       })
@@ -435,7 +435,7 @@ describe('component', () => {
     it('should not throw if a standalone component imports itself using a forwardRef', () => {
       @Component({
         selector: 'comp',
-        template: '<comp *ngIf="recurse"/>hello',
+        template: '@if (recurse) {<comp/>}hello',
         standalone: true,
         imports: [forwardRef(() => Comp), NgIf]
       })

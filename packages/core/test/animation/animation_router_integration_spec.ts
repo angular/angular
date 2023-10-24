@@ -190,8 +190,12 @@ describe('Animation Router Tests', function() {
          selector: 'page2',
          template: `
           <h1>Page 2</h1>
-          <div *ngIf="exp" class="if-one" @ifAnimation></div>
-          <div *ngIf="exp" class="if-two" @ifAnimation></div>
+          @if (exp) {
+<div class="if-one" @ifAnimation></div>
+}
+          @if (exp) {
+<div class="if-two" @ifAnimation></div>
+}
         `,
          animations: [
            trigger(
@@ -291,8 +295,12 @@ describe('Animation Router Tests', function() {
          selector: 'page1',
          template: `
           <h1>Page 1</h1>
-          <div *ngIf="exp" class="if-one" @ifAnimation></div>
-          <div *ngIf="exp" class="if-two" @ifAnimation></div>
+          @if (exp) {
+<div class="if-one" @ifAnimation></div>
+}
+          @if (exp) {
+<div class="if-two" @ifAnimation></div>
+}
         `,
          animations: [
            trigger(
@@ -383,8 +391,12 @@ describe('Animation Router Tests', function() {
           <div [@pageAnimation]="prepRoute(outlet)">
             <header>
               <div class="inner">
-                <div *ngIf="!loading" class="title">Page Ready</div>
-                <div *ngIf="loading" class="loading">loading...</div>
+                @if (!loading) {
+<div class="title">Page Ready</div>
+}
+                @if (loading) {
+<div class="loading">loading...</div>
+}
               </div>
             </header>
             <section class="router-container">

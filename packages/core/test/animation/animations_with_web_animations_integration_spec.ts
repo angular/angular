@@ -30,13 +30,15 @@ describe('animation integration tests using web animations', function() {
     @Component({
       selector: 'ani-cmp',
       template: `
-          <div @auto *ngIf="exp">
+          @if (exp) {
+<div @auto>
             <div style="line-height:20px;">1</div>
             <div style="line-height:20px;">2</div>
             <div style="line-height:20px;">3</div>
             <div style="line-height:20px;">4</div>
             <div style="line-height:20px;">5</div>
           </div>
+}
         `,
       animations: [trigger(
           'auto',
@@ -87,13 +89,15 @@ describe('animation integration tests using web animations', function() {
     @Component({
       selector: 'ani-cmp',
       template: `
-          <div @auto *ngIf="exp">
+          @if (exp) {
+<div @auto>
             <div style="line-height:20px;">1</div>
             <div style="line-height:20px;">2</div>
             <div style="line-height:20px;">3</div>
             <div style="line-height:20px;">4</div>
             <div style="line-height:20px;">5</div>
           </div>
+}
         `,
       animations: [trigger(
           'auto',
@@ -128,9 +132,11 @@ describe('animation integration tests using web animations', function() {
       selector: 'ani-cmp',
       template: `
             <div [@myAnimation]="exp" #parent>
-              <div *ngFor="let item of items" class="child" style="line-height:20px">
+              @for (item of items; track item) {
+  <div class="child" style="line-height:20px">
                 - {{ item }}
               </div>
+}
             </div>
           `,
       animations: [trigger(
@@ -197,9 +203,11 @@ describe('animation integration tests using web animations', function() {
       template: `
             <button (click)="toggle()">Open / Close</button>
             <hr />
-            <div *ngIf="exp" @slide class="box">
+            @if (exp) {
+<div @slide class="box">
             ...
             </div>
+}
           `,
       animations: [trigger(
           'slide',
@@ -264,11 +272,13 @@ describe('animation integration tests using web animations', function() {
               <button (click)="full()">Full</button>
               <hr />
               <div [@list]="exp" class="list">
-                <div *ngFor="let item of items" class="outer">
+                @for (item of items; track item) {
+  <div class="outer">
                   <div class="inner">
                     {{ item }}
                   </div>
                 </div>
+}
               </div>
             `,
           animations: [
@@ -406,7 +416,9 @@ describe('animation integration tests using web animations', function() {
          selector: 'ani-cmp',
          template: `
           <div [@myAnimation]="exp">
-            <div *ngFor="let item of items" class="target"></div>
+            @for (item of items; track item) {
+  <div class="target"></div>
+}
           </div>
         `,
          animations: [

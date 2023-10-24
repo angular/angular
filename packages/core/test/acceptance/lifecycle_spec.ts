@@ -310,7 +310,7 @@ describe('onChanges', () => {
       }
     }
 
-    @Component({template: `<comp *ngIf="show" [val]="val"></comp>`})
+    @Component({template: `@if (show) {<comp [val]="val"></comp>}`})
     class App {
       show = true;
 
@@ -812,7 +812,9 @@ describe('onChanges', () => {
     @Component({
       template: `
       <comp name="0" [val]="val"></comp>
-      <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
+      @for (number of numbers; track number) {
+  <comp [name]="number" [val]="val"></comp>
+}
       <comp name="1" [val]="val"></comp>
       `
     })
@@ -939,7 +941,9 @@ describe('onChanges', () => {
     @Component({
       template: `
         <parent name="0" [val]="val"></parent>
-        <parent *ngFor="let number of numbers" [name]="number" [val]="val"></parent>
+        @for (number of numbers; track number) {
+  <parent [name]="number" [val]="val"></parent>
+}
         <parent name="1" [val]="val"></parent>
       `
     })
@@ -1509,7 +1513,9 @@ describe('onInit', () => {
 
     @Component({
       template: `
-        <div *ngIf="show"><my-comp></my-comp></div>
+        @if (show) {
+<div><my-comp></my-comp></div>
+}
       `
     })
     class App {
@@ -1873,7 +1879,9 @@ describe('onInit', () => {
     @Component({
       template: `
         <comp name="0"></comp>
-        <comp *ngFor="let number of numbers" [name]="number"></comp>
+        @for (number of numbers; track number) {
+  <comp [name]="number"></comp>
+}
         <comp name="1"></comp>
       `
     })
@@ -1920,7 +1928,9 @@ describe('onInit', () => {
     @Component({
       template: `
         <parent name="0"></parent>
-        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        @for (number of numbers; track number) {
+  <parent [name]="number"></parent>
+}
         <parent name="1"></parent>
       `
     })
@@ -2287,7 +2297,7 @@ describe('afterContentinit', () => {
       }
     }
 
-    @Component({template: `<comp *ngIf="show"></comp>`})
+    @Component({template: `@if (show) {<comp></comp>}`})
     class App {
       show = true;
 
@@ -2469,7 +2479,9 @@ describe('afterContentinit', () => {
     @Component({
       template: `
         <comp name="4"></comp>
-        <comp *ngFor="let number of numbers" [name]="number"></comp>
+        @for (number of numbers; track number) {
+  <comp [name]="number"></comp>
+}
         <comp name="5"></comp>
       `
     })
@@ -2521,7 +2533,9 @@ describe('afterContentinit', () => {
     @Component({
       template: `
         <parent name="4"></parent>
-        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        @for (number of numbers; track number) {
+  <parent [name]="number"></parent>
+}
         <parent name="5"></parent>
       `
     })
@@ -2724,7 +2738,7 @@ describe('afterViewInit', () => {
     }
 
     @Component({
-      template: `<comp *ngIf="show"></comp>`,
+      template: `@if (show) {<comp></comp>}`,
     })
     class App {
       show = true;
@@ -2948,7 +2962,9 @@ describe('afterViewInit', () => {
     @Component({
       template: `
         <comp name="4"></comp>
-        <comp *ngFor="let number of numbers" [name]="number"></comp>
+        @for (number of numbers; track number) {
+  <comp [name]="number"></comp>
+}
         <comp name="5"></comp>
       `
     })
@@ -3007,7 +3023,9 @@ describe('afterViewInit', () => {
     @Component({
       template: `
         <parent name="4"></parent>
-        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        @for (number of numbers; track number) {
+  <parent [name]="number"></parent>
+}
         <parent name="5"></parent>
       `
     })
@@ -3255,7 +3273,9 @@ describe('afterViewChecked', () => {
     @Component({
       template: `
       <parent name="4"></parent>
-      <parent *ngFor="let number of numbers" [name]="number"></parent>
+      @for (number of numbers; track number) {
+  <parent [name]="number"></parent>
+}
       <parent name="5"></parent>
       `
     })
@@ -3398,7 +3418,7 @@ describe('onDestroy', () => {
     }
 
     @Component({
-      template: `<comp *ngIf="show"></comp>`,
+      template: `@if (show) {<comp></comp>}`,
     })
     class App {
       show = true;
@@ -3446,10 +3466,12 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <comp name="1"></comp>
           <comp name="2"></comp>
         </div>
+}
       `
     })
     class App {
@@ -3499,10 +3521,12 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <parent name="1"></parent>
           <parent name="2"></parent>
         </div>
+}
       `
     })
     class App {
@@ -3568,10 +3592,12 @@ describe('onDestroy', () => {
     }
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <grandparent name="1"></grandparent>
           <grandparent name="2"></grandparent>
         </div>
+}
       `
     })
     class App {
@@ -3629,7 +3655,8 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <comp name="1">
             <projected name="1"></projected>
           </comp>
@@ -3637,6 +3664,7 @@ describe('onDestroy', () => {
             <projected name="2"></projected>
           </comp>
         </div>
+}
       `
     })
     class App {
@@ -3680,11 +3708,15 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-      <div *ngIf="showAll">
+      @if (showAll) {
+<div>
         <comp name="1"></comp>
-        <comp *ngIf="showMiddle" name="2"></comp>
+        @if (showMiddle) {
+<comp name="2"></comp>
+}
         <comp name="3"></comp>
       </div>
+}
       `
     })
     class App {
@@ -3751,9 +3783,13 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-        <div *ngIf="show">
-          <comp *ngFor="let number of numbers" [name]="number"></comp>
+        @if (show) {
+<div>
+          @for (number of numbers; track number) {
+  <comp [name]="number"></comp>
+}
         </div>
+}
       `
     })
     class App {
@@ -3827,11 +3863,13 @@ describe('onDestroy', () => {
     }
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <button (click)="handleClick1()">test 1</button>
           <comp></comp>
           <button (click)="handleClick2()">test 2</button>
         </div>
+}
       `
     })
     class App {
@@ -3954,10 +3992,12 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <comp name="1" dir="1"></comp>
           <comp name="2" dir="2"></comp>
         </div>
+}
       `
     })
     class App {
@@ -3996,7 +4036,7 @@ describe('onDestroy', () => {
       }
     }
 
-    @Component({template: `<p *ngIf="show" dir></p>`})
+    @Component({template: `@if (show) {<p dir></p>}`})
     class App {
       show = true;
     }
@@ -4073,7 +4113,7 @@ describe('hook order', () => {
   }
 
   it('should call all hooks in correct order', () => {
-    @Component({template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`})
+    @Component({template: `@if (show) {<comp name="comp" [value]="value"></comp>}`})
     class App {
       value = 'a';
 
@@ -4126,10 +4166,12 @@ describe('hook order', () => {
   it('should call all hooks in correct order with children', () => {
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <parent name="parent1" [value]="value"></parent>
           <parent name="parent2" [value]="value"></parent>
         </div>
+}
       `
     })
     class App {
@@ -4215,7 +4257,8 @@ describe('hook order', () => {
   it('should call all hooks in correct order with view and content', () => {
     @Component({
       template: `
-        <div *ngIf="show">
+        @if (show) {
+<div>
           <parent name="parent1" [value]="value">
             <comp name="projected1" [value]="value"></comp>
           </parent>
@@ -4223,6 +4266,7 @@ describe('hook order', () => {
             <comp name="projected2" [value]="value"></comp>
           </parent>
         </div>
+}
       `
     })
     class App {
@@ -4342,9 +4386,11 @@ describe('non-regression', () => {
     }
 
     @Component({
-      template: `<ng-template [ngIf]="show">
+      template: `@if (show) {
+<ng-template>
         <ng-template onDestroyDir>content</ng-template>
-      </ng-template>`
+      </ng-template>
+}`
     })
     class App {
       show = true;

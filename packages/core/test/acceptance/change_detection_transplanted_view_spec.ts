@@ -112,10 +112,18 @@ describe('change detection for transplanted views', () => {
 
     @Component({
       template: `
-      <declare-comp *ngIf="showDeclare"></declare-comp>
-      <onpush-declare-comp *ngIf="showOnPushDeclare"></onpush-declare-comp>
-      <insert-comp *ngIf="showInsert"></insert-comp>
-      <insert-for-onpush-declare-comp *ngIf="showInsertForOnPushDeclare"></insert-for-onpush-declare-comp>
+      @if (showDeclare) {
+<declare-comp></declare-comp>
+}
+      @if (showOnPushDeclare) {
+<onpush-declare-comp></onpush-declare-comp>
+}
+      @if (showInsert) {
+<insert-comp></insert-comp>
+}
+      @if (showInsertForOnPushDeclare) {
+<insert-for-onpush-declare-comp></insert-for-onpush-declare-comp>
+}
       `
     })
     class AppComp {
@@ -368,8 +376,10 @@ describe('change detection for transplanted views', () => {
 
     @Component({
       template: `
-        <insertion *ngIf="showInsertion" [template]="declaration?.template">
+        @if (showInsertion) {
+<insertion [template]="declaration?.template">
         </insertion>
+}
         <declaration></declaration>
         `
     })
@@ -586,7 +596,7 @@ describe('change detection for transplanted views', () => {
   it('refreshes transplanted views used as template in ngForTemplate', () => {
     @Component({
       selector: 'triple',
-      template: '<div *ngFor="let unused of [1,2,3]; template: template"></div>',
+      template: '@for (unused of [1,2,3]; track unused) {<div></div>}',
       changeDetection: ChangeDetectionStrategy.OnPush
     })
     class TripleTemplate {

@@ -791,7 +791,7 @@ withEachNg1Version(() => {
            let destroyed = false;
 
            @Component(
-               {selector: 'ng2-outer', template: '<div *ngIf="!destroyIt"><ng1></ng1></div>'})
+               {selector: 'ng2-outer', template: '@if (!destroyIt) {<div><ng1></ng1></div>}'})
            class Ng2OuterComponent {
              @Input() destroyIt = false;
            }
@@ -2192,9 +2192,11 @@ withEachNg1Version(() => {
              @Component({
                selector: 'ng2',
                template: `
-                <div *ngIf="!ng2Destroy">
+                @if (!ng2Destroy) {
+<div>
                   <ng1-a></ng1-a> | <ng1-b></ng1-b>
                 </div>
+}
               `
              })
              class Ng2Component {
@@ -2289,9 +2291,11 @@ withEachNg1Version(() => {
              @Component({
                selector: 'ng2',
                template: `
-                <div *ngIf="!ng2Destroy">
+                @if (!ng2Destroy) {
+<div>
                   <ng1-a></ng1-a> | <ng1-b></ng1-b>
                 </div>
+}
               `
              })
              class Ng2Component {
@@ -2370,7 +2374,7 @@ withEachNg1Version(() => {
              const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
              let ng2ComponentInstance: Ng2Component;
 
-             @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+             @Component({selector: 'ng2', template: '@if (!ng2Destroy) {<div><ng1></ng1></div>}'})
              class Ng2Component {
                ng2Destroy: boolean = false;
                constructor() {
@@ -2418,7 +2422,7 @@ withEachNg1Version(() => {
              const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
              let ng2ComponentInstance: Ng2Component;
 
-             @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+             @Component({selector: 'ng2', template: '@if (!ng2Destroy) {<div><ng1></ng1></div>}'})
              class Ng2Component {
                ng2Destroy: boolean = false;
                constructor() {
@@ -2486,7 +2490,7 @@ withEachNg1Version(() => {
              };
 
              // Define `Ng2Component`
-             @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+             @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
              class Ng2ComponentA {
                destroyIt = false;
 
@@ -2553,7 +2557,7 @@ withEachNg1Version(() => {
              };
 
              // Define `Ng2Component`
-             @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+             @Component({selector: 'ng2A', template: '@if (!destroyIt) {<ng2B></ng2B>}'})
              class Ng2ComponentA {
                destroyIt = false;
 
@@ -2822,7 +2826,7 @@ withEachNg1Version(() => {
              // Define `Ng2Component`
              @Component({
                selector: 'ng2A',
-               template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
+               template: 'ng2A(<ng1>{{ value }} | @if (showB) {<ng2B></ng2B>}</ng1>)'
              })
              class Ng2ComponentA {
                value = 'foo';
@@ -3213,10 +3217,18 @@ withEachNg1Version(() => {
                template: `
                 ng2(
                   <ng1>
-                    <content-x><div *ngIf="show">{{ x }}1</div></content-x>
-                    <div *ngIf="!show">{{ y }}1</div>
-                    <content-x><div *ngIf="!show">{{ x }}2</div></content-x>
-                    <div *ngIf="show">{{ y }}2</div>
+                    <content-x>@if (show) {
+<div>{{ x }}1</div>
+}</content-x>
+                    @if (!show) {
+<div>{{ y }}1</div>
+}
+                    <content-x>@if (!show) {
+<div>{{ x }}2</div>
+}</content-x>
+                    @if (show) {
+<div>{{ y }}2</div>
+}
                   </ng1>
                 )`
              })

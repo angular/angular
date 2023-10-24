@@ -547,7 +547,7 @@ describe('di', () => {
         }
       }
 
-      @Component({template: '<div dirA dirB *ngFor="let i of array"></div>'})
+      @Component({template: '@for (i of array; track i) {<div dirA dirB></div>}'})
       class MyComp {
         array = [1, 2, 3];
       }
@@ -731,9 +731,11 @@ describe('di', () => {
       it('should find dependencies for directives in embedded views', () => {
         @Component({
           template: `<div dirB>
-            <div *ngIf="showing">
+            @if (showing) {
+<div>
               <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
             </div>
+}
           </div>`
         })
         class MyApp {
@@ -752,11 +754,15 @@ describe('di', () => {
       it('should find dependencies of directives nested deeply in inline views', () => {
         @Component({
           template: `<div dirB>
-            <ng-container *ngIf="!skipContent">
-              <ng-container *ngIf="!skipContent2">
+            @if (!skipContent) {
+
+              @if (!skipContent2) {
+
                 <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
-              </ng-container>
-            </ng-container>
+              
+}
+            
+}
           </div>`
         })
         class MyApp {
@@ -1468,7 +1474,7 @@ describe('di', () => {
             }
             @Component({
               selector: 'root',
-              template: '<div><child *ngIf="true"></child></div>',
+              template: '<div>@if (true) {<child></child>}</div>',
             })
             class ParentComponent {
             }
@@ -1497,7 +1503,7 @@ describe('di', () => {
             }
             @Component({
               selector: 'root',
-              template: '<div><ng-template [ngIf]="true"><child></child></ng-template></div>',
+              template: '<div>@if (true) {<ng-template><child></child></ng-template>}</div>',
             })
             class ParentComponent {
             }
@@ -1527,7 +1533,7 @@ describe('di', () => {
 
             @Component({
               selector: 'root',
-              template: '<div><child *ngIf="true"></child></div>',
+              template: '<div>@if (true) {<child></child>}</div>',
             })
             class ParentComponent {
             }
@@ -1557,7 +1563,7 @@ describe('di', () => {
 
             @Component({
               selector: 'root',
-              template: '<child *ngIf="true"></child>',
+              template: '@if (true) {<child></child>}',
             })
             class ParentComponent {
             }
@@ -1579,7 +1585,7 @@ describe('di', () => {
             let parentComponentInjector: Injector;
             @Component({
               selector: 'parent',
-              template: '<child *ngIf="true"></child>',
+              template: '@if (true) {<child></child>}',
               providers: [{
                 provide: 'token',
                 useValue: 'PARENT',
@@ -1620,7 +1626,7 @@ describe('di', () => {
             let parentComponentInjector: Injector;
             @Component({
               selector: 'parent',
-              template: '<ng-template [ngIf]="true"><child></child></ng-template>',
+              template: '@if (true) {<ng-template><child></child></ng-template>}',
               providers: [{
                 provide: 'token',
                 useValue: 'PARENT',
@@ -2178,10 +2184,7 @@ describe('di', () => {
         });
 
         it('should not find providers on the host itself if in inline view', () => {
-          @Component({
-            selector: 'my-comp',
-            template: '<ng-container *ngIf="showing"><div dirA></div></ng-container>'
-          })
+          @Component({selector: 'my-comp', template: '@if (showing) {<div dirA></div>}'})
           class MyComp {
             showing = false;
           }
@@ -2201,7 +2204,7 @@ describe('di', () => {
         });
 
         it('should find providers across embedded views if not passing component boundary', () => {
-          @Component({template: '<div dirB><div *ngIf="showing" dirA></div></div>'})
+          @Component({template: '<div dirB>@if (showing) {<div dirA></div>}</div>'})
           class MyApp {
             showing = false;
             @ViewChild(DirectiveA) dirA!: DirectiveA;
@@ -2705,9 +2708,11 @@ describe('di', () => {
 
       @Component({
         template: `<div parentDir>
-          <ng-container *ngIf="showing">
+          @if (showing) {
+
             <span childDir child2Dir #child1="childDir" #child2="child2Dir">{{ child1.value }}-{{ child2.value }}</span>
-          </ng-container>
+          
+}
         </div>`
       })
       class MyComp {
@@ -3080,7 +3085,7 @@ describe('di', () => {
 
         @Component({
           selector: 'my-app',
-          template: `<div *ngIf="showing | pipe">Visible</div>`,
+          template: `@if (showing | pipe) {<div>Visible</div>}`,
         })
         class MyApp {
           showing = true;
@@ -3170,9 +3175,13 @@ describe('di', () => {
       it('should inject host component ChangeDetectorRef into directives in embedded views', () => {
         @Component({
           selector: 'my-comp',
-          template: `<ng-container *ngIf="showing">
-            <div dir otherDir #dir="dir" *ngIf="showing"></div>
-          </ng-container>`
+          template: `@if (showing) {
+
+            @if (showing) {
+<div dir otherDir #dir="dir"></div>
+}
+          
+}`
         })
         class MyComp {
           showing = true;
@@ -3196,7 +3205,7 @@ describe('di', () => {
 
       it('should inject host component ChangeDetectorRef into directives on containers', () => {
         @Component(
-            {selector: 'my-comp', template: '<div dir otherDir #dir="dir" *ngIf="showing"></div>'})
+            {selector: 'my-comp', template: '@if (showing) {<div dir otherDir #dir="dir"></div>}'})
         class MyComp {
           showing = true;
           constructor(public cdr: ChangeDetectorRef) {}

@@ -391,7 +391,9 @@ describe('ngFor', () => {
       selector: 'test-component',
       imports: [NgForOf],
       template: `
-          <ng-container *ngFor="let item of items">{{ item }}|</ng-container>
+          @for (item of items; track item) {
+  {{ item }}|
+}
         `,
       standalone: true,
     })
@@ -410,7 +412,9 @@ describe('ngFor', () => {
       selector: 'test-component',
       imports: [NgFor],
       template: `
-          <ng-container *ngFor="let item of items">{{ item }}|</ng-container>
+          @for (item of items; track item) {
+  {{ item }}|
+}
         `,
       standalone: true,
     })

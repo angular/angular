@@ -220,9 +220,11 @@ describe('NgModule', () => {
       @Component({
         selector: 'my-comp',
         template: `
-          <ng-container *ngIf="condition">
+          @if (condition) {
+
             <div [unknown-prop]="true"></div>
-          </ng-container>
+          
+}
         `,
       })
       class MyComp {
@@ -249,7 +251,7 @@ describe('NgModule', () => {
     it('should log an error on unknown props of `ng-template` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
-        template: ` <ng-template *ngIf="condition"></ng-template> `,
+        template: ` @if (condition) {<ng-template></ng-template>} `,
       })
       class MyComp {
         condition = true;
@@ -301,7 +303,7 @@ describe('NgModule', () => {
     it('should log an error on unknown props of `ng-content` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
-        template: ` <ng-content *ngIf="condition"></ng-content> `,
+        template: ` @if (condition) {<ng-content></ng-content>} `,
       })
       class MyComp {
         condition = true;
@@ -329,9 +331,11 @@ describe('NgModule', () => {
          @Component({
            selector: 'my-comp',
            template: `
-          <ng-container *ngIf="condition">
+          @if (condition) {
+
             <div [unknown-prop]="true"></div>
-          </ng-container>
+          
+}
         `,
          })
          class MyComp {
@@ -359,9 +363,11 @@ describe('NgModule', () => {
       @Component({
         selector: 'my-comp',
         template: `
-          <ng-container *ngIf="condition">
+          @if (condition) {
+
             <div [unknown-prop]="true"></div>
-          </ng-container>
+          
+}
         `,
       })
       class MyComp {
@@ -389,9 +395,11 @@ describe('NgModule', () => {
          @Component({
            selector: 'my-comp',
            template: `
-          <ng-container *ngIf="condition">
+          @if (condition) {
+
             <div [unknown-prop]="true"></div>
-          </ng-container>
+          
+}
         `,
          })
          class MyComp {

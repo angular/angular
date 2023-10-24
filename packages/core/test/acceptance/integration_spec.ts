@@ -93,7 +93,7 @@ describe('acceptance integration tests', () => {
     it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
       @Component({
         template:
-            '<ng-template [ngIf]="render"><div><ng-container>content</ng-container></div></ng-template>'
+            '@if (render) {<ng-template><div><ng-container>content</ng-container></div></ng-template>}'
       })
       class App {
         render = false;
@@ -114,7 +114,7 @@ describe('acceptance integration tests', () => {
     });
 
     it('should add and remove DOM nodes when ng-container is a child of an embedded view', () => {
-      @Component({template: '<ng-container *ngIf="render">content</ng-container>'})
+      @Component({template: '@if (render) {content}'})
       class App {
         render = false;
       }
@@ -691,7 +691,7 @@ describe('acceptance integration tests', () => {
     });
 
     it('should support a component with sub-views', () => {
-      @Component({selector: 'comp', template: '<div *ngIf="condition">text</div>'})
+      @Component({selector: 'comp', template: '@if (condition) {<div>text</div>}'})
       class MyComp {
         @Input() condition!: boolean;
       }
@@ -833,7 +833,9 @@ describe('acceptance integration tests', () => {
         @Component({
           template: `
             <span [attr.title]="title">
-              <b [attr.title]="title" *ngIf="shouldRender"></b>
+              @if (shouldRender) {
+<b [attr.title]="title"></b>
+}
             </span>
           `
         })
@@ -2097,9 +2099,11 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
         <svg>
-          <ng-template [ngIf]="condition">
+          @if (condition) {
+<ng-template>
             <text>Hello</text>
           </ng-template>
+}
         </svg>
       `,
     })
@@ -2284,7 +2288,7 @@ describe('acceptance integration tests', () => {
   });
 
   it('should be able to insert and remove elements inside <template>', () => {
-    @Component({template: '<template><strong *ngIf="render">Hello</strong></template>'})
+    @Component({template: '<template>@if (render) {<strong>Hello</strong>}</template>'})
     class App {
       render = true;
     }
@@ -2413,9 +2417,11 @@ describe('acceptance integration tests', () => {
 
          @Component({
            template: `
-          <div *ngFor="let item of items" dir [attr.data-comp]="text">
+          @for (item of items; track item) {
+  <div dir [attr.data-comp]="text">
             ...
           </div>
+}
         `
          })
          class Cmp {
@@ -2453,14 +2459,24 @@ describe('acceptance integration tests', () => {
 
          @Component({
            template: `
-          <div *ngIf="showWarningMessage; else listOfItems">
+          @if (showWarningMessage) {
+<div>
             Nooo!
           </div>
+} @else {
 
-          <ng-template #listOfItems>
             <animation-comp *ngFor="let item of items; trackBy: itemTrackFn">
               {{ item.value }}
             </animation-comp>
+          
+}
+
+          <ng-template #listOfI@for (item of items; track itemTrackFn($index, item)) {
+  tems>
+         ckBy: itemTrackFn">
+              {{ item.value }}
+           
+} </animation-comp>
           </ng-template>
         `
          })
@@ -2554,17 +2570,29 @@ describe('acceptance integration tests', () => {
              trigger('inner', [transition('* => *', [])]),
            ],
            template: `
-          <div *ngIf="showRoot" (@root.start)="track('root', $event)" @root>
-            <div *ngIf="showIfContents; else innerCompList" (@outer.start)="track('outer', $event)" @outer>
+          @if (showRoot) {
+<div (@root.start)="track('root', $event)" @root>
+            @if (showIfContents) {
+<div (@outer.start)="track('outer', $event)" @outer>
               Nooo!
             </div>
+} @else {
 
-            <ng-template #innerCompList>
               <inner-comp *ngFor="let item of items; trackBy: itemTrackFn" (@inner.start)="track('inner', $event)" @inner>
                 {{ item.value }}
               </inner-comp>
+            
+}
+
+            <ng-template #innerComp@for (item of items; track itemTrackFn($index, item)) {
+  List>
+     rackBy: itemTrackFn" (@inner.start)="track('inner', $event)" @inner>
+                {{ item.value }}
+       
+}       </inner-comp>
             </ng-template>
           </div>
+}
         `
          })
          class Cmp {

@@ -51,7 +51,7 @@ class App {
 
 @Component({
   selector: 'door',
-  template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
+  template: `{{frame.name}}(@for (lock of locks; track lock) {<span>{{lock.name}}</span>})`,
 })
 class Door {
   @ContentChildren(forwardRef(() => Lock)) locks!: QueryList<Lock>;

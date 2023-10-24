@@ -178,7 +178,7 @@ describe('AnimationRenderer', () => {
        (async) => {
          @Component({
            selector: 'my-cmp',
-           template: '<div #elm *ngIf="exp"></div>',
+           template: '@if (exp) {<div #elm></div>}',
            animations: [trigger(
                'someAnimation',
                [transition(
@@ -217,9 +217,15 @@ describe('AnimationRenderer', () => {
          @Component({
            selector: 'my-cmp',
            template: `
-               <div #elm1 *ngIf="exp1"></div>
-               <div #elm2 @animation1 *ngIf="exp2"></div>
-               <div #elm3 @animation2 *ngIf="exp3"></div>
+               @if (exp1) {
+<div #elm1></div>
+}
+               @if (exp2) {
+<div #elm2 @animation1></div>
+}
+               @if (exp3) {
+<div #elm3 @animation2></div>
+}
             `,
            animations: [
              trigger('animation1', [transition('a => b', [])]),

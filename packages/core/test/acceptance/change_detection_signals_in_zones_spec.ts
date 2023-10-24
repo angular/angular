@@ -143,7 +143,9 @@ describe('OnPush components with signals', () => {
          template: `
             {{incrementTemplateExecutions()}}
             <!-- Template constructed to execute child component constructor in the update pass of a host component -->
-            <ng-template [ngIf]="true"><child></child></ng-template>
+            @if (true) {
+<ng-template><child></child></ng-template>
+}
           `,
          changeDetection: ChangeDetectionStrategy.OnPush,
          standalone: true,
@@ -193,7 +195,9 @@ describe('OnPush components with signals', () => {
          template: `
             {{incrementTemplateExecutions()}}
             <!-- Template constructed to execute child component constructor in the update pass of a host component -->
-            <ng-template [ngIf]="true"><with-input-setter [testInput]="'input'" /></ng-template>
+            @if (true) {
+<ng-template><with-input-setter [testInput]="'input'" /></ng-template>
+}
           `,
          changeDetection: ChangeDetectionStrategy.OnPush,
          standalone: true,
@@ -244,7 +248,9 @@ describe('OnPush components with signals', () => {
       template: `
          {{incrementTemplateExecutions()}}
          <!-- Template constructed to execute child component constructor in the update pass of a host component -->
-         <ng-template [ngIf]="true"><with-query-setter /></ng-template>
+         @if (true) {
+<ng-template><with-query-setter /></ng-template>
+}
        `,
       changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: true,

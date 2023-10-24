@@ -747,7 +747,7 @@ class DirectiveNeedsContentChild {
   @ContentChild(TextDirective) child!: TextDirective;
 }
 
-@Component({selector: 'needs-view-child', template: `<div *ngIf="shouldShow" text="foo"></div>`})
+@Component({selector: 'needs-view-child', template: `@if (shouldShow) {<div text="foo"></div>}`})
 class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   shouldShow: boolean = true;
   shouldShow2: boolean = false;
@@ -798,7 +798,7 @@ class InertDirective {
 
 @Component({
   selector: 'needs-query',
-  template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>'
+  template: '<div text="ignoreme"></div>@for ( dir of query; track  dir) {<b>{{dir.text}}|</b>}'
 })
 class NeedsQuery {
   @ContentChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -814,7 +814,7 @@ class NeedsFourQueries {
 
 @Component({
   selector: 'needs-query-desc',
-  template: '<ng-content></ng-content><div *ngFor="let  dir of query">{{dir.text}}|</div>'
+  template: '<ng-content></ng-content>@for ( dir of query; track  dir) {<div>{{dir.text}}|</div>}'
 })
 class NeedsQueryDesc {
   @ContentChildren(TextDirective, {descendants: true}) query!: QueryList<TextDirective>;
@@ -837,7 +837,7 @@ class NeedsQueryByTwoLabels {
 
 @Component({
   selector: 'needs-query-and-project',
-  template: '<div *ngFor="let  dir of query">{{dir.text}}|</div><ng-content></ng-content>'
+  template: '@for ( dir of query; track  dir) {<div>{{dir.text}}|</div>}<ng-content></ng-content>'
 })
 class NeedsQueryAndProject {
   @ContentChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -851,7 +851,7 @@ class NeedsViewQuery {
   @ViewChildren(TextDirective) query!: QueryList<TextDirective>;
 }
 
-@Component({selector: 'needs-view-query-if', template: '<div *ngIf="show" text="1"></div>'})
+@Component({selector: 'needs-view-query-if', template: '@if (show) {<div text="1"></div>}'})
 class NeedsViewQueryIf {
   show: boolean = false;
   @ViewChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -859,7 +859,7 @@ class NeedsViewQueryIf {
 
 @Component({
   selector: 'needs-view-query-nested-if',
-  template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>'
+  template: '<div text="1">@if (show) {<div><div dir></div></div>}</div>'
 })
 class NeedsViewQueryNestedIf {
   show: boolean = true;

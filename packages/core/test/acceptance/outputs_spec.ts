@@ -104,7 +104,7 @@ describe('outputs', () => {
     let counter = 0;
 
     @Component(
-        {template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>'})
+        {template: '@if (condition) {<button-toggle (change)="onChange()"></button-toggle>}'})
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       condition = true;
@@ -133,9 +133,13 @@ describe('outputs', () => {
 
     @Component({
       template: `
-        <div *ngIf="condition">
-          <button-toggle *ngIf="condition2" (change)="onChange()"></button-toggle>
+        @if (condition) {
+<div>
+          @if (condition2) {
+<button-toggle (change)="onChange()"></button-toggle>
+}
         </div>
+}
       `
     })
     class App {
@@ -168,11 +172,13 @@ describe('outputs', () => {
 
     @Component({
       template: `
-        <div *ngIf="condition">
+        @if (condition) {
+<div>
           <button (click)="onClick()">Click me</button>
           <button-toggle (change)="onChange()"></button-toggle>
           <destroy-comp></destroy-comp>
         </div>
+}
       `
     })
     class App {
