@@ -13,7 +13,7 @@ import {HAS_CHILD_VIEWS_TO_REFRESH, LContainer, TYPE} from '../interfaces/contai
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -238,25 +238,6 @@ export function markAncestorsForTraversal(lView: LView) {
       }
     }
     parent = parent[PARENT];
-  }
-}
-
-/**
- * Marks the component or root view of an LView for refresh.
- *
- * This function locates the declaration component view of a given LView and marks it for refresh.
- * With this, we get component-level change detection granularity. Marking the `LView` itself for
- * refresh would be view-level granularity.
- *
- * Note that when an LView is a root view, the DECLARATION_COMPONENT_VIEW will be the root view
- * itself. This is a bit confusing since the TView.type is `Root`, rather than `Component`, but this
- * is actually what we need for host bindings in a root view.
- */
-export function markViewDirtyFromSignal(lView: LView): void {
-  const declarationComponentView = lView[DECLARATION_COMPONENT_VIEW];
-  declarationComponentView[FLAGS] |= LViewFlags.RefreshView;
-  if (viewAttachedToChangeDetector(declarationComponentView)) {
-    markAncestorsForTraversal(declarationComponentView);
   }
 }
 
