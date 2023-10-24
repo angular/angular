@@ -44,12 +44,19 @@ export class DeferredSymbolTracker {
       throw new Error(`Provided import declaration doesn't have any symbols.`);
     }
 
+    // If the entire import is a type-only import, none of the symbols can be eager.
+    if (importDecl.importClause.isTypeOnly) {
+      return symbolMap;
+    }
+
     if (importDecl.importClause.namedBindings !== undefined) {
       const bindings = importDecl.importClause.namedBindings;
       if (ts.isNamedImports(bindings)) {
         // Case 1: `import {a, b as B} from 'a'`
         for (const element of bindings.elements) {
-          symbolMap.set(element.name.text, AssumeEager);
+          if (!element.isTypeOnly) {
+            symbolMap.set(element.name.text, AssumeEager);
+          }
         }
       } else {
         // Case 2: `import X from 'a'`

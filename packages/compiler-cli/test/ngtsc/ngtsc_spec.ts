@@ -9107,6 +9107,230 @@ function allTests(os: string) {
           // via dynamic imports and an original import can be removed.
           expect(jsContents).not.toContain('import { CmpA }');
         });
+
+        it('should drop imports when one is deferrable and the rest are type-only imports', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            export class Foo {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA, type Foo } from './cmp-a';
+
+            export const foo: Foo = {};
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other has a single type-only element',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import { type Foo } from './cmp-a';
+
+                export const foo: Foo = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is type-only at the declaration level',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type { Foo, CmpA as CmpAlias } from './cmp-a';
+
+                export const foo: Foo|CmpAlias = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is a type-only import of all symbols',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type * as allCmpA from './cmp-a';
+
+                export const foo: allCmpA.Foo|allCmpA.CmpA = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports of deferrable symbols from the same file', () => {
+          env.write('cmps.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-b',
+              template: 'CmpB!'
+            })
+            export class CmpB {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA } from './cmps';
+            import { CmpB } from './cmps';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, CmpB],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <cmp-b />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents)
+              .toContain(
+                  '() => [import("./cmps").then(m => m.CmpA), import("./cmps").then(m => m.CmpB)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+          expect(jsContents).not.toContain('import { CmpB }');
+        });
       });
 
       it('should detect pipe used in the `when` trigger as an eager dependency', () => {
@@ -9327,7 +9551,7 @@ function allTests(os: string) {
            }));
            env.write(`test.ts`, `
             import {Component} from '@angular/core';
-    
+
             @Component({
               template: '...',
             })
@@ -9350,7 +9574,7 @@ function allTests(os: string) {
            }));
            env.write(`test.ts`, `
             import {Component} from '@angular/core';
-     
+
             @Component({
               standalone: true,
               template: '...',
@@ -9368,7 +9592,7 @@ function allTests(os: string) {
          () => {
            env.write(`test.ts`, `
           import {Component} from '@angular/core';
-   
+
           @Component({
             template: '...',
           })
