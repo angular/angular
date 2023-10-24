@@ -13,6 +13,11 @@ export const boundngif = '[ngIf]';
 export const nakedngif = 'ngIf';
 export const ngfor = '*ngFor';
 export const ngswitch = '[ngSwitch]';
+export const boundcase = '[ngSwitchCase]';
+export const switchcase = '*ngSwitchCase';
+export const nakedcase = 'ngSwitchCase';
+export const switchdefault = '*ngSwitchDefault';
+export const nakeddefault = 'ngSwitchDefault';
 
 const attributesToMigrate = [
   ngif,
@@ -20,14 +25,11 @@ const attributesToMigrate = [
   boundngif,
   ngfor,
   ngswitch,
-];
-
-const casesToMigrate = [
-  '[ngSwitchCase]',
-  '*ngSwitchCase',
-  'ngSwitchCase',
-  '*ngSwitchDefault',
-  'ngSwitchDefault',
+  boundcase,
+  switchcase,
+  nakedcase,
+  switchdefault,
+  nakeddefault,
 ];
 
 /**
@@ -61,7 +63,7 @@ export class ElementToMigrate {
   el: Element;
   attr: Attribute;
   nestCount = 0;
-  lineBreaks = false;
+  hasLineBreaks = false;
 
   constructor(el: Element, attr: Attribute) {
     this.el = el;
@@ -170,22 +172,6 @@ export class ElementCollector extends RecursiveVisitor {
         }
       }
     }
-    super.visitElement(el, null);
-  }
-}
-
-export class CaseCollector extends RecursiveVisitor {
-  readonly elements: ElementToMigrate[] = [];
-
-  override visitElement(el: Element): void {
-    if (el.attrs.length > 0) {
-      for (const attr of el.attrs) {
-        if (casesToMigrate.includes(attr.name)) {
-          this.elements.push(new ElementToMigrate(el, attr));
-        }
-      }
-    }
-
     super.visitElement(el, null);
   }
 }
