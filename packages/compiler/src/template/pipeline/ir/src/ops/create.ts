@@ -679,12 +679,18 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   errorSlot: SlotHandle|null;
 
+  placeholderMinimumTime: number|null;
+  loadingMinimumTime: number|null;
+  loadingAfterTime: number|null;
+
+  placeholderConfig: o.Expression|null;
+  loadingConfig: o.Expression|null;
+
   sourceSpan: ParseSourceSpan;
 }
 
 export function createDeferOp(
-    xref: XrefId, main: XrefId, mainSlot: SlotHandle, placeholderView: XrefId|null,
-    placeholderSlot: SlotHandle|null, sourceSpan: ParseSourceSpan): DeferOp {
+    xref: XrefId, main: XrefId, mainSlot: SlotHandle, sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
     xref,
@@ -693,13 +699,19 @@ export function createDeferOp(
     mainSlot,
     loadingView: null,
     loadingSlot: null,
+    loadingConfig: null,
+    loadingMinimumTime: null,
+    loadingAfterTime: null,
     placeholderView: null,
-    placeholderSlot,
+    placeholderSlot: null,
+    placeholderConfig: null,
+    placeholderMinimumTime: null,
     errorView: null,
     errorSlot: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
+    numSlotsUsed: 2,
   };
 }
 interface DeferTriggerBase {
@@ -724,7 +736,7 @@ interface DeferInteractionTrigger extends DeferTriggerBase {
    * The slot index of the named reference, inside the view provided below. This slot may not be
    * inside the current view, and is handled specially as a result.
    */
-  targetSlot: number|null;
+  targetSlot: SlotHandle|null;
 
   targetView: XrefId|null;
 

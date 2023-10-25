@@ -75,7 +75,7 @@ enum Fence {
    * Note that all `ContextWrite` fences are implicitly `ContextRead` fences as operations which
    * change the view context do so based on the current one.
    */
-  ViewContextWrite = 0b011,
+  ViewContextWrite = 0b010,
 
   /**
    * Indicates that a call is required for its side-effects, even if nothing reads its result.
@@ -304,9 +304,9 @@ function optimizeVariablesInOpList(
 function fencesForIrExpression(expr: ir.Expression): Fence {
   switch (expr.kind) {
     case ir.ExpressionKind.NextContext:
-      return Fence.ViewContextWrite;
+      return Fence.ViewContextRead | Fence.ViewContextWrite;
     case ir.ExpressionKind.RestoreView:
-      return Fence.ViewContextWrite | Fence.SideEffectful;
+      return Fence.ViewContextRead | Fence.ViewContextWrite | Fence.SideEffectful;
     case ir.ExpressionKind.Reference:
       return Fence.ViewContextRead;
     default:
