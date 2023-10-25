@@ -685,6 +685,7 @@ describe('Query API', () => {
          const template =
              '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
          const view = createTestCmpAndDetectChanges(MyComp0, template);
+         view.detectChanges();
 
          const q = view.debugElement.children[0].references!['q'];
          expect(q.query.length).toBe(1);
