@@ -209,6 +209,83 @@ describe('setProfiler', () => {
     expect(((myServiceProviderConfiguredEvent!.providerRecord)?.provider as ClassProvider).multi)
         .toBeTrue();
   });
+
+  it('should emit correct DI events when service providers are configured with providedIn', () => {
+    @Injectable({providedIn: 'root'})
+    class RootService {
+    }
+
+    @Injectable({providedIn: 'platform'})
+    class PlatformService {
+    }
+
+    const providedInRootInjectionToken = new InjectionToken(
+        'providedInRootInjectionToken', {providedIn: 'root', factory: () => 'hello world'});
+
+    const providedInPlatformToken = new InjectionToken(
+        'providedInPlatformToken', {providedIn: 'platform', factory: () => 'hello world'});
+
+    @Component({
+      selector: 'my-comp',
+      template: 'hello world',
+    })
+    class MyComponent {
+      rootService = inject(RootService);
+      platformService = inject(PlatformService);
+      fromRoot = inject(providedInRootInjectionToken);
+      fromPlatform = inject(providedInPlatformToken);
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComponent]});
+    TestBed.createComponent(MyComponent);
+
+    // MyService should have been configured
+    const rootServiceProviderConfiguredEvent = searchForProfilerEvent<ProviderConfiguredEvent>(
+        providerConfiguredEvents, (event) => event.providerRecord.token === RootService);
+
+    expect(rootServiceProviderConfiguredEvent).toBeTruthy();
+    expect(rootServiceProviderConfiguredEvent!.context).toBeTruthy();
+    expect(rootServiceProviderConfiguredEvent!.context!.injector).toBeInstanceOf(R3Injector);
+    expect((rootServiceProviderConfiguredEvent!.context!.injector as R3Injector).scopes.has('root'))
+        .toBeTrue();
+
+    const platformServiceProviderConfiguredEvent = searchForProfilerEvent<ProviderConfiguredEvent>(
+        providerConfiguredEvents, (event) => event.providerRecord.token === PlatformService);
+    expect(platformServiceProviderConfiguredEvent).toBeTruthy();
+    expect(platformServiceProviderConfiguredEvent!.context).toBeTruthy();
+    expect(platformServiceProviderConfiguredEvent!.context!.injector).toBeInstanceOf(R3Injector);
+    expect((platformServiceProviderConfiguredEvent!.context!.injector as R3Injector)
+               .scopes.has('platform'))
+        .toBeTrue();
+
+    const providedInRootInjectionTokenProviderConfiguredEvent =
+        searchForProfilerEvent<ProviderConfiguredEvent>(
+            providerConfiguredEvents,
+            (event) => event.providerRecord.token === providedInRootInjectionToken);
+    expect(providedInRootInjectionTokenProviderConfiguredEvent).toBeTruthy();
+    expect(providedInRootInjectionTokenProviderConfiguredEvent!.context).toBeTruthy();
+    expect(providedInRootInjectionTokenProviderConfiguredEvent!.context!.injector)
+        .toBeInstanceOf(R3Injector);
+    expect((providedInRootInjectionTokenProviderConfiguredEvent!.context!.injector as R3Injector)
+               .scopes.has('root'))
+        .toBeTrue();
+    expect(providedInRootInjectionTokenProviderConfiguredEvent!.providerRecord.token)
+        .toBe(providedInRootInjectionToken);
+
+    const providedInPlatformTokenProviderConfiguredEvent =
+        searchForProfilerEvent<ProviderConfiguredEvent>(
+            providerConfiguredEvents,
+            (event) => event.providerRecord.token === providedInPlatformToken);
+    expect(providedInPlatformTokenProviderConfiguredEvent).toBeTruthy();
+    expect(providedInPlatformTokenProviderConfiguredEvent!.context).toBeTruthy();
+    expect(providedInPlatformTokenProviderConfiguredEvent!.context!.injector)
+        .toBeInstanceOf(R3Injector);
+    expect((providedInPlatformTokenProviderConfiguredEvent!.context!.injector as R3Injector)
+               .scopes.has('platform'))
+        .toBeTrue();
+    expect(providedInPlatformTokenProviderConfiguredEvent!.providerRecord.token)
+        .toBe(providedInPlatformToken);
+  });
 });
 
 describe('getInjectorMetadata', () => {

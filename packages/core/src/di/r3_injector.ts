@@ -28,7 +28,7 @@ import {catchInjectorError, convertToBitFlags, injectArgs, NG_TEMP_TOKEN_PATH, s
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
 import {InjectFlags, InjectOptions} from './interface/injector';
-import {ClassProvider, ConstructorProvider, EnvironmentProviders, InternalEnvironmentProviders, isEnvironmentProviders, Provider, StaticClassProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, EnvironmentProviders, InternalEnvironmentProviders, isEnvironmentProviders, Provider, StaticClassProvider, TypeProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
 import {NullInjector} from './null_injector';
 import {isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
@@ -270,6 +270,13 @@ export class R3Injector extends EnvironmentInjector {
           if (def && this.injectableDefInScope(def)) {
             // Found an injectable def and it's scoped to this injector. Pretend as if it was here
             // all along.
+
+            if (ngDevMode) {
+              runInInjectorProfilerContext(this, token as Type<T>, () => {
+                emitProviderConfiguredEvent(token as TypeProvider);
+              });
+            }
+
             record = makeRecord(injectableDefOrInjectorDefFactory(token), NOT_YET);
           } else {
             record = null;
