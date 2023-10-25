@@ -11,8 +11,6 @@ import {Injectable} from '@angular/core';
 /**
  * This class wraps the platform Navigation API which allows server-specific and test
  * implementations.
- *
- * @internal
  */
 @Injectable({providedIn: 'platform', useFactory: () => window.navigation})
 export abstract class PlatformNavigation extends Navigation {
