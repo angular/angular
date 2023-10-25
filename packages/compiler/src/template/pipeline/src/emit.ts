@@ -28,7 +28,7 @@ import {phaseFormatI18nParams} from './phases/format_i18n_params';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
-import {phaseConstTraitCollection} from './phases/has_const_trait_collection';
+import {phaseConstExpressionCollection} from './phases/has_const_expression_collection';
 import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
 import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
@@ -69,6 +69,8 @@ import {phaseTrackVariables} from './phases/track_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseWrapIcus} from './phases/wrap_icus';
+import {phaseDeferResolveTargets} from './phases/defer_resolve_targets';
+import {phaseDeferConfigs} from './phases/defer_configs';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -96,6 +98,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Tmpl, fn: phaseConditionals},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
+  {kind: Kind.Tmpl, fn: phaseDeferConfigs},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
   {kind: Kind.Tmpl, fn: phaseIcuExtraction},
   {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
@@ -109,6 +112,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseRepeaterDerivedVars},
   {kind: Kind.Tmpl, fn: phaseTrackVariables},
   {kind: Kind.Both, fn: phaseResolveNames},
+  {kind: Kind.Tmpl, fn: phaseDeferResolveTargets},
   {kind: Kind.Tmpl, fn: phaseTrackFnOptimization},
   {kind: Kind.Both, fn: phaseResolveContexts},
   {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
@@ -124,7 +128,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseFormatI18nParams},
   {kind: Kind.Tmpl, fn: phaseTrackFnGeneration},
   {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
-  {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
+  {kind: Kind.Tmpl, fn: phaseConstExpressionCollection},
   {kind: Kind.Both, fn: phaseConstCollection},
   {kind: Kind.Tmpl, fn: phaseAssignI18nSlotDependencies},
   {kind: Kind.Both, fn: phaseVarCounting},

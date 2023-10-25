@@ -355,6 +355,11 @@ export enum ExpressionKind {
    * properties ($even, $first, etc.).
    */
   DerivedRepeaterVar,
+
+  /**
+   * An expression that will be automatically extracted to the component const array.
+   */
+  ConstCollected,
 }
 
 export enum VariableFlags {
