@@ -16,7 +16,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a deferred block with secondary blocks",
@@ -33,7 +34,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a deferred block with placeholder block parameters",

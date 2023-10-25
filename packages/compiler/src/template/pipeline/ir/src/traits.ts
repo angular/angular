@@ -10,6 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 import type {Expression} from './expression';
 import type {Op, XrefId} from './operations';
+import {SlotHandle} from './handle';
 
 /**
  * Marker symbol for `ConsumesSlotOpTrait`.
@@ -20,11 +21,6 @@ export const ConsumesSlot = Symbol('ConsumesSlot');
  * Marker symbol for `DependsOnSlotContextOpTrait`.
  */
 export const DependsOnSlotContext = Symbol('DependsOnSlotContext');
-
-/**
- * Marker symbol for `UsesSlotIndex` trait.
- */
-export const UsesSlotIndex = Symbol('UsesSlotIndex');
 
 /**
  * Marker symbol for `ConsumesVars` trait.
@@ -51,7 +47,7 @@ export interface ConsumesSlotOpTrait {
    * Assigned data slot (the starting index, if more than one slot is needed) for this operation, or
    * `null` if slots have not yet been assigned.
    */
-  slot: number|null;
+  slot: SlotHandle;
 
   /**
    * The number of slots which will be used by this operation. By default 1, but can be increased if
@@ -87,29 +83,6 @@ export interface DependsOnSlotContextOpTrait {
   target: XrefId;
 
   sourceSpan: ParseSourceSpan;
-}
-
-
-/**
- * Marks an expression which requires knowledge of the assigned slot of a given
- * `ConsumesSlotOpTrait` implementor (e.g. an element slot).
- *
- * During IR processing, assigned slots of `ConsumesSlotOpTrait` implementors will be propagated to
- * `UsesSlotIndexTrait` implementors by matching their `XrefId`s.
- */
-export interface UsesSlotIndexTrait {
-  readonly[UsesSlotIndex]: true;
-
-  /**
-   * `XrefId` of the `ConsumesSlotOpTrait` which this expression needs to reference by its assigned
-   * slot index.
-   */
-  target: XrefId;
-
-  /**
-   * The slot index of `target`, or `null` if slots have not yet been assigned.
-   */
-  targetSlot: number|null;
 }
 
 /**
@@ -157,19 +130,9 @@ export interface HasConstTrait {
  * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
  * implementors of the trait).
  */
-export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'> = {
+export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'slot'> = {
   [ConsumesSlot]: true,
-  slot: null,
   numSlotsUsed: 1,
-} as const;
-
-/**
- * Default values for most `UsesSlotIndexTrait` fields (used with the spread operator to initialize
- * implementors of the trait).
- */
-export const TRAIT_USES_SLOT_INDEX: Omit<UsesSlotIndexTrait, 'target'> = {
-  [UsesSlotIndex]: true,
-  targetSlot: null,
 } as const;
 
 /**
@@ -238,16 +201,6 @@ export function hasConsumesVarsTrait(value: any): boolean {
 export function hasUsesVarOffsetTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
     UsesVarOffsetTrait {
   return (expr as Partial<UsesVarOffsetTrait>)[UsesVarOffset] === true;
-}
-
-/**
- * Test whether an operation or expression implements `UsesSlotIndexTrait`.
- */
-export function hasUsesSlotIndexTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
-    UsesSlotIndexTrait;
-export function hasUsesSlotIndexTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&UsesSlotIndexTrait;
-export function hasUsesSlotIndexTrait(value: any): boolean {
-  return (value as Partial<UsesSlotIndexTrait>)[UsesSlotIndex] === true;
 }
 
 /**

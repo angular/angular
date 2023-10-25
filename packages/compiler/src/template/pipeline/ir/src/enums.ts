@@ -507,3 +507,20 @@ export enum I18nParamValueFlags {
    */
   CloseTag = 0b1000,
 }
+
+/**
+ * Whether the active namespace is HTML, MathML, or SVG mode.
+ */
+export enum Namespace {
+  HTML,
+  SVG,
+  Math,
+}
+
+/**
+ * The type of a `@defer` trigger, for use in the ir.
+ */
+export enum DeferTriggerKind {
+  Idle,
+  Interaction,
+}

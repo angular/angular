@@ -36,10 +36,10 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
       }
 
       // Assign slots to this declaration starting at the current `slotCount`.
-      op.slot = slotCount;
+      op.slot.slot = slotCount;
 
       // And track its assigned slot in the `slotMap`.
-      slotMap.set(op.xref, op.slot);
+      slotMap.set(op.xref, op.slot.slot);
 
       // Each declaration may use more than 1 slot, so increment `slotCount` to reserve the number
       // of slots required.
@@ -64,40 +64,6 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
         const childView = job.views.get(op.xref)!;
         op.decls = childView.decls;
       }
-
-      if (ir.hasUsesSlotIndexTrait(op) && op.target !== null && op.targetSlot === null) {
-        if (!slotMap.has(op.target)) {
-          // We do expect to find a slot allocated for everything which might be referenced.
-          throw new Error(
-              `AssertionError: no slot allocated for ${ir.OpKind[op.kind]} target ${op.target}`);
-        }
-
-        op.targetSlot = slotMap.get(op.target)!;
-      }
-
-      // Process all `ir.Expression`s within this view, and look for `usesSlotIndexExprTrait`.
-      ir.visitExpressionsInOp(op, expr => {
-        if (!ir.isIrExpression(expr)) {
-          return;
-        }
-
-        if (!ir.hasUsesSlotIndexTrait(expr) || expr.targetSlot !== null) {
-          return;
-        }
-
-        // The `UsesSlotIndexExprTrait` indicates that this expression references something declared
-        // in this component template by its slot index. Use the `target` `ir.XrefId` to find the
-        // allocated slot for that declaration in `slotMap`.
-
-        if (!slotMap.has(expr.target)) {
-          // We do expect to find a slot allocated for everything which might be referenced.
-          throw new Error(`AssertionError: no slot allocated for ${expr.constructor.name} target ${
-              expr.target}`);
-        }
-
-        // Record the allocated slot on the expression.
-        expr.targetSlot = slotMap.get(expr.target)!;
-      });
     }
   }
 }
