@@ -50,7 +50,7 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   // This helper is to give a reasonable error message to people upgrading to v9 that have not yet
   // installed `@angular/localize` in their app.
   // tslint:disable-next-line: no-toplevel-property-access
-  global.$localize = global.$localize || function() {
+  global.$localize ??= function() {
     throw new Error(
         'It looks like your application or one of its dependencies is using i18n.\n' +
         'Angular 9 introduced a global `$localize()` function that needs to be loaded.\n' +
