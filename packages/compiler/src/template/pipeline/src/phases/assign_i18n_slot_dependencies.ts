@@ -14,7 +14,7 @@ import {CompilationJob} from '../compilation';
  */
 export function phaseAssignI18nSlotDependencies(job: CompilationJob) {
   const i18nLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
-  let lastSlotConsumer = null;
+  let lastSlotConsumer: ir.XrefId|null = null;
   for (const unit of job.units) {
     // Record the last consumed slot before each i18n end instruction.
     for (const op of unit.create) {

@@ -13,8 +13,8 @@ import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {Op, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
-
+import {ConsumesSlotOpTrait, ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
+import {SlotHandle} from '../handle';
 import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -474,7 +474,7 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
  * Logical operation representing a conditional expression in the update IR.
  */
 export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
-                                       UsesSlotIndexTrait, ConsumesVarsTrait {
+                                       ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -486,7 +486,7 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   /**
    * The slot of the target, to be populated during slot allocation.
    */
-  targetSlot: number|null;
+  targetSlot: SlotHandle;
 
   /**
    * The main test expression (for a switch), or `null` (for an if, which has no test expression).
@@ -518,30 +518,32 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, test: o.Expression|null, conditions: Array<ConditionalCaseExpr>,
-    sourceSpan: ParseSourceSpan): ConditionalOp {
+    target: XrefId, targetSlot: SlotHandle, test: o.Expression|null,
+    conditions: Array<ConditionalCaseExpr>, sourceSpan: ParseSourceSpan): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
+    targetSlot,
     test,
     conditions,
     processed: null,
     sourceSpan,
     contextValue: null,
     ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
   };
 }
 
-export interface RepeaterOp extends Op<UpdateOp>, UsesSlotIndexTrait {
+export interface RepeaterOp extends Op<UpdateOp> {
   kind: OpKind.Repeater;
 
   /**
    * The RepeaterCreate op associated with this repeater.
    */
   target: XrefId;
+
+  targetSlot: SlotHandle;
 
   /**
    * The collection provided to the for loop as its expression.
@@ -552,14 +554,15 @@ export interface RepeaterOp extends Op<UpdateOp>, UsesSlotIndexTrait {
 }
 
 export function createRepeaterOp(
-    repeaterCreate: XrefId, collection: o.Expression, sourceSpan: ParseSourceSpan): RepeaterOp {
+    repeaterCreate: XrefId, targetSlot: SlotHandle, collection: o.Expression,
+    sourceSpan: ParseSourceSpan): RepeaterOp {
   return {
     kind: OpKind.Repeater,
     target: repeaterCreate,
+    targetSlot,
     collection,
     sourceSpan,
     ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 
@@ -574,6 +577,8 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    * The i18n block that this expression belongs to.
    */
   owner: XrefId;
+
+  ownerSlot: SlotHandle;
 
   /**
    * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
@@ -605,11 +610,12 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    owner: XrefId, expression: o.Expression, i18nPlaceholder: string,
+    owner: XrefId, ownerSlot: SlotHandle, expression: o.Expression, i18nPlaceholder: string,
     resolutionTime: I18nParamResolutionTime, sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     owner,
+    ownerSlot,
     target: owner,
     expression,
     i18nPlaceholder,
@@ -624,7 +630,7 @@ export function createI18nExpressionOp(
 /**
  * An op that represents applying a set of i18n expressions.
  */
-export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
+export interface I18nApplyOp extends Op<UpdateOp> {
   kind: OpKind.I18nApply;
 
   /**
@@ -632,19 +638,22 @@ export interface I18nApplyOp extends Op<UpdateOp>, UsesSlotIndexTrait {
    */
   target: XrefId;
 
+  targetSlot: SlotHandle;
+
   sourceSpan: ParseSourceSpan;
 }
 
 /**
  *Creates an op to apply i18n expression ops
  */
-export function createI18nApplyOp(target: XrefId, sourceSpan: ParseSourceSpan): I18nApplyOp {
+export function createI18nApplyOp(
+    target: XrefId, targetSlot: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     target,
+    targetSlot,
     sourceSpan,
     ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 

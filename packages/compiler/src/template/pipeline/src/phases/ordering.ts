@@ -81,7 +81,7 @@ export function phaseOrdering(job: CompilationJob) {
  */
 function orderWithin(
     opList: ir.OpList<ir.CreateOp|ir.UpdateOp>, ordering: Array<Rule<ir.CreateOp|ir.UpdateOp>>) {
-  let opsToOrder = [];
+  let opsToOrder: Array<ir.CreateOp|ir.UpdateOp> = [];
   // Only reorder ops that target the same xref; do not mix ops that target different xrefs.
   let firstTargetInGroup: ir.XrefId|null = null;
   for (const op of opList) {

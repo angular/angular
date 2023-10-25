@@ -25,7 +25,7 @@ export function phasePipeVariadic(job: CompilationJob): void {
         }
 
         return new ir.PipeBindingVariadicExpr(
-            expr.target, expr.name, o.literalArr(expr.args), expr.args.length);
+            expr.target, expr.targetSlot, expr.name, o.literalArr(expr.args), expr.args.length);
       }, ir.VisitorContextFlag.None);
     }
   }

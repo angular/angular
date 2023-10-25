@@ -11,8 +11,8 @@ import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind, SanitizerFn} from './enums';
-import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
-
+import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
 import {Interpolation, type UpdateOp} from './ops/update';
@@ -90,14 +90,10 @@ export class LexicalReadExpr extends ExpressionBase {
 /**
  * Runtime operation to retrieve the value of a local reference.
  */
-export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait {
+export class ReferenceExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.Reference;
 
-  readonly[UsesSlotIndex] = true;
-
-  targetSlot: number|null = null;
-
-  constructor(readonly target: XrefId, readonly offset: number) {
+  constructor(readonly target: XrefId, readonly targetSlot: SlotHandle, readonly offset: number) {
     super();
   }
 
@@ -114,9 +110,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
   override transformInternalExpressions(): void {}
 
   override clone(): ReferenceExpr {
-    const expr = new ReferenceExpr(this.target, this.offset);
-    expr.targetSlot = this.targetSlot;
-    return expr;
+    return new ReferenceExpr(this.target, this.targetSlot, this.offset);
   }
 }
 
@@ -442,18 +436,17 @@ export class PureFunctionParameterExpr extends ExpressionBase {
   }
 }
 
-export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrait,
-                                                               ConsumesVarsTrait,
+export class PipeBindingExpr extends ExpressionBase implements ConsumesVarsTrait,
                                                                UsesVarOffsetTrait {
   override readonly kind = ExpressionKind.PipeBinding;
-  readonly[UsesSlotIndex] = true;
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  targetSlot: number|null = null;
   varOffset: number|null = null;
 
-  constructor(readonly target: XrefId, readonly name: string, readonly args: o.Expression[]) {
+  constructor(
+      readonly target: XrefId, readonly targetSlot: SlotHandle, readonly name: string,
+      readonly args: o.Expression[]) {
     super();
   }
 
@@ -479,27 +472,24 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
   }
 
   override clone() {
-    const r = new PipeBindingExpr(this.target, this.name, this.args.map(a => a.clone()));
-    r.targetSlot = this.targetSlot;
+    const r =
+        new PipeBindingExpr(this.target, this.targetSlot, this.name, this.args.map(a => a.clone()));
     r.varOffset = this.varOffset;
     return r;
   }
 }
 
-export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotIndexTrait,
-                                                                       ConsumesVarsTrait,
+export class PipeBindingVariadicExpr extends ExpressionBase implements ConsumesVarsTrait,
                                                                        UsesVarOffsetTrait {
   override readonly kind = ExpressionKind.PipeBindingVariadic;
-  readonly[UsesSlotIndex] = true;
   readonly[ConsumesVarsTrait] = true;
   readonly[UsesVarOffset] = true;
 
-  targetSlot: number|null = null;
   varOffset: number|null = null;
 
   constructor(
-      readonly target: XrefId, readonly name: string, public args: o.Expression,
-      public numArgs: number) {
+      readonly target: XrefId, readonly targetSlot: SlotHandle, readonly name: string,
+      public args: o.Expression, public numArgs: number) {
     super();
   }
 
@@ -521,8 +511,8 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
   }
 
   override clone(): PipeBindingVariadicExpr {
-    const r = new PipeBindingVariadicExpr(this.target, this.name, this.args.clone(), this.numArgs);
-    r.targetSlot = this.targetSlot;
+    const r = new PipeBindingVariadicExpr(
+        this.target, this.targetSlot, this.name, this.args.clone(), this.numArgs);
     r.varOffset = this.varOffset;
     return r;
   }
@@ -766,21 +756,17 @@ export class SanitizerExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
-export class SlotLiteralExpr extends ExpressionBase implements UsesSlotIndexTrait {
+export class SlotLiteralExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SlotLiteralExpr;
-  readonly[UsesSlotIndex] = true;
 
-  constructor(readonly target: XrefId) {
+  constructor(readonly slot: SlotHandle) {
     super();
   }
-
-  targetSlot: number|null = null;
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof SlotLiteralExpr && e.target === this.target &&
-        e.targetSlot === this.targetSlot;
+    return e instanceof SlotLiteralExpr && e.slot === this.slot;
   }
 
   override isConstant() {
@@ -788,9 +774,7 @@ export class SlotLiteralExpr extends ExpressionBase implements UsesSlotIndexTrai
   }
 
   override clone(): SlotLiteralExpr {
-    const copy = new SlotLiteralExpr(this.target);
-    copy.targetSlot = this.targetSlot;
-    return copy;
+    return new SlotLiteralExpr(this.slot);
   }
 
   override transformInternalExpressions(): void {}
@@ -805,7 +789,7 @@ export class ConditionalCaseExpr extends ExpressionBase {
    * @param target The Xref of the view to be displayed if this condition is true.
    */
   constructor(
-      public expr: o.Expression|null, readonly target: XrefId,
+      public expr: o.Expression|null, readonly target: XrefId, readonly targetSlot: SlotHandle,
       readonly alias: t.Variable|null = null) {
     super();
   }
@@ -825,7 +809,7 @@ export class ConditionalCaseExpr extends ExpressionBase {
   }
 
   override clone(): ConditionalCaseExpr {
-    return new ConditionalCaseExpr(this.expr, this.target);
+    return new ConditionalCaseExpr(this.expr, this.target, this.targetSlot);
   }
 
   override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
@@ -975,7 +959,6 @@ export function transformExpressionsInOp(
     case OpKind.ContainerStart:
     case OpKind.Defer:
     case OpKind.DeferOn:
-    case OpKind.DeferSecondaryBlock:
     case OpKind.DisableBindings:
     case OpKind.Element:
     case OpKind.ElementEnd:

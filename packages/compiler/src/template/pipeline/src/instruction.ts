@@ -205,8 +205,23 @@ export function defer(
   return call(Identifiers.defer, args, sourceSpan);
 }
 
-export function deferOn(sourceSpan: ParseSourceSpan|null): ir.CreateOp {
-  return call(Identifiers.deferOnIdle, [], sourceSpan);
+const deferTriggerToR3TriggerInstructionsMap = new Map([
+  [ir.DeferTriggerKind.Idle, [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle]],
+  [
+    ir.DeferTriggerKind.Interaction,
+    [Identifiers.deferOnInteraction, Identifiers.deferPrefetchOnInteraction]
+  ],
+]);
+
+export function deferOn(
+    trigger: ir.DeferTriggerKind, args: number[], prefetch: boolean,
+    sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  const instructions = deferTriggerToR3TriggerInstructionsMap.get(trigger);
+  if (instructions === undefined) {
+    throw new Error(`Unable to determine instruction for trigger ${trigger}`);
+  }
+  const instructionToCall = prefetch ? instructions[1] : instructions[0];
+  return call(instructionToCall, args.map(a => o.literal(a)), sourceSpan);
 }
 
 export function projectionDef(def: o.Expression|null): ir.CreateOp {

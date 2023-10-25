@@ -25,8 +25,8 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
       // Any case with a `null` condition is `default`. If one exists, default to it instead.
       const defaultCase = op.conditions.findIndex((cond) => cond.expr === null);
       if (defaultCase >= 0) {
-        const xref = op.conditions.splice(defaultCase, 1)[0].target;
-        test = new ir.SlotLiteralExpr(xref);
+        const slot = op.conditions.splice(defaultCase, 1)[0].targetSlot;
+        test = new ir.SlotLiteralExpr(slot);
       } else {
         // By default, a switch evaluates to `-1`, causing no template to be displayed.
         test = o.literal(-1);
@@ -53,7 +53,7 @@ export function phaseConditionals(job: ComponentCompilationJob): void {
           op.contextValue = new ir.ReadTemporaryExpr(caseExpressionTemporaryXref);
         }
         test = new o.ConditionalExpr(
-            conditionalCase.expr, new ir.SlotLiteralExpr(conditionalCase.target), test);
+            conditionalCase.expr, new ir.SlotLiteralExpr(conditionalCase.targetSlot), test);
       }
 
       // Save the resulting aggregate Joost-expression.
