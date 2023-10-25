@@ -183,4 +183,4 @@ declare const global: any;
       }
     };
   };
-})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
+})(globalThis);

@@ -11,7 +11,6 @@ System.config({defaultJSExtensions: true});
 System.import('../lib/browser/api-util').then(() => {
   System.import('../lib/browser/browser-legacy').then(() => {
     System.import('../lib/browser/browser').then(() => {
-      const _global = typeof window !== 'undefined' ? window : self;
       Zone.current.fork({name: 'webworker'}).run(() => {
         const websocket = new WebSocket('ws://localhost:8001');
         websocket.addEventListener('open', () => {
