@@ -138,7 +138,7 @@ The `module` field of the library's `package.json` would be `"index.js"` and the
 When `true`, the recommended value, enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler. This phase uses TypeScript to verify binding expressions.
 For more information, see [Template type checking](guide/template-typecheck).
 
-Default is `false`, but when you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
+Default is `false`, but set to `true` in the created workspace configuration when creating a project using the Angular CLI.
 
 <div class="alert is-important">
 
@@ -213,7 +213,7 @@ When `true`, reports an error for a supplied parameter whose injection type cann
 When `false`, constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 The recommended value is `true`, but the default value is `false`.
 
-When you use the Angular CLI command `ng new --strict`, it is set to `true` in the created project's configuration.
+Set to `true` in the created workspace configuration when creating a project using the Angular CLI.
 
 ### `strictTemplates`
 
@@ -222,7 +222,7 @@ When `true`, enables [strict template type checking](guide/template-typecheck#st
 The strictness flags that this option enables allow you to turn on and off specific types of strict template type checking.
 See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
-When you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
+Set to `true` in the created workspace configuration when creating a project using the Angular CLI.
 
 ### `trace`
 
@@ -246,4 +246,4 @@ Besides the configuration file, you can also use [`tsc` command line options](ht
 
 <!-- end links -->
 
-@reviewed 2023-04-19
+@reviewed 2023-10-24
