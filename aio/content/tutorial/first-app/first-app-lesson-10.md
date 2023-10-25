@@ -19,13 +19,13 @@ The [Angular Router](/guide/router-tutorial) enables users to declare routes and
 
 In this lesson, you will enable routing in your application to navigate to the details page.
 
-## Step 1 - Create a default details component 
+## Step 1 - Create a default details component
 
-1. From the terminal, enter the following command to create the `DetailsComponent`: 
+1. From the terminal, enter the following command to create the `DetailsComponent`:
 
     <code-example format="shell" language="shell">
 
-    ng generate component details --standalone --inline-template --skip-tests
+    ng generate component details --inline-template --skip-tests
 
     </code-example>
 
@@ -41,21 +41,21 @@ In this lesson, you will enable routing in your application to navigate to the d
 
     1. Update the call to `bootstrapApplication` to include the routing configuration:
 
-        <code-example header="Add router configuration in src/main.ts" path="first-app-lesson-10/src/main.ts" region="add-router-config"></code-example>        
+        <code-example header="Add router configuration in src/main.ts" path="first-app-lesson-10/src/main.ts" region="add-router-config"></code-example>
 
 1.  In `src/app/app.component.ts`, update the component to use routing:
     1.  Add a file level import for `RoutingModule`:
 
         <code-example header="Import RouterModule in src/app/app.component.ts" path="first-app-lesson-10/src/app/app.component.ts" region="import-router-module"></code-example>
-    
+
     1.  Add `RouterModule` to the `@Component` metadata imports
 
         <code-example header="Import RouterModule in src/app/app.component.ts" path="first-app-lesson-10/src/app/app.component.ts" region="import-router-module-deco"></code-example>
-    
+
     1. In the `template` property, replace the `<app-home></app-home>` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
 
         <code-example header="Add router-outlet in src/app/app.component.ts" path="first-app-lesson-10/src/app/app.component.ts" region="add-router-outlet"></code-example>
-    
+
 ## Step 3 - Add route to new component
 In the previous step you removed the reference to the `<app-home>` component in the template. In this step, you will add a new route to that component.
 
@@ -65,7 +65,7 @@ In the previous step you removed the reference to the `<app-home>` component in 
         <code-example header="Import components and Routes" path="first-app-lesson-10/src/app/routes.ts" region="import-routes-components"></code-example>
 
     1.  Define a variable called `routeConfig` of type `Routes` and define two  routes for the app:
-    
+
         <code-example header="Add routes to the app" path="first-app-lesson-10/src/app/routes.ts" region="define-app-routes"></code-example>
 
         The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `HomeComponent` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
@@ -93,4 +93,4 @@ For more information about the topics covered in this lesson, visit:
 *  [Routing in Angular Overview](guide/routing-overview)
 *  [Common Routing Tasks](guide/router)
 
-@reviewed 2023-07-11
+@reviewed 2023-10-24

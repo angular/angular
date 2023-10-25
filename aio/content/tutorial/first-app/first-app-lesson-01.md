@@ -20,7 +20,7 @@ In the **Terminal** pane of your IDE:
 
 1.  In your project directory, navigate to the `first-app` directory.
 1.  Run this command to install the dependencies needed to run the app.
-    
+
     <code-example format="shell" language="shell">
 
     npm install
@@ -120,4 +120,4 @@ For more information about the topics covered in this lesson, visit:
 * [Angular Components](/guide/component-overview)
 * [Creating applications with the Angular CLI](/cli)
 
-  @reviewed 2023-07-10
+@reviewed 2023-10-24

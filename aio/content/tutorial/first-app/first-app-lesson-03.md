@@ -22,7 +22,7 @@ In the **Terminal** pane of your IDE:
 1. Run this command to create a new `HousingLocationComponent`
 
     <code-example format="shell" language="shell">
-    ng generate component housingLocation --standalone --inline-template --skip-tests
+    ng generate component housingLocation --inline-template --skip-tests
     </code-example>
 
 1. Run this command to build and serve your app.
@@ -64,7 +64,7 @@ In the **Edit** pane of your IDE:
 In this step, you will copy over the pre-written styles for the `HousingLocationComponent` to your app so that the app renders properly.
 
 1. Open `src/app/housing-location/housing-location.css`, and paste the styles below into the file:
-        
+
     <code-example header="Add CSS styles to housing location to the component in src/app/housing-location/housing-location.component.css" path="first-app-lesson-03/src/app/housing-location/housing-location.component.css"></code-example>
 
 1.  Save your code, return to the browser and confirm that the app builds without error. You should find the message "housing-location works!" rendered to the screen.Correct any errors before you continue to the next step.
@@ -84,4 +84,4 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 * [First Angular app lesson 4 -  Add a housing location interface to the application](tutorial/first-app/first-app-lesson-04)
 
-@reviewed 2023-07-11
+@reviewed 2023-10-24
