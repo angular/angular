@@ -33,7 +33,7 @@ In addition to the default Angular application framework, you will also create a
 
     <code-example format="shell" language="shell">
 
-    ng new angular-custom-route-match --standalone
+    ng new angular-custom-route-match
 
     </code-example>
 
@@ -48,7 +48,7 @@ In addition to the default Angular application framework, you will also create a
 
    <code-example format="shell" language="shell">
 
-   ng generate component profile --standalone
+   ng generate component profile
 
    </code-example>
 
@@ -146,4 +146,4 @@ This content is based on [Custom Route Matching with the Angular Router](https:/
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-24

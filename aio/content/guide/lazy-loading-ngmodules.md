@@ -68,11 +68,11 @@ Enter the following command where `customer-app` is the name of your app:
 
 <code-example format="shell" language="shell">
 
-ng new customer-app --routing
+ng new customer-app --no-standalone
 
 </code-example>
 
-This creates an application called `customer-app` and the `--routing` flag generates a file called `app-routing.module.ts`. This is one of the files you need for setting up lazy loading for your feature module.
+This creates an application called `customer-app` with a file called `app-routing.module.ts`. This is one of the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 
 ### Create a feature module with routing
@@ -422,4 +422,4 @@ You might also be interested in the following:
 
 <!-- end links -->
 
-@reviewed 2022-05-07
+@reviewed 2023-10-24

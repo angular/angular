@@ -92,12 +92,12 @@ Angular components, templates, and styles go here.
 
 | `src/app/` files | Purpose |
 |---|---|
-| `app/app.config.ts` | Defines the application config logic that tells Angular how to assemble the application. As you add more providers to the app, they must be declared here.<br><br>_Only generated when using the `--standalone` option._ |
+| `app/app.config.ts` | Defines the application config logic that tells Angular how to assemble the application. As you add more providers to the app, they must be declared here. |
 | `app/app.component.ts` | Defines the logic for the application's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
 | `app/app.component.html` | Defines the HTML template associated with the root `AppComponent`. |
 | `app/app.component.css` | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
-| `app/app.module.ts` | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_This file is not generated when using the `--standalone` option._ |
+| `app/app.module.ts` | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_This file is not generated when using `--no-standalone` option._ |
 
 ### Application configuration files
 
@@ -207,4 +207,4 @@ Under the `projects/` folder, the `my-lib` folder contains your library code.
 
 <!-- end links -->
 
-@reviewed 2023-04-24
+@reviewed 2023-10-24
