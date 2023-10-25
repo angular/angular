@@ -20,12 +20,12 @@ export function phaseGenerateAdvance(job: CompilationJob): void {
     for (const op of unit.create) {
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
-      } else if (op.slot === null) {
+      } else if (op.slot.slot === null) {
         throw new Error(
             `AssertionError: expected slots to have been allocated before generating advance() calls`);
       }
 
-      slotMap.set(op.xref, op.slot);
+      slotMap.set(op.xref, op.slot.slot);
     }
 
     // Next, step through the update operations and generate `ir.AdvanceOp`s as required to ensure

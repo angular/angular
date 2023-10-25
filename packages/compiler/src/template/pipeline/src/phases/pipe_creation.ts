@@ -30,22 +30,18 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
         throw new Error(`AssertionError: pipe bindings should not appear in child expressions`);
       }
 
-      // This update op must be associated with a create op that consumes a slot (either by
-      // depending on the ambient context of `target`, or merely referencing that create op via
-      // `target`).
-      if (!ir.hasDependsOnSlotContextTrait(updateOp) &&
-          !ir.hasUsesSlotIndexTrait<ir.UpdateOp>(updateOp)) {
-        throw new Error(`AssertionError: pipe binding associated with non-slot operation ${
-            ir.OpKind[updateOp.kind]}`);
-      }
-
       if (unit.job.compatibility) {
-        addPipeToCreationBlock(unit, updateOp.target, expr);
+        // TODO: We can delete this cast and check once compatibility mode is removed.
+        const slotHandle = (updateOp as any).target;
+        if (slotHandle == undefined) {
+          throw new Error(`AssertionError: expected slot handle to be assigned for pipe creation`);
+        }
+        addPipeToCreationBlock(unit, (updateOp as any).target, expr);
       } else {
         // When not in compatibility mode, we just add the pipe to the end of the create block. This
         // is not only simpler and faster, but allows more chaining opportunities for other
         // instructions.
-        unit.create.push(ir.createPipeOp(expr.target, expr.name));
+        unit.create.push(ir.createPipeOp(expr.target, expr.targetSlot, expr.name));
       }
     });
   }
@@ -71,7 +67,7 @@ function addPipeToCreationBlock(
       op = op.next!;
     }
 
-    const pipe = ir.createPipeOp(binding.target, binding.name) as ir.CreateOp;
+    const pipe = ir.createPipeOp(binding.target, binding.targetSlot, binding.name) as ir.CreateOp;
     ir.OpList.insertBefore(pipe, op.next!);
 
     // This completes adding the pipe to the creation block.

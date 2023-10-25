@@ -104,6 +104,8 @@ interface Reference {
    */
   targetId: ir.XrefId;
 
+  targetSlot: ir.SlotHandle;
+
   /**
    * A generated offset of this reference among all the references on a specific element.
    */
@@ -151,6 +153,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
           scope.references.push({
             name: op.localRefs[offset].name,
             targetId: op.xref,
+            targetSlot: op.slot,
             offset,
             variable: {
               kind: ir.SemanticVariableKind.Identifier,
@@ -205,8 +208,8 @@ function generateVariablesInScopeForView(
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset),
-        ir.VariableFlags.None));
+        view.job.allocateXrefId(), ref.variable,
+        new ir.ReferenceExpr(ref.targetId, ref.targetSlot, ref.offset), ir.VariableFlags.None));
   }
 
   if (scope.parent !== null) {

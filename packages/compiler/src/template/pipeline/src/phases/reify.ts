@@ -44,21 +44,21 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
     switch (op.kind) {
       case ir.OpKind.Text:
-        ir.OpList.replace(op, ng.text(op.slot!, op.initialValue, op.sourceSpan));
+        ir.OpList.replace(op, ng.text(op.slot.slot!, op.initialValue, op.sourceSpan));
         break;
       case ir.OpKind.ElementStart:
         ir.OpList.replace(
             op,
             ng.elementStart(
-                op.slot!, op.tag!, op.attributes as number | null, op.localRefs as number | null,
-                op.sourceSpan));
+                op.slot.slot!, op.tag!, op.attributes as number | null,
+                op.localRefs as number | null, op.sourceSpan));
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
             op,
             ng.element(
-                op.slot!, op.tag!, op.attributes as number | null, op.localRefs as number | null,
-                op.sourceSpan));
+                op.slot.slot!, op.tag!, op.attributes as number | null,
+                op.localRefs as number | null, op.sourceSpan));
         break;
       case ir.OpKind.ElementEnd:
         ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
@@ -67,27 +67,27 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.elementContainerStart(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.slot.slot!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
       case ir.OpKind.Container:
         ir.OpList.replace(
             op,
             ng.elementContainer(
-                op.slot!, op.attributes as number | null, op.localRefs as number | null,
+                op.slot.slot!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
       case ir.OpKind.ContainerEnd:
         ir.OpList.replace(op, ng.elementContainerEnd());
         break;
       case ir.OpKind.I18nStart:
-        ir.OpList.replace(op, ng.i18nStart(op.slot!, op.messageIndex!, op.subTemplateIndex!));
+        ir.OpList.replace(op, ng.i18nStart(op.slot.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
       case ir.OpKind.I18nEnd:
         ir.OpList.replace(op, ng.i18nEnd());
         break;
       case ir.OpKind.I18n:
-        ir.OpList.replace(op, ng.i18n(op.slot!, op.messageIndex!, op.subTemplateIndex!));
+        ir.OpList.replace(op, ng.i18n(op.slot.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
@@ -97,7 +97,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.template(
-                op.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
+                op.slot.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
                 op.block ? null : op.tag, op.attributes, op.sourceSpan),
         );
         break;
@@ -108,7 +108,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(op, ng.enableBindings());
         break;
       case ir.OpKind.Pipe:
-        ir.OpList.replace(op, ng.pipe(op.slot!, op.name));
+        ir.OpList.replace(op, ng.pipe(op.slot.slot!, op.name));
         break;
       case ir.OpKind.Listener:
         const listenerFn =
@@ -144,28 +144,42 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.defer(
-                op.slot!, op.targetSlot!, null, op.loading && op.loading.targetSlot,
-                op.placeholder && op.placeholder.targetSlot, op.error && op.error.targetSlot,
-                op.loading?.constIndex ?? null, op.placeholder?.constIndex ?? null, op.sourceSpan));
-        break;
-      case ir.OpKind.DeferSecondaryBlock:
-        ir.OpList.remove<ir.CreateOp>(op);
+                op.slot.slot!, op.mainSlot.slot!, null, op.loadingSlot?.slot ?? null,
+                op.placeholderSlot?.slot! ?? null, op.errorSlot?.slot ?? null,
+                /* TODO: const indices */ null, null, op.sourceSpan));
         break;
       case ir.OpKind.DeferOn:
-        ir.OpList.replace(op, ng.deferOn(op.sourceSpan));
+        let args: number[] = [];
+        switch (op.trigger.kind) {
+          case ir.DeferTriggerKind.Idle:
+            break;
+          case ir.DeferTriggerKind.Interaction:
+            if (op.trigger.targetSlot === null || op.trigger.targetSlotViewSteps === null) {
+              throw new Error('Slot or view steps not set in trigger reification');
+            }
+            args = [op.trigger.targetSlot];
+            if (op.trigger.targetSlotViewSteps !== 0) {
+              args.push(op.trigger.targetSlotViewSteps);
+            }
+            break;
+          default:
+            throw new Error(`AssertionError: Unsupported reification of defer trigger kind ${
+                (op.trigger as any).kind}`);
+        }
+        ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.prefetch, op.sourceSpan));
         break;
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
         break;
       case ir.OpKind.Projection:
-        if (op.slot === null) {
+        if (op.slot.slot === null) {
           throw new Error('No slot was assigned for project instruction');
         }
         ir.OpList.replace<ir.CreateOp>(
-            op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes, op.sourceSpan));
+            op, ng.projection(op.slot.slot!, op.projectionSlotIndex, op.attributes, op.sourceSpan));
         break;
       case ir.OpKind.RepeaterCreate:
-        if (op.slot === null) {
+        if (op.slot.slot === null) {
           throw new Error('No slot was assigned for repeater instruction');
         }
         if (!(unit instanceof ViewCompilationUnit)) {
@@ -197,7 +211,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.repeaterCreate(
-                op.slot, repeaterView.fnName, op.decls!, op.vars!, op.trackByFn!,
+                op.slot.slot!, repeaterView.fnName, op.decls!, op.vars!, op.trackByFn!,
                 op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
@@ -267,7 +281,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.I18nApply:
-        ir.OpList.replace(op, ng.i18nApply(op.targetSlot!, op.sourceSpan));
+        ir.OpList.replace(op, ng.i18nApply(op.targetSlot.slot!, op.sourceSpan));
         break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(
@@ -310,14 +324,14 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         if (op.processed === null) {
           throw new Error(`Conditional test was not set.`);
         }
-        if (op.targetSlot === null) {
+        if (op.targetSlot.slot === null) {
           throw new Error(`Conditional slot was not set.`);
         }
         ir.OpList.replace(
-            op, ng.conditional(op.targetSlot, op.processed, op.contextValue, op.sourceSpan));
+            op, ng.conditional(op.targetSlot.slot, op.processed, op.contextValue, op.sourceSpan));
         break;
       case ir.OpKind.Repeater:
-        ir.OpList.replace(op, ng.repeater(op.targetSlot!, op.collection, op.sourceSpan));
+        ir.OpList.replace(op, ng.repeater(op.targetSlot.slot!, op.collection, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
@@ -338,7 +352,7 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
     case ir.ExpressionKind.NextContext:
       return ng.nextContext(expr.steps);
     case ir.ExpressionKind.Reference:
-      return ng.reference(expr.targetSlot! + 1 + expr.offset);
+      return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
     case ir.ExpressionKind.RestoreView:
@@ -373,13 +387,13 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
     case ir.ExpressionKind.PureFunctionParameterExpr:
       throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);
     case ir.ExpressionKind.PipeBinding:
-      return ng.pipeBind(expr.targetSlot!, expr.varOffset!, expr.args);
+      return ng.pipeBind(expr.targetSlot.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.PipeBindingVariadic:
-      return ng.pipeBindV(expr.targetSlot!, expr.varOffset!, expr.args);
+      return ng.pipeBindV(expr.targetSlot.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.SanitizerExpr:
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
-      return o.literal(expr.targetSlot);
+      return o.literal(expr.slot.slot!);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);
