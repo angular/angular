@@ -773,6 +773,11 @@
           "tooltip": "Angular preview features and APIs",
           "children": [
             {
+              "url": "guide/control_flow",
+              "title": "Built-in control flow",
+              "tooltip": "Angular built-in control flow: if, for and switch"
+            },
+            {
               "url": "guide/signals",
               "title": "Signals",
               "tooltip": "Angular signals for optimized change detection"

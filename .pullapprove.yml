@@ -342,6 +342,7 @@ groups:
           'aio/content/blocks/**/{*,.*}',
           'aio/content/guide/hydration.md',
           'aio/content/guide/signals.md',
+          'aio/content/guide/control_flow.md',
           'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
