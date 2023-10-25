@@ -14,7 +14,6 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
-import {Identifiers} from '../../../render3/r3_identifiers';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
@@ -102,7 +101,8 @@ export function ingestHostAttribute(
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
   const eventBinding = ir.createListenerOp(
-      job.root.xref, event.name, null, event.targetOrPhase, true, event.sourceSpan);
+      job.root.xref, new ir.SlotHandle(), event.name, null, event.targetOrPhase, true,
+      event.sourceSpan);
   // TODO: Can this be a chain?
   eventBinding.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(
       convertAst(event.handler.ast, job, event.sourceSpan), event.handlerSpan)));
@@ -279,25 +279,30 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
  */
 function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId|null = null;
+  let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const ifCase of ifBlock.branches) {
     const cView = unit.job.allocateView(unit.xref);
     if (ifCase.expressionAlias !== null) {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
+    const tmplOp = ir.createTemplateOp(
+        cView.xref, 'Conditional', ir.Namespace.HTML, true,
+        undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan);
+    unit.create.push(tmplOp);
+
     if (firstXref === null) {
       firstXref = cView.xref;
+      firstSlotHandle = tmplOp.slot;
     }
-    unit.create.push(ir.createTemplateOp(
-        cView.xref, 'Conditional', ir.Namespace.HTML, true,
-        undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan));
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr =
-        new ir.ConditionalCaseExpr(caseExpr, cView.xref, ifCase.expressionAlias);
+        new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.slot, ifCase.expressionAlias);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
-  const conditional = ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan);
+  const conditional =
+      ir.createConditionalOp(firstXref!, firstSlotHandle!, null, conditions, ifBlock.sourceSpan);
   unit.update.push(conditional);
 }
 
@@ -306,25 +311,28 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
   let firstXref: ir.XrefId|null = null;
+  let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
-    if (firstXref === null) {
-      firstXref = cView.xref;
-    }
-    unit.create.push(ir.createTemplateOp(
+    const tmplOp = ir.createTemplateOp(
         cView.xref, 'Case', ir.Namespace.HTML, true,
         undefined /* TODO: figure out how i18n works with new control flow */,
-        switchCase.sourceSpan));
+        switchCase.sourceSpan);
+    unit.create.push(tmplOp);
+    if (firstXref === null) {
+      firstXref = cView.xref;
+      firstSlotHandle = tmplOp.slot;
+    }
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
-    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, cView.xref);
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.slot);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
   const conditional = ir.createConditionalOp(
-      firstXref!, convertAst(switchBlock.expression, unit.job, null), conditions,
+      firstXref!, firstSlotHandle!, convertAst(switchBlock.expression, unit.job, null), conditions,
       switchBlock.sourceSpan);
   unit.update.push(conditional);
 }
@@ -354,38 +362,41 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       ingestDeferView(unit, 'Error', deferBlock.error?.children, deferBlock.error?.sourceSpan);
 
   // Create the main defer op, and ops for all secondary views.
-  const deferOp = ir.createDeferOp(unit.job.allocateXrefId(), main.xref, deferBlock.sourceSpan);
+  const deferXref = unit.job.allocateXrefId();
+  const deferOp = ir.createDeferOp(
+      deferXref, main.xref, main.slot, placeholder?.xref ?? null, placeholder?.slot ?? null,
+      deferBlock.sourceSpan);
   unit.create.push(deferOp);
 
-  if (loading && deferBlock.loading) {
-    deferOp.loading =
-        ir.createDeferSecondaryOp(deferOp.xref, loading.xref, ir.DeferSecondaryKind.Loading);
-    if (deferBlock.loading.afterTime !== null || deferBlock.loading.minimumTime !== null) {
-      deferOp.loading.constValue = [deferBlock.loading.minimumTime, deferBlock.loading.afterTime];
+  // Configure all defer `on` conditions.
+
+  let prefetch = false;
+  let deferOnOps: ir.DeferOnOp[] = [];
+  for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
+    if (triggers.idle !== undefined) {
+      const deferOnOp =
+          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, prefetch, null!);
+      deferOnOps.push(deferOnOp);
     }
-    unit.create.push(deferOp.loading);
-  }
-
-  if (placeholder && deferBlock.placeholder) {
-    deferOp.placeholder = ir.createDeferSecondaryOp(
-        deferOp.xref, placeholder.xref, ir.DeferSecondaryKind.Placeholder);
-    if (deferBlock.placeholder.minimumTime !== null) {
-      deferOp.placeholder.constValue = [deferBlock.placeholder.minimumTime];
+    if (triggers.interaction !== undefined) {
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {
+            kind: ir.DeferTriggerKind.Interaction,
+            targetName: triggers.interaction.reference,
+            targetXref: null,
+            targetSlot: null,
+            targetView: null,
+            targetSlotViewSteps: null,
+          },
+          prefetch, null!);
+      deferOnOps.push(deferOnOp);
     }
-    unit.create.push(deferOp.placeholder);
+    prefetch = true;
   }
-
-  if (error && deferBlock.error) {
-    deferOp.error =
-        ir.createDeferSecondaryOp(deferOp.xref, error.xref, ir.DeferSecondaryKind.Error);
-    unit.create.push(deferOp.error);
+  if (deferOnOps.length === 0) {
+    deferOnOps.push(ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
   }
-
-  // Configure all defer conditions.
-  const deferOnOp = ir.createDeferOnOp(unit.job.allocateXrefId(), null!);
-
-  // Add all ops to the view.
-  unit.create.push(deferOnOp);
+  unit.create.push(deferOnOps);
 }
 
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
@@ -452,7 +463,8 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   const expression = convertAst(
       forBlock.expression, unit.job,
       convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
-  const repeater = ir.createRepeaterOp(repeaterCreate.xref, expression, forBlock.sourceSpan);
+  const repeater = ir.createRepeaterOp(
+      repeaterCreate.xref, repeaterCreate.slot, expression, forBlock.sourceSpan);
   unit.update.push(repeater);
 }
 
@@ -534,6 +546,7 @@ function convertAst(
     // TODO: pipes should probably have source maps; figure out details.
     return new ir.PipeBindingExpr(
         job.allocateXrefId(),
+        new ir.SlotHandle(),
         ast.name,
         [
           convertAst(ast.exp, job, baseSourceSpan),
@@ -636,8 +649,8 @@ function ingestBindings(
       continue;
     }
 
-    listenerOp =
-        ir.createListenerOp(op.xref, output.name, op.tag, output.phase, false, output.sourceSpan);
+    listenerOp = ir.createListenerOp(
+        op.xref, op.slot, output.name, op.tag, output.phase, false, output.sourceSpan);
 
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?

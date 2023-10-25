@@ -9,9 +9,10 @@
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, DeferSecondaryKind, I18nParamValueFlags, OpKind} from '../enums';
+import {BindingKind, DeferTriggerKind, I18nParamValueFlags, Namespace, OpKind} from '../enums';
+import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -20,11 +21,11 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
-    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferSecondaryBlockOp|DeferOnOp|RepeaterCreateOp|
-    ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp|IcuOp;
+export type CreateOp =
+    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
+    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
+    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
+    DeferOp|DeferOnOp|RepeaterCreateOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp|IcuOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -75,6 +76,8 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    * This ID is used to reference this element from other IR structures.
    */
   xref: XrefId;
+
+  slot: SlotHandle;
 
   /**
    * Attributes of various kinds on this element. Represented as a `ConstIndex` pointer into the
@@ -137,6 +140,7 @@ export function createElementStartOp(
     kind: OpKind.ElementStart,
     xref,
     tag,
+    slot: new SlotHandle(),
     attributes: null,
     localRefs: [],
     nonBindable: false,
@@ -202,6 +206,7 @@ export function createTemplateOp(
     xref,
     attributes: null,
     tag,
+    slot: new SlotHandle(),
     block: generatedInBlock,
     decls: null,
     vars: null,
@@ -280,6 +285,7 @@ export function createRepeaterCreateOp(
     kind: OpKind.RepeaterCreate,
     attributes: null,
     xref: primaryView,
+    slot: new SlotHandle(),
     emptyView,
     track,
     trackByFn: null,
@@ -424,6 +430,7 @@ export function createTextOp(
   return {
     kind: OpKind.Text,
     xref,
+    slot: new SlotHandle(),
     initialValue,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
@@ -434,8 +441,11 @@ export function createTextOp(
 /**
  * Logical operation representing an event listener on an element in the creation IR.
  */
-export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
+export interface ListenerOp extends Op<CreateOp> {
   kind: OpKind.Listener;
+
+  target: XrefId;
+  targetSlot: SlotHandle;
 
   /**
    * Whether this listener is from a host binding.
@@ -485,11 +495,12 @@ export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
  * Create a `ListenerOp`. Host bindings reuse all the listener logic.
  */
 export function createListenerOp(
-    target: XrefId, name: string, tag: string|null, animationPhase: string|null,
-    hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
+    target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
+    animationPhase: string|null, hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
   return {
     kind: OpKind.Listener,
     target,
+    targetSlot,
     tag,
     hostListener,
     name,
@@ -500,7 +511,6 @@ export function createListenerOp(
     animationPhase: animationPhase,
     sourceSpan,
     ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 
@@ -510,23 +520,15 @@ export interface PipeOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   name: string;
 }
 
-export function createPipeOp(xref: XrefId, name: string): PipeOp {
+export function createPipeOp(xref: XrefId, slot: SlotHandle, name: string): PipeOp {
   return {
     kind: OpKind.Pipe,
     xref,
+    slot,
     name,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
-}
-
-/**
- * Whether the active namespace is HTML, MathML, or SVG mode.
- */
-export enum Namespace {
-  HTML,
-  SVG,
-  Math,
 }
 
 /**
@@ -571,8 +573,6 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   xref: XrefId;
 
-  slot: number|null;
-
   projectionSlotIndex: number;
 
   attributes: string[];
@@ -589,6 +589,7 @@ export function createProjectionOp(
   return {
     kind: OpKind.Projection,
     xref,
+    slot: new SlotHandle(),
     selector,
     projectionSlotIndex: 0,
     attributes: [],
@@ -642,7 +643,7 @@ export function createExtractedAttributeOp(
   };
 }
 
-export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait, UsesSlotIndexTrait {
+export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.Defer;
 
   /**
@@ -651,91 +652,121 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait, UsesSlotInde
   xref: XrefId;
 
   /**
-   * The xref of the main view. This will be associated with `slot`.
+   * The xref of the main view.
    */
-  target: XrefId;
+  mainView: XrefId;
+
+  mainSlot: SlotHandle;
 
   /**
    * Secondary loading block associated with this defer op.
    */
-  loading: DeferSecondaryBlockOp|null;
+  loadingView: XrefId|null;
+
+  loadingSlot: SlotHandle|null;
 
   /**
    * Secondary placeholder block associated with this defer op.
    */
-  placeholder: DeferSecondaryBlockOp|null;
+  placeholderView: XrefId|null;
+
+  placeholderSlot: SlotHandle|null;
 
   /**
    * Secondary error block associated with this defer op.
    */
-  error: DeferSecondaryBlockOp|null;
+  errorView: XrefId|null;
+
+  errorSlot: SlotHandle|null;
 
   sourceSpan: ParseSourceSpan;
 }
 
-export function createDeferOp(xref: XrefId, main: XrefId, sourceSpan: ParseSourceSpan): DeferOp {
+export function createDeferOp(
+    xref: XrefId, main: XrefId, mainSlot: SlotHandle, placeholderView: XrefId|null,
+    placeholderSlot: SlotHandle|null, sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
     xref,
-    target: main,
-    loading: null,
-    placeholder: null,
-    error: null,
+    slot: new SlotHandle(),
+    mainView: main,
+    mainSlot,
+    loadingView: null,
+    loadingSlot: null,
+    placeholderView: null,
+    placeholderSlot,
+    errorView: null,
+    errorSlot: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
-    ...TRAIT_USES_SLOT_INDEX,
   };
 }
-
-export interface DeferSecondaryBlockOp extends Op<CreateOp>, UsesSlotIndexTrait, HasConstTrait {
-  kind: OpKind.DeferSecondaryBlock;
-
-  /**
-   * The xref of the corresponding defer op.
-   */
-  deferOp: XrefId;
-
-  /**
-   * Which kind of secondary block this op represents.
-   */
-  secondaryBlockKind: DeferSecondaryKind;
-
-  /**
-   * The xref of the secondary view. This will be associated with `slot`.
-   */
-  target: XrefId;
+interface DeferTriggerBase {
+  kind: DeferTriggerKind;
 }
 
-export function createDeferSecondaryOp(
-    deferOp: XrefId, secondaryView: XrefId,
-    secondaryBlockKind: DeferSecondaryKind): DeferSecondaryBlockOp {
-  return {
-    kind: OpKind.DeferSecondaryBlock,
-    deferOp,
-    target: secondaryView,
-    secondaryBlockKind,
-    constValue: null,
-    makeExpression: literalOrArrayLiteral,
-    ...NEW_OP,
-    ...TRAIT_USES_SLOT_INDEX,
-    ...TRAIT_HAS_CONST,
-  };
+interface DeferIdleTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Idle;
 }
 
-export interface DeferOnOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+interface DeferInteractionTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Interaction;
+
+  targetName: string|null;
+
+  /**
+   * The Xref of the targeted name. May be in a different view.
+   */
+  targetXref: XrefId|null;
+
+  /**
+   * The slot index of the named reference, inside the view provided below. This slot may not be
+   * inside the current view, and is handled specially as a result.
+   */
+  targetSlot: number|null;
+
+  targetView: XrefId|null;
+
+  /**
+   * Number of steps to walk up or down the view tree to find the target localRef.
+   */
+  targetSlotViewSteps: number|null;
+}
+
+/**
+ * The union type of all defer trigger interfaces.
+ */
+export type DeferTrigger = DeferIdleTrigger|DeferInteractionTrigger;
+
+export interface DeferOnOp extends Op<CreateOp> {
   kind: OpKind.DeferOn;
+
+  defer: XrefId;
+
+  /**
+   * The trigger for this defer op (e.g. idle, hover, etc).
+   */
+  trigger: DeferTrigger;
+
+  /**
+   * Whether to emit the prefetch version of the instruction.
+   */
+  prefetch: boolean;
 
   sourceSpan: ParseSourceSpan;
 }
 
-export function createDeferOnOp(xref: XrefId, sourceSpan: ParseSourceSpan): DeferOnOp {
+export function createDeferOnOp(
+    defer: XrefId, trigger: DeferTrigger, prefetch: boolean,
+    sourceSpan: ParseSourceSpan): DeferOnOp {
   return {
     kind: OpKind.DeferOn,
-    xref,
+    defer,
+    trigger,
+    prefetch,
     sourceSpan,
     ...NEW_OP,
-    ...TRAIT_CONSUMES_SLOT,
   };
 }
 
@@ -882,6 +913,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
   return {
     kind: OpKind.I18nStart,
     xref,
+    slot: new SlotHandle(),
     root: root ?? xref,
     message,
     messageIndex: null,

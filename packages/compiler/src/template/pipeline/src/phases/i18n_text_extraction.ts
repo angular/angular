@@ -17,18 +17,21 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
     // Remove all text nodes within i18n blocks, their content is already captured in the i18n
     // message.
     let currentI18nId: ir.XrefId|null = null;
-    const textNodes = new Map<ir.XrefId, ir.XrefId>();
+    let currentI18nSlot: ir.SlotHandle|null = null;
+    const textNodes = new Map<ir.XrefId, {xref: ir.XrefId, slot: ir.SlotHandle}>();
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
           currentI18nId = op.xref;
+          currentI18nSlot = op.slot;
           break;
         case ir.OpKind.I18nEnd:
           currentI18nId = null;
+          currentI18nSlot = null;
           break;
         case ir.OpKind.Text:
-          if (currentI18nId !== null) {
-            textNodes.set(op.xref, currentI18nId);
+          if (currentI18nId !== null && currentI18nSlot !== null) {
+            textNodes.set(op.xref, {xref: currentI18nId, slot: currentI18nSlot});
             ir.OpList.remove<ir.CreateOp>(op);
           }
           break;
@@ -44,14 +47,14 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
             continue;
           }
 
-          const i18nBlockId = textNodes.get(op.target)!;
+          const i18nBlock = textNodes.get(op.target)!;
           const ops: ir.UpdateOp[] = [];
           for (let i = 0; i < op.interpolation.expressions.length; i++) {
             const expr = op.interpolation.expressions[i];
             const placeholder = op.i18nPlaceholders[i];
             ops.push(ir.createI18nExpressionOp(
-                i18nBlockId, expr, placeholder.name, ir.I18nParamResolutionTime.Creation,
-                expr.sourceSpan ?? op.sourceSpan));
+                i18nBlock.xref, i18nBlock.slot, expr, placeholder.name,
+                ir.I18nParamResolutionTime.Creation, expr.sourceSpan ?? op.sourceSpan));
           }
           if (ops.length > 0) {
             // ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18nPlaceholders, op.sourceSpan));
