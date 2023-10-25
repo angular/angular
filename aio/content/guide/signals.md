@@ -3,12 +3,6 @@
 **Angular Signals** is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize
 rendering updates.
 
-<div class="alert is-important">
-
-Angular signals are available for [developer preview](/guide/releases#developer-preview). They're ready for you to try, but may change before they are stable.
-
-</div>
-
 ## What are signals?
 
 A **signal** is a wrapper around a value that can notify interested consumers when that value changes. Signals can contain any value, from simple primitives to complex data structures.
