@@ -2420,5 +2420,29 @@ describe('FormGroup', () => {
     });
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('updateTreeValidity', () => {
+    const g = new FormGroup({
+      c: new FormControl(),
+      g: new FormGroup({
+        c: new FormControl(),
+      }),
+      a: new FormArray([
+        new FormControl(),
+      ])
+    });
+    const s = [
+      g, g.controls.c, g.controls.g, g.controls.g.controls.c, g.controls.a, g.controls.a.at(0)
+    ].map(c => spyOn(c, 'updateValueAndValidity'));
+    g.updateTreeValidity();
+    for (const spy of s) {
+      expect(spy).toHaveBeenCalledWith({onlySelf: true, emitEvent: true});
+      spy.calls.reset();
+    }
+    g.updateTreeValidity({emitEvent: false});
+    for (const spy of s) {
+      expect(spy).toHaveBeenCalledWith({onlySelf: true, emitEvent: false});
+    }
+  });
 });
 })();
