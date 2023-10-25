@@ -381,6 +381,9 @@
     "name": "Observable"
   },
   {
+    "name": "PERF_MARK_STANDALONE"
+  },
+  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {

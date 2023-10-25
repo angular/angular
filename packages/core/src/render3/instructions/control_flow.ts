@@ -24,6 +24,10 @@ import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContain
 
 import {ɵɵtemplate} from './template';
 
+const PERF_MARK_CONTROL_FLOW = {
+  detail: {feature: 'NgControlFlow'}
+};
+
 /**
  * The conditional instruction represents the basic building block on the runtime side to support
  * built-in "if" and "switch". On the high level this instruction is responsible for adding and
@@ -36,6 +40,8 @@ import {ɵɵtemplate} from './template';
  * @codeGenApi
  */
 export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
+  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
   const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
@@ -132,6 +138,8 @@ export function ɵɵrepeaterCreate(
     index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
     trackByFn: TrackByFunction<unknown>, trackByUsesComponentInstance?: boolean,
     emptyTemplateFn?: ComponentTemplate<unknown>, emptyDecls?: number, emptyVars?: number): void {
+  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?
