@@ -185,20 +185,22 @@ export function text(
 
 export function defer(
     selfSlot: number, primarySlot: number, dependencyResolverFn: null, loadingSlot: number|null,
-    placeholderSlot: number|null, errorSlot: number|null, loadingConfigIndex: number|null,
-    placeholderConfigIndex: number|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
-  const args = [
+    placeholderSlot: number|null, errorSlot: number|null, loadingConfig: o.Expression|null,
+    placeholderConfig: o.Expression|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  const args: Array<o.Expression> = [
     o.literal(selfSlot),
     o.literal(primarySlot),
     o.literal(dependencyResolverFn),
     o.literal(loadingSlot),
     o.literal(placeholderSlot),
     o.literal(errorSlot),
-    o.literal(loadingConfigIndex),
-    o.literal(placeholderConfigIndex),
+    loadingConfig ?? o.literal(null),
+    placeholderConfig ?? o.literal(null),
   ];
 
-  while (args[args.length - 1].value === null) {
+  let expr: o.Expression;
+  while ((expr = args[args.length - 1]) !== null && expr instanceof o.LiteralExpr &&
+         expr.value === null) {
     args.pop();
   }
 

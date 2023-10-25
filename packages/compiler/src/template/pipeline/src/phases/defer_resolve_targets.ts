@@ -33,7 +33,7 @@ export function phaseDeferResolveTargets(job: ComponentCompilationJob): void {
         if (ref.target !== '') {
           continue;
         }
-        scope.targets.set(ref.name, op.xref);
+        scope.targets.set(ref.name, {xref: op.xref, slot: op.slot});
       }
     }
 
@@ -58,9 +58,12 @@ export function phaseDeferResolveTargets(job: ComponentCompilationJob): void {
         while (view !== null) {
           const scope = getScopeForView(view);
           if (scope.targets.has(op.trigger.targetName)) {
-            op.trigger.targetXref = scope.targets.get(op.trigger.targetName)!;
+            const {xref, slot} = scope.targets.get(op.trigger.targetName)!;
+
+            op.trigger.targetXref = xref;
             op.trigger.targetView = view.xref;
             op.trigger.targetSlotViewSteps = step;
+            op.trigger.targetSlot = slot;
             return;
           }
 
@@ -90,8 +93,6 @@ export function phaseDeferResolveTargets(job: ComponentCompilationJob): void {
   }
 }
 
-
-
 class Scope {
-  targets = new Map<string, ir.XrefId>();
+  targets = new Map<string, {xref: ir.XrefId, slot: ir.SlotHandle}>();
 }

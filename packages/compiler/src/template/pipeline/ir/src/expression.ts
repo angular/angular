@@ -24,7 +24,7 @@ export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextEx
     GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
     PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
     SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr;
+    SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -853,6 +853,38 @@ export class DerivedRepeaterVarExpr extends ExpressionBase {
   }
 }
 
+export class ConstCollectedExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ConstCollected;
+
+  constructor(public expr: o.Expression) {
+    super();
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.expr = transform(this.expr, flags);
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any) {
+    this.expr.visitExpression(visitor, context);
+  }
+
+  override isEquivalent(e: o.Expression): boolean {
+    if (!(e instanceof ConstCollectedExpr)) {
+      return false;
+    }
+    return this.expr.isEquivalent(e.expr);
+  }
+
+  override isConstant(): boolean {
+    return this.expr.isConstant();
+  }
+
+  override clone(): ConstCollectedExpr {
+    return new ConstCollectedExpr(this.expr);
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -953,11 +985,19 @@ export function transformExpressionsInOp(
     case OpKind.Repeater:
       op.collection = transformExpressionsInExpression(op.collection, transform, flags);
       break;
+    case OpKind.Defer:
+      if (op.loadingConfig !== null) {
+        op.loadingConfig = transformExpressionsInExpression(op.loadingConfig, transform, flags);
+      }
+      if (op.placeholderConfig !== null) {
+        op.placeholderConfig =
+            transformExpressionsInExpression(op.placeholderConfig, transform, flags);
+      }
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:
     case OpKind.ContainerStart:
-    case OpKind.Defer:
     case OpKind.DeferOn:
     case OpKind.DisableBindings:
     case OpKind.Element:

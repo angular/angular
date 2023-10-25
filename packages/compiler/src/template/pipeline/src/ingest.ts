@@ -363,9 +363,14 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
-  const deferOp = ir.createDeferOp(
-      deferXref, main.xref, main.slot, placeholder?.xref ?? null, placeholder?.slot ?? null,
-      deferBlock.sourceSpan);
+  const deferOp = ir.createDeferOp(deferXref, main.xref, main.slot, deferBlock.sourceSpan);
+  deferOp.placeholderView = placeholder?.xref ?? null;
+  deferOp.placeholderSlot = placeholder?.slot ?? null;
+  deferOp.loadingSlot = loading?.slot ?? null;
+  deferOp.errorSlot = error?.slot ?? null;
+  deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
+  deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
+  deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;
   unit.create.push(deferOp);
 
   // Configure all defer `on` conditions.
