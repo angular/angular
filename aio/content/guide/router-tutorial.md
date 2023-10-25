@@ -43,7 +43,7 @@ This application will have two components: *crisis-list* and *heroes-list*.
 
     <code-example format="shell" language="shell">
 
-    ng new angular-router-sample --standalone
+    ng new angular-router-sample
 
     </code-example>
 
@@ -58,7 +58,7 @@ This application will have two components: *crisis-list* and *heroes-list*.
 
     <code-example format="shell" language="shell">
 
-    ng generate component crisis-list --standalone
+    ng generate component crisis-list
 
     </code-example>
 
@@ -70,7 +70,7 @@ This application will have two components: *crisis-list* and *heroes-list*.
 
     <code-example format="shell" language="shell">
 
-    ng generate component heroes-list --standalone
+    ng generate component heroes-list
 
     </code-example>
 
@@ -130,7 +130,7 @@ To add this functionality to your sample application, you need to update the `ap
 You import this provider function from `@angular/router`.
 
 1.  From your code editor, open the `app.config.ts` file.
-1.  Add the following import statements: 
+1.  Add the following import statements:
 
 ```
 import { provideRouter } from '@angular/router';
@@ -263,7 +263,7 @@ In this section, you'll create a 404 page and update your route configuration to
 
     <code-example format="shell" language="shell">
 
-    ng generate component page-not-found --standalone
+    ng generate component page-not-found
 
     </code-example>
 
@@ -308,4 +308,4 @@ For more information about routing, see the following topics:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-24
