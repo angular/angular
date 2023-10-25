@@ -55,7 +55,7 @@ declare const WorkerGlobalScope: any;
 export const zoneSymbol = Zone.__symbol__;
 const isWindowExists = typeof window !== 'undefined';
 const internalWindow: any = isWindowExists ? window : undefined;
-const _global: any = isWindowExists && internalWindow || typeof self === 'object' && self || global;
+const _global: any = isWindowExists && internalWindow || globalThis;
 
 const REMOVE_ATTRIBUTE = 'removeAttribute';
 
