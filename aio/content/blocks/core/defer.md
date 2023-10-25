@@ -47,7 +47,7 @@ Triggers provide conditions for when defer loading occurs. Some allow a template
 
 <h2>Prefetch</h2>
 
-Triggers prefetching of the defer block used in the `@defer` parameters. Separate multiple prefetch triggers with a semicolon.
+Configures prefetching of the defer block used in the `@defer` parameters, but does not affect rendering. Rendering is handled by the standard `on` and `when` conditions. Separate multiple prefetch configurations with a semicolon.
 
 ```html
 @defer (prefetch on <trigger>; prefetch when <condition>) {
