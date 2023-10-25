@@ -408,6 +408,9 @@
     "name": "PARAM_REGEX"
   },
   {
+    "name": "PERF_MARK_STANDALONE"
+  },
+  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {

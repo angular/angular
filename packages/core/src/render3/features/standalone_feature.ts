@@ -60,6 +60,10 @@ class StandaloneService implements OnDestroy {
   });
 }
 
+const PERF_MARK_STANDALONE = {
+  detail: {feature: 'NgStandalone'}
+};
+
 /**
  * A feature that acts as a setup code for the {@link StandaloneService}.
  *
@@ -71,6 +75,7 @@ class StandaloneService implements OnDestroy {
  * @codeGenApi
  */
 export function ɵɵStandaloneFeature(definition: ComponentDef<unknown>) {
+  performance.mark('mark_use_counter', PERF_MARK_STANDALONE);
   definition.getStandaloneInjector = (parentInjector: EnvironmentInjector) => {
     return parentInjector.get(StandaloneService).getOrCreateStandaloneInjector(definition);
   };
