@@ -22,14 +22,14 @@ export function generateLocaleGlobalFile(
   const extraLocaleData = generateLocaleExtraDataArrayCode(locale, localeData);
   const data = basicLocaleData.replace(/\]$/, `, ${extraLocaleData}]`);
   return `${fileHeader}
-  (function(global) {
-    global.ng = global.ng || {};
-    global.ng.common = global.ng.common || {};
-    global.ng.common.locales = global.ng.common.locales || {};
+  (function() {
+    globalThis.ng ??= {};
+    globalThis.ng.common ??= {};
+    globalThis.ng.common.locales ??= {};
     const u = undefined;
     ${getPluralFunction(localeData, false)}
-    global.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
-  })(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
+    globalThis.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
+  })();
     `;
 }
 
