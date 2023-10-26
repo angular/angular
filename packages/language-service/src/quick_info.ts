@@ -8,7 +8,7 @@
 import {AST, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {DeferredTrigger, isBlockNode} from '@angular/compiler/src/render3/r3_ast';
+import {BlockNode, DeferredTrigger} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './display_parts';
@@ -26,8 +26,7 @@ export class QuickInfoBuilder {
       private readonly positionDetails: TemplateTarget) {}
 
   get(): ts.QuickInfo|undefined {
-    if (this.node instanceof DeferredTrigger ||
-        !(this.node instanceof AST) && isBlockNode(this.node)) {
+    if (this.node instanceof DeferredTrigger || this.node instanceof BlockNode) {
       return createQuickInfoForBuiltIn(this.node, this.positionDetails.position);
     }
 

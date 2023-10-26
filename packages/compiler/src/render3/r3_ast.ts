@@ -173,32 +173,44 @@ export class ViewportDeferredTrigger extends DeferredTrigger {
   }
 }
 
-export class DeferredBlockPlaceholder implements Node {
+export class BlockNode {
   constructor(
-      public children: Node[], public minimumTime: number|null, public nameSpan: ParseSourceSpan,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+}
+
+export class DeferredBlockPlaceholder extends BlockNode implements Node {
+  constructor(
+      public children: Node[], public minimumTime: number|null, nameSpan: ParseSourceSpan,
+      sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
+      endSourceSpan: ParseSourceSpan|null) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockPlaceholder(this);
   }
 }
 
-export class DeferredBlockLoading implements Node {
+export class DeferredBlockLoading extends BlockNode implements Node {
   constructor(
       public children: Node[], public afterTime: number|null, public minimumTime: number|null,
-      public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
+      endSourceSpan: ParseSourceSpan|null) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockLoading(this);
   }
 }
 
-export class DeferredBlockError implements Node {
+export class DeferredBlockError extends BlockNode implements Node {
   constructor(
-      public children: Node[], public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public children: Node[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockError(this);
@@ -215,7 +227,7 @@ export interface DeferredBlockTriggers {
   viewport?: ViewportDeferredTrigger;
 }
 
-export class DeferredBlock implements Node {
+export class DeferredBlock extends BlockNode implements Node {
   readonly triggers: Readonly<DeferredBlockTriggers>;
   readonly prefetchTriggers: Readonly<DeferredBlockTriggers>;
   private readonly definedTriggers: (keyof DeferredBlockTriggers)[];
@@ -225,9 +237,9 @@ export class DeferredBlock implements Node {
       public children: Node[], triggers: DeferredBlockTriggers,
       prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
-      public nameSpan: ParseSourceSpan, public sourceSpan: ParseSourceSpan,
-      public mainBlockSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {
+      nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
     // We cache the keys since we know that they won't change and we
@@ -255,25 +267,31 @@ export class DeferredBlock implements Node {
   }
 }
 
-export class SwitchBlock implements Node {
+export class SwitchBlock extends BlockNode implements Node {
   constructor(
       public expression: AST, public cases: SwitchBlockCase[],
       /**
        * These blocks are only captured to allow for autocompletion in the language service. They
        * aren't meant to be processed in any other way.
        */
-      public unknownBlocks: UnknownBlock[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public unknownBlocks: UnknownBlock[], sourceSpan: ParseSourceSpan,
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
+      nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlock(this);
   }
 }
 
-export class SwitchBlockCase implements Node {
+export class SwitchBlockCase extends BlockNode implements Node {
   constructor(
-      public expression: AST|null, public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public expression: AST|null, public children: Node[], sourceSpan: ParseSourceSpan,
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
+      nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlockCase(this);
@@ -286,45 +304,53 @@ export class SwitchBlockCase implements Node {
 export type ForLoopBlockContext =
     Record<'$index'|'$first'|'$last'|'$even'|'$odd'|'$count', Variable>;
 
-export class ForLoopBlock implements Node {
+export class ForLoopBlock extends BlockNode implements Node {
   constructor(
       public item: Variable, public expression: ASTWithSource, public trackBy: ASTWithSource,
       public trackKeywordSpan: ParseSourceSpan, public contextVariables: ForLoopBlockContext,
-      public children: Node[], public empty: ForLoopBlockEmpty|null,
-      public sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public children: Node[], public empty: ForLoopBlockEmpty|null, sourceSpan: ParseSourceSpan,
+      public mainBlockSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
   }
 }
 
-export class ForLoopBlockEmpty implements Node {
+export class ForLoopBlockEmpty extends BlockNode implements Node {
   constructor(
-      public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null,
-      public nameSpan: ParseSourceSpan) {}
+      public children: Node[], sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlockEmpty(this);
   }
 }
 
-export class IfBlock implements Node {
+export class IfBlock extends BlockNode implements Node {
   constructor(
-      public branches: IfBlockBranch[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+      public branches: IfBlockBranch[], sourceSpan: ParseSourceSpan,
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
+      nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlock(this);
   }
 }
 
-export class IfBlockBranch implements Node {
+export class IfBlockBranch extends BlockNode implements Node {
   constructor(
       public expression: AST|null, public children: Node[], public expressionAlias: Variable|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlockBranch(this);
@@ -512,15 +538,4 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
     }
   }
   return result;
-}
-
-export type BlockNode = IfBlockBranch|ForLoopBlockEmpty|ForLoopBlock|SwitchBlockCase|SwitchBlock|
-    DeferredBlockError|DeferredBlockPlaceholder|DeferredBlockLoading;
-
-export function isBlockNode(node: Node): node is BlockNode {
-  return node instanceof IfBlockBranch || node instanceof ForLoopBlockEmpty ||
-      node instanceof ForLoopBlock || node instanceof SwitchBlockCase ||
-      node instanceof SwitchBlock || node instanceof DeferredBlockError ||
-      node instanceof DeferredBlockPlaceholder || node instanceof DeferredBlockLoading ||
-      node instanceof DeferredBlock;
 }

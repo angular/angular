@@ -76,7 +76,9 @@ class BlockVisitor extends t.RecursiveVisitor {
   }
 
   visit(node: t.Node) {
-    if (t.isBlockNode(node)) {
+    if (node instanceof t.BlockNode
+        // Omit `IfBlock` because we include the branches individually
+        && !(node instanceof t.IfBlock)) {
       this.blocks.push(node);
     }
   }
