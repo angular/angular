@@ -134,11 +134,14 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 
   // start from top of template
   // loop through each element
-  visitor.elements[0].hasLineBreaks = hasLineBreaks;
-  let prevElEnd = visitor.elements[0]?.el.sourceSpan.end.offset ?? result.length - 1;
-  let nestedQueue: number[] = [prevElEnd];
-  for (let i = 1; i < visitor.elements.length; i++) {
+  let nestedQueue: number[] = [];
+  for (let i = 0; i < visitor.elements.length; i++) {
     let currEl = visitor.elements[i];
+    if (i === 0) {
+      nestedQueue.push(currEl.el.sourceSpan.end.offset);
+      currEl.hasLineBreaks = hasLineBreaks;
+      continue;
+    }
     currEl.hasLineBreaks = hasLineBreaks;
     currEl.nestCount = getNestedCount(currEl, nestedQueue);
     if (currEl.el.sourceSpan.end.offset !== nestedQueue[nestedQueue.length - 1]) {
