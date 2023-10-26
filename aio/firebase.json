@@ -218,7 +218,10 @@
       {"type": 301, "source": "/analytics", "destination": "/cli/analytics"},
 
       // Deprecated error messages
-      {"type": 301, "source": "/errors/NG6999", "destination": "https://v13.angular.io/errors/NG6999"}
+      {"type": 301, "source": "/errors/NG6999", "destination": "https://v13.angular.io/errors/NG6999"},
+
+      // Universal has been renamed to ssr
+      {"type": 301, "source": "/guide/universal", "destination": "/guide/ssr"}
     ],
     "rewrites": [
       {

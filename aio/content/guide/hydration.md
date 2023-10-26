@@ -6,7 +6,7 @@ Hydration is the process that restores the server side rendered application on t
 
 ## Why is hydration important?
 
-Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First Input Delay ([FID](https://web.dev/fid/)) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
+Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First-contentful paint [FCP](https://developer.chrome.com/en/docs/lighthouse/performance/first-contentful-paint/) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
 
 Without hydration enabled, server side rendered Angular applications will destroy and re-render the application's DOM, which may result in a visible UI flicker. This re-rendering can negatively impact [Core Web Vitals](https://web.dev/learn-core-web-vitals/) like [LCP](https://web.dev/lcp/) and cause a layout shift. Enabling hydration allows the existing DOM to be re-used and prevents a flicker.
 
@@ -14,7 +14,7 @@ Without hydration enabled, server side rendered Angular applications will destro
 
 ## How do you enable hydration in Angular
 
-Before you can get started with hydration, you must have a server side rendered (SSR) application. Follow the [Angular Universal Guide](/guide/universal) to enable server side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
+Before you can get started with hydration, you must have a server side rendered (SSR) application. Follow the [Angular SSR Guide](/guide/ssr) to enable server side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
 
 ```typescript
 import {
@@ -62,7 +62,7 @@ After you've followed these steps and have started up your server, load your app
 While running an application in dev mode, you can confirm hydration is enabled by opening the Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated.
 
 <div class="alert is-helpful">
-  
+
 Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
 
 </div>
@@ -95,7 +95,7 @@ It is best to refactor your component to avoid this sort of DOM manipulation. Tr
 
 ### Valid HTML structure
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. 
+There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration.
 
 As an example, here are some of the most common cases of this issue.
 

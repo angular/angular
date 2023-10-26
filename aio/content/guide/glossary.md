@@ -717,7 +717,7 @@ It can also pre-generate pages as HTML files that you serve later.
 This technique can improve performance on mobile and low-powered devices and improve the user experience by showing a static first page quickly while the client-side application is loading.
 The static version can also make your application more visible to web crawlers.
 
-You can easily prepare an application for server-side rendering by using the [Angular CLI][AioGuideGlossaryCommandLineInterfaceCli] to run the [Angular Universal][AioGuideGlossaryUniversal] tool, using the `@nguniversal/express-engine` [schematic][AioGuideGlossarySchematic].
+You can easily prepare an application for server-side rendering by using the [Angular CLI][AioGuideGlossaryCommandLineInterfaceCli]  `ng add @angular/ssr` command.
 
 ## service
 
@@ -889,12 +889,12 @@ In development mode, Angular throws the `ExpressionChangedAfterItHasBeenCheckedE
 To avoid this error, a [lifecycle hook][AioGuideLifecycleHooks] method that seeks to make such a change should trigger a new change detection run.
 The new run follows the same direction as before, but succeeds in picking up the new value.
 
-## Universal
+## Server-side rendering
 
 A tool for implementing [server-side rendering][AioGuideGlossaryServerSideRendering] of an Angular application.
 When integrated with an app, Universal generates and serves static pages on the server in response to requests from browsers.
 The initial static page serves as a fast-loading placeholder while the full application is being prepared for normal execution in the browser.
-To learn more, see [Angular Universal: server-side rendering][AioGuideUniversal].
+To learn more, see [Angular server-side rendering][AioGuideSSR].
 
 ## view
 
@@ -1117,7 +1117,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideGlossaryTree]: guide/glossary#tree "tree - Glossary | Angular"
 [AioGuideGlossaryTypescript]: guide/glossary#typescript "TypeScript - Glossary | Angular"
 [AioGuideGlossaryU]: guide/glossary#unidirectional-data-flow "U - Glossary | Angular"
-[AioGuideGlossaryUniversal]: guide/glossary#universal "Universal - Glossary | Angular"
+[AioGuideGlossarySSR]: guide/glossary#server-side-rendering "Server-side rendering - Glossary | Angular"
 [AioGuideGlossaryV]: guide/glossary#view "V - Glossary | Angular"
 [AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
 [AioGuideGlossaryViewHierarchy]: guide/glossary#view-hierarchy "view hierarchy - Glossary | Angular"
@@ -1168,7 +1168,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
 
-[AioGuideUniversal]: guide/universal "Server-side rendering (SSR) with Angular Universal | Angular"
+[AioGuideSSR]: guide/ssr "Server-side rendering (SSR) with Angular | Angular"
 
 [AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
 [AioGuideWorkspaceConfigProjectToolConfigurationOptions]: guide/workspace-config#project-tool-configuration-options "Project tool configuration options - Angular workspace configuration | Angular"

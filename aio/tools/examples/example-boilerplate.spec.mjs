@@ -76,16 +76,16 @@ describe('example-boilerplate tool', () => {
       ]);
     });
 
-    it('should copy all the source boilerplate files for universal (on top of the cli ones)', () => {
+    it('should copy all the source boilerplate files for ssr (on top of the cli ones)', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-      exampleBoilerPlate.loadJsonFile.and.returnValue({projectType: 'universal'});
+      exampleBoilerPlate.loadJsonFile.and.returnValue({projectType: 'ssr'});
 
       exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(3);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
         [`${boilerplateDir}/cli`, outputDir, jasmine.any(Function)],
-        [`${boilerplateDir}/universal`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/ssr`, outputDir, jasmine.any(Function)],
         [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });

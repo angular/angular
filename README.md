@@ -152,7 +152,7 @@ Join the conversation and help the community.
 [forms]: https://angular.io/guide/forms-overview
 [api]: https://angular.io/api
 [angularelements]: https://angular.io/guide/elements
-[ssr]: https://angular.io/guide/universal
+[ssr]: https://angular.io/guide/ssr
 [schematics]: https://angular.io/guide/schematics
 [lazyloading]: https://angular.io/guide/lazy-loading-ngmodules
 [node.js]: https://nodejs.org/
