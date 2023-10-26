@@ -3,5 +3,12 @@
   "$id": "AngularControlFlowMigration",
   "title": "Angular Control Flow Migration Schema",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path relative to the project root which should be migrated",
+      "x-prompt": "Which path in your project should be migrated?",
+      "default": "./"
+    }
+  }
 }
