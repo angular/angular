@@ -7,7 +7,7 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {EntryType, InterfaceEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {ClassEntry, EntryType, InterfaceEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -184,12 +184,12 @@ runInEachFileSystem(() => {
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
       env.write('index.ts', `
-        export interface UserProfile {            
+        export interface UserProfile {
           get userId(): number;
-          
+
           get userName(): string;
           set userName(value: string);
-          
+
           set isAdmin(value: boolean);
         }
       `);
@@ -210,6 +210,122 @@ runInEachFileSystem(() => {
       expect(userNameSetter.memberType).toBe(MemberType.Setter);
       expect(isAdminSetter.name).toBe('isAdmin');
       expect(isAdminSetter.memberType).toBe(MemberType.Setter);
+    });
+
+    it('should extract inherited members', () => {
+      env.write('index.ts', `
+        interface Ancestor {
+          id: string;
+          value: string|number;
+
+          save(value: string|number): string|number;
+        }
+
+        interface Parent extends Ancestor {
+          name: string;
+        }
+
+        export interface Child extends Parent {
+          age: number;
+          value: number;
+
+          save(value: number): number;
+          save(value: string|number): string|number;
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const interfaceEntry = docs[0] as InterfaceEntry;
+      expect(interfaceEntry.members.length).toBe(6);
+
+      const [ageEntry, valueEntry, numberSaveEntry, unionSaveEntry, nameEntry, idEntry] =
+          interfaceEntry.members;
+
+      expect(ageEntry.name).toBe('age');
+      expect(ageEntry.memberType).toBe(MemberType.Property);
+      expect((ageEntry as PropertyEntry).type).toBe('number');
+      expect(ageEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(valueEntry.name).toBe('value');
+      expect(valueEntry.memberType).toBe(MemberType.Property);
+      expect((valueEntry as PropertyEntry).type).toBe('number');
+      expect(valueEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(numberSaveEntry.name).toBe('save');
+      expect(numberSaveEntry.memberType).toBe(MemberType.Method);
+      expect((numberSaveEntry as MethodEntry).returnType).toBe('number');
+      expect(numberSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(unionSaveEntry.name).toBe('save');
+      expect(unionSaveEntry.memberType).toBe(MemberType.Method);
+      expect((unionSaveEntry as MethodEntry).returnType).toBe('string | number');
+      expect(unionSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect((nameEntry as PropertyEntry).type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Property);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).toContain(MemberTags.Inherited);
+    });
+
+    it('should extract inherited getters/setters', () => {
+      env.write('index.ts', `
+        interface Ancestor {
+          get name(): string;
+          set name(v: string);
+
+          get id(): string;
+          set id(v: string);
+
+          get age(): number;
+          set age(v: number);
+        }
+
+        interface Parent extends Ancestor {
+          name: string;
+        }
+
+        export interface Child extends Parent {
+          get id(): string;
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const interfaceEntry = docs[0] as InterfaceEntry;
+      expect(interfaceEntry.members.length).toBe(4);
+
+      const [idEntry, nameEntry, ageGetterEntry, ageSetterEntry] =
+          interfaceEntry.members as PropertyEntry[];
+
+      // When the child interface overrides an accessor pair with another accessor, it overrides
+      // *both* the getter and the setter, resulting (in this case) in just a getter.
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Getter);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      // When the child interface overrides an accessor with a property, the property takes
+      // precedence.
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect(nameEntry.type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageGetterEntry.name).toBe('age');
+      expect(ageGetterEntry.memberType).toBe(MemberType.Getter);
+      expect(ageGetterEntry.type).toBe('number');
+      expect(ageGetterEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageSetterEntry.name).toBe('age');
+      expect(ageSetterEntry.memberType).toBe(MemberType.Setter);
+      expect(ageSetterEntry.type).toBe('number');
+      expect(ageSetterEntry.memberTags).toContain(MemberTags.Inherited);
     });
   });
 });
