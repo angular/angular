@@ -7,7 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Input, signal, untracked, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy,inject, ChangeDetectorRef, Component, Directive, Input, signal, untracked, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {
@@ -483,7 +483,7 @@ describe('OnPush components with signals', () => {
     expect(fixture.nativeElement.outerHTML).not.toContain('blue');
   });
 
-  it('should warn when writing to signals during change-detecting a given template, in advance()',
+  it('should be able to write to signals during change-detecting a given template, in advance()',
      () => {
        const counter = signal(0);
 
@@ -509,49 +509,63 @@ describe('OnPush components with signals', () => {
          counter = counter;
        }
 
-       const consoleWarnSpy = spyOn(console, 'warn').and.callThrough();
-
        const fixture = TestBed.createComponent(TestCmp);
-       fixture.detectChanges(false);
-       expect(consoleWarnSpy)
-           .toHaveBeenCalledWith(jasmine.stringMatching(
-               /will likely result in ExpressionChangedAfterItHasBeenChecked/));
+       // CheckNoChanges should not throw ExpressionChanged error
+       // and signal value is updated to latest value with 1 `detectChanges`
+       fixture.detectChanges();
+       expect(fixture.nativeElement.innerText).toContain('1');
+       expect(fixture.nativeElement.innerText).toContain('force advance()');
      });
 
-  it('should warn when writing to signals during change-detecting a given template, at the end',
-     () => {
-       const counter = signal(0);
+  it('should allow writing to signals during change-detecting a given template, at the end', () => {
+    const counter = signal(0);
 
-       @Directive({
-         standalone: true,
-         selector: '[misunderstood]',
-       })
-       class MisunderstoodDir {
-         ngOnInit(): void {
-           counter.update((c) => c + 1);
-         }
-       }
+    @Directive({
+      standalone: true,
+      selector: '[misunderstood]',
+    })
+    class MisunderstoodDir {
+      ngOnInit(): void {
+        counter.update((c) => c + 1);
+      }
+    }
 
-       @Component({
-         selector: 'test-component',
-         standalone: true,
-         imports: [MisunderstoodDir],
-         template: `
+    @Component({
+      selector: 'test-component',
+      standalone: true,
+      imports: [MisunderstoodDir],
+      template: `
           {{counter()}}<div misunderstood></div>
         `,
-       })
-       class TestCmp {
-         counter = counter;
-       }
+    })
+    class TestCmp {
+      counter = counter;
+    }
 
-       const consoleWarnSpy = spyOn(console, 'warn').and.callThrough();
+    const fixture = TestBed.createComponent(TestCmp);
+    // CheckNoChanges should not throw ExpressionChanged error
+    // and signal value is updated to latest value with 1 `detectChanges`
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toBe('1');
+  });
 
-       const fixture = TestBed.createComponent(TestCmp);
-       fixture.detectChanges(false);
-       expect(consoleWarnSpy)
-           .toHaveBeenCalledWith(jasmine.stringMatching(
-               /will likely result in ExpressionChangedAfterItHasBeenChecked/));
-     });
+  it('should allow writing to signals in afterViewInit', () => {
+    @Component({
+      template: '{{loading()}}',
+      standalone: true,
+    })
+    class MyComp {
+      loading = signal(true);
+      // Classic example of what would have caused ExpressionChanged...Error
+      ngAfterViewInit() {
+        this.loading.set(false);
+      }
+    }
+
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toBe('false');
+  });
 
   it('does not refresh view if signal marked dirty but did not change', () => {
     const val = signal('initial', {equal: () => true});
@@ -748,6 +762,34 @@ describe('OnPush components with signals', () => {
          // hook did not run again because host view was not refreshed
          expect(fixture.componentInstance.signalChild.afterViewCheckedRuns).toBe(1);
        });
+  });
+
+  it('can refresh the root of change detection if updated after checked', () => {
+    const val = signal(1);
+    @Component({
+      template: '',
+      selector: 'child',
+      standalone: true,
+    })
+    class Child {
+      ngOnInit() {
+        val.set(2);
+      }
+    }
+
+    @Component({
+      template: '{{val()}}<child />',
+      imports: [Child],
+      standalone: true,
+    })
+    class SignalComponent {
+      val = val;
+      cdr = inject(ChangeDetectorRef);
+    }
+
+    const fixture = TestBed.createComponent(SignalComponent);
+    fixture.componentInstance.cdr.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('2');
   });
 });
 
