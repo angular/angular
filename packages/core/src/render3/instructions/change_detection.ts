@@ -46,26 +46,7 @@ export function detectChangesInternal<T>(
 
   try {
     refreshView(tView, lView, tView.template, context);
-    let retries = 0;
-    // If after running change detection, this view still needs to be refreshed or there are
-    // descendants views that need to be refreshed due to re-dirtying during the change detection
-    // run, detect changes on the view again. We run change detection in `Targeted` mode to only
-    // refresh views with the `RefreshView` flag.
-    while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-           lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
-      if (retries === MAXIMUM_REFRESH_RERUNS) {
-        throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-            ngDevMode &&
-                'Infinite change detection while trying to refresh views. ' +
-                    'There may be components which each cause the other to require a refresh, ' +
-                    'causing an infinite loop.');
-      }
-      retries++;
-      // Even if this view is detached, we still detect changes in targeted mode because this was
-      // the root of the change detection run.
-      detectChangesInView(lView, ChangeDetectionMode.Targeted);
-    }
+    detectChangesInViewWhileDirty(lView);
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -82,6 +63,29 @@ export function detectChangesInternal<T>(
       // Invoke all callbacks registered via `after*Render`, if needed.
       afterRenderEventManager?.end();
     }
+  }
+}
+
+function detectChangesInViewWhileDirty(lView: LView) {
+  let retries = 0;
+  // If after running change detection, this view still needs to be refreshed or there are
+  // descendants views that need to be refreshed due to re-dirtying during the change detection
+  // run, detect changes on the view again. We run change detection in `Targeted` mode to only
+  // refresh views with the `RefreshView` flag.
+  while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+         lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
+    if (retries === MAXIMUM_REFRESH_RERUNS) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+          ngDevMode &&
+              'Infinite change detection while trying to refresh views. ' +
+                  'There may be components which each cause the other to require a refresh, ' +
+                  'causing an infinite loop.');
+    }
+    retries++;
+    // Even if this view is detached, we still detect changes in targeted mode because this was
+    // the root of the change detection run.
+    detectChangesInView(lView, ChangeDetectionMode.Targeted);
   }
 }
 

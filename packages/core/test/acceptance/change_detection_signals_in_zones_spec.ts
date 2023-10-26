@@ -7,7 +7,8 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, signal, ViewChild} from '@angular/core';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {
@@ -822,6 +823,31 @@ describe('OnPush components with signals', () => {
     const fixture = TestBed.createComponent(SignalComponent);
     fixture.componentInstance.cdr.detectChanges();
     expect(fixture.nativeElement.innerText).toEqual('2');
+  });
+
+  // Note: We probably don't want this to throw but need to decide how to handle reruns
+  // This asserts current behavior and should be updated when this is handled
+  it('throws error when writing to a signal in afterRender', () => {
+    const counter = signal(0);
+
+    @Component({
+      selector: 'test-component',
+      standalone: true,
+      template: ` {{counter()}} `,
+    })
+    class TestCmp {
+      counter = counter;
+      constructor() {
+        afterNextRender(() => {
+          this.counter.set(1);
+        });
+      }
+    }
+    TestBed.configureTestingModule(
+        {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
+
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
   });
 });
 
