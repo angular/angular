@@ -14,6 +14,9 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
 export function consumerDestroy(node: ReactiveNode): void;
 
 // @public
+export function consumerPollProducersForChange(node: ReactiveNode): boolean;
+
+// @public
 export function createComputed<T>(computation: () => T): ComputedGetter<T>;
 
 // @public
