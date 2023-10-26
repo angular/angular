@@ -1963,7 +1963,7 @@ describe('control flow migration', () => {
 
         @Component({
           imports: [NgIf],
-          template: \`<div><span *ngIf="toggle>This should be hidden</span></div>\`
+          template: \`<div><span *ngIf="toggle">This should be hidden</span></div>\`
         })
         class Comp {
           toggle = false;
@@ -1973,7 +1973,8 @@ describe('control flow migration', () => {
       await runMigration();
       tree.readContent('/comp.ts');
 
-      expect(warnOutput.join(' ')).toContain('WARNING: 1 errors occured during your migration');
+      expect(warnOutput.join(' '))
+          .toContain('IMPORTANT! This migration is in developer preview. Use with caution.');
     });
   });
 
