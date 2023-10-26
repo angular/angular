@@ -42,14 +42,17 @@ export enum CompletionNodeContext {
 
 const ANIMATION_PHASES = ['start', 'done'];
 
-function buildBlockSnippet(insertSnippet: boolean, text: string, withParens: boolean): string {
+function buildBlockSnippet(insertSnippet: boolean, blockName: string, withParens: boolean): string {
   if (!insertSnippet) {
-    return text;
+    return blockName;
+  }
+  if (blockName === 'for') {
+    return `${blockName} (\${1:item} of \${2:items}; track \${3:\\$index}) {$4}`;
   }
   if (withParens) {
-    return `${text} ($1) {$2}`;
+    return `${blockName} ($1) {$2}`;
   }
-  return `${text} {$1}`;
+  return `${blockName} {$1}`;
 }
 
 /**
