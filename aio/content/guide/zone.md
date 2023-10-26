@@ -407,18 +407,17 @@ export class AppComponent implements OnInit {
 <!-- vale Angular.Google_Headings = YES -->
 
 To make Zone.js available in Angular, you need to import the `zone.js` package.
-If you are using the Angular CLI, this step is done automatically, and you can see the following line in the `src/polyfills.ts`:
+If you are using the Angular CLI, this step is done automatically, and you can see the following line in the `angular.json`:
 
-<code-example format="typescript" language="typescript">
+<code-example format="json" language="json">
 
-/***************************************************************************************************
- &ast; Zone JS is required by default for Angular itself.
- */
-import 'zone.js';  // Included with Angular CLI.
+"polyfills": [
+  "zone.js"
+]
 
 </code-example>
 
-Before importing the `zone.js` package, you can set the following configurations:
+Several `zone.js` settings can be changed like:
 
 *   Disabling some asynchronous API monkey patching for better performance.
     For example, disabling the `requestAnimationFrame()` monkey patch, so the callback of `requestAnimationFrame()` does not trigger change detection.
@@ -426,7 +425,6 @@ Before importing the `zone.js` package, you can set the following configurations
 
 *   Specify that certain DOM events do not run inside the Angular zone. For example, to prevent a `mousemove` or `scroll` event to trigger change detection
 
-Several other settings can be changed.
 To make these changes, you need to create a `zone-flags.ts` file, such as the following.
 
 <code-example format="typescript" language="typescript">
@@ -439,15 +437,25 @@ To make these changes, you need to create a `zone-flags.ts` file, such as the fo
 
 </code-example>
 
-Next, import `zone-flags` before you import `zone.js` in the `polyfills.ts`:
+Next, add `zone-flags` before `zone.js` in the `angular.json` file:
 
-<code-example format="typescript" language="typescript">
+<code-example format="json" language="json">
 
-/***************************************************************************************************
- &ast; Zone JS is required by default for Angular.
- */
-import `./zone-flags`;
-import 'zone.js';  // Included with Angular CLI.
+"polyfills": [
+  "src/zone-flags.ts",
+  "zone.js"
+]
+
+</code-example>
+
+Lastly, add `zone-flags` to the `include` array in the `tsconfig.app.json` file:
+
+<code-example format="json" language="json">
+
+"include": [
+  "src/**/*.d.ts",
+  "src/zone-flags.ts"
+]
 
 </code-example>
 
