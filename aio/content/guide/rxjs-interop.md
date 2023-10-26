@@ -16,6 +16,7 @@ The `toSignal` function creates a signal which tracks the value of an Observable
 import {Component} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {interval} from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
@@ -68,6 +69,7 @@ The `toObservable` utility creates an `Observable` which tracks the value of a s
 
 ```ts
 import { Component, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component(...)
 export class SearchResults {
