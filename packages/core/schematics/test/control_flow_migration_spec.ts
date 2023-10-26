@@ -2063,4 +2063,26 @@ describe('control flow migration', () => {
       expect(content).toContain('<ng-template #myTmpl let-greeting>');
     });
   });
+
+  describe('no migration needed', () => {
+    it('should do nothing when no control flow is present', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          template: \`<div><span>shrug</span></div>\`
+        })
+        class Comp {
+          toggle = false;
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain('template: `<div><span>shrug</span></div>`');
+    });
+  });
 });
