@@ -204,6 +204,38 @@ describe('OnPush components with signals', () => {
     expect(instance.value()).toBe('new');
   });
 
+  it('does not refresh a component when a signal notifies but isn\'t actually updated', () => {
+    @Component({
+      template: `{{memo()}}{{incrementTemplateExecutions()}}`,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+    })
+    class OnPushCmp {
+      numTemplateExecutions = 0;
+      value = signal({value: 'initial'});
+      memo = computed(() => this.value().value, {equal: Object.is});
+      incrementTemplateExecutions() {
+        this.numTemplateExecutions++;
+        return '';
+      }
+    }
+    const fixture = TestBed.createComponent(OnPushCmp);
+    const instance = fixture.componentInstance;
+
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+    expect(fixture.nativeElement.textContent.trim()).toEqual('initial');
+
+    instance.value.update(v => ({...v}));
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+
+    instance.value.update(v => ({value: 'new'}));
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(2);
+    expect(fixture.nativeElement.textContent.trim()).toEqual('new');
+  });
+
   it('should not mark components as dirty when signal is read in a constructor of a child component',
      () => {
        const state = signal('initial');
@@ -778,7 +810,7 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      template: '{{val()}}<child />',
+      template: '{{val()}} <child />',
       imports: [Child],
       standalone: true,
     })

@@ -59,7 +59,6 @@ export const EMBEDDED_VIEW_INJECTOR = 20;
 export const ON_DESTROY_HOOKS = 21;
 export const EFFECTS_TO_SCHEDULE = 22;
 export const REACTIVE_TEMPLATE_CONSUMER = 23;
-export const REACTIVE_HOST_BINDING_CONSUMER = 24;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -356,11 +355,6 @@ export interface LView<T = unknown> extends Array<any> {
    * if any signals were read.
    */
   [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer|null;
-
-  /**
-   * Same as REACTIVE_TEMPLATE_CONSUMER, but for the host bindings of the LView.
-   */
-  [REACTIVE_HOST_BINDING_CONSUMER]: ReactiveLViewConsumer|null;
 }
 
 /**

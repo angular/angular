@@ -15,12 +15,8 @@ import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-<<<<<<< HEAD
-import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView, TViewType} from '../interfaces/view';
-=======
-import {CONTEXT, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
 import {getOrBorrowReactiveLViewConsumer, maybeReturnReactiveLViewConsumer, ReactiveLViewConsumer} from '../reactive_lview_consumer';
->>>>>>> 48df4581bb (refactor(core): Update LView consumer to use only 1 consumer for a component)
 import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -405,14 +401,15 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   // backwards views, it gives an opportunity for `OnPush` components to be marked `Dirty`
   // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
   // current CheckNoChanges bug to surface when making unrelated changes.
-  shouldRefreshView ||= !!(
-      flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && (!isInCheckNoChangesPass || RUN_IN_CHECK_NO_CHANGES_ANYWAY));
+  shouldRefreshView ||=
+      !!(flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global &&
+         (!isInCheckNoChangesPass || RUN_IN_CHECK_NO_CHANGES_ANYWAY));
 
   // Always refresh views marked for refresh, regardless of mode.
   shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
 
   // Refresh views when they have a dirty reactive consumer, regardless of mode.
-  shouldRefreshView ||= !!consumer?.dirty;
+  shouldRefreshView ||= !!(consumer?.dirty && consumerPollProducersForChange(consumer));
 
   // Mark the Flags and `ReactiveNode` as not dirty before refreshing the component, so that they
   // can be re-dirtied during the refresh process.

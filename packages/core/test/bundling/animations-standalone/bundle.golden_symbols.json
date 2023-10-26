@@ -738,16 +738,10 @@
     "name": "connectableObservableDescriptor"
   },
   {
-    "name": "consumerAfterComputation"
-  },
-  {
-    "name": "consumerBeforeComputation"
-  },
-  {
-    "name": "consumerDestroy"
-  },
-  {
     "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerPollProducersForChange"
   },
   {
     "name": "containsElement"
@@ -793,9 +787,6 @@
   },
   {
     "name": "createTransitionInstruction"
-  },
-  {
-    "name": "currentConsumer"
   },
   {
     "name": "dashCaseToCamelCase"
@@ -846,6 +837,9 @@
     "name": "enterView"
   },
   {
+    "name": "epoch"
+  },
+  {
     "name": "eraseStyles"
   },
   {
@@ -886,6 +880,9 @@
   },
   {
     "name": "forwardRef"
+  },
+  {
+    "name": "freeConsumers"
   },
   {
     "name": "from"
@@ -1006,9 +1003,6 @@
   },
   {
     "name": "getPromiseCtor"
-  },
-  {
-    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSimpleChangesStore"
@@ -1297,6 +1291,9 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
+  },
+  {
+    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"
