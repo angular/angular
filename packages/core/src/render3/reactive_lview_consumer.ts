@@ -8,13 +8,13 @@
 
 import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
 
-import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
+import {LView, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
 import {markAncestorsForTraversal} from './util/view_utils';
 
 let freeConsumers: ReactiveLViewConsumer[] = [];
 export interface ReactiveLViewConsumer extends ReactiveNode {
   lView: LView|null;
-  slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER;
+  slot: typeof REACTIVE_TEMPLATE_CONSUMER;
 }
 
 /**

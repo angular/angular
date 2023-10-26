@@ -1026,16 +1026,10 @@
     "name": "connectableObservableDescriptor"
   },
   {
-    "name": "consumerAfterComputation"
-  },
-  {
-    "name": "consumerBeforeComputation"
-  },
-  {
-    "name": "consumerDestroy"
-  },
-  {
     "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerPollProducersForChange"
   },
   {
     "name": "containsSegmentGroup"
@@ -1114,9 +1108,6 @@
   },
   {
     "name": "createWildcardMatchResult"
-  },
-  {
-    "name": "currentConsumer"
   },
   {
     "name": "deactivateRouteAndItsChildren"
@@ -1209,6 +1200,9 @@
     "name": "enterView"
   },
   {
+    "name": "epoch"
+  },
+  {
     "name": "equalArraysOrString"
   },
   {
@@ -1273,6 +1267,9 @@
   },
   {
     "name": "forwardRef"
+  },
+  {
+    "name": "freeConsumers"
   },
   {
     "name": "from"
@@ -1438,9 +1435,6 @@
   },
   {
     "name": "getPromiseCtor"
-  },
-  {
-    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSanitizer"
@@ -1837,6 +1831,9 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
+  },
+  {
+    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"

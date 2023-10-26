@@ -600,16 +600,10 @@
     "name": "connectableObservableDescriptor"
   },
   {
-    "name": "consumerAfterComputation"
-  },
-  {
-    "name": "consumerBeforeComputation"
-  },
-  {
-    "name": "consumerDestroy"
-  },
-  {
     "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerPollProducersForChange"
   },
   {
     "name": "convertToBitFlags"
@@ -640,9 +634,6 @@
   },
   {
     "name": "createTView"
-  },
-  {
-    "name": "currentConsumer"
   },
   {
     "name": "deepForEach"
@@ -687,6 +678,9 @@
     "name": "enterView"
   },
   {
+    "name": "epoch"
+  },
+  {
     "name": "executeCheckHooks"
   },
   {
@@ -718,6 +712,9 @@
   },
   {
     "name": "forwardRef"
+  },
+  {
+    "name": "freeConsumers"
   },
   {
     "name": "from"
@@ -835,9 +832,6 @@
   },
   {
     "name": "getPromiseCtor"
-  },
-  {
-    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSimpleChangesStore"
@@ -1093,6 +1087,9 @@
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
+  },
+  {
+    "name": "producerUpdateValueVersion"
   },
   {
     "name": "profiler"
