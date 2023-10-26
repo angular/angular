@@ -807,7 +807,7 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should parse a deferred block with a timeout set in seconds', () => {
+    it('should parse a deferred block with a timer set in seconds', () => {
       expectFromHtml('@defer (on timer(10s)){hello}').toEqual([
         ['DeferredBlock'],
         ['TimerDeferredTrigger', 10000],
@@ -815,7 +815,15 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should parse a deferred block with a timeout that has no units', () => {
+    it('should parse a deferred block with a timer with a decimal point', () => {
+      expectFromHtml('@defer (on timer(1.5s)){hello}').toEqual([
+        ['DeferredBlock'],
+        ['TimerDeferredTrigger', 1500],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with a timer that has no units', () => {
       expectFromHtml('@defer (on timer(100)){hello}').toEqual([
         ['DeferredBlock'],
         ['TimerDeferredTrigger', 100],
@@ -883,12 +891,12 @@ describe('R3 template transform', () => {
     it('should parse a loading block with parameters', () => {
       expectFromHtml(
           '@defer{<calendar-cmp [date]="current"/>}' +
-          '@loading (after 100ms; minimum 1s){Loading...}')
+          '@loading (after 100ms; minimum 1.5s){Loading...}')
           .toEqual([
             ['DeferredBlock'],
             ['Element', 'calendar-cmp'],
             ['BoundAttribute', 0, 'date', 'current'],
-            ['DeferredBlockLoading', 'after 100ms', 'minimum 1000ms'],
+            ['DeferredBlockLoading', 'after 100ms', 'minimum 1500ms'],
             ['Text', 'Loading...'],
           ]);
     });
@@ -896,12 +904,12 @@ describe('R3 template transform', () => {
     it('should parse a placeholder block with parameters', () => {
       expectFromHtml(
           '@defer {<calendar-cmp [date]="current"/>}' +
-          '@placeholder (minimum 1s){Placeholder...}')
+          '@placeholder (minimum 1.5s){Placeholder...}')
           .toEqual([
             ['DeferredBlock'],
             ['Element', 'calendar-cmp'],
             ['BoundAttribute', 0, 'date', 'current'],
-            ['DeferredBlockPlaceholder', 'minimum 1000ms'],
+            ['DeferredBlockPlaceholder', 'minimum 1500ms'],
             ['Text', 'Placeholder...'],
           ]);
     });

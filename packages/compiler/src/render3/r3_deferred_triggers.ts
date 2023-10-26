@@ -15,7 +15,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import * as t from './r3_ast';
 
 /** Pattern for a timing value in a trigger. */
-const TIME_PATTERN = /^\d+(ms|s)?$/;
+const TIME_PATTERN = /^\d+\.?\d*(ms|s)?$/;
 
 /** Pattern for a separator between keywords in a trigger expression. */
 const SEPARATOR_PATTERN = /^\s$/;
@@ -372,5 +372,5 @@ export function parseDeferredTime(value: string): number|null {
   }
 
   const [time, units] = match;
-  return parseInt(time) * (units === 's' ? 1000 : 1);
+  return parseFloat(time) * (units === 's' ? 1000 : 1);
 }
