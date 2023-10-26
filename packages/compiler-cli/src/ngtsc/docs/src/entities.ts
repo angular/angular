@@ -47,6 +47,7 @@ export enum MemberTags {
   Optional = 'optional',
   Input = 'input',
   Output = 'output',
+  Inherited = 'override',
 }
 
 /** Documentation entity for single JsDoc tag. */
