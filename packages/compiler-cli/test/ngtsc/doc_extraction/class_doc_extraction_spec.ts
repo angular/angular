@@ -73,8 +73,8 @@ runInEachFileSystem(() => {
         export class UserProfile {
           ident(value: boolean): boolean
           ident(value: number): number
-          ident(value: number|boolean): number|boolean {
-            return value;
+          ident(value: number|boolean|string): number|boolean {
+            return 0;
           }
         }
       `);
@@ -207,13 +207,13 @@ runInEachFileSystem(() => {
         nameMember,
         ageMember,
         addressMember,
-        countryMember,
         birthdayMember,
         getEyeColorMember,
         getNameMember,
         getAgeMember,
-        getCountryMember,
         getBirthdayMember,
+        countryMember,
+        getCountryMember,
       ] = classEntry.members;
 
       // Properties
@@ -380,6 +380,115 @@ runInEachFileSystem(() => {
       expect(genericEntry.name).toBe('T');
       expect(genericEntry.constraint).toBeUndefined();
       expect(genericEntry.default).toBeUndefined();
+    });
+
+    it('should extract inherited members', () => {
+      env.write('index.ts', `
+        class Ancestor {
+          id: string;
+          value: string|number;
+
+          save(value: string|number): string|number { return 0; }
+        }
+
+        class Parent extends Ancestor {
+          name: string;
+        }
+
+        export class Child extends Parent {
+          age: number;
+          value: number;
+
+          save(value: number): number;
+          save(value: string|number): string|number { return 0; }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(5);
+
+      const [ageEntry, valueEntry, childSaveEntry, nameEntry, idEntry] = classEntry.members;
+
+      expect(ageEntry.name).toBe('age');
+      expect(ageEntry.memberType).toBe(MemberType.Property);
+      expect((ageEntry as PropertyEntry).type).toBe('number');
+      expect(ageEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(valueEntry.name).toBe('value');
+      expect(valueEntry.memberType).toBe(MemberType.Property);
+      expect((valueEntry as PropertyEntry).type).toBe('number');
+      expect(valueEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(childSaveEntry.name).toBe('save');
+      expect(childSaveEntry.memberType).toBe(MemberType.Method);
+      expect((childSaveEntry as MethodEntry).returnType).toBe('number');
+      expect(childSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect((nameEntry as PropertyEntry).type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Property);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).toContain(MemberTags.Inherited);
+    });
+
+    it('should extract inherited getters/setters', () => {
+      env.write('index.ts', `
+        class Ancestor {
+          get name(): string { return ''; }
+          set name(v: string) { }
+
+          get id(): string { return ''; }
+          set id(v: string) { }
+
+          get age(): number { return 0; }
+          set age(v: number) { }
+        }
+
+        class Parent extends Ancestor {
+          name: string;
+        }
+
+        export class Child extends Parent {
+          get id(): string { return ''; }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(4);
+
+      const [idEntry, nameEntry, ageGetterEntry, ageSetterEntry] =
+          classEntry.members as PropertyEntry[];
+
+      // When the child class overrides an accessor pair with another accessor, it overrides
+      // *both* the getter and the setter, resulting (in this case) in just a getter.
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Getter);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      // When the child class overrides an accessor with a property, the property takes precedence.
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect(nameEntry.type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageGetterEntry.name).toBe('age');
+      expect(ageGetterEntry.memberType).toBe(MemberType.Getter);
+      expect(ageGetterEntry.type).toBe('number');
+      expect(ageGetterEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageSetterEntry.name).toBe('age');
+      expect(ageSetterEntry.memberType).toBe(MemberType.Setter);
+      expect(ageSetterEntry.type).toBe('number');
+      expect(ageSetterEntry.memberTags).toContain(MemberTags.Inherited);
     });
   });
 });

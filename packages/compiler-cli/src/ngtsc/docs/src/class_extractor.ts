@@ -53,7 +53,7 @@ class ClassExtractor {
       isAbstract: this.isAbstract(),
       entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
                                                                EntryType.UndecoratedClass,
-      members: this.extractAllClassMembers(this.declaration),
+      members: this.extractAllClassMembers(),
       generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
@@ -62,10 +62,10 @@ class ClassExtractor {
   }
 
   /** Extracts doc info for a class's members. */
-  protected extractAllClassMembers(classDeclaration: ClassDeclarationLike): MemberEntry[] {
+  protected extractAllClassMembers(): MemberEntry[] {
     const members: MemberEntry[] = [];
 
-    for (const member of classDeclaration.members) {
+    for (const member of this.getMemberDeclarations()) {
       if (this.isMemberExcluded(member)) continue;
 
       const memberEntry = this.extractClassMember(member);
@@ -130,7 +130,38 @@ class ClassExtractor {
       tags.push(MemberTags.Optional);
     }
 
+    if (member.parent !== this.declaration) {
+      tags.push(MemberTags.Inherited);
+    }
+
     return tags;
+  }
+
+  /** Gets all member declarations, including inherited members. */
+  private getMemberDeclarations(): MemberElement[] {
+    // We rely on TypeScript to resolve all the inherited members to their
+    // ultimate form via `getPropertiesOfType`. This is important because child
+    // classes may narrow types or add method overloads.
+    const type = this.typeChecker.getTypeAtLocation(this.declaration);
+    const members = type.getProperties();
+
+    // While the properties of the declaration type represent the properties that exist
+    // on a clas *instance*, static members are properties on the class symbol itself.
+    const typeOfConstructor = this.typeChecker.getTypeOfSymbol(type.symbol);
+    const staticMembers = typeOfConstructor.getProperties();
+
+    const result: MemberElement[] = [];
+    for (const member of [...members, ...staticMembers]) {
+      // A member may have multiple declarations in the case of function overloads.
+      const memberDeclarations = member.getDeclarations() ?? [];
+      for (const memberDeclaration of memberDeclarations) {
+        if (this.isDocumentableMember(memberDeclaration)) {
+          result.push(memberDeclaration);
+        }
+      }
+    }
+
+    return result;
   }
 
   /** Get the tags for a member that come from the declaration modifiers. */
@@ -170,22 +201,22 @@ class ClassExtractor {
   private isMemberExcluded(member: MemberElement): boolean {
     return !member.name || !this.isDocumentableMember(member) ||
         !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
-        isAngularPrivateName(member.name.getText());
+        member.name.getText() === 'prototype' || isAngularPrivateName(member.name.getText());
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
-  private isDocumentableMember(member: MemberElement): member is MethodLike|PropertyLike {
+  private isDocumentableMember(member: ts.Node): member is MethodLike|PropertyLike {
     return this.isMethod(member) || this.isProperty(member) || ts.isAccessor(member);
   }
 
   /** Gets whether a member is a property. */
-  private isProperty(member: MemberElement): member is PropertyLike {
+  private isProperty(member: ts.Node): member is PropertyLike {
     // Classes have declarations, interface have signatures
     return ts.isPropertyDeclaration(member) || ts.isPropertySignature(member);
   }
 
   /** Gets whether a member is a method. */
-  private isMethod(member: MemberElement): member is MethodLike {
+  private isMethod(member: ts.Node): member is MethodLike {
     // Classes have declarations, interface have signatures
     return ts.isMethodDeclaration(member) || ts.isMethodSignature(member);
   }
@@ -197,20 +228,14 @@ class ClassExtractor {
   }
 
   /** Gets whether a method is the concrete implementation for an overloaded function. */
-  private isImplementationForOverload(method: MethodLike): boolean {
+  private isImplementationForOverload(method: MethodLike): boolean|undefined {
     // Method signatures (in an interface) are never implementations.
     if (method.kind === ts.SyntaxKind.MethodSignature) return false;
 
-    const methodsWithSameName =
-        this.declaration.members.filter(member => member.name?.getText() === method.name.getText())
-            .sort((a, b) => a.pos - b.pos);
-
-    // No overloads.
-    if (methodsWithSameName.length === 1) return false;
-
-    // The implementation is always the last declaration, so we know this is the
-    // implementation if it's the last position.
-    return method.pos === methodsWithSameName[methodsWithSameName.length - 1].pos;
+    const signature = this.typeChecker.getSignatureFromDeclaration(method);
+    return signature &&
+        this.typeChecker.isImplementationOfOverload(
+            signature.declaration as ts.SignatureDeclaration);
   }
 }
 
