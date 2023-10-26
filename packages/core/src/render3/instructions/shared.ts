@@ -82,13 +82,11 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         consumer.dirty = false;
         const prevConsumer = consumerBeforeComputation(consumer);
-        consumer.isRunning = true;
         try {
           const context = lView[directiveIdx];
           hostBindingFn(RenderFlags.Update, context);
         } finally {
           consumerAfterComputation(consumer, prevConsumer);
-          consumer.isRunning = false;
         }
       }
     }
@@ -274,12 +272,10 @@ export function executeTemplate<T>(
     try {
       if (effectiveConsumer !== null) {
         effectiveConsumer.dirty = false;
-        effectiveConsumer.isRunning = true;
       }
       templateFn(rf, context);
     } finally {
       consumerAfterComputation(effectiveConsumer, prevConsumer);
-      effectiveConsumer && (effectiveConsumer.isRunning = false);
     }
   } finally {
     setSelectedIndex(prevSelectedIndex);
