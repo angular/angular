@@ -488,7 +488,7 @@ You can supply a value such as the following to apply optimization to one or the
 
 <div class="alert is-helpful">
 
-For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by setting styles optimization to `true`.
+For [SSR](guide/glossary#server-side-rendering), you can reduce the code rendered in the HTML page by setting styles optimization to `true`.
 
 </div>
 

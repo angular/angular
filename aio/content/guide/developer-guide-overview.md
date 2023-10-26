@@ -57,9 +57,9 @@ To get the most out of these developer guides, you should review the following t
     <p>Learn more about how to use a web worker to run a CPU-intensive computation in a background thread.</p>
     <p class="card-footer">Web Workers</p>
   </a>
-  <a href="guide/universal" class="docs-card" title="Server-side rendering">
+  <a href="guide/ssr" class="docs-card" title="Server-side rendering">
     <section>Server-side rendering</section>
-    <p>Learn more about how to use Angular Universal to create a static application page.</p>
+    <p>Learn more about how to use Angular SSR to create a static application page.</p>
     <p class="card-footer">Server-side rendering</p>
   </a>
   <a href="guide/prerendering" class="docs-card" title="Pre-rendering">

@@ -733,9 +733,9 @@
           "tooltip": "Using web workers for background processing."
         },
         {
-          "url": "guide/universal",
+          "url": "guide/ssr",
           "title": "Server-side rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
+          "tooltip": "Render HTML server-side."
         },
         {
           "url": "guide/prerendering",
@@ -1240,11 +1240,6 @@
                   "url": "guide/ngmodule-api",
                   "title": "NgModule API",
                   "tooltip": "Understand the details of NgModules."
-                },
-                {
-                  "url": "guide/universal-ngmodule",
-                  "title": "Server-side rendering with NgModule applications",
-                  "tooltip": "Render HTML server-side with Angular Universal (using NgModule)."
                 },
                 {
                   "url": "guide/ngmodule-faq",
