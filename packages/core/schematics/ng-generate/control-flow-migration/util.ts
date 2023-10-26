@@ -107,13 +107,9 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 
     // Don't migrate invalid templates.
     if (parsed.errors && parsed.errors.length > 0) {
-      for (let error of parsed.errors) {
-        errors.push({type: 'parse', error});
-      }
       return {migrated: null, errors};
     }
-  } catch (error: unknown) {
-    errors.push({type: 'parse', error});
+  } catch {
     return {migrated: null, errors};
   }
 
