@@ -1,28 +1,49 @@
-# Getting started with the CLI's esbuild-based build system
+# Getting started with the Angular CLI's new build system
 
-<div class="alert is-important">
-
-The esbuild-based ECMAScript module (ESM) application build system feature is available for [developer preview](/guide/releases#developer-preview).
-It's ready for you to try, but it might change before it is stable and is not yet recommended for production builds.
-
-</div>
-
-In v16 and higher, the new build system provides a way to build Angular applications. This new build system includes:
+In v17 and higher, the new build system provides an improved way to build Angular applications. This new build system includes:
 
 - A modern output format using ESM, with dynamic import expressions to support lazy module loading.
 - Faster build-time performance for both initial builds and incremental rebuilds.
 - Newer JavaScript ecosystem tools such as [esbuild](https://esbuild.github.io/) and [Vite](https://vitejs.dev/).
+- Integrated SSR and prerendering capabilites
 
-You can opt-in to use the new builder on a per application basis with minimal configuration updates required.
+This new build system is stable and fully supported for use with Angular applications.
+You can migrate to the new build system with applications that use the `browser` builder.
+If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
-## Trying the ESM build system in an Angular CLI application
+<div class="alert is-important">
 
-A new builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application. The build is a drop-in replacement for the existing `browser` builder that provides the current stable browser application build system.
-You can try out the new build system for applications that use the `browser` builder.
+The existing Webpack-based build system is still considered stable and fully supported.
+Applications can continue to use the `browser` builder and will not be automatically migrated when updating.
 
-### Updating the application configuration
+</div>
 
-The new build system was implemented to minimize the amount of changes necessary to transition your applications. Currently, the new build system is provided via an alternate builder (`browser-esbuild`). You can update the `build` target for any application target to try out the new build system.
+## For new applications
+
+New applications will use this new build system by default via the `application` builder.
+
+## For existing applications
+
+For existing projects, you can opt-in to use the new builder on a per-application basis with two different options.
+Both options are considered stable and fully supported by the Angular team.
+The choice of which option to use is a factor of how many changes you will need to make to migrate and what new features you would like to use in the project.
+
+Builder | Configuration Changes | Code Changes | Integrated SSR |
+| :----- | :-------- | :------ | :------- |
+| `application` | Multiple option changes required. If using SSR, additional targets will need to be updated. | Yes, if using SSR | Yes
+| `browser-esbuild` | builder name only | No* | No
+
+The `application` builder is generally preferred as it improves server-side rendered (SSR) builds, and makes it easier for client-side rendered projects to adopt SSR in the future.
+However it requires a little more migration effort, particularly for existing SSR applications.
+If the `application` builder is difficult for your project to adopt, `browser-esbuild` can be an easier solution which gives most of the build performance benefits with fewer breaking changes.
+
+### Using the `browser-esbuild` builder
+
+A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application. The builder is a drop-in replacement for the existing `browser` builder that provides the preexisting browser application build system.
+
+The compatiblity option was implemented to minimize the amount of changes necessary to initially migrate your applications.
+This is provided via an alternate builder (`browser-esbuild`).
+You can update the `build` target for any application target to migrate to the new build system.
 
 The following is what you would typically find in `angular.json` for an application:
 
@@ -44,9 +65,68 @@ Changing the `builder` field is the only change you will need to make.
 ...
 </code-example>
 
-### Executing a build
+### Using the `application` builder
 
-Once you have updated the application configuration, builds can be performed using the `ng build` as was previously done. For the remaining options that are currently not yet implemented in the developer preview, a warning will be issued for each and the option will be ignored during the build.
+A builder named `application` is also available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
+This builder is the default for all new applications created via `ng new`.
+
+The following is what you would typically find in `angular.json` for an application:
+
+<code-example language="json" hideCopy="true">
+...
+"architect": {
+  "build": {
+    "builder": "@angular-devkit/build-angular:browser",
+...
+</code-example>
+
+Changing the `builder` field is the first change you will need to make.
+
+<code-example language="json" hideCopy="true">
+...
+"architect": {
+  "build": {
+    "builder": "@angular-devkit/build-angular:application",
+...
+</code-example>
+
+Once the builder name has been changed, options within the `build` target will need to be updated.
+The following table lists all the `browser` builder options that will need to be adjusted or removed.
+
+| `browser` Option | Action | Notes |
+| :-------------- | :----- | :----- |
+| `main` | rename option to `browser` | |
+| `polyfills` | convert value to an array | may already have been migrated | 
+| `buildOptimizer` | remove option |
+| `resourcesOutputPath` | remove option | always `media` |
+| `vendorChunk` | remove option |
+| `commonChunk` | remove option |
+| `deployUrl`   | remove option | 
+| `ngswConfigPath` | move value to `serviceWorker` and remove option | `serviceWorker` is now either `false` or a configuration path
+
+
+If the application is not using SSR currently, this should be the final step to allow `ng build` to function.
+After executing `ng build` for the first time, there may be new warnings or errors based on behavioral differences or application usage of Webpack-specific features.
+Many of the warnings will provide suggestions on how to remedy that problem.
+If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
+Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
+
+For applications that are already using SSR, additional manual adjustments to code will be needed to update the SSR server code to support the new integrated SSR capabilities.
+The `application` builder now provides the integrated functionality for all of the following preexisting builders:
+
+* `app-shell`
+* `prerender`
+* `server`
+* `ssr-dev-server`
+
+The [Angular SSR Guide](/guide/ssr) provides additional information regarding the new setup process for SSR.
+
+## Executing a build
+
+Once you have updated the application configuration, builds can be performed using the `ng build` as was previously done.
+Depending on the choice of builder migration, some of the command line options may be different.
+If the build command is contained in any `npm` or other scripts, ensure they are reviewed and updated.
+For applications that have migrated to the `application` builder and that use SSR and/or prererending, you also may be able to remove extra `ng run` commands from scripts now that `ng build` has integrated SSR support.
 
 <code-example language="shell">
 
@@ -54,9 +134,10 @@ ng build
 
 </code-example>
 
-### Starting the development server
+## Starting the development server
 
-The development server now has the ability to automatically detect the new build system and use it to build the application. To start the development server no changes are necessary to the `dev-server` builder configuration or command line.
+The development server will automatically detect the new build system and use it to build the application.
+To start the development server no changes are necessary to the `dev-server` builder configuration or command line.
 
 <code-example language="shell">
 
@@ -68,22 +149,21 @@ You can continue to use the [command line options](/cli/serve) you have used in 
 
 <div class="alert is-important">
 
-The developer preview currently does not provide HMR support and the HMR related options will be ignored if used. Angular focused HMR capabilities are currently planned and will be introduced in a future version.
+JavaScript-based Hot Module Replacement (HMR) is currently not supported.
+However, global stylesheet (`styles` build option) HMR is available and enabled by default.
+Angular focused HMR capabilities are currently planned and will be introduced in a future version.
 
 </div>
 
-### Unimplemented options and behavior
+## Unimplemented options and behavior
 
 Several build options are not yet implemented but will be added in the future as the build system moves towards a stable status. If your application uses these options, you can still try out the build system without removing them. Warnings will be issued for any unimplemented options but they will otherwise be ignored. However, if your application relies on any of these options to function, you may want to wait to try.
 
-- [Bundle budgets](https://github.com/angular/angular-cli/issues/25100) (`budgets`)
-- [Localization](https://github.com/angular/angular-cli/issues/25099) (`localize`/`i18nDuplicateTranslation`/`i18nMissingTranslation`)
-- [Web workers](https://github.com/angular/angular-cli/issues/25101) (`webWorkerTsConfig`)
 - [WASM imports](https://github.com/angular/angular-cli/issues/25102) -- WASM can still be loaded manually via [standard web APIs](https://developer.mozilla.org/en-US/docs/WebAssembly/Loading_and_running).
 
 Building libraries with the new build system via `ng-packagr` is also not yet possible but library build support will be available in a future release.
 
-### ESM default imports vs. namespace imports
+## ESM default imports vs. namespace imports
 
 TypeScript by default allows default exports to be imported as namespace imports and then used in call expressions. This is unfortunately a divergence from the ECMAScript specification. The underlying bundler (`esbuild`) within the new build system expects ESM code that conforms to the specification. The build system will now generate a warning if your application uses an incorrect type of import of a package. However, to allow TypeScript to accept the correct usage, a TypeScript option must be enabled within the application's `tsconfig` file. When enabled, the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop) option provides better alignment with the ECMAScript specification and is also recommended by the TypeScript team. Once enabled, you can update package imports where applicable to an ECMAScript conformant form.
 
@@ -129,28 +209,11 @@ The usage of Vite in the Angular CLI is currently only within a _development ser
 
 There are currently several known issues that you may encounter when trying the new build system. This list will be updated to stay current. If any of these issues are currently blocking you from trying out the new build system, please check back in the future as it may have been solved.
 
-### Runtime-evaluated dynamic import expressions
+### Type-checking of Web Worker code and processing of nested Web Workers
 
-Dynamic import expressions that do not contain static values will be kept in their original form and not processed at build time. This is a limitation of the underlying bundler but is [planned](https://github.com/evanw/esbuild/pull/2508) to be implemented in the future. In many cases, application code can be made to work by changing the import expressions into static strings with some form of conditional statement such as an `if` or `switch` for the known potential files.
-
-Unsupported:
-
-```ts
-return await import(`/abc/${name}.json`);
-```
-
-Supported:
-
-```ts
-switch (name) {
-  case 'x':
-    return await import('/abc/x.json');
-  case 'y':
-    return await import('/abc/y.json');
-  case 'z':
-    return await import('/abc/z.json');
-}
-```
+Web Workers can be used within application code using the same syntax (`new Worker(new URL('<workerfile>', import.meta.url))`) that is supported with the `browser` builder.
+However, the code within the Worker will not currently be type-checked by the TypeScript compiler. TypeScript code is supported just not type-checked.
+Additionally, any nested workers will not be processed by the build system. A nested worker is a Worker instantiation within another Worker file.
 
 ### Order-dependent side-effectful imports in lazy modules
 
@@ -163,14 +226,6 @@ This is caused by a [defect](https://github.com/evanw/esbuild/issues/399) in the
 Avoiding the use of modules with non-local side effects (outside of polyfills) is recommended whenever possible regardless of the build system being used and avoids this particular issue. Modules with non-local side effects can have a negative effect on both application size and runtime performance as well.
 
 </div>
-
-### Long build times when using Sass combined with pnpm or yarn PnP
-
-Applications may have increased build times due to the need to workaround Sass resolution incompatibilities when using either the pnpm or Yarn PnP package managers.
-Sass files with `@import` or `@use` directives referencing a package when using either of these package managers can trigger the performance problem.
-
-An alternative workaround that alleviates the build time increases is in development and will be available before the build system moves to stable status.
-Both the Yarn package manager in node modules mode and the `npm` package manager are not affected by this problem.
 
 ## Bug reports
 
