@@ -15,7 +15,6 @@ let currentConsumer: ReactiveLViewConsumer|null = null;
 export interface ReactiveLViewConsumer extends ReactiveNode {
   lView: LView;
   slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER;
-  isRunning: boolean;
 }
 
 /**
@@ -33,13 +32,6 @@ const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'|'slot'> 
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
-    if (ngDevMode && node.isRunning) {
-      console.warn(
-          `Angular detected a signal being set which makes the template for this component dirty` +
-          ` while it's being executed, which is not currently supported and will likely result` +
-          ` in ExpressionChangedAfterItHasBeenChecked errors or future updates not working` +
-          ` entirely.`);
-    }
     markViewDirtyFromSignal(node.lView);
   },
   consumerOnSignalRead(this: ReactiveLViewConsumer): void {
@@ -49,7 +41,6 @@ const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'|'slot'> 
     this.lView[this.slot] = currentConsumer;
     currentConsumer = null;
   },
-  isRunning: false,
 };
 
 function createLViewConsumer(): ReactiveLViewConsumer {

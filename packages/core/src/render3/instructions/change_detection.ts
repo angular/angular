@@ -13,7 +13,7 @@ import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView, TViewType} from '../interfaces/view';
 import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -160,23 +160,17 @@ export function refreshView<T>(
     // execute pre-order hooks (OnInit, OnChanges, DoCheck)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
-      const consumer = lView[REACTIVE_TEMPLATE_CONSUMER];
-      try {
-        consumer && (consumer.isRunning = true);
-        if (hooksInitPhaseCompleted) {
-          const preOrderCheckHooks = tView.preOrderCheckHooks;
-          if (preOrderCheckHooks !== null) {
-            executeCheckHooks(lView, preOrderCheckHooks, null);
-          }
-        } else {
-          const preOrderHooks = tView.preOrderHooks;
-          if (preOrderHooks !== null) {
-            executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
-          }
-          incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
+      if (hooksInitPhaseCompleted) {
+        const preOrderCheckHooks = tView.preOrderCheckHooks;
+        if (preOrderCheckHooks !== null) {
+          executeCheckHooks(lView, preOrderCheckHooks, null);
         }
-      } finally {
-        consumer && (consumer.isRunning = false);
+      } else {
+        const preOrderHooks = tView.preOrderHooks;
+        if (preOrderHooks !== null) {
+          executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
+        }
+        incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
       }
     }
 
