@@ -260,8 +260,8 @@
           "b1": {
             "desc": "Server-side Rendering for Angular apps.",
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
-            "title": "Angular Universal",
-            "url": "https://angular.io/guide/universal"
+            "title": "Angular SSR",
+            "url": "https://angular.io/guide/ssr"
           },
           "c1": {
             "desc": "Lightweight development only Node.js® server",
