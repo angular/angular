@@ -1,12 +1,25 @@
-Control flow block used to conditionally render content in the DOM.
+The `@if` block conditionally displays its content when its condition expression is truthy. 
 
 @syntax
 
 ```html
-@if ( <condition> ) {
-  <!-- conditional template fragment -->
+@if (a > b) {
+  {{a}} is greater than {{b}}
+} @else if (b > a) {
+  {{a}} is less than {{b}}
+} @else {
+  {{a}} is equal to {{b}}
 }
 ```
 
 @description
-This is the full description.
+
+Content is added and removed from the DOM based on the evaluation of conditional expressions in the `@if` and `@else` blocks.
+
+The built-in `@if` supports referencing of expression results to keep a solution for common coding patterns:
+
+```html
+@if (users$ | async; as users) {
+  {{ users.length }}
+}
+```
