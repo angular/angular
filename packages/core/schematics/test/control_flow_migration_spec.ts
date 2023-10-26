@@ -2085,5 +2085,45 @@ describe('control flow migration', () => {
 
       expect(content).toContain('template: `<div><span>shrug</span></div>`');
     });
+
+    it('should do nothing with already present updated control flow', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          template: \`<div>@if (toggle) {<span>shrug</span>}</div>\`
+        })
+        class Comp {
+          toggle = false;
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain('template: `<div>@if (toggle) {<span>shrug</span>}</div>`');
+    });
+
+    it('should migrate an ngif inside a block', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          template: \`<div>@if (toggle) {<div><span *ngIf="show">shrug</span></div>}</div>\`
+        })
+        class Comp {
+          toggle = false;
+          show = false;
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain(
+          'template: `<div>@if (toggle) {<div>@if (show) {<span>shrug</span>}</div>}</div>`');
+    });
   });
 });

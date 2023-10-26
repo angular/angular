@@ -101,7 +101,7 @@ export function migrateTemplate(template: string): {migrated: string|null, error
       // Allows for ICUs to be parsed.
       tokenizeExpansionForms: true,
       // Explicitly disable blocks so that their characters are treated as plain text.
-      tokenizeBlocks: false,
+      tokenizeBlocks: true,
       preserveLineEndings: true,
     });
 
