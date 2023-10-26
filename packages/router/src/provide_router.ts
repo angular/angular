@@ -236,7 +236,7 @@ const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
  *
  * When set to `EnabledBlocking`, the initial navigation starts before the root
  * component is created. The bootstrap is blocked until the initial navigation is complete. This
- * value is required for [server-side rendering](guide/universal) to work.
+ * value is required for [server-side rendering](guide/ssr) to work.
  *
  * When set to `EnabledNonBlocking`, the initial navigation starts after the root component has been
  * created. The bootstrap is not blocked on the completion of the initial navigation.
@@ -286,7 +286,7 @@ export type InitialNavigationFeature =
  * Configures initial navigation to start before the root component is created.
  *
  * The bootstrap is blocked until the initial navigation is complete. This value is required for
- * [server-side rendering](guide/universal) to work.
+ * [server-side rendering](guide/ssr) to work.
  *
  * @usageNotes
  *

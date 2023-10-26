@@ -16,6 +16,6 @@
   "exclude": [
     "**/*-aot.ts",
     "node_modules/",
-    "universal/"
+    "ssr/"
   ]
 }
