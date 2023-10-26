@@ -73,7 +73,7 @@ export class ExampleZipper {
 
   // rename a custom main.ts or index.html file
   _renameFile(file, exampleType) {
-    if (/src\/main[-.]\w+\.ts$/.test(file) && exampleType !== 'universal') {
+    if (/src\/main[-.]\w+\.ts$/.test(file) && exampleType !== 'ssr') {
       return 'src/main.ts';
     }
 
