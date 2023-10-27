@@ -29,6 +29,7 @@ import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../metadata/resource_loading';
 import {PendingTasks} from '../pending_tasks';
+import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {assertNgModuleType} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
@@ -323,6 +324,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -555,6 +557,18 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
+      // Catch any `ExpressionChanged...` errors and report them to error handler like above
+      try {
+        const callbacksExecuted = this.afterRenderEffectManager.execute();
+        if ((typeof ngDevMode === 'undefined' || ngDevMode) && callbacksExecuted) {
+          for (let view of this._views) {
+            view.checkNoChanges();
+          }
+        }
+      } catch (e) {
+        this.internalErrorHandler(e);
+      }
+
       this._runningTick = false;
     }
   }
