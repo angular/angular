@@ -7,8 +7,18 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, computed, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
+
+import {EnvironmentInjector} from '../../src/di';
+
+function createAndAttachComponent<T>(component: Type<T>) {
+  const componentRef =
+      createComponent(component, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+  TestBed.inject(ApplicationRef).attachView(componentRef.hostView);
+  return componentRef;
+}
 
 describe('after render hooks', () => {
   describe('browser', () => {
@@ -59,13 +69,13 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         // It hasn't run at all
         expect(log).toEqual([]);
 
         // Running change detection once
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
           'internalAfterNextRender #1',
           'internalAfterNextRender #2',
@@ -82,7 +92,7 @@ describe('after render hooks', () => {
 
         // Running change detection again
         log.length = 0;
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
           'afterRender (EarlyRead)',
           'afterRender (Write)',
@@ -122,8 +132,8 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
-        const compInstance = fixture.componentInstance;
+        const component = createAndAttachComponent(Comp);
+        const compInstance = component.instance;
         const viewContainerRef = compInstance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
 
@@ -133,34 +143,84 @@ describe('after render hooks', () => {
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(0);
+
+        // Running change detection at the compInstance level
+        compInstance.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(0);
+
+        // Running change detection at the Application level
+        TestBed.inject(ApplicationRef).tick();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+
+        // Running change detection after removing view.
+        viewContainerRef.remove();
+        TestBed.inject(ApplicationRef).tick();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(2);
+      });
+
+      it('should run with ComponentFixture.detectChanges', () => {
+        @Component({selector: 'dynamic-comp'})
+        class DynamicComp {
+          afterRenderCount = 0;
+
+          constructor() {
+            afterRender(() => {
+              this.afterRenderCount++;
+            });
+          }
+        }
+
+        @Component({selector: 'comp'})
+        class Comp {
+          afterRenderCount = 0;
+          changeDetectorRef = inject(ChangeDetectorRef);
+          viewContainerRef = inject(ViewContainerRef);
+
+          constructor() {
+            afterRender(() => {
+              this.afterRenderCount++;
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+        const compInstance = fixture.componentInstance;
+        const viewContainerRef = compInstance.viewContainerRef;
+        const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+        // Running change detection at the dynamicCompRef level
+        dynamicCompRef.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
         expect(compInstance.afterRenderCount).toBe(1);
 
         // Running change detection at the compInstance level
         compInstance.changeDetectorRef.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(2);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+        // Running change detection at the Application level
+        fixture.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
         expect(compInstance.afterRenderCount).toBe(2);
 
-        // Running change detection at the fixture level (first time)
-        fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(3);
-        expect(compInstance.afterRenderCount).toBe(3);
-
-        // Running change detection at the fixture level (second time)
-        fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(4);
-        expect(compInstance.afterRenderCount).toBe(4);
-
-        // Running change detection at the fixture level (third time)
-        fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(5);
-        expect(compInstance.afterRenderCount).toBe(5);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(5);
-        expect(compInstance.afterRenderCount).toBe(6);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(3);
       });
 
       it('should run all hooks after outer change detection', () => {
@@ -199,11 +259,40 @@ describe('after render hooks', () => {
           declarations: [ChildComp, ParentComp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(ParentComp);
+        createAndAttachComponent(ParentComp);
         expect(log).toEqual([]);
 
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
+      });
+
+
+      it('should run hooks once after tick even if there are multiple root views', () => {
+        let log: string[] = [];
+
+        @Component({
+          standalone: true,
+          template: ``,
+        })
+        class MyComp {
+          constructor() {
+            afterRender(() => {
+              log.push('render');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          // NgZone can make counting hard because it runs ApplicationRef.tick automatically.
+          providers: [{provide: NgZone, useClass: NoopNgZone}, ...COMMON_CONFIGURATION.providers],
+        });
+        expect(log).toEqual([]);
+        const appRef = TestBed.inject(ApplicationRef);
+        appRef.attachView(TestBed.createComponent(MyComp).componentRef.hostView);
+        appRef.attachView(TestBed.createComponent(MyComp).componentRef.hostView);
+        appRef.attachView(TestBed.createComponent(MyComp).componentRef.hostView);
+        appRef.tick();
+        expect(log.length).toEqual(3);
       });
 
       it('should unsubscribe when calling destroy', () => {
@@ -223,48 +312,18 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
         expect(afterRenderCount).toBe(0);
 
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(1);
 
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(2);
         hookRef!.destroy();
 
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(2);
-      });
-
-      it('should throw if called recursively', () => {
-        class RethrowErrorHandler extends ErrorHandler {
-          override handleError(error: any): void {
-            throw error;
-          }
-        }
-
-        @Component({
-          selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
-        })
-        class Comp {
-          changeDetectorRef = inject(ChangeDetectorRef);
-
-          constructor() {
-            afterRender(() => {
-              this.changeDetectorRef.detectChanges();
-            });
-          }
-        }
-
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
-        const fixture = TestBed.createComponent(Comp);
-        expect(() => fixture.detectChanges())
-            .toThrowError(/A new render operation began before the previous operation ended./);
       });
 
       it('should defer nested hooks to the next cycle', () => {
@@ -289,24 +348,24 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         // It hasn't run at all
         expect(outerHookCount).toBe(0);
         expect(innerHookCount).toBe(0);
 
         // Running change detection (first time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(1);
         expect(innerHookCount).toBe(0);
 
         // Running change detection (second time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(2);
         expect(innerHookCount).toBe(1);
 
         // Running change detection (third time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(3);
         expect(innerHookCount).toBe(2);
       });
@@ -327,10 +386,10 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(zoneLog).toEqual([false]);
       });
 
@@ -371,10 +430,10 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
       });
 
@@ -431,10 +490,10 @@ describe('after render hooks', () => {
           declarations: [Root, CompA, CompB],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Root);
+        createAndAttachComponent(Root);
 
         expect(log).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
           'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
           'mixed-read-write-2', 'read-1', 'read-2'
@@ -527,8 +586,8 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
-        const compInstance = fixture.componentInstance;
+        const component = createAndAttachComponent(Comp);
+        const compInstance = component.instance;
         const viewContainerRef = compInstance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
 
@@ -538,32 +597,22 @@ describe('after render hooks', () => {
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the compInstance level
         compInstance.changeDetectorRef.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(0);
 
-        // Running change detection at the fixture level (first time)
-        fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
-
-        // Running change detection at the fixture level (second time)
-        fixture.detectChanges();
-        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(1);
-
-        // Running change detection at the fixture level (third time)
-        fixture.detectChanges();
+        // Running change detection at the Application level
+        TestBed.inject(ApplicationRef).tick();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
         expect(compInstance.afterRenderCount).toBe(1);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
         expect(compInstance.afterRenderCount).toBe(1);
       });
@@ -604,10 +653,10 @@ describe('after render hooks', () => {
           declarations: [ChildComp, ParentComp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(ParentComp);
+        createAndAttachComponent(ParentComp);
         expect(log).toEqual([]);
 
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
       });
 
@@ -628,11 +677,11 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
         expect(afterRenderCount).toBe(0);
 
         hookRef!.destroy();
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);
       });
 
@@ -645,25 +694,29 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new RethrowErrorHandler()}]
         })
         class Comp {
-          changeDetectorRef = inject(ChangeDetectorRef);
+          appRef = inject(ApplicationRef);
+          injector = inject(EnvironmentInjector);
 
-          constructor() {
+          ngOnInit() {
             afterNextRender(() => {
-              this.changeDetectorRef.detectChanges();
-            });
+              this.appRef.tick();
+            }, {injector: this.injector});
           }
         }
 
         TestBed.configureTestingModule({
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
+          providers: [
+            {provide: ErrorHandler, useClass: RethrowErrorHandler},
+            ...COMMON_CONFIGURATION.providers
+          ]
         });
-        const fixture = TestBed.createComponent(Comp);
-        expect(() => fixture.detectChanges())
-            .toThrowError(/A new render operation began before the previous operation ended./);
+        createAndAttachComponent(Comp);
+        expect(() => TestBed.inject(ApplicationRef).tick())
+            .toThrowError(/ApplicationRef.tick is called recursively/);
       });
 
       it('should defer nested hooks to the next cycle', () => {
@@ -689,24 +742,24 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         // It hasn't run at all
         expect(outerHookCount).toBe(0);
         expect(innerHookCount).toBe(0);
 
         // Running change detection (first time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(1);
         expect(innerHookCount).toBe(0);
 
         // Running change detection (second time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(1);
         expect(innerHookCount).toBe(1);
 
         // Running change detection (third time)
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(outerHookCount).toBe(1);
         expect(innerHookCount).toBe(1);
       });
@@ -727,10 +780,10 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(zoneLog).toEqual([false]);
       });
 
@@ -771,10 +824,10 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
+        createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual(['pass 1', 'fail 1', 'pass 2', 'fail 2']);
       });
 
@@ -831,10 +884,10 @@ describe('after render hooks', () => {
           declarations: [Root, CompA, CompB],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Root);
+        createAndAttachComponent(Root);
 
         expect(log).toEqual([]);
-        fixture.detectChanges();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
           'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
           'mixed-read-write-2', 'read-1', 'read-2'
@@ -865,8 +918,8 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
-        fixture.detectChanges();
+        createAndAttachComponent(Comp);
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);
       });
     });
@@ -888,8 +941,8 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        const fixture = TestBed.createComponent(Comp);
-        fixture.detectChanges();
+        createAndAttachComponent(Comp);
+        TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);
       });
     });

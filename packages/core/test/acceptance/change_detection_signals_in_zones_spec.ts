@@ -8,7 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {afterNextRender, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, EnvironmentInjector, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
@@ -899,17 +899,22 @@ describe('OnPush components with signals', () => {
     })
     class TestCmp {
       counter = counter;
-      constructor() {
+      injector = inject(EnvironmentInjector);
+      ngOnInit() {
         afterNextRender(() => {
           this.counter.set(1);
-        });
+        }, {injector: this.injector});
       }
     }
     TestBed.configureTestingModule(
         {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
 
     const fixture = TestBed.createComponent(TestCmp);
-    expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
+    const appRef = TestBed.inject(ApplicationRef);
+    appRef.attachView(fixture.componentRef.hostView);
+    const spy = spyOn(console, 'error');
+    appRef.tick();
+    expect(spy.calls.first().args[1]).toMatch(/ExpressionChanged/);
   });
 
   it('destroys all signal consumers when destroying the view tree', () => {
