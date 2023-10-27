@@ -12,7 +12,7 @@ import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {createAndRenderEmbeddedLView} from '../render3/view_manipulation';
-import {ViewRef as R3_ViewRef} from '../render3/view_ref';
+import {InternalViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
 
 import {createElementRef, ElementRef} from './element_ref';

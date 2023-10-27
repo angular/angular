@@ -31,7 +31,7 @@ import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
 import {addLViewToLContainer, shouldAddViewToDom} from '../render3/view_manipulation';
-import {ViewRef as R3ViewRef} from '../render3/view_ref';
+import {InternalViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan, assertLessThan, throwError} from '../util/assert';
 
@@ -474,7 +474,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 
   private insertImpl(viewRef: ViewRef, index?: number, addToDOM?: boolean): ViewRef {
-    const lView = (viewRef as R3ViewRef<any>)._lView!;
+    const lView = (viewRef as InternalViewRef<unknown>)._lView;
 
     if (ngDevMode && viewRef.destroyed) {
       throw new Error('Cannot insert a destroyed View in a ViewContainer!');
@@ -514,7 +514,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     addLViewToLContainer(lContainer, lView, adjustedIdx, addToDOM);
 
-    (viewRef as R3ViewRef<any>).attachToViewContainerRef();
+    (viewRef as InternalViewRef<any>).attachToViewContainerRef();
     addToArray(getOrCreateViewRefs(lContainer), adjustedIdx, viewRef);
 
     return viewRef;
@@ -554,7 +554,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     const wasDetached =
         view && removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx) != null;
-    return wasDetached ? new R3ViewRef(view!) : null;
+    return wasDetached ? new InternalViewRef(view!) : null;
   }
 
   private _adjustIndex(index?: number, shift: number = 0) {

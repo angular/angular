@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks, ɵInternalViewRef as InternalViewRef} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
@@ -191,7 +191,7 @@ export class ComponentFixture<T> {
    */
   getDeferBlocks(): Promise<DeferBlockFixture[]> {
     const deferBlocks: DeferBlockDetails[] = [];
-    const lView = (this.componentRef.hostView as any)['_lView'];
+    const lView = (this.componentRef.hostView as InternalViewRef<unknown>)._lView;
     getDeferBlocks(lView, deferBlocks);
 
     const deferBlockFixtures = [];

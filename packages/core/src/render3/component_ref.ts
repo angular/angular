@@ -51,7 +51,7 @@ import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
-import {RootViewRef, ViewRef} from './view_ref';
+import {InternalViewRef, RootViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -309,7 +309,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
  */
 export class ComponentRef<T> extends AbstractComponentRef<T> {
   override instance: T;
-  override hostView: ViewRef<T>;
+  override hostView: InternalViewRef<T>;
   override changeDetectorRef: ChangeDetectorRef;
   override componentType: Type<T>;
   private previousInputValues: Map<string, unknown>|null = null;
