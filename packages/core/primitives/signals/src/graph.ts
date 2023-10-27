@@ -22,6 +22,11 @@ let inNotificationPhase = false;
 type Version = number&{__brand: 'Version'};
 
 /**
+ * Global epoch counter. Incremented whenever a source signal is set.
+ */
+let epoch: Version = 1 as Version;
+
+/**
  * Symbol used to tell `Signal`s apart from other functions.
  *
  * This can be used to auto-unwrap signals in various cases, or to auto-wrap non-signal values.
@@ -52,6 +57,7 @@ export function isReactive(value: unknown): value is Reactive {
 
 export const REACTIVE_NODE: ReactiveNode = {
   version: 0 as Version,
+  lastCleanEpoch: 0 as Version,
   dirty: false,
   producerNode: undefined,
   producerLastReadVersion: undefined,
@@ -87,6 +93,14 @@ export interface ReactiveNode {
    * previous value (by whatever definition of equality is in use).
    */
   version: Version;
+
+  /**
+   * Epoch at which this node is verified to be clean.
+   *
+   * This allows skipping of some polling operations in the case where no signals have been set
+   * since this node was last read.
+   */
+  lastCleanEpoch: Version;
 
   /**
    * Whether this node (in its consumer capacity) is dirty.
@@ -232,6 +246,15 @@ export function producerAccessed(node: ReactiveNode): void {
 }
 
 /**
+ * Increment the global epoch counter.
+ *
+ * Called by source producers (that is, not computeds) whenever their values change.
+ */
+export function producerIncrementEpoch(): void {
+  epoch++;
+}
+
+/**
  * Ensure this producer's `version` is up-to-date.
  */
 export function producerUpdateValueVersion(node: ReactiveNode): void {
@@ -241,10 +264,18 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
     return;
   }
 
+  if (!node.dirty && node.lastCleanEpoch === epoch) {
+    // Even non-live consumers can skip polling if they previously found themselves to be clean at
+    // the current epoch, since their dependencies could not possibly have changed (such a change
+    // would've increased the epoch).
+    return;
+  }
+
   if (!node.producerMustRecompute(node) && !consumerPollProducersForChange(node)) {
     // None of our producers report a change since the last time they were read, so no
     // recomputation of our value is necessary, and we can consider ourselves clean.
     node.dirty = false;
+    node.lastCleanEpoch = epoch;
     return;
   }
 
@@ -252,6 +283,7 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
 
   // After recomputing the value, we're no longer dirty.
   node.dirty = false;
+  node.lastCleanEpoch = epoch;
 }
 
 /**
