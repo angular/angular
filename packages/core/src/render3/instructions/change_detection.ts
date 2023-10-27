@@ -30,7 +30,6 @@ const MAXIMUM_REFRESH_RERUNS = 100;
 export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
-  const afterRenderEventManager = environment.afterRenderEventManager;
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to invoke renderer factory functions in that mode
@@ -39,7 +38,6 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
 
   if (!checkNoChangesMode) {
     rendererFactory.begin?.();
-    afterRenderEventManager?.begin();
   }
 
   try {
@@ -56,9 +54,6 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
       // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
       // other post-order hooks.
       environment.inlineEffectRunner?.flush();
-
-      // Invoke all callbacks registered via `after*Render`, if needed.
-      afterRenderEventManager?.end();
     }
   }
 }

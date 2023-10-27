@@ -350,13 +350,6 @@ class AfterRenderCallback {
  */
 interface AfterRenderCallbackHandler {
   /**
-   * Validate that it's safe for a render operation to begin,
-   * throwing if not. Not guaranteed to be called if a render
-   * operation is started before handler was registered.
-   */
-  validateBegin(): void;
-
-  /**
    * Register a new callback.
    */
   register(callback: AfterRenderCallback): void;
@@ -367,9 +360,9 @@ interface AfterRenderCallbackHandler {
   unregister(callback: AfterRenderCallback): void;
 
   /**
-   * Execute callbacks.
+   * Execute callbacks. Returns `true` if any callbacks were executed.
    */
-  execute(): void;
+  execute(): boolean;
 
   /**
    * Perform any necessary cleanup.
@@ -392,16 +385,6 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
   };
   private deferredCallbacks = new Set<AfterRenderCallback>();
 
-  validateBegin(): void {
-    if (this.executingCallbacks) {
-      throw new RuntimeError(
-          RuntimeErrorCode.RECURSIVE_APPLICATION_RENDER,
-          ngDevMode &&
-              'A new render operation began before the previous operation ended. ' +
-                  'Did you trigger change detection from afterRender or afterNextRender?');
-    }
-  }
-
   register(callback: AfterRenderCallback): void {
     // If we're currently running callbacks, new callbacks should be deferred
     // until the next render operation.
@@ -414,10 +397,12 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
     this.deferredCallbacks.delete(callback);
   }
 
-  execute(): void {
+  execute(): boolean {
+    let callbacksExecuted = false;
     this.executingCallbacks = true;
     for (const bucket of Object.values(this.buckets)) {
       for (const callback of bucket) {
+        callbacksExecuted = true;
         callback.invoke();
       }
     }
@@ -427,6 +412,7 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
       this.buckets[callback.phase].add(callback);
     }
     this.deferredCallbacks.clear();
+    return callbacksExecuted;
   }
 
   destroy(): void {
@@ -442,8 +428,6 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
  * Delegates to an optional `AfterRenderCallbackHandler` for implementation.
  */
 export class AfterRenderEventManager {
-  private renderDepth = 0;
-
   /* @internal */
   handler: AfterRenderCallbackHandler|null = null;
 
@@ -451,32 +435,19 @@ export class AfterRenderEventManager {
   internalCallbacks: VoidFunction[] = [];
 
   /**
-   * Mark the beginning of a render operation (i.e. CD cycle).
-   * Throws if called while executing callbacks.
+   * Executes callbacks. Returns `true` if any callbacks executed.
    */
-  begin() {
-    this.handler?.validateBegin();
-    this.renderDepth++;
-  }
-
-  /**
-   * Mark the end of a render operation. Callbacks will be
-   * executed if there are no more pending operations.
-   */
-  end() {
-    ngDevMode && assertGreaterThan(this.renderDepth, 0, 'renderDepth must be greater than 0');
-    this.renderDepth--;
-
-    if (this.renderDepth === 0) {
-      // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
-      // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
-      // can still be tree-shaken unless used by the application.
-      for (const callback of this.internalCallbacks) {
-        callback();
-      }
-      this.internalCallbacks.length = 0;
-      this.handler?.execute();
+  execute(): boolean {
+    // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
+    // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
+    // can still be tree-shaken unless used by the application.
+    const callbacks = [...this.internalCallbacks];
+    this.internalCallbacks.length = 0;
+    for (const callback of callbacks) {
+      callback();
     }
+    const handlerCallbacksExecuted = this.handler?.execute();
+    return !!handlerCallbacksExecuted || callbacks.length > 0;
   }
 
   ngOnDestroy() {
