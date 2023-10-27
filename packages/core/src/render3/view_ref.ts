@@ -55,7 +55,7 @@ export class InternalViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef
        *
        * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
        */
-      private _cdRefInjectingView?: LView) {}
+      private _cdRefInjectingView?: LView, private readonly notifyErrorHandler = true) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
@@ -282,7 +282,8 @@ export class InternalViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+    detectChangesInternal(
+        this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
   }
 
   /**
@@ -293,7 +294,8 @@ export class InternalViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+      checkNoChangesInternal(
+          this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
     }
   }
 
@@ -318,31 +320,5 @@ export class InternalViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef
           ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
-  }
-}
-
-export class RootViewRef<T> extends InternalViewRef<T> {
-  constructor(public _view: LView) {
-    super(_view);
-  }
-
-  override detectChanges(): void {
-    const lView = this._view;
-    const tView = lView[TVIEW];
-    const context = lView[CONTEXT];
-    detectChangesInternal(tView, lView, context, false);
-  }
-
-  override checkNoChanges(): void {
-    if (ngDevMode) {
-      const lView = this._view;
-      const tView = lView[TVIEW];
-      const context = lView[CONTEXT];
-      checkNoChangesInternal(tView, lView, context, false);
-    }
-  }
-
-  override get context(): T {
-    return null!;
   }
 }

@@ -288,6 +288,9 @@
     "name": "Injector"
   },
   {
+    "name": "InternalViewRef"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -483,9 +486,6 @@
     "name": "RootComponent"
   },
   {
-    "name": "RootViewRef"
-  },
-  {
     "name": "RuntimeError"
   },
   {
@@ -598,9 +598,6 @@
   },
   {
     "name": "ViewEncapsulation"
-  },
-  {
-    "name": "ViewRef"
   },
   {
     "name": "WebAnimationsDriver"
@@ -883,9 +880,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"

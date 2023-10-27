@@ -267,6 +267,9 @@
     "name": "Injector"
   },
   {
+    "name": "InternalViewRef"
+  },
+  {
     "name": "LEAVE_TOKEN_REGEX"
   },
   {
@@ -441,9 +444,6 @@
     "name": "RendererStyleFlags2"
   },
   {
-    "name": "RootViewRef"
-  },
-  {
     "name": "RuntimeError"
   },
   {
@@ -544,9 +544,6 @@
   },
   {
     "name": "ViewEncapsulation"
-  },
-  {
-    "name": "ViewRef"
   },
   {
     "name": "WebAnimationsDriver"
@@ -820,9 +817,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"

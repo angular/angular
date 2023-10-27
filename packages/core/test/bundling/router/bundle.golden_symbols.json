@@ -321,6 +321,9 @@
     "name": "InnerSubscriber"
   },
   {
+    "name": "InternalViewRef"
+  },
+  {
     "name": "ItemComponent"
   },
   {
@@ -621,9 +624,6 @@
     "name": "ResolveStart"
   },
   {
-    "name": "RootViewRef"
-  },
-  {
     "name": "RouteConfigLoadEnd"
   },
   {
@@ -835,9 +835,6 @@
   },
   {
     "name": "ViewEngineTemplateRef"
-  },
-  {
-    "name": "ViewRef"
   },
   {
     "name": "XSS_SECURITY_URL"
@@ -1171,9 +1168,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
