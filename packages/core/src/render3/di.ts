@@ -739,7 +739,7 @@ function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): bool
 }
 
 export function getNodeInjectorLView(nodeInjector: NodeInjector): LView {
-  return (nodeInjector as any)._lView as LView;
+  return nodeInjector._lView;
 }
 
 export function getNodeInjectorTNode(nodeInjector: NodeInjector): TElementNode|TContainerNode|
@@ -751,7 +751,7 @@ export function getNodeInjectorTNode(nodeInjector: NodeInjector): TElementNode|T
 export class NodeInjector implements Injector {
   constructor(
       private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
-      private _lView: LView) {}
+      public _lView: LView) {}
 
   get(token: any, notFoundValue?: any, flags?: InjectFlags|InjectOptions): any {
     return getOrCreateInjectable(
@@ -761,7 +761,7 @@ export class NodeInjector implements Injector {
 
 /** Creates a `NodeInjector` for the current node. */
 export function createNodeInjector(): Injector {
-  return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
+  return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView());
 }
 
 /**

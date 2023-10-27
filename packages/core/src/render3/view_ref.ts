@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef, InternalViewRef, ViewRefTracker} from '../linker/view_ref';
+import {EmbeddedViewRef, ViewRefTracker} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
@@ -27,7 +27,7 @@ import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/
 // the multiple @extends by making the annotation @implements instead
 interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 
-export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDetectorRefInterface {
+export class InternalViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
   private _appRef: ViewRefTracker|null = null;
   private _attachedToViewContainer = false;
 
@@ -46,8 +46,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
        *
        * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
        * view.
-       *
-       * @internal
        */
       public _lView: LView,
 
@@ -89,7 +87,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
     } else if (this._attachedToViewContainer) {
       const parent = this._lView[PARENT];
       if (isLContainer(parent)) {
-        const viewRefs = parent[VIEW_REFS] as ViewRef<unknown>[] | null;
+        const viewRefs = parent[VIEW_REFS] as InternalViewRef<unknown>[] | null;
         const index = viewRefs ? viewRefs.indexOf(this) : -1;
         if (index > -1) {
           ngDevMode &&
@@ -323,8 +321,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
   }
 }
 
-/** @internal */
-export class RootViewRef<T> extends ViewRef<T> {
+export class RootViewRef<T> extends InternalViewRef<T> {
   constructor(public _view: LView) {
     super(_view);
   }
