@@ -33,11 +33,15 @@ export type SourceMessage = string;
  * I.E. the message that indicates what will be translated to.
  *
  * Uses `{$placeholder-name}` to indicate a placeholder.
+ *
+ * @publicApi
  */
 export type TargetMessage = string;
 
 /**
  * A string that uniquely identifies a message, to be used for matching translations.
+ *
+ * @publicApi
  */
 export type MessageId = string;
 
