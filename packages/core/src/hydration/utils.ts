@@ -9,6 +9,7 @@
 
 import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
+import type {InternalViewRef} from '../render3/view_ref';
 import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
@@ -180,7 +181,7 @@ export function retrieveHydrationInfo(
  */
 export function getLNodeForHydration(viewRef: ViewRef): LView|LContainer|null {
   // Reading an internal field from `ViewRef` instance.
-  let lView = (viewRef as any)._lView as LView;
+  let lView = (viewRef as InternalViewRef<unknown>)._lView;
   const tView = lView[TVIEW];
   // A registered ViewRef might represent an instance of an
   // embedded view, in which case we do not need to annotate it.
