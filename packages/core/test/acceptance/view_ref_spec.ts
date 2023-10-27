@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, ElementRef, EmbeddedViewRef, EnvironmentInjector, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {InternalViewRef} from '@angular/core/src/linker/view_ref';
+import {InternalViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 
 
@@ -25,12 +25,12 @@ describe('ViewRef', () => {
 
       create() {
         this.componentRef = createComponent(DynamicComponent, {environmentInjector: this.injector});
-        (this.componentRef.hostView as InternalViewRef).attachToAppRef(this.appRef);
+        (this.componentRef.hostView as InternalViewRef<unknown>).attachToAppRef(this.appRef);
         document.body.appendChild(this.componentRef.instance.elRef.nativeElement);
       }
 
       destroy() {
-        (this.componentRef.hostView as InternalViewRef).detachFromAppRef();
+        (this.componentRef.hostView as InternalViewRef<unknown>).detachFromAppRef();
       }
     }
 
@@ -54,7 +54,7 @@ describe('ViewRef', () => {
     @Component({template: ''})
     class App {
       constructor(changeDetectorRef: ChangeDetectorRef) {
-        (changeDetectorRef as InternalViewRef).onDestroy(() => called = true);
+        (changeDetectorRef as InternalViewRef<unknown>).onDestroy(() => called = true);
       }
     }
 

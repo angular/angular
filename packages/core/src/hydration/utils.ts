@@ -180,7 +180,8 @@ export function retrieveHydrationInfo(
  */
 export function getLNodeForHydration(viewRef: ViewRef): LView|LContainer|null {
   // Reading an internal field from `ViewRef` instance.
-  let lView = (viewRef as any)._lView as LView;
+  // TODO(atscott): This should be `as InternalViewRef<unknown>` but creates a circular dependency
+  let lView = (viewRef as any)._lView;
   const tView = lView[TVIEW];
   // A registered ViewRef might represent an instance of an
   // embedded view, in which case we do not need to annotate it.
