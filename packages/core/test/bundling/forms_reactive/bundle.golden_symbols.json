@@ -273,6 +273,9 @@
     "name": "Injector"
   },
   {
+    "name": "InternalViewRef"
+  },
+  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -507,9 +510,6 @@
     "name": "RootComponent"
   },
   {
-    "name": "RootViewRef"
-  },
-  {
     "name": "RuntimeError"
   },
   {
@@ -613,9 +613,6 @@
   },
   {
     "name": "ViewEngineTemplateRef"
-  },
-  {
-    "name": "ViewRef"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -910,9 +907,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
