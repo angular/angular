@@ -125,6 +125,8 @@ class RepeaterMetadata {
  * @param templateFn Reference to the template of the main repeater block.
  * @param decls The number of nodes, local refs, and pipes for the main block.
  * @param vars The number of bindings for the main block.
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
  * @param trackByFn Reference to the tracking function.
  * @param trackByUsesComponentInstance Whether the tracking function has any references to the
  *  component instance. If it doesn't, we can avoid rebinding it.
@@ -136,10 +138,10 @@ class RepeaterMetadata {
  */
 export function ɵɵrepeaterCreate(
     index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
-    trackByFn: TrackByFunction<unknown>, trackByUsesComponentInstance?: boolean,
-    emptyTemplateFn?: ComponentTemplate<unknown>, emptyDecls?: number, emptyVars?: number): void {
+    tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
+    trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
+    emptyDecls?: number, emptyVars?: number): void {
   performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
-
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?
@@ -150,7 +152,7 @@ export function ɵɵrepeaterCreate(
   const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
-  ɵɵtemplate(index + 1, templateFn, decls, vars);
+  ɵɵtemplate(index + 1, templateFn, decls, vars, tagName, attrsIndex);
 
   if (hasEmptyBlock) {
     ngDevMode &&

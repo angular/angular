@@ -7,7 +7,8 @@
  */
 
 
-import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
+import {NgIf} from '@angular/common';
+import {ChangeDetectorRef, Component, Directive, inject, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow - for', () => {
@@ -275,6 +276,301 @@ describe('control flow - for', () => {
       fixture.componentInstance.items = [5, 3, 7];
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('5(0)|3(1)|7(2)|');
+    });
+  });
+
+  describe('content projection', () => {
+    it('should project an @for with a single root node into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <span foo>{{item}}</span>
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+    });
+
+    it('should project an @for with multiple root nodes into the catch-all slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <span foo>one{{item}}</span>
+          <div foo>two{{item}}</div>
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before one1two1one2two2 After Slot: ');
+    });
+
+    // Right now the template compiler doesn't collect comment nodes.
+    // This test is to ensure that we don't regress if it happens in the future.
+    it('should project an @for with single root node and comments into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <!-- before -->
+          <span foo>{{item}}</span>
+          <!-- after -->
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+    });
+
+    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+         })
+         class TestComponent {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           preserveWhitespaces: true,
+           // Note the whitespace due to the indentation inside @for.
+           template:
+               '<test>Before @for (item of items; track $index) {<span foo>{{item}}</span>} After</test>'
+         })
+         class App {
+           items = [1, 2, 3];
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+       });
+
+    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+         })
+         class TestComponent {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           preserveWhitespaces: true,
+           // Note the whitespace due to the indentation inside @for.
+           template: `
+              <test>Before @for (item of items; track $index) {
+                <span foo>{{item}}</span>
+              } After</test>
+            `
+         })
+         class App {
+           items = [1, 2, 3];
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent)
+             .toMatch(/Main: Before\s+1\s+2\s+3\s+After Slot:/);
+       });
+
+    it('should not project the root node across multiple layers of @for', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          @for (item of items; track $index) {
+            <span foo>{{item}}</span>
+          }
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before 1212 After Slot: ');
+    });
+
+    it('should project an @for with a single root template node into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, NgIf],
+        template: `<test>Before @for (item of items; track $index) {
+        <span *ngIf="true" foo>{{item}}</span>
+      } After</test>`
+      })
+      class App {
+        items = [1, 2];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 12');
+
+      fixture.componentInstance.items.push(3);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+    });
+
+    it('should invoke a projected attribute directive at the root of an @for once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[foo]',
+        standalone: true,
+      })
+      class FooDirective {
+        constructor() {
+          directiveCount++;
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, FooDirective],
+        template: `<test>Before @for (item of items; track $index) {
+        <span foo>{{item}}</span>
+      } After</test>
+      `
+      })
+      class App {
+        items = [1];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1');
+    });
+
+    it('should invoke a projected template directive at the root of an @for once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[templateDir]',
+        standalone: true,
+      })
+      class TemplateDirective implements OnInit {
+        constructor(
+            private viewContainerRef: ViewContainerRef,
+            private templateRef: TemplateRef<any>,
+        ) {
+          directiveCount++;
+        }
+
+        ngOnInit(): void {
+          const view = this.viewContainerRef.createEmbeddedView(this.templateRef);
+          this.viewContainerRef.insert(view);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, TemplateDirective],
+        template: `<test>Before @for (item of items; track $index) {
+        <span *templateDir foo>{{item}}</span>
+      } After</test>
+      `
+      })
+      class App {
+        items = [1];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1');
     });
   });
 });
