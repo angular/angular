@@ -88,7 +88,7 @@
       // The destination value must be updated with each new major version.
       // When changing this value, be sure to update or add the corresponding
       //  test in angular/aio/tests/deployment/shared/URLS_TO_REDIRECT.txt
-      {"type": 301, "source": "/guide/update-to-latest-version", "destination": "/guide/update-to-version-16"},
+      {"type": 301, "source": "/guide/update-to-latest-version", "destination": "/guide/update-to-version-17"},
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
