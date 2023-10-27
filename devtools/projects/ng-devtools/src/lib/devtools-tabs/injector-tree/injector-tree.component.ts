@@ -82,7 +82,7 @@ export class InjectorTreeComponent {
 
   /**
    *
-   * Converts the the array of resolution paths for every node in the
+   * Converts the array of resolution paths for every node in the
    * directive forest into a tree structure that can be rendered by the
    * injector tree visualizer.
    *
