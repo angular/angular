@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, ErrorHandler, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, createComponent, Directive, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -2720,6 +2720,7 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
        }));
 
+    // TODO(atscott): This should work without NgZone
     it('should bind the trigger events inside the NgZone', fakeAsync(() => {
          @Component({
            standalone: true,
@@ -2734,14 +2735,19 @@ describe('@defer', () => {
          class MyCmp {
          }
 
+         const appRef = TestBed.inject(ApplicationRef);
          const eventsInZone: Record<string, boolean> = {};
-         const fixture = TestBed.createComponent(MyCmp);
-         const button = fixture.nativeElement.querySelector('button');
+         const componentRef =
+             createComponent(MyCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+         const button = componentRef.location.nativeElement.querySelector('button');
 
          spyOn(button, 'addEventListener').and.callFake((name: string) => {
            eventsInZone[name] = NgZone.isInAngularZone();
          });
-         fixture.detectChanges();
+         appRef.attachView(componentRef.hostView);
+         TestBed.inject(NgZone).run(() => {
+           appRef.tick();
+         });
 
          expect(eventsInZone).toEqual({click: true, keydown: true});
        }));
@@ -3047,6 +3053,7 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
        }));
 
+    // TODO(atscott): This should work without NgZone
     it('should bind the trigger events inside the NgZone', fakeAsync(() => {
          @Component({
            standalone: true,
@@ -3061,14 +3068,19 @@ describe('@defer', () => {
          class MyCmp {
          }
 
+         const appRef = TestBed.inject(ApplicationRef);
          const eventsInZone: Record<string, boolean> = {};
-         const fixture = TestBed.createComponent(MyCmp);
-         const button = fixture.nativeElement.querySelector('button');
+         const component =
+             createComponent(MyCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+         const button = component.location.nativeElement.querySelector('button');
 
          spyOn(button, 'addEventListener').and.callFake((name: string) => {
            eventsInZone[name] = NgZone.isInAngularZone();
          });
-         fixture.detectChanges();
+         appRef.attachView(component.hostView);
+         TestBed.inject(NgZone).run(() => {
+           appRef.tick();
+         });
 
          expect(eventsInZone).toEqual({
            mouseenter: true,

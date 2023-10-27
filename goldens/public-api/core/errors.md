@@ -59,7 +59,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
-    INFINITE_CHANGE_DETECTION = 103,
+    INFINITE_CHANGE_DETECTION = 102,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
@@ -116,8 +116,6 @@ export const enum RuntimeErrorCode {
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
-    // (undocumented)
-    RECURSIVE_APPLICATION_RENDER = 102,
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
