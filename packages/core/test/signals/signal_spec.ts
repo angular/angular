@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {setPostSignalSetFn} from '@angular/core/primitives/signals';
+import {ReactiveNode, setPostSignalSetFn, SIGNAL} from '@angular/core/primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {
@@ -102,6 +102,39 @@ describe('signals', () => {
 
     counter.set(2);
     expect(double()).toBe(4);
+  });
+
+  describe('optimizations', () => {
+    it('should not repeatedly poll status of a non-live node if no signals have changed', () => {
+      const unrelated = signal(0);
+      const source = signal(1);
+      let computations = 0;
+      const derived = computed(() => {
+        computations++;
+        return source() * 2;
+      });
+
+      expect(derived()).toBe(2);
+      expect(computations).toBe(1);
+
+      const sourceNode = source[SIGNAL] as ReactiveNode;
+      // Forcibly increment the version of the source signal. This will cause a mismatch during
+      // polling, and will force the derived signal to recompute if polled (which we should observe
+      // in this test).
+      sourceNode.version++;
+
+      // Read the derived signal again. This should not recompute (even with the forced version
+      // update) as no signals have been set since the last read.
+      expect(derived()).toBe(2);
+      expect(computations).toBe(1);
+
+      // Set the `unrelated` signal, which now means that `derived` should poll if read again.
+      // Because of the forced version, that poll will cause a recomputation which we will observe.
+      unrelated.set(1);
+
+      expect(derived()).toBe(2);
+      expect(computations).toBe(2);
+    });
   });
 
   describe('post-signal-set functions', () => {
