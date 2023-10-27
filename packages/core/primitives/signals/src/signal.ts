@@ -8,7 +8,7 @@
 
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {throwInvalidWriteToSignalError} from './errors';
-import {producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
+import {producerAccessed, producerIncrementEpoch, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
 
 /**
  * If set, called after `WritableSignal`s are updated.
@@ -98,6 +98,7 @@ const SIGNAL_NODE: object = /* @__PURE__ */ (() => {
 
 function signalValueChanged<T>(node: SignalNode<T>): void {
   node.version++;
+  producerIncrementEpoch();
   producerNotifyConsumers(node);
   postSignalSetFn?.();
 }

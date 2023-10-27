@@ -64,6 +64,7 @@ export interface ReactiveNode {
     consumerMarkedDirty(node: unknown): void;
     consumerOnSignalRead(node: unknown): void;
     dirty: boolean;
+    lastCleanEpoch: Version;
     liveConsumerIndexOfThis: number[] | undefined;
     liveConsumerNode: ReactiveNode[] | undefined;
     nextProducerIndex: number;
