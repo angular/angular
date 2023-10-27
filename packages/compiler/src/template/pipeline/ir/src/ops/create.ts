@@ -784,7 +784,7 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   xref: XrefId;
 
   /**
-   * A reference to the root i18n block that this one belongs to. For a a root i18n block, this is
+   * A reference to the root i18n block that this one belongs to. For a root i18n block, this is
    * the same as xref.
    */
   root: XrefId;
