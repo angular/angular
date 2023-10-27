@@ -513,6 +513,40 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate an if block with an element root node",
+      "inputFiles": [
+        "if_element_root_node.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_element_root_node_template.js",
+              "generated": "if_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an element root node",
+      "inputFiles": [
+        "for_element_root_node.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_element_root_node_template.js",
+              "generated": "for_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

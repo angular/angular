@@ -53,6 +53,9 @@ const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
 // Global symbols available only inside event bindings.
 const EVENT_BINDING_SCOPE_GLOBALS = new Set<string>(['$event']);
 
+// Tag name of the `ng-template` element.
+const NG_TEMPLATE_TAG_NAME = 'ng-template';
+
 // List of supported global targets for event listeners
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
@@ -998,7 +1001,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const tagNameWithoutNamespace =
         template.tagName ? splitNsName(template.tagName)[1] : template.tagName;
     const contextNameSuffix = template.tagName ? '_' + sanitizeIdentifier(template.tagName) : '';
-    const NG_TEMPLATE_TAG_NAME = 'ng-template';
 
     // prepare attributes parameter (including attributes used for directive matching)
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
@@ -1148,7 +1150,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are
     // used inside the branch expressions.
-    const branchData = block.branches.map(({expression, expressionAlias, children, sourceSpan}) => {
+    const branchData = block.branches.map((branch, branchIndex) => {
+      const {expression, expressionAlias, children, sourceSpan} = branch;
+
       // If the branch has an alias, it'll be assigned directly to the container's context.
       // We define a variable referring directly to the context so that any nested usages can be
       // rewritten to refer to it.
@@ -1158,13 +1162,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               expressionAlias.keySpan)] :
           undefined;
 
+      let tagName: string|null = null;
+      let attrsExprs: o.Expression[]|undefined;
+
+      // Only the first branch can be used for projection, because the conditional
+      // uses the container of the first branch as the insertion point for all branches.
+      if (branchIndex === 0) {
+        const inferredData = this.inferProjectionDataFromInsertionPoint(branch);
+        tagName = inferredData.tagName;
+        attrsExprs = inferredData.attrsExprs;
+      }
+
       // Note: the template needs to be created *before* we process the expression,
       // otherwise pipes injecting some symbols won't work (see #52102).
-      const index =
-          this.createEmbeddedTemplateFn(null, children, '_Conditional', sourceSpan, variables);
+      const templateIndex = this.createEmbeddedTemplateFn(
+          tagName, children, '_Conditional', sourceSpan, variables, attrsExprs);
       const processedExpression =
           expression === null ? null : expression.visit(this._valueConverter);
-      return {index, expression: processedExpression, alias: expressionAlias};
+      return {index: templateIndex, expression: processedExpression, alias: expressionAlias};
     });
 
     // Use the index of the first block as the index for the entire container.
@@ -1460,6 +1475,47 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
   }
 
+  /**
+   * Infers the data used for content projection (tag name and attributes) from the content of a
+   * node.
+   * @param node Node for which to infer the projection data.
+   */
+  private inferProjectionDataFromInsertionPoint(node: t.IfBlockBranch|t.ForLoopBlock) {
+    let root: t.Element|t.Template|null = null;
+    let tagName: string|null = null;
+    let attrsExprs: o.Expression[]|undefined;
+
+    for (const child of node.children) {
+      // Skip over comment nodes.
+      if (child instanceof t.Comment) {
+        continue;
+      }
+
+      // We can only infer the tag name/attributes if there's a single root node.
+      if (root !== null) {
+        root = null;
+        break;
+      }
+
+      // Root nodes can only elements or templates with a tag name (e.g. `<div *foo></div>`).
+      if (child instanceof t.Element || (child instanceof t.Template && child.tagName !== null)) {
+        root = child;
+      }
+    }
+
+    // If we've found a single root node, its tag name and *static* attributes can be copied
+    // to the surrounding template to be used for content projection. Note that it's important
+    // that we don't copy any bound attributes since they don't participate in content projection
+    // and they can be used in directive matching (in the case of `Template.templateAttrs`).
+    if (root !== null) {
+      tagName = root instanceof t.Element ? root.name : root.tagName;
+      attrsExprs =
+          this.getAttributeExpressions(NG_TEMPLATE_TAG_NAME, root.attributes, root.inputs, []);
+    }
+
+    return {tagName, attrsExprs};
+  }
+
   private allocateDataSlot() {
     return this._dataIndex++;
   }
@@ -1468,6 +1524,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Allocate one slot for the repeater metadata. The slots for the primary and empty block
     // are implicitly inferred by the runtime to index + 1 and index + 2.
     const blockIndex = this.allocateDataSlot();
+    const {tagName, attrsExprs} = this.inferProjectionDataFromInsertionPoint(block);
     const primaryData = this.prepareEmbeddedTemplateFn(
         block.children, '_For',
         [block.item, block.contextVariables.$index, block.contextVariables.$count]);
@@ -1490,6 +1547,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         o.variable(primaryData.name),
         o.literal(primaryData.getConstCount()),
         o.literal(primaryData.getVarCount()),
+        o.literal(tagName),
+        this.addAttrsToConsts(attrsExprs || null),
         trackByExpression,
       ];
 

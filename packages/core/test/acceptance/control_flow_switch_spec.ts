@@ -135,4 +135,33 @@ describe('control flow - switch', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('One');
   });
+
+  it('should project an @switch block into the catch-all slot', () => {
+    @Component({
+      standalone: true,
+      selector: 'test',
+      template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+    })
+    class TestComponent {
+    }
+
+    @Component({
+      standalone: true,
+      imports: [TestComponent],
+      template: `
+      <test>Before @switch (1) {
+        @case (1) {
+          <span foo>foo</span>
+        }
+      } After</test>
+    `
+    })
+    class App {
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Main: Before foo After Slot: ');
+  });
 });
