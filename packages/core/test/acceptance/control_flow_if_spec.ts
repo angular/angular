@@ -7,7 +7,8 @@
  */
 
 
-import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {ChangeDetectorRef, Component, Directive, inject, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
@@ -258,5 +259,328 @@ describe('control flow - if', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('Something');
+  });
+
+  describe('content projection', () => {
+    it('should project an @if with a single root node into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (true) {
+          <span foo>foo</span>
+        } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
+
+    it('should project an @if with multiple root nodes into the catch-all slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (true) {
+          <span foo>one</span>
+          <div foo>two</div>
+        } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before onetwo After Slot: ');
+    });
+
+    // Right now the template compiler doesn't collect comment nodes.
+    // This test is to ensure that we don't regress if it happens in the future.
+    it('should project an @if with a single root node and comments into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (true) {
+          <!-- before -->
+          <span foo>foo</span>
+          <!-- after -->
+        } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
+
+    // Note: the behavior in this test is *not* intuitive, but it's meant to capture
+    // the projection behavior from `*ngIf` with `@if`. The test can be updated if we
+    // change how content projection works in the future.
+    it('should project an @else content into the slot of @if', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template:
+            'Main: <ng-content/> One: <ng-content select="[one]"/> Two: <ng-content select="[two]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (value) {
+          <span one>one</span>
+        } @else {
+          <span two>two</span>
+        } After</test>
+      `
+      })
+      class App {
+        value = true;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After One: one Two: ');
+
+      fixture.componentInstance.value = false;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After One: two Two: ');
+    });
+
+    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+         })
+         class TestComponent {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           preserveWhitespaces: true,
+           template: '<test>Before @if (true) {<span foo>one</span>} After</test>'
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: one');
+       });
+
+    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+         })
+         class TestComponent {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           preserveWhitespaces: true,
+           // Note the whitespace due to the indentation inside @if.
+           template: `
+            <test>Before @if (true) {
+              <span foo>one</span>
+            } After</test>
+          `
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
+       });
+
+    it('should not project the root node across multiple layers of @if', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (true) {
+          @if (true) {
+            <span foo>one</span>
+          }
+        } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
+    });
+
+    it('should project an @if with a single root template node into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, NgFor],
+        template: `<test>Before @if (true) {
+        <span *ngFor="let item of items" foo>{{item}}</span>
+      } After</test>`
+      })
+      class App {
+        items = [1, 2];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 12');
+
+      fixture.componentInstance.items.push(3);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+    });
+
+    it('should invoke a projected attribute directive at the root of an @if once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[foo]',
+        standalone: true,
+      })
+      class FooDirective {
+        constructor() {
+          directiveCount++;
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, FooDirective],
+        template: `<test>Before @if (true) {
+        <span foo>foo</span>
+      } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
+
+    it('should invoke a projected template directive at the root of an @if once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[templateDir]',
+        standalone: true,
+      })
+      class TemplateDirective implements OnInit {
+        constructor(
+            private viewContainerRef: ViewContainerRef,
+            private templateRef: TemplateRef<any>,
+        ) {
+          directiveCount++;
+        }
+
+        ngOnInit(): void {
+          const view = this.viewContainerRef.createEmbeddedView(this.templateRef);
+          this.viewContainerRef.insert(view);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, TemplateDirective],
+        template: `<test>Before @if (true) {
+        <span *templateDir foo>foo</span>
+      } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
   });
 });

@@ -26,7 +26,7 @@ function MyApp_Conditional_0_Conditional_1_Template(rf, ctx) {
       return $r3$.ɵɵresetView($ctx_r10$.log($ctx_r10$.value(), $root_r1$, $inner_r3$));
     });
     $r3$.ɵɵelementEnd();
-    $r3$.ɵɵtemplate(1, MyApp_Conditional_0_Conditional_1_Conditional_1_Template, 1, 0);
+    $r3$.ɵɵtemplate(1, MyApp_Conditional_0_Conditional_1_Conditional_1_Template, 1, 0, "button");
   }
   if (rf & 2) {
     const $ctx_r2$ = $r3$.ɵɵnextContext(2);
