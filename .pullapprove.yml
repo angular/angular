@@ -939,6 +939,7 @@ groups:
           'aio/content/guide/update-to-version-14.md',
           'aio/content/guide/update-to-version-15.md',
           'aio/content/guide/update-to-version-16.md',
+          'aio/content/guide/update-to-version-17.md',
           ])
     reviewers:
       users:
