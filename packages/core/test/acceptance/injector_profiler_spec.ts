@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PercentPipe} from '@angular/common';
+import {NgForOf, PercentPipe} from '@angular/common';
 import {inject} from '@angular/core';
-import {afterRender, ClassProvider, Component, Directive, ElementRef, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, NgModule, NgModuleRef, ProviderToken, ViewChild} from '@angular/core/src/core';
+import {afterRender, ClassProvider, Component, Directive, ElementRef, Injectable, InjectFlags, InjectionToken, Injector, NgModule, NgModuleRef, QueryList, ViewChild, ViewChildren} from '@angular/core/src/core';
 import {NullInjector} from '@angular/core/src/di/null_injector';
 import {isClassProvider, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider} from '@angular/core/src/di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '@angular/core/src/di/r3_injector';
@@ -730,6 +730,92 @@ describe('getInjectorProviders', () => {
        expect(myServiceProviderRecord!.importPath![0]).toBe(MyStandaloneComponentB);
        expect(myServiceProviderRecord!.importPath![1]).toBe(ModuleA);
      }));
+
+  it('should be able to get injector providers for element injectors created by components rendering in an ngFor',
+     () => {
+       class MyService {}
+
+       @Component(
+           {selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+       class ItemComponent {
+         injector = inject(Injector);
+       }
+
+       @Component({
+         selector: 'my-comp',
+         template: `
+        <item-cmp *ngFor="let item of items"></item-cmp>
+       `,
+         imports: [ItemComponent, NgForOf],
+         standalone: true
+       })
+       class MyStandaloneComponent {
+         injector = inject(Injector);
+         items = [1, 2, 3];
+
+         @ViewChildren(ItemComponent) itemComponents: QueryList<ItemComponent>|undefined;
+       }
+
+       const root = TestBed.createComponent(MyStandaloneComponent);
+       root.detectChanges();
+
+       const myStandaloneComponent = root.componentRef.instance;
+       const itemComponents = myStandaloneComponent.itemComponents;
+       expect(itemComponents).toBeInstanceOf(QueryList);
+       expect(itemComponents?.length).toBe(3);
+       itemComponents!.forEach(item => {
+         const itemProviders = getInjectorProviders(item.injector);
+         expect(itemProviders).toBeInstanceOf(Array);
+         expect(itemProviders.length).toBe(1);
+         expect(itemProviders[0].token).toBe(MyService);
+         expect(itemProviders[0].provider).toBe(MyService);
+         expect(itemProviders[0].isViewProvider).toBe(false);
+       });
+     });
+
+  it('should be able to get injector providers for element injectors created by components rendering in a @for',
+     () => {
+       class MyService {}
+
+       @Component(
+           {selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+       class ItemComponent {
+         injector = inject(Injector);
+       }
+
+       @Component({
+         selector: 'my-comp',
+         template: `
+        @for (item of items; track item) {
+          <item-cmp></item-cmp>
+        }
+       `,
+         imports: [ItemComponent],
+         standalone: true
+       })
+       class MyStandaloneComponent {
+         injector = inject(Injector);
+         items = [1, 2, 3];
+
+         @ViewChildren(ItemComponent) itemComponents: QueryList<ItemComponent>|undefined;
+       }
+
+       const root = TestBed.createComponent(MyStandaloneComponent);
+       root.detectChanges();
+
+       const myStandaloneComponent = root.componentRef.instance;
+       const itemComponents = myStandaloneComponent.itemComponents;
+       expect(itemComponents).toBeInstanceOf(QueryList);
+       expect(itemComponents?.length).toBe(3);
+       itemComponents!.forEach(item => {
+         const itemProviders = getInjectorProviders(item.injector);
+         expect(itemProviders).toBeInstanceOf(Array);
+         expect(itemProviders.length).toBe(1);
+         expect(itemProviders[0].token).toBe(MyService);
+         expect(itemProviders[0].provider).toBe(MyService);
+         expect(itemProviders[0].isViewProvider).toBe(false);
+       });
+     });
 });
 
 describe('getDependenciesFromInjectable', () => {
