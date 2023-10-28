@@ -35,17 +35,6 @@ or use the `.update()` operation to compute a new value from the previous one:
 count.update(value => value + 1);
 ```
 
-When working with signals that contain objects, it's sometimes useful to mutate that object directly. For example, if the object is an array, you may want to push a new value without replacing the array entirely. To make an internal change like this, use the `.mutate` method:
-
-```ts
-const todos = signal([{title: 'Learn signals', done: false}]);
-
-todos.mutate(value => {
-  // Change the first TODO in the array to 'done: true' without replacing it.
-  value[0].done = true;
-});
-```
-
 Writable signals have the type `WritableSignal`.
 
 ### Computed signals
@@ -202,8 +191,6 @@ data.set(['test']);
 ```
 
 Equality functions can be provided to both writable and computed signals.
-
-For writable signals, `.mutate()` does not check for equality because it mutates the current value without producing a new reference.
 
 ### Reading without tracking dependencies
 
