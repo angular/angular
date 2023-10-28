@@ -205,9 +205,9 @@ function getProviderImportsContainer(injector: Injector): Type<unknown>|null {
  *     injector
  */
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
-  const diResolver = getNodeInjectorLView(injector);
+  const diResolver = getNodeInjectorTNode(injector);
   const {resolverToProviders} = getFrameworkDIDebugData();
-  return resolverToProviders.get(diResolver) ?? [];
+  return resolverToProviders.get(diResolver as TNode) ?? [];
 }
 
 /**

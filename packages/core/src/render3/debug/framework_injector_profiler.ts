@@ -27,9 +27,12 @@ import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, Injec
  * getDependenciesFromInjectable API, which takes in an injector and a token and returns it's
  * dependencies.
  *
- * resolverToProviders: Maps a DI resolver (an Injector or an LView) to the providers configured
+ * resolverToProviders: Maps a DI resolver (an Injector or a TNode) to the providers configured
  * within it This is used to support the getInjectorProviders API, which takes in an injector and
- * returns the providers that it was configured with.
+ * returns the providers that it was configured with. Note that for the element injector case we
+ * use the TNode instead of the LView as the DI resolver. This is because the registration of
+ * providers happens only once per type of TNode. If an injector is created with an identical TNode,
+ * the providers for that injector will not be reconfigured.
  *
  * standaloneInjectorToComponent: Maps the injector of a standalone component to the standalone
  * component that it is associated with. Used in the getInjectorProviders API, specificially in the
@@ -53,13 +56,13 @@ import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, Injec
 class DIDebugData {
   resolverToTokenToDependencies =
       new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-  resolverToProviders = new WeakMap<Injector|LView, ProviderRecord[]>();
+  resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
     this.resolverToTokenToDependencies =
         new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-    this.resolverToProviders = new WeakMap<Injector|LView, ProviderRecord[]>();
+    this.resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
     this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
   }
 }
@@ -237,7 +240,13 @@ function handleProviderConfiguredEvent(
     context: InjectorProfilerContext, data: ProviderRecord): void {
   const {resolverToProviders} = frameworkDIDebugData;
 
-  const diResolver = getDIResolver(context?.injector);
+  let diResolver: Injector|TNode;
+  if (context?.injector instanceof NodeInjector) {
+    diResolver = getNodeInjectorTNode(context.injector) as TNode;
+  } else {
+    diResolver = context.injector;
+  }
+
   if (diResolver === null) {
     throwError('A ProviderConfigured event must be run within an injection context.');
   }
