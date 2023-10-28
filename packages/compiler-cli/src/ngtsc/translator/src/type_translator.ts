@@ -14,6 +14,7 @@ import {ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';
+import {TypeEmitter} from './type_emitter';
 
 
 export function translateType(
@@ -79,12 +80,13 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     return ts.factory.createTypeLiteralNode([indexSignature]);
   }
 
-  visitTransplantedType(ast: o.TransplantedType<ts.Node>, context: any) {
+  visitTransplantedType(ast: o.TransplantedType<ts.Node>, context: Context) {
     if (!ts.isTypeNode(ast.type)) {
       throw new Error(`A TransplantedType must wrap a TypeNode`);
     }
 
-    return this.translateTransplantedTypeNode(ast.type, context);
+    const emitter = new TypeEmitter(typeRef => this.translateTypeReference(typeRef, context));
+    return emitter.emitType(ast.type);
   }
 
   visitReadVarExpr(ast: o.ReadVarExpr, context: Context): ts.TypeQueryNode {
@@ -253,17 +255,13 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     return typeNode;
   }
 
-  /**
-   * Translates a type reference node so that all of its references
-   * are imported into the context file.
-   */
-  private translateTransplantedTypeReferenceNode(
-      node: ts.TypeReferenceNode&{typeName: ts.Identifier}, context: any): ts.TypeReferenceNode {
-    const declaration = this.reflector.getDeclarationOfIdentifier(node.typeName);
-
+  private translateTypeReference(type: ts.TypeReferenceNode, context: Context): ts.TypeReferenceNode
+      |null {
+    const target = ts.isIdentifier(type.typeName) ? type.typeName : type.typeName.right;
+    const declaration = this.reflector.getDeclarationOfIdentifier(target);
     if (declaration === null) {
       throw new Error(
-          `Unable to statically determine the declaration file of type node ${node.typeName.text}`);
+          `Unable to statically determine the declaration file of type node ${target.text}`);
     }
 
     const emittedType = this.refEmitter.emit(
@@ -271,52 +269,14 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
         ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
             ImportFlags.AllowRelativeDtsImports);
 
-    assertSuccessfulReferenceEmit(emittedType, node, 'type');
+    assertSuccessfulReferenceEmit(emittedType, target, 'type');
 
-    const result = emittedType.expression.visitExpression(this, context);
+    const typeNode = this.translateExpression(emittedType.expression, context);
 
-    if (!ts.isTypeReferenceNode(result)) {
-      throw new Error(`Expected TypeReferenceNode when referencing the type for ${
-          node.typeName.text}, but received ${ts.SyntaxKind[result.kind]}`);
+    if (!ts.isTypeReferenceNode(typeNode)) {
+      throw new Error(
+          `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[typeNode.kind]}.`);
     }
-
-    // If the original node doesn't have any generic parameters we return the results.
-    if (node.typeArguments === undefined || node.typeArguments.length === 0) {
-      return result;
-    }
-
-    // If there are any generics, we have to reflect them as well.
-    const translatedArgs =
-        node.typeArguments.map(arg => this.translateTransplantedTypeNode(arg, context));
-
-    return ts.factory.updateTypeReferenceNode(
-        result, result.typeName, ts.factory.createNodeArray(translatedArgs));
-  }
-
-  /**
-   * Translates a type node so that all of the type references it
-   * contains are imported and can be referenced in the context file.
-   */
-  private translateTransplantedTypeNode(rootNode: ts.TypeNode, context: any): ts.TypeNode {
-    const factory: ts.TransformerFactory<ts.Node> = transformContext => root => {
-      const walk = (node: ts.Node): ts.Node => {
-        if (ts.isTypeReferenceNode(node) && ts.isIdentifier(node.typeName)) {
-          const translated =
-              this.translateTransplantedTypeReferenceNode(node as ts.TypeReferenceNode & {
-                typeName: ts.Identifier;
-              }, context);
-
-          if (translated !== node) {
-            return translated;
-          }
-        }
-
-        return ts.visitEachChild(node, walk, transformContext);
-      };
-
-      return ts.visitNode(root, walk);
-    };
-
-    return ts.transform(rootNode, [factory]).transformed[0] as ts.TypeNode;
+    return typeNode;
   }
 }
