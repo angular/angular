@@ -8766,7 +8766,7 @@ function allTests(os: string) {
         expect(jsContents).toContain(`import { externalToNumber } from 'external';`);
         expect(jsContents).toContain('inputs: { value: ["value", "value", externalToNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
-        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
       });
 
@@ -8797,7 +8797,7 @@ function allTests(os: string) {
         expect(jsContents)
             .toContain('inputs: { value: ["value", "value", (value) => value ? 1 : 0] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
-        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
       });
 

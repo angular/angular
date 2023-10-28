@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {initMockFileSystem} from '../../file_system/testing';
+import {Reference} from '../../imports';
 import {TypeCheckingConfig} from '../api';
 import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
 
@@ -611,10 +612,10 @@ describe('type check blocks', () => {
           transform: {
             node: ts.factory.createFunctionDeclaration(
                 undefined, undefined, undefined, undefined, [], undefined, undefined),
-            type: ts.factory.createUnionTypeNode([
+            type: new Reference(ts.factory.createUnionTypeNode([
               ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
               ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ])
+            ]))
           },
         },
       },
