@@ -9,7 +9,7 @@
 import * as o from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, ImportFlags, OwningModule, Reference, ReferenceEmitter} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
@@ -80,13 +80,17 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     return ts.factory.createTypeLiteralNode([indexSignature]);
   }
 
-  visitTransplantedType(ast: o.TransplantedType<ts.Node>, context: Context) {
-    if (!ts.isTypeNode(ast.type)) {
+  visitTransplantedType(ast: o.TransplantedType<unknown>, context: Context) {
+    const node = ast.type instanceof Reference ? ast.type.node : ast.type;
+    if (!ts.isTypeNode(node)) {
       throw new Error(`A TransplantedType must wrap a TypeNode`);
     }
 
-    const emitter = new TypeEmitter(typeRef => this.translateTypeReference(typeRef, context));
-    return emitter.emitType(ast.type);
+    const viaModule = ast.type instanceof Reference ? ast.type.bestGuessOwningModule : null;
+
+    const emitter =
+        new TypeEmitter(typeRef => this.translateTypeReference(typeRef, context, viaModule));
+    return emitter.emitType(node);
   }
 
   visitReadVarExpr(ast: o.ReadVarExpr, context: Context): ts.TypeQueryNode {
@@ -255,8 +259,9 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     return typeNode;
   }
 
-  private translateTypeReference(type: ts.TypeReferenceNode, context: Context): ts.TypeReferenceNode
-      |null {
+  private translateTypeReference(
+      type: ts.TypeReferenceNode, context: Context,
+      viaModule: OwningModule|null): ts.TypeReferenceNode|null {
     const target = ts.isIdentifier(type.typeName) ? type.typeName : type.typeName.right;
     const declaration = this.reflector.getDeclarationOfIdentifier(target);
     if (declaration === null) {
@@ -264,10 +269,17 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
           `Unable to statically determine the declaration file of type node ${target.text}`);
     }
 
+    let owningModule = viaModule;
+    if (declaration.viaModule !== null) {
+      owningModule = {
+        specifier: declaration.viaModule,
+        resolutionContext: type.getSourceFile().fileName,
+      };
+    }
+
+    const reference = new Reference(declaration.node, owningModule);
     const emittedType = this.refEmitter.emit(
-        new Reference(declaration.node), this.contextFile,
-        ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-            ImportFlags.AllowRelativeDtsImports);
+        reference, this.contextFile, ImportFlags.NoAliasing | ImportFlags.AllowTypeImports);
 
     assertSuccessfulReferenceEmit(emittedType, target, 'type');
 
