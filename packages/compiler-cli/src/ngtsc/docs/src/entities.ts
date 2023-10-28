@@ -32,19 +32,35 @@ export enum MemberType {
   EnumItem = 'enum_item',
 }
 
+export enum DecoratorType {
+  Class = 'class',
+  Member = 'member',
+  Parameter = 'parameter',
+}
+
 /** Informational tags applicable to class members. */
 export enum MemberTags {
+  Abstract = 'abstract',
   Static = 'static',
   Readonly = 'readonly',
   Protected = 'protected',
   Optional = 'optional',
   Input = 'input',
   Output = 'output',
+  Inherited = 'override',
 }
 
+/** Documentation entity for single JsDoc tag. */
 export interface JsDocTagEntry {
   name: string;
   comment: string;
+}
+
+/** Documentation entity for single generic parameter. */
+export interface GenericEntry {
+  name: string;
+  constraint: string|undefined;
+  default: string|undefined;
 }
 
 /** Base type for all documentation entities. */
@@ -61,9 +77,14 @@ export interface ConstantEntry extends DocEntry {
   type: string;
 }
 
+/** Documentation entity for a type alias. */
+export type TypeAliasEntry = ConstantEntry;
+
 /** Documentation entity for a TypeScript class. */
 export interface ClassEntry extends DocEntry {
+  isAbstract: boolean;
   members: MemberEntry[];
+  generics: GenericEntry[];
 }
 
 // From an API doc perspective, class and interfaces are identical.
@@ -74,6 +95,12 @@ export type InterfaceEntry = ClassEntry;
 /** Documentation entity for a TypeScript enum. */
 export interface EnumEntry extends DocEntry {
   members: EnumMemberEntry[];
+}
+
+/** Documentation entity for an Angular decorator. */
+export interface DecoratorEntry extends DocEntry {
+  decoratorType: DecoratorType;
+  options: PropertyEntry[];
 }
 
 /** Documentation entity for an Angular directives and components. */
@@ -92,6 +119,7 @@ export interface PipeEntry extends ClassEntry {
 export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
+  generics: GenericEntry[];
 }
 
 /** Sub-entry for a single class or enum member. */
@@ -114,6 +142,7 @@ export interface PropertyEntry extends MemberEntry {
   type: string;
   inputAlias?: string;
   outputAlias?: string;
+  isRequiredInput?: boolean;
 }
 
 /** Sub-entry for a class method. */

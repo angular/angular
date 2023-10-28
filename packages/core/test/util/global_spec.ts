@@ -8,17 +8,15 @@
 
 import {global} from '../../src/util/global';
 
-{
-  describe('global', () => {
-    it('should be global this value', () => {
-      const _global = new Function('return this')();
-      expect(global).toBe(_global);
-    });
-
-    if (typeof globalThis !== 'undefined') {
-      it('should use globalThis as global reference', () => {
-        expect(global).toBe(globalThis);
-      });
-    }
+describe('global', () => {
+  it('should be global this value', () => {
+    const _global = new Function('return this')();
+    expect(global).toBe(_global);
   });
-}
+
+  if (typeof globalThis !== 'undefined') {
+    it('should use globalThis as global reference', () => {
+      expect(global).toBe(globalThis);
+    });
+  }
+});

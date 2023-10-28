@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FunctionExtractor} from '@angular/compiler-cli/src/ngtsc/docs/src/function_extractor';
-import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -15,6 +13,10 @@ import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta
 import {ClassDeclaration} from '../../reflection';
 
 import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
+import {isAngularPrivateName} from './filters';
+import {FunctionExtractor} from './function_extractor';
+import {extractGenerics} from './generics_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
 // For the purpose of extraction, we can largely treat properties and accessors the same.
@@ -48,9 +50,11 @@ class ClassExtractor {
   extract(): ClassEntry {
     return {
       name: this.declaration.name.text,
+      isAbstract: this.isAbstract(),
       entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
                                                                EntryType.UndecoratedClass,
-      members: this.extractAllClassMembers(this.declaration),
+      members: this.extractAllClassMembers(),
+      generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
       rawComment: extractRawJsDoc(this.declaration),
@@ -58,10 +62,10 @@ class ClassExtractor {
   }
 
   /** Extracts doc info for a class's members. */
-  protected extractAllClassMembers(classDeclaration: ClassDeclarationLike): MemberEntry[] {
+  protected extractAllClassMembers(): MemberEntry[] {
     const members: MemberEntry[] = [];
 
-    for (const member of classDeclaration.members) {
+    for (const member of this.getMemberDeclarations()) {
       if (this.isMemberExcluded(member)) continue;
 
       const memberEntry = this.extractClassMember(member);
@@ -75,7 +79,7 @@ class ClassExtractor {
 
   /** Extract docs for a class's members (methods and properties).  */
   protected extractClassMember(memberDeclaration: MemberElement): MemberEntry|undefined {
-    if (this.isMethod(memberDeclaration)) {
+    if (this.isMethod(memberDeclaration) && !this.isImplementationForOverload(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
     } else if (this.isProperty(memberDeclaration)) {
       return this.extractClassProperty(memberDeclaration);
@@ -126,7 +130,38 @@ class ClassExtractor {
       tags.push(MemberTags.Optional);
     }
 
+    if (member.parent !== this.declaration) {
+      tags.push(MemberTags.Inherited);
+    }
+
     return tags;
+  }
+
+  /** Gets all member declarations, including inherited members. */
+  private getMemberDeclarations(): MemberElement[] {
+    // We rely on TypeScript to resolve all the inherited members to their
+    // ultimate form via `getPropertiesOfType`. This is important because child
+    // classes may narrow types or add method overloads.
+    const type = this.typeChecker.getTypeAtLocation(this.declaration);
+    const members = type.getProperties();
+
+    // While the properties of the declaration type represent the properties that exist
+    // on a clas *instance*, static members are properties on the class symbol itself.
+    const typeOfConstructor = this.typeChecker.getTypeOfSymbol(type.symbol);
+    const staticMembers = typeOfConstructor.getProperties();
+
+    const result: MemberElement[] = [];
+    for (const member of [...members, ...staticMembers]) {
+      // A member may have multiple declarations in the case of function overloads.
+      const memberDeclarations = member.getDeclarations() ?? [];
+      for (const memberDeclaration of memberDeclarations) {
+        if (this.isDocumentableMember(memberDeclaration)) {
+          result.push(memberDeclaration);
+        }
+      }
+    }
+
+    return result;
   }
 
   /** Get the tags for a member that come from the declaration modifiers. */
@@ -148,6 +183,8 @@ class ClassExtractor {
         return MemberTags.Readonly;
       case ts.SyntaxKind.ProtectedKeyword:
         return MemberTags.Protected;
+      case ts.SyntaxKind.AbstractKeyword:
+        return MemberTags.Abstract;
       default:
         return undefined;
     }
@@ -158,28 +195,47 @@ class ClassExtractor {
    * This is the case if:
    *  - The member does not have a name
    *  - The member is neither a method nor property
-   *  - The member is protected
+   *  - The member is private
+   *  - The member has a name that marks it as Angular-internal.
    */
   private isMemberExcluded(member: MemberElement): boolean {
     return !member.name || !this.isDocumentableMember(member) ||
-        !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword);
+        !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
+        member.name.getText() === 'prototype' || isAngularPrivateName(member.name.getText());
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
-  private isDocumentableMember(member: MemberElement): member is MethodLike|PropertyLike {
+  private isDocumentableMember(member: ts.Node): member is MethodLike|PropertyLike {
     return this.isMethod(member) || this.isProperty(member) || ts.isAccessor(member);
   }
 
   /** Gets whether a member is a property. */
-  private isProperty(member: MemberElement): member is PropertyLike {
+  private isProperty(member: ts.Node): member is PropertyLike {
     // Classes have declarations, interface have signatures
     return ts.isPropertyDeclaration(member) || ts.isPropertySignature(member);
   }
 
   /** Gets whether a member is a method. */
-  private isMethod(member: MemberElement): member is MethodLike {
+  private isMethod(member: ts.Node): member is MethodLike {
     // Classes have declarations, interface have signatures
     return ts.isMethodDeclaration(member) || ts.isMethodSignature(member);
+  }
+
+  /** Gets whether the declaration for this extractor is abstract. */
+  private isAbstract(): boolean {
+    const modifiers = this.declaration.modifiers ?? [];
+    return modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+  }
+
+  /** Gets whether a method is the concrete implementation for an overloaded function. */
+  private isImplementationForOverload(method: MethodLike): boolean|undefined {
+    // Method signatures (in an interface) are never implementations.
+    if (method.kind === ts.SyntaxKind.MethodSignature) return false;
+
+    const signature = this.typeChecker.getSignatureFromDeclaration(method);
+    return signature &&
+        this.typeChecker.isImplementationOfOverload(
+            signature.declaration as ts.SignatureDeclaration);
   }
 }
 
@@ -213,6 +269,7 @@ class DirectiveExtractor extends ClassExtractor {
     if (inputMetadata) {
       entry.memberTags.push(MemberTags.Input);
       entry.inputAlias = inputMetadata.bindingPropertyName;
+      entry.isRequiredInput = inputMetadata.required;
     }
 
     const outputMetadata = this.getOutputMetadata(propertyDeclaration);

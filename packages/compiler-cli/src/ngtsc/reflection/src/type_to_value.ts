@@ -18,7 +18,8 @@ import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReferenc
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference {
+    typeNode: ts.TypeNode|null, checker: ts.TypeChecker,
+    isLocalCompilation: boolean): TypeValueReference {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null) {
     return missingType();
@@ -34,6 +35,7 @@ export function typeToValue(
   }
 
   const {local, decl} = symbols;
+
   // It's only valid to convert a type reference to a value reference if the type actually
   // has a value declaration associated with it. Note that const enums are an exception,
   // because while they do have a value declaration, they don't exist at runtime.
@@ -42,7 +44,15 @@ export function typeToValue(
     if (decl.declarations !== undefined && decl.declarations.length > 0) {
       typeOnlyDecl = decl.declarations[0];
     }
-    return noValueDeclaration(typeNode, typeOnlyDecl);
+
+    // In local compilation mode a declaration is considered invalid only if it is a type related
+    // declaration.
+    if (!isLocalCompilation || (typeOnlyDecl && [
+          ts.SyntaxKind.TypeParameter, ts.SyntaxKind.TypeAliasDeclaration,
+          ts.SyntaxKind.InterfaceDeclaration
+        ].includes(typeOnlyDecl.kind))) {
+      return noValueDeclaration(typeNode, typeOnlyDecl);
+    }
   }
 
   // The type points to a valid value declaration. Rewrite the TypeReference into an
@@ -94,7 +104,7 @@ export function typeToValue(
       const moduleName = extractModuleName(firstDecl.parent.parent.parent);
       return {
         kind: TypeValueReferenceKind.IMPORTED,
-        valueDeclaration: decl.valueDeclaration,
+        valueDeclaration: decl.valueDeclaration ?? null,
         moduleName,
         importedName,
         nestedPath
@@ -121,7 +131,7 @@ export function typeToValue(
       const moduleName = extractModuleName(firstDecl.parent.parent);
       return {
         kind: TypeValueReferenceKind.IMPORTED,
-        valueDeclaration: decl.valueDeclaration,
+        valueDeclaration: decl.valueDeclaration ?? null,
         moduleName,
         importedName,
         nestedPath

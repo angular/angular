@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {Identifiers} from '../../../render3/r3_identifiers';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
@@ -129,6 +130,10 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestSwitchBlock(unit, node);
     } else if (node instanceof t.DeferredBlock) {
       ingestDeferBlock(unit, node);
+    } else if (node instanceof t.Icu) {
+      ingestIcu(unit, node);
+    } else if (node instanceof t.ForLoopBlock) {
+      ingestForBlock(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -177,7 +182,8 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
 function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
-  if (tmpl.i18n !== undefined && !(tmpl.i18n instanceof i18n.Message)) {
+  if (tmpl.i18n !== undefined &&
+      !(tmpl.i18n instanceof i18n.Message || tmpl.i18n instanceof i18n.TagPlaceholder)) {
     throw Error(`Unhandled i18n metadata type for template: ${tmpl.i18n.constructor.name}`);
   }
 
@@ -189,10 +195,10 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
     [namespacePrefix, tagNameWithoutNamespace] = splitNsName(tmpl.tagName);
   }
 
-  // TODO: validate the fallback tag name here.
+  const i18nPlaceholder = tmpl.i18n instanceof i18n.TagPlaceholder ? tmpl.i18n : undefined;
   const tplOp = ir.createTemplateOp(
-      childView.xref, tagNameWithoutNamespace ?? 'ng-template', namespaceForKey(namespacePrefix),
-      false, undefined, tmpl.startSourceSpan);
+      childView.xref, tagNameWithoutNamespace, namespaceForKey(namespacePrefix), false,
+      i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -200,11 +206,13 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   ingestNodes(childView, tmpl.children);
 
   for (const {name, value} of tmpl.variables) {
-    childView.contextVariables.set(name, value);
+    childView.contextVariables.set(name, value !== '' ? value : '$implicit');
   }
 
-  // If there is an i18n message associated with this template, insert i18n start and end ops.
-  if (tmpl.i18n instanceof i18n.Message) {
+  // If this is a plain template and there is an i18n message associated with it, insert i18n start
+  // and end ops. For structural directive templates, the i18n ops will be added when ingesting the
+  // element/template the directive is placed on.
+  if (isPlainTemplate(tmpl) && tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
     ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
@@ -215,7 +223,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
-  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector);
+  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector, content.sourceSpan);
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
@@ -245,7 +253,7 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
   }
   if (text.i18n !== undefined && !(text.i18n instanceof i18n.Container)) {
     throw Error(
-        `Unhandled i18n metadata type for text interpolation: ${text.i18n.constructor.name}`);
+        `Unhandled i18n metadata type for text interpolation: ${text.i18n?.constructor.name}`);
   }
 
   const i18nPlaceholders = text.i18n instanceof i18n.Container ?
@@ -281,7 +289,8 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       firstXref = cView.xref;
     }
     unit.create.push(ir.createTemplateOp(
-        cView.xref, 'Conditional', ir.Namespace.HTML, true, undefined, ifCase.sourceSpan));
+        cView.xref, 'Conditional', ir.Namespace.HTML, true,
+        undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan));
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr =
         new ir.ConditionalCaseExpr(caseExpr, cView.xref, ifCase.expressionAlias);
@@ -304,7 +313,9 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       firstXref = cView.xref;
     }
     unit.create.push(ir.createTemplateOp(
-        cView.xref, 'Case', ir.Namespace.HTML, true, undefined, switchCase.sourceSpan));
+        cView.xref, 'Case', ir.Namespace.HTML, true,
+        undefined /* TODO: figure out how i18n works with new control flow */,
+        switchCase.sourceSpan));
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
@@ -377,6 +388,74 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   unit.create.push(deferOnOp);
 }
 
+function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
+  if (icu.i18n instanceof i18n.Message) {
+    const xref = unit.job.allocateXrefId();
+    unit.create.push(ir.createIcuOp(xref, icu.i18n, null!));
+    unit.update.push(ir.createIcuUpdateOp(xref, null!));
+  } else {
+    throw Error(`Unhandled i18n metadata type for ICU: ${icu.i18n?.constructor.name}`);
+  }
+}
+
+/**
+ * Ingest an `@for` block into the given `ViewCompilation`.
+ */
+function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): void {
+  const repeaterView = unit.job.allocateView(unit.xref);
+
+  const createRepeaterAlias = (ident: string, repeaterVar: ir.DerivedRepeaterVarIdentity) => {
+    repeaterView.aliases.add({
+      kind: ir.SemanticVariableKind.Alias,
+      name: null,
+      identifier: ident,
+      expression: new ir.DerivedRepeaterVarExpr(repeaterView.xref, repeaterVar),
+    });
+  };
+
+  // Set all the context variables and aliases available in the repeater.
+  repeaterView.contextVariables.set(forBlock.item.name, forBlock.item.value);
+  repeaterView.contextVariables.set(
+      forBlock.contextVariables.$index.name, forBlock.contextVariables.$index.value);
+  repeaterView.contextVariables.set(
+      forBlock.contextVariables.$count.name, forBlock.contextVariables.$count.value);
+  createRepeaterAlias(forBlock.contextVariables.$first.name, ir.DerivedRepeaterVarIdentity.First);
+  createRepeaterAlias(forBlock.contextVariables.$last.name, ir.DerivedRepeaterVarIdentity.Last);
+  createRepeaterAlias(forBlock.contextVariables.$even.name, ir.DerivedRepeaterVarIdentity.Even);
+  createRepeaterAlias(forBlock.contextVariables.$odd.name, ir.DerivedRepeaterVarIdentity.Odd);
+
+  const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
+  const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
+
+  ingestNodes(repeaterView, forBlock.children);
+
+  let emptyView: ViewCompilationUnit|null = null;
+  if (forBlock.empty !== null) {
+    emptyView = unit.job.allocateView(unit.xref);
+    ingestNodes(emptyView, forBlock.empty.children);
+  }
+
+  const varNames: ir.RepeaterVarNames = {
+    $index: forBlock.contextVariables.$index.name,
+    $count: forBlock.contextVariables.$count.name,
+    $first: forBlock.contextVariables.$first.name,
+    $last: forBlock.contextVariables.$last.name,
+    $even: forBlock.contextVariables.$even.name,
+    $odd: forBlock.contextVariables.$odd.name,
+    $implicit: forBlock.item.name,
+  };
+
+  const repeaterCreate = ir.createRepeaterCreateOp(
+      repeaterView.xref, emptyView?.xref ?? null, track, varNames, forBlock.sourceSpan);
+  unit.create.push(repeaterCreate);
+
+  const expression = convertAst(
+      forBlock.expression, unit.job,
+      convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
+  const repeater = ir.createRepeaterOp(repeaterCreate.xref, expression, forBlock.sourceSpan);
+  unit.update.push(repeater);
+}
+
 /**
  * Convert a template AST expression into an output AST expression.
  */
@@ -434,7 +513,8 @@ function convertAst(
   } else if (ast instanceof e.LiteralMap) {
     const entries = ast.keys.map((key, idx) => {
       const value = ast.values[idx];
-      // TODO: should literals have source maps, or do we just map the whole surrounding expression?
+      // TODO: should literals have source maps, or do we just map the whole surrounding
+      // expression?
       return new o.LiteralMapEntry(key.key, convertAst(value, job, baseSourceSpan), key.quoted);
     });
     return new o.LiteralMapExpr(entries, undefined, convertSourceSpan(ast.span, baseSourceSpan));
@@ -480,18 +560,36 @@ function convertAst(
 }
 
 /**
+ * Checks whether the given template is a plain ng-template (as opposed to another kind of template
+ * such as a structural directive template or control flow template). This is checked based on the
+ * tagName. We can expect that only plain ng-templates will come through with a tagName of
+ * 'ng-template'.
+ *
+ * Here are some of the cases we expect:
+ *
+ * | Angular HTML                       | Template tagName   |
+ * | ---------------------------------- | ------------------ |
+ * | `<ng-template>`                    | 'ng-template'      |
+ * | `<div *ngIf="true">`               | 'div'              |
+ * | `<svg><ng-template>`               | 'svg:ng-template'  |
+ * | `@if (true) {`                     | 'Conditional'      |
+ * | `<ng-template *ngIf>` (plain)      | 'ng-template'      |
+ * | `<ng-template *ngIf>` (structural) | null               |
+ */
+function isPlainTemplate(tmpl: t.Template) {
+  return splitNsName(tmpl.tagName ?? '')[1] === 'ng-template';
+}
+
+/**
  * Process all of the bindings on an element-like structure in the template AST and convert them
  * to their IR representation.
  */
 function ingestBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   let flags: BindingFlags = BindingFlags.None;
-  const isPlainTemplate =
-      element instanceof t.Template && splitNsName(element.tagName ?? '')[1] === 'ng-template';
-
   if (element instanceof t.Template) {
     flags |= BindingFlags.OnNgTemplateElement;
-    if (isPlainTemplate) {
+    if (element instanceof t.Template && isPlainTemplate(element)) {
       flags |= BindingFlags.BindingTargetsTemplate;
     }
 
@@ -532,7 +630,7 @@ function ingestBindings(
       }
     }
 
-    if (element instanceof t.Template && !isPlainTemplate) {
+    if (element instanceof t.Template && !isPlainTemplate(element)) {
       unit.create.push(
           ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
       continue;

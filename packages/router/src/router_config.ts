@@ -33,7 +33,7 @@ export type ErrorHandler = (error: any) => any;
  * navigation.
  * * 'enabledBlocking' - The initial navigation starts before the root component is created.
  * The bootstrap is blocked until the initial navigation is complete. This value is required
- * for [server-side rendering](guide/universal) to work.
+ * for [server-side rendering](guide/ssr) to work.
  * * 'disabled' - The initial navigation is not performed. The location listener is set up before
  * the root component gets created. Use if there is a reason to have
  * more control over when the router starts its initial navigation due to some complex
@@ -85,8 +85,11 @@ export interface RouterConfigOptions {
 
   /**
    * Defines how the router merges parameters, data, and resolved data from parent to child
-   * routes. By default ('emptyOnly'), inherits parent parameters only for
-   * path-less or component-less routes.
+   * routes.
+   *
+   * By default ('emptyOnly'), a route inherits the parent route's parameters when the route itself
+   * has an empty path (meaning its configured with path: '') or when the parent route doesn't have
+   * any component set.
    *
    * Set to 'always' to enable unconditional inheritance of parent parameters.
    *
@@ -188,7 +191,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * One of `enabled`, `enabledBlocking`, `enabledNonBlocking` or `disabled`.
    * When set to `enabled` or `enabledBlocking`, the initial navigation starts before the root
    * component is created. The bootstrap is blocked until the initial navigation is complete. This
-   * value is required for [server-side rendering](guide/universal) to work. When set to
+   * value is required for [server-side rendering](guide/ssr) to work. When set to
    * `enabledNonBlocking`, the initial navigation starts after the root component has been created.
    * The bootstrap is not blocked on the completion of the initial navigation. When set to
    * `disabled`, the initial navigation is not performed. The location listener is set up before the

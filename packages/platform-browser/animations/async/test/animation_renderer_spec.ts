@@ -138,7 +138,7 @@ describe('AnimationRenderer', () => {
     it('should resolve the body|document|window nodes given their values as strings as input',
        async () => {
          const renderer = await makeRenderer();
-         const engine = (renderer as any).delegate.engine as MockAnimationEngine;
+         const engine = ((renderer)['delegate'] as AnimationRenderer).engine as MockAnimationEngine;
 
          const cb = (event: any): boolean => {
            return true;
@@ -153,7 +153,64 @@ describe('AnimationRenderer', () => {
          renderer.listen('window', '@event', cb);
          expect(engine.captures['listen'].pop()[0]).toBe(window);
        });
+
+    it('should store animations events passed to the default renderer and register them against the animation renderer',
+       async () => {
+         const type = <RendererType2>{
+           id: 'id',
+           encapsulation: null!,
+           styles: [],
+           data: {'animation': []},
+         };
+
+         const factory = TestBed.inject(RendererFactory2) as AsyncAnimationRendererFactory;
+         const renderer = factory.createRenderer(element, type) as DynamicDelegationRenderer;
+
+         const cb = (event: any): boolean => true;
+         renderer.listen('body', '@event', cb);
+         renderer.listen('document', '@event', cb);
+         renderer.listen('window', '@event', cb);
+
+         // The animation renderer is not loaded yet
+         expect((renderer['delegate'] as AnimationRenderer).engine).toBeUndefined();
+
+         // This will change the delegate renderer from the default one to the AnimationRenderer
+         await factory['_rendererFactoryPromise']!.then(() => renderer);
+
+         const engine = (renderer['delegate'] as AnimationRenderer).engine as MockAnimationEngine;
+
+         expect(engine.captures['listen'][0][0]).toBe(document.body);
+         expect(engine.captures['listen'][1][0]).toBe(document);
+         expect(engine.captures['listen'][2][0]).toBe(window);
+       });
   });
+
+  it('should store animations properties set on the default renderer and set them also on the animation renderer',
+     async () => {
+       const type = <RendererType2>{
+         id: 'id',
+         encapsulation: null!,
+         styles: [],
+         data: {'animation': []},
+       };
+
+       const factory = TestBed.inject(RendererFactory2) as AsyncAnimationRendererFactory;
+       const renderer = factory.createRenderer(element, type) as DynamicDelegationRenderer;
+
+       renderer.setProperty(element, '@openClose', 'closed');
+       renderer.setProperty(element, '@openClose', 'open');
+
+       // The animation renderer is not loaded yet
+       expect((renderer['delegate'] as AnimationRenderer).engine).toBeUndefined();
+
+       // This will change the delegate renderer from the default one to the AnimationRenderer
+       await factory['_rendererFactoryPromise']!.then(() => renderer);
+
+       const engine = (renderer['delegate'] as AnimationRenderer).engine as MockAnimationEngine;
+
+       expect(engine.captures['setProperty'][0][2]).toBe('closed');
+       expect(engine.captures['setProperty'][1][2]).toBe('open');
+     });
 
   describe('registering animations', () => {
     it('should only create a trigger definition once even if the registered multiple times');
@@ -347,25 +404,6 @@ class MockAnimationEngine extends InjectableAnimationEngine {
   override flush() {}
 
   override destroy(namespaceId: string) {}
-}
-
-@Injectable()
-class ExtendedAnimationRendererFactory extends AnimationRendererFactory {
-  public log: string[] = [];
-
-  override begin() {
-    super.begin();
-    this.log.push('begin');
-  }
-
-  override end() {
-    super.end();
-    this.log.push('end');
-  }
-
-  override createRenderer(hostElement: any, type: RendererType2|null): Renderer2 {
-    return {} as any;
-  }
 }
 
 function assertHasParent(element: any, yes: boolean = true) {

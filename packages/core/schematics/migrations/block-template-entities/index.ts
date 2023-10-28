@@ -44,6 +44,12 @@ function runBlockTemplateEntitiesMigration(tree: Tree, tsconfigPath: string, bas
   for (const [path, file] of analysis) {
     const ranges = file.getSortedRanges();
     const relativePath = relative(basePath, path);
+
+    // Don't interrupt the entire migration if a file can't be read.
+    if (!tree.exists(relativePath)) {
+      continue;
+    }
+
     const content = tree.readText(relativePath);
     const update = tree.beginUpdate(relativePath);
 

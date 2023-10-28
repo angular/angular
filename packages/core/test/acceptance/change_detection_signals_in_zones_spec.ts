@@ -7,7 +7,7 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Input, signal, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Directive, Input, signal, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {
@@ -370,4 +370,74 @@ describe('OnPush components with signals', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.outerHTML).not.toContain('blue');
   });
+
+  it('should warn when writing to signals during change-detecting a given template, in advance()',
+     () => {
+       const counter = signal(0);
+
+       @Directive({
+         standalone: true,
+         selector: '[misunderstood]',
+       })
+       class MisunderstoodDir {
+         ngOnInit(): void {
+           counter.update((c) => c + 1);
+         }
+       }
+
+       @Component({
+         selector: 'test-component',
+         standalone: true,
+         imports: [MisunderstoodDir],
+         template: `
+          {{counter()}}<div misunderstood></div>{{ 'force advance()' }}
+        `,
+       })
+       class TestCmp {
+         counter = counter;
+       }
+
+       const consoleWarnSpy = spyOn(console, 'warn').and.callThrough();
+
+       const fixture = TestBed.createComponent(TestCmp);
+       fixture.detectChanges(false);
+       expect(consoleWarnSpy)
+           .toHaveBeenCalledWith(jasmine.stringMatching(
+               /will likely result in ExpressionChangedAfterItHasBeenChecked/));
+     });
+
+  it('should warn when writing to signals during change-detecting a given template, at the end',
+     () => {
+       const counter = signal(0);
+
+       @Directive({
+         standalone: true,
+         selector: '[misunderstood]',
+       })
+       class MisunderstoodDir {
+         ngOnInit(): void {
+           counter.update((c) => c + 1);
+         }
+       }
+
+       @Component({
+         selector: 'test-component',
+         standalone: true,
+         imports: [MisunderstoodDir],
+         template: `
+          {{counter()}}<div misunderstood></div>
+        `,
+       })
+       class TestCmp {
+         counter = counter;
+       }
+
+       const consoleWarnSpy = spyOn(console, 'warn').and.callThrough();
+
+       const fixture = TestBed.createComponent(TestCmp);
+       fixture.detectChanges(false);
+       expect(consoleWarnSpy)
+           .toHaveBeenCalledWith(jasmine.stringMatching(
+               /will likely result in ExpressionChangedAfterItHasBeenChecked/));
+     });
 });

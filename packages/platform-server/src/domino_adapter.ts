@@ -13,8 +13,9 @@ import domino from './bundled-domino';
 
 export function setDomTypes() {
   // Make all Domino types available in the global env.
-  Object.assign(global, domino.impl);
-  (global as any)['KeyboardEvent'] = domino.impl.Event;
+  // NB: Any changes here should also be done in `packages/platform-server/init/src/shims.ts`.
+  Object.assign(globalThis, domino.impl);
+  (globalThis as any)['KeyboardEvent'] = domino.impl.Event;
 }
 
 /**

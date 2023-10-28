@@ -23,7 +23,7 @@ import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULT
  * The name of the key used in the TransferState collection,
  * where hydration information is located.
  */
-const TRANSFER_STATE_TOKEN_ID = '__ɵnghData__';
+const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
 /**
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.

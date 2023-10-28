@@ -252,6 +252,9 @@
     "name": "EventManagerPlugin"
   },
   {
+    "name": "EventType"
+  },
+  {
     "name": "FilterOperator"
   },
   {
@@ -273,7 +276,13 @@
     "name": "GuardsCheckStart"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
+  },
+  {
+    "name": "HistoryStateManager"
   },
   {
     "name": "INITIAL_NAVIGATION"
@@ -450,6 +459,9 @@
     "name": "NavigationCancel"
   },
   {
+    "name": "NavigationCancellationCode"
+  },
+  {
     "name": "NavigationEnd"
   },
   {
@@ -460,6 +472,9 @@
   },
   {
     "name": "NavigationSkipped"
+  },
+  {
+    "name": "NavigationSkippedCode"
   },
   {
     "name": "NavigationStart"
@@ -981,9 +996,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -994,9 +1006,6 @@
   },
   {
     "name": "combineLatest"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "compare"
@@ -1078,9 +1087,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createLViewConsumer"
   },
   {
     "name": "createNewSegmentChildren"
@@ -1170,13 +1176,13 @@
     "name": "detectChangesInView"
   },
   {
+    "name": "detectChangesInViewIfAttached"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "disableStylesheet"
   },
   {
     "name": "dispatch"
@@ -1261,6 +1267,9 @@
   },
   {
     "name": "first"
+  },
+  {
+    "name": "flattenRouteTree"
   },
   {
     "name": "flattenUnsubscriptionErrors"
@@ -1350,6 +1359,9 @@
     "name": "getIdxOfMatchingSelector"
   },
   {
+    "name": "getInherited"
+  },
+  {
     "name": "getInjectableDef"
   },
   {
@@ -1387,9 +1399,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -1504,9 +1513,6 @@
   },
   {
     "name": "incrementInitPhaseFlags"
-  },
-  {
-    "name": "inheritedParamsDataResolve"
   },
   {
     "name": "initFeatures"
@@ -1701,6 +1707,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -1786,9 +1795,6 @@
   },
   {
     "name": "nodeChildrenAsMap"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
@@ -1885,6 +1891,9 @@
   },
   {
     "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"
@@ -2067,6 +2076,9 @@
     "name": "unwrapSafeValue"
   },
   {
+    "name": "updateAncestorTraversalFlagsOnAttach"
+  },
+  {
     "name": "updateMicroTaskStatus"
   },
   {
@@ -2076,10 +2088,10 @@
     "name": "updateSegmentGroupChildren"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"
@@ -2134,6 +2146,9 @@
   },
   {
     "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵgetInheritedFactory"
   },
   {
     "name": "ɵɵinject"

@@ -1,13 +1,25 @@
 import { Component } from '@angular/core';
+import {
+  NgFor, NgIf, NgClass, NgStyle,
+  CurrencyPipe, DatePipe, DecimalPipe, JsonPipe, LowerCasePipe, PercentPipe, SlicePipe, UpperCasePipe
+} from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterOutlet} from '@angular/router';
 
 import { MovieService } from './movie.service';
 import { IMovie } from './movie';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: [ './app.component.css' ],
-  providers: [ MovieService ]
+  imports: [
+    FormsModule,
+    NgFor, NgIf, NgClass, NgStyle,
+    CurrencyPipe, DatePipe, DecimalPipe, JsonPipe, LowerCasePipe, PercentPipe, SlicePipe, UpperCasePipe,
+    RouterLink, RouterOutlet
+  ],
+  styleUrls: [ './app.component.css' ]
 })
 export class AppComponent {
 

@@ -1,4 +1,26 @@
 <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="controlsLoaded" [multi]="true">
+
+  <div *ngIf="controller.directiveMetadata?.dependencies.length > 0" class="mat-accordion-content">
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+        <mat-panel-title>
+          Injected Services
+          <a
+            href="https://angular.io/guide/dependency-injection"
+            target="_blank"
+            class="documentation"
+            matTooltip="Open docs reference"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon class="docs-link">open_in_new</mat-icon>
+          </a>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <ng-injected-services [controller]="controller"/>
+    </mat-expansion-panel>
+  </div>
+
   <div class="mat-accordion-content" *ngFor="let index of categoryOrder" cdkDrag>
     <mat-expansion-panel [class]="panels[index].class" *ngIf="!panels[index].hidden" [expanded]="true">
       <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">

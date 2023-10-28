@@ -1418,6 +1418,30 @@ describe('type check blocks', () => {
               'else { "" + ((this).other()); }');
     });
 
+    it('should generate a guard expression for listener inside conditional', () => {
+      const TEMPLATE = `
+        @if (expr === 0) {
+          <button (click)="zero()"></button>
+        } @else if (expr === 1) {
+          <button (click)="one()"></button>
+        } @else if (expr === 2) {
+          <button (click)="two()"></button>
+        } @else {
+          <button (click)="otherwise()"></button>
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if ((((this).expr)) === (0)) (this).zero();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`);
+    });
+
     it('should generate an if block with an `as` expression', () => {
       const TEMPLATE = `@if (expr === 1; as alias) {
         {{alias}}
@@ -1444,8 +1468,43 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'switch (((this).expr)) { case 1: "" + ((this).one()); break; ' +
-              'case 2: "" + ((this).two()); break; default: "" + ((this).default()); break; }');
+              'if ((((this).expr)) === 1) { "" + ((this).one()); } else if ' +
+              '((((this).expr)) === 2) { "" + ((this).two()); } else { "" + ((this).default()); }');
+    });
+
+    it('should generate a switch block that only has a default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('{ "" + ((this).default()); }');
+    });
+
+    it('should generate a guard expression for a listener inside a switch case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            <button (click)="one()"></button>
+          }
+          @case (2) {
+            <button (click)="two()"></button>
+          }
+          @default {
+            <button (click)="default()"></button>
+          }
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if ((((this).expr)) === 1) (this).one();`);
+      expect(result).toContain(`if ((((this).expr)) === 2) (this).two();`);
+      expect(result).toContain(
+          `if ((((this).expr)) !== 1 && (((this).expr)) !== 2) (this).default();`);
     });
 
     it('should generate a switch block inside a template', () => {
@@ -1467,9 +1526,10 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'var _t1: any = null!; { var _t2 = (_t1.exp); switch (_t2()) { ' +
-              'case "one": "" + ((this).one()); break; case "two": "" + ((this).two()); break; ' +
-              'default: "" + ((this).default()); break; } } ');
+              'var _t1: any = null!; { var _t2 = (_t1.exp); _t2(); ' +
+              'if ((_t2()) === "one") { "" + ((this).one()); } ' +
+              'else if ((_t2()) === "two") { "" + ((this).two()); } ' +
+              'else { "" + ((this).default()); } }');
     });
   });
 

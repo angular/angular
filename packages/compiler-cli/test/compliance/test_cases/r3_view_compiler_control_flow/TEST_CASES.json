@@ -62,13 +62,13 @@
           "files": [
             {
               "expected": "switch_with_pipe_template.js",
-              "generated": "switch_with_pipe.js"
+              "generated": "switch_with_pipe.js",
+              "templatePipelineExpected": "switch_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a basic if block",
@@ -148,13 +148,13 @@
           "files": [
             {
               "expected": "if_with_pipe_template.js",
-              "generated": "if_with_pipe.js"
+              "generated": "if_with_pipe.js",
+              "templatePipelineExpected": "if_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate an if block with an aliased expression",
@@ -223,8 +223,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a for block with an empty block",
@@ -241,8 +240,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a for block that tracks by index",
@@ -259,8 +257,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a for block that tracks by a field on the item",
@@ -277,8 +274,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a nested for block",
@@ -295,8 +291,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a for block with template variables",
@@ -313,8 +308,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a for block with aliased template variables",
@@ -331,8 +325,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should be able to refer to aliased template variables in nested for blocks",
@@ -349,8 +342,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should be able to use for loop variables in an event listener",
@@ -367,8 +359,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should parenthesize context variables used in an expression",
@@ -385,8 +376,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should implicitly allocate data slots for primary and empty block",
@@ -403,8 +393,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not expose for loop variables to the surrounding scope",
@@ -421,8 +410,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should optimize tracking function that calls a method on the component with $index and the item from the root template",
@@ -439,8 +427,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should optimize tracking function that calls a method on the component with $index and the item from a nested template",
@@ -457,8 +444,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reuse identical pure tracking functions",
@@ -475,8 +461,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reuse identical impure tracking functions",
@@ -493,8 +478,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should preserve object and array literals inside tracking expressions",
@@ -511,8 +495,24 @@
           ],
           "failureMessage": "Incorrect template"
         }
+      ]
+    },
+    {
+      "description": "should generate an for loop block using a pipe in its expression",
+      "inputFiles": [
+        "for_with_pipe.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_with_pipe_template.js",
+              "generated": "for_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

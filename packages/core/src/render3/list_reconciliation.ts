@@ -15,8 +15,7 @@ import {TrackByFunction} from '../change_detection';
  */
 export abstract class LiveCollection<T, V> {
   abstract get length(): number;
-  abstract at(index: number): T;
-  abstract key(index: number): unknown;
+  abstract at(index: number): V;
   abstract attach(index: number, item: T): void;
   abstract detach(index: number): T;
   abstract create(index: number, value: V): T;
@@ -45,6 +44,20 @@ export abstract class LiveCollection<T, V> {
   move(prevIndex: number, newIdx: number): void {
     this.attach(newIdx, this.detach(prevIndex));
   }
+}
+
+function valuesMatching<V>(
+    liveIdx: number, liveValue: V, newIdx: number, newValue: V,
+    trackBy: TrackByFunction<V>): number {
+  if (liveIdx === newIdx && Object.is(liveValue, newValue)) {
+    // matching and no value identity to update
+    return 1;
+  } else if (Object.is(trackBy(liveIdx, liveValue), trackBy(newIdx, newValue))) {
+    // matching but requires value identity update
+    return -1;
+  }
+
+  return 0;
 }
 
 /**
@@ -84,41 +97,50 @@ export function reconcile<T, V>(
 
     while (liveStartIdx <= liveEndIdx && liveStartIdx <= newEndIdx) {
       // compare from the beginning
-      const liveStartKey = liveCollection.key(liveStartIdx);
+      const liveStartValue = liveCollection.at(liveStartIdx);
       const newStartValue = newCollection[liveStartIdx];
-      const newStartKey = trackByFn(liveStartIdx, newStartValue);
-      if (Object.is(liveStartKey, newStartKey)) {
-        liveCollection.updateValue(liveStartIdx, newStartValue);
+      const isStartMatching =
+          valuesMatching(liveStartIdx, liveStartValue, liveStartIdx, newStartValue, trackByFn);
+      if (isStartMatching !== 0) {
+        if (isStartMatching < 0) {
+          liveCollection.updateValue(liveStartIdx, newStartValue);
+        }
         liveStartIdx++;
         continue;
       }
 
       // compare from the end
       // TODO(perf): do _all_ the matching from the end
-      const liveEndKey = liveCollection.key(liveEndIdx);
-      const newEndItem = newCollection[newEndIdx];
-      const newEndKey = trackByFn(newEndIdx, newEndItem);
-      if (Object.is(liveEndKey, newEndKey)) {
-        liveCollection.updateValue(liveEndIdx, newEndItem);
+      const liveEndValue = liveCollection.at(liveEndIdx);
+      const newEndValue = newCollection[newEndIdx];
+      const isEndMatching =
+          valuesMatching(liveEndIdx, liveEndValue, newEndIdx, newEndValue, trackByFn);
+      if (isEndMatching !== 0) {
+        if (isEndMatching < 0) {
+          liveCollection.updateValue(liveEndIdx, newEndValue);
+        }
         liveEndIdx--;
         newEndIdx--;
         continue;
       }
 
-      // Detect swap / moves:
-      if (Object.is(newStartKey, liveEndKey) && Object.is(newEndKey, liveStartKey)) {
-        // swap on both ends;
-        liveCollection.swap(liveStartIdx, liveEndIdx);
-        liveCollection.updateValue(liveStartIdx, newStartValue);
-        liveCollection.updateValue(liveEndIdx, newEndItem);
-        newEndIdx--;
-        liveStartIdx++;
-        liveEndIdx--;
-        continue;
-      } else if (Object.is(newStartKey, liveEndKey)) {
-        // the new item is the same as the live item with the end pointer - this is a move forward
-        // to an earlier index;
-        liveCollection.move(liveEndIdx, liveStartIdx);
+      // Detect swap and moves:
+      const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
+      const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
+      const newStartKey = trackByFn(liveStartIdx, newStartValue);
+      if (Object.is(newStartKey, liveEndKey)) {
+        const newEndKey = trackByFn(newEndIdx, newEndValue);
+        // detect swap on both ends;
+        if (Object.is(newEndKey, liveStartKey)) {
+          liveCollection.swap(liveStartIdx, liveEndIdx);
+          liveCollection.updateValue(liveEndIdx, newEndValue);
+          newEndIdx--;
+          liveEndIdx--;
+        } else {
+          // the new item is the same as the live item with the end pointer - this is a move forward
+          // to an earlier index;
+          liveCollection.move(liveEndIdx, liveStartIdx);
+        }
         liveCollection.updateValue(liveStartIdx, newStartValue);
         liveStartIdx++;
         continue;
@@ -127,7 +149,8 @@ export function reconcile<T, V>(
       // Fallback to the slow path: we need to learn more about the content of the live and new
       // collections.
       detachedItems ??= new MultiMap();
-      liveKeysInTheFuture ??= initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx);
+      liveKeysInTheFuture ??=
+          initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
       // Check if I'm inserting a previously detached item: if so, attach it here
       if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newStartKey)) {
@@ -162,19 +185,24 @@ export function reconcile<T, V>(
     const newCollectionIterator = newCollection[Symbol.iterator]();
     let newIterationResult = newCollectionIterator.next();
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
+      const liveValue = liveCollection.at(liveStartIdx);
       const newValue = newIterationResult.value;
-      const newKey = trackByFn(liveStartIdx, newValue);
-      const liveKey = liveCollection.key(liveStartIdx);
-      if (Object.is(liveKey, newKey)) {
-        // found a match - move on
-        liveCollection.updateValue(liveStartIdx, newValue);
+      const isStartMatching =
+          valuesMatching(liveStartIdx, liveValue, liveStartIdx, newValue, trackByFn);
+      if (isStartMatching !== 0) {
+        // found a match - move on, but update value
+        if (isStartMatching < 0) {
+          liveCollection.updateValue(liveStartIdx, newValue);
+        }
         liveStartIdx++;
         newIterationResult = newCollectionIterator.next();
       } else {
         detachedItems ??= new MultiMap();
-        liveKeysInTheFuture ??= initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx);
+        liveKeysInTheFuture ??=
+            initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
 
         // Check if I'm inserting a previously detached item: if so, attach it here
+        const newKey = trackByFn(liveStartIdx, newValue);
         if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newKey)) {
           liveCollection.updateValue(liveStartIdx, newValue);
           liveStartIdx++;
@@ -187,6 +215,7 @@ export function reconcile<T, V>(
           newIterationResult = newCollectionIterator.next();
         } else {
           // it is a move forward - detach the current item without advancing in collections
+          const liveKey = trackByFn(liveStartIdx, liveValue);
           detachedItems.set(liveKey, liveCollection.detach(liveStartIdx));
           liveEndIdx--;
         }
@@ -236,10 +265,11 @@ function createOrAttach<T, V>(
 }
 
 function initLiveItemsInTheFuture<T>(
-    liveCollection: LiveCollection<unknown, unknown>, start: number, end: number): Set<unknown> {
+    liveCollection: LiveCollection<unknown, unknown>, start: number, end: number,
+    trackByFn: TrackByFunction<unknown>): Set<unknown> {
   const keys = new Set();
   for (let i = start; i <= end; i++) {
-    keys.add(liveCollection.key(i));
+    keys.add(trackByFn(i, liveCollection.at(i)));
   }
   return keys;
 }

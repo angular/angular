@@ -13,6 +13,14 @@ function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
   return (op: ir.UpdateOp) => op.kind === kind;
 }
 
+function kindWithInterpolationTest(
+    kind: ir.OpKind.Attribute|ir.OpKind.Property|ir.OpKind.HostProperty,
+    interpolation: boolean): (op: ir.UpdateOp) => boolean {
+  return (op: ir.UpdateOp) => {
+    return op.kind === kind && interpolation === op.expression instanceof ir.Interpolation;
+  };
+}
+
 interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
   test: (op: T) => boolean;
   transform?: (ops: Array<T>) => Array<T>;
@@ -20,7 +28,7 @@ interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
 
 /**
  * Defines the groups based on `OpKind` that ops will be divided into, for the various create
- * binding kinds. Ops will be collected into groups, then optionally transformed, before recombining
+ * op kinds. Ops will be collected into groups, then optionally transformed, before recombining
  * the groups in the order defined here.
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
@@ -29,18 +37,20 @@ const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
 ];
 
 /**
- * As above, but for update ops.
+ * Defines the groups based on `OpKind` that ops will be divided into, for the various update
+ * op kinds.
  */
 const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
-  {test: op => op.kind === ir.OpKind.HostProperty && op.expression instanceof ir.Interpolation},
-  {test: op => op.kind === ir.OpKind.HostProperty && !(op.expression instanceof ir.Interpolation)},
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
   {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
   {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
   {test: kindTest(ir.OpKind.StyleProp)},
   {test: kindTest(ir.OpKind.ClassProp)},
-  {test: op => op.kind === ir.OpKind.Property && op.expression instanceof ir.Interpolation},
-  {test: op => op.kind === ir.OpKind.Property && !(op.expression instanceof ir.Interpolation)},
-  {test: kindTest(ir.OpKind.Attribute)},
+  {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.Attribute, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.Property, false)},
+  {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
 ];
 
 /**
@@ -58,32 +68,38 @@ export function phaseOrdering(job: CompilationJob) {
     // still have ops pulled at the end, put them back in the correct order.
 
     // Create mode:
-    let opsToOrder = [];
-    for (const op of unit.create) {
-      if (handledOpKinds.has(op.kind)) {
-        opsToOrder.push(op);
-        ir.OpList.remove(op);
-      } else {
-        ir.OpList.insertBefore(reorder(opsToOrder, CREATE_ORDERING), op);
-        opsToOrder = [];
-      }
-    }
-    unit.create.push(reorder(opsToOrder, CREATE_ORDERING));
+    orderWithin(unit.create, CREATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
 
 
     // Update mode:
-    opsToOrder = [];
-    for (const op of unit.update) {
-      if (handledOpKinds.has(op.kind)) {
-        opsToOrder.push(op);
-        ir.OpList.remove(op);
-      } else {
-        ir.OpList.insertBefore(reorder(opsToOrder, UPDATE_ORDERING), op);
-        opsToOrder = [];
-      }
-    }
-    unit.update.push(reorder(opsToOrder, UPDATE_ORDERING));
+    orderWithin(unit.update, UPDATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
   }
+}
+
+/**
+ * Order all the ops within the specified group.
+ */
+function orderWithin(
+    opList: ir.OpList<ir.CreateOp|ir.UpdateOp>, ordering: Array<Rule<ir.CreateOp|ir.UpdateOp>>) {
+  let opsToOrder = [];
+  // Only reorder ops that target the same xref; do not mix ops that target different xrefs.
+  let firstTargetInGroup: ir.XrefId|null = null;
+  for (const op of opList) {
+    const currentTarget = ir.hasDependsOnSlotContextTrait(op) ? op.target : null;
+    if (!handledOpKinds.has(op.kind) ||
+        (currentTarget !== firstTargetInGroup &&
+         (firstTargetInGroup !== null && currentTarget !== null))) {
+      ir.OpList.insertBefore(reorder(opsToOrder, ordering), op);
+      opsToOrder = [];
+      firstTargetInGroup = null;
+    }
+    if (handledOpKinds.has(op.kind)) {
+      opsToOrder.push(op);
+      ir.OpList.remove(op);
+      firstTargetInGroup = currentTarget ?? firstTargetInGroup;
+    }
+  }
+  opList.push(reorder(opsToOrder, ordering));
 }
 
 /**

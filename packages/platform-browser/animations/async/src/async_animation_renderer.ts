@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer} from '@angular/animations/browser';
-import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
-
+import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
+import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵRuntimeError as RuntimeError, ɵAnimationRendererType as AnimationRendererType} from '@angular/core';
+import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 /**
  * This alias narrows down to only the properties we need when lazy loading (or mock) the module
  */
 type AnimationBrowserModuleImports =
     Pick<typeof import('@angular/animations/browser'), 'ɵcreateEngine'|'ɵAnimationRendererFactory'>;
+
+
+const ANIMATION_PREFIX = '@';
 
 export class AsyncAnimationRendererFactory implements RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory>|null = null;
@@ -35,8 +38,12 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
 
     return moduleImpl
         .catch((e) => {
-          // TODO: Create a runtime error
-          throw new Error('Failed to load the @angular/animations/browser module');
+          throw new RuntimeError(
+              RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
+              (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                  'Async loading for animations package was ' +
+                      'enabled, but loading failed. Angular falls back to using regular rendering. ' +
+                      'No animations will be displayed and their styles won\'t be applied.');
         })
         .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
           // We can't create the renderer yet because we might need the hostElement and the type
@@ -59,7 +66,7 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
   createRenderer(hostElement: any, rendererType: RendererType2): Renderer2 {
     const renderer = this.delegate.createRenderer(hostElement, rendererType);
 
-    if ((renderer as AnimationRenderer).isAnimationRenderer) {
+    if ((renderer as AnimationRenderer).ɵtype === AnimationRendererType.Regular) {
       // The factory is already loaded, this is an animation renderer
       return renderer;
     }
@@ -78,10 +85,16 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
       this._rendererFactoryPromise = this.loadImpl();
     }
 
-    this._rendererFactoryPromise?.then((animationRendererFactory) => {
-      const animationRenderer = animationRendererFactory.createRenderer(hostElement, rendererType);
-      dynamicRenderer.use(animationRenderer);
-    });
+    this._rendererFactoryPromise
+        ?.then((animationRendererFactory) => {
+          const animationRenderer =
+              animationRendererFactory.createRenderer(hostElement, rendererType);
+          dynamicRenderer.use(animationRenderer);
+        })
+        .catch(e => {
+          // Permanently use regular renderer when loading fails.
+          dynamicRenderer.use(renderer);
+        });
 
     return dynamicRenderer;
   }
@@ -104,17 +117,33 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
  * by changing the delegate renderer.
  */
 export class DynamicDelegationRenderer implements Renderer2 {
+  // List of callbacks that need to be replayed on the animation renderer once its loaded
+  private replay: ((renderer: Renderer2) => void)[]|null = [];
+  readonly ɵtype = AnimationRendererType.Delegated;
+
   constructor(private delegate: Renderer2) {}
 
   use(impl: Renderer2) {
     this.delegate = impl;
+
+    if (this.replay !== null) {
+      // Replay queued actions using the animation renderer to apply
+      // all events and properties collected while loading was in progress.
+      for (const fn of this.replay) {
+        fn(impl);
+      }
+      // Set to `null` to indicate that the queue was processed
+      // and we no longer need to collect events and properties.
+      this.replay = null;
+    }
   }
 
-  get data(): {[key: string]: any;} {
+  get data(): {[key: string]: any} {
     return this.delegate.data;
   }
 
   destroy(): void {
+    this.replay = null;
     this.delegate.destroy();
   }
 
@@ -183,6 +212,11 @@ export class DynamicDelegationRenderer implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
+    // We need to keep track of animation properties set on default renderer
+    // So we can also set them also on the animation renderer
+    if (this.shouldReplay(name)) {
+      this.replay!.push((renderer: Renderer2) => renderer.setProperty(el, name, value));
+    }
     this.delegate.setProperty(el, name, value);
   }
 
@@ -191,6 +225,16 @@ export class DynamicDelegationRenderer implements Renderer2 {
   }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+    // We need to keep track of animation events registred by the default renderer
+    // So we can also register them against the animation renderer
+    if (this.shouldReplay(eventName)) {
+      this.replay!.push((renderer: Renderer2) => renderer.listen(target, eventName, callback));
+    }
     return this.delegate.listen(target, eventName, callback);
+  }
+
+  private shouldReplay(propOrEventName: string): boolean {
+    //`null` indicates that we no longer need to collect events and properties
+    return this.replay !== null && propOrEventName.startsWith(ANIMATION_PREFIX);
   }
 }

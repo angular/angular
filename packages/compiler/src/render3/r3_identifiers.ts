@@ -160,6 +160,8 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnInteraction', moduleName: CORE};
   static deferPrefetchOnViewport:
       o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
+  static deferEnableTimerScheduling:
+      o.ExternalReference = {name: 'ɵɵdeferEnableTimerScheduling', moduleName: CORE};
 
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
@@ -342,7 +344,7 @@ export class Identifiers {
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
   static setClassMetadataAsync:
       o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};
-
+  static setClassDebugInfo: o.ExternalReference = {name: 'ɵsetClassDebugInfo', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};

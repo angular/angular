@@ -241,3 +241,14 @@ export function injectRenderer2(): Renderer2 {
   const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
   return (isLView(nodeAtIndex) ? nodeAtIndex : lView)[RENDERER] as Renderer2;
 }
+
+/**
+ * This enum is meant to be used by `ɵtype` properties of the different renderers implemented
+ * by the framework
+ *
+ * We choose to not add `ɵtype` to `Renderer2` to no expose it to the public API.
+ */
+export const enum AnimationRendererType {
+  Regular = 0,
+  Delegated = 1,
+}

@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ChangeDetectorRef, Component, computed, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('after render hooks', () => {
@@ -15,6 +15,82 @@ describe('after render hooks', () => {
     const COMMON_CONFIGURATION = {
       providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
     };
+
+    describe('internalAfterNextRender', () => {
+      it('should run with the expected timing', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            // Helper to register into each phase
+            function forEachPhase(fn: (phase: AfterRenderPhase) => void) {
+              for (const phase in AfterRenderPhase) {
+                const val = AfterRenderPhase[phase];
+                if (typeof val === 'number') {
+                  fn(val);
+                }
+              }
+            }
+
+            internalAfterNextRender(() => {
+              log.push('internalAfterNextRender #1');
+            });
+
+            forEachPhase(phase => afterRender(() => {
+                           log.push(`afterRender (${AfterRenderPhase[phase]})`);
+                         }, {phase}));
+
+            internalAfterNextRender(() => {
+              log.push('internalAfterNextRender #2');
+            });
+
+            forEachPhase(phase => afterNextRender(() => {
+                           log.push(`afterNextRender (${AfterRenderPhase[phase]})`);
+                         }, {phase}));
+
+            internalAfterNextRender(() => {
+              log.push('internalAfterNextRender #3');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+
+        // It hasn't run at all
+        expect(log).toEqual([]);
+
+        // Running change detection once
+        fixture.detectChanges();
+        expect(log).toEqual([
+          'internalAfterNextRender #1',
+          'internalAfterNextRender #2',
+          'internalAfterNextRender #3',
+          'afterRender (EarlyRead)',
+          'afterNextRender (EarlyRead)',
+          'afterRender (Write)',
+          'afterNextRender (Write)',
+          'afterRender (MixedReadWrite)',
+          'afterNextRender (MixedReadWrite)',
+          'afterRender (Read)',
+          'afterNextRender (Read)',
+        ]);
+
+        // Running change detection again
+        log.length = 0;
+        fixture.detectChanges();
+        expect(log).toEqual([
+          'afterRender (EarlyRead)',
+          'afterRender (Write)',
+          'afterRender (MixedReadWrite)',
+          'afterRender (Read)',
+        ]);
+      });
+    });
 
     describe('afterRender', () => {
       it('should run with the correct timing', () => {
@@ -363,6 +439,61 @@ describe('after render hooks', () => {
           'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
           'mixed-read-write-2', 'read-1', 'read-2'
         ]);
+      });
+
+      describe('throw error inside reactive context', () => {
+        it('inside template effect', () => {
+          @Component({template: `{{someFn()}}`})
+          class TestCmp {
+            someFn() {
+              afterRender(() => {});
+            }
+          }
+
+          const fixture = TestBed.createComponent(TestCmp);
+          expect(() => fixture.detectChanges())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
+
+        it('inside computed', () => {
+          const testComputed = computed(() => {
+            afterRender(() => {});
+          });
+
+          expect(() => testComputed())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
+
+        it('inside effect', () => {
+          @Component({template: ``})
+          class TestCmp {
+            constructor() {
+              effect(() => {
+                this.someFnThatWillScheduleAfterRender();
+              });
+            }
+
+            someFnThatWillScheduleAfterRender() {
+              afterRender(() => {});
+            }
+          }
+
+          TestBed.configureTestingModule({
+            providers: [
+              {
+                provide: ErrorHandler, useClass: class extends ErrorHandler{
+                  override handleError(e: Error) {
+                    throw e;
+                  }
+                },
+              },
+            ]
+          });
+          TestBed.createComponent(TestCmp);
+
+          expect(() => TestBed.flushEffects())
+              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+        });
       });
     });
 

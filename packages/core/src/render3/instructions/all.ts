@@ -32,7 +32,7 @@ export * from './change_detection';
 export * from './class_map_interpolation';
 export * from './component_instance';
 export * from './control_flow';
-export * from './defer';
+export * from '../../defer/instructions';
 export * from './di';
 export * from './di_attr';
 export * from './element';

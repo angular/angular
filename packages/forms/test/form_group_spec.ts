@@ -223,7 +223,6 @@ describe('FormGroup', () => {
     });
   });
 
-
   describe('touched', () => {
     let c: FormControl, g: FormGroup;
 
@@ -692,6 +691,19 @@ describe('FormGroup', () => {
 
       expect(c.disabled).toBe(false);
       expect(g.disabled).toBe(false);
+    });
+
+    it('should be able to reset a nested control with null', () => {
+      const g = new FormGroup({
+        id: new FormControl(2),
+        nested: new FormGroup<any>({
+          id: new FormControl(3),
+        }),
+      });
+
+      g.reset({id: 1, nested: null});
+      expect(g.get('nested')?.value).toEqual({id: null});
+      expect(g.get('nested.id')?.value).toBe(null);
     });
 
     describe('reset() events', () => {
@@ -2397,6 +2409,16 @@ describe('FormGroup', () => {
         }
       }
     });
+  });
+
+  it('should throw with invalid keys', () => {
+    const consoleWarnSpy = spyOn(console, 'warn');
+    new FormGroup({
+      foo: new FormControl('foo'),
+      bar: new FormControl('foo', [Validators.required]),
+      'baz.not.ok': new FormControl('baz')
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
   });
 });
 })();

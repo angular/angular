@@ -41,11 +41,19 @@ $dark-theme: map.deep-merge(
 
 .light-theme {
   @include mat.all-component-themes($light-theme);
+  
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-container-height: 24px;
+  }
 }
 
 .dark-theme {
   background: #202124;
   @include mat.all-component-themes($dark-theme);
+
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-container-height: 24px;
+  }
 }
 
 

@@ -241,7 +241,12 @@ export class DeferredBlock implements Node {
 
 export class SwitchBlock implements Node {
   constructor(
-      public expression: AST, public cases: SwitchBlockCase[], public sourceSpan: ParseSourceSpan,
+      public expression: AST, public cases: SwitchBlockCase[],
+      /**
+       * These blocks are only captured to allow for autocompletion in the language service. They
+       * aren't meant to be processed in any other way.
+       */
+      public unknownBlocks: UnknownBlock[], public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -252,7 +257,7 @@ export class SwitchBlock implements Node {
 export class SwitchBlockCase implements Node {
   constructor(
       public expression: AST|null, public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan) {}
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlockCase(this);
@@ -310,7 +315,8 @@ export class IfBlockBranch implements Node {
 }
 
 export class UnknownBlock implements Node {
-  constructor(public name: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitUnknownBlock(this);
@@ -445,10 +451,9 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.children);
   }
   visitForLoopBlock(block: ForLoopBlock): void {
-    block.item.visit(this);
-    visitAll(this, Object.values(block.contextVariables));
-    visitAll(this, block.children);
-    block.empty?.visit(this);
+    const blockItems = [block.item, ...Object.values(block.contextVariables), ...block.children];
+    block.empty && blockItems.push(block.empty);
+    visitAll(this, blockItems);
   }
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
     visitAll(this, block.children);
@@ -457,8 +462,9 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.branches);
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
-    visitAll(this, block.children);
-    block.expressionAlias?.visit(this);
+    const blockItems = block.children;
+    block.expressionAlias && blockItems.push(block.expressionAlias);
+    visitAll(this, blockItems);
   }
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}

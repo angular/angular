@@ -177,6 +177,7 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
       controls: TControl, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    (typeof ngDevMode === 'undefined' || ngDevMode) && validateFormGroupControls(controls);
     this.controls = controls;
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
@@ -485,8 +486,9 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
       value: ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any> = {} as unknown as
           ɵFormGroupValue<TControl>,
       options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._forEachChild((control, name) => {
-      control.reset((value as any)[name], {onlySelf: true, emitEvent: options.emitEvent});
+    this._forEachChild((control: AbstractControl, name) => {
+      control.reset(
+          value ? (value as any)[name] : null, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this._updatePristine(options);
     this._updateTouched(options);
@@ -586,6 +588,21 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
         null;
   }
 }
+
+/**
+ * Will validate that none of the controls has a key with a dot
+ * Throws other wise
+ */
+function validateFormGroupControls<TControl>(
+    controls: {[K in keyof TControl]: AbstractControl<any, any>;}) {
+  const invalidKeys = Object.keys(controls).filter(key => key.includes('.'));
+  if (invalidKeys.length > 0) {
+    // TODO: make this an error once there are no more uses in G3
+    console.warn(`FormGroup keys cannot include \`.\`, please replace the keys for: ${
+        invalidKeys.join(',')}.`);
+  }
+}
+
 
 interface UntypedFormGroupCtor {
   new(controls: {[key: string]: AbstractControl},

@@ -7,7 +7,7 @@
  */
 
 import {CompilerConfig} from '@angular/compiler';
-import {Compiler, CompilerFactory, CompilerOptions, Injector, MissingTranslationStrategy, StaticProvider, ViewEncapsulation} from '@angular/core';
+import {Compiler, CompilerFactory, CompilerOptions, Injector, StaticProvider, ViewEncapsulation} from '@angular/core';
 
 export const COMPILER_PROVIDERS =
     <StaticProvider[]>[{provide: Compiler, useFactory: () => new Compiler()}];
@@ -25,9 +25,7 @@ export class JitCompilerFactory implements CompilerFactory {
   /** @internal */
   constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
-      useJit: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
-      missingTranslation: MissingTranslationStrategy.Warning,
     };
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];
@@ -41,13 +39,7 @@ export class JitCompilerFactory implements CompilerFactory {
           provide: CompilerConfig,
           useFactory: () => {
             return new CompilerConfig({
-              // let explicit values from the compiler options overwrite options
-              // from the app providers
-              useJit: opts.useJit,
-              // let explicit values from the compiler options overwrite options
-              // from the app providers
               defaultEncapsulation: opts.defaultEncapsulation,
-              missingTranslation: opts.missingTranslation,
               preserveWhitespaces: opts.preserveWhitespaces,
             });
           },
@@ -62,10 +54,8 @@ export class JitCompilerFactory implements CompilerFactory {
 
 function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {
-    useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
     providers: _mergeArrays(optionsArr.map(options => options.providers!)),
-    missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
     preserveWhitespaces: _lastDefined(optionsArr.map(options => options.preserveWhitespaces)),
   };
 }

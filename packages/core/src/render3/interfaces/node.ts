@@ -936,10 +936,6 @@ export type InitialInputData = (InitialInputs|null)[];
  */
 export type InitialInputs = string[];
 
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
-
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.
  */

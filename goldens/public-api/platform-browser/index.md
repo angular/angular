@@ -153,13 +153,11 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 }
 
 // @public
-export const enum HydrationFeatureKind {
+export enum HydrationFeatureKind {
     // (undocumented)
-    HttpTransferCacheOptions = 2,
+    HttpTransferCacheOptions = 1,
     // (undocumented)
-    NoDomReuseFeature = 0,
-    // (undocumented)
-    NoHttpTransferCache = 1
+    NoHttpTransferCache = 0
 }
 
 // @public @deprecated
@@ -259,9 +257,6 @@ export const VERSION: Version;
 
 // @public
 export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions>;
-
-// @public
-export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;

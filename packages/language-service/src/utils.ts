@@ -147,8 +147,8 @@ function tsDeclarationSortComparator(a: DeclarationNode, b: DeclarationNode): nu
   }
 }
 
-function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler): TemplateInfo|
-    undefined {
+export function getFirstComponentForTemplateFile(
+    fileName: string, compiler: NgCompiler): TemplateInfo|undefined {
   const templateTypeChecker = compiler.getTemplateTypeChecker();
   const components = compiler.getComponentsWithTemplateFile(fileName);
   const sortedComponents = Array.from(components).sort(tsDeclarationSortComparator);

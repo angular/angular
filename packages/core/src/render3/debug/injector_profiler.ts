@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {FactoryProvider} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
@@ -13,6 +14,8 @@ import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interfac
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
+import type {TNode} from '../interfaces/node';
+import type {LView} from '../interfaces/view';
 
 /**
  * An enum describing the types of events that can be emitted from the injector profiler
@@ -86,7 +89,7 @@ export interface ProviderRecord {
   /**
    * DI token that this provider is configuring
    */
-  token: Type<unknown>;
+  token: Type<unknown>|InjectionToken<unknown>;
 
   /**
    * Determines if provider is configured as view provider.
@@ -138,6 +141,11 @@ export interface InjectedService {
    * Injector that this service was provided in.
    */
   providedIn?: Injector;
+
+  /**
+   * In NodeInjectors, the LView and TNode that serviced this injection.
+   */
+  injectedIn?: {lView: LView, tNode: TNode};
 }
 
 export interface InjectorProfiler {
@@ -192,20 +200,39 @@ function injectorProfiler(event: InjectorProfilerEvent): void {
  * Emits an InjectorProfilerEventType.ProviderConfigured to the injector profiler. The data in the
  * emitted event includes the raw provider, as well as the token that provider is providing.
  *
- * @param provider A provider object
+ * @param eventProvider A provider object
  */
 export function emitProviderConfiguredEvent(
-    provider: SingleProvider, isViewProvider: boolean = false): void {
+    eventProvider: SingleProvider, isViewProvider: boolean = false): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  let token;
+  // if the provider is a TypeProvider (typeof provider is function) then the token is the
+  // provider itself
+  if (typeof eventProvider === 'function') {
+    token = eventProvider;
+  }
+  // if the provider is an injection token, then the token is the injection token.
+  else if (eventProvider instanceof InjectionToken) {
+    token = eventProvider;
+  }
+  // in all other cases we can access the token via the `provide` property of the provider
+  else {
+    token = resolveForwardRef(eventProvider.provide);
+  }
+
+  let provider = eventProvider;
+  // Injection tokens may define their own default provider which gets attached to the token itself
+  // as `ɵprov`. In this case, we want to emit the provider that is attached to the token, not the
+  // token itself.
+  if (eventProvider instanceof InjectionToken) {
+    provider = eventProvider.ɵprov as FactoryProvider || eventProvider;
+  }
 
   injectorProfiler({
     type: InjectorProfilerEventType.ProviderConfigured,
     context: getInjectorProfilerContext(),
-    providerRecord: {
-      token: typeof provider === 'function' ? provider : resolveForwardRef(provider.provide),
-      provider,
-      isViewProvider
-    }
+    providerRecord: {token, provider, isViewProvider}
   });
 }
 

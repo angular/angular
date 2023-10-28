@@ -940,9 +940,30 @@ export class NgCompiler {
   }
 
   private makeCompilation(): LazyCompilationState {
+    const isCore = isAngularCorePackage(this.inputProgram);
+
+    // Note: If this compilation builds `@angular/core`, we always build in full compilation
+    // mode. Code inside the core package is always compatible with itself, so it does not
+    // make sense to go through the indirection of partial compilation
+    let compilationMode: CompilationMode = CompilationMode.FULL;
+    if (!isCore) {
+      switch (this.options.compilationMode) {
+        case 'full':
+          compilationMode = CompilationMode.FULL;
+          break;
+        case 'partial':
+          compilationMode = CompilationMode.PARTIAL;
+          break;
+        case 'experimental-local':
+          compilationMode = CompilationMode.LOCAL;
+          break;
+      }
+    }
+
     const checker = this.inputProgram.getTypeChecker();
 
-    const reflector = new TypeScriptReflectionHost(checker);
+    const reflector =
+        new TypeScriptReflectionHost(checker, compilationMode === CompilationMode.LOCAL);
 
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
@@ -1000,8 +1021,6 @@ export class NgCompiler {
       aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
-    const isCore = isAngularCorePackage(this.inputProgram);
-
     const evaluator =
         new PartialEvaluator(reflector, checker, this.incrementalCompilation.depGraph);
     const dtsReader = new DtsMetadataReader(checker, reflector);
@@ -1044,24 +1063,6 @@ export class NgCompiler {
 
     const deferredSymbolsTracker = new DeferredSymbolTracker(this.inputProgram.getTypeChecker());
 
-    // Note: If this compilation builds `@angular/core`, we always build in full compilation
-    // mode. Code inside the core package is always compatible with itself, so it does not
-    // make sense to go through the indirection of partial compilation
-    let compilationMode: CompilationMode = CompilationMode.FULL;
-    if (!isCore) {
-      switch (this.options.compilationMode) {
-        case 'full':
-          compilationMode = CompilationMode.FULL;
-          break;
-        case 'partial':
-          compilationMode = CompilationMode.PARTIAL;
-          break;
-        case 'experimental-local':
-          compilationMode = CompilationMode.LOCAL;
-          break;
-      }
-    }
-
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
     // So in partial compilation mode, when building a library, a cycle will cause an error.
@@ -1085,6 +1086,14 @@ export class NgCompiler {
           'JIT mode support ("supportJitMode" option) cannot be disabled in partial compilation mode.');
     }
 
+    // Currently forbidOrphanComponents depends on the code generated behind ngJitMode flag. Until
+    // we come up with a better design for these flags, it is necessary to have the JIT mode in
+    // order for forbidOrphanComponents to be able to work properly.
+    if (supportJitMode === false && this.options.forbidOrphanComponents) {
+      throw new Error(
+          'JIT mode support ("supportJitMode" option) cannot be disabled when forbidOrphanComponents is set to true');
+    }
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
       new ComponentDecoratorHandler(
@@ -1097,7 +1106,8 @@ export class NgCompiler {
           this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
-          supportTestBed, compilationMode, deferredSymbolsTracker),
+          supportTestBed, compilationMode, deferredSymbolsTracker,
+          !!this.options.forbidOrphanComponents),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).

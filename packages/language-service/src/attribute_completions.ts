@@ -405,7 +405,7 @@ function buildSnippet(insertSnippet: true|undefined, text: string): string|undef
  * This sort priority is based on the ASCII table. Other than `space`, the `!` is the first
  * printable character in the ASCII ordering.
  */
-enum AsciiSortPriority {
+export enum AsciiSortPriority {
   First = '!',
   Second = '"',
 }

@@ -39,6 +39,13 @@ export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => v
 export type ContentQueriesFunction<T> =
     <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
 
+export interface ClassDebugInfo {
+  className: string;
+  filePath?: string;
+  lineNumber?: number;
+  forbidOrphanRendering?: boolean;
+}
+
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
  * should be executed.
@@ -224,6 +231,12 @@ export interface DirectiveDef<T> {
    * The features applied to this directive
    */
   readonly features: DirectiveDefFeature[]|null;
+
+  /**
+   * Info related to debugging/troubleshooting for this component. This info is only available in
+   * dev mode.
+   */
+  debugInfo: ClassDebugInfo|null;
 
   /**
    * Function that will add the host directives to the list of matches during directive matching.
@@ -517,11 +530,6 @@ export type PipeTypesOrFactory = (() => PipeTypeList)|PipeTypeList;
 
 export type PipeTypeList =
     (PipeType<any>|Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
-
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
 
 /**
  * NgModule scope info as provided by AoT compiler

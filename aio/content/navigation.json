@@ -517,6 +517,11 @@
           "tooltip": "How to enable hydration on your server rendered applications."
         },
         {
+          "url": "guide/defer",
+          "title": "Deferred Loading",
+          "tooltip": "How to defer load components, directives, and pipes."
+        },
+        {
           "url": "guide/image-directive",
           "title": "Image optimization",
           "tooltip": "Performant images with the Angular image directive."
@@ -733,9 +738,9 @@
           "tooltip": "Using web workers for background processing."
         },
         {
-          "url": "guide/universal",
+          "url": "guide/ssr",
           "title": "Server-side rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
+          "tooltip": "Render HTML server-side."
         },
         {
           "url": "guide/prerendering",
@@ -772,6 +777,11 @@
           "title": "Feature preview",
           "tooltip": "Angular preview features and APIs",
           "children": [
+            {
+              "url": "guide/control_flow",
+              "title": "Built-in control flow",
+              "tooltip": "Angular built-in control flow: if, for and switch"
+            },
             {
               "url": "guide/signals",
               "title": "Signals",
@@ -1124,11 +1134,6 @@
                   "tooltip": "Basic building blocks of Angular applications."
                 },
                 {
-                  "url": "guide/architecture-modules",
-                  "title": "Intro to modules",
-                  "tooltip": "About NgModules."
-                },
-                {
                   "url": "guide/architecture-components",
                   "title": "Intro to components",
                   "tooltip": "About Components, Templates, and Views."
@@ -1137,11 +1142,6 @@
                   "url": "guide/architecture-services",
                   "title": "Intro to services and DI",
                   "tooltip": "About services and dependency injection."
-                },
-                {
-                  "url": "guide/architecture-next-steps",
-                  "title": "Next steps",
-                  "tooltip": "Beyond the basics."
                 },
                 {
                   "url": "guide/binding-syntax",
@@ -1157,6 +1157,11 @@
                   "url": "guide/template-reference-variables",
                   "title": "Template variables",
                   "tooltip": "Introductory guide to referring to DOM elements within a template."
+                },
+                {
+                  "url": "guide/architecture-next-steps",
+                  "title": "Next steps",
+                  "tooltip": "Beyond the basics."
                 }
               ]
             },
@@ -1245,11 +1250,6 @@
                   "url": "guide/ngmodule-api",
                   "title": "NgModule API",
                   "tooltip": "Understand the details of NgModules."
-                },
-                {
-                  "url": "guide/universal-ngmodule",
-                  "title": "Server-side rendering with NgModule applications",
-                  "tooltip": "Render HTML server-side with Angular Universal (using NgModule)."
                 },
                 {
                   "url": "guide/ngmodule-faq",

@@ -446,13 +446,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // Notify the client about this activation.
     const current = this.versions.get(this.latestHash!)!;
-    const notice = {
-      type: 'UPDATE_ACTIVATED',
-      previous,
-      current: this.mergeHashWithAppData(current.manifest, this.latestHash!),
-    };
 
-    client.postMessage(notice);
     return true;
   }
 

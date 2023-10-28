@@ -72,6 +72,7 @@ describe('ShadowCss', () => {
     expect(shim('one\\:two {}', 'contenta')).toEqualCss('one\\:two[contenta] {}');
     expect(shim('one\\\\:two {}', 'contenta')).toEqualCss('one\\\\[contenta]:two {}');
     expect(shim('.one\\:two {}', 'contenta')).toEqualCss('.one\\:two[contenta] {}');
+    expect(shim('.one\\:\\fc ber {}', 'contenta')).toEqualCss('.one\\:\\fc ber[contenta] {}');
     expect(shim('.one\\:two .three\\:four {}', 'contenta'))
         .toEqualCss('.one\\:two[contenta] .three\\:four[contenta] {}');
   });

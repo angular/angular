@@ -24,19 +24,16 @@
     "name": "AnimationAstBuilderVisitor"
   },
   {
-    "name": "AnimationBuilder"
-  },
-  {
     "name": "AnimationDriver"
   },
   {
     "name": "AnimationEngine"
   },
   {
-    "name": "AnimationFactory"
+    "name": "AnimationGroupPlayer"
   },
   {
-    "name": "AnimationGroupPlayer"
+    "name": "AnimationMetadataType"
   },
   {
     "name": "AnimationRenderer"
@@ -94,12 +91,6 @@
   },
   {
     "name": "BehaviorSubject"
-  },
-  {
-    "name": "BrowserAnimationBuilder"
-  },
-  {
-    "name": "BrowserAnimationFactory"
   },
   {
     "name": "BrowserDomAdapter"
@@ -244,6 +235,9 @@
   },
   {
     "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
   },
   {
     "name": "HAS_TRANSPLANTED_VIEWS"
@@ -439,9 +433,6 @@
   },
   {
     "name": "RefCountSubscriber"
-  },
-  {
-    "name": "RendererAnimationPlayer"
   },
   {
     "name": "RendererFactory2"
@@ -714,9 +705,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "cloakAndComputeStyles"
   },
   {
@@ -727,9 +715,6 @@
   },
   {
     "name": "collectNativeNodesInLContainer"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "computeStaticStyling"
@@ -795,9 +780,6 @@
     "name": "createLView"
   },
   {
-    "name": "createLViewConsumer"
-  },
-  {
     "name": "createNodeInjector"
   },
   {
@@ -837,13 +819,13 @@
     "name": "detectChangesInView"
   },
   {
+    "name": "detectChangesInViewIfAttached"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "disableStylesheet"
   },
   {
     "name": "documentElement"
@@ -982,9 +964,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -1191,9 +1170,6 @@
     "name": "isValueProvider"
   },
   {
-    "name": "issueAnimationCommand"
-  },
-  {
     "name": "iterator"
   },
   {
@@ -1231,6 +1207,9 @@
   },
   {
     "name": "map"
+  },
+  {
+    "name": "markAncestorsForTraversal"
   },
   {
     "name": "markAsComponentHost"
@@ -1275,9 +1254,6 @@
     "name": "ngZoneApplicationErrorHandlerFactory"
   },
   {
-    "name": "nonNegativeNumber"
-  },
-  {
     "name": "nonNull"
   },
   {
@@ -1312,9 +1288,6 @@
   },
   {
     "name": "parseTimelineCommand"
-  },
-  {
-    "name": "parseTransitionExpr"
   },
   {
     "name": "processInjectorTypesWithProviders"
@@ -1393,9 +1366,6 @@
   },
   {
     "name": "searchTokensOnInjector"
-  },
-  {
-    "name": "sequence"
   },
   {
     "name": "setActiveConsumer"
@@ -1491,10 +1461,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "visitDslNode"

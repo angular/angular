@@ -165,6 +165,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
@@ -576,16 +579,10 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
     "name": "collectNativeNodesInLContainer"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "computeStaticStyling"
@@ -636,9 +633,6 @@
     "name": "createLView"
   },
   {
-    "name": "createLViewConsumer"
-  },
-  {
     "name": "createNodeInjector"
   },
   {
@@ -672,13 +666,13 @@
     "name": "detectChangesInView"
   },
   {
+    "name": "detectChangesInViewIfAttached"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "disableStylesheet"
   },
   {
     "name": "empty"
@@ -805,9 +799,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -1023,6 +1014,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -1066,9 +1060,6 @@
   },
   {
     "name": "noSideEffects"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
@@ -1239,10 +1230,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

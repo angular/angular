@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XhrFactory} from '@angular/common';
-import {Injectable, Provider} from '@angular/core';
+import {PlatformLocation, XhrFactory} from '@angular/common';
+import {HttpEvent, HttpHandlerFn, HttpRequest, ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS} from '@angular/common/http';
+import {inject, Injectable, Provider} from '@angular/core';
+import {Observable} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -34,7 +36,31 @@ export class ServerXhr implements XhrFactory {
   }
 }
 
+function relativeUrlsTransformerInterceptorFn(
+    request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  const platformLocation = inject(PlatformLocation);
+  const {href, protocol, hostname, port} = platformLocation;
+  if (!protocol.startsWith('http')) {
+    return next(request);
+  }
+
+  let urlPrefix = `${protocol}//${hostname}`;
+  if (port) {
+    urlPrefix += `:${port}`;
+  }
+
+  const baseHref = platformLocation.getBaseHrefFromDOM() || href;
+  const baseUrl = new URL(baseHref, urlPrefix);
+  const newUrl = new URL(request.url, baseUrl).toString();
+
+  return next(request.clone({url: newUrl}));
+}
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr},
+  {
+    provide: HTTP_ROOT_INTERCEPTOR_FNS,
+    useValue: relativeUrlsTransformerInterceptorFn,
+    multi: true,
+  },
 ];

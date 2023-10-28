@@ -17,7 +17,7 @@ import * as t from './r3_ast';
 const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+(.*)/;
 
 /** Pattern for the tracking expression in a for loop block. */
-const FOR_LOOP_TRACK_PATTERN = /^track\s+(.*)/;
+const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;
 
 /** Pattern for the `as` expression in a conditional block. */
 const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
@@ -26,7 +26,7 @@ const CONDITIONAL_ALIAS_PATTERN = /^as\s+(.*)/;
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 
 /** Pattern used to identify a `let` parameter. */
-const FOR_LOOP_LET_PATTERN = /^let\s+(.*)/;
+const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
 
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
@@ -54,11 +54,6 @@ export function createIfBlock(
     bindingParser: BindingParser): {node: t.IfBlock|null, errors: ParseError[]} {
   const errors: ParseError[] = validateIfConnectedBlocks(connectedBlocks);
   const branches: t.IfBlockBranch[] = [];
-
-  if (errors.length > 0) {
-    return {node: null, errors};
-  }
-
   const mainBlockParams = parseConditionalBlockParameters(ast, errors, bindingParser);
 
   if (mainBlockParams !== null) {
@@ -67,19 +62,18 @@ export function createIfBlock(
         mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan));
   }
 
-  // Assumes that the structure is valid since we validated it above.
   for (const block of connectedBlocks) {
-    const children = html.visitAll(visitor, block.children, block.children);
-
     if (ELSE_IF_PATTERN.test(block.name)) {
       const params = parseConditionalBlockParameters(block, errors, bindingParser);
 
       if (params !== null) {
+        const children = html.visitAll(visitor, block.children, block.children);
         branches.push(new t.IfBlockBranch(
             params.expression, children, params.expressionAlias, block.sourceSpan,
             block.startSourceSpan, block.endSourceSpan));
       }
     } else if (block.name === 'else') {
+      const children = html.visitAll(visitor, block.children, block.children);
       branches.push(new t.IfBlockBranch(
           null, children, null, block.sourceSpan, block.startSourceSpan, block.endSourceSpan));
     }
@@ -155,13 +149,11 @@ export function createSwitchBlock(
     ast: html.Block, visitor: html.Visitor,
     bindingParser: BindingParser): {node: t.SwitchBlock|null, errors: ParseError[]} {
   const errors = validateSwitchBlock(ast);
-
-  if (errors.length > 0) {
-    return {node: null, errors};
-  }
-
-  const primaryExpression = parseBlockParameterToBinding(ast.parameters[0], bindingParser);
+  const primaryExpression = ast.parameters.length > 0 ?
+      parseBlockParameterToBinding(ast.parameters[0], bindingParser) :
+      bindingParser.parseBinding('', false, ast.sourceSpan, 0);
   const cases: t.SwitchBlockCase[] = [];
+  const unknownBlocks: t.UnknownBlock[] = [];
   let defaultCase: t.SwitchBlockCase|null = null;
 
   // Here we assume that all the blocks are valid given that we validated them above.
@@ -170,12 +162,17 @@ export function createSwitchBlock(
       continue;
     }
 
+    if ((node.name !== 'case' || node.parameters.length === 0) && node.name !== 'default') {
+      unknownBlocks.push(new t.UnknownBlock(node.name, node.sourceSpan, node.nameSpan));
+      continue;
+    }
+
     const expression = node.name === 'case' ?
         parseBlockParameterToBinding(node.parameters[0], bindingParser) :
         null;
     const ast = new t.SwitchBlockCase(
         expression, html.visitAll(visitor, node.children, node.children), node.sourceSpan,
-        node.startSourceSpan);
+        node.startSourceSpan, node.endSourceSpan);
 
     if (expression === null) {
       defaultCase = ast;
@@ -191,7 +188,8 @@ export function createSwitchBlock(
 
   return {
     node: new t.SwitchBlock(
-        primaryExpression, cases, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan),
+        primaryExpression, cases, unknownBlocks, ast.sourceSpan, ast.startSourceSpan,
+        ast.endSourceSpan),
     errors
   };
 }

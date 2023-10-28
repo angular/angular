@@ -135,6 +135,7 @@ The schemas configure options for the following builders.
 
 <!-- vale Angular.Google_WordListWarnings = NO -->
 
+*   [application](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/application/schema.json)
 *   [app-shell](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/app-shell/schema.json)
 *   [browser](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/browser/schema.json)
 *   [dev-server](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/dev-server/schema.json)
@@ -198,7 +199,7 @@ It has the following top-level properties.
 
 | PROPERTY        | Details                                                                                                                                                                                                                                                                                                              |
 |:---             |:---                                                                                                                                                                                                                                                                                                                      |
-| `builder`       | The npm package for the build tool used to create this target. The default builder for an application \(`ng build myApp`\) is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org) package bundler. <div class="alert is-helpful"> **NOTE**: A different builder is used for building a library \(`ng build myLib`\). </div> |
+| `builder`       | The npm package for the build tool used to create this target. The default builder for an application \(`ng build myApp`\) is `@angular-devkit/build-angular:application`, which uses the [esbuild](https://esbuild.github.io/) package bundler. <div class="alert is-helpful"> **NOTE**: A different builder is used for building a library \(`ng build myLib`\). </div> |
 | `options`       | This section contains default build target options, used when no named alternative configuration is specified. See the [Default build targets](#default-build-targets) section.                                                                                                                                                |
 | `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See the [Alternate build configurations](#build-configs) section.                                             |
 
@@ -487,7 +488,7 @@ You can supply a value such as the following to apply optimization to one or the
 
 <div class="alert is-helpful">
 
-For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by setting styles optimization to `true`.
+For [SSR](guide/glossary#server-side-rendering), you can reduce the code rendered in the HTML page by setting styles optimization to `true`.
 
 </div>
 
@@ -547,4 +548,4 @@ When supplying the value as a String the filename of the specified path will be 
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-24

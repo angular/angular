@@ -155,8 +155,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should allow directive inputs as an interpolated prop on <ng-template>",
@@ -199,8 +198,7 @@
           ],
           "failureMessage": "Incorrect outer template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create unique template function names even for similar nested template structures",
@@ -334,6 +332,17 @@
               "generated": "self_closing_tags_nested.js"
             }
           ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle structural directive on ng-template",
+      "inputFiles": [
+        "template_with_structural_directive.ts"
+      ],
+      "expectations": [
+        {
           "failureMessage": "Incorrect template"
         }
       ]

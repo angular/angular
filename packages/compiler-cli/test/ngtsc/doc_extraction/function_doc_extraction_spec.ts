@@ -15,7 +15,7 @@ import {NgtscTestEnvironment} from '../env';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc function docs extraction', () => {
@@ -87,6 +87,48 @@ runInEachFileSystem(os => {
       expect(idsParamEntry.name).toBe('ids');
       expect(idsParamEntry.type).toBe('string[]');
       expect(idsParamEntry.isRestParam).toBe(true);
+    });
+
+    it('should extract overloaded functions', () => {
+      env.write('index.ts', `
+        export function ident(value: boolean): boolean
+        export function ident(value: number): number
+        export function ident(value: number|boolean): number|boolean {
+          return value;
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(2);
+
+      const [booleanOverloadEntry, numberOverloadEntry] = docs as FunctionEntry[];
+
+      expect(booleanOverloadEntry.name).toBe('ident');
+      expect(booleanOverloadEntry.params.length).toBe(1);
+      expect(booleanOverloadEntry.params[0].type).toBe('boolean');
+      expect(booleanOverloadEntry.returnType).toBe('boolean');
+
+      expect(numberOverloadEntry.name).toBe('ident');
+      expect(numberOverloadEntry.params.length).toBe(1);
+      expect(numberOverloadEntry.params[0].type).toBe('number');
+      expect(numberOverloadEntry.returnType).toBe('number');
+    });
+
+    it('should extract function generics', () => {
+      env.write('index.ts', `
+        export function save<T>(data: T) { }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const [functionEntry] = docs as FunctionEntry[];
+      expect(functionEntry.generics.length).toBe(1);
+
+      const [genericEntry] = functionEntry.generics;
+      expect(genericEntry.name).toBe('T');
+      expect(genericEntry.constraint).toBeUndefined();
+      expect(genericEntry.default).toBeUndefined();
     });
   });
 });

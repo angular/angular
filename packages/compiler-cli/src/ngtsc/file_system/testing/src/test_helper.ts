@@ -38,12 +38,7 @@ const FS_WINDOWS = 'Windows';
 const FS_ALL = [FS_OS_X, FS_WINDOWS, FS_UNIX, FS_NATIVE];
 
 function runInEachFileSystemFn(callback: (os: string) => void) {
-  // Some CI checks need to disable the simulated file system tests.
-  if (process.env['NG_SKIP_SIMULATED_FS']) {
-    runInFileSystem(FS_NATIVE, callback, false);
-  } else {
-    FS_ALL.forEach(os => runInFileSystem(os, callback, false));
-  }
+  FS_ALL.forEach(os => runInFileSystem(os, callback, false));
 }
 
 function runInFileSystem(os: string, callback: (os: string) => void, error: boolean) {

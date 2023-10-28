@@ -1383,12 +1383,20 @@ describe('R3 template transform', () => {
       });
 
       it('should report if a block different from "case" and "default" is used in a switch', () => {
-        expect(() => parse(`
-          @switch (cond) {
-            @case (x()) {X case}
-            @foo {Foo}
-          }
-        `)).toThrowError(/@switch block can only contain @case and @default blocks/);
+        const result = parse(
+            `
+              @switch (cond) {
+                @case (x()) {X case}
+                @foo {Foo}
+              }
+            `,
+            {ignoreError: true});
+
+        const switchNode = result.nodes[0] as t.SwitchBlock;
+        expect(result.errors.map(e => e.msg)).toEqual([
+          '@switch block can only contain @case and @default blocks'
+        ]);
+        expect(switchNode.unknownBlocks.map(b => b.name)).toEqual(['foo']);
       });
 
       it('should report if @case or @default is used outside of a switch block', () => {
@@ -1516,6 +1524,24 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a for loop block with newlines in its let parameters', () => {
+      expectFromHtml(`
+        @for (item of items.foo.bar; track item.id; let\nidx = $index,\nf = $first,\nc = $count,\nl = $last,\nev = $even,\nod = $odd) {
+          {{ item }}
+        }
+      `).toEqual([
+        ['ForLoopBlock', 'items.foo.bar', 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', 'idx', '$index'],
+        ['Variable', 'f', '$first'],
+        ['Variable', 'c', '$count'],
+        ['Variable', 'l', '$last'],
+        ['Variable', 'ev', '$even'],
+        ['Variable', 'od', '$odd'],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
     it('should parse nested for loop blocks', () => {
       expectFromHtml(`
         @for (item of items.foo.bar; track item.id) {
@@ -1551,6 +1577,21 @@ describe('R3 template transform', () => {
         ['Variable', 'item', '$implicit'],
         ['BoundText', ' {{ item }} '],
       ]);
+    });
+
+    it('should parse a for loop block with newlines in its expression', () => {
+      const expectedResult = [
+        ['ForLoopBlock', 'items.foo.bar', 'item.id + foo'],
+        ['Variable', 'item', '$implicit'],
+        ['BoundText', '{{ item }}'],
+      ];
+
+      expectFromHtml(`
+        @for (item\nof\nitems.foo.bar; track item.id +\nfoo) {{{ item }}}
+      `).toEqual(expectedResult);
+      expectFromHtml(`
+        @for ((item\nof\nitems.foo.bar); track (item.id +\nfoo)) {{{ item }}}
+      `).toEqual(expectedResult);
     });
 
     describe('validations', () => {

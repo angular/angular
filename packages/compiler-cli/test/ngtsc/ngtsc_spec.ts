@@ -537,6 +537,21 @@ function allTests(os: string) {
               'never, never, never>');
     });
 
+    it('should error when supportJitMode is false and forbidOrphanComponents is true', () => {
+      env.tsconfig({
+        supportJitMode: false,
+        forbidOrphanComponents: true,
+      });
+      env.write('test.ts', '');
+
+      const diagnostics = env.driveDiagnostics();
+
+      expect(diagnostics).toEqual([jasmine.objectContaining({
+        messageText: jasmine.stringMatching(
+            /JIT mode support \("supportJitMode" option\) cannot be disabled when forbidOrphanComponents is set to true/),
+      })]);
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
@@ -8854,6 +8869,47 @@ function allTests(os: string) {
         expect(jsContents).not.toContain('import { CmpA }');
       });
 
+      it('should include timer scheduler function when ' +
+             '`after` or `minimum` parameters are used',
+         () => {
+           env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+              import { CmpA } from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  @defer {
+                    <cmp-a />
+                  } @loading (after 500ms; minimum 300ms) {
+                    Loading...
+                  }
+                \`,
+              })
+              export class TestCmp {}
+            `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)');
+         });
+
       describe('imports', () => {
         it('should retain regular imports when symbol is eagerly referenced', () => {
           env.write('cmp-a.ts', `
@@ -9050,6 +9106,230 @@ function allTests(os: string) {
           // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
           // via dynamic imports and an original import can be removed.
           expect(jsContents).not.toContain('import { CmpA }');
+        });
+
+        it('should drop imports when one is deferrable and the rest are type-only imports', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            export class Foo {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA, type Foo } from './cmp-a';
+
+            export const foo: Foo = {};
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other has a single type-only element',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import { type Foo } from './cmp-a';
+
+                export const foo: Foo = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is type-only at the declaration level',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type { Foo, CmpA as CmpAlias } from './cmp-a';
+
+                export const foo: Foo|CmpAlias = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is a type-only import of all symbols',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type * as allCmpA from './cmp-a';
+
+                export const foo: allCmpA.Foo|allCmpA.CmpA = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports of deferrable symbols from the same file', () => {
+          env.write('cmps.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-b',
+              template: 'CmpB!'
+            })
+            export class CmpB {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA } from './cmps';
+            import { CmpB } from './cmps';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, CmpB],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <cmp-b />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents)
+              .toContain(
+                  '() => [import("./cmps").then(m => m.CmpA), import("./cmps").then(m => m.CmpB)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+          expect(jsContents).not.toContain('import { CmpB }');
         });
       });
 
@@ -9258,6 +9538,72 @@ function allTests(os: string) {
              expect(jsContents).toContain('setClassMetadata');
            });
       });
+    });
+
+    describe('debug info', () => {
+      it('should set forbidOrphanRendering debug info for component when the option forbidOrphanComponents is set',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             extends: './tsconfig-base.json',
+             angularCompilerOptions: {
+               forbidOrphanComponents: true,
+             },
+           }));
+           env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '...',
+            })
+            export class Comp {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toMatch('forbidOrphanRendering: true');
+         });
+
+      it('should set forbidOrphanRendering debug info for standalone components when the option forbidOrphanComponents is set',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             extends: './tsconfig-base.json',
+             angularCompilerOptions: {
+               forbidOrphanComponents: true,
+             },
+           }));
+           env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              standalone: true,
+              template: '...',
+            })
+            export class Comp {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toMatch('forbidOrphanRendering: true');
+         });
+
+      it('should not set forbidOrphanRendering debug info when the option forbidOrphanComponents is not set',
+         () => {
+           env.write(`test.ts`, `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '...',
+          })
+          export class Comp {}
+      `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).not.toMatch('forbidOrphanRendering:');
+         });
     });
   });
 

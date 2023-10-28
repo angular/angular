@@ -132,7 +132,7 @@ The following diagram represents the relationship between the `root` `ModuleInje
 While the name `root` is a special alias, other `EnvironmentInjector` hierarchies don't have aliases.
 You have the option to create `EnvironmentInjector` hierarchies whenever a dynamically loaded component is created, such as with the Router, which will create child `EnvironmentInjector` hierarchies.
 
-All requests forward up to the root injector, whether you configured it with the `ApplicationConfig` instance passed to the `boostrapApplication()` method, or registered all providers with `root` in their own services.
+All requests forward up to the root injector, whether you configured it with the `ApplicationConfig` instance passed to the `bootstrapApplication()` method, or registered all providers with `root` in their own services.
 
 <div class="callout is-helpful">
 
@@ -827,7 +827,7 @@ Here is the `viewProviders` array in the `<app-child>` class and `@Host()` in th
 <code-example format="typescript" language="typescript">
 
 &commat;Component({
-  standone: true,
+  standalone: true,
   selector: 'app-child',
   &hellip;
   viewProviders:

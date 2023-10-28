@@ -50,7 +50,8 @@ export function phaseI18nTextExtraction(job: CompilationJob): void {
             const expr = op.interpolation.expressions[i];
             const placeholder = op.i18nPlaceholders[i];
             ops.push(ir.createI18nExpressionOp(
-                i18nBlockId, expr, placeholder, expr.sourceSpan ?? op.sourceSpan));
+                i18nBlockId, expr, placeholder.name, ir.I18nParamResolutionTime.Creation,
+                expr.sourceSpan ?? op.sourceSpan));
           }
           if (ops.length > 0) {
             // ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18nPlaceholders, op.sourceSpan));

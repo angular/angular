@@ -20,7 +20,7 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {Params} from './shared';
-import {StateManager} from './state_manager';
+import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
@@ -69,10 +69,10 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
 @Injectable({providedIn: 'root'})
 export class Router {
   private get currentUrlTree() {
-    return this.stateManager.currentUrlTree;
+    return this.stateManager.getCurrentUrlTree();
   }
   private get rawUrlTree() {
-    return this.stateManager.rawUrlTree;
+    return this.stateManager.getRawUrlTree();
   }
   private disposed = false;
   private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
@@ -108,7 +108,7 @@ export class Router {
    * The current state of routing in this NgModule.
    */
   get routerState() {
-    return this.stateManager.routerState;
+    return this.stateManager.getRouterState();
   }
 
   /**
@@ -177,7 +177,7 @@ export class Router {
         const currentTransition = this.navigationTransitions.currentTransition;
         const currentNavigation = this.navigationTransitions.currentNavigation;
         if (currentTransition !== null && currentNavigation !== null) {
-          this.stateManager.handleNavigationEvent(e, currentNavigation);
+          this.stateManager.handleRouterEvent(e, currentNavigation);
           if (e instanceof NavigationCancel && e.code !== NavigationCancellationCode.Redirect &&
               e.code !== NavigationCancellationCode.SupersededByNewNavigation) {
             // It seems weird that `navigated` is set to `true` when the navigation is rejected,
@@ -249,7 +249,7 @@ export class Router {
     // run into ngZone
     if (!this.nonRouterCurrentEntryChangeSubscription) {
       this.nonRouterCurrentEntryChangeSubscription =
-          this.stateManager.nonRouterCurrentEntryChange((url, state) => {
+          this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
             // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
             // hybrid apps.
             setTimeout(() => {

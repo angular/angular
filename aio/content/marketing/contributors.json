@@ -779,6 +779,14 @@
     "bio": "I'm Software Senior Developer. With more than 8 years of professional software development experience focusing in Web Development, Tech Management and skills for problem-solving. I'm passionate about sharing my knowledge with the community about Web Development and I do this through code contributions, videos, conferences, articles and, creating online content therefore I got recognized by Google like an GDE (Google Developer Expert) in Angular and by Microsoft like an MVP (Most Value Professional).",
     "groups": ["GDE"]
   },
+  "nicoss54": {
+    "name": "Nicolas Frizzarin",
+    "picture": "nicolasfrizzarin.jpeg",
+    "twitter": "Nicooss54",
+    "website": "https://dev.to/nicoss54",
+    "bio": "Google Developer Expert in Web Technologies and Angular and OpenJs Foundation Member, Nicolas is a FontEnd specialist and user Interface Designer from Metz, France. He works as a Developer Advocate and Senior Staff Engineer at Sfeir Luxembourg. His daily mission is to help teams to make robust, powerful and beautiful web applications. Besides that, Nicolas is a speaker, and likes to contribute to the community by giving talks, trainings, writing articles or participating in open source projects.",
+    "groups": ["GDE"]
+  },
   "nirkaufman": {
     "name": "Nir Kaufman",
     "picture": "nirkaufman.jpg",
@@ -985,6 +993,14 @@
     "twitter": "toddmotto",
     "website": "https://ultimateangular.com",
     "bio": "Owner and trainer at Ultimate Angular. Lives in England, UK. Has a love for teaching, OSS and speaking at conferences. Google Developer Expert for Web Technologies and Angular.",
+    "groups": ["GDE"]
+  },
+  "thomaslaforge": {
+    "name": "Thomas Laforge",
+    "picture": "thomaslaforge.png",
+    "twitter": "laforge_toma",
+    "website": "https://thomaslaforge.dev/home",
+    "bio": "Thomas is a contractor with a strong passion for frontend development, specifically focusing on Angular. He is the creator and maintainer of Angular Challenges, a platform that gathers multiple challenges to help you improve your skills in Angular.",
     "groups": ["GDE"]
   },
   "tomastrajan": {

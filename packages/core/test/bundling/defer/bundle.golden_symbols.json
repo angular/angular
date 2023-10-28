@@ -105,9 +105,6 @@
     "name": "DEFER_BLOCK_CONFIG"
   },
   {
-    "name": "DEFER_BLOCK_DEPENDENCY_INTERCEPTOR"
-  },
-  {
     "name": "DEFER_BLOCK_STATE"
   },
   {
@@ -124,9 +121,6 @@
   },
   {
     "name": "DeferBlockBehavior"
-  },
-  {
-    "name": "DeferBlockCleanupManager"
   },
   {
     "name": "DeferBlockInternalState"
@@ -201,6 +195,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
@@ -234,9 +231,6 @@
     "name": "KeyEventsPlugin"
   },
   {
-    "name": "LOADING_AFTER_CLEANUP_FN"
-  },
-  {
     "name": "LOADING_AFTER_SLOT"
   },
   {
@@ -247,6 +241,9 @@
   },
   {
     "name": "MATH_ML_NAMESPACE"
+  },
+  {
+    "name": "MAXIMUM_REFRESH_RERUNS"
   },
   {
     "name": "MINIMUM_SLOT"
@@ -387,6 +384,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PREFETCH_TRIGGER_CLEANUP_FNS"
+  },
+  {
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
@@ -427,9 +427,6 @@
   },
   {
     "name": "SOURCE"
-  },
-  {
-    "name": "STATE_IS_FROZEN_UNTIL"
   },
   {
     "name": "SVG_NAMESPACE"
@@ -489,10 +486,10 @@
     "name": "TRACKED_LVIEWS"
   },
   {
-    "name": "TYPE"
+    "name": "TRIGGER_CLEANUP_FNS"
   },
   {
-    "name": "TimerScheduler"
+    "name": "TYPE"
   },
   {
     "name": "USE_VALUE"
@@ -612,6 +609,12 @@
     "name": "appendChild"
   },
   {
+    "name": "applyDeferBlockState"
+  },
+  {
+    "name": "applyDeferBlockStateWithSchedulingImpl"
+  },
+  {
     "name": "applyNodes"
   },
   {
@@ -622,9 +625,6 @@
   },
   {
     "name": "applyView"
-  },
-  {
-    "name": "arraySplice"
   },
   {
     "name": "assertConsumerNode"
@@ -657,16 +657,10 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
     "name": "collectNativeNodesInLContainer"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "computeStaticStyling"
@@ -720,9 +714,6 @@
     "name": "createLView"
   },
   {
-    "name": "createLViewConsumer"
-  },
-  {
     "name": "createNodeInjector"
   },
   {
@@ -762,13 +753,13 @@
     "name": "detectChangesInView"
   },
   {
+    "name": "detectChangesInViewIfAttached"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "disableStylesheet"
   },
   {
     "name": "empty"
@@ -891,6 +882,9 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getMinimumDurationForState"
+  },
+  {
     "name": "getNativeByTNode"
   },
   {
@@ -907,9 +901,6 @@
   },
   {
     "name": "getOrCreateComponentTView"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -967,6 +958,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "handleError"
   },
   {
     "name": "hasInSkipHydrationBlockFlag"
@@ -1119,6 +1113,9 @@
     "name": "init_cleanup"
   },
   {
+    "name": "init_cleanup2"
+  },
+  {
     "name": "init_closure"
   },
   {
@@ -1159,6 +1156,9 @@
   },
   {
     "name": "init_computed"
+  },
+  {
+    "name": "init_computed2"
   },
   {
     "name": "init_config"
@@ -1221,16 +1221,7 @@
     "name": "init_default_keyvalue_differ"
   },
   {
-    "name": "init_defer"
-  },
-  {
-    "name": "init_defer2"
-  },
-  {
     "name": "init_defer_component"
-  },
-  {
-    "name": "init_defer_events"
   },
   {
     "name": "init_definition"
@@ -1275,6 +1266,9 @@
     "name": "init_directives"
   },
   {
+    "name": "init_discovery"
+  },
+  {
     "name": "init_discovery_utils"
   },
   {
@@ -1285,6 +1279,9 @@
   },
   {
     "name": "init_dom"
+  },
+  {
+    "name": "init_dom_triggers"
   },
   {
     "name": "init_effect"
@@ -1309,6 +1306,9 @@
   },
   {
     "name": "init_environment2"
+  },
+  {
+    "name": "init_equality"
   },
   {
     "name": "init_error_details_base_url"
@@ -1419,6 +1419,9 @@
     "name": "init_identity"
   },
   {
+    "name": "init_idle_scheduler"
+  },
+  {
     "name": "init_iframe_attrs_validation"
   },
   {
@@ -1479,7 +1482,13 @@
     "name": "init_input_transforms_feature"
   },
   {
+    "name": "init_instructions"
+  },
+  {
     "name": "init_interfaces"
+  },
+  {
+    "name": "init_interfaces2"
   },
   {
     "name": "init_internal_tokens"
@@ -1794,6 +1803,9 @@
     "name": "init_security"
   },
   {
+    "name": "init_set_debug_info"
+  },
+  {
     "name": "init_share"
   },
   {
@@ -1801,6 +1813,9 @@
   },
   {
     "name": "init_signal"
+  },
+  {
+    "name": "init_signal2"
   },
   {
     "name": "init_signals"
@@ -1881,6 +1896,9 @@
     "name": "init_text_interpolation"
   },
   {
+    "name": "init_timer_scheduler"
+  },
+  {
     "name": "init_toSubscriber"
   },
   {
@@ -1921,6 +1939,9 @@
   },
   {
     "name": "init_utils"
+  },
+  {
+    "name": "init_utils2"
   },
   {
     "name": "init_version"
@@ -2001,10 +2022,16 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeAllTriggerCleanupFns"
+  },
+  {
     "name": "invokeDirectivesHostBindings"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "invokeTriggerCleanupFns"
   },
   {
     "name": "isArray"
@@ -2112,6 +2139,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -2155,9 +2185,6 @@
   },
   {
     "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
@@ -2250,9 +2277,6 @@
     "name": "scheduleArray"
   },
   {
-    "name": "scheduleDeferBlockUpdate"
-  },
-  {
     "name": "searchTokensOnInjector"
   },
   {
@@ -2340,6 +2364,9 @@
     "name": "switchMap"
   },
   {
+    "name": "throwError"
+  },
+  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -2352,13 +2379,16 @@
     "name": "unwrapRNode"
   },
   {
+    "name": "updateAncestorTraversalFlagsOnAttach"
+  },
+  {
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"
@@ -2377,6 +2407,9 @@
   },
   {
     "name": "ɵɵStandaloneFeature"
+  },
+  {
+    "name": "ɵɵdefer"
   },
   {
     "name": "ɵɵdeferWhen"

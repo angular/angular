@@ -163,7 +163,7 @@ function logOversizedImageWarning(src: string) {
   console.warn(formatRuntimeError(
       RuntimeErrorCode.IMAGE_PERFORMANCE_WARNING,
       `An image with src ${src} has intrinsic file dimensions much larger than its ` +
-          `rendered size. This can ` +
+          `rendered size. This can negatively impact application loading performance. ` +
           `For more information about addressing or disabling this warning, see ` +
           `https://angular.io/errors/NG2965`));
 }

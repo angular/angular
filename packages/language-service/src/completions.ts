@@ -9,10 +9,10 @@
 import {AST, ASTWithSource, BindingPipe, BindingType, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, PotentialDirective, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
+import {BoundEvent, DeferredBlock, SwitchBlock, TextAttribute, UnknownBlock} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
-import {addAttributeCompletionEntries, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
+import {addAttributeCompletionEntries, AsciiSortPriority, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
@@ -29,6 +29,8 @@ type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive|TextAttribute
 
 type ElementAnimationCompletionBuilder = CompletionBuilder<TmplAstBoundAttribute|TmplAstBoundEvent>;
 
+type BlockCompletionBuilder = CompletionBuilder<UnknownBlock>;
+
 export enum CompletionNodeContext {
   None,
   ElementTag,
@@ -39,6 +41,16 @@ export enum CompletionNodeContext {
 }
 
 const ANIMATION_PHASES = ['start', 'done'];
+
+function buildBlockSnippet(insertSnippet: boolean, text: string, withParens: boolean): string {
+  if (!insertSnippet) {
+    return text;
+  }
+  if (withParens) {
+    return `${text} ($1) {$2}`;
+  }
+  return `${text} {$1}`;
+}
 
 /**
  * Performs autocompletion operations on a given node in the template.
@@ -83,9 +95,63 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return this.getPipeCompletions();
     } else if (this.isLiteralCompletion()) {
       return this.getLiteralCompletions(options);
+    } else if (this.isBlockCompletion()) {
+      return this.getBlockCompletions(options);
     } else {
       return undefined;
     }
+  }
+
+  private isBlockCompletion(): this is BlockCompletionBuilder {
+    return this.node instanceof UnknownBlock;
+  }
+
+  private getBlockCompletions(
+      this: BlockCompletionBuilder, options: ts.GetCompletionsAtPositionOptions|undefined):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const blocksWithParens = ['if', 'else if', 'for', 'switch', 'case', 'defer'];
+    const blocksWithoutParens = ['else', 'empty', 'placeholder', 'error', 'loading', 'default'];
+
+    // Determine whether to provide a snippet, which includes parens and curly braces.
+    // If the block has any expressions or a body, don't provide a snippet as the completion.
+    // TODO: We can be smarter about this, e.g. include `default` in `switch` if it is missing.
+    const incompleteBlockHasExpressionsOrBody =
+        this.node.sourceSpan.toString().substring(1 + this.node.name.length).trim().length > 0;
+    const useSnippet = (options?.includeCompletionsWithSnippetText ?? false) &&
+        !incompleteBlockHasExpressionsOrBody;
+
+    // Generate the list of completions, one for each block.
+    // TODO: Exclude connected blocks (e.g. `else` when the preceding block isn't `if` or `else
+    // if`).
+    const partialCompletionEntryWholeBlock = {
+      kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
+      replacementSpan: {
+        start: this.node.sourceSpan.start.offset + 1,
+        length: this.node.name.length,
+      }
+    };
+    let competionKeywords: string[] = [...blocksWithParens, ...blocksWithoutParens];
+    if (this.nodeParent instanceof SwitchBlock) {
+      competionKeywords = ['case', 'default'];
+    }
+    const completionEntries: ts.CompletionEntry[] = competionKeywords.map(
+        name => ({
+          name,
+          sortText: `${AsciiSortPriority.First}${name}`,
+          insertText: buildBlockSnippet(useSnippet, name, blocksWithParens.includes(name)),
+          isSnippet: useSnippet || undefined,
+          ...partialCompletionEntryWholeBlock,
+        }));
+
+    // Return the completions.
+    const completionInfo: ts.CompletionInfo = {
+      flags: ts.CompletionInfoFlags.IsContinuation,
+      isMemberCompletion: false,
+      isGlobalCompletion: false,
+      isNewIdentifierLocation: false,
+      entries: completionEntries,
+    };
+    return completionInfo;
   }
 
   private isLiteralCompletion(): this is LiteralCompletionBuilder {
@@ -118,7 +184,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     if (this.node instanceof LiteralPrimitive) {
       if (typeof this.node.value === 'string' && this.node.value.length > 0) {
         replacementSpan = {
-          // The sourceSpan of `LiteralPrimitive` includes the open quote and the completion entries
+          // The sourceSpan of `LiteralPrimitive` includes the open quote and the completion
+          // entries
           // don't, so skip the open quote here.
           start: this.node.sourceSpan.start + 1,
           length: this.node.value.length,
@@ -366,8 +433,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     return {
       entries,
       // Although this completion is "global" in the sense of an Angular expression (there is no
-      // explicit receiver), it is not "global" in a TypeScript sense since Angular expressions have
-      // the component as an implicit receiver.
+      // explicit receiver), it is not "global" in a TypeScript sense since Angular expressions
+      // have the component as an implicit receiver.
       isGlobalCompletion: false,
       isMemberCompletion: true,
       isNewIdentifierLocation: false,
@@ -392,8 +459,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
     if (templateContext.has(entryName)) {
       const entry = templateContext.get(entryName)!;
-      // Entries that reference a symbol in the template context refer either to local references or
-      // variables.
+      // Entries that reference a symbol in the template context refer either to local references
+      // or variables.
       const symbol = this.templateTypeChecker.getSymbolOfNode(entry.node, this.component) as
               TemplateDeclarationSymbol |
           null;
@@ -449,8 +516,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   private isElementTagCompletion(): this is CompletionBuilder<TmplAstElement|TmplAstText> {
     if (this.node instanceof TmplAstText) {
       const positionInTextNode = this.position - this.node.sourceSpan.start.offset;
-      // We only provide element completions in a text node when there is an open tag immediately to
-      // the left of the position.
+      // We only provide element completions in a text node when there is an open tag immediately
+      // to the left of the position.
       return this.node.value.substring(0, positionInTextNode).endsWith('<');
     } else if (this.node instanceof TmplAstElement) {
       return this.nodeContext === CompletionNodeContext.ElementTag;
@@ -479,8 +546,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     const replacementSpan: ts.TextSpan = {start, length};
 
     let potentialTags = Array.from(templateTypeChecker.getPotentialElementTags(this.component));
-    // Don't provide non-Angular tags (directive === null) because we expect other extensions (i.e.
-    // Emmet) to provide those for HTML files.
+    // Don't provide non-Angular tags (directive === null) because we expect other extensions
+    // (i.e. Emmet) to provide those for HTML files.
     potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
     const entries: ts.CompletionEntry[] = potentialTags.map(([tag, directive]) => ({
                                                               kind: tagCompletionKind(directive),
@@ -648,8 +715,9 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
-        // The `sourceSpan` only includes `ngFor` and the `valueSpan` is always empty even if there
-        // is something there because we split this up into the desugared AST, `ngFor ngForOf=""`.
+        // The `sourceSpan` only includes `ngFor` and the `valueSpan` is always empty even if
+        // there is something there because we split this up into the desugared AST, `ngFor
+        // ngForOf=""`.
         const nodeStart = this.node.keySpan.start.getContext(1, 1);
         if (nodeStart?.before[0] === '*') {
           const nodeEnd = this.node.keySpan.end.getContext(1, 1);
@@ -768,8 +836,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       case AttributeCompletionKind.DomAttribute:
       case AttributeCompletionKind.DomProperty:
         // TODO(alxhub): ideally we would show the same documentation as quick info here. However,
-        // since these bindings don't exist in the TCB, there is no straightforward way to retrieve
-        // a `ts.Symbol` for the field in the TS DOM definition.
+        // since these bindings don't exist in the TCB, there is no straightforward way to
+        // retrieve a `ts.Symbol` for the field in the TS DOM definition.
         displayParts = [];
         break;
       case AttributeCompletionKind.DirectiveAttribute:

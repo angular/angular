@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1208,6 +1208,8 @@ class TcbBlockImplicitVariableOp extends TcbOp {
  * Executing this operation returns nothing.
  */
 class TcbIfOp extends TcbOp {
+  private expressionScopes = new Map<TmplAstIfBlockBranch, Scope>();
+
   constructor(private tcb: Context, private scope: Scope, private block: TmplAstIfBlock) {
     super();
   }
@@ -1231,29 +1233,81 @@ class TcbIfOp extends TcbOp {
 
     // If the expression is null, it means that it's an `else` statement.
     if (branch.expression === null) {
-      const branchScope = Scope.forNodes(this.tcb, this.scope, null, branch.children, null);
+      const branchScope = Scope.forNodes(
+          this.tcb, this.scope, null, branch.children, this.generateBranchGuard(index));
       return ts.factory.createBlock(branchScope.render());
     }
 
-    let branchParentScope: Scope;
+    // We need to process the expression first so it gets its own scope that the body of the
+    // conditional will inherit from. We do this, because we need to declare a separate variable
+    // for the case where the expression has an alias _and_ because we need the processed
+    // expression when generating the guard for the body.
+    const expressionScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
+    expressionScope.render().forEach(stmt => this.scope.addStatement(stmt));
+    this.expressionScopes.set(branch, expressionScope);
 
-    if (branch.expressionAlias === null) {
-      branchParentScope = this.scope;
-    } else {
-      // If the expression is aliased, we create a scope with a variable containing the expression.
-      // Further down we'll use the variable instead of the expression itself in the `if` statement.
-      // This allows for the type of the alias to be narrowed.
-      branchParentScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
-      branchParentScope.render().forEach(stmt => this.scope.addStatement(stmt));
-    }
-
-    const branchScope = Scope.forNodes(this.tcb, branchParentScope, null, branch.children, null);
     const expression = branch.expressionAlias === null ?
-        tcbExpression(branch.expression, this.tcb, branchScope) :
-        branchScope.resolve(branch.expressionAlias);
+        tcbExpression(branch.expression, this.tcb, expressionScope) :
+        expressionScope.resolve(branch.expressionAlias);
+
+    const bodyScope = Scope.forNodes(
+        this.tcb, expressionScope, null, branch.children, this.generateBranchGuard(index));
 
     return ts.factory.createIfStatement(
-        expression, ts.factory.createBlock(branchScope.render()), this.generateBranch(index + 1));
+        expression, ts.factory.createBlock(bodyScope.render()), this.generateBranch(index + 1));
+  }
+
+  private generateBranchGuard(index: number): ts.Expression|null {
+    let guard: ts.Expression|null = null;
+
+    // Since event listeners are inside callbacks, type narrowing doesn't apply to them anymore.
+    // To recreate the behavior, we generate an expression that negates all the values of the
+    // branches _before_ the current one, and then we add the current branch's expression on top.
+    // For example `@if (expr === 1) {} @else if (expr === 2) {} @else if (expr === 3)`, the guard
+    // for the last expression will be `!(expr === 1) && !(expr === 2) && expr === 3`.
+    for (let i = 0; i <= index; i++) {
+      const branch = this.block.branches[i];
+
+      // Skip over branches without an expression.
+      if (branch.expression === null) {
+        continue;
+      }
+
+      // This shouldn't happen since all the state is handled
+      // internally, but we have the check just in case.
+      if (!this.expressionScopes.has(branch)) {
+        throw new Error(`Could not determine expression scope of branch at index ${i}`);
+      }
+
+      const expressionScope = this.expressionScopes.get(branch)!;
+      let expression: ts.Expression;
+
+      if (branch.expressionAlias === null) {
+        // We need to recreate the expression and mark it to be ignored for diagnostics,
+        // because it was already checked as a part of the block's condition and we don't
+        // want it to produce a duplicate diagnostic.
+        expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+        markIgnoreDiagnostics(expression);
+      } else {
+        expression = expressionScope.resolve(branch.expressionAlias);
+      }
+
+      // The expressions of the preceeding branches have to be negated
+      // (e.g. `expr` becomes `!(expr)`) when comparing in the guard, except
+      // for the branch's own expression which is preserved as is.
+      const comparisonExpression = i === index ?
+          expression :
+          ts.factory.createPrefixUnaryExpression(
+              ts.SyntaxKind.ExclamationToken, ts.factory.createParenthesizedExpression(expression));
+
+      // Finally add the expression to the guard with an && operator.
+      guard = guard === null ?
+          comparisonExpression :
+          ts.factory.createBinaryExpression(
+              guard, ts.SyntaxKind.AmpersandAmpersandToken, comparisonExpression);
+    }
+
+    return guard;
   }
 }
 
@@ -1273,27 +1327,104 @@ class TcbSwitchOp extends TcbOp {
   }
 
   override execute(): null {
-    const clauses: ts.CaseOrDefaultClause[] = [];
+    // Since we'll use the expression in multiple comparisons, we don't want to
+    // log the same diagnostic more than once. Ignore this expression since we already
+    // produced a `TcbExpressionOp`.
+    const comparisonExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    markIgnoreDiagnostics(comparisonExpression);
+
+    // Wrap the comparisson expression in parentheses so we don't ignore
+    // diagnostics when comparing incompatible types (see #52315).
+    const expression = ts.factory.createParenthesizedExpression(comparisonExpression);
+    const root = this.generateCase(0, expression, null);
+
+    if (root !== undefined) {
+      this.scope.addStatement(root);
+    }
+
+    return null;
+  }
+
+  private generateCase(
+      index: number, switchValue: ts.Expression,
+      defaultCase: TmplAstSwitchBlockCase|null): ts.Statement|undefined {
+    // If we've reached the end, output the default case as the final `else`.
+    if (index >= this.block.cases.length) {
+      if (defaultCase !== null) {
+        const defaultScope = Scope.forNodes(
+            this.tcb, this.scope, null, defaultCase.children,
+            this.generateGuard(defaultCase, switchValue));
+        return ts.factory.createBlock(defaultScope.render());
+      }
+      return undefined;
+    }
+
+    // If the current case is the default (could be placed arbitrarily),
+    // skip it since it needs to be generated as the final `else` at the end.
+    const current = this.block.cases[index];
+    if (current.expression === null) {
+      return this.generateCase(index + 1, switchValue, current);
+    }
+
+    const caseScope = Scope.forNodes(
+        this.tcb, this.scope, null, current.children, this.generateGuard(current, switchValue));
+    const caseValue = tcbExpression(current.expression, this.tcb, caseScope);
+
+    // TODO(crisbeto): change back to a switch statement when the TS bug is resolved.
+    // Note that it would be simpler to generate a `switch` statement to represent the user's
+    // code, but the current TypeScript version (at the time of writing 5.2.2) has a bug where
+    // parenthesized `switch` expressions aren't narrowed correctly:
+    // https://github.com/microsoft/TypeScript/issues/56030. We work around it by generating
+    // `if`/`else if`/`else` statements to represent the switch block instead.
+    return ts.factory.createIfStatement(
+        ts.factory.createBinaryExpression(
+            switchValue, ts.SyntaxKind.EqualsEqualsEqualsToken, caseValue),
+        ts.factory.createBlock(caseScope.render()),
+        this.generateCase(index + 1, switchValue, defaultCase));
+  }
+
+  private generateGuard(node: TmplAstSwitchBlockCase, switchValue: ts.Expression): ts.Expression
+      |null {
+    // For non-default cases, the guard needs to compare against the case value, e.g.
+    // `switchExpression === caseExpression`.
+    if (node.expression !== null) {
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(node.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      return ts.factory.createBinaryExpression(
+          switchValue, ts.SyntaxKind.EqualsEqualsEqualsToken, expression);
+    }
+
+    // To fully narrow the type in the default case, we need to generate an expression that negates
+    // the values of all of the other expressions. For example:
+    // @switch (expr) {
+    //   @case (1) {}
+    //   @case (2) {}
+    //   @default {}
+    // }
+    // Will produce the guard `expr !== 1 && expr !== 2`.
+    let guard: ts.Expression|null = null;
 
     for (const current of this.block.cases) {
-      // Our template switch statements don't fall through so we always have a break at the end.
-      const breakStatement = ts.factory.createBreakStatement();
-      const clauseScope = Scope.forNodes(this.tcb, this.scope, null, current.children, null);
-
       if (current.expression === null) {
-        clauses.push(ts.factory.createDefaultClause([...clauseScope.render(), breakStatement]));
+        continue;
+      }
+
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(current.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      const comparison = ts.factory.createBinaryExpression(
+          switchValue, ts.SyntaxKind.ExclamationEqualsEqualsToken, expression);
+
+      if (guard === null) {
+        guard = comparison;
       } else {
-        clauses.push(ts.factory.createCaseClause(
-            tcbExpression(current.expression, this.tcb, clauseScope),
-            [...clauseScope.render(), breakStatement]));
+        guard = ts.factory.createBinaryExpression(
+            guard, ts.SyntaxKind.AmpersandAmpersandToken, comparison);
       }
     }
 
-    this.scope.addStatement(ts.factory.createSwitchStatement(
-        tcbExpression(this.block.expression, this.tcb, this.scope),
-        ts.factory.createCaseBlock(clauses)));
-
-    return null;
+    return guard;
   }
 }
 
@@ -1712,7 +1843,9 @@ class Scope {
     } else if (node instanceof TmplAstIfBlock) {
       this.opQueue.push(new TcbIfOp(this.tcb, this, node));
     } else if (node instanceof TmplAstSwitchBlock) {
-      this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
+      this.opQueue.push(
+          new TcbExpressionOp(this.tcb, this, node.expression),
+          new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.appendChildren(node.empty);

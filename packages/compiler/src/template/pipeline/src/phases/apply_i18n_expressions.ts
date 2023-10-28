@@ -19,7 +19,7 @@ export function phaseApplyI18nExpressions(job: CompilationJob): void {
       // Only add apply after expressions that are not followed by more expressions.
       if (op.kind === ir.OpKind.I18nExpression && needsApplication(op)) {
         // TODO: what should be the source span for the apply op?
-        ir.OpList.insertAfter<ir.UpdateOp>(ir.createI18nApplyOp(op.target, null!), op);
+        ir.OpList.insertAfter<ir.UpdateOp>(ir.createI18nApplyOp(op.owner, null!), op);
       }
     }
   }
@@ -34,7 +34,7 @@ function needsApplication(op: ir.I18nExpressionOp) {
     return true;
   }
   // If the next op is an expression targeting a different i18n block, we need to apply.
-  if (op.next.target !== op.target) {
+  if (op.next.owner !== op.owner) {
     return true;
   }
   return false;

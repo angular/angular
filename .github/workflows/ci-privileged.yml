@@ -23,7 +23,7 @@ jobs:
       SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           # Checking out the pull request commit is intended here as we need to run the changed code tests.
@@ -31,7 +31,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Starting Saucelabs tunnel service
         run: ./tools/saucelabs/sauce-service.sh run &
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
@@ -62,31 +62,3 @@ jobs:
         run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
       - name: Stop Saucelabs tunnel service
         run: ./tools/saucelabs/sauce-service.sh stop
-
-  bazel-saucelabs:
-    runs-on: ubuntu-latest-4core
-    env:
-      JOBS: 2
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1befe6d24fd5cab818e7f8bada40ab364781b8a8
-        with:
-          cache-node-modules: true
-          # Checking out the pull request commit is intended here as we need to run the changed code tests.
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@1befe6d24fd5cab818e7f8bada40ab364781b8a8
-      - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@ba9b4487ced515e5b4d87edd681a3bd9792444d6
-      - name: Set up Sauce Tunnel Daemon
-        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
-        env:
-          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-          SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-      - name: Run all saucelabs bazel tests
-        run: |
-          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}

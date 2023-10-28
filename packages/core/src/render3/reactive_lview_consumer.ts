@@ -8,20 +8,17 @@
 
 import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
 
-import {assertDefined, assertEqual} from '../util/assert';
+import {RuntimeError} from '../errors';
+import {assertDefined} from '../util/assert';
 
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
 
 let currentConsumer: ReactiveLViewConsumer|null = null;
 export interface ReactiveLViewConsumer extends ReactiveNode {
-  lView: LView|null;
-}
-
-export function setLViewForConsumer(node: ReactiveLViewConsumer, lView: LView): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      assertEqual(node.lView, null, 'Consumer already associated with a view.');
-  node.lView = lView;
+  lView: LView;
+  slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER;
+  isRunning: boolean;
 }
 
 /**
@@ -32,50 +29,40 @@ export function setLViewForConsumer(node: ReactiveLViewConsumer, lView: LView): 
 export function getReactiveLViewConsumer(
     lView: LView, slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER):
     ReactiveLViewConsumer {
-  return lView[slot] ?? getOrCreateCurrentLViewConsumer();
+  return lView[slot] ?? getOrCreateCurrentLViewConsumer(lView, slot);
 }
 
-/**
- * Assigns the `currentTemplateContext` to its LView's `REACTIVE_CONSUMER` slot if there are tracked
- * producers.
- *
- * The presence of producers means that a signal was read while the consumer was the active
- * consumer.
- *
- * If no producers are present, we do not assign the current template context. This also means we
- * can just reuse the template context for the next LView.
- */
-export function commitLViewConsumerIfHasProducers(
-    lView: LView,
-    slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER): void {
-  const consumer = getOrCreateCurrentLViewConsumer();
-  if (!consumer.producerNode?.length) {
-    return;
-  }
-
-  lView[slot] = currentConsumer;
-  consumer.lView = lView;
-  currentConsumer = createLViewConsumer();
-}
-
-const REACTIVE_LVIEW_CONSUMER_NODE: ReactiveLViewConsumer = {
+const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'|'slot'> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        assertDefined(
-            node.lView,
-            'Updating a signal during template or host binding execution is not allowed.');
-    markViewDirty(node.lView!);
+    if (ngDevMode && node.isRunning) {
+      console.warn(
+          `Angular detected a signal being set which makes the template for this component dirty` +
+          ` while it's being executed, which is not currently supported and will likely result` +
+          ` in ExpressionChangedAfterItHasBeenChecked errors or future updates not working` +
+          ` entirely.`);
+    }
+    markViewDirty(node.lView);
   },
-  lView: null,
+  consumerOnSignalRead(this: ReactiveLViewConsumer): void {
+    if (currentConsumer !== this) {
+      return;
+    }
+    this.lView[this.slot] = currentConsumer;
+    currentConsumer = null;
+  },
+  isRunning: false,
 };
 
 function createLViewConsumer(): ReactiveLViewConsumer {
   return Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
 }
 
-function getOrCreateCurrentLViewConsumer() {
+function getOrCreateCurrentLViewConsumer(
+    lView: LView, slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER) {
   currentConsumer ??= createLViewConsumer();
+  currentConsumer.lView = lView;
+  currentConsumer.slot = slot;
   return currentConsumer;
 }

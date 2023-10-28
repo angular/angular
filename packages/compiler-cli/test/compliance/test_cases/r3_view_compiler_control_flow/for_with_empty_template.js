@@ -3,8 +3,8 @@ function MyApp_For_3_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const item_r2 = ctx.$implicit;
-    $r3$.ɵɵtextInterpolate1(" ", item_r2.name, " ");
+    const $item_r2$ = ctx.$implicit;
+    $r3$.ɵɵtextInterpolate1(" ", $item_r2$.name, " ");
   }
 }
 

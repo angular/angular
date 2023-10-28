@@ -87,10 +87,9 @@ class DepsTracker implements DepsTrackerApi {
       };
     } else {
       if (!this.ownerNgModule.has(type)) {
-        throw new RuntimeError(
-            RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
-            `Orphan component found! Trying to render the component ${
-                type.name} without first loading the NgModule that declares it. Make sure that you import the component's NgModule in the NgModule or the standalone component in which you are trying to render this component. Also make sure the way the app is bundled and served always includes the component's NgModule before the component.`);
+        // This component is orphan! No need to handle the error since the component rendering
+        // pipeline (e.g., view_container_ref) will check for this error based on configs.
+        return {dependencies: []};
       }
 
       const scope = this.getNgModuleScope(this.ownerNgModule.get(type)!);
@@ -284,6 +283,19 @@ class DepsTracker implements DepsTrackerApi {
     }
 
     return ans;
+  }
+
+  /** @override */
+  isOrphanComponent(cmp: Type<any>): boolean {
+    const def = getComponentDef(cmp);
+
+    if (!def || def.standalone) {
+      return false;
+    }
+
+    this.resolveNgModulesDecls();
+
+    return !this.ownerNgModule.has(cmp as ComponentType<any>);
   }
 }
 

@@ -75,7 +75,7 @@ export function template(
     slot: number, templateFnRef: o.Expression, decls: number, vars: number, tag: string|null,
     constIndex: number|null, sourceSpan: ParseSourceSpan): ir.CreateOp {
   const args = [o.literal(slot), templateFnRef, o.literal(decls), o.literal(vars)];
-  if (tag !== null) {
+  if (tag !== null || constIndex !== null) {
     args.push(o.literal(tag));
     if (constIndex !== null) {
       args.push(o.literal(constIndex));
@@ -214,23 +214,59 @@ export function projectionDef(def: o.Expression|null): ir.CreateOp {
 }
 
 export function projection(
-    slot: number, projectionSlotIndex: number, attributes: number|null): ir.CreateOp {
-  const args = [o.literal(slot)];
-  if (projectionSlotIndex !== 0 || attributes !== null) {
+    slot: number, projectionSlotIndex: number, attributes: string[],
+    sourceSpan: ParseSourceSpan): ir.CreateOp {
+  const args: o.Expression[] = [o.literal(slot)];
+  if (projectionSlotIndex !== 0 || attributes.length > 0) {
     args.push(o.literal(projectionSlotIndex));
-    if (attributes != null) {
-      args.push(o.literal(attributes));
+    if (attributes.length > 0) {
+      args.push(o.literalArr(attributes.map(attr => o.literal(attr))));
     }
   }
-  return call(Identifiers.projection, args, null);
+  return call(Identifiers.projection, args, sourceSpan);
 }
 
-export function i18nStart(slot: number, constIndex: number): ir.CreateOp {
-  return call(Identifiers.i18nStart, [o.literal(slot), o.literal(constIndex)], null);
+export function i18nStart(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+  const args = [o.literal(slot), o.literal(constIndex)];
+  if (subTemplateIndex !== null) {
+    args.push(o.literal(subTemplateIndex));
+  }
+  return call(Identifiers.i18nStart, args, null);
 }
 
-export function i18n(slot: number, constIndex: number): ir.CreateOp {
-  return call(Identifiers.i18n, [o.literal(slot), o.literal(constIndex)], null);
+export function repeaterCreate(
+    slot: number, viewFnName: string, decls: number, vars: number, trackByFn: o.Expression,
+    trackByUsesComponentInstance: boolean, emptyViewFnName: string|null, emptyDecls: number|null,
+    emptyVars: number|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  let args = [
+    o.literal(slot),
+    o.variable(viewFnName),
+    o.literal(decls),
+    o.literal(vars),
+    trackByFn,
+  ];
+  if (trackByUsesComponentInstance || emptyViewFnName !== null) {
+    args.push(o.literal(trackByUsesComponentInstance));
+    if (emptyViewFnName !== null) {
+      args.push(o.variable(emptyViewFnName));
+      args.push(o.literal(emptyDecls));
+      args.push(o.literal(emptyVars));
+    }
+  }
+  return call(Identifiers.repeaterCreate, args, sourceSpan);
+}
+
+export function repeater(
+    metadataSlot: number, collection: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.repeater, [o.literal(metadataSlot), collection], sourceSpan);
+}
+
+export function i18n(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+  const args = [o.literal(slot), o.literal(constIndex)];
+  if (subTemplateIndex) {
+    args.push(o.literal(subTemplateIndex));
+  }
+  return call(Identifiers.i18n, args, null);
 }
 
 export function i18nEnd(): ir.CreateOp {

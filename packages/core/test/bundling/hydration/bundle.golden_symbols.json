@@ -33,6 +33,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BODY"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -141,9 +144,6 @@
     "name": "EMPTY_PAYLOAD"
   },
   {
-    "name": "ENABLED_SSR_FEATURES"
-  },
-  {
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
@@ -186,7 +186,13 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
+  },
+  {
+    "name": "HEADERS"
   },
   {
     "name": "HTTP_ROOT_INTERCEPTOR_FNS"
@@ -202,6 +208,12 @@
   },
   {
     "name": "HttpResponseBase"
+  },
+  {
+    "name": "HttpStatusCode"
+  },
+  {
+    "name": "HydrationFeatureKind"
   },
   {
     "name": "INJECTOR2"
@@ -399,6 +411,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "RESPONSE_TYPE"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -421,6 +436,15 @@
   },
   {
     "name": "SKIP_HYDRATION_ATTR_NAME"
+  },
+  {
+    "name": "SKIP_HYDRATION_ATTR_NAME_LOWER_CASE"
+  },
+  {
+    "name": "STATUS"
+  },
+  {
+    "name": "STATUS_TEXT"
   },
   {
     "name": "SafeSubscriber"
@@ -496,6 +520,9 @@
   },
   {
     "name": "TransferState"
+  },
+  {
+    "name": "URL2"
   },
   {
     "name": "USE_VALUE"
@@ -636,16 +663,10 @@
     "name": "clearElementContents"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
     "name": "collectNativeNodesInLContainer"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "concatStringsWithSpace"
@@ -690,9 +711,6 @@
     "name": "createLView"
   },
   {
-    "name": "createLViewConsumer"
-  },
-  {
     "name": "createNodeInjector"
   },
   {
@@ -729,13 +747,13 @@
     "name": "detectChangesInView"
   },
   {
+    "name": "detectChangesInViewIfAttached"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "disableStylesheet"
   },
   {
     "name": "empty"
@@ -865,9 +883,6 @@
   },
   {
     "name": "getNullInjector"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -1095,6 +1110,9 @@
     "name": "map"
   },
   {
+    "name": "markAncestorsForTraversal"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -1138,9 +1156,6 @@
   },
   {
     "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
-    "name": "nonNegativeNumber"
   },
   {
     "name": "nonNull"
@@ -1320,10 +1335,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

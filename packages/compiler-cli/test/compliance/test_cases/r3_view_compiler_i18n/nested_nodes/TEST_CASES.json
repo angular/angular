@@ -69,8 +69,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support named interpolations",
@@ -99,8 +98,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support interpolations with complex expressions",
@@ -114,8 +112,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle i18n attributes with bindings in content",
@@ -129,8 +126,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle i18n attributes with bindings and nested elements in content",
@@ -144,8 +140,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle i18n attributes with bindings in content and element attributes",
@@ -169,13 +164,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "nested_templates.js",
+              "expected": "nested_templates.template.js",
+              "templatePipelineExpected": "nested_templates.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should ignore i18n attributes on self-closing tags",
@@ -214,13 +215,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "directives.js",
+              "expected": "directives.template.js",
+              "templatePipelineExpected": "directives.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate event listeners instructions before i18n ones",

@@ -12,7 +12,7 @@ import { trigger, transition, state, animate, style, keyframes } from '@angular/
         opacity: 1,
         backgroundColor: 'yellow'
       })),
-      state('close', style({
+      state('closed', style({
         height: '100px',
         opacity: 0.5,
         backgroundColor: 'green'

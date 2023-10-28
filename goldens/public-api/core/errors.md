@@ -19,7 +19,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
-    ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = 602,
+    ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
@@ -29,7 +29,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
-    DUPLICATE_DIRECTITVE = 309,
+    DEFER_LOADING_FAILED = 750,
+    // (undocumented)
+    DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
@@ -56,6 +58,8 @@ export const enum RuntimeErrorCode {
     IMAGE_PERFORMANCE_WARNING = -913,
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
+    // (undocumented)
+    INFINITE_CHANGE_DETECTION = 103,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)

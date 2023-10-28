@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser, LexerTokenType, RecursiveVisitor, Text, visitAll} from '@angular/compiler';
+import {HtmlParser, LexerTokenType, Node, RecursiveVisitor, Text, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
@@ -21,6 +21,12 @@ const REPLACEMENTS: Record<string, string> = {
   '@': '&#64;',
   '}': '&#125;',
 };
+
+/**
+ * Regex used to quickly detect if a file needs to be
+ * migrated before we perform a more accurate analysis.
+ */
+const CONTROL_FLOW_CHARS_PATTERN = /@|}/;
 
 /** Represents a file that was analyzed by the migration. */
 export class AnalyzedFile {
@@ -60,11 +66,7 @@ export class AnalyzedFile {
  * @param analyzedFiles Map in which to store the results.
  */
 export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>) {
-  for (const node of sourceFile.statements) {
-    if (!ts.isClassDeclaration(node)) {
-      continue;
-    }
-
+  forEachClass(sourceFile, node => {
     // Note: we have a utility to resolve the Angular decorators from a class declaration already.
     // We don't use it here, because it requires access to the type checker which makes it more
     // time-consuming to run internally.
@@ -80,7 +82,7 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
         null;
 
     if (!metadata) {
-      continue;
+      return;
     }
 
     for (const prop of metadata.properties) {
@@ -106,7 +108,7 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
           break;
       }
     }
-  }
+  });
 }
 
 /**
@@ -114,6 +116,12 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
 export function migrateTemplate(template: string): string|null {
+  if (!CONTROL_FLOW_CHARS_PATTERN.test(template)) {
+    return null;
+  }
+
+  let rootNodes: Node[]|null = null;
+
   try {
     // Note: we use the HtmlParser here, instead of the `parseTemplate` function, because the
     // latter returns an Ivy AST, not an HTML AST. The HTML AST has the advantage of preserving
@@ -127,31 +135,34 @@ export function migrateTemplate(template: string): string|null {
       tokenizeBlocks: false,
     });
 
-    // Don't migrate invalid templates.
-    if (parsed.errors && parsed.errors.length > 0) {
-      return null;
+    if (parsed.errors.length === 0) {
+      rootNodes = parsed.rootNodes;
     }
-
-    let result = template;
-    const visitor = new TextRangeCollector();
-    visitAll(visitor, parsed.rootNodes);
-    const sortedRanges = visitor.textRanges.sort(([aStart], [bStart]) => bStart - aStart);
-
-    for (const [start, end] of sortedRanges) {
-      const text = result.slice(start, end);
-      let replaced = '';
-
-      for (const char of text) {
-        replaced += REPLACEMENTS[char] || char;
-      }
-
-      result = result.slice(0, start) + replaced + result.slice(end);
-    }
-
-    return result;
   } catch {
+  }
+
+  // Don't migrate invalid templates.
+  if (rootNodes === null) {
     return null;
   }
+
+  let result = template;
+  const visitor = new TextRangeCollector();
+  visitAll(visitor, rootNodes);
+  const sortedRanges = visitor.textRanges.sort(([aStart], [bStart]) => bStart - aStart);
+
+  for (const [start, end] of sortedRanges) {
+    const text = result.slice(start, end);
+    let replaced = '';
+
+    for (const char of text) {
+      replaced += REPLACEMENTS[char] || char;
+    }
+
+    result = result.slice(0, start) + replaced + result.slice(end);
+  }
+
+  return result;
 }
 
 /** Finds all text-only ranges within an HTML AST. Skips over interpolations and ICUs. */
@@ -167,4 +178,14 @@ class TextRangeCollector extends RecursiveVisitor {
 
     super.visitText(text, null);
   }
+}
+
+/** Executes a callback on each class declaration in a file. */
+function forEachClass(sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration) => void) {
+  sourceFile.forEachChild(function walk(node) {
+    if (ts.isClassDeclaration(node)) {
+      callback(node);
+    }
+    node.forEachChild(walk);
+  });
 }

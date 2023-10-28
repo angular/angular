@@ -155,6 +155,10 @@ export class RouterTestingHarness {
       }
       return activatedComponent as T;
     } else {
+      if (requiredRoutedComponentType !== undefined) {
+        throw new Error(`Unexpected routed component type. Expected ${
+            requiredRoutedComponentType.name} but the navigation did not activate any component.`);
+      }
       return null;
     }
   }

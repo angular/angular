@@ -9,12 +9,10 @@
 import {SecurityContext} from '@angular/core';
 import {DomSanitizerImpl} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-{
-  describe('DOM Sanitization Service', () => {
-    it('accepts resource URL values for resource contexts', () => {
-      const svc = new DomSanitizerImpl(null);
-      const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
-      expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
-    });
+describe('DOM Sanitization Service', () => {
+  it('accepts resource URL values for resource contexts', () => {
+    const svc = new DomSanitizerImpl(null);
+    const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
+    expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
   });
-}
+});

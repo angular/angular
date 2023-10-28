@@ -145,6 +145,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     }
   }
 
+  function getOutliningSpans(fileName: string): ts.OutliningSpan[] {
+    if (angularOnly) {
+      return ngLS.getOutliningSpans(fileName);
+    } else {
+      return tsLS.getOutliningSpans(fileName) ?? ngLS.getOutliningSpans(fileName);
+    }
+  }
+
   function getTcb(fileName: string, position: number): GetTcbResponse|undefined {
     return ngLS.getTcb(fileName, position);
   }
@@ -217,6 +225,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getCompilerOptionsDiagnostics,
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
+    getOutliningSpans,
     getTemplateLocationForComponent,
     getCodeFixesAtPosition,
     getCombinedCodeFix,

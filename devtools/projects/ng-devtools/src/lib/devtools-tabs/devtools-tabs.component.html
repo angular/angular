@@ -36,6 +36,8 @@
   ></ng-directive-explorer>
   <ng-profiler [class.hidden]="activeTab !== 'Profiler'"></ng-profiler>
   <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"></ng-router-tree>
+
+  <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"></ng-injector-tree>
 </div>
 
 <mat-menu #menu="matMenu">

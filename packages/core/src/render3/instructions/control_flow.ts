@@ -101,7 +101,9 @@ export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
 }
 
 class RepeaterMetadata {
-  constructor(public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>) {}
+  constructor(
+      public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>,
+      public liveCollection?: LiveCollectionLContainerImpl) {}
 }
 
 /**
@@ -153,28 +155,32 @@ export function ɵɵrepeaterCreate(
 }
 
 class LiveCollectionLContainerImpl extends
-    LiveCollection<LView<RepeaterContext<unknown>>, RepeaterContext<unknown>> {
+    LiveCollection<LView<RepeaterContext<unknown>>, unknown> {
+  /**
+   Property indicating if indexes in the repeater context need to be updated following the live
+   collection changes. Index updates are necessary if and only if views are inserted / removed in
+   the middle of LContainer. Adds and removals at the end don't require index updates.
+ */
+  private needsIndexUpdate = false;
   constructor(
-      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode,
-      private trackByFn: TrackByFunction<unknown>) {
+      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode) {
     super();
   }
 
   override get length(): number {
     return this.lContainer.length - CONTAINER_HEADER_OFFSET;
   }
-  override at(index: number): LView<RepeaterContext<unknown>> {
-    return getExistingLViewFromLContainer(this.lContainer, index);
-  }
-  override key(index: number): unknown {
-    return this.trackByFn(index, this.at(index)[CONTEXT].$implicit);
+  override at(index: number): unknown {
+    return this.getLView(index)[CONTEXT].$implicit;
   }
   override attach(index: number, lView: LView<RepeaterContext<unknown>>): void {
     const dehydratedView = lView[HYDRATION] as DehydratedContainerView;
+    this.needsIndexUpdate ||= index !== this.length;
     addLViewToLContainer(
         this.lContainer, lView, index, shouldAddViewToDom(this.templateTNode, dehydratedView));
   }
   override detach(index: number): LView<RepeaterContext<unknown>> {
+    this.needsIndexUpdate ||= index !== this.length - 1;
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
@@ -190,7 +196,23 @@ class LiveCollectionLContainerImpl extends
     destroyLView(lView[TVIEW], lView);
   }
   override updateValue(index: number, value: unknown): void {
-    this.at(index)[CONTEXT].$implicit = value;
+    this.getLView(index)[CONTEXT].$implicit = value;
+  }
+
+  reset() {
+    this.needsIndexUpdate = false;
+  }
+
+  updateIndexes() {
+    if (this.needsIndexUpdate) {
+      for (let i = 0; i < this.length; i++) {
+        this.getLView(i)[CONTEXT].$index = i;
+      }
+    }
+  }
+
+  private getLView(index: number): LView<RepeaterContext<unknown>> {
+    return getExistingLViewFromLContainer(this.lContainer, index);
   }
 }
 
@@ -209,29 +231,27 @@ export function ɵɵrepeater(
   const hostLView = getLView();
   const hostTView = hostLView[TVIEW];
   const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
-  const containerIndex = metadataSlotIdx + 1;
-  const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
-  const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
 
-  reconcile(
-      new LiveCollectionLContainerImpl(
-          lContainer, hostLView, itemTemplateTNode, metadata.trackByFn),
-      collection, metadata.trackByFn);
-
-  // moves in the container might caused context's index to get out of order, re-adjust
-  // PERF: we could try to book-keep moves and do this index re-adjust as need, at the cost of the
-  // additional code complexity
-  for (let i = 0; i < lContainer.length - CONTAINER_HEADER_OFFSET; i++) {
-    const lView = getExistingLViewFromLContainer<RepeaterContext<unknown>>(lContainer, i);
-    lView[CONTEXT].$index = i;
+  if (metadata.liveCollection === undefined) {
+    const containerIndex = metadataSlotIdx + 1;
+    const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
+    metadata.liveCollection =
+        new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
+  } else {
+    metadata.liveCollection.reset();
   }
 
+  const liveCollection = metadata.liveCollection;
+  reconcile(liveCollection, collection, metadata.trackByFn);
+
+  // moves in the container might caused context's index to get out of order, re-adjust if needed
+  liveCollection.updateIndexes();
+
   // handle empty blocks
-  // PERF: maybe I could skip allocation of memory for the empty block? Isn't it the "fix" on the
-  // compiler side that we've been discussing? Talk to K & D!
-  const bindingIndex = nextBindingIndex();
   if (metadata.hasEmptyBlock) {
-    const isCollectionEmpty = lContainer.length - CONTAINER_HEADER_OFFSET === 0;
+    const bindingIndex = nextBindingIndex();
+    const isCollectionEmpty = liveCollection.length === 0;
     if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
       const emptyTemplateIndex = metadataSlotIdx + 2;
       const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);

@@ -182,6 +182,8 @@ groups:
         - crisbeto
         - devversion
         - dylhunn
+        - jessicajaniuk
+        - AndrewKushnir
 
   # =========================================================
   #  Framework: Core
@@ -337,8 +339,11 @@ groups:
           'aio/content/examples/view-encapsulation/**/{*,.*}',
           'aio/content/images/guide/view-encapsulation/**/{*,.*}',
           'aio/content/special-elements/**/{*,.*}',
+          'aio/content/blocks/**/{*,.*}',
           'aio/content/guide/hydration.md',
+          'aio/content/guide/defer.md',
           'aio/content/guide/signals.md',
+          'aio/content/guide/control_flow.md',
           'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
@@ -516,10 +521,8 @@ groups:
         contains_any_globs(files, [
           'packages/platform-server/**/{*,.*}',
           'aio/content/guide/prerendering.md',
-          'aio/content/guide/universal.md',
-          'aio/content/examples/universal/**/{*,.*}',
-          'aio/content/guide/universal-ngmodule.md',
-          'aio/content/examples/universal-ngmodule/**/{*,.*}'
+          'aio/content/guide/ssr.md',
+          'aio/content/examples/ssr/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -937,6 +940,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
+        - jessicajaniuk
         - jelbourn
 
   # =========================================================

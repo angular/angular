@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
@@ -118,6 +119,50 @@ export interface AfterRenderRef {
 }
 
 /**
+ * Options passed to `internalAfterNextRender`.
+ */
+export interface InternalAfterNextRenderOptions {
+  /**
+   * The `Injector` to use during creation.
+   *
+   * If this is not provided, the current injection context will be used instead (via `inject`).
+   */
+  injector?: Injector;
+}
+
+/** `AfterRenderRef` that does nothing. */
+const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
+  destroy() {}
+};
+
+/**
+ * Register a callback to run once before any userspace `afterRender` or
+ * `afterNextRender` callbacks.
+ *
+ * This function should almost always be used instead of `afterRender` or
+ * `afterNextRender` for implementing framework functionality. Consider:
+ *
+ *   1.) `AfterRenderPhase.EarlyRead` is intended to be used for implementing
+ *       custom layout. If the framework itself mutates the DOM after *any*
+ *       `AfterRenderPhase.EarlyRead` callbacks are run, the phase can no
+ *       longer reliably serve its purpose.
+ *
+ *   2.) Importing `afterRender` in the framework can reduce the ability for it
+ *       to be tree-shaken, and the framework shouldn't need much of the behavior.
+ */
+export function internalAfterNextRender(
+    callback: VoidFunction, options?: InternalAfterNextRenderOptions) {
+  const injector = options?.injector ?? inject(Injector);
+
+  // Similarly to the public `afterNextRender` function, an internal one
+  // is only invoked in a browser.
+  if (!isPlatformBrowser(injector)) return;
+
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
+  afterRenderEventManager.internalCallbacks.push(callback);
+}
+
+/**
  * Register a callback to be invoked each time the application
  * finishes rendering.
  *
@@ -166,28 +211,33 @@ export interface AfterRenderRef {
  * @developerPreview
  */
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
+  ngDevMode &&
+      assertNotInReactiveContext(
+          afterRender,
+          'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
+              'callback inside the component constructor`.');
+
   !options && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
 
   if (!isPlatformBrowser(injector)) {
-    return {destroy() {}};
+    return NOOP_AFTER_RENDER_REF;
   }
 
-  let destroy: VoidFunction|undefined;
-  const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
+  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterRender'}});
+
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
   const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
-  const ngZone = injector.get(NgZone);
-  const errorHandler = injector.get(ErrorHandler, null, {optional: true});
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
-  const instance = new AfterRenderCallback(ngZone, errorHandler, phase, callback);
-
-  destroy = () => {
+  const destroy = () => {
     callbackHandler.unregister(instance);
     unregisterFn();
   };
+  const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
+  const instance = new AfterRenderCallback(injector, phase, callback);
+
   callbackHandler.register(instance);
   return {destroy};
 }
@@ -247,27 +297,26 @@ export function afterNextRender(
   const injector = options?.injector ?? inject(Injector);
 
   if (!isPlatformBrowser(injector)) {
-    return {destroy() {}};
+    return NOOP_AFTER_RENDER_REF;
   }
 
-  let destroy: VoidFunction|undefined;
-  const unregisterFn = injector.get(DestroyRef).onDestroy(() => destroy?.());
+  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterNextRender'}});
+
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
   const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
-  const ngZone = injector.get(NgZone);
-  const errorHandler = injector.get(ErrorHandler, null, {optional: true});
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
-  const instance = new AfterRenderCallback(ngZone, errorHandler, phase, () => {
-    destroy?.();
-    callback();
-  });
-
-  destroy = () => {
+  const destroy = () => {
     callbackHandler.unregister(instance);
     unregisterFn();
   };
+  const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
+  const instance = new AfterRenderCallback(injector, phase, () => {
+    destroy();
+    callback();
+  });
+
   callbackHandler.register(instance);
   return {destroy};
 }
@@ -276,9 +325,15 @@ export function afterNextRender(
  * A wrapper around a function to be used as an after render callback.
  */
 class AfterRenderCallback {
+  private zone: NgZone;
+  private errorHandler: ErrorHandler|null;
+
   constructor(
-      private zone: NgZone, private errorHandler: ErrorHandler|null,
-      public readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {}
+      injector: Injector, public readonly phase: AfterRenderPhase,
+      private callbackFn: VoidFunction) {
+    this.zone = injector.get(NgZone);
+    this.errorHandler = injector.get(ErrorHandler, null, {optional: true});
+  }
 
   invoke() {
     try {
@@ -391,6 +446,9 @@ export class AfterRenderEventManager {
   /* @internal */
   handler: AfterRenderCallbackHandler|null = null;
 
+  /* @internal */
+  internalCallbacks: VoidFunction[] = [];
+
   /**
    * Mark the beginning of a render operation (i.e. CD cycle).
    * Throws if called while executing callbacks.
@@ -409,6 +467,13 @@ export class AfterRenderEventManager {
     this.renderDepth--;
 
     if (this.renderDepth === 0) {
+      // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
+      // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
+      // can still be tree-shaken unless used by the application.
+      for (const callback of this.internalCallbacks) {
+        callback();
+      }
+      this.internalCallbacks.length = 0;
       this.handler?.execute();
     }
   }
@@ -416,6 +481,7 @@ export class AfterRenderEventManager {
   ngOnDestroy() {
     this.handler?.destroy();
     this.handler = null;
+    this.internalCallbacks.length = 0;
   }
 
   /** @nocollapse */

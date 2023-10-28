@@ -38,14 +38,17 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
+  const { protocol, originalUrl, baseUrl, headers } = req;
+
   renderModule(AppServerModule, {
     document: indexHtml,
-    url: req.url,
-    extraProviders: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
+    url: `${protocol}://${headers.host}${originalUrl}`,
+    extraProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
     res.send(response);
   });
 });
+
 
 app.listen(4206, () => {
   console.log('Server listening on port 4206!');

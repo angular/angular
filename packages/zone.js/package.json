@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
@@ -13,7 +13,7 @@
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
-    "domino": "https://github.com/angular/domino.git#f2435fe1f9f7c91ade0bd472c4723e5eacd7d19a",
+    "domino": "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658",
     "google-closure-compiler": "^20230802.0.0",
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",

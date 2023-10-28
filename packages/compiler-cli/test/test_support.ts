@@ -40,7 +40,7 @@ export interface TestSupport {
 function createTestSupportFor(basePath: string) {
   // Typescript uses identity comparison on `paths` and other arrays in order to determine
   // if program structure can be reused for incremental compilation, so we reuse the default
-  // values unless overriden, and freeze them so that they can't be accidentally changed somewhere
+  // values unless overridden, and freeze them so that they can't be accidentally changed somewhere
   // in tests.
   const defaultCompilerOptions = {
     basePath,

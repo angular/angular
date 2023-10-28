@@ -6,18 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainer} from '../assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-import {CONTEXT, DESCENDANT_VIEWS_TO_REFRESH, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
+import {CONTEXT, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView} from '../interfaces/view';
 import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
-import {clearViewRefreshFlag, getComponentLViewByIndex, isCreationMode, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
+
+/**
+ * The maximum number of times the change detection traversal will rerun before throwing an error.
+ */
+const MAXIMUM_REFRESH_RERUNS = 100;
 
 export function detectChangesInternal<T>(
     tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
@@ -37,6 +43,25 @@ export function detectChangesInternal<T>(
 
   try {
     refreshView(tView, lView, tView.template, context);
+    let retries = 0;
+    // If after running change detection, this view still needs to be refreshed or there are
+    // descendants views that need to be refreshed due to re-dirtying during the change detection
+    // run, detect changes on the view again. We run change detection in `Targeted` mode to only
+    // refresh views with the `RefreshView` flag.
+    while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh)) {
+      if (retries === MAXIMUM_REFRESH_RERUNS) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+            ngDevMode &&
+                'Infinite change detection while trying to refresh views. ' +
+                    'There may be components which each cause the other to require a refresh, ' +
+                    'causing an infinite loop.');
+      }
+      retries++;
+      // Even if this view is detached, we still detect changes in targeted mode because this was
+      // the root of the change detection run.
+      detectChangesInView(lView, ChangeDetectionMode.Targeted);
+    }
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -134,17 +159,23 @@ export function refreshView<T>(
     // execute pre-order hooks (OnInit, OnChanges, DoCheck)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
-      if (hooksInitPhaseCompleted) {
-        const preOrderCheckHooks = tView.preOrderCheckHooks;
-        if (preOrderCheckHooks !== null) {
-          executeCheckHooks(lView, preOrderCheckHooks, null);
+      const consumer = lView[REACTIVE_TEMPLATE_CONSUMER];
+      try {
+        consumer && (consumer.isRunning = true);
+        if (hooksInitPhaseCompleted) {
+          const preOrderCheckHooks = tView.preOrderCheckHooks;
+          if (preOrderCheckHooks !== null) {
+            executeCheckHooks(lView, preOrderCheckHooks, null);
+          }
+        } else {
+          const preOrderHooks = tView.preOrderHooks;
+          if (preOrderHooks !== null) {
+            executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
+          }
+          incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
         }
-      } else {
-        const preOrderHooks = tView.preOrderHooks;
-        if (preOrderHooks !== null) {
-          executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
-        }
-        incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
+      } finally {
+        consumer && (consumer.isRunning = false);
       }
     }
 
@@ -228,7 +259,14 @@ export function refreshView<T>(
     if (!isInCheckNoChangesPass) {
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
-    clearViewRefreshFlag(lView);
+  } catch (e) {
+    // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
+    // because the error might have caused a situation where views below the current location are
+    // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
+    // cleared during change detection and we failed to run to completion.
+
+    markAncestorsForTraversal(lView);
+    throw e;
   } finally {
     leaveView();
   }
@@ -241,9 +279,10 @@ export function refreshView<T>(
 function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
+    lContainer[HAS_CHILD_VIEWS_TO_REFRESH] = false;
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
-      detectChangesInView(embeddedLView, mode);
+      detectChangesInViewIfAttached(embeddedLView, mode);
     }
   }
 }
@@ -279,34 +318,44 @@ function detectChangesInComponent(
     hostLView: LView, componentHostIdx: number, mode: ChangeDetectionMode): void {
   ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
-  detectChangesInView(componentView, mode);
+  detectChangesInViewIfAttached(componentView, mode);
 }
 
 /**
  * Visits a view as part of change detection traversal.
  *
- * - If the view is detached, no additional traversal happens.
+ * If the view is detached, no additional traversal happens.
+ */
+function detectChangesInViewIfAttached(lView: LView, mode: ChangeDetectionMode) {
+  if (!viewAttachedToChangeDetector(lView)) {
+    return;
+  }
+  detectChangesInView(lView, mode);
+}
+
+/**
+ * Visits a view as part of change detection traversal.
  *
  * The view is refreshed if:
  * - If the view is CheckAlways or Dirty and ChangeDetectionMode is `Global`
  * - If the view has the `RefreshTransplantedView` flag
  *
  * The view is not refreshed, but descendants are traversed in `ChangeDetectionMode.Targeted` if the
- * view has a non-zero TRANSPLANTED_VIEWS_TO_REFRESH counter.
- *
+ * view HasChildViewsToRefresh flag is set.
  */
 function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
-  if (!viewAttachedToChangeDetector(lView)) {
-    return;
-  }
-
   const tView = lView[TVIEW];
   const flags = lView[FLAGS];
+
+  // Flag cleared before change detection runs so that the view can be re-marked for traversal if
+  // necessary.
+  lView[FLAGS] &= ~(LViewFlags.HasChildViewsToRefresh | LViewFlags.RefreshView);
+
   if ((flags & (LViewFlags.CheckAlways | LViewFlags.Dirty) &&
        mode === ChangeDetectionMode.Global) ||
       flags & LViewFlags.RefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
-  } else if (lView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
+  } else if (flags & LViewFlags.HasChildViewsToRefresh) {
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
     const components = tView.components;
     if (components !== null) {

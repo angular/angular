@@ -28,7 +28,7 @@ jobs:
       - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
         id: comment-branch
 
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           # Specify repository as the PR branch might be from a fork.
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
@@ -38,7 +38,7 @@ jobs:
 
       - uses: ./.github/actions/yarn-install
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           bazelrc: ./.bazelrc.user
 

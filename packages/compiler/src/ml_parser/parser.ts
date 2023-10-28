@@ -474,7 +474,7 @@ class _TreeBuilder {
     const span = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
     const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
-    const block = new html.Block(token.parts[0], parameters, [], span, startSpan);
+    const block = new html.Block(token.parts[0], parameters, [], span, token.sourceSpan, startSpan);
     this._pushContainer(block, false);
   }
 
@@ -500,7 +500,7 @@ class _TreeBuilder {
     const span = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
     const startSpan = new ParseSourceSpan(token.sourceSpan.start, end, token.sourceSpan.fullStart);
-    const block = new html.Block(token.parts[0], parameters, [], span, startSpan);
+    const block = new html.Block(token.parts[0], parameters, [], span, token.sourceSpan, startSpan);
     this._pushContainer(block, false);
 
     // Incomplete blocks don't have children so we close them immediately and report an error.

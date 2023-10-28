@@ -605,8 +605,10 @@ export class NavigationTransitions {
                          switchTap(() => this.afterPreactivation()),
 
                          switchMap(() => {
-                           const viewTransitionStarted =
-                               this.createViewTransition?.(this.environmentInjector);
+                           const {currentSnapshot, targetSnapshot} = overallTransitionState;
+                           const viewTransitionStarted = this.createViewTransition?.(
+                               this.environmentInjector, currentSnapshot.root,
+                               targetSnapshot!.root);
 
                            // If view transitions are enabled, block the navigation until the view
                            // transition callback starts. Otherwise, continue immediately.

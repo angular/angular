@@ -24,7 +24,7 @@ import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual,
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
-import {assertFirstCreatePass, assertFirstUpdatePass, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
+import {assertFirstCreatePass, assertFirstUpdatePass, assertLView, assertNoDuplicateDirectives, assertTNodeForLView, assertTNodeForTView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
@@ -43,7 +43,7 @@ import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
-import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
+import {getReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
@@ -82,18 +82,17 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         consumer.dirty = false;
         const prevConsumer = consumerBeforeComputation(consumer);
+        consumer.isRunning = true;
         try {
           const context = lView[directiveIdx];
           hostBindingFn(RenderFlags.Update, context);
         } finally {
           consumerAfterComputation(consumer, prevConsumer);
+          consumer.isRunning = false;
         }
       }
     }
   } finally {
-    if (lView[REACTIVE_HOST_BINDING_CONSUMER] === null) {
-      commitLViewConsumerIfHasProducers(lView, REACTIVE_HOST_BINDING_CONSUMER);
-    }
     setSelectedIndex(-1);
   }
 }
@@ -275,15 +274,14 @@ export function executeTemplate<T>(
     try {
       if (effectiveConsumer !== null) {
         effectiveConsumer.dirty = false;
+        effectiveConsumer.isRunning = true;
       }
       templateFn(rf, context);
     } finally {
       consumerAfterComputation(effectiveConsumer, prevConsumer);
+      effectiveConsumer && (effectiveConsumer.isRunning = false);
     }
   } finally {
-    if (isUpdatePhase && lView[REACTIVE_TEMPLATE_CONSUMER] === null) {
-      commitLViewConsumerIfHasProducers(lView, REACTIVE_TEMPLATE_CONSUMER);
-    }
     setSelectedIndex(prevSelectedIndex);
 
     const postHookType =
@@ -1131,6 +1129,7 @@ function findDirectiveDefMatches(
       }
     }
   }
+  ngDevMode && matches !== null && assertNoDuplicateDirectives(matches);
   return matches === null ? null : [matches, hostDirectiveDefs];
 }
 
@@ -1413,8 +1412,8 @@ export function createLContainer(
     false,        // has transplanted views
     currentView,  // parent
     null,         // next
-    0,            // transplanted views to refresh count
     tNode,        // t_host
+    false,        // has child views to refresh
     native,       // native,
     null,         // view refs
     null,         // moved views

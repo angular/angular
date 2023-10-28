@@ -90,3 +90,100 @@
     color: #bcc5ce;
   }
 }
+
+:host {
+  ::ng-deep {
+    .link {
+      stroke: #9b9b9b;
+      stroke-width: 3px;
+      fill: none;
+
+      &.highlighted {
+        stroke: #4da1ff;
+      }
+    }
+
+    .node {
+      cursor: pointer;
+
+      &.highlighted {
+        text {
+          font-weight: 600;
+        }
+
+        circle {
+          stroke: #4da1ff;
+          fill: #fff;
+          stroke-width: 5px;
+        }
+      }
+    }
+
+    .node-environment {
+      stroke: #f05057;
+      fill: #f9c2c5;
+      stroke-width: 1px;
+    }
+
+    & .node-environment:hover,
+    & .node-environment.selected {
+      fill: #4da1ff;
+    }
+
+    .node-imported-module {
+      stroke: #8838f7;
+      fill: #f9c2c5;
+      stroke-width: 3px;
+    }
+    
+    & .node-element {
+      stroke: #28ab2c;
+      fill: #a7d5a9;
+      stroke-width: 1px;
+    }
+
+    & .node-element:hover,
+    & .node-element.selected {
+      fill: #28ab2c;
+    }
+
+    text {
+      fill: #000000;
+      font-weight: 300;
+      font-size: 18px;
+    }
+  }
+}
+
+:host-context(.dark-theme) ::ng-deep {
+  .legend {
+    background: #2f2c2c;
+  }
+
+  .link {
+    stroke: #bcc5ce;
+    fill: none;
+
+    &.highlighted {
+      stroke: #4da1ff;
+    }
+  }
+
+  .node {
+    &.highlighted {
+      circle {
+        stroke: #4da1ff;
+        fill: #fff;
+        stroke-width: 5px;
+      }
+    }
+  }
+
+  .arrow {
+    fill: white;
+  }
+
+  text {
+    fill: #bcc5ce;
+  }
+}

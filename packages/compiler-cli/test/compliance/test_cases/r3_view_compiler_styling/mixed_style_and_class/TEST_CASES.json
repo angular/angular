@@ -17,10 +17,13 @@
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": ["pipe_bindings.js"]
+          "files": [{
+            "expected": "pipe_bindings_template.js",
+            "templatePipelineExpected": "pipe_bindings.pipeline.js",
+            "generated": "pipe_bindings.js"
+          }]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should properly offset multiple style pipe references for styling bindings",
@@ -30,8 +33,7 @@
           "failureMessage": "Incorrect template",
           "files": ["pipe_bindings_slots.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should always generate advance() statements before any styling instructions",

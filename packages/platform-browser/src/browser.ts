@@ -231,7 +231,7 @@ export class BrowserModule {
               providersAlreadyPresent: boolean|null) {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
       throw new RuntimeError(
-          RuntimeErrorCode.BROWER_MODULE_ALREADY_LOADED,
+          RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
           `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
               `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
     }

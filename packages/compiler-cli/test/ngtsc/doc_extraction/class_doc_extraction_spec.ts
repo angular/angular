@@ -15,7 +15,7 @@ import {NgtscTestEnvironment} from '../env';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc class docs extraction', () => {
@@ -33,16 +33,22 @@ runInEachFileSystem(os => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
-      expect(docs[0].name).toBe('UserProfile');
-      expect(docs[0].entryType).toBe(EntryType.UndecoratedClass);
-      expect(docs[1].name).toBe('CustomSlider');
-      expect(docs[1].entryType).toBe(EntryType.UndecoratedClass);
+
+      const [userProfileEntry, customSliderEntry] = docs as ClassEntry[];
+
+      expect(userProfileEntry.name).toBe('UserProfile');
+      expect(userProfileEntry.isAbstract).toBe(false);
+      expect(userProfileEntry.entryType).toBe(EntryType.UndecoratedClass);
+
+      expect(customSliderEntry.name).toBe('CustomSlider');
+      expect(customSliderEntry.isAbstract).toBe(false);
+      expect(customSliderEntry.entryType).toBe(EntryType.UndecoratedClass);
     });
 
     it('should extract class members', () => {
       env.write('index.ts', `
         export class UserProfile {
-          firstName(): string { return 'Morgan'; }          
+          firstName(): string { return 'Morgan'; }
           age: number = 25;
         }
       `);
@@ -60,6 +66,47 @@ runInEachFileSystem(os => {
       expect(propertyEntry.memberType).toBe(MemberType.Property);
       expect(propertyEntry.name).toBe('age');
       expect(propertyEntry.type).toBe('number');
+    });
+
+    it('should extract methods with overloads', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          ident(value: boolean): boolean
+          ident(value: number): number
+          ident(value: number|boolean|string): number|boolean {
+            return 0;
+          }
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(2);
+
+      const [booleanOverloadEntry, numberOverloadEntry] = classEntry.members as MethodEntry[];
+
+      expect(booleanOverloadEntry.name).toBe('ident');
+      expect(booleanOverloadEntry.params.length).toBe(1);
+      expect(booleanOverloadEntry.params[0].type).toBe('boolean');
+      expect(booleanOverloadEntry.returnType).toBe('boolean');
+
+      expect(numberOverloadEntry.name).toBe('ident');
+      expect(numberOverloadEntry.params.length).toBe(1);
+      expect(numberOverloadEntry.params[0].type).toBe('number');
+      expect(numberOverloadEntry.returnType).toBe('number');
+    });
+
+    it('should not extract Angular-internal members', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          ɵfirstName(): string { return 'Morgan'; }
+          _age: number = 25;
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(0);
     });
 
     it('should extract a method with a rest parameter', () => {
@@ -160,13 +207,13 @@ runInEachFileSystem(os => {
         nameMember,
         ageMember,
         addressMember,
-        countryMember,
         birthdayMember,
         getEyeColorMember,
         getNameMember,
         getAgeMember,
-        getCountryMember,
         getBirthdayMember,
+        countryMember,
+        getCountryMember,
       ] = classEntry.members;
 
       // Properties
@@ -216,6 +263,232 @@ runInEachFileSystem(os => {
       expect(userNameSetter.memberType).toBe(MemberType.Setter);
       expect(isAdminSetter.name).toBe('isAdmin');
       expect(isAdminSetter.memberType).toBe(MemberType.Setter);
+    });
+
+    it('should extract abstract classes', () => {
+      env.write('index.ts', `
+        export abstract class UserProfile {
+          firstName: string;
+          abstract lastName: string;
+
+          save(): void { }
+          abstract reset(): void;
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.isAbstract).toBe(true);
+      expect(classEntry.members.length).toBe(4);
+
+      const [firstNameEntry, latsNameEntry, saveEntry, resetEntry] = classEntry.members;
+
+      expect(firstNameEntry.name).toBe('firstName');
+      expect(firstNameEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(latsNameEntry.name).toBe('lastName');
+      expect(latsNameEntry.memberTags).toContain(MemberTags.Abstract);
+
+      expect(saveEntry.name).toBe('save');
+      expect(saveEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(resetEntry.name).toBe('reset');
+      expect(resetEntry.memberTags).toContain(MemberTags.Abstract);
+    });
+
+    it('should extract class generic parameters', () => {
+      env.write('index.ts', `
+        export class UserProfile<T> {
+          constructor(public name: T) { }
+        }
+
+        export class TwinProfile<U, V> {
+          constructor(public name: U, age: V) { }
+        }
+
+        export class AdminProfile<X extends String> {
+          constructor(public name: X) { }
+        }
+
+        export class BotProfile<Q = string> {
+          constructor(public name: Q) { }
+        }
+
+        export class ExecProfile<W extends String = string> {
+          constructor(public name: W) { }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(5);
+
+      const [
+        userProfileEntry,
+        twinProfileEntry,
+        adminProfileEntry,
+        botProfileEntry,
+        execProfileEntry,
+      ] = docs as ClassEntry[];
+
+      expect(userProfileEntry.generics.length).toBe(1);
+      expect(twinProfileEntry.generics.length).toBe(2);
+      expect(adminProfileEntry.generics.length).toBe(1);
+      expect(botProfileEntry.generics.length).toBe(1);
+      expect(execProfileEntry.generics.length).toBe(1);
+
+      const [userProfileGenericEntry] = userProfileEntry.generics;
+      expect(userProfileGenericEntry.name).toBe('T');
+      expect(userProfileGenericEntry.constraint).toBeUndefined();
+      expect(userProfileGenericEntry.default).toBeUndefined();
+
+      const [nameGenericEntry, ageGenericEntry] = twinProfileEntry.generics;
+      expect(nameGenericEntry.name).toBe('U');
+      expect(nameGenericEntry.constraint).toBeUndefined();
+      expect(nameGenericEntry.default).toBeUndefined();
+      expect(ageGenericEntry.name).toBe('V');
+      expect(ageGenericEntry.constraint).toBeUndefined();
+      expect(ageGenericEntry.default).toBeUndefined();
+
+      const [adminProfileGenericEntry] = adminProfileEntry.generics;
+      expect(adminProfileGenericEntry.name).toBe('X');
+      expect(adminProfileGenericEntry.constraint).toBe('String');
+      expect(adminProfileGenericEntry.default).toBeUndefined();
+
+      const [botProfileGenericEntry] = botProfileEntry.generics;
+      expect(botProfileGenericEntry.name).toBe('Q');
+      expect(botProfileGenericEntry.constraint).toBeUndefined();
+      expect(botProfileGenericEntry.default).toBe('string');
+
+      const [execProfileGenericEntry] = execProfileEntry.generics;
+      expect(execProfileGenericEntry.name).toBe('W');
+      expect(execProfileGenericEntry.constraint).toBe('String');
+      expect(execProfileGenericEntry.default).toBe('string');
+    });
+
+    it('should extract method generic parameters', () => {
+      env.write('index.ts', `
+        export class UserProfile {
+          save<T>(data: T): void { }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      const [genericEntry] = (classEntry.members[0] as MethodEntry).generics;
+
+      expect(genericEntry.name).toBe('T');
+      expect(genericEntry.constraint).toBeUndefined();
+      expect(genericEntry.default).toBeUndefined();
+    });
+
+    it('should extract inherited members', () => {
+      env.write('index.ts', `
+        class Ancestor {
+          id: string;
+          value: string|number;
+
+          save(value: string|number): string|number { return 0; }
+        }
+
+        class Parent extends Ancestor {
+          name: string;
+        }
+
+        export class Child extends Parent {
+          age: number;
+          value: number;
+
+          save(value: number): number;
+          save(value: string|number): string|number { return 0; }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(5);
+
+      const [ageEntry, valueEntry, childSaveEntry, nameEntry, idEntry] = classEntry.members;
+
+      expect(ageEntry.name).toBe('age');
+      expect(ageEntry.memberType).toBe(MemberType.Property);
+      expect((ageEntry as PropertyEntry).type).toBe('number');
+      expect(ageEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(valueEntry.name).toBe('value');
+      expect(valueEntry.memberType).toBe(MemberType.Property);
+      expect((valueEntry as PropertyEntry).type).toBe('number');
+      expect(valueEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(childSaveEntry.name).toBe('save');
+      expect(childSaveEntry.memberType).toBe(MemberType.Method);
+      expect((childSaveEntry as MethodEntry).returnType).toBe('number');
+      expect(childSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect((nameEntry as PropertyEntry).type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Property);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).toContain(MemberTags.Inherited);
+    });
+
+    it('should extract inherited getters/setters', () => {
+      env.write('index.ts', `
+        class Ancestor {
+          get name(): string { return ''; }
+          set name(v: string) { }
+
+          get id(): string { return ''; }
+          set id(v: string) { }
+
+          get age(): number { return 0; }
+          set age(v: number) { }
+        }
+
+        class Parent extends Ancestor {
+          name: string;
+        }
+
+        export class Child extends Parent {
+          get id(): string { return ''; }
+        }`);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(4);
+
+      const [idEntry, nameEntry, ageGetterEntry, ageSetterEntry] =
+          classEntry.members as PropertyEntry[];
+
+      // When the child class overrides an accessor pair with another accessor, it overrides
+      // *both* the getter and the setter, resulting (in this case) in just a getter.
+      expect(idEntry.name).toBe('id');
+      expect(idEntry.memberType).toBe(MemberType.Getter);
+      expect((idEntry as PropertyEntry).type).toBe('string');
+      expect(idEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      // When the child class overrides an accessor with a property, the property takes precedence.
+      expect(nameEntry.name).toBe('name');
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect(nameEntry.type).toBe('string');
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageGetterEntry.name).toBe('age');
+      expect(ageGetterEntry.memberType).toBe(MemberType.Getter);
+      expect(ageGetterEntry.type).toBe('number');
+      expect(ageGetterEntry.memberTags).toContain(MemberTags.Inherited);
+
+      expect(ageSetterEntry.name).toBe('age');
+      expect(ageSetterEntry.memberType).toBe(MemberType.Setter);
+      expect(ageSetterEntry.type).toBe('number');
+      expect(ageSetterEntry.memberTags).toContain(MemberTags.Inherited);
     });
   });
 });

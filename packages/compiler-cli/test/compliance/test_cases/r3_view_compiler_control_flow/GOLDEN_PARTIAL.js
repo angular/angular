@@ -238,10 +238,10 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-
     <div>
       {{message}}
       @switch (value() | test) {
-        @case (0) {
+        @case (0 | test) {
           case 0
         }
-        @case (1) {
+        @case (1 | test) {
           case 1
         }
         @default {
@@ -257,10 +257,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>
       {{message}}
       @switch (value() | test) {
-        @case (0) {
+        @case (0 | test) {
           case 0
         }
-        @case (1) {
+        @case (1 | test) {
           case 1
         }
         @default {
@@ -1587,5 +1587,68 @@ export declare class MyApp {
     trackFn(obj: any, arr: any[]): null;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_with_pipe.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestPipe {
+    transform(value) {
+        return value;
+    }
+}
+TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "test" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
+            type: Pipe,
+            args: [{ standalone: true, name: 'test' }]
+        }] });
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.items = [1, 2, 3];
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @for (item of items | test; track item) {
+        {{item}}
+      }
+    </div>
+  `, isInline: true, dependencies: [{ kind: "pipe", type: TestPipe, name: "test" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @for (item of items | test; track item) {
+        {{item}}
+      }
+    </div>
+  `,
+                    standalone: true,
+                    imports: [TestPipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_with_pipe.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestPipe {
+    transform(value: unknown): unknown;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test", true>;
+}
+export declare class MyApp {
+    message: string;
+    items: number[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 

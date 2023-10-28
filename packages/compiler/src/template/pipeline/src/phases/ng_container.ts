@@ -18,12 +18,6 @@ export function phaseNgContainer(job: CompilationJob): void {
   for (const unit of job.units) {
     const updatedElementXrefs = new Set<ir.XrefId>();
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Element && op.tag === CONTAINER_TAG) {
-        // Transmute the `Element` instruction to `Container`.
-        (op as ir.Op<ir.CreateOp>).kind = ir.OpKind.Container;
-        updatedElementXrefs.add(op.xref);
-      }
-
       if (op.kind === ir.OpKind.ElementStart && op.tag === CONTAINER_TAG) {
         // Transmute the `ElementStart` instruction to `ContainerStart`.
         (op as ir.Op<ir.CreateOp>).kind = ir.OpKind.ContainerStart;

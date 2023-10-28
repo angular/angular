@@ -16,7 +16,7 @@ import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration, withNoDomReuse} from '@angular/platform-browser';
+import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 
 import {provideServerRendering} from '../public_api';
@@ -34,7 +34,7 @@ const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
 const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
-const TRANSFER_STATE_TOKEN_ID = '__ɵnghData__';
+const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
 const NGH_ATTR_REGEXP = new RegExp(` ${NGH_ATTR_NAME}=".*?"`, 'g');
 const EMPTY_TEXT_NODE_REGEXP = new RegExp(`<!--${EMPTY_TEXT_NODE_COMMENT}-->`, 'g');
@@ -309,43 +309,6 @@ describe('platform-server hydration integration', () => {
 
       return bootstrapApplication(component, {providers});
     }
-
-    describe('public API', () => {
-      it('should allow to disable DOM hydration using `withNoDomReuse` feature', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
-            <header>Header</header>
-            <main>This is hydrated content in the main element.</main>
-            <footer>Footer</footer>
-          `,
-        })
-        class SimpleComponent {
-        }
-
-        const html =
-            await ssr(SimpleComponent, undefined, [withDebugConsole()], [withNoDomReuse()]);
-        const ssrContents = getAppContents(html);
-
-        // There should be no `ngh` annotations.
-        expect(ssrContents).not.toContain(`<app ${NGH_ATTR_NAME}`);
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef =
-            await hydrate(html, SimpleComponent, [withDebugConsole()], [withNoDomReuse()]);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        // Make sure there is no hydration-related message in a console.
-        verifyHasNoLog(appRef, 'Angular hydrated');
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyNoNodesWereClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-    });
 
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
@@ -2409,6 +2372,53 @@ describe('platform-server hydration integration', () => {
         const clientRootNode = compRef.location.nativeElement;
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should not reference IntersectionObserver on the server', async () => {
+        // This test verifies that there are no errors produced while rendering on a server
+        // when `on viewport` trigger is used for a defer block.
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp],
+          template: `
+            @defer (when isVisible; prefetch on viewport(ref)) {
+              <my-lazy-cmp />
+            } @placeholder {
+              <div #ref>Placeholder!</div>
+            }
+          `
+        })
+        class SimpleComponent {
+          isVisible = false;
+        }
+
+        const errors: string[] = [];
+        class CustomErrorHandler extends ErrorHandler {
+          override handleError(error: any): void {
+            errors.push(error);
+          }
+        }
+        const envProviders = [{
+          provide: ErrorHandler,
+          useClass: CustomErrorHandler,
+        }];
+
+        const html = await ssr(SimpleComponent, undefined, envProviders);
+        const ssrContents = getAppContents(html);
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Placeholder');
+
+        // Verify that there are no errors.
+        expect(errors).toHaveSize(0);
       });
 
       it('should not hydrate when an entire block in skip hydration section', async () => {

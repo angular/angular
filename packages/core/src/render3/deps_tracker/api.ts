@@ -117,4 +117,10 @@ export interface DepsTrackerApi {
   getStandaloneComponentScope(
       type: ComponentType<any>,
       rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
+
+  /**
+   * Checks if the NgModule declaring the component is not loaded into the browser yet. Always
+   * returns false for standalone components.
+   */
+  isOrphanComponent(cmp: ComponentType<any>): boolean;
 }

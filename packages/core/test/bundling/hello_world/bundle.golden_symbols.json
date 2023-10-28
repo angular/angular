@@ -105,6 +105,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
+  },
+  {
     "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
@@ -441,16 +444,10 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
     "name": "collectNativeNodesInLContainer"
-  },
-  {
-    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "concatStringsWithSpace"
@@ -495,9 +492,6 @@
     "name": "createLView"
   },
   {
-    "name": "createLViewConsumer"
-  },
-  {
     "name": "createNodeInjector"
   },
   {
@@ -529,6 +523,9 @@
   },
   {
     "name": "detectChangesInView"
+  },
+  {
+    "name": "detectChangesInViewIfAttached"
   },
   {
     "name": "detectChangesInternal"
@@ -634,9 +631,6 @@
   },
   {
     "name": "getNullInjector"
-  },
-  {
-    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
@@ -805,6 +799,9 @@
   },
   {
     "name": "map"
+  },
+  {
+    "name": "markAncestorsForTraversal"
   },
   {
     "name": "markViewDirty"
@@ -984,10 +981,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateViewsToRefresh"
+    "name": "urlParsingNode"
   },
   {
-    "name": "urlParsingNode"
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

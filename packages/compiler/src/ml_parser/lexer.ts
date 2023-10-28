@@ -918,7 +918,7 @@ class _Tokenizer {
     }
 
     if (this._tokenizeBlocks && !this._inInterpolation && !this._isInExpansion() &&
-        (this._isBlockStart() || this._cursor.peek() === chars.$RBRACE)) {
+        (this._cursor.peek() === chars.$AT || this._cursor.peek() === chars.$RBRACE)) {
       return true;
     }
 
@@ -938,19 +938,6 @@ class _Tokenizer {
       const code = tmp.peek();
       if ((chars.$a <= code && code <= chars.$z) || (chars.$A <= code && code <= chars.$Z) ||
           code === chars.$SLASH || code === chars.$BANG) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private _isBlockStart(): boolean {
-    if (this._tokenizeBlocks && this._cursor.peek() === chars.$AT) {
-      const tmp = this._cursor.clone();
-
-      // If it is, also verify that the next character is a valid block identifier.
-      tmp.advance();
-      if (isBlockNameChar(tmp.peek())) {
         return true;
       }
     }

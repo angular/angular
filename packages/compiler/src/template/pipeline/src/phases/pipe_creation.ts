@@ -30,12 +30,23 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
         throw new Error(`AssertionError: pipe bindings should not appear in child expressions`);
       }
 
-      if (!ir.hasDependsOnSlotContextTrait(updateOp)) {
+      // This update op must be associated with a create op that consumes a slot (either by
+      // depending on the ambient context of `target`, or merely referencing that create op via
+      // `target`).
+      if (!ir.hasDependsOnSlotContextTrait(updateOp) &&
+          !ir.hasUsesSlotIndexTrait<ir.UpdateOp>(updateOp)) {
         throw new Error(`AssertionError: pipe binding associated with non-slot operation ${
             ir.OpKind[updateOp.kind]}`);
       }
 
-      addPipeToCreationBlock(unit, updateOp.target, expr);
+      if (unit.job.compatibility) {
+        addPipeToCreationBlock(unit, updateOp.target, expr);
+      } else {
+        // When not in compatibility mode, we just add the pipe to the end of the create block. This
+        // is not only simpler and faster, but allows more chaining opportunities for other
+        // instructions.
+        unit.create.push(ir.createPipeOp(expr.target, expr.name));
+      }
     });
   }
 }

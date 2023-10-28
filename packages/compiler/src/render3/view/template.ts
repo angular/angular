@@ -34,7 +34,6 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3DeferBlockMetadata} from './api';
-import {BLOCK_SYNTAX_ENABLED_DEFAULT} from './block_syntax_switch';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -1150,9 +1149,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // callback in order to generate the correct expressions when pipes or pure functions are
     // used inside the branch expressions.
     const branchData = block.branches.map(({expression, expressionAlias, children, sourceSpan}) => {
-      const processedExpression =
-          expression === null ? null : expression.visit(this._valueConverter);
-
       // If the branch has an alias, it'll be assigned directly to the container's context.
       // We define a variable referring directly to the context so that any nested usages can be
       // rewritten to refer to it.
@@ -1162,11 +1158,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               expressionAlias.keySpan)] :
           undefined;
 
-      return {
-        index: this.createEmbeddedTemplateFn(null, children, '_Conditional', sourceSpan, variables),
-        expression: processedExpression,
-        alias: expressionAlias
-      };
+      // Note: the template needs to be created *before* we process the expression,
+      // otherwise pipes injecting some symbols won't work (see #52102).
+      const index =
+          this.createEmbeddedTemplateFn(null, children, '_Conditional', sourceSpan, variables);
+      const processedExpression =
+          expression === null ? null : expression.visit(this._valueConverter);
+      return {index, expression: processedExpression, alias: expressionAlias};
     });
 
     // Use the index of the first block as the index for the entire container.
@@ -1223,23 +1221,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitSwitchBlock(block: t.SwitchBlock): void {
-    const blockExpression = block.expression.visit(this._valueConverter);
-    this.allocateBindingSlots(null);  // Allocate a slot for the primary block expression.
-
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are used.
     const caseData = block.cases.map(currentCase => {
-      return {
-        index: this.createEmbeddedTemplateFn(
-            null, currentCase.children, '_Case', currentCase.sourceSpan),
-        expression: currentCase.expression === null ?
-            null :
-            currentCase.expression.visit(this._valueConverter)
-      };
+      const index = this.createEmbeddedTemplateFn(
+          null, currentCase.children, '_Case', currentCase.sourceSpan);
+      const expression = currentCase.expression === null ?
+          null :
+          currentCase.expression.visit(this._valueConverter);
+      return {index, expression};
     });
 
     // Use the index of the first block as the index for the entire container.
     const containerIndex = caseData[0].index;
+
+    // Note: the expression needs to be processed *after* the template,
+    // otherwise pipes injecting some symbols won't work (see #52102).
+    const blockExpression = block.expression.visit(this._valueConverter);
+    this.allocateBindingSlots(null);  // Allocate a slot for the primary block expression.
 
     this.updateInstructionWithAdvance(containerIndex, block.sourceSpan, R3.conditional, () => {
       const generateCases = (caseIndex: number): o.Expression => {
@@ -1324,14 +1323,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           o.literal(errorIndex),
           loadingConsts?.length ? this.addToConsts(o.literalArr(loadingConsts)) : o.TYPED_NULL_EXPR,
           placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
+          (loadingConsts?.length || placeholderConsts) ?
+              o.importExpr(R3.deferEnableTimerScheduling) :
+              o.TYPED_NULL_EXPR,
         ]));
-
-    this.createDeferTriggerInstructions(deferredIndex, triggers, metadata, false);
-    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, metadata, true);
 
     // Allocate an extra data slot right after a defer block slot to store
     // instance-specific state of that defer block at runtime.
     this.allocateDataSlot();
+
+    // Note: the triggers need to be processed *after* the various templates,
+    // otherwise pipes injecting some symbols won't work (see #52102).
+    this.createDeferTriggerInstructions(deferredIndex, triggers, metadata, false);
+    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, metadata, true);
   }
 
   private createDeferredDepsFunction(name: string, metadata: R3DeferBlockMetadata) {
@@ -1467,13 +1471,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const primaryData = this.prepareEmbeddedTemplateFn(
         block.children, '_For',
         [block.item, block.contextVariables.$index, block.contextVariables.$count]);
-    const emptyData = block.empty === null ?
-        null :
-        this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
     const {expression: trackByExpression, usesComponentInstance: trackByUsesComponentInstance} =
         this.createTrackByFunction(block);
-    const value = block.expression.visit(this._valueConverter);
-    this.allocateBindingSlots(value);
+    let emptyData: TemplateData|null = null;
+
+    if (block.empty !== null) {
+      emptyData = this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
+      // Allocate an extra slot for the empty block tracking.
+      this.allocateBindingSlots(null);
+    }
 
     this.registerComputedLoopVariables(block, primaryData.scope);
 
@@ -1498,6 +1504,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       return params;
     });
+
+    // Note: the expression needs to be processed *after* the template,
+    // otherwise pipes injecting some symbols won't work (see #52102).
+    // Note: we don't allocate binding slots for this expression,
+    // because its value isn't stored in the LView.
+    const value = block.expression.visit(this._valueConverter);
 
     // `repeater(0, iterable)`
     this.updateInstruction(
@@ -2696,7 +2708,7 @@ export function parseTemplate(
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
     ...options,
     tokenizeExpansionForms: true,
-    tokenizeBlocks: options.enableBlockSyntax ?? BLOCK_SYNTAX_ENABLED_DEFAULT,
+    tokenizeBlocks: options.enableBlockSyntax ?? true,
   });
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&

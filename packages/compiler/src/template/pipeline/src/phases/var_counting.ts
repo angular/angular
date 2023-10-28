@@ -34,6 +34,14 @@ export function phaseVarCounting(job: CompilationJob): void {
           return;
         }
 
+        // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
+        // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
+        // assigning offsets in two passes instead of one, only in compatibility mode.
+        if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            expr instanceof ir.PureFunctionExpr) {
+          return;
+        }
+
         // Some expressions require knowledge of the number of variable slots consumed.
         if (ir.hasUsesVarOffsetTrait(expr)) {
           expr.varOffset = varCount;
@@ -45,6 +53,26 @@ export function phaseVarCounting(job: CompilationJob): void {
       });
     }
 
+    // Compatiblity mode pass for pure function offsets (as explained above).
+    if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+      for (const op of unit.ops()) {
+        ir.visitExpressionsInOp(op, expr => {
+          if (!ir.isIrExpression(expr) || !(expr instanceof ir.PureFunctionExpr)) {
+            return;
+          }
+
+          // Some expressions require knowledge of the number of variable slots consumed.
+          if (ir.hasUsesVarOffsetTrait(expr)) {
+            expr.varOffset = varCount;
+          }
+
+          if (ir.hasConsumesVarsTrait(expr)) {
+            varCount += varsUsedByIrExpression(expr);
+          }
+        });
+      }
+    }
+
     unit.vars = varCount;
   }
 
@@ -53,7 +81,7 @@ export function phaseVarCounting(job: CompilationJob): void {
     // an embedded view).
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind !== ir.OpKind.Template) {
+        if (op.kind !== ir.OpKind.Template && op.kind !== ir.OpKind.RepeaterCreate) {
           continue;
         }
 
@@ -77,7 +105,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.
       slots = 1;
-      if (op.expression instanceof ir.Interpolation) {
+      if (op.expression instanceof ir.Interpolation && !isSingletonInterpolation(op.expression)) {
         slots += op.expression.expressions.length;
       }
       return slots;
@@ -115,4 +143,14 @@ export function varsUsedByIrExpression(expr: ir.Expression&ir.ConsumesVarsTrait)
       throw new Error(
           `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`);
   }
+}
+
+function isSingletonInterpolation(expr: ir.Interpolation): boolean {
+  if (expr.expressions.length !== 1 || expr.strings.length !== 2) {
+    return false;
+  }
+  if (expr.strings[0] !== '' || expr.strings[1] !== '') {
+    return false;
+  }
+  return true;
 }

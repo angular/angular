@@ -166,7 +166,7 @@ Avoiding the use of modules with non-local side effects (outside of polyfills) i
 
 ### Long build times when using Sass combined with pnpm or yarn PnP
 
-Applications may have increased build times due to the need to workaround Sass resolution incompabilities when using either the pnpm or Yarn PnP package managers.
+Applications may have increased build times due to the need to workaround Sass resolution incompatibilities when using either the pnpm or Yarn PnP package managers.
 Sass files with `@import` or `@use` directives referencing a package when using either of these package managers can trigger the performance problem.
 
 An alternative workaround that alleviates the build time increases is in development and will be available before the build system moves to stable status.

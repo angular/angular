@@ -7,7 +7,7 @@
  */
 
 
-import {Component, Pipe, PipeTransform} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
@@ -234,5 +234,29 @@ describe('control flow - if', () => {
     fixture.componentInstance.value = 1;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent.trim()).toBe('one');
+  });
+
+  it('should be able to use pipes injecting ChangeDetectorRef in if blocks', () => {
+    @Pipe({name: 'test', standalone: true})
+    class TestPipe implements PipeTransform {
+      changeDetectorRef = inject(ChangeDetectorRef);
+
+      transform(value: any) {
+        return value;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: '@if (show | test) {Something}',
+      imports: [TestPipe],
+    })
+    class TestComponent {
+      show = true;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Something');
   });
 });

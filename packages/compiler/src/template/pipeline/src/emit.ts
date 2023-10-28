@@ -1,4 +1,5 @@
 /**
+ *
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -12,16 +13,18 @@ import * as ir from '../ir';
 
 import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 
-import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
 import {phaseFindAnyCasts} from './phases/any_cast';
 import {phaseApplyI18nExpressions} from './phases/apply_i18n_expressions';
+import {phaseAssignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
 import {phaseAttributeExtraction} from './phases/attribute_extraction';
 import {phaseBindingSpecialization} from './phases/binding_specialization';
 import {phaseChaining} from './phases/chaining';
+import {phaseCollapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {phaseConditionals} from './phases/conditionals';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
+import {phaseFormatI18nParams} from './phases/format_i18n_params';
 import {phaseGenerateAdvance} from './phases/generate_advance';
 import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
 import {phaseGenerateVariables} from './phases/generate_variables';
@@ -30,6 +33,7 @@ import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsin
 import {phaseI18nConstCollection} from './phases/i18n_const_collection';
 import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
 import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
+import {phaseIcuExtraction} from './phases/icu_extraction';
 import {phaseLocalRefs} from './phases/local_refs';
 import {phaseNamespace} from './phases/namespace';
 import {phaseNaming} from './phases/naming';
@@ -42,21 +46,29 @@ import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
 import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
+import {phasePropagateI18nBlocks} from './phases/propagate_i18n_blocks';
+import {phasePropagateI18nPlaceholders} from './phases/propagate_i18n_placeholders';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
 import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
+import {phaseRepeaterDerivedVars} from './phases/repeater_derived_vars';
 import {phaseResolveContexts} from './phases/resolve_contexts';
 import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
-import {phaseResolveI18nPlaceholders} from './phases/resolve_i18n_placeholders';
+import {phaseResolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
+import {phaseResolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
 import {phaseResolveNames} from './phases/resolve_names';
 import {phaseResolveSanitizers} from './phases/resolve_sanitizers';
 import {phaseSaveRestoreView} from './phases/save_restore_view';
 import {phaseSlotAllocation} from './phases/slot_allocation';
 import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
 import {phaseTemporaryVariables} from './phases/temporary_variables';
+import {phaseTrackFnGeneration} from './phases/track_fn_generation';
+import {phaseTrackFnOptimization} from './phases/track_fn_optimization';
+import {phaseTrackVariables} from './phases/track_variables';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
+import {phaseWrapIcus} from './phases/wrap_icus';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -75,12 +87,17 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseNamespace},
   {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
   {kind: Kind.Both, fn: phaseBindingSpecialization},
+  {kind: Kind.Tmpl, fn: phasePropagateI18nBlocks},
+  {kind: Kind.Tmpl, fn: phaseWrapIcus},
   {kind: Kind.Both, fn: phaseAttributeExtraction},
   {kind: Kind.Both, fn: phaseParseExtractedStyles},
   {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
+  {kind: Kind.Both, fn: phaseCollapseSingletonInterpolations},
+  {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Tmpl, fn: phaseConditionals},
   {kind: Kind.Tmpl, fn: phasePipeCreation},
   {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
+  {kind: Kind.Tmpl, fn: phaseIcuExtraction},
   {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
   {kind: Kind.Tmpl, fn: phasePipeVariadic},
   {kind: Kind.Both, fn: phasePureLiteralStructures},
@@ -89,7 +106,10 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
   {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
   {kind: Kind.Both, fn: phaseResolveDollarEvent},
+  {kind: Kind.Tmpl, fn: phaseRepeaterDerivedVars},
+  {kind: Kind.Tmpl, fn: phaseTrackVariables},
   {kind: Kind.Both, fn: phaseResolveNames},
+  {kind: Kind.Tmpl, fn: phaseTrackFnOptimization},
   {kind: Kind.Both, fn: phaseResolveContexts},
   {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
   {kind: Kind.Tmpl, fn: phaseLocalRefs},
@@ -97,11 +117,16 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: phaseExpandSafeReads},
   {kind: Kind.Both, fn: phaseTemporaryVariables},
   {kind: Kind.Tmpl, fn: phaseSlotAllocation},
-  {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
   {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
+  {kind: Kind.Tmpl, fn: phaseResolveI18nElementPlaceholders},
+  {kind: Kind.Tmpl, fn: phaseResolveI18nExpressionPlaceholders},
+  {kind: Kind.Tmpl, fn: phasePropagateI18nPlaceholders},
+  {kind: Kind.Tmpl, fn: phaseFormatI18nParams},
+  {kind: Kind.Tmpl, fn: phaseTrackFnGeneration},
   {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
   {kind: Kind.Tmpl, fn: phaseConstTraitCollection},
   {kind: Kind.Both, fn: phaseConstCollection},
+  {kind: Kind.Tmpl, fn: phaseAssignI18nSlotDependencies},
   {kind: Kind.Both, fn: phaseVarCounting},
   {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
   {kind: Kind.Both, fn: phaseVariableOptimization},
@@ -111,8 +136,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: phaseEmptyElements},
   {kind: Kind.Tmpl, fn: phaseNonbindable},
   {kind: Kind.Both, fn: phasePureFunctionExtraction},
-  {kind: Kind.Tmpl, fn: phaseAlignPipeVariadicVarOffset},
-  {kind: Kind.Both, fn: phaseOrdering},
   {kind: Kind.Both, fn: phaseReify},
   {kind: Kind.Both, fn: phaseChaining},
 ];

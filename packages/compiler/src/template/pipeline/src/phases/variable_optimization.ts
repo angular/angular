@@ -30,6 +30,15 @@ import {CompilationJob} from '../compilation';
  */
 export function phaseVariableOptimization(job: CompilationJob): void {
   for (const unit of job.units) {
+    inlineAlwaysInlineVariables(unit.create);
+    inlineAlwaysInlineVariables(unit.update);
+
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.Listener) {
+        inlineAlwaysInlineVariables(op.handlerOps);
+      }
+    }
+
     optimizeVariablesInOpList(unit.create, job.compatibility);
     optimizeVariablesInOpList(unit.update, job.compatibility);
 
@@ -93,6 +102,33 @@ interface OpInfo {
    * Flags indicating any `Fence`s present for this operation.
    */
   fences: Fence;
+}
+
+function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
+  const vars = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp|ir.UpdateOp>>();
+  for (const op of ops) {
+    if (op.kind === ir.OpKind.Variable && op.flags & ir.VariableFlags.AlwaysInline) {
+      ir.visitExpressionsInOp(op, expr => {
+        if (ir.isIrExpression(expr) && fencesForIrExpression(expr) !== Fence.None) {
+          throw new Error(`AssertionError: A context-sensitive variable was marked AlwaysInline`);
+        }
+      });
+      vars.set(op.xref, op);
+    }
+
+    ir.transformExpressionsInOp(op, expr => {
+      if (expr instanceof ir.ReadVariableExpr && vars.has(expr.xref)) {
+        const varOp = vars.get(expr.xref)!;
+        // Inline by cloning, because we might inline into multiple places.
+        return varOp.initializer.clone();
+      }
+      return expr;
+    }, ir.VisitorContextFlag.None);
+  }
+
+  for (const op of vars.values()) {
+    ir.OpList.remove(op as ir.CreateOp | ir.UpdateOp);
+  }
 }
 
 /**
@@ -174,10 +210,15 @@ function optimizeVariablesInOpList(
   // Next, inline any remaining variables with exactly one usage.
   const toInline: ir.XrefId[] = [];
   for (const [id, count] of varUsages) {
+    const decl = varDecls.get(id)!;
+    const varInfo = opMap.get(decl as ir.CreateOp | ir.UpdateOp)!;
     // We can inline variables that:
-    //  - are used once
+    //  - are used exactly once, and
     //  - are not used remotely
-    if (count !== 1) {
+    // OR
+    //  - are marked for always inlining
+    const isAlwaysInline = !!(decl.flags & ir.VariableFlags.AlwaysInline);
+    if (count !== 1 || isAlwaysInline) {
       // We can't inline this variable as it's used more than once.
       continue;
     }
@@ -196,6 +237,12 @@ function optimizeVariablesInOpList(
     // no future operation will make inlining legal.
     const decl = varDecls.get(candidate)!;
     const varInfo = opMap.get(decl as ir.CreateOp | ir.UpdateOp)!;
+    const isAlwaysInline = !!(decl.flags & ir.VariableFlags.AlwaysInline);
+
+    if (isAlwaysInline) {
+      throw new Error(
+          `AssertionError: Found an 'AlwaysInline' variable after the always inlining pass.`);
+    }
 
     // Scan operations following the variable declaration and look for the point where that variable
     // is used. There should only be one usage given the precondition above.

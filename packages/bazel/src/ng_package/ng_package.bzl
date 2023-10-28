@@ -80,7 +80,6 @@ WELL_KNOWN_EXTERNALS = [
     "@angular/common/testing",
     "@angular/common/upgrade",
     "@angular/compiler",
-    "@angular/compiler/testing",
     "@angular/core",
     "@angular/core/testing",
     "@angular/elements",

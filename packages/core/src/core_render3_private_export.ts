@@ -66,6 +66,7 @@ export {
   RenderFlags as ɵRenderFlags,
   setClassMetadata as ɵsetClassMetadata,
   setClassMetadataAsync as ɵsetClassMetadataAsync,
+  ɵsetClassDebugInfo,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
   ɵDeferBlockDependencyInterceptor,
@@ -224,6 +225,7 @@ export {
   ɵɵdeferPrefetchOnHover,
   ɵɵdeferPrefetchOnInteraction,
   ɵɵdeferPrefetchOnViewport,
+  ɵɵdeferEnableTimerScheduling,
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
@@ -311,7 +313,7 @@ export {
 export {
   noSideEffects as ɵnoSideEffects,
 } from './util/closure';
-export { AfterRenderEventManager as ɵAfterRenderEventManager } from './render3/after_render_hooks';
+export { AfterRenderEventManager as ɵAfterRenderEventManager, internalAfterNextRender as ɵinternalAfterNextRender } from './render3/after_render_hooks';
 export {depsTracker as ɵdepsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT} from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadata as ɵgetAsyncClassMetadata} from './render3/metadata';

@@ -255,7 +255,7 @@ type Event_2 = NavigationStart | NavigationEnd | NavigationCancel | NavigationEr
 export { Event_2 as Event }
 
 // @public
-export const enum EventType {
+export enum EventType {
     // (undocumented)
     ActivationEnd = 14,
     // (undocumented)
@@ -433,7 +433,7 @@ export class NavigationCancel extends RouterEvent {
 }
 
 // @public
-export const enum NavigationCancellationCode {
+export enum NavigationCancellationCode {
     GuardRejected = 3,
     NoDataFromResolver = 2,
     Redirect = 0,
@@ -491,7 +491,7 @@ export class NavigationSkipped extends RouterEvent {
 }
 
 // @public
-export const enum NavigationSkippedCode {
+export enum NavigationSkippedCode {
     IgnoredByUrlHandlingStrategy = 1,
     IgnoredSameUrlNavigation = 0
 }
@@ -770,7 +770,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | RouterHashLocationFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1086,7 +1086,25 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export interface ViewTransitionInfo {
+    from: ActivatedRouteSnapshot;
+    to: ActivatedRouteSnapshot;
+    transition: {
+        finished: Promise<void>;
+        ready: Promise<void>;
+        updateCallbackDone: Promise<void>;
+        skipTransition(): void;
+    };
+}
+
+// @public
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+// @public
+export interface ViewTransitionsFeatureOptions {
+    onViewTransitionCreated?: (transitionInfo: ViewTransitionInfo) => void;
+    skipInitialTransition?: boolean;
+}
 
 // @public
 export function withComponentInputBinding(): ComponentInputBindingFeature;
@@ -1101,7 +1119,7 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
 
 // @public
-export function withHashLocation(): RouterConfigurationFeature;
+export function withHashLocation(): RouterHashLocationFeature;
 
 // @public
 export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;

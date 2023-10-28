@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           node-module-directories: |
@@ -60,13 +60,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Run unit tests
@@ -74,36 +74,17 @@ jobs:
       - name: Test build
         run: yarn devtools:build:chrome
 
-  framework-win:
-    runs-on: windows-latest
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
-        with:
-          cache-node-modules: true
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
-      - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
-      - name: Install node modules
-        run: yarn install --frozen-lockfile --network-timeout 100000
-      - name: Test all windows CI targets
-        # Skip the simulated file system tests on Windows, because they tend to be flaky.
-        # Note that we need to pass `NG_SKIP_SIMULATED_FS` using `--test_env`, because the
-        # environment variable doesn't get picked up in Bazel when specified through `env` in GHA.
-        run: bazel test --test_tag_filters="-browser:chromium-local" --test_env=NG_SKIP_SIMULATED_FS=true //packages/compiler-cli/...
-
   test:
     runs-on: ubuntu-latest-4core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules
         run: yarn install --frozen-lockfile --network-timeout 100000
       - name: Run CI tests for framework
@@ -113,15 +94,15 @@ jobs:
     runs-on: ubuntu-latest-4core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           node-module-directories: |
             ./aio/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Run AIO tests with upstream packages
@@ -134,15 +115,15 @@ jobs:
       labels: ubuntu-latest-4core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           node-module-directories: |
             ./aio/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules
         run: yarn install --cwd aio --frozen-lockfile
       - name: Run AIO tests with local packages
@@ -157,15 +138,15 @@ jobs:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           node-module-directories: |
             ./aio/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules for aio
         run: yarn install --cwd aio --frozen-lockfile
       - name: Set the stable branch environment variable
@@ -201,13 +182,13 @@ jobs:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@ba9b4487ced515e5b4d87edd681a3bd9792444d6
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
@@ -219,7 +200,7 @@ jobs:
       labels: ubuntu-latest-4core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
         with:
           cache-node-modules: true
           node-module-directories: |
@@ -227,9 +208,9 @@ jobs:
             ./packages/zone.js/node_modules
             ./packages/zone.js/test/typings/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@9b1adb2ad5a049ea9985734f197dca43dd4d3f1b
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - run: |
@@ -261,3 +242,33 @@ jobs:
       - run: yarn --cwd packages/zone.js closuretest
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
+
+  bazel-saucelabs:
+    # TODO: Replace legacy job with Bazel saucelabs job.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest-4-cores
+    env:
+      JOBS: 2
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
+        with:
+          cache-node-modules: true
+          # Checking out the pull request commit is intended here as we need to run the changed code tests.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@1173ab9b7174e4ec6ff3a3455226ca75594edaa0
+      - name: Set up Sauce Tunnel Daemon
+        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
+        env:
+          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+          SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      - name: Run all saucelabs bazel tests
+        run: |
+          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
+          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}

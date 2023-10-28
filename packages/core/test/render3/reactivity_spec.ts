@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {AfterViewInit, Component, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, computed, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -347,5 +347,63 @@ describe('effects', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('0');
+  });
+
+  describe('should disallow creating an effect context', () => {
+    it('inside template effect', () => {
+      @Component({
+        template: '{{someFn()}}',
+      })
+      class Cmp {
+        someFn() {
+          effect(() => {});
+        }
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      expect(() => fixture.detectChanges(true))
+          .toThrowError(/effect\(\) cannot be called from within a reactive context./);
+    });
+
+    it('inside computed', () => {
+      expect(() => {
+        computed(() => {
+          effect(() => {});
+        })();
+      }).toThrowError(/effect\(\) cannot be called from within a reactive context./);
+    });
+
+    it('inside an effect', () => {
+      @Component({
+        template: '',
+      })
+      class Cmp {
+        constructor() {
+          effect(() => {
+            this.someFnThatWillCreateAnEffect();
+          });
+        }
+
+        someFnThatWillCreateAnEffect() {
+          effect(() => {});
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: ErrorHandler, useClass: class extends ErrorHandler{
+              override handleError(e: Error) {
+                throw e;
+              }
+            },
+          },
+        ]
+      });
+      TestBed.createComponent(Cmp);
+
+      expect(() => TestBed.flushEffects())
+          .toThrowError(/effect\(\) cannot be called from within a reactive context./);
+    });
   });
 });

@@ -72,12 +72,8 @@ export class DelegatingCompilerHost implements
     this.useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
     this.getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
     this.hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
-    // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
-    // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
-    // @ts-ignore
     this.resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
     this.resolveTypeReferenceDirectiveReferences =
-        // @ts-ignore
         this.delegateMethod('resolveTypeReferenceDirectiveReferences');
   }
 

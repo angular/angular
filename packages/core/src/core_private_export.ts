@@ -8,9 +8,12 @@
 
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS, internalCreateApplication as ɵinternalCreateApplication, whenStable as ɵwhenStable} from './application_ref';
-export {ENABLED_SSR_FEATURES as ɵENABLED_SSR_FEATURES, IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application_tokens';
+export {IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application_tokens';
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {Console as ɵConsole} from './console';
+export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks} from './defer/discovery';
+export {renderDeferBlockState as ɵrenderDeferBlockState, triggerResourceLoading as ɵtriggerResourceLoading} from './defer/instructions';
+export {DeferBlockBehavior as ɵDeferBlockBehavior, DeferBlockConfig as ɵDeferBlockConfig, DeferBlockState as ɵDeferBlockState} from './defer/interfaces';
 export {convertToBitFlags as ɵconvertToBitFlags, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
 export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDeclaration, ɵɵInjectorDef} from './di/interface/defs';
 export {InternalEnvironmentProviders as ɵInternalEnvironmentProviders, isEnvironmentProviders as ɵisEnvironmentProviders} from './di/interface/provider';
@@ -28,9 +31,8 @@ export {Writable as ɵWritable} from './interface/type';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
+export {AnimationRendererType as ɵAnimationRendererType} from './render/api';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
-export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks, renderDeferBlockState as ɵrenderDeferBlockState, triggerResourceLoading as ɵtriggerResourceLoading} from './render3/instructions/defer';
-export {DeferBlockBehavior as ɵDeferBlockBehavior, DeferBlockConfig as ɵDeferBlockConfig, DeferBlockState as ɵDeferBlockState} from './render3/interfaces/defer';
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';

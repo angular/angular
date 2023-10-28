@@ -10,7 +10,6 @@ about the features and tools that can help you develop and deliver Angular appli
 ## Application architecture
 
 *   The **Main Concepts** section located in the table of contents contains several topics that explain how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
-*   The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 *   The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page application.
 *   The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 
@@ -34,7 +33,7 @@ Most applications still need to access a server using the `HttpClient` to access
 For some platforms and applications, you might also want to use the PWA \(Progressive Web App\) model to improve the user experience.
 
 *   [HTTP](guide/understanding-communicating-with-http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
-*   [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering \(SSR\). This allows you to run your Angular application on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
+*   [Server-side rendering](guide/ssr): Angular Universal generates static application pages on the server through server-side rendering \(SSR\). This allows you to run your Angular application on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
 *   [Service workers and PWA](guide/service-worker-intro): Use a service worker to reduce dependency on the network and significantly improve the user experience.
 *   [Web workers](guide/web-worker): Learn how to run CPU-intensive computations in a background thread.
 
@@ -70,4 +69,4 @@ For some platforms and applications, you might also want to use the PWA \(Progre
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-25

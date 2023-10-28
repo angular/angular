@@ -11,11 +11,11 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgModuleRef, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
+import {bootstrapApplication, BrowserModule, provideClientHydration, Title} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
@@ -28,7 +28,7 @@ const APP_CONFIG: ApplicationConfig = {
   ]
 };
 
-function getStandaloneBoostrapFn(
+function getStandaloneBootstrapFn(
     component: Type<unknown>, providers: Array<Provider|EnvironmentProviders> = []): () =>
     Promise<ApplicationRef> {
   return () => bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}));
@@ -245,7 +245,7 @@ function createMyAsyncServerApp(standalone: boolean) {
 }
 
 const MyAsyncServerApp = createMyAsyncServerApp(false);
-const MyAsyncServerAppStandalone = getStandaloneBoostrapFn(createMyAsyncServerApp(true));
+const MyAsyncServerAppStandalone = getStandaloneBootstrapFn(createMyAsyncServerApp(true));
 
 @NgModule({
   declarations: [MyAsyncServerApp],
@@ -267,7 +267,7 @@ function createSVGComponent(standalone: boolean) {
 }
 
 const SVGComponent = createSVGComponent(false);
-const SVGComponentStandalone = getStandaloneBoostrapFn(createSVGComponent(true));
+const SVGComponentStandalone = getStandaloneBootstrapFn(createSVGComponent(true));
 
 @NgModule({
   declarations: [SVGComponent],
@@ -309,7 +309,7 @@ function createMyAnimationApp(standalone: boolean) {
 }
 
 const MyAnimationApp = createMyAnimationApp(false);
-const MyAnimationAppStandalone = getStandaloneBoostrapFn(createMyAnimationApp(true));
+const MyAnimationAppStandalone = getStandaloneBootstrapFn(createMyAnimationApp(true));
 
 @NgModule({
   declarations: [MyAnimationApp],
@@ -332,7 +332,7 @@ function createMyStylesApp(standalone: boolean) {
 }
 
 const MyStylesApp = createMyStylesApp(false);
-const MyStylesAppStandalone = getStandaloneBoostrapFn(createMyStylesApp(true));
+const MyStylesAppStandalone = getStandaloneBootstrapFn(createMyStylesApp(true));
 
 @NgModule(
     {declarations: [MyStylesApp], imports: [BrowserModule, ServerModule], bootstrap: [MyStylesApp]})
@@ -355,7 +355,7 @@ function createMyTransferStateApp(standalone: boolean) {
 }
 
 const MyTransferStateApp = createMyTransferStateApp(false);
-const MyTransferStateAppStandalone = getStandaloneBoostrapFn(createMyTransferStateApp(true));
+const MyTransferStateAppStandalone = getStandaloneBootstrapFn(createMyTransferStateApp(true));
 
 
 @NgModule({
@@ -415,7 +415,7 @@ function createShadowDomEncapsulationApp(standalone: boolean) {
 
 const ShadowDomEncapsulationApp = createShadowDomEncapsulationApp(false);
 const ShadowDomEncapsulationAppStandalone =
-    getStandaloneBoostrapFn(createShadowDomEncapsulationApp(true));
+    getStandaloneBootstrapFn(createShadowDomEncapsulationApp(true));
 
 @NgModule({
   declarations: [ShadowDomEncapsulationApp],
@@ -447,7 +447,8 @@ function createFalseAttributesComponents(standalone: boolean) {
 }
 
 const [MyHostComponent, MyChildComponent] = createFalseAttributesComponents(false);
-const MyHostComponentStandalone = getStandaloneBoostrapFn(createFalseAttributesComponents(true)[0]);
+const MyHostComponentStandalone =
+    getStandaloneBootstrapFn(createFalseAttributesComponents(true)[0]);
 
 @NgModule({
   declarations: [MyHostComponent, MyChildComponent],
@@ -470,7 +471,7 @@ function createMyInputComponent(standalone: boolean) {
 }
 
 const MyInputComponent = createMyInputComponent(false);
-const MyInputComponentStandalone = getStandaloneBoostrapFn(createMyInputComponent(true));
+const MyInputComponentStandalone = getStandaloneBootstrapFn(createMyInputComponent(true));
 
 @NgModule({
   declarations: [MyInputComponent],
@@ -494,7 +495,7 @@ function createHTMLTypesApp(standalone: boolean) {
 }
 
 const HTMLTypesApp = createHTMLTypesApp(false);
-const HTMLTypesAppStandalone = getStandaloneBoostrapFn(createHTMLTypesApp(true));
+const HTMLTypesAppStandalone = getStandaloneBootstrapFn(createHTMLTypesApp(true));
 
 @NgModule({
   declarations: [HTMLTypesApp],
@@ -517,7 +518,7 @@ function createMyHiddenComponent(standalone: boolean) {
 }
 
 const MyHiddenComponent = createMyHiddenComponent(false);
-const MyHiddenComponentStandalone = getStandaloneBoostrapFn(createMyHiddenComponent(true));
+const MyHiddenComponentStandalone = getStandaloneBootstrapFn(createMyHiddenComponent(true));
 
 @NgModule({
   declarations: [MyHiddenComponent],
@@ -707,6 +708,58 @@ describe('platform-server integration', () => {
         location.pushState(null, 'Test', '/foo#bar');
       });
     });
+
+    describe('Legacy (Remove once url normalization is removed)', () => {
+      it('parses and returns pathname without a slash', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('');
+        expect(location.protocol).toBe('');
+        expect(location.port).toBe('');
+        expect(location.pathname).toBe('deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+      it('port is set to 443 when using https protocol', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'https://test.com:443/deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('test.com');
+        expect(location.protocol).toBe('https:');
+        expect(location.port).toBe('443');
+        expect(location.pathname).toBe('/deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+
+      it('port is set to 80 when using http protocol', async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com:80/deep/path?query#hash'}
+        }]);
+
+        const appRef = await platform.bootstrapModule(ExampleModule);
+
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.hostname).toBe('test.com');
+        expect(location.protocol).toBe('http:');
+        expect(location.port).toBe('80');
+        expect(location.pathname).toBe('/deep/path');
+        expect(location.search).toBe('?query');
+        expect(location.hash).toBe('#hash');
+      });
+    });
   });
 
   describe('render', () => {
@@ -880,89 +933,11 @@ describe('platform-server integration', () => {
         }
 
         const bootstrap = renderApplication(
-            getStandaloneBoostrapFn(SimpleApp, [provideClientHydration()]), {document: doc});
+            getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]), {document: doc});
         // HttpClient cache and DOM hydration are enabled by default.
         const output = await bootstrap;
         expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
       });
-
-      it('includes a set of features into `ng-server-context` attribute', async () => {
-        const options = {
-          document: doc,
-        };
-        const providers = [{
-          provide: SERVER_CONTEXT,
-          useValue: 'ssg',
-        }];
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `<div>Works!</div>`,
-        })
-        class SimpleApp {
-        }
-
-        const bootstrap = renderApplication(
-            getStandaloneBoostrapFn(SimpleApp, [provideClientHydration()]),
-            {...options, platformProviders: providers});
-        // HttpClient cache and DOM hydration are enabled by default.
-        const output = await bootstrap;
-        expect(output).toMatch(/ng-server-context="ssg\|httpcache,hydration"/);
-      });
-
-      it('should include a set of features into `ng-server-context` attribute ' +
-             '(excluding disabled hydration feature)',
-         async () => {
-           const options = {
-             document: doc,
-           };
-           const providers = [{
-             provide: SERVER_CONTEXT,
-             useValue: 'ssg',
-           }];
-           @Component({
-             standalone: true,
-             selector: 'app',
-             template: `<div>Works!</div>`,
-           })
-           class SimpleApp {
-           }
-
-           const bootstrap = renderApplication(
-               getStandaloneBoostrapFn(SimpleApp, [provideClientHydration(withNoDomReuse())]),
-               {...options, platformProviders: providers});
-           const output = await bootstrap;
-           // Dom hydration is disabled, so it should not be included.
-           expect(output).toMatch(/ng-server-context="ssg\|httpcache"/);
-         });
-
-      it('should not include features into `ng-server-context` attribute ' +
-             'when all features are disabled',
-         async () => {
-           const options = {
-             document: doc,
-           };
-           const providers = [{
-             provide: SERVER_CONTEXT,
-             useValue: 'ssg',
-           }];
-           @Component({
-             standalone: true,
-             selector: 'app',
-             template: `<div>Works!</div>`,
-           })
-           class SimpleApp {
-           }
-
-           const bootstrap = renderApplication(
-               getStandaloneBoostrapFn(
-                   SimpleApp,
-                   [provideClientHydration(withNoDomReuse(), withNoHttpTransferCache())]),
-               {...options, platformProviders: providers});
-           const output = await bootstrap;
-           // All features were disabled, so none of them are included.
-           expect(output).toMatch(/ng-server-context="ssg"/);
-         });
 
       it('should handle false values on attributes', async () => {
         const options = {document: doc};
@@ -1012,7 +987,7 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, RenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, RenderHookProviders), options) :
             renderModule(RenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1026,7 +1001,8 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, MultiRenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, MultiRenderHookProviders),
+                options) :
             renderModule(MultiRenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1040,7 +1016,8 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncRenderHookProviders), options) :
+                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
+                options) :
             renderModule(AsyncRenderHookModule, options);
         const output = await bootstrap;
         // title should be added by the render hook.
@@ -1054,7 +1031,7 @@ describe('platform-server integration', () => {
         const options = {document: doc};
         const bootstrap = isStandalone ?
             renderApplication(
-                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
                 options) :
             renderModule(AsyncMultiRenderHookModule, options);
         const output = await bootstrap;
@@ -1070,7 +1047,7 @@ describe('platform-server integration', () => {
          async () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(getStandaloneBoostrapFn(PendingTasksAppStandalone), options) :
+               renderApplication(getStandaloneBootstrapFn(PendingTasksAppStandalone), options) :
                renderModule(PendingTasksAppModule, options);
            const output = await bootstrap;
            expect(output).toBe(
@@ -1166,6 +1143,43 @@ describe('platform-server integration', () => {
         const http = ref.injector.get(HttpClient);
         ref.injector.get(NgZone).run(() => {
           http.get<string>('http://localhost/testing').subscribe((body: string) => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost/testing').flush('success!');
+        });
+      });
+    });
+
+    describe(`given 'url' is provided in 'INITIAL_CONFIG'`, () => {
+      let mock: HttpTestingController;
+      let ref: NgModuleRef<HttpInterceptorExampleModule>;
+      let http: HttpClient;
+
+      beforeEach(async () => {
+        const platform = platformServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://localhost:4000/foo'}
+        }]);
+
+        ref = await platform.bootstrapModule(HttpInterceptorExampleModule);
+        mock = ref.injector.get(HttpTestingController);
+        http = ref.injector.get(HttpClient);
+      });
+
+      it('should resolve relative request URLs to absolute', async () => {
+        ref.injector.get(NgZone).run(() => {
+          http.get('/testing').subscribe(body => {
+            NgZone.assertInAngularZone();
+            expect(body).toEqual('success!');
+          });
+          mock.expectOne('http://localhost:4000/testing').flush('success!');
+        });
+      });
+
+      it(`should not replace the baseUrl of a request when it's absolute`, async () => {
+        ref.injector.get(NgZone).run(() => {
+          http.get('http://localhost/testing').subscribe(body => {
             NgZone.assertInAngularZone();
             expect(body).toEqual('success!');
           });

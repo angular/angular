@@ -50,7 +50,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a deferred block with loading block parameters",
@@ -67,7 +68,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a deferred block with local dependencies",

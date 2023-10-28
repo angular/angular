@@ -1,3 +1,236 @@
+<a name="17.0.0-rc.1"></a>
+# 17.0.0-rc.1 (2023-10-25)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6795cccbbb](https://github.com/angular/angular/commit/6795cccbbbfc17bbf88fb8197aa172cca67fa2d2) | fix | account for type-only imports in defer blocks ([#52343](https://github.com/angular/angular/pull/52343)) |
+| [81c315ec6e](https://github.com/angular/angular/commit/81c315ec6ea37c55d951d3b38b6c551226173be5) | fix | template type checking not reporting diagnostics for incompatible type comparisons ([#52322](https://github.com/angular/angular/pull/52322)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea6d75291f](https://github.com/angular/angular/commit/ea6d75291fbedd25c08da6397bce2d3351b595d8) | fix | emit provider configured event when a service is configured with `providedIn` ([#52365](https://github.com/angular/angular/pull/52365)) |
+| [1dd8558f82](https://github.com/angular/angular/commit/1dd8558f82aeb5f5819629d5e25b616343d27f1f) | fix | Ensure backwards-referenced transplanted views are refreshed ([#51854](https://github.com/angular/angular/pull/51854)) |
+| [957effa404](https://github.com/angular/angular/commit/957effa404aa887a5b3ebce1adc3e0739cfaa26e) | fix | get root and platform injector providers in special cases ([#52365](https://github.com/angular/angular/pull/52365)) |
+| [a803c89a21](https://github.com/angular/angular/commit/a803c89a217286dd9e16a2e14a4bb1c54ff2e329) | fix | load global utils before creating platform injector in the standalone case ([#52365](https://github.com/angular/angular/pull/52365)) |
+| [1dc14d9853](https://github.com/angular/angular/commit/1dc14d98539b9063b14c6463a534a4129b0a4643) | perf | avoid unnecessary callbacks in after render hooks ([#52292](https://github.com/angular/angular/pull/52292)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bd9e91ecf7](https://github.com/angular/angular/commit/bd9e91ecf7af877e4ecf08a16eda7b4e59707541) | perf | reduce data transfer when using HTTP caching ([#52347](https://github.com/angular/angular/pull/52347)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9d565cd6d6](https://github.com/angular/angular/commit/9d565cd6d682e5c86ee8d43e1ee1c0f8866eb274) | fix | Autocomplete block keywords in more cases ([#52198](https://github.com/angular/angular/pull/52198)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c878f90d2](https://github.com/angular/angular/commit/4c878f90d2cba689703d8def9dade3b7f8f6e8f1) | fix | Add support for nested structures inside a switch statement ([#52358](https://github.com/angular/angular/pull/52358)) |
+| [54fed68bbf](https://github.com/angular/angular/commit/54fed68bbfed34a631df64ac6a32e99d2fade50a) | fix | Fixes the root level template offset in control flow migration ([#52355](https://github.com/angular/angular/pull/52355)) |
+| [54bc384661](https://github.com/angular/angular/commit/54bc384661ae7b884dbb822592e75df281aa02dd) | fix | handle nested classes in block entities migration ([#52309](https://github.com/angular/angular/pull/52309)) |
+| [c9b1ddff4d](https://github.com/angular/angular/commit/c9b1ddff4d16cca149ca2b1faae729bf454b61e5) | fix | handle nested classes in control flow migration ([#52309](https://github.com/angular/angular/pull/52309)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0c66e2424c](https://github.com/angular/angular/commit/0c66e2424c84f92765c727a98f8d2199f4b1a809) | fix | resolve relative requests URL ([#52326](https://github.com/angular/angular/pull/52326)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6858149eb1](https://github.com/angular/angular/commit/6858149eb15814b0bdd460cb501de32715fe9a76) | fix | `RouterTestingHarness` should throw if a component is expected but navigation fails ([#52357](https://github.com/angular/angular/pull/52357)) |
+| [4dce8766f8](https://github.com/angular/angular/commit/4dce8766f8a3a33ffab0b3df5981ad209db42c77) | fix | Ensure newly resolved data is inherited by child routes ([#52167](https://github.com/angular/angular/pull/52167)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.11"></a>
+# 16.2.11 (2023-10-25)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54ea3b65c3](https://github.com/angular/angular/commit/54ea3b65c35254b220054541f2fbc52384486156) | fix | emit provider configured event when a service is configured with `providedIn` ([#52365](https://github.com/angular/angular/pull/52365)) |
+| [78533324dc](https://github.com/angular/angular/commit/78533324dcda2e884fbe489aaa6b37fa9a6fadbc) | fix | get root and platform injector providers in special cases ([#52365](https://github.com/angular/angular/pull/52365)) |
+| [019a0f4c22](https://github.com/angular/angular/commit/019a0f4c225d6bb6f741b37bf272b62899fe1f69) | fix | load global utils before creating platform injector in the standalone case ([#52365](https://github.com/angular/angular/pull/52365)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b79b4aca91](https://github.com/angular/angular/commit/b79b4aca914aefda1605fc8d069ac8d84283f1b3) | fix | `RouterTestingHarness` should throw if a component is expected but navigation fails ([#52357](https://github.com/angular/angular/pull/52357)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-rc.0"></a>
+# 17.0.0-rc.0 (2023-10-18)
+## Deprecations
+### core
+- NgProbeToken
+  
+  The `NgProbeToken` is not used internally since the transition from View Engine to Ivy. The token has no utility and can be removed from applications and libraries.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65b460448e](https://github.com/angular/angular/commit/65b460448ec5fdcee5aecca0cdc3cf498b0832cb) | fix | missing space in ngSwitch equality warning ([#52180](https://github.com/angular/angular/pull/52180)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [073ebfe09e](https://github.com/angular/angular/commit/073ebfe09eccd5d01d27fcc46fc5d4465c1851ff) | fix | apply style on :host attributes in prod builds. ([#49118](https://github.com/angular/angular/pull/49118)) |
+| [81a287a79a](https://github.com/angular/angular/commit/81a287a79afc16d43c0fd24d7aea54be4414940a) | fix | avoid error in template parser for tag names that can occur in object prototype ([#52225](https://github.com/angular/angular/pull/52225)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99e7629159](https://github.com/angular/angular/commit/99e7629159afbb8550957a265c5bd75f7e13f052) | fix | do not remove used ng-template nodes in control flow migration ([#52186](https://github.com/angular/angular/pull/52186)) |
+| [ffe9b1fcc2](https://github.com/angular/angular/commit/ffe9b1fcc2ecb8dc0d36c7f9228ac1a052554eef) | fix | handle for alias with as in control flow migration ([#52183](https://github.com/angular/angular/pull/52183)) |
+| [e5720edb46](https://github.com/angular/angular/commit/e5720edb460a1bb51475c78d3bd442da52991a46) | fix | handle if alias in control flow migration ([#52181](https://github.com/angular/angular/pull/52181)) |
+| [8e4a7ab52b](https://github.com/angular/angular/commit/8e4a7ab52bc85172efd12e42304e1b8da446ff75) | perf | avoid repeated access to LContainer and trackBy calculation ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [1032c1e1a5](https://github.com/angular/angular/commit/1032c1e1a5f5de28f38ede1786cf973f8e8b7a53) | perf | cache LiveCollectionLContainerImpl ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [37d627dbd4](https://github.com/angular/angular/commit/37d627dbd4083662b103de2e28102e6ff31a9192) | perf | minimze trackBy calculations ([#52227](https://github.com/angular/angular/pull/52227)) |
+| [ba9fc2419e](https://github.com/angular/angular/commit/ba9fc2419eee0d72c573463016a872a4b69f71c1) | refactor | deprecate the `NgProbeToken` ([#51396](https://github.com/angular/angular/pull/51396)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c9cde3ab10](https://github.com/angular/angular/commit/c9cde3ab103699bc3f941d8176ee0b0373fcf7e0) | perf | only append style element on creation ([#52237](https://github.com/angular/angular/pull/52237)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.10"></a>
+# 16.2.10 (2023-10-18)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.0.0-next.8"></a>
+# 17.0.0-next.8 (2023-10-11)
+## Breaking Changes
+### common
+- the NgSwitch directive now defaults to the === equality operator,
+  migrating from the previously used ==. NgSwitch expressions and / or
+  individual condition values need adjusting to this stricter equality
+  check. The added warning message should help pinpointing NgSwitch
+  usages where adjustments are needed.
+### core
+- The  `mutate` method was removed from the `WritableSignal` interface and completely
+  dropped from the public API surface. As an alternative please use the update method and
+  make immutable changes to the object.
+  
+  Example before:
+  
+  ```typescript
+  items.mutate(itemsArray => itemsArray.push(newItem));
+  ```
+  
+  Example after:
+  
+  ```typescript
+  items.update(itemsArray => [itemsArray, …newItem]);
+  ```
+- The  `mutate` method was removed from the `WritableSignal` interface and completely
+  dropped from the public API surface. As an alternative please use the update method and
+  make immutable changes to the object.
+  
+  Example before:
+  
+  ```typescript
+  items.mutate(itemsArray => itemsArray.push(newItem));
+  ```
+  
+  Example after:
+  
+  ```typescript
+  items.update(itemsArray => [itemsArray, …newItem]);
+  ```
+### platform-browser
+- The `withNoDomReuse()` function was removed from the public API. If you need to disable hydration, you can exclude the `provideClientHydration()` call from provider list in your application (which would disable hydration features for the entire application) or use `ngSkipHydration` attribute to disable hydration for particular components. See this guide for additional information: https://angular.io/guide/hydration#how-to-skip-hydration-for-particular-components.
+### router
+- Routes with `loadComponent` would incorrectly cause
+  child routes to inherit their data by default. The default
+  `paramsInheritanceStrategy` is `emptyOnly`. If parent data should be
+  inherited in child routes, this should be manually set to `always`.
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2da3551a70](https://github.com/angular/angular/commit/2da3551a703ebef401d76a8e88e388437e851d85) | feat | report gc and render time spent in script ([#50771](https://github.com/angular/angular/pull/50771)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [da056a1fe2](https://github.com/angular/angular/commit/da056a1fe2816299319fb3f87416316be2029479) | fix | add missing types field for @angular/common/locales of exports in package.json ([#52080](https://github.com/angular/angular/pull/52080)) |
+| [85843e8212](https://github.com/angular/angular/commit/85843e8212e99deb8b70f3d3f8dfe002b978cbb1) | fix | allow to specify only some properties of `DatePipeConfig` ([#51287](https://github.com/angular/angular/pull/51287)) |
+| [28a5925f53](https://github.com/angular/angular/commit/28a5925f53790067d45f1f68d204a36088dbf5e3) | fix | use === operator to match NgSwitch cases ([#51504](https://github.com/angular/angular/pull/51504)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1934524a0c](https://github.com/angular/angular/commit/1934524a0c673fb65cd927c55c712f59446f9c93) | feat | add docs extraction for type aliases ([#52118](https://github.com/angular/angular/pull/52118)) |
+| [7bfe20707f](https://github.com/angular/angular/commit/7bfe20707fedff7290e12356a1545644b436d41c) | feat | extract api for fn overloads and abtract classes ([#52040](https://github.com/angular/angular/pull/52040)) |
+| [7dbd47fb30](https://github.com/angular/angular/commit/7dbd47fb3015117c420f984181bfcb48e533525a) | fix | allow newlines in track and let expressions ([#52137](https://github.com/angular/angular/pull/52137)) |
+| [9d19c8e317](https://github.com/angular/angular/commit/9d19c8e31752d211f575246282358b83afe90969) | fix | don't allocate variable to for loop expression ([#52158](https://github.com/angular/angular/pull/52158)) |
+| [16ff08ec70](https://github.com/angular/angular/commit/16ff08ec70bfa192041ba050e550676e8d505a05) | fix | narrow the type of expressions in event listeners inside if blocks ([#52069](https://github.com/angular/angular/pull/52069)) |
+| [ac0d5dcfd6](https://github.com/angular/angular/commit/ac0d5dcfd6015ec4283ed1a5cf241f130f4c5cf5) | fix | narrow the type of expressions in event listeners inside switch blocks ([#52069](https://github.com/angular/angular/pull/52069)) |
+| [17078a3fe1](https://github.com/angular/angular/commit/17078a3fe1e9b90e48952b6c12b6e6b774b97810) | fix | pipes used inside defer triggers not being picked up ([#52071](https://github.com/angular/angular/pull/52071)) |
+| [861ce3a7c5](https://github.com/angular/angular/commit/861ce3a7c574340a6164ad0de13f49bda3e172da) | fix | pipes using DI not working in blocks ([#52112](https://github.com/angular/angular/pull/52112)) |
+| [386e1e9500](https://github.com/angular/angular/commit/386e1e950033ad98661e5077a4f119df0e7b3008) | fix | work around TypeScript bug when narrowing switch statements ([#52110](https://github.com/angular/angular/pull/52110)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [11bb19cafc](https://github.com/angular/angular/commit/11bb19cafcf447b7ce6ade146d431a43c3e2c682) | fix | handle nested qualified names in ctor injection in local compilation mode ([#51947](https://github.com/angular/angular/pull/51947)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [50275e58b8](https://github.com/angular/angular/commit/50275e58b80acfc52239908a6c61523e99f6731c) | feat | Add schematic to migrate control flow syntax ([#52035](https://github.com/angular/angular/pull/52035)) |
+| [048f400efc](https://github.com/angular/angular/commit/048f400efc75011e888ea25d214a0211f91b96d4) | feat | add warnings for oversized images and lazy-lcp ([#51846](https://github.com/angular/angular/pull/51846)) |
+| [4427e1ebc2](https://github.com/angular/angular/commit/4427e1ebc29f5541cfe6a404f212de4359441812) | feat | create function to assert not running inside reactive context ([#52049](https://github.com/angular/angular/pull/52049)) |
+| [5b88d136af](https://github.com/angular/angular/commit/5b88d136affdaa35e7015c00281b86cae040321b) | feat | mark core signal APIs as stable ([#51821](https://github.com/angular/angular/pull/51821)) |
+| [8eef694def](https://github.com/angular/angular/commit/8eef694def3dc660779168925a380179c7e30993) | feat | Provide a diagnostic for missing Signal invocation in template interpolation. ([#49660](https://github.com/angular/angular/pull/49660)) |
+| [40113f653c](https://github.com/angular/angular/commit/40113f653c2468315e1dea64f17e545840cc5e22) | feat | Remove deprecated `CompilerOptions.useJit` and`CompilerOptions.missingTranslation`. ([#49672](https://github.com/angular/angular/pull/49672)) |
+| [68ba798ae3](https://github.com/angular/angular/commit/68ba798ae3551b789a86d46b0a3bb61d42ef3f87) | feat | revamp the runtime error message for orphan components to include full component info ([#51919](https://github.com/angular/angular/pull/51919)) |
+| [1a4aee7e49](https://github.com/angular/angular/commit/1a4aee7e49074e3bc3f3099bff88eaee9b2ab255) | feat | show runtime error for orphan component rendering ([#52061](https://github.com/angular/angular/pull/52061)) |
+| [5411864c2e](https://github.com/angular/angular/commit/5411864c2e74b52e7df8022719f0fd792b50a849) | fix | adjust toSignal types to handle more common cases ([#51991](https://github.com/angular/angular/pull/51991)) |
+| [df58c0b714](https://github.com/angular/angular/commit/df58c0b714e37152ddf81855ee31f93f9fa71e30) | fix | disallow `afterRender` in reactive contexts ([#52138](https://github.com/angular/angular/pull/52138)) |
+| [5d61221ed7](https://github.com/angular/angular/commit/5d61221ed7b4a5d1ef005183045d45238b19a446) | fix | disallow using `effect` inside reactive contexts ([#52138](https://github.com/angular/angular/pull/52138)) |
+| [c7ff9dff2c](https://github.com/angular/angular/commit/c7ff9dff2c14aba70e92b9e216a2d4d97d6ef71e) | fix | drop mutate function from the signals public API ([#51821](https://github.com/angular/angular/pull/51821)) |
+| [00128e3853](https://github.com/angular/angular/commit/00128e38538f12fe9bc72ede9b55149e0be5ead0) | fix | drop mutate function from the signals public API ([#51821](https://github.com/angular/angular/pull/51821)) ([#51986](https://github.com/angular/angular/pull/51986)) |
+| [50ad074505](https://github.com/angular/angular/commit/50ad074505c15d09fe5d85fb443d9a2775125f87) | fix | framework debug APIs getDependenciesForTokenInInjector and getInjectorMetadata ([#51719](https://github.com/angular/angular/pull/51719)) |
+| [7368b8aaeb](https://github.com/angular/angular/commit/7368b8aaeba2ef0972a8bb261208c7281e050bb9) | fix | host directive validation not picking up duplicate directives on component node ([#52073](https://github.com/angular/angular/pull/52073)) |
+| [d487014785](https://github.com/angular/angular/commit/d48701478518d97a1fd5b4744963530494f93958) | fix | Remove no longer needed build rule related to removed migration ([#52143](https://github.com/angular/angular/pull/52143)) |
+| [4da08dc2ef](https://github.com/angular/angular/commit/4da08dc2ef439d3eced7199afb9a104cfd7b54cc) | fix | remove unnecessary migration ([#52141](https://github.com/angular/angular/pull/52141)) |
+| [d5dad3eb4c](https://github.com/angular/angular/commit/d5dad3eb4cd837032da72899f0796c6d431cb2c9) | fix | viewport trigger deregistering callbacks multiple times ([#52115](https://github.com/angular/angular/pull/52115)) |
+| [e90694259e](https://github.com/angular/angular/commit/e90694259e31f264f05d4aa9ebe275638577ce1a) | perf | build-in for should update indexes only when views were added / removed ([#52051](https://github.com/angular/angular/pull/52051)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ddd7212ee2](https://github.com/angular/angular/commit/ddd7212ee2067112cdf54d5528c8480a0e505c76) | fix | reset() call with null values on nested group ([#48830](https://github.com/angular/angular/pull/48830)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7dde42a5df](https://github.com/angular/angular/commit/7dde42a5dfdab30e9420708722e0bef9f1467d1f) | feat | allow customization of the HttpTransferCache. ([#52029](https://github.com/angular/angular/pull/52029)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [449830f24e](https://github.com/angular/angular/commit/449830f24e78ebd977ca3210ab3541912d959245) | feat | Complete inside @switch ([#52153](https://github.com/angular/angular/pull/52153)) |
+| [023a181ba5](https://github.com/angular/angular/commit/023a181ba5f489deb0a47bbc9b290621ad38304a) | feat | Implement outlining spans for control flow blocks ([#52062](https://github.com/angular/angular/pull/52062)) |
+| [7c052bb6ef](https://github.com/angular/angular/commit/7c052bb6efde580afc61d6c50e787353c103e3e1) | feat | Support autocompletion for blocks ([#52121](https://github.com/angular/angular/pull/52121)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f0da7c2e44](https://github.com/angular/angular/commit/f0da7c2e44a29c5a71cf4880388989d129f4c6e8) | feat | schematic to remove deprecated CompilerOptions properties ([#49672](https://github.com/angular/angular/pull/49672)) |
+| [965ce5a8c5](https://github.com/angular/angular/commit/965ce5a8c514237aa8e4c03a5e4b5527a1a19d96) | feat | Schematics for `TransferState`, `StateKey` and `makeStateKey` migration. ([#49594](https://github.com/angular/angular/pull/49594)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b375d106f](https://github.com/angular/angular/commit/5b375d106f2e02afadad8f5a60c37558318ea091) | fix | Fire Animations events when using async animations. ([#52087](https://github.com/angular/angular/pull/52087)) |
+| [65786b2b96](https://github.com/angular/angular/commit/65786b2b96ba198034ff23bb14571a659a491b50) | fix | prevent duplicate stylesheets from being created ([#52019](https://github.com/angular/angular/pull/52019)) |
+| [75d610d420](https://github.com/angular/angular/commit/75d610d420ce3a1ec6429d79c72ec6ef6c2c9a10) | fix | set animation properties when using async animations. ([#52087](https://github.com/angular/angular/pull/52087)) |
+| [dbc14eb41d](https://github.com/angular/angular/commit/dbc14eb41d540ab3f7509e41cdf64ac6fe33e13a) | refactor | remove `withNoDomReuse` function ([#52057](https://github.com/angular/angular/pull/52057)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1da28f4825](https://github.com/angular/angular/commit/1da28f482517ea53a18e4eb526c7c9708e6fcb55) | feat | Add callback to execute when a view transition is created ([#52002](https://github.com/angular/angular/pull/52002)) |
+| [37df395be0](https://github.com/angular/angular/commit/37df395be070a11b8cd84c0ff3af9290d15c4e9d) | fix | children of routes with loadComponent should not inherit parent data by default ([#52114](https://github.com/angular/angular/pull/52114)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="16.2.9"></a>
+# 16.2.9 (2023-10-11)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51a5baace3](https://github.com/angular/angular/commit/51a5baace3b1eee130fa911327773066139cc68e) | fix | reset() call with null values on nested group ([#48830](https://github.com/angular/angular/pull/48830)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-next.7"></a>
 # 17.0.0-next.7 (2023-10-04)
 ## Deprecations

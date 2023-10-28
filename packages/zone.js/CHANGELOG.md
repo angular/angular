@@ -1,3 +1,12 @@
+## [14.0.1](https://github.com/angular/angular/compare/zone.js-0.14.0...zone.js-14.0.1) (2023-10-25)
+
+
+### Bug Fixes
+
+* **zone.js:** use `globalThis` instead of `global` and `window` ([#52367](https://github.com/angular/angular/issues/52367)) ([def719e](https://github.com/angular/angular/commit/def719e2cac50bbf1cda4a2c4bf96de2d4ba4bfd))
+
+
+
 # [0.14.0](https://github.com/angular/angular/compare/zone.js-0.13.3...zone.js-0.14.0) (2023-09-14)
 
 
@@ -123,7 +132,7 @@ the task is explicitly cancelled, e.g with `clearInterval(id)`.
 - **zone.js:** fix several test cases which trigger `done()` multiple times ([#45025](https://github.com/angular/angular/issues/45025)) ([d5565cc](https://github.com/angular/angular/commit/d5565ccdb4573a47eb329b09c6852c1ae39672a6))
 - **zone.js:** only one listener should also re-throw an error correctly ([#41868](https://github.com/angular/angular/issues/41868)) ([299f92c](https://github.com/angular/angular/commit/299f92c3b62a43c94cff4a204f9e41c46a159efc)), closes [#41867](https://github.com/angular/angular/issues/41867) [/github.com/angular/angular/pull/41562#issuecomment-822696973](https://github.com//github.com/angular/angular/pull/41562/issues/issuecomment-822696973)
 - **zone.js:** patch global instead of Mocha object ([#45047](https://github.com/angular/angular/issues/45047)) ([8efbdb5](https://github.com/angular/angular/commit/8efbdb57c11a6c632f69d7e142a632b6a853fa46)), closes [#42834](https://github.com/angular/angular/issues/42834)
-- **zone.js:** should continue to executue listeners when throw error ([#41562](https://github.com/angular/angular/issues/41562)) ([008eaf3](https://github.com/angular/angular/commit/008eaf3b7df90b2cdd9c83e229d23d4014d6dbc9)), closes [#41522](https://github.com/angular/angular/issues/41522)
+- **zone.js:** should continue to execute listeners when throw error ([#41562](https://github.com/angular/angular/issues/41562)) ([008eaf3](https://github.com/angular/angular/commit/008eaf3b7df90b2cdd9c83e229d23d4014d6dbc9)), closes [#41522](https://github.com/angular/angular/issues/41522)
 - **zone.js:** update several flaky cases ([#41526](https://github.com/angular/angular/issues/41526)) ([25a83eb](https://github.com/angular/angular/commit/25a83eb264aa19fc4616cea45e04d790b9bcd777)), closes [#41434](https://github.com/angular/angular/issues/41434)
 
 ### Features

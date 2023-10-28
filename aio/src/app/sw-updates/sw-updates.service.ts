@@ -1,5 +1,5 @@
 import { ApplicationRef, ErrorHandler, Injectable, OnDestroy } from '@angular/core';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 import { concat, from, interval, Subject } from 'rxjs';
 import { filter, first, switchMap, takeUntil, tap } from 'rxjs/operators';
 
@@ -45,11 +45,12 @@ export class SwUpdatesService implements OnDestroy {
     // Activate available updates.
     this.swu.versionUpdates
         .pipe(
-            filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+            filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
             tap(evt => this.log(`Update available: ${JSON.stringify(evt)}`)),
             takeUntil(this.onDisable),
             switchMap(() => from(this.swu.activateUpdate()))
         )
+
         .subscribe((isActivated) => {
           if(isActivated) {
             this.log('Update activated');

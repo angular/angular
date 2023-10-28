@@ -86,4 +86,4 @@ global[zoneSymbolPrefix + 'FakeAsyncTestMacroTask'] = [{source: 'TestClass.myTim
 global[zoneSymbolPrefix + 'UNPATCHED_EVENTS'] = ['scroll', 'wheel'];
 // touchstart and scroll will be passive by default.
 global[zoneSymbolPrefix + 'PASSIVE_EVENTS'] = ['touchstart', 'scroll'];
-})(typeof window === 'object' && window || typeof self === 'object' && self || global);
+})(globalThis);
