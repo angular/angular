@@ -140,7 +140,7 @@ export type InputMapping = InputOrOutput&{
 /** Metadata for an input's transform function. */
 export interface InputTransform {
   node: ts.Node;
-  type: ts.TypeNode;
+  type: Reference<ts.TypeNode>;
 }
 
 /**

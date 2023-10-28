@@ -717,7 +717,7 @@ class TcbDirectiveInputsOp extends TcbOp {
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: ts.TypeNode;
 
-          if (transformType) {
+          if (transformType !== null) {
             type = this.tcb.env.referenceTransplantedType(new TransplantedType(transformType));
           } else {
             // The input has a coercion declaration which should be used instead of assigning the
@@ -2067,7 +2067,10 @@ class Scope {
 
 interface TcbBoundAttribute {
   attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
-  inputs: {fieldName: ClassPropertyName, required: boolean, transformType: ts.TypeNode|null}[];
+  inputs:
+      {fieldName: ClassPropertyName,
+       required: boolean,
+       transformType: Reference<ts.TypeNode>|null}[];
 }
 
 /**
