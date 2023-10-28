@@ -69,7 +69,6 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
   }
 }
 
-
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
@@ -155,17 +154,21 @@ export class HttpParams {
 
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
-    if (!!options.fromString) {
-      if (!!options.fromObject) {
+    if (options.fromString) {
+      if (options.fromObject) {
         throw new Error(`Cannot specify both fromString and fromObject.`);
       }
       this.map = paramParser(options.fromString, this.encoder);
-    } else if (!!options.fromObject) {
+    } else if (options.fromObject) {
       this.map = new Map<string, string[]>();
-      Object.keys(options.fromObject).forEach(key => {
-        const value = (options.fromObject as any)[key];
+      Object.entries(options.fromObject).forEach(([key, value]) => {
         // convert the values to strings
-        const values = Array.isArray(value) ? value.map(valueToString) : [valueToString(value)];
+        const values = Array.isArray(value) ? value.map(valueToString)
+                                              // Due to Array.isArray not narrowing ReadonlyArray,
+                                              // we need a type assertion
+                                              // See https://github.com/angular/angular/issues/42641
+                                              :
+                                              [valueToString(value as string | number | boolean)];
         this.map!.set(key, values);
       });
     } else {
@@ -193,7 +196,7 @@ export class HttpParams {
   get(param: string): string|null {
     this.init();
     const res = this.map!.get(param);
-    return !!res ? res[0] : null;
+    return res ? res[0] : null;
   }
 
   /**
@@ -234,14 +237,15 @@ export class HttpParams {
   appendAll(params: {[param: string]: string|number|boolean|ReadonlyArray<string|number|boolean>}):
       HttpParams {
     const updates: Update[] = [];
-    Object.keys(params).forEach(param => {
-      const value = params[param];
+    Object.entries(params).forEach(([param, value]) => {
       if (Array.isArray(value)) {
         value.forEach(_value => {
           updates.push({param, value: _value, op: 'a'});
         });
       } else {
-        updates.push({param, value: value as (string | number | boolean), op: 'a'});
+        // Due to Array.isArray not narrowing ReadonlyArray, we need a type assertion
+        // See https://github.com/angular/angular/issues/42641
+        updates.push({param, value: value as string | number | boolean, op: 'a'});
       }
     });
     return this.clone(updates);
@@ -274,14 +278,13 @@ export class HttpParams {
    */
   toString(): string {
     this.init();
-    return this.keys()
-        .map(key => {
+    return [...this.map!.entries()]
+        .map(([key, value]) => {
           const eKey = this.encoder.encodeKey(key);
           // `a: ['1']` produces `'a=1'`
           // `b: []` produces `''`
           // `c: ['1', '2']` produces `'c=1&c=2'`
-          return this.map!.get(key)!.map(value => eKey + '=' + this.encoder.encodeValue(value))
-              .join('&');
+          return value.map(item => eKey + '=' + this.encoder.encodeValue(item)).join('&');
         })
         // filter out empty values because `b: []` produces `''`
         // which results in `a=1&&c=1&c=2` instead of `a=1&c=1&c=2` if we don't
