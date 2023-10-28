@@ -779,7 +779,10 @@ function parseInputTransformFunction(
   // Treat functions with no arguments as `unknown` since returning
   // the same value from the transform function is valid.
   if (!firstParam) {
-    return {node, type: ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)};
+    return {
+      node,
+      type: new Reference(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword))
+    };
   }
 
   // This should be caught by `noImplicitAny` already, but null check it just in case.
@@ -795,7 +798,8 @@ function parseInputTransformFunction(
 
   assertEmittableInputType(firstParam.type, clazz.getSourceFile(), reflector, refEmitter);
 
-  return {node, type: firstParam.type};
+  const viaModule = value instanceof Reference ? value.bestGuessOwningModule : null;
+  return {node, type: new Reference(firstParam.type, viaModule)};
 }
 
 /**

@@ -615,7 +615,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     static ngAcceptInputType_height: unknown;
     // (undocumented)
-    static ngAcceptInputType_ngSrc: string | i1_2.SafeValue;
+    static ngAcceptInputType_ngSrc: string | i0.ɵSafeValue;
     // (undocumented)
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
