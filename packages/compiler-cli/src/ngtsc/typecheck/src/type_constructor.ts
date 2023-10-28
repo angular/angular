@@ -150,7 +150,7 @@ function constructTypeCtorParameter(
           /* type */
           transform == null ?
               tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName) :
-              transform.type));
+              transform.type.node));
     }
   }
   if (plainKeys.length > 0) {
