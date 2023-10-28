@@ -9,9 +9,7 @@ import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
-
-import {canEmitType, TypeEmitter} from './type_emitter';
-
+import {canEmitType, TypeEmitter} from '../../translator';
 
 /**
  * See `TypeEmitter` for more information on the emitting process.
