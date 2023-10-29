@@ -94,14 +94,6 @@ function parseTimeExpression(
   return {duration, delay, easing};
 }
 
-export function copyObj(
-    obj: {[key: string]: any}, destination: {[key: string]: any} = {}): {[key: string]: any} {
-  Object.keys(obj).forEach(prop => {
-    destination[prop] = obj[prop];
-  });
-  return destination;
-}
-
 export function convertToMap(obj: ɵStyleData): ɵStyleDataMap {
   const styleMap: ɵStyleDataMap = new Map();
   Object.keys(obj).forEach(prop => {
@@ -201,7 +193,7 @@ export function extractStyleParams(value: string|number|null|undefined): string[
 
 export function interpolateParams(
     value: string|number, params: {[name: string]: any}, errors: Error[]): string|number {
-  const original = value.toString();
+  const original = `${value}`;
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
     // this means that the value was never overridden by the data passed in by the user
