@@ -98,18 +98,20 @@ export class JsonpClientBackend implements HttpBackend {
    *
    */
   handle(req: HttpRequest<never>): Observable<HttpEvent<any>> {
-    // Firstly, check both the method and response type. If either doesn't match
-    // then the request was improperly routed here and cannot be handled.
-    if (req.method !== 'JSONP') {
-      throw new Error(JSONP_ERR_WRONG_METHOD);
-    } else if (req.responseType !== 'json') {
-      throw new Error(JSONP_ERR_WRONG_RESPONSE_TYPE);
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      // Firstly, check both the method and response type. If either doesn't match
+      // then the request was improperly routed here and cannot be handled.
+      if (req.method !== 'JSONP') {
+        throw new Error(JSONP_ERR_WRONG_METHOD);
+      } else if (req.responseType !== 'json') {
+        throw new Error(JSONP_ERR_WRONG_RESPONSE_TYPE);
+      }
 
-    // Check the request headers. JSONP doesn't support headers and
-    // cannot set any that were supplied.
-    if (req.headers.keys().length > 0) {
-      throw new Error(JSONP_ERR_HEADERS_NOT_SUPPORTED);
+      // Check the request headers. JSONP doesn't support headers and
+      // cannot set any that were supplied.
+      if (req.headers.keys().length > 0) {
+        throw new Error(JSONP_ERR_HEADERS_NOT_SUPPORTED);
+      }
     }
 
     // Everything else happens inside the Observable boundary.

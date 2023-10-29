@@ -155,7 +155,7 @@ export class HttpParams {
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
     if (options.fromString) {
-      if (options.fromObject) {
+      if (options.fromObject && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw new Error(`Cannot specify both fromString and fromObject.`);
       }
       this.map = paramParser(options.fromString, this.encoder);
