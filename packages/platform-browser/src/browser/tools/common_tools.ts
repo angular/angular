@@ -8,8 +8,6 @@
 
 import {ApplicationRef, ComponentRef} from '@angular/core';
 
-import {window} from './browser';
-
 export class ChangeDetectionPerfRecord {
   constructor(public msPerTick: number, public numTicks: number) {}
 }
@@ -46,29 +44,23 @@ export class AngularProfiler {
     const record = config && config['record'];
     const profileName = 'Change Detection';
     // Profiler is not available in Android browsers without dev tools opened
-    const isProfilerAvailable = window.console.profile != null;
-    if (record && isProfilerAvailable) {
-      window.console.profile(profileName);
+    if (record && 'profile' in console && typeof console.profile === 'function') {
+      console.profile(profileName);
     }
-    const start = performanceNow();
+    const start = performance.now();
     let numTicks = 0;
-    while (numTicks < 5 || (performanceNow() - start) < 500) {
+    while (numTicks < 5 || (performance.now() - start) < 500) {
       this.appRef.tick();
       numTicks++;
     }
-    const end = performanceNow();
-    if (record && isProfilerAvailable) {
-      window.console.profileEnd(profileName);
+    const end = performance.now();
+    if (record && 'profileEnd' in console && typeof console.profileEnd === 'function') {
+      console.profileEnd(profileName);
     }
     const msPerTick = (end - start) / numTicks;
-    window.console.log(`ran ${numTicks} change detection cycles`);
-    window.console.log(`${msPerTick.toFixed(2)} ms per check`);
+    console.log(`ran ${numTicks} change detection cycles`);
+    console.log(`${msPerTick.toFixed(2)} ms per check`);
 
     return new ChangeDetectionPerfRecord(msPerTick, numTicks);
   }
-}
-
-function performanceNow() {
-  return window.performance && window.performance.now ? window.performance.now() :
-                                                        new Date().getTime();
 }
