@@ -15,7 +15,7 @@ import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {missingEvent, missingTrigger, transitionFailed, triggerTransitionsFailed, unregisteredTrigger, unsupportedTriggerEvent} from '../error_helpers';
-import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util';
+import {ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -83,8 +83,8 @@ class StateValue {
     const value = isObj ? input['value'] : input;
     this.value = normalizeTriggerValue(value);
     if (isObj) {
-      const options = copyObj(input as any);
-      delete options['value'];
+      // we drop the value property from options.
+      const {value, ...options} = input;
       this.options = options as AnimationOptions;
     } else {
       this.options = {};
