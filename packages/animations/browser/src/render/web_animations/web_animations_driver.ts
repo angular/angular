@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, camelCaseToDashCase, copyStyles, normalizeKeyframes} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, camelCaseToDashCase, computeStyle, copyStyles, normalizeKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {containsElement, getParentElement, invokeQuery, validateStyleProperty, validateWebAnimatableStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
@@ -50,7 +50,7 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 
   computeStyle(element: any, prop: string, defaultValue?: string): string {
-    return (window.getComputedStyle(element) as any)[prop] as string;
+    return computeStyle(element, prop);
   }
 
   animate(
