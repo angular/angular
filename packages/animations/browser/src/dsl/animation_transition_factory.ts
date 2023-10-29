@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray} from '../util';
+import {copyObj, interpolateParams} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -96,10 +96,10 @@ export class AnimationTransitionFactory {
       checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
     }
 
-    const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
         element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap, totalTime);
+        nextStateStyles, timelines, [...queriedElements.values()], preStyleMap, postStyleMap,
+        totalTime);
   }
 }
 
