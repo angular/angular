@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, ɵɵinject} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
@@ -34,13 +34,6 @@ export type MetaDefinition = {
 };
 
 /**
- * Factory to create a `Meta` service instance for the current DOM document.
- */
-export function createMeta() {
-  return new Meta(ɵɵinject(DOCUMENT));
-}
-
-/**
  * A service for managing HTML `<meta>` tags.
  *
  * Properties of the `MetaDefinition` object match the attributes of the
@@ -62,7 +55,7 @@ export function createMeta() {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: createMeta, deps: []})
+@Injectable({providedIn: 'root'})
 export class Meta {
   private _dom: DomAdapter;
   constructor(@Inject(DOCUMENT) private _doc: any) {
