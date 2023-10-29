@@ -129,7 +129,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 
 Join the conversation and help the community.
 
-- [Twitter][twitter]
+- [X (formerly Twitter)][X (formerly Twitter)]
 - [Discord][discord]
 - [Gitter][gitter]
 - [YouTube][youtube]
@@ -158,7 +158,7 @@ Join the conversation and help the community.
 [node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
-[twitter]: https://www.twitter.com/angular
+[X (formerly Twitter)]: https://www.twitter.com/angular
 [discord]: https://discord.gg/angular
 [gitter]: https://gitter.im/angular/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
