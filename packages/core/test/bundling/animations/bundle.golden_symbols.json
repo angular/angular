@@ -1227,9 +1227,6 @@
     "name": "iterator"
   },
   {
-    "name": "iteratorToArray"
-  },
-  {
     "name": "leaveDI"
   },
   {

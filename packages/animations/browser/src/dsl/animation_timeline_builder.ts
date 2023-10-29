@@ -9,7 +9,7 @@ import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOpt
 
 import {invalidQuery} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
-import {copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
+import {copyStyles, interpolateParams, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
@@ -816,8 +816,8 @@ export class TimelineBuilder {
       finalKeyframes.push(finalKeyframe);
     });
 
-    const preProps: string[] = preStyleProps.size ? iteratorToArray(preStyleProps.values()) : [];
-    const postProps: string[] = postStyleProps.size ? iteratorToArray(postStyleProps.values()) : [];
+    const preProps: string[] = [...preStyleProps.values()];
+    const postProps: string[] = [...postStyleProps.values()];
 
     // special case for a 0-second animation (which is designed just to place styles onscreen)
     if (isEmpty) {

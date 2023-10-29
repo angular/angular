@@ -216,16 +216,6 @@ export function interpolateParams(
   return str == original ? value : str;
 }
 
-export function iteratorToArray(iterator: any): any[] {
-  const arr: any[] = [];
-  let item = iterator.next();
-  while (!item.done) {
-    arr.push(item.value);
-    item = iterator.next();
-  }
-  return arr;
-}
-
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
