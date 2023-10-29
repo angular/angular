@@ -705,6 +705,9 @@
     "name": "applyNodes"
   },
   {
+    "name": "applyParamDefaults"
+  },
+  {
     "name": "applyProjectionRecursive"
   },
   {
@@ -798,13 +801,7 @@
     "name": "convertToBitFlags"
   },
   {
-    "name": "convertToMap"
-  },
-  {
     "name": "copyAnimationEvent"
-  },
-  {
-    "name": "copyStyles"
   },
   {
     "name": "createElementNode"

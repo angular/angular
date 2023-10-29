@@ -11,7 +11,7 @@ import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/anim
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
 import {invalidNodeType, invalidParamValue, invalidStyleParams, invalidTimingValue, negativeDelayValue, negativeStepValue} from './error_helpers';
 
-export const ONE_SECOND = 1000;
+const ONE_SECOND = 1000;
 
 export const SUBSTITUTION_EXPR_START = '{{';
 export const SUBSTITUTION_EXPR_END = '}}';
@@ -94,15 +94,6 @@ function parseTimeExpression(
   return {duration, delay, easing};
 }
 
-export function convertToMap(obj: ɵStyleData): ɵStyleDataMap {
-  const styleMap: ɵStyleDataMap = new Map();
-  Object.keys(obj).forEach(prop => {
-    const val = obj[prop];
-    styleMap.set(prop, val);
-  });
-  return styleMap;
-}
-
 export function normalizeKeyframes(keyframes: Array<ɵStyleData>|
                                    Array<ɵStyleDataMap>): Array<ɵStyleDataMap> {
   if (!keyframes.length) {
@@ -111,31 +102,11 @@ export function normalizeKeyframes(keyframes: Array<ɵStyleData>|
   if (keyframes[0] instanceof Map) {
     return keyframes as Array<ɵStyleDataMap>;
   }
-  return keyframes.map(kf => convertToMap(kf as ɵStyleData));
+  return keyframes.map(kf => new Map(Object.entries(kf)));
 }
 
 export function normalizeStyles(styles: ɵStyleDataMap|Array<ɵStyleDataMap>): ɵStyleDataMap {
-  const normalizedStyles: ɵStyleDataMap = new Map();
-  if (Array.isArray(styles)) {
-    styles.forEach(data => copyStyles(data, normalizedStyles));
-  } else {
-    copyStyles(styles, normalizedStyles);
-  }
-  return normalizedStyles;
-}
-
-export function copyStyles(
-    styles: ɵStyleDataMap, destination: ɵStyleDataMap = new Map(),
-    backfill?: ɵStyleDataMap): ɵStyleDataMap {
-  if (backfill) {
-    for (let [prop, val] of backfill) {
-      destination.set(prop, val);
-    }
-  }
-  for (let [prop, val] of styles) {
-    destination.set(prop, val);
-  }
-  return destination;
+  return Array.isArray(styles) ? new Map(...styles) : new Map(styles);
 }
 
 export function setStyles(element: any, styles: ɵStyleDataMap, formerStyles?: ɵStyleDataMap) {
