@@ -10,7 +10,7 @@ import {AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata,
 import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnimation, invalidProperty, invalidStagger, invalidState, invalidStyleValue, invalidTrigger, keyframeOffsetsOutOfOrder, keyframesMissingOffsets} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {convertToMap, copyObj, extractStyleParams, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
+import {convertToMap, extractStyleParams, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
 import {pushUnrecognizedPropertiesWarning} from '../warning_helpers';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
@@ -500,7 +500,7 @@ function normalizeSelector(selector: string): [string, boolean] {
 
 
 function normalizeParams(obj: {[key: string]: any}|any): {[key: string]: any}|null {
-  return obj ? copyObj(obj) : null;
+  return obj ? {...obj} : null;
 }
 
 export type StyleTimeTuple = {
@@ -569,7 +569,7 @@ function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]
 
 function normalizeAnimationOptions(options: AnimationOptions|null): AnimationOptions {
   if (options) {
-    options = copyObj(options);
+    options = {...options};
     if (options['params']) {
       options['params'] = normalizeParams(options['params'])!;
     }
