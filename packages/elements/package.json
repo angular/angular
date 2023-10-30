@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": ">=18.13.0"
+    "node": "^18.13.0 || >=20.9.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

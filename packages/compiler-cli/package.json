@@ -67,7 +67,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=18.13.0"
+    "node": "^18.13.0 || >=20.9.0"
   },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
