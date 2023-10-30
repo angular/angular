@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundEvent, BoundText, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundEvent, BoundText, Comment, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
 import {createCssSelector} from './template';
@@ -798,14 +798,29 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     const name = trigger.reference;
 
     if (name === null) {
-      const children = block.placeholder ? block.placeholder.children : null;
+      let trigger: Element|null = null;
 
-      // If the trigger doesn't have a reference, it is inferred as the root element node of the
-      // placeholder, if it only has one root node. Otherwise it's ambiguous so we don't
-      // attempt to resolve further.
-      return children !== null && children.length === 1 && children[0] instanceof Element ?
-          children[0] :
-          null;
+      if (block.placeholder !== null) {
+        for (const child of block.placeholder.children) {
+          // Skip over comment nodes. Currently by default the template parser doesn't capture
+          // comments, but we have a safeguard here just in case since it can be enabled.
+          if (child instanceof Comment) {
+            continue;
+          }
+
+          // We can only infer the trigger if there's one root element node. Any other
+          // nodes at the root make it so that we can't infer the trigger anymore.
+          if (trigger !== null) {
+            return null;
+          }
+
+          if (child instanceof Element) {
+            trigger = child;
+          }
+        }
+      }
+
+      return trigger;
     }
 
     const outsideRef = this.findEntityInScope(block, name);
@@ -821,7 +836,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     }
 
     // If the trigger couldn't be found in the main block, check the
-    // placeholder  block which is shown before the main block has loaded.
+    // placeholder block which is shown before the main block has loaded.
     if (block.placeholder !== null) {
       const refInPlaceholder = this.findEntityInScope(block.placeholder, name);
       const targetInPlaceholder =
