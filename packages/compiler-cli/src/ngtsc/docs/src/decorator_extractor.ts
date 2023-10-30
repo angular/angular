@@ -29,7 +29,7 @@ export function extractorDecorator(
     rawComment: extractRawJsDoc(documentedNode),
     description: extractJsDocDescription(documentedNode),
     jsdocTags: extractJsDocTags(documentedNode),
-    options: getDecoratorOptions(declaration, typeChecker),
+    members: getDecoratorOptions(declaration, typeChecker),
   };
 }
 
