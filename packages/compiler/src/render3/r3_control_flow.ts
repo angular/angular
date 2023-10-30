@@ -338,8 +338,10 @@ function validateSwitchBlock(ast: html.Block): ParseError[] {
   }
 
   for (const node of ast.children) {
-    // Skip over empty text nodes inside the switch block since they can be used for formatting.
-    if (node instanceof html.Text && node.value.trim().length === 0) {
+    // Skip over comments and empty text nodes inside the switch block.
+    // Empty text nodes can be used for formatting while comments don't affect the runtime.
+    if (node instanceof html.Comment ||
+        (node instanceof html.Text && node.value.trim().length === 0)) {
       continue;
     }
 
