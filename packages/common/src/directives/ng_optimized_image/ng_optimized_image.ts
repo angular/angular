@@ -513,8 +513,13 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private shouldGenerateAutomaticSrcset(): boolean {
+    let oversizedImage = false;
+    if (!this.sizes) {
+      oversizedImage =
+          this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT;
+    }
     return !this.disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
-        !(this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT);
+        !oversizedImage;
   }
 
   /** @nodoc */
