@@ -30,6 +30,9 @@ import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '
 import {assertTNodeForLView, assertTNode} from '../assert';
 import {RElement} from '../interfaces/renderer_dom';
 import {getNativeByTNode} from './view_utils';
+import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
+import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
+import {ValueProvider} from '../../di/interface/provider';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -391,12 +394,13 @@ function walkProviderTreeToDiscoverImportPaths(
  * @returns an array of objects representing the providers of the given injector
  */
 function getEnvironmentInjectorProviders(injector: EnvironmentInjector): ProviderRecord[] {
-  const providerRecords = getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
+  const providerRecordsWithoutImportPaths =
+      getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
 
   // platform injector has no provider imports container so can we skip trying to
   // find import paths
   if (isPlatformInjector(injector)) {
-    return providerRecords;
+    return providerRecordsWithoutImportPaths;
   }
 
   const providerImportsContainer = getProviderImportsContainer(injector);
@@ -407,27 +411,37 @@ function getEnvironmentInjectorProviders(injector: EnvironmentInjector): Provide
     // container (and thus no concept of module import paths). Therefore we simply
     // return the provider records as is.
     if (isRootInjector(injector)) {
-      return providerRecords;
+      return providerRecordsWithoutImportPaths;
     }
 
     throwError('Could not determine where injector providers were configured.');
   }
 
   const providerToPath = getProviderImportPaths(providerImportsContainer);
+  const providerRecords = [];
 
-  return providerRecords.map(providerRecord => {
-    let importPath = providerToPath.get(providerRecord.provider) ?? [providerImportsContainer];
+  for (const providerRecord of providerRecordsWithoutImportPaths) {
+    const provider = providerRecord.provider;
+    // Ignore these special providers for now until we have a cleaner way of
+    // determing when they are provided by the framework vs provided by the user.
+    const token = (provider as ValueProvider).provide;
+    if (token === ENVIRONMENT_INITIALIZER || token === INJECTOR_DEF_TYPES) {
+      continue;
+    }
+
+    let importPath = providerToPath.get(provider) ?? [];
 
     const def = getComponentDef(providerImportsContainer);
     const isStandaloneComponent = !!def?.standalone;
     // We prepend the component constructor in the standalone case
     // because walkProviderTree does not visit this constructor during it's traversal
     if (isStandaloneComponent) {
-      importPath = [providerImportsContainer, ...providerToPath.get(providerRecord.provider) ?? []];
+      importPath = [providerImportsContainer, ...importPath];
     }
 
-    return {...providerRecord, importPath};
-  });
+    providerRecords.push({...providerRecord, importPath});
+  }
+  return providerRecords;
 }
 
 function isPlatformInjector(injector: Injector) {
