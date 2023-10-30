@@ -189,6 +189,7 @@
     "multimatch": "^6.0.0",
     "patch-package": "^7.0.0",
     "prettier": "^3.0.0",
+    "puppeteer-core": "21.4.1",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz",
     "seek-bzip": "^2.0.0",
     "semver": "^7.3.5",
