@@ -315,7 +315,7 @@ function buildIfThenElseBlock(
 }
 
 function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
-  const aliasWithEqualRegexp = /=\s+(count|index|first|last|even|odd)/gm;
+  const aliasWithEqualRegexp = /=\s*(count|index|first|last|even|odd)/gm;
   const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
   const lbString = etm.hasLineBreaks ? lb : '';
