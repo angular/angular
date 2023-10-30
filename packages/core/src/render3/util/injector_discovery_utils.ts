@@ -57,26 +57,32 @@ export function getDependenciesFromInjectable<T>(
   const resolutionPath = getInjectorResolutionPath(injector);
 
   const dependencies = unformattedDependencies.map(dep => {
+    // injectedIn contains private fields, so we omit it from the response
+    const formattedDependency: Omit<InjectedService, 'injectedIn'> = {
+      value: dep.value,
+    };
+
     // convert injection flags to booleans
     const flags = dep.flags as InternalInjectFlags;
-    dep.flags = {
+    formattedDependency.flags = {
       optional: (InternalInjectFlags.Optional & flags) === InternalInjectFlags.Optional,
       host: (InternalInjectFlags.Host & flags) === InternalInjectFlags.Host,
       self: (InternalInjectFlags.Self & flags) === InternalInjectFlags.Self,
       skipSelf: (InternalInjectFlags.SkipSelf & flags) === InternalInjectFlags.SkipSelf,
     };
 
+
     // find the injector that provided the dependency
     for (let i = 0; i < resolutionPath.length; i++) {
       const injectorToCheck = resolutionPath[i];
 
       // if skipSelf is true we skip the first injector
-      if (i === 0 && dep.flags.skipSelf) {
+      if (i === 0 && formattedDependency.flags.skipSelf) {
         continue;
       }
 
       // host only applies to NodeInjectors
-      if (dep.flags.host && injectorToCheck instanceof EnvironmentInjector) {
+      if (formattedDependency.flags.host && injectorToCheck instanceof EnvironmentInjector) {
         break;
       }
 
@@ -88,36 +94,29 @@ export function getDependenciesFromInjectable<T>(
         // in the resolution path by using the host flag. This is done to make sure that we've found
         // the correct providing injector, and not a node injector that is connected to our path via
         // a router outlet.
-        if (dep.flags.host) {
+        if (formattedDependency.flags.host) {
           const firstInjector = resolutionPath[0];
-          const lookupFromFirstInjector =
-              firstInjector.get(dep.token as Type<unknown>, null, {...dep.flags, optional: true});
+          const lookupFromFirstInjector = firstInjector.get(
+              dep.token as Type<unknown>, null, {...formattedDependency.flags, optional: true});
 
           if (lookupFromFirstInjector !== null) {
-            dep.providedIn = injectorToCheck;
+            formattedDependency.providedIn = injectorToCheck;
           }
 
           break;
         }
 
-        dep.providedIn = injectorToCheck;
+        formattedDependency.providedIn = injectorToCheck;
         break;
       }
 
       // if self is true we stop after the first injector
-      if (i === 0 && dep.flags.self) {
+      if (i === 0 && formattedDependency.flags.self) {
         break;
       }
     }
 
-    // injectedIn contains private fields, so we omit it from the response
-    const formattedDependency: Omit<InjectedService, 'injectedIn'> = {
-      value: dep.value,
-    };
-
     if (dep.token) formattedDependency.token = dep.token;
-    if (dep.flags) formattedDependency.flags = dep.flags;
-    if (dep.providedIn) formattedDependency.providedIn = dep.providedIn;
 
     return formattedDependency;
   });
