@@ -24,7 +24,7 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
-    it('should extract class decorators that define options in an interface', () => {
+    it('should extract class decorators that define members in an interface', () => {
       env.write('index.ts', `
         export interface Component {
           /** The template. */
@@ -50,10 +50,10 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Class);
 
-      expect(decoratorEntry.options.length).toBe(1);
-      expect(decoratorEntry.options[0].name).toBe('template');
-      expect(decoratorEntry.options[0].type).toBe('string');
-      expect(decoratorEntry.options[0].description).toBe('The template.');
+      expect(decoratorEntry.members.length).toBe(1);
+      expect(decoratorEntry.members[0].name).toBe('template');
+      expect(decoratorEntry.members[0].type).toBe('string');
+      expect(decoratorEntry.members[0].description).toBe('The template.');
     });
 
     it('should extract property decorators', () => {
@@ -82,10 +82,10 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Member);
 
-      expect(decoratorEntry.options.length).toBe(1);
-      expect(decoratorEntry.options[0].name).toBe('alias');
-      expect(decoratorEntry.options[0].type).toBe('string');
-      expect(decoratorEntry.options[0].description).toBe('The alias.');
+      expect(decoratorEntry.members.length).toBe(1);
+      expect(decoratorEntry.members[0].name).toBe('alias');
+      expect(decoratorEntry.members[0].type).toBe('string');
+      expect(decoratorEntry.members[0].description).toBe('The alias.');
     });
 
     it('should extract property decorators with a type alias', () => {
@@ -116,10 +116,10 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Member);
 
-      expect(decoratorEntry.options.length).toBe(1);
-      expect(decoratorEntry.options[0].name).toBe('read');
-      expect(decoratorEntry.options[0].type).toBe('string');
-      expect(decoratorEntry.options[0].description).toBe('The read.');
+      expect(decoratorEntry.members.length).toBe(1);
+      expect(decoratorEntry.members[0].name).toBe('read');
+      expect(decoratorEntry.members[0].type).toBe('string');
+      expect(decoratorEntry.members[0].description).toBe('The read.');
     });
 
     it('should extract param decorators', () => {
@@ -148,10 +148,10 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Parameter);
 
-      expect(decoratorEntry.options.length).toBe(1);
-      expect(decoratorEntry.options[0].name).toBe('token');
-      expect(decoratorEntry.options[0].type).toBe('string');
-      expect(decoratorEntry.options[0].description).toBe('The token.');
+      expect(decoratorEntry.members.length).toBe(1);
+      expect(decoratorEntry.members[0].name).toBe('token');
+      expect(decoratorEntry.members[0].type).toBe('string');
+      expect(decoratorEntry.members[0].description).toBe('The token.');
     });
   });
 });
