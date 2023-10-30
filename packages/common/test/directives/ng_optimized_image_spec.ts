@@ -1797,6 +1797,38 @@ describe('Image directive', () => {
         expect(img.getAttribute('srcset')).toBeNull();
       });
 
+      it('should add a responsive srcset to the img element if height is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="1100" height="2400" sizes="100vw">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should add a responsive srcset to the img element if width is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="3000" height="400" sizes="100vw">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
       it('should use a custom breakpoint set if one is provided', () => {
         const imageConfig = {
           breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 1280, 3840],
