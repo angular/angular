@@ -149,12 +149,20 @@ class OnTriggerParser {
   }
 
   private consumeTrigger(identifier: Token, parameters: string[]) {
-    const triggerStartSpan =
+    const triggerNameStartSpan =
         this.span.start.moveBy(this.start + identifier.index - this.tokens[0].index);
-    const nameSpan =
-        new ParseSourceSpan(triggerStartSpan, triggerStartSpan.moveBy(identifier.strValue.length));
-    const endSpan = triggerStartSpan.moveBy(this.token().end - identifier.index);
-    const sourceSpan = new ParseSourceSpan(this.span.start, endSpan);
+    const nameSpan = new ParseSourceSpan(
+        triggerNameStartSpan, triggerNameStartSpan.moveBy(identifier.strValue.length));
+    const endSpan = triggerNameStartSpan.moveBy(this.token().end - identifier.index);
+
+    // Put the prefetch and on spans with the first trigger
+    // This should maybe be refactored to have something like an outer OnGroup AST
+    // Since triggers can be grouped with commas "on hover(x), interaction(y)"
+    const isFirstTrigger = identifier.index === 0;
+    const onSourceSpan = isFirstTrigger ? this.onSourceSpan : null;
+    const prefetchSourceSpan = isFirstTrigger ? this.prefetchSpan : null;
+    const sourceSpan =
+        new ParseSourceSpan(isFirstTrigger ? this.span.start : triggerNameStartSpan, endSpan);
 
     try {
       switch (identifier.toString()) {
@@ -162,7 +170,7 @@ class OnTriggerParser {
           this.trackTrigger(
               'idle',
               createIdleTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan));
+                  parameters, nameSpan, sourceSpan, prefetchSourceSpan, onSourceSpan));
           break;
 
         case OnTriggerType.TIMER:
@@ -315,7 +323,7 @@ function createIdleTrigger(
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan,
+    onSourceSpan: ParseSourceSpan|null,
     ): t.IdleDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IDLE}" trigger cannot have parameters`);
@@ -329,7 +337,7 @@ function createTimerTrigger(
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan,
+    onSourceSpan: ParseSourceSpan|null,
 ) {
   if (parameters.length !== 1) {
     throw new Error(`"${OnTriggerType.TIMER}" trigger must have exactly one parameter`);
@@ -349,7 +357,7 @@ function createImmediateTrigger(
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan,
+    onSourceSpan: ParseSourceSpan|null,
     ): t.ImmediateDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IMMEDIATE}" trigger cannot have parameters`);
@@ -360,7 +368,7 @@ function createImmediateTrigger(
 
 function createHoverTrigger(
     parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
     placeholder: t.DeferredBlockPlaceholder|null): t.HoverDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder);
   return new t.HoverDeferredTrigger(
@@ -369,7 +377,7 @@ function createHoverTrigger(
 
 function createInteractionTrigger(
     parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
     placeholder: t.DeferredBlockPlaceholder|null): t.InteractionDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder);
   return new t.InteractionDeferredTrigger(
@@ -378,7 +386,7 @@ function createInteractionTrigger(
 
 function createViewportTrigger(
     parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
     placeholder: t.DeferredBlockPlaceholder|null): t.ViewportDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder);
   return new t.ViewportDeferredTrigger(

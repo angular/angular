@@ -120,7 +120,7 @@ export class Element implements Node {
 export abstract class DeferredTrigger implements Node {
   constructor(
       public nameSpan: ParseSourceSpan|null, public sourceSpan: ParseSourceSpan,
-      public prefetchSpan: ParseSourceSpan|null, public whenOrOnSourceSpan: ParseSourceSpan) {}
+      public prefetchSpan: ParseSourceSpan|null, public whenOrOnSourceSpan: ParseSourceSpan|null) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredTrigger(this);
@@ -144,7 +144,7 @@ export class ImmediateDeferredTrigger extends DeferredTrigger {}
 export class HoverDeferredTrigger extends DeferredTrigger {
   constructor(
       public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
@@ -152,7 +152,7 @@ export class HoverDeferredTrigger extends DeferredTrigger {
 export class TimerDeferredTrigger extends DeferredTrigger {
   constructor(
       public delay: number, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
@@ -160,7 +160,7 @@ export class TimerDeferredTrigger extends DeferredTrigger {
 export class InteractionDeferredTrigger extends DeferredTrigger {
   constructor(
       public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
@@ -168,7 +168,7 @@ export class InteractionDeferredTrigger extends DeferredTrigger {
 export class ViewportDeferredTrigger extends DeferredTrigger {
   constructor(
       public reference: string|null, nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan) {
+      prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }

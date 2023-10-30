@@ -621,19 +621,19 @@ describe('quick info', () => {
             });
           });
 
-          it('on', () => {
-            expectQuickInfo({
-              templateOverride: `@defer (o¦n immediate) { } `,
-              expectedSpanText: 'on',
-              expectedDisplayString: '(keyword) on'
-            });
-          });
-
           it('prefetch (when)', () => {
             expectQuickInfo({
               templateOverride: `@defer (prefet¦ch when title) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch'
+            });
+          });
+
+          it('on', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (o¦n immediate) { } `,
+              expectedSpanText: 'on',
+              expectedDisplayString: '(keyword) on'
             });
           });
 
