@@ -1364,6 +1364,24 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a switch block containing comments', () => {
+      expectFromHtml(`
+          @switch (cond.kind) {
+            <!-- X case -->
+            @case (x) { X case }
+
+            <!-- default case -->
+            @default { No case matched }
+          }
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', 'x'],
+        ['Text', ' X case '],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
     describe('validations', () => {
       it('should report syntax error in switch expression', () => {
         expect(() => parse(`
