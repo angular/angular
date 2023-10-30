@@ -14,7 +14,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import * as t from './r3_ast';
 
 /** Pattern for the expression in a for loop block. */
-const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+(.*)/;
+const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+([\S\s]*)/;
 
 /** Pattern for the tracking expression in a for loop block. */
 const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;

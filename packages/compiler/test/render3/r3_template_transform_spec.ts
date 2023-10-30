@@ -1594,6 +1594,21 @@ describe('R3 template transform', () => {
       `).toEqual(expectedResult);
     });
 
+    it('should parse for loop block expression containing new lines', () => {
+      expectFromHtml(`
+        @for (item of [
+          { id: 1 },
+          { id: 2 }
+        ]; track item.id) {
+          {{ item }}
+        }
+      `).toEqual([
+        ['ForLoopBlock', '[{id: 1}, {id: 2}]', 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
     describe('validations', () => {
       it('should report if for loop does not have an expression', () => {
         expect(() => parse(`@for {hello}`)).toThrowError(/@for loop does not have an expression/);
