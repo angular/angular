@@ -375,12 +375,38 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Configure all defer `on` conditions.
 
+  // TODO: refactor prefetch triggers to use a separate op type, with a shared superclass. This will
+  // make it easier to refactor prefetch behavior in the future.
   let prefetch = false;
   let deferOnOps: ir.DeferOnOp[] = [];
   for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
     if (triggers.idle !== undefined) {
       const deferOnOp =
           ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, prefetch, null!);
+      deferOnOps.push(deferOnOp);
+    }
+    if (triggers.immediate !== undefined) {
+      const deferOnOp =
+          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Immediate}, prefetch, null!);
+      deferOnOps.push(deferOnOp);
+    }
+    if (triggers.timer !== undefined) {
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay}, prefetch, null!
+      );
+      deferOnOps.push(deferOnOp);
+    }
+    if (triggers.hover !== undefined) {
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {
+            kind: ir.DeferTriggerKind.Hover,
+            targetName: triggers.hover.reference,
+            targetXref: null,
+            targetSlot: null,
+            targetView: null,
+            targetSlotViewSteps: null,
+          },
+          prefetch, null!);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.interaction !== undefined) {
@@ -396,11 +422,27 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
           prefetch, null!);
       deferOnOps.push(deferOnOp);
     }
+    if (triggers.viewport !== undefined) {
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {
+            kind: ir.DeferTriggerKind.Viewport,
+            targetName: triggers.viewport.reference,
+            targetXref: null,
+            targetSlot: null,
+            targetView: null,
+            targetSlotViewSteps: null,
+          },
+          prefetch, null!);
+      deferOnOps.push(deferOnOp);
+    }
+    // If no (non-prefetching) defer triggers were provided, default to `idle`.
+    if (deferOnOps.length === 0) {
+      deferOnOps.push(
+          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
+    }
     prefetch = true;
   }
-  if (deferOnOps.length === 0) {
-    deferOnOps.push(ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
-  }
+
   unit.create.push(deferOnOps);
 }
 

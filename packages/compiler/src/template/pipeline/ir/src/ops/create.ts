@@ -718,13 +718,7 @@ interface DeferTriggerBase {
   kind: DeferTriggerKind;
 }
 
-interface DeferIdleTrigger extends DeferTriggerBase {
-  kind: DeferTriggerKind.Idle;
-}
-
-interface DeferInteractionTrigger extends DeferTriggerBase {
-  kind: DeferTriggerKind.Interaction;
-
+interface DeferTriggerWithTargetBase extends DeferTriggerBase {
   targetName: string|null;
 
   /**
@@ -746,10 +740,37 @@ interface DeferInteractionTrigger extends DeferTriggerBase {
   targetSlotViewSteps: number|null;
 }
 
+interface DeferIdleTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Idle;
+}
+
+interface DeferImmediateTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Immediate;
+}
+
+interface DeferHoverTrigger extends DeferTriggerWithTargetBase {
+  kind: DeferTriggerKind.Hover;
+}
+
+interface DeferTimerTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Timer;
+
+  delay: number;
+}
+
+interface DeferInteractionTrigger extends DeferTriggerWithTargetBase {
+  kind: DeferTriggerKind.Interaction;
+}
+
+interface DeferViewportTrigger extends DeferTriggerWithTargetBase {
+  kind: DeferTriggerKind.Viewport;
+}
+
 /**
  * The union type of all defer trigger interfaces.
  */
-export type DeferTrigger = DeferIdleTrigger|DeferInteractionTrigger;
+export type DeferTrigger = DeferIdleTrigger|DeferImmediateTrigger|DeferTimerTrigger|
+    DeferHoverTrigger|DeferInteractionTrigger|DeferViewportTrigger;
 
 export interface DeferOnOp extends Op<CreateOp> {
   kind: OpKind.DeferOn;

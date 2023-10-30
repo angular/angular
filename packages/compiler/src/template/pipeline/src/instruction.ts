@@ -186,7 +186,8 @@ export function text(
 export function defer(
     selfSlot: number, primarySlot: number, dependencyResolverFn: null, loadingSlot: number|null,
     placeholderSlot: number|null, errorSlot: number|null, loadingConfig: o.Expression|null,
-    placeholderConfig: o.Expression|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+    placeholderConfig: o.Expression|null, enableTimerScheduling: boolean,
+    sourceSpan: ParseSourceSpan|null): ir.CreateOp {
   const args: Array<o.Expression> = [
     o.literal(selfSlot),
     o.literal(primarySlot),
@@ -196,6 +197,7 @@ export function defer(
     o.literal(errorSlot),
     loadingConfig ?? o.literal(null),
     placeholderConfig ?? o.literal(null),
+    enableTimerScheduling ? o.importExpr(Identifiers.deferEnableTimerScheduling) : o.literal(null),
   ];
 
   let expr: o.Expression;
@@ -210,8 +212,17 @@ export function defer(
 const deferTriggerToR3TriggerInstructionsMap = new Map([
   [ir.DeferTriggerKind.Idle, [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle]],
   [
+    ir.DeferTriggerKind.Immediate,
+    [Identifiers.deferOnImmediate, Identifiers.deferPrefetchOnImmediate]
+  ],
+  [ir.DeferTriggerKind.Timer, [Identifiers.deferOnTimer, Identifiers.deferPrefetchOnTimer]],
+  [ir.DeferTriggerKind.Hover, [Identifiers.deferOnHover, Identifiers.deferPrefetchOnHover]],
+  [
     ir.DeferTriggerKind.Interaction,
     [Identifiers.deferOnInteraction, Identifiers.deferPrefetchOnInteraction]
+  ],
+  [
+    ir.DeferTriggerKind.Viewport, [Identifiers.deferOnViewport, Identifiers.deferPrefetchOnViewport]
   ],
 ]);
 
