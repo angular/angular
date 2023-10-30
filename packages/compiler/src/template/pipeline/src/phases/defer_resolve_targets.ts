@@ -46,8 +46,12 @@ export function phaseDeferResolveTargets(job: ComponentCompilationJob): void {
       placeholderView: ir.XrefId|null): void {
     switch (op.trigger.kind) {
       case ir.DeferTriggerKind.Idle:
+      case ir.DeferTriggerKind.Immediate:
+      case ir.DeferTriggerKind.Timer:
         return;
+      case ir.DeferTriggerKind.Hover:
       case ir.DeferTriggerKind.Interaction:
+      case ir.DeferTriggerKind.Viewport:
         if (op.trigger.targetName === null) {
           return;
         }

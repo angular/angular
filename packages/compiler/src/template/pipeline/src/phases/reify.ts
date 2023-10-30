@@ -141,21 +141,30 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         break;
       case ir.OpKind.Defer:
+        const timerScheduling =
+            !!op.loadingMinimumTime || !!op.loadingAfterTime || !!op.placeholderMinimumTime;
         ir.OpList.replace(
             op,
             ng.defer(
                 op.slot.slot!, op.mainSlot.slot!, null, op.loadingSlot?.slot ?? null,
                 op.placeholderSlot?.slot! ?? null, op.errorSlot?.slot ?? null, op.loadingConfig,
-                op.placeholderConfig, op.sourceSpan));
+                op.placeholderConfig, timerScheduling, op.sourceSpan));
         break;
       case ir.OpKind.DeferOn:
         let args: number[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Idle:
+          case ir.DeferTriggerKind.Immediate:
+            break;
+          case ir.DeferTriggerKind.Timer:
+            args = [op.trigger.delay];
             break;
           case ir.DeferTriggerKind.Interaction:
+          case ir.DeferTriggerKind.Hover:
+          case ir.DeferTriggerKind.Viewport:
             if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-              throw new Error('Slot or view steps not set in trigger reification');
+              throw new Error(`Slot or view steps not set in trigger reification for trigger kind ${
+                  op.trigger.kind}`);
             }
             args = [op.trigger.targetSlot.slot];
             if (op.trigger.targetSlotViewSteps !== 0) {
