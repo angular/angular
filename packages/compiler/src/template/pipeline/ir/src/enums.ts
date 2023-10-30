@@ -527,5 +527,9 @@ export enum Namespace {
  */
 export enum DeferTriggerKind {
   Idle,
+  Immediate,
+  Timer,
+  Hover,
   Interaction,
+  Viewport,
 }
