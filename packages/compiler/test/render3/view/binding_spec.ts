@@ -535,6 +535,25 @@ describe('t2 binding', () => {
       expect(triggerEl?.name).toBe('button');
     });
 
+    it('should identify an implicit trigger inside the placeholder block with comments', () => {
+      const template = parseTemplate(
+          `
+            @defer (on viewport) {
+              main
+            } @placeholder {
+              <!-- before -->
+              <button #trigger></button>
+              <!-- after -->
+            }
+          `,
+          '');
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const block = Array.from(bound.getDeferBlocks())[0];
+      const triggerEl = bound.getDeferredTriggerTarget(block, block.triggers.viewport!);
+      expect(triggerEl?.name).toBe('button');
+    });
+
     it('should not identify an implicit trigger if the placeholder has multiple root nodes', () => {
       const template = parseTemplate(
           `
