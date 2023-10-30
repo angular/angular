@@ -1,10 +1,10 @@
-# Deferred Loading
+# Deferrable Views
 
 ## Overview
 
-Deferred loading is a feature that can be used in component template to defer the loading of select dependencies within that template. Those dependencies include components, directives, and pipes, and any associated CSS. To use this feature, you can declaratively wrap a section of your template in a `@defer` block which specifies the loading conditions.
+Deferrable views can be used in component template to defer the loading of select dependencies within that template. Those dependencies include components, directives, and pipes, and any associated CSS. To use this feature, you can declaratively wrap a section of your template in a `@defer` block which specifies the loading conditions.
 
-The `@defer` block supports a series of [triggers](guide/defer#triggers), [prefeching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
+Deferrable views support a series of [triggers](guide/defer#triggers), [prefeching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
 
 ```html
 @defer {
@@ -12,9 +12,9 @@ The `@defer` block supports a series of [triggers](guide/defer#triggers), [prefe
 }
 ```
 
-## Why use `@defer`?
+## Why use Deferrable Views?
 
-`@defer` is a powerful tool that can be used to reduce the initial bundle size of your application or defer heavy components that may not ever be loaded until a later time. This should result in a faster initial load and an improvement in your Core Web Vitals (CWV) results. Deferring some of your components until later should specifically improve Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
+Deferrable views, also known as `@defer` blocks, are a powerful tool that can be used to reduce the initial bundle size of your application or defer heavy components that may not ever be loaded until a later time. This should result in a faster initial load and an improvement in your Core Web Vitals (CWV) results. Deferring some of your components until later should specifically improve Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
 
 Note: It is highly recommended that any defer loaded component that might result in layout shift once the dependencies have loaded be below the fold or otherwise not yet visible to the user.
 
