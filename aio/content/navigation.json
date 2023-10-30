@@ -518,7 +518,7 @@
         },
         {
           "url": "guide/defer",
-          "title": "Deferred Loading",
+          "title": "Deferrable views",
           "tooltip": "How to defer load components, directives, and pipes."
         },
         {
