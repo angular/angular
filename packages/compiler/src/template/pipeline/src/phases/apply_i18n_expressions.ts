@@ -13,7 +13,7 @@ import {CompilationJob} from '../compilation';
 /**
  * Adds apply operations after i18n expressions.
  */
-export function phaseApplyI18nExpressions(job: CompilationJob): void {
+export function applyI18nExpressions(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
       // Only add apply after expressions that are not followed by more expressions.

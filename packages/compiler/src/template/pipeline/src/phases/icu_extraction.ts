@@ -13,7 +13,7 @@ import {CompilationJob} from '../compilation';
 /**
  * Extracts ICUs into i18n expressions.
  */
-export function phaseIcuExtraction(job: CompilationJob): void {
+export function extractI18nICUs(job: CompilationJob): void {
   for (const unit of job.units) {
     // Build a map of ICU to the i18n block they belong to, then remove the `Icu` ops.
     const icus = new Map<

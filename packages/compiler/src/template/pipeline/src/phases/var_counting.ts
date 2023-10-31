@@ -13,7 +13,7 @@ import {CompilationJob, ComponentCompilationJob} from '../compilation';
  * Counts the number of variable slots used within each view, and stores that on the view itself, as
  * well as propagates it to the `ir.TemplateOp` for embedded views.
  */
-export function phaseVarCounting(job: CompilationJob): void {
+export function countVariables(job: CompilationJob): void {
   // First, count the vars used in each view, and update the view-level counter.
   for (const unit of job.units) {
     let varCount = 0;

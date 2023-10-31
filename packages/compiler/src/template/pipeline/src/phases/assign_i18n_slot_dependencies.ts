@@ -12,7 +12,7 @@ import {CompilationJob} from '../compilation';
 /**
  * Updates i18n expression ops to depend on the last slot in their owning i18n block.
  */
-export function phaseAssignI18nSlotDependencies(job: CompilationJob) {
+export function assignI18nSlotDependencies(job: CompilationJob) {
   const i18nLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
   let lastSlotConsumer: ir.XrefId|null = null;
   for (const unit of job.units) {

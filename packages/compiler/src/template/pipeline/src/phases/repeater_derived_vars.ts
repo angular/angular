@@ -11,7 +11,12 @@ import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
 
-export function phaseRepeaterDerivedVars(job: CompilationJob): void {
+/**
+ * Inside the body of a repeater, certain context variables (such as `$first`) are ambiently
+ * available. This phase finds those variable usages, and replaces them with the appropriate
+ * expression.
+ */
+export function generateRepeaterDerivedVars(job: CompilationJob): void {
   const repeaters = new Map<ir.XrefId, ir.RepeaterCreateOp>();
 
   for (const unit of job.units) {

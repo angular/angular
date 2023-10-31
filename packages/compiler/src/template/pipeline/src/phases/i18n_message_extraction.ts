@@ -9,8 +9,10 @@
 import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
-/** Extracts i18n messages into their own op. */
-export function phaseI18nMessageExtraction(job: ComponentCompilationJob): void {
+/**
+ * Extracts i18n messages into their own op.
+ */
+export function extractI18nMessages(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart) {

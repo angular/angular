@@ -11,9 +11,9 @@ import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
 /**
- * Collapse the various conditions of conditional ops into a single test expression.
+ * Collapse the various conditions of conditional ops (if, switch) into a single test expression.
  */
-export function phaseConditionals(job: ComponentCompilationJob): void {
+export function generateConditionalExpressions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       if (op.kind !== ir.OpKind.Conditional) {

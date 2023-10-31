@@ -24,7 +24,7 @@ const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
 /**
  * Resolves sanitization functions for ops that need them.
  */
-export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
+export function resolveSanitizers(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
     let sanitizerFn: ir.SanitizerFn|null;

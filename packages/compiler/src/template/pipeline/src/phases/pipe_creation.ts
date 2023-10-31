@@ -9,7 +9,14 @@
 import * as ir from '../../ir';
 import type {CompilationJob, CompilationUnit} from '../compilation';
 
-export function phasePipeCreation(job: CompilationJob): void {
+/**
+ * This phase generates pipe creation instructions. We do this based on the pipe bindings found in
+ * the update block, in the order we see them.
+ *
+ * When not in compatibility mode, we can simply group all these creation instructions together, to
+ * maximize chaining opportunities.
+ */
+export function createPipes(job: CompilationJob): void {
   for (const unit of job.units) {
     processPipeBindingsInView(unit);
   }

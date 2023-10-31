@@ -12,7 +12,7 @@ import {CompilationJob} from '../compilation';
 /**
  * Removes text nodes within i18n blocks since they are already hardcoded into the i18n message.
  */
-export function phaseI18nTextExtraction(job: CompilationJob): void {
+export function extractI18nText(job: CompilationJob): void {
   for (const unit of job.units) {
     // Remove all text nodes within i18n blocks, their content is already captured in the i18n
     // message.
