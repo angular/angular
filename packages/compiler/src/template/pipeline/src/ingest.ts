@@ -301,12 +301,12 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
 
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = tmplOp.slot;
+      firstSlotHandle = tmplOp.handle;
     }
 
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr =
-        new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.slot, ifCase.expressionAlias);
+        new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.handle, ifCase.expressionAlias);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
@@ -331,12 +331,12 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     unit.create.push(tmplOp);
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = tmplOp.slot;
+      firstSlotHandle = tmplOp.handle;
     }
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
-    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.slot);
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.handle);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
@@ -372,11 +372,11 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
-  const deferOp = ir.createDeferOp(deferXref, main.xref, main.slot, deferBlock.sourceSpan);
+  const deferOp = ir.createDeferOp(deferXref, main.xref, main.handle, deferBlock.sourceSpan);
   deferOp.placeholderView = placeholder?.xref ?? null;
-  deferOp.placeholderSlot = placeholder?.slot ?? null;
-  deferOp.loadingSlot = loading?.slot ?? null;
-  deferOp.errorSlot = error?.slot ?? null;
+  deferOp.placeholderSlot = placeholder?.handle ?? null;
+  deferOp.loadingSlot = loading?.handle ?? null;
+  deferOp.errorSlot = error?.handle ?? null;
   deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
   deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
   deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;
@@ -521,7 +521,7 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
       forBlock.expression, unit.job,
       convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
   const repeater = ir.createRepeaterOp(
-      repeaterCreate.xref, repeaterCreate.slot, expression, forBlock.sourceSpan);
+      repeaterCreate.xref, repeaterCreate.handle, expression, forBlock.sourceSpan);
   unit.update.push(repeater);
 }
 
@@ -707,7 +707,7 @@ function ingestBindings(
     }
 
     listenerOp = ir.createListenerOp(
-        op.xref, op.slot, output.name, op.tag, output.phase, false, output.sourceSpan);
+        op.xref, op.handle, output.name, op.tag, output.phase, false, output.sourceSpan);
 
     // if output.handler is a chain, then push each statement from the chain separately, and
     // return the last one?

@@ -24,7 +24,7 @@ export function extractI18nICUs(job: CompilationJob): void {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
           currentI18nId = op.xref;
-          currentI18nSlot = op.slot;
+          currentI18nSlot = op.handle;
           break;
         case ir.OpKind.I18nEnd:
           currentI18nId = null;
