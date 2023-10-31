@@ -37,7 +37,6 @@ import {
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
-import {applyValueToInputField} from '../apply_value_input_field';
 import {
   assertFirstCreatePass,
   assertFirstUpdatePass,
@@ -141,6 +140,7 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
+import {_setAttributeImpl} from '../util/attrs_utils_with_hydration_support';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
 import {
@@ -155,6 +155,7 @@ import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
+import {_setPropertyImpl} from '../util/prop_utils_with_hydration_support';
 
 /**
  * Invoke `HostBindingsFunction`s for view.
@@ -1115,10 +1116,19 @@ export function elementPropertyInternal<T>(
       ngDevMode.rendererSetProperty++;
     }
 
+    const isFirstPass = (lView[FLAGS] & LViewFlags.FirstLViewPass) === LViewFlags.FirstLViewPass;
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.value || '', propName) as any) : value;
-    renderer.setProperty(element as RElement, propName, value);
+    _setPropertyImpl(
+      isFirstPass,
+      renderer,
+      tNode.index,
+      element as RElement,
+      propName,
+      value,
+      lView[HYDRATION],
+    );
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
@@ -1673,7 +1683,19 @@ export function elementAttributeInternal(
     );
   }
   const element = getNativeByTNode(tNode, lView) as RElement;
-  setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
+  const isFirstPass = (lView[FLAGS] & LViewFlags.FirstLViewPass) === LViewFlags.FirstLViewPass;
+  setElementAttribute(
+    lView[RENDERER],
+    element,
+    namespace,
+    tNode.value,
+    name,
+    value,
+    sanitizer,
+    isFirstPass,
+    tNode.index,
+    lView[HYDRATION],
+  );
 }
 
 export function setElementAttribute(
@@ -1684,6 +1706,9 @@ export function setElementAttribute(
   name: string,
   value: any,
   sanitizer: SanitizerFn | null | undefined,
+  isFirstPass: boolean,
+  nodeIndex: number,
+  hydrationInfo: DehydratedView | null,
 ) {
   if (value == null) {
     ngDevMode && ngDevMode.rendererRemoveAttribute++;
@@ -1693,7 +1718,16 @@ export function setElementAttribute(
     const strValue =
       sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
 
-    renderer.setAttribute(element, name, strValue as string, namespace);
+    _setAttributeImpl(
+      isFirstPass,
+      renderer,
+      nodeIndex,
+      element,
+      name,
+      strValue,
+      namespace,
+      hydrationInfo,
+    );
   }
 }
 

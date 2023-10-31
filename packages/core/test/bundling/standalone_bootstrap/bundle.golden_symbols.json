@@ -462,6 +462,12 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
+    "name": "_setAttributeImpl"
+  },
+  {
+    "name": "_setAttributeWithHydrationSupport"
+  },
+  {
     "name": "_wasLastNodeCreated"
   },
   {

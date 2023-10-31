@@ -323,6 +323,9 @@ export function applyMutableOpCodes(
             attrName,
             attrValue,
             null,
+            /* isFirstPass */ false,
+            /* nodeIndex */ 0,
+            /* hydrationInfo */ null,
           );
           break;
         default:
@@ -441,6 +444,9 @@ export function applyUpdateOpCodes(
                     propName,
                     value,
                     sanitizeFn,
+                    /* isFirstPass */ false,
+                    /* nodeIndex */ 0,
+                    /* hydrationInfo */ null,
                   );
                 } else {
                   elementPropertyInternal(

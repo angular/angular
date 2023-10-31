@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  consumerDestroy,
-  getActiveConsumer,
-  setActiveConsumer,
-} from '@angular/core/primitives/signals';
+import {consumerDestroy, setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
@@ -68,6 +64,7 @@ import {
   HookData,
   HookFn,
   HOST,
+  HYDRATION,
   LView,
   LViewFlags,
   NEXT,
@@ -1273,11 +1270,17 @@ export function writeDirectClass(renderer: Renderer, element: RElement, newValue
 }
 
 /** Sets up the static DOM attributes on an `RNode`. */
-export function setupStaticAttributes(renderer: Renderer, element: RElement, tNode: TNode) {
-  const {mergedAttrs, classes, styles} = tNode;
+export function setupStaticAttributes(
+  renderer: Renderer,
+  element: RElement,
+  tNode: TNode,
+  lView: LView,
+) {
+  const {index, mergedAttrs, classes, styles} = tNode;
 
   if (mergedAttrs !== null) {
-    setUpAttributes(renderer, element, mergedAttrs);
+    const isFirstPass = (lView[FLAGS] & LViewFlags.FirstLViewPass) === LViewFlags.FirstLViewPass;
+    setUpAttributes(renderer, element, mergedAttrs, isFirstPass, index, lView[HYDRATION]);
   }
 
   if (classes !== null) {

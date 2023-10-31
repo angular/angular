@@ -567,6 +567,15 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
+    "name": "_setAttributeImpl"
+  },
+  {
+    "name": "_setAttributeWithHydrationSupport"
+  },
+  {
+    "name": "_setAttributeWithHydrationSupportImpl"
+  },
+  {
     "name": "_wasLastNodeCreated"
   },
   {
@@ -852,6 +861,9 @@
     "name": "getFirstLContainer"
   },
   {
+    "name": "getHydrationProtectedAttribute"
+  },
+  {
     "name": "getInjectImplementation"
   },
   {
@@ -955,6 +967,9 @@
   },
   {
     "name": "hasSkipHydrationAttrOnTNode"
+  },
+  {
+    "name": "hydrationProtectedElementToAttributeMap"
   },
   {
     "name": "icuContainerIterate"
@@ -1324,6 +1339,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldProtectAttribute"
   },
   {
     "name": "shouldSearchParent"
