@@ -236,7 +236,10 @@ class DefaultDomRenderer2 implements Renderer2 {
         el.setAttribute(name, value);
       }
     } else {
-      el.setAttribute(name, value);
+      const attrValue = el.getAttribute(name);
+      if (value !== attrValue) {
+        el.setAttribute(name, value);
+      }
     }
   }
 
