@@ -16,24 +16,24 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
  * appropriate view. We eagerly generate all save view variables; they will be optimized away later.
  */
 export function saveAndRestoreView(job: ComponentCompilationJob): void {
-  for (const view of job.views.values()) {
-    view.create.prepend([
+  for (const unit of job.units) {
+    unit.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
-          view.job.allocateXrefId(), {
+          unit.job.allocateXrefId(), {
             kind: ir.SemanticVariableKind.SavedView,
             name: null,
-            view: view.xref,
+            view: unit.xref,
           },
           new ir.GetCurrentViewExpr(), ir.VariableFlags.None),
     ]);
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (op.kind !== ir.OpKind.Listener) {
         continue;
       }
 
       // Embedded views always need the save/restore view operation.
-      let needsRestoreView = view !== job.root;
+      let needsRestoreView = unit !== job.root;
 
       if (!needsRestoreView) {
         for (const handlerOp of op.handlerOps) {
@@ -47,7 +47,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
       }
 
       if (needsRestoreView) {
-        addSaveRestoreViewOperationToListener(view, op);
+        addSaveRestoreViewOperationToListener(unit, op);
       }
     }
   }

@@ -15,8 +15,8 @@ import type {CompilationJob} from '../compilation';
  * Parses extracted style and class attributes into separate ExtractedAttributeOps per style or
  * class property.
  */
-export function parseExtractedStyles(cpl: CompilationJob) {
-  for (const unit of cpl.units) {
+export function parseExtractedStyles(job: CompilationJob) {
+  for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute && op.bindingKind === ir.BindingKind.Attribute &&
           ir.isStringLiteral(op.expression!)) {
