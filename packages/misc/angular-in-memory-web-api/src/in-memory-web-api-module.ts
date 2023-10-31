@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpBackend, ɵPRIMARY_HTTP_BACKEND as PRIMARY_HTTP_BACKEND} from '@angular/common/http';
+import {XhrFactory} from '@angular/common';
+import {HttpBackend} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
-import {HttpClientBackendService} from './http-client-backend-service';
+import {httpClientInMemBackendServiceFactory} from './http-client-in-memory-web-api-module';
 import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService} from './interfaces';
 
 @NgModule()
@@ -21,8 +22,6 @@ export class InMemoryWebApiModule {
    *
    *  Usually imported in the root application module.
    *  Can import in a lazy feature module too, which will shadow modules loaded earlier
-   *
-   *  Note: If you use the `FetchBackend`, make sure forRoot is invoked after in the providers list
    *
    * @param dbCreator - Class that creates seed data for in-memory database. Must implement
    *     InMemoryDbService.
@@ -38,9 +37,11 @@ export class InMemoryWebApiModule {
       ngModule: InMemoryWebApiModule,
       providers: [
         {provide: InMemoryDbService, useClass: dbCreator},
-        {provide: InMemoryBackendConfig, useValue: options},
-        {provide: HttpBackend, useClass: HttpClientBackendService},
-        {provide: PRIMARY_HTTP_BACKEND, useExisting: HttpClientBackendService}
+        {provide: InMemoryBackendConfig, useValue: options}, {
+          provide: HttpBackend,
+          useFactory: httpClientInMemBackendServiceFactory,
+          deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory]
+        }
       ]
     };
   }
