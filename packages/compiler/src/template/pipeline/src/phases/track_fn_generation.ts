@@ -7,7 +7,6 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';

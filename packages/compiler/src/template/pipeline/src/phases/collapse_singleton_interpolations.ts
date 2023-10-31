@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../../../../output/output_ast';
-import {Identifiers as R3} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ViewCompilationUnit, ComponentCompilationJob} from '../compilation';
+import type {ComponentCompilationJob} from '../compilation';
 import {literalOrArrayLiteral} from '../conversion';
 
 /**
