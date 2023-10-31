@@ -183,11 +183,9 @@ export interface TemplateOp extends ElementOpBase {
   vars: number|null;
 
   /**
-   * Whether or not this template was automatically created for use with block syntax (control flow
-   * or defer). This will eventually cause the emitted template instruction to use fewer arguments,
-   * since several of the default arguments are unnecessary for blocks.
+   * Suffix to add to the name of the generated template function.
    */
-  block: boolean;
+  functionNameSuffix: string;
 
   /**
    * The i18n placeholder data associated with this template.
@@ -199,7 +197,7 @@ export interface TemplateOp extends ElementOpBase {
  * Create a `TemplateOp`.
  */
 export function createTemplateOp(
-    xref: XrefId, tag: string|null, namespace: Namespace, generatedInBlock: boolean,
+    xref: XrefId, tag: string|null, functionNameSuffix: string, namespace: Namespace,
     i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
@@ -207,7 +205,7 @@ export function createTemplateOp(
     attributes: null,
     tag,
     slot: new SlotHandle(),
-    block: generatedInBlock,
+    functionNameSuffix,
     decls: null,
     vars: null,
     localRefs: [],
@@ -264,6 +262,11 @@ export interface RepeaterCreateOp extends ElementOpBase {
    */
   usesComponentInstance: boolean;
 
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -279,8 +282,8 @@ export interface RepeaterVarNames {
 }
 
 export function createRepeaterCreateOp(
-    primaryView: XrefId, emptyView: XrefId|null, track: o.Expression, varNames: RepeaterVarNames,
-    sourceSpan: ParseSourceSpan): RepeaterCreateOp {
+    primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
+    varNames: RepeaterVarNames, sourceSpan: ParseSourceSpan): RepeaterCreateOp {
   return {
     kind: OpKind.RepeaterCreate,
     attributes: null,
@@ -289,7 +292,8 @@ export function createRepeaterCreateOp(
     emptyView,
     track,
     trackByFn: null,
-    tag: 'For',
+    tag,
+    functionNameSuffix: 'For',
     namespace: Namespace.HTML,
     nonBindable: false,
     localRefs: [],
