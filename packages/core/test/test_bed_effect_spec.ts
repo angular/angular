@@ -34,13 +34,19 @@ describe('effects in TestBed', () => {
     TestBed.createComponent(Cmp).detectChanges();
 
     expect(log).toEqual([
+      // The component gets constructed, which creates the effect. Since the effect is created in a
+      // component, it doesn't get scheduled until the component is first change detected.
       'Ctor',
-      'Effect',
+
+      // Next, the first change detection (update pass) happens.
       'DoCheck',
+
+      // Then the effect runs.
+      'Effect',
     ]);
   });
 
-  it('created in ngOnInit should not run with detectChanges()', () => {
+  it('created in ngOnInit should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
@@ -68,12 +74,15 @@ describe('effects in TestBed', () => {
     TestBed.createComponent(Cmp).detectChanges();
 
     expect(log).toEqual([
-      // B: component bootstrapped
+      // The component gets constructed.
       'Ctor',
-      // ngDoCheck runs before ngOnInit
-      'DoCheck',
-    ]);
 
-    // effect should not have executed.
+      // Next, the first change detection (update pass) happens, which creates the effect and
+      // schedules it for execution.
+      'DoCheck',
+
+      // Then the effect runs.
+      'Effect',
+    ]);
   });
 });
