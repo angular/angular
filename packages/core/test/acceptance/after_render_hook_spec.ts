@@ -489,9 +489,9 @@ describe('after render hooks', () => {
               },
             ]
           });
-          TestBed.createComponent(TestCmp);
+          const fixture = TestBed.createComponent(TestCmp);
 
-          expect(() => TestBed.flushEffects())
+          expect(() => fixture.detectChanges())
               .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
         });
       });

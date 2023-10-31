@@ -13,7 +13,7 @@ import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-import {CONTEXT, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
 import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -248,6 +248,16 @@ export function refreshView<T>(
       // list. The result of this would be that if the exception would not be throw on subsequent CD
       // the styling would be unable to process it data and reflect to the DOM.
       tView.firstUpdatePass = false;
+    }
+
+    // Schedule any effects that are waiting on the update pass of this view.
+    if (lView[EFFECTS_TO_SCHEDULE]) {
+      for (const notifyEffect of lView[EFFECTS_TO_SCHEDULE]) {
+        notifyEffect();
+      }
+
+      // Once they've been run, we can drop the array.
+      lView[EFFECTS_TO_SCHEDULE] = null;
     }
 
     // Do not reset the dirty state when running in check no changes mode. We don't want components

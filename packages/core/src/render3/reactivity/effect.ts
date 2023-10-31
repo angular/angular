@@ -8,13 +8,16 @@
 
 import {createWatch, Watch, WatchCleanupRegisterFn} from '@angular/core/primitives/signals';
 
+import {ChangeDetectorRef} from '../../change_detection';
 import {assertInInjectionContext} from '../../di/contextual';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
+import type {InternalViewRef} from '../view_ref';
 import {DestroyRef} from '../../linker/destroy_ref';
+import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
 
@@ -170,7 +173,7 @@ export class ZoneAwareMicrotaskScheduler implements EffectScheduler {
  */
 class EffectHandle implements EffectRef, SchedulableEffect {
   unregisterOnDestroy: (() => void)|undefined;
-  protected watcher: Watch;
+  readonly watcher: Watch;
 
   constructor(
       private scheduler: EffectScheduler,
@@ -196,10 +199,6 @@ class EffectHandle implements EffectRef, SchedulableEffect {
 
   private schedule(): void {
     this.scheduler.scheduleEffect(this);
-  }
-
-  notify(): void {
-    this.watcher.notify();
   }
 
   destroy(): void {
@@ -272,8 +271,25 @@ export function effect(
       (typeof Zone === 'undefined') ? null : Zone.current, destroyRef, errorHandler,
       options?.allowSignalWrites ?? false);
 
-  // Effects start dirty.
-  handle.notify();
+  // Effects need to be marked dirty manually to trigger their initial run. The timing of this
+  // marking matters, because the effects may read signals that track component inputs, which are
+  // only available after those components have had their first update pass.
+  //
+  // We inject `ChangeDetectorRef` optionally, to determine whether this effect is being created in
+  // the context of a component or not. If it is, then we check whether the component has already
+  // run its update pass, and defer the effect's initial scheduling until the update pass if it
+  // hasn't already run.
+  const cdr =
+      injector.get(ChangeDetectorRef, null, {optional: true}) as InternalViewRef<unknown>| null;
+  if (!cdr || !(cdr._lView[FLAGS] & LViewFlags.FirstLViewPass)) {
+    // This effect is either not running in a view injector, or the view has already
+    // undergone its first change detection pass, which is necessary for any required inputs to be
+    // set.
+    handle.watcher.notify();
+  } else {
+    // Delay the initialization of the effect until the view is fully initialized.
+    (cdr._lView[EFFECTS_TO_SCHEDULE] ??= []).push(handle.watcher.notify);
+  }
 
   return handle;
 }
