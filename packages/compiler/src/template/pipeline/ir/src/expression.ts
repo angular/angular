@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {ExpressionKind, OpKind, SanitizerFn} from './enums';
+import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn} from './enums';
 import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
@@ -818,13 +818,6 @@ export class ConditionalCaseExpr extends ExpressionBase {
       this.expr = transformExpressionsInExpression(this.expr, transform, flags);
     }
   }
-}
-
-export enum DerivedRepeaterVarIdentity {
-  First,
-  Last,
-  Even,
-  Odd,
 }
 
 export class DerivedRepeaterVarExpr extends ExpressionBase {
