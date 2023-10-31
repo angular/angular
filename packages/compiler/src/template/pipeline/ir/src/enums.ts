@@ -528,3 +528,13 @@ export enum DeferTriggerKind {
   Interaction,
   Viewport,
 }
+
+/**
+ * Repeaters implicitly define these derived variables, and child nodes may read them.
+ */
+export enum DerivedRepeaterVarIdentity {
+  First,
+  Last,
+  Even,
+  Odd,
+}
