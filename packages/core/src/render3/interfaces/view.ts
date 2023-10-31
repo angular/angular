@@ -57,6 +57,7 @@ export const QUERIES = 18;
 export const ID = 19;
 export const EMBEDDED_VIEW_INJECTOR = 20;
 export const ON_DESTROY_HOOKS = 21;
+export const EFFECTS_TO_SCHEDULE = 22;
 export const REACTIVE_TEMPLATE_CONSUMER = 23;
 export const REACTIVE_HOST_BINDING_CONSUMER = 24;
 
@@ -335,6 +336,11 @@ export interface LView<T = unknown> extends Array<any> {
    * precedence over the element and module injectors.
    */
   readonly[EMBEDDED_VIEW_INJECTOR]: Injector|null;
+
+  /**
+   * Effect scheduling operations that need to run during this views's update pass.
+   */
+  [EFFECTS_TO_SCHEDULE]: Array<() => void>|null;
 
   /**
    * A collection of callbacks functions that are executed when a given LView is destroyed. Those

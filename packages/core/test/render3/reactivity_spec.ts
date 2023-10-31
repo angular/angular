@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {AfterViewInit, Component, computed, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, computed, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injectable, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -123,11 +123,6 @@ describe('effects', () => {
 
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
-
-    // Effects don't run during change detection.
-    expect(didRun).toBeFalse();
-
-    TestBed.flushEffects();
 
     expect(didRun).toBeTrue();
   });
@@ -349,6 +344,174 @@ describe('effects', () => {
     expect(fixture.nativeElement.textContent).toBe('0');
   });
 
+  describe('effects created in components should first run after ngOnInit', () => {
+    it('when created during bootstrapping', () => {
+      let log: string[] = [];
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '',
+      })
+      class TestCmp {
+        constructor() {
+          effect(() => log.push('effect'));
+        }
+
+        ngOnInit(): void {
+          log.push('init');
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      TestBed.flushEffects();
+      expect(log).toEqual([]);
+      fixture.detectChanges();
+      expect(log).toEqual(['init', 'effect']);
+    });
+
+    it('when created during change detection', () => {
+      let log: string[] = [];
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '',
+      })
+      class TestCmp {
+        ngOnInitRan = false;
+        constructor() {
+          effect(() => log.push('effect'));
+        }
+
+        ngOnInit(): void {
+          log.push('init');
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'driver-cmp',
+        imports: [TestCmp],
+        template: `
+          @if (cond) {
+            <test-cmp />
+          }
+        `,
+      })
+      class DriverCmp {
+        cond = false;
+      }
+
+      const fixture = TestBed.createComponent(DriverCmp);
+      fixture.detectChanges();
+      expect(log).toEqual([]);
+
+      // Toggle the @if, which should create and run the effect.
+      fixture.componentInstance.cond = true;
+      fixture.detectChanges();
+      expect(log).toEqual(['init', 'effect']);
+    });
+
+    it('when created dynamically', () => {
+      let log: string[] = [];
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '',
+      })
+      class TestCmp {
+        ngOnInitRan = false;
+        constructor() {
+          effect(() => log.push('effect'));
+        }
+
+        ngOnInit(): void {
+          log.push('init');
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'driver-cmp',
+        template: '',
+      })
+      class DriverCmp {
+        vcr = inject(ViewContainerRef);
+      }
+
+      const fixture = TestBed.createComponent(DriverCmp);
+      fixture.detectChanges();
+
+      fixture.componentInstance.vcr.createComponent(TestCmp);
+
+      // Verify that simply creating the component didn't schedule the effect.
+      TestBed.flushEffects();
+      expect(log).toEqual([]);
+
+      // Running change detection should schedule and run the effect.
+      fixture.detectChanges();
+      expect(log).toEqual(['init', 'effect']);
+    });
+
+    it('when created in a service provided in a component', () => {
+      let log: string[] = [];
+
+      @Injectable()
+      class EffectService {
+        constructor() {
+          effect(() => log.push('effect'));
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '',
+        providers: [EffectService],
+      })
+      class TestCmp {
+        svc = inject(EffectService);
+
+        ngOnInit(): void {
+          log.push('init');
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      TestBed.flushEffects();
+      expect(log).toEqual([]);
+      fixture.detectChanges();
+      expect(log).toEqual(['init', 'effect']);
+    });
+
+    it('if multiple effects are created', () => {
+      let log: string[] = [];
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '',
+      })
+      class TestCmp {
+        constructor() {
+          effect(() => log.push('effect a'));
+          effect(() => log.push('effect b'));
+          effect(() => log.push('effect c'));
+        }
+
+        ngOnInit(): void {
+          log.push('init');
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(log[0]).toBe('init');
+      expect(log).toContain('effect a');
+      expect(log).toContain('effect b');
+      expect(log).toContain('effect c');
+    });
+  });
+
   describe('should disallow creating an effect context', () => {
     it('inside template effect', () => {
       @Component({
@@ -400,9 +563,9 @@ describe('effects', () => {
           },
         ]
       });
-      TestBed.createComponent(Cmp);
+      const fixture = TestBed.createComponent(Cmp);
 
-      expect(() => TestBed.flushEffects())
+      expect(() => fixture.detectChanges())
           .toThrowError(/effect\(\) cannot be called from within a reactive context./);
     });
   });
