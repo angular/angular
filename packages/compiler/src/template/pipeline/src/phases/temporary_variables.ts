@@ -19,8 +19,8 @@ import type {CompilationJob, CompilationUnit} from '../compilation';
  * in the double keyed read `a?.[f()]?.[f()]`, the two function calls have non-overlapping scopes.
  * Implement an algorithm for reuse.
  */
-export function generateTemporaryVariables(cpl: CompilationJob): void {
-  for (const unit of cpl.units) {
+export function generateTemporaryVariables(job: CompilationJob): void {
+  for (const unit of job.units) {
     unit.create.prepend(generateTemporaries(unit.create) as Array<ir.StatementOp<ir.CreateOp>>);
     unit.update.prepend(generateTemporaries(unit.update) as Array<ir.StatementOp<ir.UpdateOp>>);
   }

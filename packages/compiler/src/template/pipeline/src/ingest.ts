@@ -30,10 +30,10 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
     relativeContextFilePath: string, i18nUseExternalIds: boolean): ComponentCompilationJob {
-  const cpl = new ComponentCompilationJob(
+  const job = new ComponentCompilationJob(
       componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds);
-  ingestNodes(cpl.root, template);
-  return cpl;
+  ingestNodes(job.root, template);
+  return job;
 }
 
 export interface HostBindingInput {
