@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  consumerDestroy,
-  getActiveConsumer,
-  setActiveConsumer,
-} from '@angular/core/primitives/signals';
+import {consumerDestroy, setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
@@ -1283,11 +1279,16 @@ export function writeDirectClass(renderer: Renderer, element: RElement, newValue
 }
 
 /** Sets up the static DOM attributes on an `RNode`. */
-export function setupStaticAttributes(renderer: Renderer, element: RElement, tNode: TNode) {
+export function setupStaticAttributes(
+  lView: LView,
+  tNode: TNode,
+  renderer: Renderer,
+  element: RElement,
+) {
   const {mergedAttrs, classes, styles} = tNode;
 
   if (mergedAttrs !== null) {
-    setUpAttributes(renderer, element, mergedAttrs);
+    setUpAttributes(lView, tNode, renderer, element, mergedAttrs);
   }
 
   if (classes !== null) {

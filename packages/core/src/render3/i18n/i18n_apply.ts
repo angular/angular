@@ -316,6 +316,10 @@ export function applyMutableOpCodes(
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
           setElementAttribute(
+            // Note that the following arguments are not provided because the i18n stuff and its
+            // attributes do not require special handling during hydration.
+            /* lView */ null,
+            /* tNode */ null,
             renderer,
             getNativeByIndex(elementNodeIndex, lView) as RElement,
             null,
@@ -434,6 +438,10 @@ export function applyUpdateOpCodes(
                   // not have TNode), in which case we know that there are no directives, and hence
                   // we use attribute setting.
                   setElementAttribute(
+                    // Note that the following arguments are not provided because the i18n stuff and its
+                    // attributes do not require special handling during hydration.
+                    /* lView */ null,
+                    /* tNode */ null,
                     lView[RENDERER],
                     lView[nodeIndex],
                     null,

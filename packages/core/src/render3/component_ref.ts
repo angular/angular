@@ -525,7 +525,7 @@ function createRootComponentView(
   hostRenderer: Renderer,
 ): LView {
   const tView = rootView[TVIEW];
-  applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
+  applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer, rootView);
 
   // Hydration info is on the host element and needs to be retrieved
   // and passed to the component LView.
@@ -564,6 +564,7 @@ function applyRootComponentStyling(
   tNode: TElementNode,
   rNode: RElement | null,
   hostRenderer: Renderer,
+  lView: LView,
 ): void {
   for (const def of rootDirectives) {
     tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
@@ -573,7 +574,7 @@ function applyRootComponentStyling(
     computeStaticStyling(tNode, tNode.mergedAttrs, true);
 
     if (rNode !== null) {
-      setupStaticAttributes(hostRenderer, rNode, tNode);
+      setupStaticAttributes(lView, tNode, hostRenderer, rNode);
     }
   }
 }
@@ -643,14 +644,30 @@ function setRootNodeAttributes(
 ) {
   if (rootSelectorOrNode) {
     // The placeholder will be replaced with the actual version at build time.
-    setUpAttributes(hostRenderer, hostRNode, ['ng-version', '0.0.0-PLACEHOLDER']);
+    setUpAttributes(
+      // Note that the following arguments are not provided because the root element and its
+      // attributes do not require special handling during hydration.
+      /* lView */ null,
+      /* tNode */ null,
+      hostRenderer,
+      hostRNode,
+      ['ng-version', '0.0.0-PLACEHOLDER'],
+    );
   } else {
     // If host element is created as a part of this function call (i.e. `rootSelectorOrNode`
     // is not defined), also apply attributes and classes extracted from component selector.
     // Extract attributes and classes from the first selector only to match VE behavior.
     const {attrs, classes} = extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
     if (attrs) {
-      setUpAttributes(hostRenderer, hostRNode, attrs);
+      setUpAttributes(
+        // Note that the following arguments are not provided because the root element and its
+        // attributes do not require special handling during hydration.
+        /* lView */ null,
+        /* tNode */ null,
+        hostRenderer,
+        hostRNode,
+        attrs,
+      );
     }
     if (classes && classes.length > 0) {
       writeDirectClass(hostRenderer, hostRNode, classes.join(' '));

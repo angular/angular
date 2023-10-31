@@ -8,7 +8,7 @@
 
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
-import {EnvironmentInjector} from '../../di/r3_injector';
+import type {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';

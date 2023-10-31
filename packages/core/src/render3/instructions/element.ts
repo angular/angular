@@ -34,7 +34,6 @@ import {
   TAttributes,
   TElementNode,
   TNode,
-  TNodeFlags,
   TNodeType,
 } from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
@@ -68,6 +67,7 @@ import {
   wasLastNodeCreated,
 } from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
+import {getHydrationProtectedAttribute} from '../util/protected_attributes';
 import {getConstant} from '../util/view_utils';
 
 import {validateElementIsKnown} from './element_validation';
@@ -160,7 +160,7 @@ export function ɵɵelementStart(
   }
 
   setCurrentTNode(tNode, true);
-  setupStaticAttributes(renderer, native, tNode);
+  setupStaticAttributes(lView, tNode, renderer, native);
 
   if (!isDetachedByI18n(tNode) && wasLastNodeCreated()) {
     // In the i18n case, the translation may have removed this element, so only add it if it is not
@@ -293,6 +293,20 @@ function locateOrCreateElementNodeImpl(
   const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);
+
+  const hydrationProtectedAttribute = getHydrationProtectedAttribute(native.tagName);
+  // If we're examining an element that is in the list of hydration-protected elements (e.g.,
+  // `<iframe>`) and it has a set attribute (e.g., `src`).
+  if (hydrationProtectedAttribute && native.hasAttribute(hydrationProtectedAttribute)) {
+    // Note that the attribute may be set through attribute bindings, for example,
+    // `[attr.src]`, or through property binding, i.e., `[src]="url"`. In both cases,
+    // even if the property is set on the element (`el[name] = value`), it will also set
+    // an attribute. Since we're in hydration mode, the attribute should be set on the
+    // server, and we're safe to check whether it has an attribute set.
+    const attributeValue = native.getAttribute(hydrationProtectedAttribute);
+    const protectedAttributes = (hydrationInfo.protectedAttributes ??= new Map<number, string>());
+    protectedAttributes.set(tNode.index, attributeValue);
+  }
 
   // This element might also be an anchor of a view container.
   if (getSerializedContainerViews(hydrationInfo, index)) {
