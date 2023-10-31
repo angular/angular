@@ -88,6 +88,25 @@ describe('signals', () => {
        expect(derived()).toEqual('object:3');
      });
 
+  it('should consider referentially equal values as always equal', () => {
+    const state = {value: 0};
+    const stateSignal = signal(state, {equal: (a, b) => false});
+
+    let computeCount = 0;
+    const derived = computed(() => `${stateSignal().value}:${++computeCount}`);
+
+    // derived is re-computed initially
+    expect(derived()).toBe('0:1');
+
+    // setting signal with the same reference should not propagate change
+    stateSignal.set(state);
+    expect(derived()).toBe('0:1');
+
+    // updating signal with the same reference should not propagate change
+    stateSignal.update(state => state);
+    expect(derived()).toBe('0:1');
+  });
+
   it('should allow converting writable signals to their readonly counterpart', () => {
     const counter = signal(0);
     const readOnlyCounter = counter.asReadonly();
