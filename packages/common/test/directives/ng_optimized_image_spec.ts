@@ -1242,6 +1242,19 @@ describe('Image directive', () => {
           .toMatch(/your images may be hosted on the Cloudinary CDN/);
     });
 
+    it('should warn if there is no image loader but using Sirv URL', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="https://some.sirv.com/img.png" width="100" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toMatch(/your images may be hosted on the Sirv CDN/);
+    });
+
     it('should NOT warn if there is a custom loader but using CDN URL', () => {
       setupTestingModule();
 

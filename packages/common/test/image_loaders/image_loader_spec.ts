@@ -11,6 +11,7 @@ import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimiz
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
+import {provideSirvLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/sirv_loader';
 import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/url';
 import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -188,6 +189,49 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://mysite.com';
       const src = 'https://angular.io/img.png';
       const loader = createCloudflareLoader(path);
+      expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
+    });
+  });
+
+  describe('Sirv loader', () => {
+    function createSirvLoader(path: string): ImageLoader {
+      const injector =
+          createEnvironmentInjector([provideSirvLoader(path)], TestBed.inject(EnvironmentInjector));
+      return injector.get(IMAGE_LOADER);
+    }
+
+    it('should construct an image loader with the given path', () => {
+      const path = 'https://somesite.sirv.com';
+      const loader = createSirvLoader(path);
+      const config = {src: 'img.png'};
+      expect(loader(config)).toBe(`${path}/img.png`);
+    });
+
+    it('should handle a trailing forward slash on the path', () => {
+      const path = 'https://somesite.sirv.com';
+      const loader = createSirvLoader(`${path}/`);
+      const config = {src: 'img.png'};
+      expect(loader(config)).toBe(`${path}/img.png`);
+    });
+
+    it('should handle a leading forward slash on the image src', () => {
+      const path = 'https://somesite.sirv.com';
+      const loader = createSirvLoader(path);
+      const config = {src: '/img.png'};
+      expect(loader(config)).toBe(`${path}/img.png`);
+    });
+
+    it('should construct an image loader with the given path', () => {
+      const path = 'https://somesite.sirv.com';
+      const loader = createSirvLoader(path);
+      const config = {src: 'img.png', width: 100};
+      expect(loader(config)).toBe(`${path}/img.png?w=100`);
+    });
+
+    it('should throw if an absolute URL is provided as a loader input', () => {
+      const path = 'https://somesite.sirv.com';
+      const src = 'https://angular.io/img.png';
+      const loader = createSirvLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
   });

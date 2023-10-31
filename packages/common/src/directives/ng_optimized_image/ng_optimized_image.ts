@@ -16,6 +16,7 @@ import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
 import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, noopImageLoader} from './image_loaders/image_loader';
 import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
 import {imgixLoaderInfo} from './image_loaders/imgix_loader';
+import {sirvLoaderInfo} from './image_loaders/sirv_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
@@ -84,7 +85,8 @@ const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 
 
 /** Info about built-in loaders we can test for. */
-export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
+export const BUILT_IN_LOADERS =
+    [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo, sirvLoaderInfo];
 
 /**
  * Directive that improves image loading performance by enforcing best practices.
