@@ -18,7 +18,7 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
-import {BINARY_OPERATORS, namespaceForKey} from './conversion';
+import {BINARY_OPERATORS, namespaceForKey, prefixWithNamespace} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
@@ -149,10 +149,6 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
     throw Error(`Unhandled i18n metadata type for element: ${element.i18n.constructor.name}`);
   }
 
-  const staticAttributes: Record<string, string> = {};
-  for (const attr of element.attributes) {
-    staticAttributes[attr.name] = attr.value;
-  }
   const id = unit.job.allocateXrefId();
 
   const [namespaceKey, elementName] = splitNsName(element.name);
@@ -196,9 +192,13 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   }
 
   const i18nPlaceholder = tmpl.i18n instanceof i18n.TagPlaceholder ? tmpl.i18n : undefined;
+  const namespace = namespaceForKey(namespacePrefix);
+  const functionNameSuffix = tagNameWithoutNamespace === null ?
+      '' :
+      prefixWithNamespace(tagNameWithoutNamespace, namespace);
   const tplOp = ir.createTemplateOp(
-      childView.xref, tagNameWithoutNamespace, namespaceForKey(namespacePrefix), false,
-      i18nPlaceholder, tmpl.startSourceSpan);
+      childView.xref, tagNameWithoutNamespace, functionNameSuffix, namespace, i18nPlaceholder,
+      tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -281,13 +281,21 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId|null = null;
   let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
-  for (const ifCase of ifBlock.branches) {
+  for (let i = 0; i < ifBlock.branches.length; i++) {
+    const ifCase = ifBlock.branches[i];
     const cView = unit.job.allocateView(unit.xref);
+    let tagName: string|null = null;
+
+    // Only the first branch can be used for projection, because the conditional
+    // uses the container of the first branch as the insertion point for all branches.
+    if (i === 0) {
+      tagName = ingestControlFlowInsertionPoint(unit, cView.xref, ifCase);
+    }
     if (ifCase.expressionAlias !== null) {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
     const tmplOp = ir.createTemplateOp(
-        cView.xref, 'Conditional', ir.Namespace.HTML, true,
+        cView.xref, tagName, 'Conditional', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan);
     unit.create.push(tmplOp);
 
@@ -295,6 +303,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       firstXref = cView.xref;
       firstSlotHandle = tmplOp.slot;
     }
+
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr =
         new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.slot, ifCase.expressionAlias);
@@ -316,7 +325,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
     const tmplOp = ir.createTemplateOp(
-        cView.xref, 'Case', ir.Namespace.HTML, true,
+        cView.xref, null, 'Case', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */,
         switchCase.sourceSpan);
     unit.create.push(tmplOp);
@@ -346,7 +355,7 @@ function ingestDeferView(
   const secondaryView = unit.job.allocateView(unit.xref);
   ingestNodes(secondaryView, children);
   const templateOp = ir.createTemplateOp(
-      secondaryView.xref, `Defer${suffix}`, ir.Namespace.HTML, true, undefined, sourceSpan!);
+      secondaryView.xref, null, `Defer${suffix}`, ir.Namespace.HTML, undefined, sourceSpan!);
   unit.create.push(templateOp);
   return templateOp;
 }
@@ -503,8 +512,9 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     $implicit: forBlock.item.name,
   };
 
+  const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, forBlock);
   const repeaterCreate = ir.createRepeaterCreateOp(
-      repeaterView.xref, emptyView?.xref ?? null, track, varNames, forBlock.sourceSpan);
+      repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(
@@ -840,4 +850,65 @@ function convertSourceSpan(
   const end = baseSourceSpan.start.moveBy(span.end);
   const fullStart = baseSourceSpan.fullStart.moveBy(span.start);
   return new ParseSourceSpan(start, end, fullStart);
+}
+
+/**
+ * With the directive-based control flow users were able to conditionally project content using
+ * the `*` syntax. E.g. `<div *ngIf="expr" projectMe></div>` will be projected into
+ * `<ng-content select="[projectMe]"/>`, because the attributes and tag name from the `div` are
+ * copied to the template via the template creation instruction. With `@if` and `@for` that is
+ * not the case, because the conditional is placed *around* elements, rather than *on* them.
+ * The result is that content projection won't work in the same way if a user converts from
+ * `*ngIf` to `@if`.
+ *
+ * This function aims to cover the most common case by doing the same copying when a control flow
+ * node has *one and only one* root element or template node.
+ *
+ * This approach comes with some caveats:
+ * 1. As soon as any other node is added to the root, the copying behavior won't work anymore.
+ *    A diagnostic will be added to flag cases like this and to explain how to work around it.
+ * 2. If `preserveWhitespaces` is enabled, it's very likely that indentation will break this
+ *    workaround, because it'll include an additional text node as the first child. We can work
+ *    around it here, but in a discussion it was decided not to, because the user explicitly opted
+ *    into preserving the whitespace and we would have to drop it from the generated code.
+ *    The diagnostic mentioned point #1 will flag such cases to users.
+ *
+ * @returns Tag name to be used for the control flow template.
+ */
+function ingestControlFlowInsertionPoint(
+    unit: ViewCompilationUnit, xref: ir.XrefId, node: t.IfBlockBranch|t.ForLoopBlock): string|null {
+  let root: t.Element|t.Template|null = null;
+
+  for (const child of node.children) {
+    // Skip over comment nodes.
+    if (child instanceof t.Comment) {
+      continue;
+    }
+
+    // We can only infer the tag name/attributes if there's a single root node.
+    if (root !== null) {
+      return null;
+    }
+
+    // Root nodes can only elements or templates with a tag name (e.g. `<div *foo></div>`).
+    if (child instanceof t.Element || (child instanceof t.Template && child.tagName !== null)) {
+      root = child;
+    }
+  }
+
+  // If we've found a single root node, its tag name and *static* attributes can be copied
+  // to the surrounding template to be used for content projection. Note that it's important
+  // that we don't copy any bound attributes since they don't participate in content projection
+  // and they can be used in directive matching (in the case of `Template.templateAttrs`).
+  if (root !== null) {
+    for (const attr of root.attributes) {
+      ingestBinding(
+          unit, xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue);
+    }
+
+    return root instanceof t.Element ? root.name : root.tagName;
+  }
+
+  return null;
 }

@@ -98,7 +98,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op,
             ng.template(
                 op.slot.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
-                op.block ? null : op.tag, op.attributes, op.sourceSpan),
+                op.tag, op.attributes, op.sourceSpan),
         );
         break;
       case ir.OpKind.DisableBindings:
@@ -220,8 +220,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.repeaterCreate(
-                op.slot.slot!, repeaterView.fnName, op.decls!, op.vars!, op.trackByFn!,
-                op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars, op.sourceSpan));
+                op.slot.slot, repeaterView.fnName, op.decls!, op.vars!, op.tag, op.attributes,
+                op.trackByFn!, op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars,
+                op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
