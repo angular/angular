@@ -12,7 +12,7 @@ import type {CompilationJob} from '../compilation';
 /**
  * Change namespaces between HTML, SVG and MathML, depending on the next element.
  */
-export function phaseNamespace(job: CompilationJob): void {
+export function emitNamespaceChanges(job: CompilationJob): void {
   for (const unit of job.units) {
     let activeNamespace = ir.Namespace.HTML;
 

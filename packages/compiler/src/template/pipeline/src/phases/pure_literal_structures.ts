@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
-export function phasePureLiteralStructures(job: CompilationJob): void {
+export function generatePureLiteralStructures(job: CompilationJob): void {
   for (const view of job.units) {
     for (const op of view.update) {
       ir.transformExpressionsInOp(op, (expr, flags) => {

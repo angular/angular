@@ -28,7 +28,7 @@ import {CompilationJob} from '../compilation';
  * To guarantee correctness, analysis of "fences" in the instruction lists is used to determine
  * which optimizations are safe to perform.
  */
-export function phaseVariableOptimization(job: CompilationJob): void {
+export function optimizeVariables(job: CompilationJob): void {
   for (const unit of job.units) {
     inlineAlwaysInlineVariables(unit.create);
     inlineAlwaysInlineVariables(unit.update);

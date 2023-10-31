@@ -12,7 +12,7 @@ import {ComponentCompilationJob} from '../compilation';
 /**
  * Propagate extractd message placeholders up to their root extracted message op.
  */
-export function phasePropagateI18nPlaceholders(job: ComponentCompilationJob) {
+export function propogateI18nPlaceholders(job: ComponentCompilationJob) {
   // Record all of the i18n and extracted message ops for use later.
   const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
   const extractedMessageOps = new Map<ir.XrefId, ir.ExtractedMessageOp>();

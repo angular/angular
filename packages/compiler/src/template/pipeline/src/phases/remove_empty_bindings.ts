@@ -10,7 +10,10 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
-export function phaseRemoveEmptyBindings(job: CompilationJob): void {
+/**
+ * Bidningd with no content can be safely deleted.
+ */
+export function removeEmptyBindings(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
       switch (op.kind) {

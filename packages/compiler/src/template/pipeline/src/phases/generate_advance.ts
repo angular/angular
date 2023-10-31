@@ -13,7 +13,7 @@ import type {CompilationJob} from '../compilation';
  * Generate `ir.AdvanceOp`s in between `ir.UpdateOp`s that ensure the runtime's implicit slot
  * context will be advanced correctly.
  */
-export function phaseGenerateAdvance(job: CompilationJob): void {
+export function generateAdvance(job: CompilationJob): void {
   for (const unit of job.units) {
     // First build a map of all of the declarations in the view that have assigned slots.
     const slotMap = new Map<ir.XrefId, number>();

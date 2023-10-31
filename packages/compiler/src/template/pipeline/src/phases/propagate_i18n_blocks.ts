@@ -14,7 +14,7 @@ import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
  * Propagate i18n blocks down through child templates that act as placeholders in the root i18n
  * message.
  */
-export function phasePropagateI18nBlocks(job: ComponentCompilationJob): void {
+export function propagateI18nBlocks(job: ComponentCompilationJob): void {
   propagateI18nBlocksToTemplates(job.root, 0);
 }
 

@@ -11,7 +11,12 @@ import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
 
-export function phaseTrackVariables(job: CompilationJob): void {
+/**
+ * Inside the `track` expression on a `for` repeater, the `$index` and `$item` variables are
+ * ambiently available. In this phase, we find those variable usages, and replace them with the
+ * appropriate output read.
+ */
+export function generateTrackVariables(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind !== ir.OpKind.RepeaterCreate) {

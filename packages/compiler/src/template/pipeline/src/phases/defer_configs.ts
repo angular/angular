@@ -11,7 +11,11 @@ import * as ir from '../../ir';
 import type {ViewCompilationUnit, ComponentCompilationJob} from '../compilation';
 import {literalOrArrayLiteral} from '../conversion';
 
-export function phaseDeferConfigs(job: ComponentCompilationJob): void {
+/**
+ * Defer instructions take a configuration array, which should be collected into the component
+ * consts. This phase finds the config options, and creates the corresponding const array.
+ */
+export function configureDeferInstructions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind !== ir.OpKind.Defer) {

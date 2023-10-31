@@ -17,7 +17,7 @@ import {literalOrArrayLiteral} from '../conversion';
  * populate `project` arguments, and generate the required `projectionDef` instruction for the job's
  * root view.
  */
-export function phaseGenerateProjectionDef(job: ComponentCompilationJob): void {
+export function generateProjectionDefs(job: ComponentCompilationJob): void {
   // TODO: Why does TemplateDefinitionBuilder force a shared constant?
   const share = job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder;
 

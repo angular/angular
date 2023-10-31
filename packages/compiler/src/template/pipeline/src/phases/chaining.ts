@@ -57,7 +57,7 @@ const CHAINABLE = new Set([
  * elementStart(0, 'div')(1, 'span');
  * ```
  */
-export function phaseChaining(job: CompilationJob): void {
+export function chain(job: CompilationJob): void {
   for (const unit of job.units) {
     chainOperationsInList(unit.create);
     chainOperationsInList(unit.update);

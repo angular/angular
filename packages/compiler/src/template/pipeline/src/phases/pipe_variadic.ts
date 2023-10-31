@@ -11,7 +11,11 @@ import * as ir from '../../ir';
 
 import type {CompilationJob, ComponentCompilationJob} from '../compilation';
 
-export function phasePipeVariadic(job: CompilationJob): void {
+/**
+ * Pipes that accept more than 4 arguments are variadic, and are handled with a different runtime
+ * instruction.
+ */
+export function createVariadicPipes(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
       ir.transformExpressionsInOp(op, expr => {
