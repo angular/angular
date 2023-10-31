@@ -151,11 +151,6 @@ export enum OpKind {
   Defer,
 
   /**
-   * An IR operation that provides secondary templates of a `@defer` block.
-   */
-  DeferSecondaryBlock,
-
-  /**
    * An operation that controls when a `@defer` loads.
    */
   DeferOn,
