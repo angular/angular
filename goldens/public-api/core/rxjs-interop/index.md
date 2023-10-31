@@ -54,6 +54,7 @@ export interface ToSignalOptions {
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
+    rejectErrors?: boolean;
     requireSync?: boolean;
 }
 

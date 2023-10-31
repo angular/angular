@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, Component, computed, EnvironmentInjector, Injector, runInInjectionContext, Signal} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Observer, ReplaySubject, Subject, Subscribable, Unsubscribable} from 'rxjs';
 
 describe('toSignal()', () => {
   it('should reflect the last emitted value of an Observable', test(() => {
@@ -120,6 +120,28 @@ describe('toSignal()', () => {
     expect(() => doubleCounter())
         .toThrowError(
             /toSignal\(\) cannot be called from within a reactive context. Invoking `toSignal` causes new subscriptions every time./);
+  });
+
+  it('should throw the error back to RxJS if rejectErrors is set', () => {
+    let capturedObserver: Observer<number> = null!;
+    const fake$ = {
+      subscribe(observer: Observer<number>): Unsubscribable {
+        capturedObserver = observer;
+        return {unsubscribe(): void {}};
+      },
+    } as Subscribable<number>;
+
+    const s = toSignal(fake$, {initialValue: 0, rejectErrors: true, manualCleanup: true});
+    expect(s()).toBe(0);
+    if (capturedObserver === null) {
+      return fail('Observer not captured as expected.');
+    }
+
+    capturedObserver.next(1);
+    expect(s()).toBe(1);
+
+    expect(() => capturedObserver.error('test')).toThrow('test');
+    expect(s()).toBe(1);
   });
 
   describe('with no initial value', () => {
