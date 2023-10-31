@@ -263,22 +263,23 @@ export function i18nStart(slot: number, constIndex: number, subTemplateIndex: nu
 }
 
 export function repeaterCreate(
-    slot: number, viewFnName: string, decls: number, vars: number, trackByFn: o.Expression,
-    trackByUsesComponentInstance: boolean, emptyViewFnName: string|null, emptyDecls: number|null,
-    emptyVars: number|null, sourceSpan: ParseSourceSpan|null): ir.CreateOp {
-  let args = [
+    slot: number, viewFnName: string, decls: number, vars: number, tag: string|null,
+    constIndex: number|null, trackByFn: o.Expression, trackByUsesComponentInstance: boolean,
+    emptyViewFnName: string|null, emptyDecls: number|null, emptyVars: number|null,
+    sourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  const args = [
     o.literal(slot),
     o.variable(viewFnName),
     o.literal(decls),
     o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
     trackByFn,
   ];
   if (trackByUsesComponentInstance || emptyViewFnName !== null) {
     args.push(o.literal(trackByUsesComponentInstance));
     if (emptyViewFnName !== null) {
-      args.push(o.variable(emptyViewFnName));
-      args.push(o.literal(emptyDecls));
-      args.push(o.literal(emptyVars));
+      args.push(o.variable(emptyViewFnName), o.literal(emptyDecls), o.literal(emptyVars));
     }
   }
   return call(Identifiers.repeaterCreate, args, sourceSpan);
