@@ -39,7 +39,7 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
         if (ref.target !== '') {
           continue;
         }
-        scope.targets.set(ref.name, {xref: op.xref, slot: op.slot});
+        scope.targets.set(ref.name, {xref: op.xref, slot: op.handle});
       }
     }
 

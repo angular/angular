@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 import type {Expression} from './expression';
 import type {Op, XrefId} from './operations';
@@ -42,7 +41,7 @@ export interface ConsumesSlotOpTrait {
    * Assigned data slot (the starting index, if more than one slot is needed) for this operation, or
    * `null` if slots have not yet been assigned.
    */
-  slot: SlotHandle;
+  handle: SlotHandle;
 
   /**
    * The number of slots which will be used by this operation. By default 1, but can be increased if
@@ -101,7 +100,7 @@ export interface UsesVarOffsetTrait {
  * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
  * implementors of the trait).
  */
-export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'slot'> = {
+export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'handle'> = {
   [ConsumesSlot]: true,
   numSlotsUsed: 1,
 } as const;

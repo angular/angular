@@ -77,8 +77,6 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   xref: XrefId;
 
-  slot: SlotHandle;
-
   /**
    * Attributes of various kinds on this element. Represented as a `ConstIndex` pointer into the
    * shared `consts` array of the component compilation.
@@ -140,7 +138,7 @@ export function createElementStartOp(
     kind: OpKind.ElementStart,
     xref,
     tag,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     attributes: null,
     localRefs: [],
     nonBindable: false,
@@ -204,7 +202,7 @@ export function createTemplateOp(
     xref,
     attributes: null,
     tag,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     functionNameSuffix,
     decls: null,
     vars: null,
@@ -288,7 +286,7 @@ export function createRepeaterCreateOp(
     kind: OpKind.RepeaterCreate,
     attributes: null,
     xref: primaryView,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     emptyView,
     track,
     trackByFn: null,
@@ -434,7 +432,7 @@ export function createTextOp(
   return {
     kind: OpKind.Text,
     xref,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     initialValue,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
@@ -528,7 +526,7 @@ export function createPipeOp(xref: XrefId, slot: SlotHandle, name: string): Pipe
   return {
     kind: OpKind.Pipe,
     xref,
-    slot,
+    handle: slot,
     name,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
@@ -593,7 +591,7 @@ export function createProjectionOp(
   return {
     kind: OpKind.Projection,
     xref,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     selector,
     projectionSlotIndex: 0,
     attributes: [],
@@ -698,7 +696,7 @@ export function createDeferOp(
   return {
     kind: OpKind.Defer,
     xref,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     mainView: main,
     mainSlot,
     loadingView: null,
@@ -950,7 +948,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
   return {
     kind: OpKind.I18nStart,
     xref,
-    slot: new SlotHandle(),
+    handle: new SlotHandle(),
     root: root ?? xref,
     message,
     messageIndex: null,

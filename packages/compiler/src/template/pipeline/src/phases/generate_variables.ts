@@ -153,7 +153,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
           scope.references.push({
             name: op.localRefs[offset].name,
             targetId: op.xref,
-            targetSlot: op.slot,
+            targetSlot: op.handle,
             offset,
             variable: {
               kind: ir.SemanticVariableKind.Identifier,
