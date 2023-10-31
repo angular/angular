@@ -36,10 +36,10 @@ export function allocateSlots(job: ComponentCompilationJob): void {
       }
 
       // Assign slots to this declaration starting at the current `slotCount`.
-      op.slot.slot = slotCount;
+      op.handle.slot = slotCount;
 
       // And track its assigned slot in the `slotMap`.
-      slotMap.set(op.xref, op.slot.slot);
+      slotMap.set(op.xref, op.handle.slot);
 
       // Each declaration may use more than 1 slot, so increment `slotCount` to reserve the number
       // of slots required.

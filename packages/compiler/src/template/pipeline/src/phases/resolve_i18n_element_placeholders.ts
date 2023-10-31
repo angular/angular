@@ -60,7 +60,7 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
               flags |= ir.I18nParamValueFlags.CloseTag;
             }
             addParam(
-                currentOps.extractedMessage.params, startName, op.slot.slot!,
+                currentOps.extractedMessage.params, startName, op.handle.slot!,
                 currentOps.i18n.subTemplateIndex, flags);
           }
           break;
@@ -76,7 +76,7 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
             // Self-closing tags don't have a closing tag placeholder.
             if (closeName !== '') {
               addParam(
-                  currentOps.extractedMessage!.params, closeName, startOp.slot.slot!,
+                  currentOps.extractedMessage!.params, closeName, startOp.handle.slot!,
                   currentOps.i18n.subTemplateIndex,
                   ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.CloseTag);
             }
@@ -91,10 +91,10 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
             }
             const subTemplateIndex = getSubTemplateIndexForTemplateTag(job, currentOps.i18n, op);
             addParam(
-                currentOps.extractedMessage.params, op.i18nPlaceholder.startName, op.slot.slot!,
+                currentOps.extractedMessage.params, op.i18nPlaceholder.startName, op.handle.slot!,
                 subTemplateIndex, ir.I18nParamValueFlags.TemplateTag);
             addParam(
-                currentOps.extractedMessage.params, op.i18nPlaceholder.closeName, op.slot.slot!,
+                currentOps.extractedMessage.params, op.i18nPlaceholder.closeName, op.handle.slot!,
                 subTemplateIndex,
                 ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag);
           }
