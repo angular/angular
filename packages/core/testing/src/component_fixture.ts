@@ -135,6 +135,9 @@ export class ComponentFixture<T> {
       // Running without zone. Just do the change detection.
       this._tick(checkNoChanges);
     }
+    // Run any effects that were created/dirtied during change detection. Such effects might become
+    // dirty in response to input signals changing.
+    this.effectRunner?.flush();
   }
 
   /**
