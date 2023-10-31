@@ -15,7 +15,7 @@ import {createOpXrefMap} from '../util/elements';
  * Attributes of `ng-content` named 'select' are specifically removed, because they control which
  * content matches as a property of the `projection`, and are not a plain attribute.
  */
-export function phaseRemoveContentSelectors(job: CompilationJob): void {
+export function removeContentSelectors(job: CompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
     for (const op of unit.update) {

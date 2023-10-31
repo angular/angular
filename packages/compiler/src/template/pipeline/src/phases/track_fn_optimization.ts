@@ -12,7 +12,13 @@ import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
 
-export function phaseTrackFnOptimization(job: CompilationJob): void {
+/**
+ * `track` functions in `for` repeaters can sometimes be "optimized," i.e. transformed into inline
+ * expressions, in lieu of an external function call. For example, tracking by `$index` can be be
+ * optimized into an inline `trackByIndex` reference. This phase checks track expressions for
+ * optimizable cases.
+ */
+export function optimizeTrackFns(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind !== ir.OpKind.RepeaterCreate) {

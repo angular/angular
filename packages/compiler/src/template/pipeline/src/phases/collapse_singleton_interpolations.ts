@@ -21,7 +21,7 @@ import {CompilationJob} from '../compilation';
  * The reification step is also capable of performing this transformation, but doing it early in the
  * pipeline allows other phases to accurately know what instruction will be emitted.
  */
-export function phaseCollapseSingletonInterpolations(job: CompilationJob): void {
+export function collapseSingletonInterpolations(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
       const eligibleOpKind = op.kind === ir.OpKind.Attribute;

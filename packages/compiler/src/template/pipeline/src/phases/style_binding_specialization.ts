@@ -14,8 +14,8 @@ import type {CompilationJob} from '../compilation';
  * Transforms special-case bindings with 'style' or 'class' in their names. Must run before the
  * main binding specialization pass.
  */
-export function phaseStyleBindingSpecialization(cpl: CompilationJob): void {
-  for (const unit of cpl.units) {
+export function specializeStyleBindings(job: CompilationJob): void {
+  for (const unit of job.units) {
     for (const op of unit.update) {
       if (op.kind !== ir.OpKind.Binding) {
         continue;

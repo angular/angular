@@ -54,7 +54,7 @@ const LIST_DELIMITER = '|';
  * Formats the param maps on extracted message ops into a maps of `Expression` objects that can be
  * used in the final output.
  */
-export function phaseFormatI18nParams(job: ComponentCompilationJob): void {
+export function formatI18nParams(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedMessage) {

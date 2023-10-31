@@ -17,7 +17,7 @@ import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '..
  * This includes propagating those names into any `ir.ReadVariableExpr`s of those variables, so that
  * the reads can be emitted correctly.
  */
-export function phaseNaming(cpl: CompilationJob): void {
+export function nameFunctionsAndVariables(cpl: CompilationJob): void {
   addNamesToView(
       cpl.root, cpl.componentName, {index: 0},
       cpl.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder);

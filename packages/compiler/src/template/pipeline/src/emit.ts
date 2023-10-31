@@ -13,64 +13,64 @@ import * as ir from '../ir';
 
 import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
 
-import {phaseFindAnyCasts} from './phases/any_cast';
-import {phaseApplyI18nExpressions} from './phases/apply_i18n_expressions';
-import {phaseAssignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
-import {phaseAttributeExtraction} from './phases/attribute_extraction';
-import {phaseBindingSpecialization} from './phases/binding_specialization';
-import {phaseChaining} from './phases/chaining';
-import {phaseCollapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
-import {phaseConditionals} from './phases/conditionals';
-import {phaseConstCollection} from './phases/const_collection';
-import {phaseEmptyElements} from './phases/empty_elements';
-import {phaseExpandSafeReads} from './phases/expand_safe_reads';
-import {phaseFormatI18nParams} from './phases/format_i18n_params';
-import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
-import {phaseGenerateVariables} from './phases/generate_variables';
-import {phaseConstExpressionCollection} from './phases/has_const_expression_collection';
-import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
-import {phaseI18nConstCollection} from './phases/i18n_const_collection';
-import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
-import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
-import {phaseIcuExtraction} from './phases/icu_extraction';
-import {phaseLocalRefs} from './phases/local_refs';
-import {phaseNamespace} from './phases/namespace';
-import {phaseNaming} from './phases/naming';
-import {phaseMergeNextContext} from './phases/next_context_merging';
-import {phaseNgContainer} from './phases/ng_container';
-import {phaseNonbindable} from './phases/nonbindable';
-import {phaseNullishCoalescing} from './phases/nullish_coalescing';
-import {phaseOrdering} from './phases/ordering';
-import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
-import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
-import {phasePipeCreation} from './phases/pipe_creation';
-import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phasePropagateI18nBlocks} from './phases/propagate_i18n_blocks';
-import {phasePropagateI18nPlaceholders} from './phases/propagate_i18n_placeholders';
-import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
-import {phasePureLiteralStructures} from './phases/pure_literal_structures';
-import {phaseReify} from './phases/reify';
-import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
-import {phaseRepeaterDerivedVars} from './phases/repeater_derived_vars';
-import {phaseResolveContexts} from './phases/resolve_contexts';
-import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
-import {phaseResolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
-import {phaseResolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
-import {phaseResolveNames} from './phases/resolve_names';
-import {phaseResolveSanitizers} from './phases/resolve_sanitizers';
-import {phaseSaveRestoreView} from './phases/save_restore_view';
-import {phaseSlotAllocation} from './phases/slot_allocation';
-import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
-import {phaseTemporaryVariables} from './phases/temporary_variables';
-import {phaseTrackFnGeneration} from './phases/track_fn_generation';
-import {phaseTrackFnOptimization} from './phases/track_fn_optimization';
-import {phaseTrackVariables} from './phases/track_variables';
-import {phaseVarCounting} from './phases/var_counting';
-import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseWrapIcus} from './phases/wrap_icus';
-import {phaseDeferResolveTargets} from './phases/defer_resolve_targets';
-import {phaseDeferConfigs} from './phases/defer_configs';
+import {deleteAnyCasts} from './phases/any_cast';
+import {applyI18nExpressions} from './phases/apply_i18n_expressions';
+import {assignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
+import {extractAttributes} from './phases/attribute_extraction';
+import {specializeBindings} from './phases/binding_specialization';
+import {chain} from './phases/chaining';
+import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
+import {generateConditionalExpressions} from './phases/conditionals';
+import {collectElementConsts} from './phases/const_collection';
+import {configureDeferInstructions} from './phases/defer_configs';
+import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
+import {collapseEmptyInstructions} from './phases/empty_elements';
+import {expandSafeReads} from './phases/expand_safe_reads';
+import {formatI18nParams} from './phases/format_i18n_params';
+import {generateAdvance} from './phases/generate_advance';
+import {generateProjectionDefs} from './phases/generate_projection_def';
+import {generateVariables} from './phases/generate_variables';
+import {collectConstExpressions} from './phases/has_const_expression_collection';
+import {parseHostStyleProperties} from './phases/host_style_property_parsing';
+import {collectI18nConsts} from './phases/i18n_const_collection';
+import {extractI18nMessages} from './phases/i18n_message_extraction';
+import {extractI18nText} from './phases/i18n_text_extraction';
+import {extractI18nICUs} from './phases/icu_extraction';
+import {liftLocalRefs} from './phases/local_refs';
+import {emitNamespaceChanges} from './phases/namespace';
+import {nameFunctionsAndVariables} from './phases/naming';
+import {mergeNextContextExpressions} from './phases/next_context_merging';
+import {generateNgContainerOps} from './phases/ng_container';
+import {disableBindings} from './phases/nonbindable';
+import {generateNullishCoalesceExpressions} from './phases/nullish_coalescing';
+import {orderOps} from './phases/ordering';
+import {parseExtractedStyles} from './phases/parse_extracted_styles';
+import {removeContentSelectors} from './phases/phase_remove_content_selectors';
+import {createPipes} from './phases/pipe_creation';
+import {createVariadicPipes} from './phases/pipe_variadic';
+import {propagateI18nBlocks} from './phases/propagate_i18n_blocks';
+import {propogateI18nPlaceholders} from './phases/propagate_i18n_placeholders';
+import {extractPureFunctions} from './phases/pure_function_extraction';
+import {generatePureLiteralStructures} from './phases/pure_literal_structures';
+import {reify} from './phases/reify';
+import {removeEmptyBindings} from './phases/remove_empty_bindings';
+import {generateRepeaterDerivedVars} from './phases/repeater_derived_vars';
+import {resolveContexts} from './phases/resolve_contexts';
+import {resolveDollarEvent} from './phases/resolve_dollar_event';
+import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
+import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
+import {resolveNames} from './phases/resolve_names';
+import {resolveSanitizers} from './phases/resolve_sanitizers';
+import {saveAndRestoreView} from './phases/save_restore_view';
+import {allocateSlots} from './phases/slot_allocation';
+import {specializeStyleBindings} from './phases/style_binding_specialization';
+import {generateTemporaryVariables} from './phases/temporary_variables';
+import {generateTrackFns} from './phases/track_fn_generation';
+import {optimizeTrackFns} from './phases/track_fn_optimization';
+import {generateTrackVariables} from './phases/track_variables';
+import {countVariables} from './phases/var_counting';
+import {optimizeVariables} from './phases/variable_optimization';
+import {wrapI18nIcus} from './phases/wrap_icus';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -84,64 +84,64 @@ type Phase = {
 };
 
 const phases: Phase[] = [
-  {kind: Kind.Tmpl, fn: phaseRemoveContentSelectors},
-  {kind: Kind.Host, fn: phaseHostStylePropertyParsing},
-  {kind: Kind.Tmpl, fn: phaseNamespace},
-  {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
-  {kind: Kind.Both, fn: phaseBindingSpecialization},
-  {kind: Kind.Tmpl, fn: phasePropagateI18nBlocks},
-  {kind: Kind.Tmpl, fn: phaseWrapIcus},
-  {kind: Kind.Both, fn: phaseAttributeExtraction},
-  {kind: Kind.Both, fn: phaseParseExtractedStyles},
-  {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
-  {kind: Kind.Both, fn: phaseCollapseSingletonInterpolations},
-  {kind: Kind.Both, fn: phaseOrdering},
-  {kind: Kind.Tmpl, fn: phaseConditionals},
-  {kind: Kind.Tmpl, fn: phasePipeCreation},
-  {kind: Kind.Tmpl, fn: phaseDeferConfigs},
-  {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
-  {kind: Kind.Tmpl, fn: phaseIcuExtraction},
-  {kind: Kind.Tmpl, fn: phaseApplyI18nExpressions},
-  {kind: Kind.Tmpl, fn: phasePipeVariadic},
-  {kind: Kind.Both, fn: phasePureLiteralStructures},
-  {kind: Kind.Tmpl, fn: phaseGenerateProjectionDef},
-  {kind: Kind.Tmpl, fn: phaseGenerateVariables},
-  {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
-  {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
-  {kind: Kind.Both, fn: phaseResolveDollarEvent},
-  {kind: Kind.Tmpl, fn: phaseRepeaterDerivedVars},
-  {kind: Kind.Tmpl, fn: phaseTrackVariables},
-  {kind: Kind.Both, fn: phaseResolveNames},
-  {kind: Kind.Tmpl, fn: phaseDeferResolveTargets},
-  {kind: Kind.Tmpl, fn: phaseTrackFnOptimization},
-  {kind: Kind.Both, fn: phaseResolveContexts},
-  {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
-  {kind: Kind.Tmpl, fn: phaseLocalRefs},
-  {kind: Kind.Both, fn: phaseNullishCoalescing},
-  {kind: Kind.Both, fn: phaseExpandSafeReads},
-  {kind: Kind.Both, fn: phaseTemporaryVariables},
-  {kind: Kind.Tmpl, fn: phaseSlotAllocation},
-  {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
-  {kind: Kind.Tmpl, fn: phaseResolveI18nElementPlaceholders},
-  {kind: Kind.Tmpl, fn: phaseResolveI18nExpressionPlaceholders},
-  {kind: Kind.Tmpl, fn: phasePropagateI18nPlaceholders},
-  {kind: Kind.Tmpl, fn: phaseFormatI18nParams},
-  {kind: Kind.Tmpl, fn: phaseTrackFnGeneration},
-  {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
-  {kind: Kind.Tmpl, fn: phaseConstExpressionCollection},
-  {kind: Kind.Both, fn: phaseConstCollection},
-  {kind: Kind.Tmpl, fn: phaseAssignI18nSlotDependencies},
-  {kind: Kind.Both, fn: phaseVarCounting},
-  {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
-  {kind: Kind.Both, fn: phaseVariableOptimization},
-  {kind: Kind.Both, fn: phaseNaming},
-  {kind: Kind.Tmpl, fn: phaseMergeNextContext},
-  {kind: Kind.Tmpl, fn: phaseNgContainer},
-  {kind: Kind.Tmpl, fn: phaseEmptyElements},
-  {kind: Kind.Tmpl, fn: phaseNonbindable},
-  {kind: Kind.Both, fn: phasePureFunctionExtraction},
-  {kind: Kind.Both, fn: phaseReify},
-  {kind: Kind.Both, fn: phaseChaining},
+  {kind: Kind.Tmpl, fn: removeContentSelectors},
+  {kind: Kind.Host, fn: parseHostStyleProperties},
+  {kind: Kind.Tmpl, fn: emitNamespaceChanges},
+  {kind: Kind.Both, fn: specializeStyleBindings},
+  {kind: Kind.Both, fn: specializeBindings},
+  {kind: Kind.Tmpl, fn: propagateI18nBlocks},
+  {kind: Kind.Tmpl, fn: wrapI18nIcus},
+  {kind: Kind.Both, fn: extractAttributes},
+  {kind: Kind.Both, fn: parseExtractedStyles},
+  {kind: Kind.Tmpl, fn: removeEmptyBindings},
+  {kind: Kind.Both, fn: collapseSingletonInterpolations},
+  {kind: Kind.Both, fn: orderOps},
+  {kind: Kind.Tmpl, fn: generateConditionalExpressions},
+  {kind: Kind.Tmpl, fn: createPipes},
+  {kind: Kind.Tmpl, fn: configureDeferInstructions},
+  {kind: Kind.Tmpl, fn: extractI18nText},
+  {kind: Kind.Tmpl, fn: extractI18nICUs},
+  {kind: Kind.Tmpl, fn: applyI18nExpressions},
+  {kind: Kind.Tmpl, fn: createVariadicPipes},
+  {kind: Kind.Both, fn: generatePureLiteralStructures},
+  {kind: Kind.Tmpl, fn: generateProjectionDefs},
+  {kind: Kind.Tmpl, fn: generateVariables},
+  {kind: Kind.Tmpl, fn: saveAndRestoreView},
+  {kind: Kind.Tmpl, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: resolveDollarEvent},
+  {kind: Kind.Tmpl, fn: generateRepeaterDerivedVars},
+  {kind: Kind.Tmpl, fn: generateTrackVariables},
+  {kind: Kind.Both, fn: resolveNames},
+  {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
+  {kind: Kind.Tmpl, fn: optimizeTrackFns},
+  {kind: Kind.Both, fn: resolveContexts},
+  {kind: Kind.Tmpl, fn: resolveSanitizers},  // TODO: run in both
+  {kind: Kind.Tmpl, fn: liftLocalRefs},
+  {kind: Kind.Both, fn: generateNullishCoalesceExpressions},
+  {kind: Kind.Both, fn: expandSafeReads},
+  {kind: Kind.Both, fn: generateTemporaryVariables},
+  {kind: Kind.Tmpl, fn: allocateSlots},
+  {kind: Kind.Tmpl, fn: extractI18nMessages},
+  {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
+  {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
+  {kind: Kind.Tmpl, fn: propogateI18nPlaceholders},
+  {kind: Kind.Tmpl, fn: formatI18nParams},
+  {kind: Kind.Tmpl, fn: generateTrackFns},
+  {kind: Kind.Tmpl, fn: collectI18nConsts},
+  {kind: Kind.Tmpl, fn: collectConstExpressions},
+  {kind: Kind.Both, fn: collectElementConsts},
+  {kind: Kind.Tmpl, fn: assignI18nSlotDependencies},
+  {kind: Kind.Both, fn: countVariables},
+  {kind: Kind.Tmpl, fn: generateAdvance},
+  {kind: Kind.Both, fn: optimizeVariables},
+  {kind: Kind.Both, fn: nameFunctionsAndVariables},
+  {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
+  {kind: Kind.Tmpl, fn: generateNgContainerOps},
+  {kind: Kind.Tmpl, fn: collapseEmptyInstructions},
+  {kind: Kind.Tmpl, fn: disableBindings},
+  {kind: Kind.Both, fn: extractPureFunctions},
+  {kind: Kind.Both, fn: reify},
+  {kind: Kind.Both, fn: chain},
 ];
 
 /**

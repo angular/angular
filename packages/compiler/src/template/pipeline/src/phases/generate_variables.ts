@@ -25,7 +25,7 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
  * Variables are generated here unconditionally, and may optimized away in future operations if it
  * turns out their values (and any side effects) are unused.
  */
-export function phaseGenerateVariables(job: ComponentCompilationJob): void {
+export function generateVariables(job: ComponentCompilationJob): void {
   recursivelyProcessView(job.root, /* there is no parent scope for the root view */ null);
 }
 

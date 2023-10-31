@@ -15,7 +15,7 @@ import {CompilationJob, CompilationUnit, ComponentCompilationJob, ViewCompilatio
  * either the `ctx` parameter to component functions (for the current view context) or to variables
  * that store those contexts (for contexts accessed via the `nextContext()` instruction).
  */
-export function phaseResolveContexts(cpl: CompilationJob): void {
+export function resolveContexts(cpl: CompilationJob): void {
   for (const unit of cpl.units) {
     processLexicalScope(unit, unit.create);
     processLexicalScope(unit, unit.update);

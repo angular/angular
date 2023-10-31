@@ -10,7 +10,13 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {ViewCompilationUnit, ComponentCompilationJob} from '../compilation';
 
-export function phaseDeferResolveTargets(job: ComponentCompilationJob): void {
+/**
+ * Some `defer` conditions can reference other elements in the template, using their local reference
+ * names. However, the semantics are quite different from the normal local reference system: in
+ * particular, we need to look at local reference names in enclosing views. This phase resolves
+ * all such references to actual xrefs.
+ */
+export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
   const scopes = new Map<ir.XrefId, Scope>();
 
   function getScopeForView(view: ViewCompilationUnit): Scope {

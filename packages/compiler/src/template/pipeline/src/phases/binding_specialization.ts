@@ -21,7 +21,7 @@ function lookupElement(
   return el;
 }
 
-export function phaseBindingSpecialization(job: CompilationJob): void {
+export function specializeBindings(job: CompilationJob): void {
   const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
   for (const unit of job.units) {
     for (const op of unit.create) {
