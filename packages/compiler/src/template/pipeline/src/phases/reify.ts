@@ -31,8 +31,8 @@ const sanitizerIdentifierMap = new Map<ir.SanitizerFn, o.ExternalReference>([
  * structures. After reification, the create/update operation lists of all views should only contain
  * `ir.StatementOp`s (which wrap generated `o.Statement`s).
  */
-export function reify(cpl: CompilationJob): void {
-  for (const unit of cpl.units) {
+export function reify(job: CompilationJob): void {
+  for (const unit of job.units) {
     reifyCreateOperations(unit, unit.create);
     reifyUpdateOperations(unit, unit.update);
   }

@@ -11,8 +11,8 @@ import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
 export function generatePureLiteralStructures(job: CompilationJob): void {
-  for (const view of job.units) {
-    for (const op of view.update) {
+  for (const unit of job.units) {
+    for (const op of unit.update) {
       ir.transformExpressionsInOp(op, (expr, flags) => {
         if (flags & ir.VisitorContextFlag.InChildOperation) {
           return expr;
