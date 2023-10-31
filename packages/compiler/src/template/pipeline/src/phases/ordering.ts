@@ -61,7 +61,12 @@ const handledOpKinds = new Set([
   ir.OpKind.ClassProp, ir.OpKind.Property, ir.OpKind.HostProperty, ir.OpKind.Attribute
 ]);
 
-export function phaseOrdering(job: CompilationJob) {
+/**
+ * Many type of operations have ordering constraints that must be respected. For example, a
+ * `ClassMap` instruction must be ordered after a `StyleMap` instruction, in order to have
+ * predictable semantics that match TemplateDefinitionBuilder and don't break applications.
+ */
+export function orderOps(job: CompilationJob) {
   for (const unit of job.units) {
     // First, we pull out ops that need to be ordered. Then, when we encounter an op that shouldn't
     // be reordered, put the ones we've pulled so far back in the correct order. Finally, if we

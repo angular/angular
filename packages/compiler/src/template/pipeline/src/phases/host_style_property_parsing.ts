@@ -18,7 +18,13 @@ const STYLE_BANG = 'style!';
 const CLASS_BANG = 'class!';
 const BANG_IMPORTANT = '!important';
 
-export function phaseHostStylePropertyParsing(job: CompilationJob): void {
+/**
+ * Host bindings are compiled using a different parser entrypoint, and are parsed quite differently
+ * as a result. Therefore, we need to do some extra parsing for host style properties, as compared
+ * to non-host style properties.
+ * TODO: Unify host bindings and non-host bindings in the parser.
+ */
+export function parseHostStyleProperties(job: CompilationJob): void {
   for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Binding) {
       continue;

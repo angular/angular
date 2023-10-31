@@ -20,7 +20,7 @@ import type {CompilationJob} from '../compilation';
  * Note that, if a track function was previously optimized, it will not need to be extracted, and
  * this phase is a no-op.
  */
-export function phaseTrackFnGeneration(job: CompilationJob): void {
+export function generateTrackFns(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind !== ir.OpKind.RepeaterCreate) {

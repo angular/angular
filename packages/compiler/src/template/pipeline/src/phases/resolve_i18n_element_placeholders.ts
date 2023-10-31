@@ -12,7 +12,7 @@ import {ComponentCompilationJob} from '../compilation';
 /**
  * Resolve the element placeholders in i18n messages.
  */
-export function phaseResolveI18nElementPlaceholders(job: ComponentCompilationJob) {
+export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
   // Record all of the element and extracted message ops for use later.
   const extractedMessageOps = new Map<ir.XrefId, ir.ExtractedMessageOp>();
   const elements = new Map<ir.XrefId, ir.ElementStartOp>();

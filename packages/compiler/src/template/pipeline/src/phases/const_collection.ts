@@ -18,7 +18,7 @@ import {element} from '../instruction';
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
  * array expressions, and lifts them into the overall component `consts`.
  */
-export function phaseConstCollection(job: CompilationJob): void {
+export function collectElementConsts(job: CompilationJob): void {
   // Collect all extracted attributes.
   const allElementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const unit of job.units) {

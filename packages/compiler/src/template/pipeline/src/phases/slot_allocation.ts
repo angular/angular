@@ -17,7 +17,7 @@ import type {ComponentCompilationJob} from '../compilation';
  * This phase is also responsible for counting the number of slots used for each view (its `decls`)
  * and propagating that number into the `Template` operations which declare embedded views.
  */
-export function phaseSlotAllocation(job: ComponentCompilationJob): void {
+export function allocateSlots(job: ComponentCompilationJob): void {
   // Map of all declarations in all views within the component which require an assigned slot index.
   // This map needs to be global (across all views within the component) since it's possible to
   // reference a slot from one view from an expression within another (e.g. local references work

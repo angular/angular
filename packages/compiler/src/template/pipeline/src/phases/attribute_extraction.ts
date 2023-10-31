@@ -15,7 +15,7 @@ import {createOpXrefMap} from '../util/elements';
  * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(job: CompilationJob): void {
+export function extractAttributes(job: CompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
     for (const op of unit.ops()) {

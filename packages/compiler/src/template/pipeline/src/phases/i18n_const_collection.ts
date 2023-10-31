@@ -29,8 +29,9 @@ const TRANSLATION_VAR_PREFIX = 'i18n_';
 
 /**
  * Lifts i18n properties into the consts array.
+ * TODO: Can we use `ConstCollectedExpr`?
  */
-export function phaseI18nConstCollection(job: ComponentCompilationJob): void {
+export function collectI18nConsts(job: ComponentCompilationJob): void {
   const fileBasedI18nSuffix =
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   const messageConstIndices = new Map<ir.XrefId, ir.ConstIndex>();

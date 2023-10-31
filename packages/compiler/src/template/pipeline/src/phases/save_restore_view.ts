@@ -10,7 +10,12 @@ import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
-export function phaseSaveRestoreView(job: ComponentCompilationJob): void {
+/**
+ * When inside of a listener, we may need access to one or more enclosing views. Therefore, each
+ * view should save the current view, and each listener must have the ability to restore the
+ * appropriate view. We eagerly generate all save view variables; they will be optimized away later.
+ */
+export function saveAndRestoreView(job: ComponentCompilationJob): void {
   for (const view of job.views.values()) {
     view.create.prepend([
       ir.createVariableOp<ir.CreateOp>(

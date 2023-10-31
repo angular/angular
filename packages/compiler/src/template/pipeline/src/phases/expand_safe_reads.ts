@@ -15,10 +15,13 @@ interface SafeTransformContext {
 }
 
 /**
- * Finds all unresolved safe read expressions, and converts them into the appropriate output AST
- * reads, guarded by null checks.
+ * Safe read expressions such as `a?.b` have different semantics in Angular templates as
+ * compared to JavaScript. In particular, they default to `null` instead of `undefined`. This phase
+ * finds all unresolved safe read expressions, and converts them into the appropriate output AST
+ * reads, guarded by null checks. We generate temporaries as needed, to avoid re-evaluating the same
+ * sub-expression multiple times.
  */
-export function phaseExpandSafeReads(job: CompilationJob): void {
+export function expandSafeReads(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, e => safeTransform(e, {job}), ir.VisitorContextFlag.None);

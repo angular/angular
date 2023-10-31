@@ -17,7 +17,7 @@ import {CompilationJob, CompilationUnit, ViewCompilationUnit} from '../compilati
  * Also matches `ir.RestoreViewExpr` expressions with the variables of their corresponding saved
  * views.
  */
-export function phaseResolveNames(cpl: CompilationJob): void {
+export function resolveNames(cpl: CompilationJob): void {
   for (const unit of cpl.units) {
     processLexicalScope(unit, unit.create, null);
     processLexicalScope(unit, unit.update, null);

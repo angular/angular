@@ -12,7 +12,7 @@ import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
 
-export function phasePureFunctionExtraction(job: CompilationJob): void {
+export function extractPureFunctions(job: CompilationJob): void {
   for (const view of job.units) {
     for (const op of view.ops()) {
       ir.visitExpressionsInOp(op, expr => {
