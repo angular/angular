@@ -22,6 +22,7 @@ import {chain} from './phases/chaining';
 import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
+import {createDeferDepsFns} from './phases/create_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
 import {createI18nIcuExpressions} from './phases/create_i18n_icu_expressions';
 import {configureDeferInstructions} from './phases/defer_configs';
@@ -123,6 +124,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Tmpl, fn: allocateSlots},
+  {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: mergeI18nContexts},

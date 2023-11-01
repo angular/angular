@@ -151,7 +151,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(
             op,
             ng.defer(
-                op.handle.slot!, op.mainSlot.slot!, null, op.loadingSlot?.slot ?? null,
+                op.handle.slot!, op.mainSlot.slot!, op.resolverFn, op.loadingSlot?.slot ?? null,
                 op.placeholderSlot?.slot! ?? null, op.errorSlot?.slot ?? null, op.loadingConfig,
                 op.placeholderConfig, timerScheduling, op.sourceSpan));
         break;
