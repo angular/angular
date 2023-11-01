@@ -51,7 +51,7 @@ import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
-import {ViewRef} from './view_ref';
+import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -319,11 +319,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
       private _tNode: TElementNode|TContainerNode|TElementContainerNode) {
     super();
     this.instance = instance;
-    this.hostView = this.changeDetectorRef = new ViewRef<T>(
-        _rootLView,
-        undefined, /* _cdRefInjectingView */
-        false,     /* notifyErrorHandler */
-    );
+    this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
     this.componentType = componentType;
   }
 
