@@ -7,16 +7,15 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import {CompilationJob} from '../compilation';
 
-/**
- * Extracts i18n messages into their own op.
- */
-export function extractI18nMessages(job: ComponentCompilationJob): void {
+export function createI18nContexts(job: CompilationJob) {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart) {
-        unit.create.push(ir.createExtractedMessageOp(op.xref, op.message, op.xref === op.root));
+        const xref = job.allocateXrefId();
+        unit.create.push(ir.createI18nContextOp(xref, op.xref, op.message, null!));
+        op.context = xref;
       }
     }
   }

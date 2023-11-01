@@ -10,40 +10,36 @@ import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
 /**
- * Propagate extractd message placeholders up to their root extracted message op.
+ * Merge i18n contexts for child i18n blocks into their parent context.
  */
-export function propogateI18nPlaceholders(job: ComponentCompilationJob) {
+export function mergeI18nContexts(job: ComponentCompilationJob) {
   // Record all of the i18n and extracted message ops for use later.
   const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
-  const extractedMessageOps = new Map<ir.XrefId, ir.ExtractedMessageOp>();
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
+          if (!op.context) {
+            throw Error('I18n op should have its context set.');
+          }
           i18nOps.set(op.xref, op);
           break;
-        case ir.OpKind.ExtractedMessage:
-          extractedMessageOps.set(op.owner, op);
+        case ir.OpKind.I18nContext:
+          i18nContexts.set(op.xref, op);
           break;
       }
     }
   }
 
-  // For each non-root message, merge its params into the root message's params.
-  for (const [xref, childExtractedMessageOp] of extractedMessageOps) {
-    if (!childExtractedMessageOp.isRoot) {
-      const i18nOp = i18nOps.get(xref);
-      if (i18nOp === undefined) {
-        throw Error('Could not find owner i18n block for extracted message.');
-      }
-      const rootExtractedMessageOp = extractedMessageOps.get(i18nOp.root);
-      if (rootExtractedMessageOp === undefined) {
-        throw Error('Could not find extracted message op for root i18n block.');
-      }
-      mergeParams(rootExtractedMessageOp.params, childExtractedMessageOp.params);
-      mergeParams(
-          rootExtractedMessageOp.postprocessingParams,
-          childExtractedMessageOp.postprocessingParams);
+  // For each non-root i18n op, merge its context into the root i18n op's context.
+  for (const childI18nOp of i18nOps.values()) {
+    if (childI18nOp.xref !== childI18nOp.root) {
+      const childContext = i18nContexts.get(childI18nOp.context!)!;
+      const rootI18nOp = i18nOps.get(childI18nOp.root)!;
+      const rootContext = i18nContexts.get(rootI18nOp.context!)!;
+      mergeParams(rootContext.params, childContext.params);
+      mergeParams(rootContext.postprocessingParams, childContext.postprocessingParams);
     }
   }
 }

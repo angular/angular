@@ -11,11 +11,11 @@ import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
 import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn} from './enums';
-import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
 import {Interpolation, type UpdateOp} from './ops/update';
+import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -987,6 +987,15 @@ export function transformExpressionsInOp(
             transformExpressionsInExpression(op.placeholderConfig, transform, flags);
       }
       break;
+    case OpKind.I18nMessage:
+      for (const [placeholder, expr] of op.params) {
+        op.params.set(placeholder, transformExpressionsInExpression(expr, transform, flags));
+      }
+      for (const [placeholder, expr] of op.postprocessingParams) {
+        op.postprocessingParams.set(
+            placeholder, transformExpressionsInExpression(expr, transform, flags));
+      }
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:
@@ -997,9 +1006,9 @@ export function transformExpressionsInOp(
     case OpKind.ElementEnd:
     case OpKind.ElementStart:
     case OpKind.EnableBindings:
-    case OpKind.ExtractedMessage:
     case OpKind.I18n:
     case OpKind.I18nApply:
+    case OpKind.I18nContext:
     case OpKind.I18nEnd:
     case OpKind.I18nStart:
     case OpKind.Icu:

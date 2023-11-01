@@ -13,51 +13,41 @@ import {ComponentCompilationJob} from '../compilation';
  * Resolve the i18n expression placeholders in i18n messages.
  */
 export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) {
-  // Record all of the i18n and extracted message ops for use later.
-  const i18nOps = new Map<ir.XrefId, ir.I18nStartOp>();
-  const extractedMessageOps = new Map<ir.XrefId, ir.ExtractedMessageOp>();
+  // Record all of the i18n context ops, and the sub-template index for each i18n op.
+  const subTemplateIndicies = new Map<ir.XrefId, number|null>();
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          i18nOps.set(op.xref, op);
+          subTemplateIndicies.set(op.xref, op.subTemplateIndex);
           break;
-        case ir.OpKind.ExtractedMessage:
-          extractedMessageOps.set(op.owner, op);
+        case ir.OpKind.I18nContext:
+          i18nContexts.set(op.xref, op);
           break;
       }
     }
   }
 
-  // Keep track of the next available expression index per i18n block.
+  // Keep track of the next available expression index per i18n context.
   const expressionIndices = new Map<ir.XrefId, number>();
 
   for (const unit of job.units) {
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
-        const i18nOp = i18nOps.get(op.owner);
-        let index = expressionIndices.get(op.owner) || 0;
-        if (!i18nOp) {
-          throw Error('Cannot find corresponding i18n block for i18nExpr');
-        }
-        const extractedMessageOp = extractedMessageOps.get(i18nOp.xref);
-        if (!extractedMessageOp) {
-          throw Error('Cannot find extracted message for i18n block');
-        }
-
+        const index = expressionIndices.get(op.context) || 0;
+        const i18nContext = i18nContexts.get(op.context)!;
+        const subTemplateIndex = subTemplateIndicies.get(i18nContext.i18nBlock)!;
         // Add the expression index in the appropriate params map.
         const params = op.resolutionTime === ir.I18nParamResolutionTime.Creation ?
-            extractedMessageOp.params :
-            extractedMessageOp.postprocessingParams;
+            i18nContext.params :
+            i18nContext.postprocessingParams;
         const values = params.get(op.i18nPlaceholder) || [];
-        values.push({
-          value: index,
-          subTemplateIndex: i18nOp.subTemplateIndex,
-          flags: ir.I18nParamValueFlags.None
-        });
+        values.push(
+            {value: index, subTemplateIndex: subTemplateIndex, flags: ir.I18nParamValueFlags.None});
         params.set(op.i18nPlaceholder, values);
 
-        expressionIndices.set(op.owner, index + 1);
+        expressionIndices.set(op.context, index + 1);
       }
     }
   }

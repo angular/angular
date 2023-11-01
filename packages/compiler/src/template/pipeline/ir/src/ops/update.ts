@@ -12,9 +12,9 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
+import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
-import {SlotHandle} from '../handle';
 import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -576,15 +576,15 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The i18n block that this expression belongs to.
    */
-  owner: XrefId;
-
-  ownerSlot: SlotHandle;
+  context: XrefId;
 
   /**
    * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
    * block. This is necessary so that we run all lifecycle hooks.
    */
   target: XrefId;
+
+  targetSlot: SlotHandle;
 
   /**
    * The expression value.
@@ -604,19 +604,18 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   sourceSpan: ParseSourceSpan;
 }
 
-
-
 /**
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    owner: XrefId, ownerSlot: SlotHandle, expression: o.Expression, i18nPlaceholder: string,
-    resolutionTime: I18nParamResolutionTime, sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    context: XrefId, target: XrefId, targetSlot: SlotHandle, expression: o.Expression,
+    i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
+    sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
-    owner,
-    ownerSlot,
-    target: owner,
+    context,
+    target,
+    targetSlot,
     expression,
     i18nPlaceholder,
     resolutionTime,

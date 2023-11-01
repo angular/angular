@@ -158,7 +158,7 @@ export enum OpKind {
   /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
-  ExtractedMessage,
+  I18nMessage,
 
   /**
    * A host binding property.
@@ -224,6 +224,8 @@ export enum OpKind {
    * An instruction to update an ICU expression.
    */
   IcuUpdate,
+
+  I18nContext,
 }
 
 /**
