@@ -290,6 +290,11 @@ export function repeater(
   return call(Identifiers.repeater, [o.literal(metadataSlot), collection], sourceSpan);
 }
 
+export function deferWhen(
+    prefetch: boolean, expr: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(prefetch ? Identifiers.deferPrefetchWhen : Identifiers.deferWhen, [expr], sourceSpan);
+}
+
 export function i18n(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
   const args = [o.literal(slot), o.literal(constIndex)];
   if (subTemplateIndex) {

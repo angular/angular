@@ -996,6 +996,9 @@ export function transformExpressionsInOp(
             placeholder, transformExpressionsInExpression(expr, transform, flags));
       }
       break;
+    case OpKind.DeferWhen:
+      op.expr = transformExpressionsInExpression(op.expr, transform, flags);
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:

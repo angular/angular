@@ -24,7 +24,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp|RepeaterOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp|RepeaterOp|DeferWhenOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -563,6 +563,41 @@ export function createRepeaterOp(
     collection,
     sourceSpan,
     ...NEW_OP,
+  };
+}
+
+export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
+  kind: OpKind.DeferWhen;
+
+  /**
+   * The `defer` create op associated with this when condition.
+   */
+  target: XrefId;
+
+  /**
+   * A user-provided expression that triggers the defer op.
+   */
+  expr: o.Expression;
+
+  /**
+   * Whether to emit the prefetch version of the instruction.
+   */
+  prefetch: boolean;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferWhenOp(
+    target: XrefId, expr: o.Expression, prefetch: boolean,
+    sourceSpan: ParseSourceSpan): DeferWhenOp {
+  return {
+    kind: OpKind.DeferWhen,
+    target,
+    expr,
+    prefetch,
+    sourceSpan,
+    ...NEW_OP,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
   };
 }
 
