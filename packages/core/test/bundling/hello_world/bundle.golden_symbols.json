@@ -138,9 +138,6 @@
     "name": "Injector"
   },
   {
-    "name": "InternalViewRef"
-  },
-  {
     "name": "LOCALE_ID2"
   },
   {
@@ -349,6 +346,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"

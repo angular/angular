@@ -270,9 +270,6 @@
     "name": "Injector"
   },
   {
-    "name": "InternalViewRef"
-  },
-  {
     "name": "LEAVE_TOKEN_REGEX"
   },
   {
@@ -547,6 +544,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "WebAnimationsDriver"
