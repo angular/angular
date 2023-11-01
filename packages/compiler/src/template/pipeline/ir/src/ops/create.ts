@@ -21,11 +21,11 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp =
-    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
-    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
-    DeferOp|DeferOnOp|RepeaterCreateOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp|IcuOp;
+export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
+    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
+    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
+    I18nStartOp|I18nEndOp|IcuOp|I18nContextOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -829,8 +829,8 @@ export interface I18nParamValue {
 /**
  * Represents an i18n message that has been extracted for inclusion in the consts array.
  */
-export interface ExtractedMessageOp extends Op<CreateOp> {
-  kind: OpKind.ExtractedMessage;
+export interface I18nMessageOp extends Op<CreateOp> {
+  kind: OpKind.I18nMessage;
 
   /**
    * A reference to the i18n op this message was extracted from.
@@ -843,24 +843,6 @@ export interface ExtractedMessageOp extends Op<CreateOp> {
   message: i18n.Message;
 
   /**
-   * Whether this op represents a root message (as opposed to a partial message for a sub-template
-   * in a root message).
-   */
-  isRoot: boolean;
-
-  /**
-   * The param map, with placeholders represented as an array of value objects for easy
-   * manipulation.
-   */
-  params: Map<string, I18nParamValue[]>;
-
-  /**
-   * The post-processing param map, with placeholders represented as an array of value objects for
-   * easy manipulation.
-   */
-  postprocessingParams: Map<string, I18nParamValue[]>;
-
-  /**
    * Whether this message needs post-processing.
    */
   needsPostprocessing: boolean;
@@ -869,30 +851,28 @@ export interface ExtractedMessageOp extends Op<CreateOp> {
    * The param map, with placeholders represented as an `Expression` to facilitate extraction to the
    * const arry.
    */
-  formattedParams: Map<string, o.Expression>|null;
+  params: Map<string, o.Expression>;
 
   /**
    * The post-processing param map, with placeholders represented as an `Expression` to facilitate
    * extraction to the const arry.
    */
-  formattedPostprocessingParams: Map<string, o.Expression>|null;
+  postprocessingParams: Map<string, o.Expression>;
 }
 
 /**
  * Create an `ExtractedMessageOp`.
  */
-export function createExtractedMessageOp(
-    owner: XrefId, message: i18n.Message, isRoot: boolean): ExtractedMessageOp {
+export function createI18nMessageOp(
+    owner: XrefId, message: i18n.Message, params: Map<string, o.Expression>,
+    postprocessingParams: Map<string, o.Expression>, needsPostprocessing: boolean): I18nMessageOp {
   return {
-    kind: OpKind.ExtractedMessage,
+    kind: OpKind.I18nMessage,
     owner,
     message,
-    isRoot,
-    params: new Map(),
-    postprocessingParams: new Map(),
-    needsPostprocessing: false,
-    formattedParams: null,
-    formattedPostprocessingParams: null,
+    params,
+    postprocessingParams,
+    needsPostprocessing,
     ...NEW_OP,
   };
 }
@@ -925,6 +905,8 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * The index of this sub-block in the i18n message. For a root i18n block, this is null.
    */
   subTemplateIndex: number|null;
+
+  context: XrefId|null;
 }
 
 /**
@@ -953,6 +935,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
     message,
     messageIndex: null,
     subTemplateIndex: null,
+    context: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
@@ -1014,6 +997,54 @@ export function createIcuOp(
   };
 }
 
+export interface I18nContextOp extends Op<CreateOp> {
+  kind: OpKind.I18nContext
+
+  /**
+   *  The id of this context.
+   */
+  xref: XrefId;
+
+  /**
+   * A reference to the I18nStartOp or I18nOp this context belongs to.
+   *
+   * It is possible for multiple contexts to belong to the same block, since both the block and any
+   * ICUs inside the block will each get their own context.
+   */
+  i18nBlock: XrefId;
+
+  /**
+   * The i18n message associated with this context.
+   */
+  message: i18n.Message;
+
+  /**
+   * The param map for this context.
+   */
+  params: Map<string, I18nParamValue[]>;
+
+  /**
+   * The post-processing param map for this context.
+   */
+  postprocessingParams: Map<string, I18nParamValue[]>;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createI18nContextOp(
+    xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
+    sourceSpan: ParseSourceSpan): I18nContextOp {
+  return {
+    kind: OpKind.I18nContext,
+    xref,
+    i18nBlock,
+    message,
+    sourceSpan,
+    params: new Map(),
+    postprocessingParams: new Map(),
+    ...NEW_OP,
+  };
+}
 
 /**
  * An index into the `consts` array which is shared across the compilation of all views in a
