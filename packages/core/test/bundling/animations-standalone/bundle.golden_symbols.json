@@ -441,6 +441,9 @@
     "name": "RendererStyleFlags2"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -817,6 +820,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
