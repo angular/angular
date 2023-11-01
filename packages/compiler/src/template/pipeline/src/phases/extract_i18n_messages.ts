@@ -54,23 +54,36 @@ const LIST_DELIMITER = '|';
  * Formats the param maps on extracted message ops into a maps of `Expression` objects that can be
  * used in the final output.
  */
-export function formatI18nParams(job: ComponentCompilationJob): void {
+export function extractI18nMessages(job: ComponentCompilationJob): void {
+  // Save the i18n context ops for later use.
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ExtractedMessage) {
-        if (op.isRoot) {
-          op.formattedParams = formatParams(op.params);
-          op.formattedPostprocessingParams = formatParams(op.postprocessingParams);
+      if (op.kind === ir.OpKind.I18nContext) {
+        i18nContexts.set(op.xref, op);
+      }
+    }
+  }
 
-          // The message will need post-processing if there are any post-processing params, or if
-          // there are any normal params that have multiple values
-          op.needsPostprocessing = op.postprocessingParams.size > 0;
-          for (const [param, values] of op.params) {
-            if (values.length > 1) {
-              op.needsPostprocessing = true;
-            }
+  for (const unit of job.units) {
+    // Extract messages from root i18n blocks.
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.I18nStart && op.xref === op.root) {
+        if (!op.context) {
+          throw Error('I18n start op should have its context set.');
+        }
+        const i18nContext = i18nContexts.get(op.context)!;
+        // The message will need post-processing if there are any post-processing params, or if
+        // there are any normal params that have multiple values
+        let needsPostprocessing = i18nContext.postprocessingParams.size > 0;
+        for (const values of i18nContext.params.values()) {
+          if (values.length > 1) {
+            needsPostprocessing = true;
           }
         }
+        unit.create.push(ir.createI18nMessageOp(
+            i18nContext.i18nBlock, i18nContext.message, formatParams(i18nContext.params),
+            formatParams(i18nContext.postprocessingParams), needsPostprocessing));
       }
     }
   }

@@ -16,22 +16,22 @@ export function extractI18nText(job: CompilationJob): void {
   for (const unit of job.units) {
     // Remove all text nodes within i18n blocks, their content is already captured in the i18n
     // message.
-    let currentI18nId: ir.XrefId|null = null;
-    let currentI18nSlot: ir.SlotHandle|null = null;
-    const textNodes = new Map<ir.XrefId, {xref: ir.XrefId, slot: ir.SlotHandle}>();
+    let currentI18n: ir.I18nStartOp|null = null;
+    const textNodeI18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          currentI18nId = op.xref;
-          currentI18nSlot = op.handle;
+          if (op.context === null) {
+            throw Error('I18n op should have its context set.');
+          }
+          currentI18n = op;
           break;
         case ir.OpKind.I18nEnd:
-          currentI18nId = null;
-          currentI18nSlot = null;
+          currentI18n = null;
           break;
         case ir.OpKind.Text:
-          if (currentI18nId !== null && currentI18nSlot !== null) {
-            textNodes.set(op.xref, {xref: currentI18nId, slot: currentI18nSlot});
+          if (currentI18n !== null) {
+            textNodeI18nBlocks.set(op.xref, currentI18n);
             ir.OpList.remove<ir.CreateOp>(op);
           }
           break;
@@ -43,21 +43,18 @@ export function extractI18nText(job: CompilationJob): void {
     for (const op of unit.update) {
       switch (op.kind) {
         case ir.OpKind.InterpolateText:
-          if (!textNodes.has(op.target)) {
+          if (!textNodeI18nBlocks.has(op.target)) {
             continue;
           }
 
-          const i18nBlock = textNodes.get(op.target)!;
+          const i18nOp = textNodeI18nBlocks.get(op.target)!;
           const ops: ir.UpdateOp[] = [];
           for (let i = 0; i < op.interpolation.expressions.length; i++) {
             const expr = op.interpolation.expressions[i];
             const placeholder = op.i18nPlaceholders[i];
             ops.push(ir.createI18nExpressionOp(
-                i18nBlock.xref, i18nBlock.slot, expr, placeholder.name,
+                i18nOp.context!, i18nOp.xref, i18nOp.handle, expr, placeholder.name,
                 ir.I18nParamResolutionTime.Creation, expr.sourceSpan ?? op.sourceSpan));
-          }
-          if (ops.length > 0) {
-            // ops.push(ir.createI18nApplyOp(i18nBlockId, op.i18nPlaceholders, op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
