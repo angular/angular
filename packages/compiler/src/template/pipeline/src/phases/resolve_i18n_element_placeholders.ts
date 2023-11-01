@@ -13,14 +13,14 @@ import {ComponentCompilationJob} from '../compilation';
  * Resolve the element placeholders in i18n messages.
  */
 export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
-  // Record all of the element and extracted message ops for use later.
-  const extractedMessageOps = new Map<ir.XrefId, ir.ExtractedMessageOp>();
+  // Record all of the element and i18n context ops for use later.
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   const elements = new Map<ir.XrefId, ir.ElementStartOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
-        case ir.OpKind.ExtractedMessage:
-          extractedMessageOps.set(op.owner, op);
+        case ir.OpKind.I18nContext:
+          i18nContexts.set(op.xref, op);
           break;
         case ir.OpKind.ElementStart:
           elements.set(op.xref, op);
@@ -30,17 +30,17 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
   }
 
   for (const unit of job.units) {
-    // Track the current i18n op and corresponding extracted message op as we step through the
-    // creation IR.
-    let currentOps: {i18n: ir.I18nStartOp, extractedMessage: ir.ExtractedMessageOp}|null = null;
+    // Track the current i18n op and corresponding i18n context op as we step through the creation
+    // IR.
+    let currentOps: {i18nBlock: ir.I18nStartOp, i18nContext: ir.I18nContextOp}|null = null;
 
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          if (!extractedMessageOps.has(op.xref)) {
-            throw Error('Could not find extracted message for i18n op');
+          if (!op.context) {
+            throw Error('Could not find i18n context for i18n op');
           }
-          currentOps = {i18n: op, extractedMessage: extractedMessageOps.get(op.xref)!};
+          currentOps = {i18nBlock: op, i18nContext: i18nContexts.get(op.context)!};
           break;
         case ir.OpKind.I18nEnd:
           currentOps = null;
@@ -60,8 +60,8 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
               flags |= ir.I18nParamValueFlags.CloseTag;
             }
             addParam(
-                currentOps.extractedMessage.params, startName, op.handle.slot!,
-                currentOps.i18n.subTemplateIndex, flags);
+                currentOps.i18nContext.params, startName, op.handle.slot!,
+                currentOps.i18nBlock.subTemplateIndex, flags);
           }
           break;
         case ir.OpKind.ElementEnd:
@@ -76,8 +76,8 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
             // Self-closing tags don't have a closing tag placeholder.
             if (closeName !== '') {
               addParam(
-                  currentOps.extractedMessage!.params, closeName, startOp.handle.slot!,
-                  currentOps.i18n.subTemplateIndex,
+                  currentOps.i18nContext.params, closeName, startOp.handle.slot!,
+                  currentOps.i18nBlock.subTemplateIndex,
                   ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.CloseTag);
             }
           }
@@ -89,12 +89,13 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
             if (currentOps === null) {
               throw Error('i18n tag placeholder should only occur inside an i18n block');
             }
-            const subTemplateIndex = getSubTemplateIndexForTemplateTag(job, currentOps.i18n, op);
+            const subTemplateIndex =
+                getSubTemplateIndexForTemplateTag(job, currentOps.i18nBlock, op);
             addParam(
-                currentOps.extractedMessage.params, op.i18nPlaceholder.startName, op.handle.slot!,
+                currentOps.i18nContext.params, op.i18nPlaceholder.startName, op.handle.slot!,
                 subTemplateIndex, ir.I18nParamValueFlags.TemplateTag);
             addParam(
-                currentOps.extractedMessage.params, op.i18nPlaceholder.closeName, op.handle.slot!,
+                currentOps.i18nContext.params, op.i18nPlaceholder.closeName, op.handle.slot!,
                 subTemplateIndex,
                 ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag);
           }

@@ -38,36 +38,34 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ExtractedMessage) {
+      if (op.kind === ir.OpKind.I18nMessage) {
         // Serialize the extracted root messages into the const array.
-        if (op.isRoot) {
-          assertAllParamsResolved(op);
+        assertAllParamsResolved(op);
 
-          const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
-          // Closure Compiler requires const names to start with `MSG_` but disallows any other
-          // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
-          // `goog.getMsg` call
-          const closureVar = i18nGenerateClosureVar(
-              job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
-          let transformFn = undefined;
+        const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
+        // Closure Compiler requires const names to start with `MSG_` but disallows any other
+        // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
+        // `goog.getMsg` call
+        const closureVar = i18nGenerateClosureVar(
+            job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
+        let transformFn = undefined;
 
-          // If nescessary, add a post-processing step and resolve any placeholder params that are
-          // set in post-processing.
-          if (op.needsPostprocessing) {
-            const extraTransformFnParams: o.Expression[] = [];
-            if (op.formattedPostprocessingParams.size > 0) {
-              extraTransformFnParams.push(o.literalMap([...op.formattedPostprocessingParams].map(
-                  ([key, value]) => ({key, value, quoted: true}))));
-            }
-            transformFn = (expr: o.ReadVarExpr) =>
-                o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
+        // If nescessary, add a post-processing step and resolve any placeholder params that are
+        // set in post-processing.
+        if (op.needsPostprocessing) {
+          const extraTransformFnParams: o.Expression[] = [];
+          if (op.postprocessingParams.size > 0) {
+            extraTransformFnParams.push(o.literalMap(
+                [...op.postprocessingParams].map(([key, value]) => ({key, value, quoted: true}))));
           }
-
-          const statements = getTranslationDeclStmts(
-              op.message, mainVar, closureVar, op.formattedParams!, transformFn);
-
-          messageConstIndices.set(op.owner, job.addConst(mainVar, statements));
+          transformFn = (expr: o.ReadVarExpr) =>
+              o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
         }
+
+        const statements =
+            getTranslationDeclStmts(op.message, mainVar, closureVar, op.params, transformFn);
+
+        messageConstIndices.set(op.owner, job.addConst(mainVar, statements));
 
         // Remove the extracted messages from the IR now that they have been collected.
         ir.OpList.remove<ir.CreateOp>(op);
@@ -169,22 +167,14 @@ function i18nGenerateClosureVar(
 /**
  * Asserts that all of the message's placeholders have values.
  */
-function assertAllParamsResolved(op: ir.ExtractedMessageOp): asserts op is ir.ExtractedMessageOp&{
-  formattedParams: Map<string, o.Expression>,
-  formattedPostprocessingParams: Map<string, o.Expression>,
-} {
-  if (op.formattedParams === null || op.formattedPostprocessingParams === null) {
-    throw Error('Params should have been formatted.');
-  }
+function assertAllParamsResolved(op: ir.I18nMessageOp): asserts op is ir.I18nMessageOp {
   for (const placeholder in op.message.placeholders) {
-    if (!op.formattedParams.has(placeholder) &&
-        !op.formattedPostprocessingParams.has(placeholder)) {
+    if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
     }
   }
   for (const placeholder in op.message.placeholderToMessage) {
-    if (!op.formattedParams.has(placeholder) &&
-        !op.formattedPostprocessingParams.has(placeholder)) {
+    if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n message placeholder: ${placeholder}`);
     }
   }

@@ -16,27 +16,24 @@ import {CompilationJob} from '../compilation';
 export function extractI18nICUs(job: CompilationJob): void {
   for (const unit of job.units) {
     // Build a map of ICU to the i18n block they belong to, then remove the `Icu` ops.
-    const icus = new Map<
-        ir.XrefId, {message: i18n.Message, i18nBlockId: ir.XrefId, i18nBlockSlot: ir.SlotHandle}>();
-    let currentI18nId: ir.XrefId|null = null;
-    let currentI18nSlot: ir.SlotHandle|null = null;
+    const icus = new Map<ir.XrefId, {message: i18n.Message, i18nOp: ir.I18nStartOp}>();
+    let currentI18nOp: ir.I18nStartOp|null = null;
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          currentI18nId = op.xref;
-          currentI18nSlot = op.handle;
+          if (!op.context) {
+            throw Error('I18n op should have its context set.');
+          }
+          currentI18nOp = op;
           break;
         case ir.OpKind.I18nEnd:
-          currentI18nId = null;
-          currentI18nSlot = null;
+          currentI18nOp = null;
           break;
         case ir.OpKind.Icu:
-          if (currentI18nId === null) {
+          if (currentI18nOp === null) {
             throw Error('Unexpected ICU outside of an i18n block.');
           }
-          icus.set(
-              op.xref,
-              {message: op.message, i18nBlockId: currentI18nId, i18nBlockSlot: currentI18nSlot!});
+          icus.set(op.xref, {message: op.message, i18nOp: currentI18nOp});
           ir.OpList.remove<ir.CreateOp>(op);
           break;
       }
@@ -46,7 +43,7 @@ export function extractI18nICUs(job: CompilationJob): void {
     for (const op of unit.update) {
       switch (op.kind) {
         case ir.OpKind.IcuUpdate:
-          const {message, i18nBlockId, i18nBlockSlot} = icus.get(op.xref)!;
+          const {message, i18nOp} = icus.get(op.xref)!;
           const icuNode = message.nodes.find((n): n is i18n.Icu => n instanceof i18n.Icu);
           if (icuNode === undefined) {
             throw Error('Could not find ICU in i18n AST');
@@ -57,9 +54,9 @@ export function extractI18nICUs(job: CompilationJob): void {
           ir.OpList.replace<ir.UpdateOp>(
               op,
               ir.createI18nExpressionOp(
-                  i18nBlockId, i18nBlockSlot, new ir.LexicalReadExpr(icuNode.expression),
-                  icuNode.expressionPlaceholder, ir.I18nParamResolutionTime.Postproccessing,
-                  null!));
+                  i18nOp.context!, i18nOp.xref, i18nOp.handle,
+                  new ir.LexicalReadExpr(icuNode.expression), icuNode.expressionPlaceholder,
+                  ir.I18nParamResolutionTime.Postproccessing, null!));
           break;
       }
     }
