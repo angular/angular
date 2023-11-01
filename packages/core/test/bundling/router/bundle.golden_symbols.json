@@ -630,6 +630,9 @@
     "name": "ResolveStart"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RouteConfigLoadEnd"
   },
   {
@@ -1177,6 +1180,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"

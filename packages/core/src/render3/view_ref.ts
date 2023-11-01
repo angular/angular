@@ -57,7 +57,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
        *
        * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
        */
-      private _cdRefInjectingView?: LView, private readonly notifyErrorHandler = true) {}
+      private _cdRefInjectingView?: LView) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
@@ -284,8 +284,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(
-        this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+    detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
   }
 
   /**
@@ -296,8 +295,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(
-          this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
     }
   }
 
