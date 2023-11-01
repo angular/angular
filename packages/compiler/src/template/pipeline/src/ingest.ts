@@ -561,6 +561,12 @@ function convertAst(
           convertSourceSpan(ast.span, baseSourceSpan));
     }
   } else if (ast instanceof e.PropertyWrite) {
+    if (ast.receiver instanceof e.ImplicitReceiver) {
+      return new o.WritePropExpr(
+          // TODO: Is it correct to always use the root context in place of the implicit receiver?
+          new ir.ContextExpr(job.root.xref), ast.name, convertAst(ast.value, job, baseSourceSpan),
+          null, convertSourceSpan(ast.span, baseSourceSpan));
+    }
     return new o.WritePropExpr(
         convertAst(ast.receiver, job, baseSourceSpan), ast.name,
         convertAst(ast.value, job, baseSourceSpan), undefined,
@@ -645,7 +651,8 @@ function convertAst(
   } else if (ast instanceof e.EmptyExpr) {
     return new ir.EmptyExpr(convertSourceSpan(ast.span, baseSourceSpan));
   } else {
-    throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
+    throw new Error(`Unhandled expression type "${ast.constructor.name}" in file "${
+        baseSourceSpan?.start.file.url}"`);
   }
 }
 
