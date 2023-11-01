@@ -12,6 +12,7 @@ import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';
 import {OnDestroy} from './interface/lifecycle_hooks';
 import {getDocument} from './render3/interfaces/document';
+import {NgZone} from './zone';
 
 // A delay in milliseconds before the scan is run after onLoad, to avoid any
 // potential race conditions with other LCP-related functions. This delay
@@ -28,9 +29,8 @@ export class ImagePerformanceWarning implements OnDestroy {
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
   private options: ImageConfig = inject(IMAGE_CONFIG);
+  private ngZone = inject(NgZone);
   private lcpImageUrl?: string;
-
-  constructor() {}
 
   public start() {
     if (typeof PerformanceObserver === 'undefined' ||
@@ -46,7 +46,11 @@ export class ImagePerformanceWarning implements OnDestroy {
       const waitToScan = () => {
         setTimeout(this.scanImages.bind(this), SCAN_DELAY);
       };
-      this.window?.addEventListener('load', waitToScan);
+      // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
+      // the scope of this functionality.
+      this.ngZone.runOutsideAngular(() => {
+        this.window?.addEventListener('load', waitToScan);
+      });
     }
   }
 
