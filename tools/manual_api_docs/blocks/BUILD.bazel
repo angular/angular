@@ -1,0 +1,6 @@
+load("//tools/manual_api_docs:generate_block_api_json.bzl", "generate_block_api_json")
+
+generate_block_api_json(
+    name = "blocks",
+    srcs = glob(["*.md"]),
+)
