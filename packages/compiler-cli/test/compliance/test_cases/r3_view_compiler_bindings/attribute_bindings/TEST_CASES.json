@@ -66,11 +66,14 @@
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "chain_multiple_bindings_for_multiple_elements.js"
+            {
+              "expected": "chain_multiple_bindings_for_multiple_elements_template.js",
+              "templatePipelineExpected": "chain_multiple_bindings_for_multiple_elements_template.pipeline.js",
+              "generated": "chain_multiple_bindings_for_multiple_elements.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple attribute bindings when there are child elements",
@@ -81,11 +84,14 @@
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "chain_multiple_bindings_with_child_elements.js"
+            {
+              "expected": "chain_multiple_bindings_with_child_elements_template.js",
+              "templatePipelineExpected": "chain_multiple_bindings_with_child_elements_template.pipeline.js",
+              "generated": "chain_multiple_bindings_with_child_elements.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should exclude attribute bindings from the attributes array",
@@ -96,11 +102,14 @@
         {
           "failureMessage": "Incorrect attribute array",
           "files": [
-            "exclude_bindings_from_consts.js"
+            {
+              "expected": "exclude_bindings_from_consts_template.js",
+              "templatePipelineExpected": "exclude_bindings_from_consts_template.pipeline.js",
+              "generated": "exclude_bindings_from_consts.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the proper update instructions for interpolated attributes",
