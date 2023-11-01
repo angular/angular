@@ -94,12 +94,16 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }
+        if (Array.isArray(op.localRefs)) {
+          throw new Error(
+              `AssertionError: local refs array should have been extracted into a constant`);
+        }
         const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
             op,
             ng.template(
                 op.handle.slot!, o.variable(childView.fnName!), childView.decls!, childView.vars!,
-                op.tag, op.attributes, op.sourceSpan),
+                op.tag, op.attributes, op.localRefs, op.sourceSpan),
         );
         break;
       case ir.OpKind.DisableBindings:
