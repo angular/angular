@@ -73,13 +73,21 @@ export function elementContainerEnd(): ir.CreateOp {
 
 export function template(
     slot: number, templateFnRef: o.Expression, decls: number, vars: number, tag: string|null,
-    constIndex: number|null, sourceSpan: ParseSourceSpan): ir.CreateOp {
-  const args = [o.literal(slot), templateFnRef, o.literal(decls), o.literal(vars)];
-  if (tag !== null || constIndex !== null) {
-    args.push(o.literal(tag));
-    if (constIndex !== null) {
-      args.push(o.literal(constIndex));
-    }
+    constIndex: number|null, localRefs: number|null, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
   }
   return call(Identifiers.templateCreate, args, sourceSpan);
 }
