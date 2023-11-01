@@ -42,11 +42,14 @@
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "local_reference_and_context_variables.js"
+            {
+              "expected": "local_reference_and_context_variables_template.js",
+              "templatePipelineExpected": "local_reference_and_context_variables_template.pipeline.js",
+              "generated": "local_reference_and_context_variables.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should gen hooks with a few simple components",
