@@ -273,9 +273,6 @@
     "name": "Injector"
   },
   {
-    "name": "InternalViewRef"
-  },
-  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -613,6 +610,9 @@
   },
   {
     "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"

@@ -321,9 +321,6 @@
     "name": "InnerSubscriber"
   },
   {
-    "name": "InternalViewRef"
-  },
-  {
     "name": "ItemComponent"
   },
   {
@@ -835,6 +832,9 @@
   },
   {
     "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "XSS_SECURITY_URL"

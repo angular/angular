@@ -288,9 +288,6 @@
     "name": "Injector"
   },
   {
-    "name": "InternalViewRef"
-  },
-  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -598,6 +595,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "WebAnimationsDriver"
