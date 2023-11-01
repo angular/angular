@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import type {ViewCompilationUnit, ComponentCompilationJob} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Some `defer` conditions can reference other elements in the template, using their local reference
@@ -58,6 +58,26 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
       case ir.DeferTriggerKind.Interaction:
       case ir.DeferTriggerKind.Viewport:
         if (op.trigger.targetName === null) {
+          // A `null` target name indicates we should default to the first element in the
+          // placeholder block.
+          if (placeholderView === null) {
+            throw new Error('defer on trigger with no target name must have a placeholder block');
+          }
+          const placeholder = job.views.get(placeholderView);
+          if (placeholder == undefined) {
+            throw new Error('AssertionError: could not find placeholder view for defer on trigger');
+          }
+          for (const placeholderOp of placeholder.create) {
+            if (ir.hasConsumesSlotTrait(placeholderOp) &&
+                (ir.isElementOrContainerOp(placeholderOp) ||
+                 placeholderOp.kind === ir.OpKind.Projection)) {
+              op.trigger.targetXref = placeholderOp.xref;
+              op.trigger.targetView = placeholderView;
+              op.trigger.targetSlotViewSteps = -1;
+              op.trigger.targetSlot = placeholderOp.handle;
+              return;
+            }
+          }
           return;
         }
         let view: ViewCompilationUnit|null =
