@@ -345,6 +345,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.Repeater:
         ir.OpList.replace(op, ng.repeater(op.targetSlot.slot!, op.collection, op.sourceSpan));
         break;
+      case ir.OpKind.DeferWhen:
+        ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
