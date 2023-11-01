@@ -288,5 +288,24 @@ runInEachFileSystem(() => {
       expect(saveEntry.jsdocTags.length).toBe(2);
       expect(saveEntry.jsdocTags[1]).toEqual({name: 'returns', comment: 'Whether it succeeded'});
     });
+
+    it('should escape decorator names', () => {
+      env.write('index.ts', `        
+        /**
+         * Save some data.
+         * @Component decorators are cool.
+         * @deprecated for some reason
+         */
+        export type s = string;
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0];
+      expect(entry.description).toBe('Save some data.\n@Component decorators are cool.');
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0].name).toBe('deprecated');
+    });
   });
 });
