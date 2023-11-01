@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {R3DeferBlockMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage, isSingleI18nIcu} from '../../../render3/view/i18n/util';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
@@ -30,9 +31,11 @@ const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
  */
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
-    relativeContextFilePath: string, i18nUseExternalIds: boolean): ComponentCompilationJob {
+    relativeContextFilePath: string, i18nUseExternalIds: boolean,
+    deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
-      componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds);
+      componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds,
+      deferBlocksMeta);
   ingestNodes(job.root, template);
   return job;
 }
@@ -362,6 +365,11 @@ function ingestDeferView(
 }
 
 function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock): void {
+  const blockMeta = unit.job.deferBlocksMeta.get(deferBlock);
+  if (blockMeta === undefined) {
+    throw new Error(`AssertionError: unable to find metadata for deferred block`);
+  }
+
   // Generate the defer main view and all secondary views.
   const main = ingestDeferView(unit, '', deferBlock.children, deferBlock.sourceSpan)!;
   const loading = ingestDeferView(
@@ -373,7 +381,8 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
-  const deferOp = ir.createDeferOp(deferXref, main.xref, main.handle, deferBlock.sourceSpan);
+  const deferOp =
+      ir.createDeferOp(deferXref, main.xref, main.handle, blockMeta, deferBlock.sourceSpan);
   deferOp.placeholderView = placeholder?.xref ?? null;
   deferOp.placeholderSlot = placeholder?.handle ?? null;
   deferOp.loadingSlot = loading?.handle ?? null;
@@ -384,7 +393,6 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   unit.create.push(deferOp);
 
   // Configure all defer `on` conditions.
-
   // TODO: refactor prefetch triggers to use a separate op type, with a shared superclass. This will
   // make it easier to refactor prefetch behavior in the future.
   let prefetch = false;
