@@ -111,7 +111,10 @@ Many of the warnings will provide suggestions on how to remedy that problem.
 If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
 Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
 
-For applications that are already using SSR, additional manual adjustments to code will be needed to update the SSR server code to support the new integrated SSR capabilities.
+For applications new to SSR, the [Angular SSR Guide](/guide/ssr) provides additional information regarding the setup process for adding SSR to an application.
+
+For applications that are already using SSR, additional manual adjustments will be needed to update the application SSR server to support the new integrated SSR capabilities.
+In the future, a schematic will make this migration process easier for existing applications.
 The `application` builder now provides the integrated functionality for all of the following preexisting builders:
 
 * `app-shell`
@@ -119,7 +122,20 @@ The `application` builder now provides the integrated functionality for all of t
 * `server`
 * `ssr-dev-server`
 
-The [Angular SSR Guide](/guide/ssr) provides additional information regarding the new setup process for SSR.
+The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
+The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
+To convert from the separate SSR builders to the integrated capabilities of the `application` builder, there are several required manual steps.
+However, as each application is different, there may be more application specific changes needed beyond these to complete the process.
+
+1. Combine SSR builder options into the `application` builder options in the `angular.json` file.
+2. Combine server TypeScript configuration from `tsconfig.server.json` into `tsconfig.app.json`.
+3. Remove and/or update any `npm` scripts referencing the old builder targets.
+4. Update application server code to remove Webpack specific elements.
+5. Remove any CommonJS assumptions in the application server code.
+
+To provide an example of the specific changes needed to convert an existing v16 project, a repository with individual commits outlining the steps is available:
+INSERT LINK HERE
+In the future, a schematic will make this migration process easier for existing applications.
 
 ## Executing a build
 
