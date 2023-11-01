@@ -15,7 +15,7 @@ import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
-import type {InternalViewRef} from '../view_ref';
+import type {ViewRef} from '../view_ref';
 import {DestroyRef} from '../../linker/destroy_ref';
 import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
@@ -279,8 +279,7 @@ export function effect(
   // the context of a component or not. If it is, then we check whether the component has already
   // run its update pass, and defer the effect's initial scheduling until the update pass if it
   // hasn't already run.
-  const cdr =
-      injector.get(ChangeDetectorRef, null, {optional: true}) as InternalViewRef<unknown>| null;
+  const cdr = injector.get(ChangeDetectorRef, null, {optional: true}) as ViewRef<unknown>| null;
   if (!cdr || !(cdr._lView[FLAGS] & LViewFlags.FirstLViewPass)) {
     // This effect is either not running in a view injector, or the view has already
     // undergone its first change detection pass, which is necessary for any required inputs to be

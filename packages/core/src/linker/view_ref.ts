@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {LView} from '../render3/interfaces/view';
 
 /**
  * Represents an Angular [view](guide/glossary#view "Definition").
@@ -100,6 +99,11 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
    * The root nodes for this embedded view.
    */
   abstract get rootNodes(): any[];
+}
+
+export interface InternalViewRef extends ViewRef {
+  detachFromAppRef(): void;
+  attachToAppRef(appRef: ViewRefTracker): void;
 }
 
 /**
