@@ -389,21 +389,23 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // make it easier to refactor prefetch behavior in the future.
   let prefetch = false;
   let deferOnOps: ir.DeferOnOp[] = [];
+  let deferWhenOps: ir.DeferWhenOp[] = [];
   for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
     if (triggers.idle !== undefined) {
-      const deferOnOp =
-          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, prefetch, null!);
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {kind: ir.DeferTriggerKind.Idle}, prefetch, triggers.idle.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.immediate !== undefined) {
-      const deferOnOp =
-          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Immediate}, prefetch, null!);
+      const deferOnOp = ir.createDeferOnOp(
+          deferXref, {kind: ir.DeferTriggerKind.Immediate}, prefetch,
+          triggers.immediate.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.timer !== undefined) {
       const deferOnOp = ir.createDeferOnOp(
-          deferXref, {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay}, prefetch, null!
-      );
+          deferXref, {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay}, prefetch,
+          triggers.timer.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.hover !== undefined) {
@@ -416,7 +418,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
             targetView: null,
             targetSlotViewSteps: null,
           },
-          prefetch, null!);
+          prefetch, triggers.hover.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.interaction !== undefined) {
@@ -429,7 +431,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
             targetView: null,
             targetSlotViewSteps: null,
           },
-          prefetch, null!);
+          prefetch, triggers.interaction.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.viewport !== undefined) {
@@ -442,11 +444,18 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
             targetView: null,
             targetSlotViewSteps: null,
           },
-          prefetch, null!);
+          prefetch, triggers.viewport.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
+    if (triggers.when !== undefined) {
+      const deferOnOp = ir.createDeferWhenOp(
+          deferXref, convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan), prefetch,
+          triggers.when.sourceSpan);
+      deferWhenOps.push(deferOnOp);
+    }
+
     // If no (non-prefetching) defer triggers were provided, default to `idle`.
-    if (deferOnOps.length === 0) {
+    if (deferOnOps.length === 0 && deferWhenOps.length === 0) {
       deferOnOps.push(
           ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
     }
@@ -454,6 +463,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   }
 
   unit.create.push(deferOnOps);
+  unit.update.push(deferWhenOps);
 }
 
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {

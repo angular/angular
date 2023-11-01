@@ -156,6 +156,11 @@ export enum OpKind {
   DeferOn,
 
   /**
+   * An operation that controls when a `@defer` loads, using a custom expression as the condition.
+   */
+  DeferWhen,
+
+  /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
   I18nMessage,
