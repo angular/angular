@@ -299,6 +299,40 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a simple two-way binding",
+      "inputFiles": [
+        "simple_two_way.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "simple_two_way_template.js",
+              "generated": "simple_two_way.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a nested two-way binding",
+      "inputFiles": [
+        "nested_two_way.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_two_way_template.js",
+              "generated": "nested_two_way.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
