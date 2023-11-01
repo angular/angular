@@ -9,6 +9,7 @@
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
+import {R3DeferBlockMetadata} from '../../../../../render3/view/api';
 import {BindingKind, DeferTriggerKind, I18nParamValueFlags, Namespace, OpKind} from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
@@ -688,11 +689,23 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   placeholderConfig: o.Expression|null;
   loadingConfig: o.Expression|null;
 
+  /**
+   * Metadata about this defer block, provided by the parser.
+   */
+  metadata: R3DeferBlockMetadata;
+
+  /**
+   * After processing, the resolver function for the defer deps will be extracted to the constant
+   * pool, and a reference to that function will be populated here.
+   */
+  resolverFn: o.Expression|null;
+
   sourceSpan: ParseSourceSpan;
 }
 
 export function createDeferOp(
-    xref: XrefId, main: XrefId, mainSlot: SlotHandle, sourceSpan: ParseSourceSpan): DeferOp {
+    xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
+    sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
     xref,
@@ -710,6 +723,8 @@ export function createDeferOp(
     placeholderMinimumTime: null,
     errorView: null,
     errorSlot: null,
+    metadata,
+    resolverFn: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,

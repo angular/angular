@@ -1,4 +1,4 @@
-const MyApp_Defer_4_DepsFn = () => [LazyDep];
+const $MyApp_Defer_4_DepsFn$ = () => [LazyDep];
 …
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
@@ -7,7 +7,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementStart(0, "div");
       $r3$.ɵɵelement(1, "eager-dep");
       $r3$.ɵɵtemplate(2, MyApp_Defer_2_Template, 1, 0)(3, MyApp_DeferLoading_3_Template, 1, 0);
-      $r3$.ɵɵdefer(4, 2, MyApp_Defer_4_DepsFn, 3);
+      $r3$.ɵɵdefer(4, 2, $MyApp_Defer_4_DepsFn$, 3);
       $r3$.ɵɵdeferOnIdle();
       $r3$.ɵɵelementEnd();
     }

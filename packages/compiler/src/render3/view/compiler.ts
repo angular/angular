@@ -236,7 +236,7 @@ export function compileComponentFromMetadata(
     // ingested into IR:
     const tpl = ingestComponent(
         meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
-        meta.i18nUseExternalIds);
+        meta.i18nUseExternalIds, meta.deferBlocks);
 
     // Then the IR is transformed to prepare it for cod egeneration.
     transform(tpl, CompilationJobKind.Tmpl);
