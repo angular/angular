@@ -1,3 +1,0 @@
-consts: [["foo", "1", "bar", "2"]]
-…
-$r3$.ɵɵrepeaterCreate(0, MyApp_For_1_Template, 2, 1, "div", 0, i0.ɵɵrepeaterTrackByIdentity);
