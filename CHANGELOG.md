@@ -1,3 +1,55 @@
+<a name="17.0.0-rc.2"></a>
+# 17.0.0-rc.2 (2023-11-02)
+## Deprecations
+### core
+- `ChangeDetectorRef.checkNoChanges` is deprecated.
+  
+  Test code should use `ComponentFixture` instead of `ChangeDetectorRef`.
+  Application code should not call `ChangeDetectorRef.checkNoChanges` directly.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bf3281a6a5](https://github.com/angular/angular/commit/bf3281a6a532cafded613b06f4fb575cb16f93d0) | fix | remove `finish` listener once player is destroyed ([#51136](https://github.com/angular/angular/pull/51136)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3bd85fb7b0](https://github.com/angular/angular/commit/3bd85fb7b0723ed807bca771e9fa95af60a3cfaf) | fix | apply fixed_srcset_width value only to fixed srcsets ([#52459](https://github.com/angular/angular/pull/52459)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2aaddd3f64](https://github.com/angular/angular/commit/2aaddd3f64bb8891bb4bdcadf05d427a89338112) | fix | allow comments between switch cases ([#52449](https://github.com/angular/angular/pull/52449)) |
+| [ddd9df68bb](https://github.com/angular/angular/commit/ddd9df68bb2e907dd820f239aaf819425cb95df8) | fix | allow decimals in defer block time values ([#52433](https://github.com/angular/angular/pull/52433)) |
+| [6c58252521](https://github.com/angular/angular/commit/6c582525217197dd777d5bb9e62d6aaa2c70a996) | fix | compilation error when for loop block expression contains new line ([#52447](https://github.com/angular/angular/pull/52447)) |
+| [1f5039bbd6](https://github.com/angular/angular/commit/1f5039bbd6de8450e5511af00044ddd2f4314016) | fix | project control flow root elements into correct slot ([#52414](https://github.com/angular/angular/pull/52414)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [96fd73dc5d](https://github.com/angular/angular/commit/96fd73dc5d8050ef7c1c47056bfb7941146d73c5) | fix | properly emit literal types in input coercion function arguments ([#52437](https://github.com/angular/angular/pull/52437)) |
+| [d517a75c9b](https://github.com/angular/angular/commit/d517a75c9b10fe0e55ad15fd22fe9ce66a036108) | fix | use originally used module specifier for transform functions ([#52437](https://github.com/angular/angular/pull/52437)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59b6ec6be8](https://github.com/angular/angular/commit/59b6ec6be8cc464a6e74449ac7e0f2554ac7392b) | docs | Deprecate `ChangeDetectorRef.checkNoChanges` ([#52431](https://github.com/angular/angular/pull/52431)) |
+| [935c1816fd](https://github.com/angular/angular/commit/935c1816fd04caab24be66f8ef67851c88d3d4da) | fix | add `rejectErrors` option to `toSignal` ([#52474](https://github.com/angular/angular/pull/52474)) |
+| [ddef3ac9a4](https://github.com/angular/angular/commit/ddef3ac9a42677b900c998b2af7cd23a8213aa3a) | fix | effects wait for ngOnInit for their first run ([#52473](https://github.com/angular/angular/pull/52473)) |
+| [b9ea2d6900](https://github.com/angular/angular/commit/b9ea2d690015dd5b919df239a5ded66f2969b97b) | fix | handle aliased index with no space in control flow migration ([#52444](https://github.com/angular/angular/pull/52444)) |
+| [4461cefa4f](https://github.com/angular/angular/commit/4461cefa4f8db21009ab10a2a53de664163a86d2) | fix | handle trackBy and aliased index in control flow migration ([#52423](https://github.com/angular/angular/pull/52423)) |
+| [696f003553](https://github.com/angular/angular/commit/696f003553a0ca6886329728511dd46761de909b) | fix | mutation bug in `getDependenciesFromInjectable` ([#52450](https://github.com/angular/angular/pull/52450)) |
+| [384d7aacd0](https://github.com/angular/angular/commit/384d7aacd04dfbb951d9d4ab493759c12cf35645) | fix | replace assertion with more intentional error ([#52427](https://github.com/angular/angular/pull/52427)) |
+| [3861a73135](https://github.com/angular/angular/commit/3861a73135ca9111c0ec10d52ee7db0a0e95f262) | perf | Update LView consumer to only mark component for check ([#52302](https://github.com/angular/angular/pull/52302)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8156b3d4ec](https://github.com/angular/angular/commit/8156b3d4ec44a3b0489cc21763790a3be2969f7e) | fix | Don't override the backend when using the InMemoryWebAPI ([#52425](https://github.com/angular/angular/pull/52425)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d7397fb29b](https://github.com/angular/angular/commit/d7397fb29b400f193a2cda7af70058ac39247e6f) | fix | Ensure control flow migration ignores new block syntax ([#52402](https://github.com/angular/angular/pull/52402)) |
+| [6a01d62b9d](https://github.com/angular/angular/commit/6a01d62b9df33732ea3dbef8de1385c8c0cb8a88) | fix | fix broken migration when no control flow is present ([#52399](https://github.com/angular/angular/pull/52399)) |
+| [e40e55d902](https://github.com/angular/angular/commit/e40e55d902e09c36da4cf73b5ab31b6b65584518) | fix | Remove unhelpful parsing errors from the log ([#52401](https://github.com/angular/angular/pull/52401)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.2.12"></a>
 # 16.2.12 (2023-11-02)
 ### animations
