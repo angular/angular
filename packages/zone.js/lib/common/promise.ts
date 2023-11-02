@@ -23,7 +23,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   const __symbol__ = api.symbol;
   const _uncaughtPromiseErrors: UncaughtPromiseError[] = [];
   const isDisableWrappingUncaughtPromiseRejection =
-      global[__symbol__('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] === true;
+      global[__symbol__('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] !== false;
   const symbolPromise = __symbol__('Promise');
   const symbolThen = __symbol__('then');
   const creationTrace = '__creationTrace__';
