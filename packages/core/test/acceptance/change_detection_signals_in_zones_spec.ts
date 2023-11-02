@@ -8,7 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, ViewChild} from '@angular/core';
+import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {
@@ -628,6 +628,53 @@ describe('OnPush components with signals', () => {
   });
 
   describe('embedded views', () => {
+    describe('with a signal read after view creation during an update pass', () => {
+      it('should work with native control flow', () => {
+        @Component({
+          template: `
+        @if (true) { }
+        {{val()}}
+        `,
+          standalone: true,
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        })
+        class MyComp {
+          val = signal('initial');
+        }
+
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        fixture.componentInstance.val.set('new');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerText).toBe('new');
+      });
+
+      it('should work with createEmbeddedView', () => {
+        @Component({
+          template: `
+        <ng-template #template></ng-template>
+        {{createEmbeddedView(template)}}
+        {{val()}}
+        `,
+          standalone: true,
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        })
+        class MyComp {
+          val = signal('initial');
+          vcr = inject(ViewContainerRef);
+          createEmbeddedView(ref: TemplateRef<{}>) {
+            this.vcr.createEmbeddedView(ref);
+          }
+        }
+
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        fixture.componentInstance.val.set('new');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerText).toBe('new');
+      });
+    });
+
     it('refreshes an embedded view in a component', () => {
       @Component({
         selector: 'signal-component',
