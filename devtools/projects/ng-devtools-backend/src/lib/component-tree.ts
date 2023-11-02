@@ -159,6 +159,14 @@ export function serializeElementInjectorWithId(injector: Injector): SerializedIn
   return {id, ...serializedInjector};
 }
 
+export function serializeInjectorWithId(injector: Injector): SerializedInjector|null {
+  if (isElementInjector(injector)) {
+    return serializeElementInjectorWithId(injector);
+  } else {
+    return serializeEnvironmentInjectorWithId(injector);
+  }
+}
+
 export function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector|null {
   let id: string;
 
@@ -261,12 +269,8 @@ const getDependenciesForDirective =
         // dependency (2)
         const dependencyResolutionPath = [
           // (1)
-          ...resolutionPath.slice(0, foundInjectorIndex + 1).map(node => {
-            if (isElementInjector(node.injector)) {
-              return {injector: serializeElementInjectorWithId(node.injector)};
-            }
-            return {injector: serializeEnvironmentInjectorWithId(node.injector)};
-          }),
+          ...resolutionPath.slice(0, foundInjectorIndex + 1)
+              .map(node => serializeInjectorWithId(node.injector)),
 
           // (2)
           // We slice the import path to remove the first element because this is the same
@@ -286,7 +290,7 @@ const getDependenciesForDirective =
             position: [position++],
             resolutionPath: dependencyResolutionPath
           });
-          continue
+          continue;
         }
 
         serializedInjectedServices.push({
@@ -546,3 +550,25 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
   } catch {
   }
 };
+
+export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
+  const serializedResolutionPath: SerializedInjector[] = [];
+
+  for (const injector of resolutionPath) {
+    let serializedInjectorWithId: SerializedInjector|null = null;
+
+    if (isElementInjector(injector)) {
+      serializedInjectorWithId = serializeElementInjectorWithId(injector);
+    } else {
+      serializedInjectorWithId = serializeEnvironmentInjectorWithId(injector);
+    }
+
+    if (serializedInjectorWithId === null) {
+      continue;
+    }
+
+    serializedResolutionPath.push(serializedInjectorWithId);
+  }
+
+  return serializedResolutionPath;
+}
