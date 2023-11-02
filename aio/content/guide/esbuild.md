@@ -130,12 +130,15 @@ However, as each application is different, there may be more application specifi
 1. Combine the options for the above mentioned SSR builders into the `application` builder options within the `angular.json` file.
 The previously used builders and their target configurations can then be fully removed from the file.
 2. Combine server TypeScript configuration from `tsconfig.server.json` into `tsconfig.app.json`.
-The `types` option is typically the only setting that needs to be combined but others may be needed based on application specific customizations.
+The `types` and `files` options are typically the only setting that needs to be combined but others may be needed based on application specific customizations.
+You should also add the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
 The `tsconfig.server.json` can then be removed as it will no longer be used during builds.
 3. Remove and/or update any `npm` scripts referencing the now removed builder targets.
 The `ng build` and `ng serve` commands provide equivalent functionality when using the `application` builder.
 4. Update application server code to remove Webpack specific elements.
-5. Remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope).
+5. Update application server code to use new bootstrapping and output directory structure.
+An example of the changes for a v16 project that has been converted can be found [here](https://github.com/alan-agius4/angular-cli-use-application-builder/commit/1defdb93a7f508662bc427439e51505668bf84cd#diff-1ba718c1eb8aa39cd20c2562d92523068c734d75f54655e97d652b992d9b4259).
+6. Remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope).
 All application code should be ESM compatible.
 This does not apply to third-party dependencies.
 
