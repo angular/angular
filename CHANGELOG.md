@@ -1,3 +1,21 @@
+<a name="16.2.12"></a>
+# 16.2.12 (2023-11-02)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [03f4050636](https://github.com/angular/angular/commit/03f4050636a385cf2e920b06e7ec94d6b5f32383) | fix | remove `finish` listener once player is destroyed ([#51136](https://github.com/angular/angular/pull/51136)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e092184a5c](https://github.com/angular/angular/commit/e092184a5c3d98f4be329e4037c9039c1b420d75) | fix | apply fixed_srcset_width values only to fixed srcsets ([#52486](https://github.com/angular/angular/pull/52486)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b3b4ae4c3a](https://github.com/angular/angular/commit/b3b4ae4c3ae5f307e68e3a57f84c9e2dfc9938fb) | fix | properly emit literal types in input coercion function arguments ([#52437](https://github.com/angular/angular/pull/52437)) |
+| [873c4f2454](https://github.com/angular/angular/commit/873c4f2454716520881f9d684364bdd6ab6ef722) | fix | use originally used module specifier for transform functions ([#52437](https://github.com/angular/angular/pull/52437)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-rc.1"></a>
 # 17.0.0-rc.1 (2023-10-25)
 ### compiler
