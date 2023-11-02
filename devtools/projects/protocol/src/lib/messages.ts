@@ -34,6 +34,7 @@ export interface SerializedInjector {
   name: string;
   type: string;
   node?: DevToolsNode;
+  providers?: number;
 }
 
 /**
@@ -49,9 +50,10 @@ export interface ProviderRecord {
 
 export interface SerializedProviderRecord {
   token: string;
-  type: 'type'|'existing'|'class'|'value'|'factory';
+  type: 'type'|'existing'|'class'|'value'|'factory'|'multi';
   multi: boolean;
   isViewProvider: boolean;
+  index?: number|number[];
 }
 
 /**
@@ -258,4 +260,6 @@ export interface Events {
   getInjectorProviders: (injector: SerializedInjector) => void;
   latestInjectorProviders:
       (injector: SerializedInjector, providers: SerializedProviderRecord[]) => void;
+
+  logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
 }
