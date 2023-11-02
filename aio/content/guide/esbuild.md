@@ -123,7 +123,7 @@ The `application` builder now provides the integrated functionality for all of t
 
 The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
 The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
-All updated applications, even those that stay on the `browser` builder, will have this change from the v17 update.
+The `@angular/ssr` package supports the `browser` builder as well as the `application` builder.
 To convert from the separate SSR builders to the integrated capabilities of the `application` builder, there are several required manual steps.
 However, as each application is different, there may be more application specific changes needed beyond these to complete the process.
 
