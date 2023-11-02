@@ -1101,6 +1101,9 @@
     "name": "init_change_detection3"
   },
   {
+    "name": "init_change_detection_flags"
+  },
+  {
     "name": "init_change_detection_utils"
   },
   {
