@@ -60,6 +60,9 @@ export class ElementRef<T = any> {
    */
   public nativeElement: T;
 
+  /**
+   * @deprecated `ElementRef` should not be constructed manually. To become abstract in version 18.
+   */
   constructor(nativeElement: T) {
     this.nativeElement = nativeElement;
   }

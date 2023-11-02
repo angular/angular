@@ -560,6 +560,7 @@ export interface EffectRef {
 
 // @public
 export class ElementRef<T = any> {
+    // @deprecated
     constructor(nativeElement: T);
     nativeElement: T;
 }
