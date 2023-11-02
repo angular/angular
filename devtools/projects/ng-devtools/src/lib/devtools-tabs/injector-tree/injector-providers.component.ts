@@ -7,10 +7,11 @@
  */
 
 import {NgForOf, NgIf} from '@angular/common';
-import {Component, Input} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
-import {SerializedInjector, SerializedProviderRecord} from 'protocol';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
 
 @Component({
   selector: 'ng-injector-providers',
@@ -27,17 +28,23 @@ import {SerializedInjector, SerializedProviderRecord} from 'protocol';
 
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Type</h3> </th>
-                <td mat-cell *matCellDef="let provider"> {{typeToLabel[provider.type]}} </td>
-              </ng-container>
-
-              <ng-container matColumnDef="multi">
-                <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Multi</h3> </th>
-                <td mat-cell *matCellDef="let provider"> <mat-icon>{{provider.multi ? 'check_circle' : 'cancel'}}</mat-icon> </td>
+                <td mat-cell *matCellDef="let provider">
+                  @if (provider.type === 'multi') {
+                    multi (x{{ provider.index.length }})
+                  } @else {
+                    {{typeToLabel[provider.type]}}
+                  }
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="isViewProvider">
                 <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Is View Provider</h3> </th>
                 <td mat-cell *matCellDef="let provider"> <mat-icon>{{provider.isViewProvider ? 'check_circle' : 'cancel'}}</mat-icon> </td>
+              </ng-container>
+
+              <ng-container matColumnDef="log">
+                <th mat-header-cell *matHeaderCellDef> <h3 class="column-title"></h3> </th>
+                <td mat-cell *matCellDef="let provider"> <mat-icon matTooltipPosition="left" matTooltip="Log provider in console" class="select" (click)="select(provider)">send</mat-icon> </td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -46,6 +53,9 @@ import {SerializedInjector, SerializedProviderRecord} from 'protocol';
         </div>
     `,
   styles: [`
+        .select {
+          cursor: pointer;
+        }
 
         :host {
           display: block;
@@ -98,10 +108,9 @@ import {SerializedInjector, SerializedProviderRecord} from 'protocol';
         }
     `],
   standalone: true,
-  imports: [NgIf, NgForOf, MatTableModule, MatIconModule],
+  imports: [NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule],
 })
 export class InjectorProvidersComponent {
-  // todo: type properly
   @Input() injector: SerializedInjector;
   @Input() providers: SerializedProviderRecord[] = [];
 
@@ -113,10 +122,23 @@ export class InjectorProvidersComponent {
     value: 'useValue',
   };
 
+  messageBus = inject(MessageBus<Events>);
+
+  select(row: SerializedProviderRecord) {
+    this.messageBus.emit('logProvider', [
+      {
+        id: this.injector.id,
+        type: this.injector.type,
+        name: this.injector.name,
+      },
+      row
+    ]);
+  }
+
   get displayedColumns(): string[] {
     if (this.injector?.type === 'element') {
-      return ['token', 'type', 'multi', 'isViewProvider'];
+      return ['token', 'type', 'isViewProvider', 'log'];
     }
-    return ['token', 'type', 'multi'];
+    return ['token', 'type', 'log'];
   }
 }
