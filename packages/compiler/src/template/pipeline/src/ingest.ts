@@ -167,7 +167,12 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   ingestReferences(startOp, element);
   ingestNodes(unit, element.children);
 
-  const endOp = ir.createElementEndOp(id, element.endSourceSpan);
+  // The source span for the end op is typically the element closing tag. However, if no closing tag
+  // exists, such as in `<input>`, we use the start source span instead. Usually the start and end
+  // instructions will be collapsed into one `element` instruction, negating the purpose of this
+  // fallback, but in cases when it is not collapsed (such as an input with a binding), we still
+  // want to map the end instruction to the main element.
+  const endOp = ir.createElementEndOp(id, element.endSourceSpan ?? element.startSourceSpan);
   unit.create.push(endOp);
 
   // If there is an i18n message associated with this element, insert i18n start and end ops.
