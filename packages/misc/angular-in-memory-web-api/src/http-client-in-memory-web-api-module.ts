@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {HttpBackend} from '@angular/common/http';
+import {HttpBackend, ɵPRIMARY_HTTP_BACKEND as PRIMARY_HTTP_BACKEND} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
 import {HttpClientBackendService} from './http-client-backend-service';
@@ -31,6 +31,8 @@ export class HttpClientInMemoryWebApiModule {
    *  Usually imported in the root application module.
    *  Can import in a lazy feature module too, which will shadow modules loaded earlier
    *
+   *  Note: If you use the `FetchBackend`, make sure forRoot is invoked after in the providers list
+   *
    * @param dbCreator - Class that creates seed data for in-memory database. Must implement
    *     InMemoryDbService.
    * @param [options]
@@ -49,7 +51,8 @@ export class HttpClientInMemoryWebApiModule {
           provide: HttpBackend,
           useFactory: httpClientInMemBackendServiceFactory,
           deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory]
-        }
+        },
+        {provide: PRIMARY_HTTP_BACKEND, useExisting: HttpBackend}
       ]
     };
   }
