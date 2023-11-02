@@ -5,9 +5,6 @@
     position: relative;
 }
 
-.svg-container {
-  padding-right: 150px;
-}
 
 .hidden {
   visibility: hidden;
@@ -191,18 +188,32 @@ as-split-area {
     background: #161515;
   }
 
-  .graph {
+  .injector-graph {
     background: #1a1a1a;
   }
 }
 
-.injector-tree {
-  padding: 16px;
+.injector-hierarchy {
+  height: 100%;
+  overflow: hidden;
+  
+  h2 {
+    padding: 4px 16px;
+    margin: 0;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #777777;
+  }
 }
 
-.graph {
+.injector-graph {
   overflow: auto;
-  background: #f1f5f6;
-  border-radius: 10px;
-  box-shadow: 0px 0px 0px rgba(0,0,0,0.5), inset 1px 1px 8px rgba(0,0,0,0.5);
+  background: #f3f3f3;
+  height: calc(100% - 50px);
+}
+
+.hierarchy-ref {
+  color: currentColor;
+  text-decoration: none;
 }

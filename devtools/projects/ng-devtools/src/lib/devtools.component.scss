@@ -93,6 +93,10 @@
 
 :host {
   ::ng-deep {
+    .node-hidden, .link-hidden {
+      display: none;
+    }
+
     .link {
       stroke: #9b9b9b;
       stroke-width: 3px;
@@ -103,55 +107,89 @@
       }
     }
 
+    .injector-graph svg {
+      cursor: move;
+    }
+    
     .node {
       cursor: pointer;
-
+  
       &.highlighted {
-        text {
-          font-weight: 600;
+        .node-container, .node-container:hover {
+          background: oklch(0.65 0.25 266 / 1);
+          border-color: white;
+          color: white;
+          font-weight: 400;
         }
+        
+        &.selected {
+          .node-container, .node-container:hover {
+            color: oklch(0.65 0.25 266 / 1);;
+            background: white;
+            border-width: 3px;
+            border-color: oklch(0.65 0.25 266 / 1);
+            font-weight: 800;
+          }
+        }
+      }
 
-        circle {
-          stroke: #4da1ff;
-          fill: #fff;
-          stroke-width: 5px;
+      .node-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: #000;
+        font-size: 16px;
+        box-sizing: border-box;
+        border-radius: 2px;
+        border-style: solid;
+        border-width: 2px;
+        font-weight: 300;
+      }
+
+      .node-environment {
+        border: 1px solid #ff7a7e;
+        background: #f9c2c5;
+
+        &:hover {
+          background: #ff7a7e;
         }
+      }
+  
+      .node-imported-module {
+        border-color: #8838f7;
+        background: #c79eff;
+
+        &:hover {
+          background: #8838f7;
+        }
+      }
+      
+      .node-element {
+        border-color: #28ab2c;
+        background: #a7d5a9;
+  
+        &:hover {
+          background: #28ab2c;
+        }
+      }
+  
+  
+      .node-null {
+        border: 1px solid #8b8b8b;
+        background: white;
+      }
+
+  
+      .node-label {
+        color: black;
+        font-weight: 300;
+        font-size: 18px;
+        text-align: center;
       }
     }
 
-    .node-environment {
-      stroke: #f05057;
-      fill: #f9c2c5;
-      stroke-width: 1px;
-    }
-
-    & .node-environment:hover,
-    & .node-environment.selected {
-      fill: #4da1ff;
-    }
-
-    .node-imported-module {
-      stroke: #8838f7;
-      fill: #f9c2c5;
-      stroke-width: 3px;
-    }
-    
-    & .node-element {
-      stroke: #28ab2c;
-      fill: #a7d5a9;
-      stroke-width: 1px;
-    }
-
-    & .node-element:hover,
-    & .node-element.selected {
-      fill: #28ab2c;
-    }
-
-    text {
-      fill: #000000;
-      font-weight: 300;
-      font-size: 18px;
-    }
   }
 }
 
@@ -169,21 +207,11 @@
     }
   }
 
-  .node {
-    &.highlighted {
-      circle {
-        stroke: #4da1ff;
-        fill: #fff;
-        stroke-width: 5px;
-      }
-    }
-  }
-
   .arrow {
     fill: white;
   }
 
-  text {
-    fill: #bcc5ce;
+  .node-label {
+    color: #000;
   }
 }
