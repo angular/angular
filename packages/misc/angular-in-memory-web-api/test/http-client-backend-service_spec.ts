@@ -8,8 +8,8 @@
 
 import 'jasmine-ajax';
 
-import {HTTP_INTERCEPTORS, HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {FetchBackend, HTTP_INTERCEPTORS, HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, provideHttpClient, withFetch} from '@angular/common/http';
+import {importProvidersFrom, Injectable} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {HttpClientBackendService, HttpClientInMemoryWebApiModule} from 'angular-in-memory-web-api';
 import {Observable, zip} from 'rxjs';
@@ -564,6 +564,34 @@ describe('HttpClient Backend Service', () => {
                  heroes => expect(heroes.length).toBeGreaterThan(0, 'should have data.heroes'),
                  failRequest);
        }));
+  });
+
+  describe('when using the FetchBackend', () => {
+    it('should be the an InMemory Service', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withFetch()),
+          importProvidersFrom(
+              HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {delay})),
+          {provide: HeroService, useClass: HttpClientHeroService}
+        ]
+      });
+
+      expect(TestBed.inject(HttpBackend)).toBeInstanceOf(HttpClientBackendService);
+    });
+
+    it('should be a FetchBackend', () => {
+      // In this test, providers order matters
+      TestBed.configureTestingModule({
+        providers: [
+          importProvidersFrom(
+              HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {delay})),
+          provideHttpClient(withFetch()), {provide: HeroService, useClass: HttpClientHeroService}
+        ]
+      });
+
+      expect(TestBed.inject(HttpBackend)).toBeInstanceOf(FetchBackend);
+    });
   });
 });
 
