@@ -9,6 +9,7 @@ if (typeof window !== 'undefined') {
   const zoneSymbol = (window as any).Zone.__symbol__;
   (window as any)['__Zone_enable_cross_context_check'] = true;
   (window as any)[zoneSymbol('fakeAsyncAutoFakeAsyncWhenClockPatched')] = true;
+  (window as any)[zoneSymbol('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] = false;
 }
 import '../lib/common/to-string';
 import '../lib/browser/api-util';
