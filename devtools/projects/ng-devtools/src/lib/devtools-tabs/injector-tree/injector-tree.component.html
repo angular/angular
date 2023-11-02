@@ -1,33 +1,59 @@
 <p class="not-supported" *ngIf="!diDebugAPIsAvailable">
-  This feature is not supported by your version of Angular. Please update to version 17.0.0 or higher.
+  This feature is only available on version 17.0.0 or higher of Angular.
 </p>
 
-<as-split [class.hidden]="!diDebugAPIsAvailable" unit="percent" direction="horizontal" [gutterSize]="9">
-  <as-split-area size="60">
-    <as-split unit="percent" direction="vertical" [gutterSize]="9">
-      <as-split-area size="30">
-        <div class="injector-tree">
-          <h1>Environment Hierarchy</h1>
-          <section #injectorTree class="environment-injectors graph">
-            <svg #svgContainer class="svg-container">
-              <g #mainGroup></g>
-            </svg>
-          </section>
-        </div>
+<as-split [class.hidden]="!diDebugAPIsAvailable" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
+  <as-split-area size="50">
+    <mat-checkbox
+      (change)="toggleHideInjectorsWithNoProviders()"
+    >
+      Hide injectors with no providers
+    </mat-checkbox>
+    <mat-checkbox
+      (change)="toggleHideAngularInjectors()"
+    >
+      Hide framework injectors
+    </mat-checkbox>
+  </as-split-area>
+  <as-split-area>
+    <as-split unit="percent" direction="horizontal" [gutterSize]="9">
+      <as-split-area size="60">
+        <as-split unit="percent" direction="vertical" [gutterSize]="9">
+          <as-split-area size="35">
+            <div class="injector-hierarchy">
+              <h2>
+                Environment Hierarchy 
+                <a class="hierarchy-ref" href="https://angular.io/guide/hierarchical-dependency-injection#types-of-injector-hierarchies" target="_blank">
+                  <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
+                </a>
+            </h2>
+              <section #injectorTree class="environment-injectors injector-graph">
+                <svg #svgContainer>
+                  <g #mainGroup></g>
+                </svg>
+              </section>
+            </div>
+          </as-split-area>
+          <as-split-area size="65">
+            <div class="injector-hierarchy">
+              <h2>
+                Element Hierarchy
+                <a class="hierarchy-ref" href="https://angular.io/guide/hierarchical-dependency-injection#types-of-injector-hierarchies" target="_blank">
+                  <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
+                </a>
+              </h2>
+              <section #elementInjectorTree class="element-injectors injector-graph">
+                <svg #elementSvgContainer>
+                  <g #elementMainGroup></g>
+                </svg>
+              </section>
+            </div>
+          </as-split-area>
+        </as-split>
       </as-split-area>
-      <as-split-area size="70">
-        <div class="injector-tree">
-          <h1>Element Hierarchy</h1>
-          <section #elementInjectorTree class="element-injectors graph">
-            <svg #elementSvgContainer class="svg-container">
-              <g #elementMainGroup></g>
-            </svg>
-          </section>
-        </div>
+      <as-split-area *ngIf="selectedNode && providers.length > 0" size="40" minSize="25">
+        <ng-injector-providers [injector]="selectedNode.data.injector" [providers]="providers"></ng-injector-providers>
       </as-split-area>
     </as-split>
-  </as-split-area>
-  <as-split-area *ngIf="selectedNode && providers.length > 0" size="40" minSize="25">
-    <ng-injector-providers [injector]="selectedNode.data.injector" [providers]="providers"></ng-injector-providers>
   </as-split-area>
 </as-split>
