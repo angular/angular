@@ -29,6 +29,7 @@ export {
   effect,
   EffectRef,
   EffectCleanupFn,
+  EffectCleanupRegisterFn,
   EffectScheduler as ɵEffectScheduler,
   ZoneAwareQueueingScheduler as ɵZoneAwareQueueingScheduler,
   FlushableEffectRunner as ɵFlushableEffectRunner,

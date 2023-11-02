@@ -106,6 +106,8 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
+Note: the `effect()` API is still in [developer preview](/guide/releases#developer-preview) as we work to integrate signal-based reactivity into the core framework.
+
 ### Use cases for effects
 
 Effects are rarely needed in most application code, but may be useful in specific circumstances. Here are some examples of situations where an `effect` might be a good solution:

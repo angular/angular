@@ -554,6 +554,9 @@ export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, o
 export type EffectCleanupFn = () => void;
 
 // @public
+export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
+
+// @public
 export interface EffectRef {
     destroy(): void;
 }
