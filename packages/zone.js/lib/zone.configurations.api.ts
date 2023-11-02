@@ -576,11 +576,11 @@ interface ZoneGlobalConfigurations {
   /**
    * Disable wrapping uncaught promise rejection.
    *
-   * By default, `zone.js` wraps the uncaught promise rejection in a new `Error` object
-   * which contains additional information such as a value of the rejection and a stack trace.
+   * By default, `zone.js` throws the original error occurs in the uncaught promise rejection.
    *
-   * If you set `__zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION = true;` before
-   * importing `zone.js`, `zone.js` will not wrap the uncaught promise rejection.
+   * If you set `__zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION = false;` before
+   * importing `zone.js`, `zone.js` will wrap the uncaught promise rejection in a new `Error` object
+   * which contains additional information such as a value of the rejection and a stack trace.
    */
   __zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION?: boolean;
 }
