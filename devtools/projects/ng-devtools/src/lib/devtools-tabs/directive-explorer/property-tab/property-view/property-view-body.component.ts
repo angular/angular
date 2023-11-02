@@ -120,10 +120,10 @@ export class PropertyViewBodyComponent {
     }
 
     ng-resolution-path {
+      border-top: 1px solid black;
       display: block;
       overflow-x: scroll;
-      box-shadow: 0px 0px 0px rgba(0,0,0,0.5), inset 1px 1px 4px rgba(0,0,0,0.5);
-      background: #f1f5f6;
+      background: #f3f3f3;
     }
 
     :host {
