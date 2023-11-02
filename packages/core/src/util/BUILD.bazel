@@ -33,4 +33,5 @@ filegroup(
     srcs = glob([
         "**/*.ts",
     ]),
+    visibility = ["//visibility:public"],
 )
