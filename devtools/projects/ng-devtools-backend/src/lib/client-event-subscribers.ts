@@ -11,7 +11,7 @@ import {debounceTime} from 'rxjs/operators';
 
 import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
 import {ComponentInspector} from './component-inspector/component-inspector';
-import {getInjectorFromElementNode, getInjectorProviders, getInjectorResolutionPath, getLatestComponentState, hasDiDebugAPIs, idToInjector, injectorsSeen, isElementInjector, queryDirectiveForest, serializeElementInjectorWithId, serializeEnvironmentInjectorWithId, serializeProviderRecord, updateState} from './component-tree';
+import {getElementInjectorElement, getInjectorFromElementNode, getInjectorProviders, getInjectorResolutionPath, getLatestComponentState, hasDiDebugAPIs, idToInjector, injectorsSeen, isElementInjector, nodeInjectorToResolutionPath, queryDirectiveForest, serializeProviderRecord, serializeResolutionPath, updateState} from './component-tree';
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
@@ -74,23 +74,24 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 
       initializeOrGetDirectiveForestHooks().indexForest();
 
-      let forest: SerializableComponentTreeNode[];
+      const forest = prepareForestForSerialization(
+          initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(), hasDiDebugAPIs());
 
-      if (hasDiDebugAPIs()) {
-        forest = prepareForestForSerialization(
-            initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(), true);
-
-        // cleanup injector id mappings
-        for (const injectorId of idToInjector.keys()) {
-          if (!injectorsSeen.has(injectorId)) {
-            idToInjector.delete(injectorId);
+      // cleanup injector id mappings
+      for (const injectorId of idToInjector.keys()) {
+        if (!injectorsSeen.has(injectorId)) {
+          const injector = idToInjector.get(injectorId)!;
+          if (isElementInjector(injector)) {
+            const element = getElementInjectorElement(injector);
+            if (element) {
+              nodeInjectorToResolutionPath.delete(element);
+            }
           }
+
+          idToInjector.delete(injectorId);
         }
-        injectorsSeen.clear();
-      } else {
-        forest = prepareForestForSerialization(
-            initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
       }
+      injectorsSeen.clear();
 
       if (!query) {
         messageBus.emit('latestComponentExplorerView', [{forest}]);
@@ -99,6 +100,7 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 
       const state = getLatestComponentState(
           query, initializeOrGetDirectiveForestHooks().getDirectiveForest());
+
       if (state) {
         const {directiveProperties} = state;
         messageBus.emit('latestComponentExplorerView', [{forest, properties: directiveProperties}]);
@@ -232,42 +234,43 @@ const prepareForestForSerialization = (roots: ComponentTreeNode[], includeResolu
               })),
           children: prepareForestForSerialization(node.children, includeResolutionPath),
         } as SerializableComponentTreeNode;
+        serializedNodes.push(serializedNode);
 
         if (includeResolutionPath) {
-          const nodeInjector = getInjectorFromElementNode(node.nativeElement!);
-          if (!nodeInjector) {
-            serializedNode['resolutionPath'] = [];
-            serializedNodes.push(serializedNode);
-            continue;
-          }
-
-          const serializedResolutionPath: SerializedInjector[] = [];
-
-          for (const injector of getInjectorResolutionPath(nodeInjector!)) {
-            let serializedInjectorWithId: SerializedInjector|null = null;
-
-            if (isElementInjector(injector)) {
-              serializedInjectorWithId = serializeElementInjectorWithId(injector);
-            } else {
-              serializedInjectorWithId = serializeEnvironmentInjectorWithId(injector);
-            }
-
-            if (serializedInjectorWithId === null) {
-              continue;
-            }
-
-            serializedResolutionPath.push(serializedInjectorWithId);
-          }
-
-          serializedNode.resolutionPath = serializedResolutionPath;
+          serializedNode.resolutionPath = getNodeDIResolutionPath(node);
         }
-
-        serializedNodes.push(serializedNode);
       }
 
       return serializedNodes;
     };
 
+function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[]|undefined {
+  const nodeInjector = getInjectorFromElementNode(node.nativeElement!);
+  if (!nodeInjector) {
+    return [];
+  }
+  // There are legit cases where an angular node will have non-ElementInjector injectors.
+  // For example, components created with createComponent require the API consumer to
+  // pass in an element injector, else it sets the element injector of the component
+  // to the NullInjector
+  if (!isElementInjector(nodeInjector)) {
+    return [];
+  }
+
+  const element = getElementInjectorElement(nodeInjector);
+
+  if (!nodeInjectorToResolutionPath.has(element)) {
+    const resolutionPaths = getInjectorResolutionPath(nodeInjector);
+    nodeInjectorToResolutionPath.set(element, serializeResolutionPath(resolutionPaths));
+  }
+
+  const serializedPath = nodeInjectorToResolutionPath.get(element)!;
+  for (const injector of serializedPath) {
+    injectorsSeen.add(injector.id);
+  }
+
+  return serializedPath;
+}
 
 const getInjectorProvidersCallback = (messageBus: MessageBus<Events>) =>
     (injector: SerializedInjector) => {
@@ -276,16 +279,43 @@ const getInjectorProvidersCallback = (messageBus: MessageBus<Events>) =>
       }
 
       const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
-      let serializedProviderRecords: SerializedProviderRecord[] = [];
+      const allProviderRecords: SerializedProviderRecord[] = [];
 
-      if (injector.type === 'environment') {
-        serializedProviderRecords = providerRecords.map((providerRecord) => {
-          return serializeProviderRecord(providerRecord, true);
-        });
-      } else {
-        serializedProviderRecords = providerRecords.map((providerRecord) => {
-          return serializeProviderRecord(providerRecord);
-        });
+      const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
+
+      for (const [index, providerRecord] of providerRecords.entries()) {
+        const record =
+            serializeProviderRecord(providerRecord, index, injector.type === 'environment');
+        allProviderRecords.push(record);
+
+        const records = tokenToRecords.get(providerRecord.token) ?? [];
+        records.push(record);
+        tokenToRecords.set(providerRecord.token, records);
+      }
+
+      const serializedProviderRecords: SerializedProviderRecord[] = [];
+
+      for (const [token, records] of tokenToRecords.entries()) {
+        const multiRecords = records.filter(record => record.multi);
+        const nonMultiRecords = records.filter(record => !record.multi);
+
+        for (const record of nonMultiRecords) {
+          serializedProviderRecords.push(record);
+        }
+
+        const [firstMultiRecord] = multiRecords;
+        if (firstMultiRecord !== undefined) {
+          // All multi providers will have the same token, so we can just use the first one.
+          serializedProviderRecords.push({
+            token: firstMultiRecord.token,
+            type: 'multi',
+            multi: true,
+            // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
+            // provided as viewProviders
+            isViewProvider: firstMultiRecord.isViewProvider,
+            index: records.map(record => record.index as number),
+          });
+        }
       }
 
       messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
