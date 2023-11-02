@@ -43,6 +43,8 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
+  messageBus.on('logProvider', logProvider);
+
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     setupInspector(messageBus);
     // Often websites have `scroll` event listener which triggers
@@ -288,3 +290,43 @@ const getInjectorProvidersCallback = (messageBus: MessageBus<Events>) =>
 
       messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
     };
+
+const logProvider =
+    (serializedInjector: SerializedInjector, serializedProvider: SerializedProviderRecord):
+        void => {
+          if (!idToInjector.has(serializedInjector.id)) {
+            return;
+          }
+
+          const injector = idToInjector.get(serializedInjector.id)!;
+
+          const providerRecords = getInjectorProviders(injector);
+
+          console.group(
+              `%c${serializedInjector.name}`,
+              `color: ${
+                  serializedInjector.type === 'element' ?
+                      '#a7d5a9' :
+                      '#f05057'}; font-size: 1.25rem; font-weight: bold;`);
+          // tslint:disable-next-line:no-console
+          console.log('injector: ', injector);
+
+          if (typeof serializedProvider.index === 'number') {
+            const provider = providerRecords[serializedProvider.index];
+
+            // tslint:disable-next-line:no-console
+            console.log('provider: ', provider);
+            // tslint:disable-next-line:no-console
+            console.log(`value: `, injector.get(provider.token, null, {optional: true}));
+          } else {
+            const providers =
+                (serializedProvider.index as number[]).map(index => providerRecords[index]);
+
+            // tslint:disable-next-line:no-console
+            console.log('providers: ', providers);
+            // tslint:disable-next-line:no-console
+            console.log(`value: `, injector.get(providers[0].token, null, {optional: true}));
+          }
+
+          console.groupEnd();
+        };
