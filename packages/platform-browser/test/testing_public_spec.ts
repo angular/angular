@@ -860,7 +860,7 @@ describe('public testing API', () => {
          })));
 
       itPromise.then(() => done.fail('Expected test to fail, but it did not'), (err) => {
-        expect(err.message).toEqual('Uncaught (in promise): baz');
+        expect(err.message).toEqual('baz');
         done();
       });
       restoreJasmineIt();
