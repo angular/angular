@@ -109,7 +109,7 @@ export interface SerializedInjectedService {
   value: string;
   position: number[];
   flags?: InjectOptions;
-  resolutionPath?: any[];
+  resolutionPath?: SerializedInjector[];
 }
 
 export interface Properties {

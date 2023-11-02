@@ -15,6 +15,7 @@ const injectorTypeToClassMap = new Map<string, string>([
   ['imported-module', 'node-imported-module'],
   ['environment', 'node-environment'],
   ['element', 'node-element'],
+  ['null', 'node-null'],
 ]);
 
 export interface InjectorTreeNode {
@@ -33,11 +34,18 @@ export interface InjectorTreeD3Node {
 }
 
 export abstract class GraphRenderer<T, U> {
-  abstract render(graph: T[]): void;
+  abstract render(graph: T): void;
+  abstract getNodeById(id: string): U|null;
+  abstract snapToNode(node: U): void;
+  abstract snapToRoot(): void;
+  abstract zoomScale(scale: number);
+  abstract root: U|null;
+  abstract get graphElement(): HTMLElement;
 
   protected nodeClickListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
   protected nodeMouseoverListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
   protected nodeMouseoutListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
+
 
   cleanup(): void {
     this.nodeClickListeners = [];
@@ -58,44 +66,101 @@ export abstract class GraphRenderer<T, U> {
   }
 }
 
-export class D3GraphRenderer extends GraphRenderer<InjectorTreeNode, InjectorTreeD3Node> {
+interface InjectorTreeVisualizerConfig {
+  orientation: 'horizontal'|'vertical';
+  nodeSize: [width: number, height: number];
+  nodeSeparation: (nodeA: InjectorTreeD3Node, nodeB: InjectorTreeD3Node) => number;
+  nodeLabelSize: [width: number, height: number];
+}
+
+export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, InjectorTreeD3Node> {
+  public config: InjectorTreeVisualizerConfig;
+
   constructor(
       private _containerElement: HTMLElement,
       private _graphElement: HTMLElement,
-      private _orientation: 'horizontal'|'vertical' = 'horizontal',
-      private _nodeSize: [width: number, height: number] = [70, 200],
-      private _nodeSeperation: number = 2,
+      {
+        orientation = 'horizontal',
+        nodeSize = [200, 500],
+        nodeSeparation = () => 2,
+        nodeLabelSize = [250, 60],
+      }: Partial<InjectorTreeVisualizerConfig> = {},
   ) {
     super();
+
+    this.config = {
+      orientation,
+      nodeSize,
+      nodeSeparation,
+      nodeLabelSize,
+    };
   }
 
   private d3 = d3;
+
+  override root: InjectorTreeD3Node|null = null;
+  zoomController: d3.ZoomBehavior<Element, unknown>|null = null;
+
+  override zoomScale(scale: number) {
+    if (this.zoomController) {
+      this.zoomController.scaleTo(this.d3.select(this._containerElement), scale);
+    }
+  }
+
+  override snapToRoot(scale = 1): void {
+    if (this.root) {
+      this.snapToNode(this.root, scale);
+    }
+  }
+
+  override snapToNode(node: InjectorTreeD3Node, scale = 1): void {
+    const svg = this.d3.select(this._containerElement);
+    const halfWidth = (this._containerElement.clientWidth / 2);
+    const halfHeight = (this._containerElement.clientHeight / 2);
+    const t = d3.zoomIdentity.translate(halfWidth - node.y, halfHeight - node.x).scale(scale);
+    svg.transition().duration(500).call(this.zoomController.transform, t);
+  }
+
+  override get graphElement(): HTMLElement {
+    return this._graphElement;
+  }
+
+  override getNodeById(id: string): InjectorTreeD3Node|null {
+    const selection = this.d3.select(this._containerElement).select(`.node[data-id="${id}"]`);
+    if (selection.empty()) {
+      return null;
+    }
+    return selection.datum();
+  }
 
   override cleanup(): void {
     super.cleanup();
     this.d3.select(this._graphElement).selectAll('*').remove();
   }
 
-  override render(injectorGraph: InjectorTreeNode[]): void {
+  override render(injectorGraph: InjectorTreeNode): void {
     // cleanup old graph
     this.cleanup();
 
+    const data = this.d3.hierarchy(injectorGraph, (node: InjectorTreeD3Node) => node.children);
     const tree = this.d3.tree();
     const svg = this.d3.select(this._containerElement);
-
     const g = this.d3.select(this._graphElement);
-    const svgPadding = 20;
+
+    this.zoomController = this.d3.zoom().scaleExtent([0.1, 2]);
+    this.zoomController.on('start zoom end', (e: {transform: number}) => {
+      g.attr('transform', e.transform);
+    });
+    svg.call(this.zoomController);
 
     // Compute the new tree layout.
-    tree.nodeSize(this._nodeSize);
-    if (this._nodeSeperation !== undefined) {
-      tree.separation((a, b) => {
-        return this._nodeSeperation;
-      });
-    }
+    tree.nodeSize(this.config.nodeSize);
+    tree.separation((a: InjectorTreeD3Node, b: InjectorTreeD3Node) => {
+      return this.config.nodeSeparation(a, b);
+    });
 
-    const root = injectorGraph[0];
-    const nodes = tree(this.d3.hierarchy(root, (node: InjectorTreeD3Node) => node.children));
+    const nodes = tree(data);
+    this.root = nodes;
 
     arrowDefId++;
     svg.append('svg:defs')
@@ -118,7 +183,16 @@ export class D3GraphRenderer extends GraphRenderer<InjectorTreeNode, InjectorTre
         .data(nodes.descendants().slice(1))
         .enter()
         .append('path')
-        .attr('class', 'link')
+        .attr(
+            'class',
+            (node: InjectorTreeD3Node) => {
+              const parentId = node.parent?.data?.injector?.id;
+              if (parentId === 'N/A') {
+                return 'link-hidden';
+              }
+
+              return `link`;
+            })
         .attr(
             'data-id',
             (node: InjectorTreeD3Node) => {
@@ -133,7 +207,7 @@ export class D3GraphRenderer extends GraphRenderer<InjectorTreeNode, InjectorTre
         .attr('marker-end', `url(#end${arrowDefId})`)
         .attr('d', (node: InjectorTreeD3Node) => {
           const parent = node.parent!;
-          if (this._orientation === 'horizontal') {
+          if (this.config.orientation === 'horizontal') {
             return `
                     M${node.y},${node.x}
                     C${(node.y + parent.y) / 2},
@@ -156,7 +230,23 @@ export class D3GraphRenderer extends GraphRenderer<InjectorTreeNode, InjectorTre
             .data(nodes.descendants())
             .enter()
             .append('g')
-            .attr('class', 'node')
+            .attr(
+                'class',
+                (node: InjectorTreeD3Node) => {
+                  if (node.data.injector.id === 'N/A') {
+                    return 'node-hidden';
+                  }
+                  return `node`;
+                })
+            .attr(
+                'data-component-id',
+                (node: InjectorTreeD3Node) => {
+                  const injector = node.data.injector;
+                  if (injector.type === 'element') {
+                    return injector.node?.component?.id ?? -1;
+                  }
+                  return -1;
+                })
             .attr(
                 'data-id',
                 (node: InjectorTreeD3Node) => {
@@ -176,97 +266,40 @@ export class D3GraphRenderer extends GraphRenderer<InjectorTreeNode, InjectorTre
                 })
 
             .attr('transform', (node: InjectorTreeD3Node) => {
-              if (this._orientation === 'horizontal') {
+              if (this.config.orientation === 'horizontal') {
                 return `translate(${node.y},${node.x})`;
               }
 
               return `translate(${node.x},${node.y})`;
             });
 
-    node.append('circle')
+    const [width, height] = this.config.nodeLabelSize!;
+
+    node.append('foreignObject')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('x', -1 * (width - 10))
+        .attr('y', -1 * (height / 2))
+        .append('xhtml:div')
+        .attr(
+            'title',
+            (node: InjectorTreeD3Node) => {
+              return node.data.injector.name;
+            })
         .attr(
             'class',
             (node: InjectorTreeD3Node) => {
-              return injectorTypeToClassMap.get(node.data?.injector?.type) ?? '';
+              return [
+                injectorTypeToClassMap.get(node.data?.injector?.type) ?? '', 'node-container'
+              ].join(' ');
             })
-        .attr('r', 8);
-
-    node.append('text')
-        .attr(
-            this._orientation === 'horizontal' ? 'dy' : 'dx',
-            (node: InjectorTreeD3Node) =>
-                (node.depth === 0 || !node.children ? '0.6em' : '-1.55em'))
-        .attr(
-            this._orientation === 'horizontal' ? 'dx' : 'dy',
-            (node: InjectorTreeD3Node):
-                number => {
-                  let textOffset = 0;
-
-                  if (!hasParent(node) && !hasChildren(node)) {
-                    textOffset = this._orientation === 'horizontal' ? 15 : 5;
-                  } else if (hasParent(node) && hasChildren(node)) {
-                    textOffset = this._orientation === 'horizontal' ? 8 : -8;
-                  } else if (!hasParent(node) && hasChildren(node)) {
-                    textOffset = -15;
-                  } else {
-                    textOffset = this._orientation === 'horizontal' ? 15 : 5;
-                  }
-
-                  return textOffset;
-                })
-        .attr('text-anchor', (node: InjectorTreeD3Node) => (node.children ? 'end' : 'start'))
-        .text((node: InjectorTreeD3Node) => {
+        .html((node: InjectorTreeD3Node) => {
           const label = node.data.injector.name;
-          const lengthLimit = 30;
+          const lengthLimit = 25;
           return label.length > lengthLimit ? label.slice(0, lengthLimit - '...'.length) + '...' :
                                               label;
         });
 
-    // reset transform
-    g.attr('transform', 'translate(0, 0)');
-
-    const svgRect = this._containerElement.getBoundingClientRect();
-    const gElRect = this._graphElement.getBoundingClientRect();
-
-    g.attr('transform', `translate(
-          ${svgRect.left - gElRect.left + svgPadding},
-          ${svgRect.top - gElRect.top + svgPadding}
-        )`);
-    const height = gElRect.height + svgPadding * 2;
-    const width = gElRect.width + svgPadding * 2;
-    svg.attr('height', height).attr('width', width);
+    svg.attr('height', '100%').attr('width', '100%');
   }
-}
-
-export class InjectorTreeVisualizer {
-  constructor(private graphRenderer: GraphRenderer<InjectorTreeNode, InjectorTreeD3Node>) {}
-
-  onInjectorClick(cb: (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => void): void {
-    this.graphRenderer.onNodeClick(cb);
-  }
-
-  onInjectorMouseover(cb: (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => void): void {
-    this.graphRenderer.onNodeMouseover(cb);
-  }
-
-  onInjectorMouseout(cb: (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => void): void {
-    this.graphRenderer.onNodeMouseout(cb);
-  }
-
-  render(injectorTree: InjectorTreeNode[]): void {
-    this.graphRenderer.render(injectorTree);
-  }
-
-  cleanup(): void {
-    this.graphRenderer.cleanup();
-  }
-}
-
-
-function hasChildren(node: InjectorTreeD3Node) {
-  return !!node.data?.children?.length;
-}
-
-function hasParent(node: InjectorTreeD3Node) {
-  return !!node.parent;
 }
