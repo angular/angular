@@ -88,7 +88,6 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   emitInspectorEvent(): void {
     if (this.inspectorRunning) {
       this._messageBus.emit('inspectorStart');
-      this.changeTab('Components');
     } else {
       this._messageBus.emit('inspectorEnd');
       this._messageBus.emit('removeHighlightOverlay');
