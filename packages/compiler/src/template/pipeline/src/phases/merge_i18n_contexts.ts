@@ -10,7 +10,7 @@ import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
 /**
- * Merge i18n contexts for child i18n blocks into their parent context.
+ * Merge i18n contexts for child i18n blocks into their ancestor root contexts.
  */
 export function mergeI18nContexts(job: ComponentCompilationJob) {
   // Record all of the i18n and extracted message ops for use later.
