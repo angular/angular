@@ -75,7 +75,7 @@ const PERF_MARK_STANDALONE = {
  * @codeGenApi
  */
 export function ɵɵStandaloneFeature(definition: ComponentDef<unknown>) {
-  performance.mark('mark_use_counter', PERF_MARK_STANDALONE);
+  performance?.mark?.('mark_use_counter', PERF_MARK_STANDALONE);
   definition.getStandaloneInjector = (parentInjector: EnvironmentInjector) => {
     return parentInjector.get(StandaloneService).getOrCreateStandaloneInjector(definition);
   };

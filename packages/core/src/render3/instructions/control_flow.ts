@@ -42,7 +42,7 @@ const PERF_MARK_CONTROL_FLOW = {
  * @codeGenApi
  */
 export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
-  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performance?.mark?.('mark_use_counter', PERF_MARK_CONTROL_FLOW);
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
@@ -148,7 +148,7 @@ export function ɵɵrepeaterCreate(
     tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
     trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
     emptyDecls?: number, emptyVars?: number): void {
-  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performance?.mark?.('mark_use_counter', PERF_MARK_CONTROL_FLOW);
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?

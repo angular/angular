@@ -129,7 +129,7 @@ export function ɵɵdefer(
   ɵɵtemplate(index, null, 0, 0);
 
   if (tView.firstCreatePass) {
-    performance.mark('mark_use_counter', {detail: {feature: 'NgDefer'}});
+    performance?.mark?.('mark_use_counter', {detail: {feature: 'NgDefer'}});
 
     const tDetails: TDeferBlockDetails = {
       primaryTmplIndex,

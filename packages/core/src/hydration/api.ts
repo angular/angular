@@ -136,7 +136,7 @@ export function withDomHydration(): EnvironmentProviders {
           }
         }
         if (isEnabled) {
-          performance.mark('mark_use_counter', {detail: {feature: 'NgHydration'}});
+          performance?.mark?.('mark_use_counter', {detail: {feature: 'NgHydration'}});
         }
         return isEnabled;
       },

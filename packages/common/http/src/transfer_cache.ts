@@ -227,7 +227,7 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
     {
       provide: CACHE_OPTIONS,
       useFactory: (): CacheOptions => {
-        performance.mark('mark_use_counter', {detail: {feature: 'NgHttpTransferCache'}});
+        performance?.mark?.('mark_use_counter', {detail: {feature: 'NgHttpTransferCache'}});
         return {isCacheActive: true, ...cacheOptions};
       }
     },
