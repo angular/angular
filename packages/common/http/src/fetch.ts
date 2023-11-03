@@ -136,6 +136,7 @@ export class FetchBackend implements HttpBackend {
               total: contentLength ? +contentLength : undefined,
               loaded: receivedLength,
               partialText,
+              loadedChunks: [...chunks],
             } as HttpDownloadProgressEvent);
             reqZone ? reqZone.run(reportProgress) : reportProgress();
           }

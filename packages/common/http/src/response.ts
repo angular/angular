@@ -84,6 +84,14 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
    * Only present if the responseType was `text`.
    */
   partialText?: string;
+
+
+  /**
+   * Binary chunks from the body that have already been loaded at the time the event is emitted
+   *
+   * Only present when using the FetchBackend
+   */
+  loadedChunks: Uint8Array[]|null;
 }
 
 /**

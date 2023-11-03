@@ -254,6 +254,7 @@ export class HttpXhrBackend implements HttpBackend {
               let progressEvent: HttpDownloadProgressEvent = {
                 type: HttpEventType.DownloadProgress,
                 loaded: event.loaded,
+                loadedChunks: null,
               };
 
               // Set the total number of bytes in the event if it's available.

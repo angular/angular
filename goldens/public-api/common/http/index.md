@@ -1882,6 +1882,7 @@ export class HttpContextToken<T> {
 
 // @public
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
+    loadedChunks: Uint8Array[] | null;
     partialText?: string;
     // (undocumented)
     type: HttpEventType.DownloadProgress;

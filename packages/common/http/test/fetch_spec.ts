@@ -270,9 +270,11 @@ describe('FetchBackend', async () => {
         expect(progress1.partialText).toBe('down');
         expect(progress1.loaded).toBe(4);
         expect(progress1.total).toBe(10);
+        expect(progress1.loadedChunks?.length).toBe(1);
         expect(progress2.partialText).toBe('download');
         expect(progress2.loaded).toBe(8);
         expect(progress2.total).toBe(10);
+        expect(progress2.loadedChunks?.length).toBe(2);
         expect(response.body).toBe('downloaded');
         done();
       });

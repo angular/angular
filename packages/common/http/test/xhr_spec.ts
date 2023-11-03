@@ -203,9 +203,11 @@ describe('XhrBackend', () => {
         expect(progress1.partialText).toBe('down');
         expect(progress1.loaded).toBe(100);
         expect(progress1.total).toBe(300);
+        expect(progress1.loadedChunks).toBe(null);
         expect(progress2.partialText).toBe('download');
         expect(progress2.loaded).toBe(200);
         expect(progress2.total).toBe(300);
+        expect(progress2.loadedChunks).toBe(null);
         expect(response.body).toBe('downloaded');
         done();
       });
