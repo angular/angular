@@ -76,10 +76,12 @@ Caching is performed by default for all `HEAD` and `GET` requests. You can confi
 ```ts
 bootstrapApplication(AppComponent, {
   providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
-    }))
-  ]
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includePostRequests: true,
+      }),
+    ),
+  ],
 });
 ```
 
@@ -112,10 +114,21 @@ export class MyComponent {
 
 If you are using Angular on the server in combination with the Angular service worker, the behavior deviates from the normal server-side rendering behavior. The initial server request will be rendered on the server as expected. However, after that initial request, subsequent requests are handled by the service worker and always client-side rendered.
 
+## Enable performance profiling
+
+The `CommonEngine` offers an option for initiating the collection of performance profiling data and displaying the results in the server console.
+This can be done by setting `enablePerformanceProfiler` to `true`.
+
+```ts
+const commonEngine = new CommonEngine({
+  enablePerformanceProfiler: true,
+});
+```
+
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2023-10-26
+@reviewed 2023-11-03
