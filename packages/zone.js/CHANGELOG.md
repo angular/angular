@@ -1,3 +1,12 @@
+## [0.14.2](https://github.com/angular/angular/compare/zone.js-0.14.1...zone.js-0.14.2) (2023-11-03)
+
+
+### Bug Fixes
+
+* **zone.js:** disable wrapping unhandled promise error by default ([6d7eb35](https://github.com/angular/angular/commit/6d7eb3548c5fc3aedb4a52ff2010141343748e90))
+
+
+
 ## [14.0.1](https://github.com/angular/angular/compare/zone.js-0.14.0...zone.js-14.0.1) (2023-10-25)
 
 
