@@ -49,7 +49,7 @@ export class ImagePerformanceWarning implements OnDestroy {
       // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
       // the scope of this functionality.
       this.ngZone.runOutsideAngular(() => {
-        this.window?.addEventListener('load', waitToScan);
+        this.window?.addEventListener('load', waitToScan, {once: true});
       });
     }
   }
