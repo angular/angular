@@ -47,16 +47,6 @@ To verify that the application is server-side rendered, run it locally with `ng 
 
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used render an Angular application.
 
-<code-example path="ssr/server.ts" region="common-engine-ctor"></code-example>
-
-The contructor accepts an object with the following properties:
-
-| Properties                    | Details                                                                                              | Default Value |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- |
-| _`bootstrap`_                 | A method which returns an `NgModule` or a promise which resolves to an `ApplicationRef`.             |               |
-| _`providers`_                 | An array of platform level providers for the all requests.                                           |               |
-| _`enablePerformanceProfiler`_ | Enable request performance profiling data collection and printing the results in the server console. | `false`       |
-
 <code-example path="ssr/server.ts" region="navigation-request"></code-example>
 
 The `render` method of `CommonEngine` accepts an object with the following properties:
@@ -123,6 +113,17 @@ export class MyComponent {
 ## Using Angular Service Worker
 
 If you are using Angular on the server in combination with the Angular service worker, the behavior deviates from the normal server-side rendering behavior. The initial server request will be rendered on the server as expected. However, after that initial request, subsequent requests are handled by the service worker and always client-side rendered.
+
+## Enable performance profiling
+
+The `CommonEngine` offers an option for initiating the collection of performance profiling data and displaying the results in the server console.
+This can be done by setting `enablePerformanceProfiler` to `true`.
+
+```ts
+const commonEngine = new CommonEngine({
+  enablePerformanceProfiler: true,
+});
+```
 
 <!-- links -->
 
