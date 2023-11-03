@@ -41,5 +41,6 @@ export {booleanAttribute, numberAttribute} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
 export {global as ɵglobal} from './util/global';
 export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
+export {performanceMark as ɵperformanceMark} from './util/performance';
 export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';

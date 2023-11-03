@@ -1686,6 +1686,9 @@
     "name": "init_partial"
   },
   {
+    "name": "init_performance"
+  },
+  {
     "name": "init_pipe"
   },
   {
@@ -2203,6 +2206,9 @@
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "performanceMark"
   },
   {
     "name": "populateDehydratedViewsInLContainer"

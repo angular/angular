@@ -1173,6 +1173,9 @@
     "name": "onLeave"
   },
   {
+    "name": "performanceMark"
+  },
+  {
     "name": "populateDehydratedViewsInLContainerImpl"
   },
   {
