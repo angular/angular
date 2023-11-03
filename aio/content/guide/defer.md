@@ -4,7 +4,7 @@
 
 Deferrable views can be used in component template to defer the loading of select dependencies within that template. Those dependencies include components, directives, and pipes, and any associated CSS. To use this feature, you can declaratively wrap a section of your template in a `@defer` block which specifies the loading conditions.
 
-Deferrable views support a series of [triggers](guide/defer#triggers), [prefeching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
+Deferrable views support a series of [triggers](guide/defer#triggers), [prefetching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
 
 ```html
 @defer {
@@ -272,7 +272,7 @@ it('should render a defer block in different states', async () => {
 });
 ```
 
-## Behavior with Server-side rendering (SSR) and Static side generation (SSG)
+## Behavior with Server-side rendering (SSR) and Static site generation (SSG)
 
 When rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified). Triggers are ignored on the server.
 
