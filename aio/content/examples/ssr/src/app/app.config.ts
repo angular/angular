@@ -12,7 +12,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     // TODO: Enable using Fetch API when disabling `HttpClientInMemoryWebApiModule`.
-    provideHttpClient(/* withFetch()*/), provideClientHydration(),
+    provideHttpClient(/* withFetch()*/),
+    provideClientHydration(),
     provideProtractorTestingSupport(),  // essential for e2e testing
 
     // TODO: Remove from production apps

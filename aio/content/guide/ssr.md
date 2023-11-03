@@ -47,6 +47,16 @@ To verify that the application is server-side rendered, run it locally with `ng 
 
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used render an Angular application.
 
+<code-example path="ssr/server.ts" region="common-engine-ctor"></code-example>
+
+The contructor accepts an object with the following properties:
+
+| Properties                    | Details                                                                                              | Default Value |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- |
+| _`bootstrap`_                 | A method which returns an `NgModule` or a promise which resolves to an `ApplicationRef`.             |               |
+| _`providers`_                 | An array of platform level providers for the all requests.                                           |               |
+| _`enablePerformanceProfiler`_ | Enable request performance profiling data collection and printing the results in the server console. | `false`       |
+
 <code-example path="ssr/server.ts" region="navigation-request"></code-example>
 
 The `render` method of `CommonEngine` accepts an object with the following properties:
@@ -76,10 +86,12 @@ Caching is performed by default for all `HEAD` and `GET` requests. You can confi
 ```ts
 bootstrapApplication(AppComponent, {
   providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
-    }))
-  ]
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includePostRequests: true,
+      }),
+    ),
+  ],
 });
 ```
 
@@ -118,4 +130,4 @@ If you are using Angular on the server in combination with the Angular service w
 
 <!-- end links -->
 
-@reviewed 2023-10-26
+@reviewed 2023-11-03
