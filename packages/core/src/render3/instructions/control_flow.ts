@@ -12,6 +12,7 @@ import {TrackByFunction} from '../../change_detection';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined} from '../../util/assert';
+import {performanceMark} from '../../util/performance';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
@@ -42,7 +43,7 @@ const PERF_MARK_CONTROL_FLOW = {
  * @codeGenApi
  */
 export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
-  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performanceMark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
@@ -148,7 +149,7 @@ export function ɵɵrepeaterCreate(
     tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
     trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
     emptyDecls?: number, emptyVars?: number): void {
-  performance.mark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performanceMark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?

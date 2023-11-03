@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, ElementRef, inject, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, ɵperformanceMark as performanceMark, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
@@ -302,7 +302,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   /** @nodoc */
   ngOnInit() {
-    performance.mark('mark_use_counter', {'detail': {'feature': 'NgOptimizedImage'}});
+    performanceMark('mark_use_counter', {'detail': {'feature': 'NgOptimizedImage'}});
 
     if (ngDevMode) {
       const ngZone = this.injector.get(NgZone);
