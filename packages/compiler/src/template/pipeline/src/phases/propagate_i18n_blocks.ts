@@ -12,7 +12,9 @@ import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
 /**
  * Propagate i18n blocks down through child templates that act as placeholders in the root i18n
- * message.
+ * message. Specifically, perform an in-order traversal of all the views, and add i18nStart/i18nEnd
+ * op pairs into descending views. Also, assign an increasing sub-template index to each
+ * descending view.
  */
 export function propagateI18nBlocks(job: ComponentCompilationJob): void {
   propagateI18nBlocksToTemplates(job.root, 0);

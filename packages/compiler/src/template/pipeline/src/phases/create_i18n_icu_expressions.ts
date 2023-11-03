@@ -51,6 +51,7 @@ export function createI18nIcuExpressions(job: CompilationJob) {
               ir.createI18nExpressionOp(
                   i18nContext.xref, i18nBlock.xref, i18nBlock.handle,
                   new ir.LexicalReadExpr(icuOp.icu.expression), icuOp.icu.expressionPlaceholder,
+                  // ICU-based i18n Expressions are resolved during post-processing.
                   ir.I18nParamResolutionTime.Postproccessing, null!));
           break;
       }

@@ -52,6 +52,8 @@ export function extractI18nText(job: CompilationJob): void {
           for (let i = 0; i < op.interpolation.expressions.length; i++) {
             const expr = op.interpolation.expressions[i];
             const placeholder = op.i18nPlaceholders[i];
+            // For now, this i18nExpression depends on the slot context of the enclosing i18n block.
+            // Later, we will modify this, and advance to a different point.
             ops.push(ir.createI18nExpressionOp(
                 i18nOp.context!, i18nOp.xref, i18nOp.handle, expr, placeholder.name,
                 ir.I18nParamResolutionTime.Creation, expr.sourceSpan ?? op.sourceSpan));
