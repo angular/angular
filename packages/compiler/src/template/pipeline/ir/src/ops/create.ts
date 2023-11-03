@@ -833,9 +833,14 @@ export interface I18nMessageOp extends Op<CreateOp> {
   kind: OpKind.I18nMessage;
 
   /**
+   * An id used to reference this message.
+   */
+  xref: XrefId;
+
+  /**
    * A reference to the i18n op this message was extracted from.
    */
-  owner: XrefId;
+  i18nBlock: XrefId;
 
   /**
    * The i18n message represented by this op.
@@ -843,36 +848,49 @@ export interface I18nMessageOp extends Op<CreateOp> {
   message: i18n.Message;
 
   /**
+   * The placeholder used for this message when it is referenced in another message.
+   * For a top-level message that isn't referenced from another message, this will be null.
+   */
+  messagePlaceholder: string|null;
+
+  /**
    * Whether this message needs post-processing.
    */
   needsPostprocessing: boolean;
 
   /**
-   * The param map, with placeholders represented as an `Expression` to facilitate extraction to the
-   * const arry.
+   * The param map, with placeholders represented as an `Expression`.
    */
   params: Map<string, o.Expression>;
 
   /**
-   * The post-processing param map, with placeholders represented as an `Expression` to facilitate
-   * extraction to the const arry.
+   * The post-processing param map, with placeholders represented as an `Expression`.
    */
   postprocessingParams: Map<string, o.Expression>;
+
+  /**
+   * A list of sub-messages that are referenced by this message.
+   */
+  subMessages: XrefId[];
 }
 
 /**
  * Create an `ExtractedMessageOp`.
  */
 export function createI18nMessageOp(
-    owner: XrefId, message: i18n.Message, params: Map<string, o.Expression>,
-    postprocessingParams: Map<string, o.Expression>, needsPostprocessing: boolean): I18nMessageOp {
+    xref: XrefId, i18nBlock: XrefId, message: i18n.Message, messagePlaceholder: string|null,
+    params: Map<string, o.Expression>, postprocessingParams: Map<string, o.Expression>,
+    needsPostprocessing: boolean): I18nMessageOp {
   return {
     kind: OpKind.I18nMessage,
-    owner,
+    xref,
+    i18nBlock,
     message,
+    messagePlaceholder,
     params,
     postprocessingParams,
     needsPostprocessing,
+    subMessages: [],
     ...NEW_OP,
   };
 }
@@ -906,6 +924,9 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   subTemplateIndex: number|null;
 
+  /**
+   * The i18n context generated from this block. Initially null, until the context is created.
+   */
   context: XrefId|null;
 }
 
@@ -980,6 +1001,21 @@ export interface IcuOp extends Op<CreateOp> {
    */
   message: i18n.Message;
 
+  /**
+   * The ICU associated with this op.
+   */
+  icu: i18n.Icu;
+
+  /**
+   * Placeholder used to reference this ICU in other i18n messages.
+   */
+  messagePlaceholder: string;
+
+  /**
+   * A reference to the i18n context for this op. Initially null, until the context is created.
+   */
+  context: XrefId|null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -987,18 +1023,38 @@ export interface IcuOp extends Op<CreateOp> {
  * Creates an op to create an ICU expression.
  */
 export function createIcuOp(
-    xref: XrefId, message: i18n.Message, sourceSpan: ParseSourceSpan): IcuOp {
+    xref: XrefId, message: i18n.Message, icu: i18n.Icu, messagePlaceholder: string,
+    sourceSpan: ParseSourceSpan): IcuOp {
   return {
     kind: OpKind.Icu,
     xref,
     message,
+    icu,
+    messagePlaceholder,
+    context: null,
     sourceSpan,
     ...NEW_OP,
   };
 }
 
+/**
+ * An i18n context that is used to generate snippets of a full translated message.
+ * A separate context is created in a few different scenarios:
+ *
+ * 1. For each top-level i18n block. A context generated for a top-level i18n block, will be used to
+ *    eventually generate the translated message for that block that is extracted into the const
+ *    array.
+ * 2. For each child i18n block (resulting from using an ng-template inside of another i18n block).
+ *    A context generated for a child i18n block will be used to generate the portion of the final
+ *    message represented by the template. It will not result in a separate message in the consts
+ *    array, but will instead be rolled into the root message that spawned it.
+ * 3. For each ICU referenced as a sub-message. ICUs that are referenced as a sub-message will be
+ *    used to generate a separate i18n message, but will not be extracted directly into the consts
+ *    array. Instead they will be pulled in as part of the initialization statements for the message
+ *    that references them.
+ */
 export interface I18nContextOp extends Op<CreateOp> {
-  kind: OpKind.I18nContext
+  kind: OpKind.I18nContext;
 
   /**
    *  The id of this context.

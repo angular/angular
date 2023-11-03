@@ -23,6 +23,7 @@ import {collapseSingletonInterpolations} from './phases/collapse_singleton_inter
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
 import {createI18nContexts} from './phases/create_i18n_contexts';
+import {createI18nIcuExpressions} from './phases/create_i18n_icu_expressions';
 import {configureDeferInstructions} from './phases/defer_configs';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
@@ -35,7 +36,6 @@ import {collectConstExpressions} from './phases/has_const_expression_collection'
 import {parseHostStyleProperties} from './phases/host_style_property_parsing';
 import {collectI18nConsts} from './phases/i18n_const_collection';
 import {extractI18nText} from './phases/i18n_text_extraction';
-import {extractI18nICUs} from './phases/icu_extraction';
 import {liftLocalRefs} from './phases/local_refs';
 import {mergeI18nContexts} from './phases/merge_i18n_contexts';
 import {emitNamespaceChanges} from './phases/namespace';
@@ -102,7 +102,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
   {kind: Kind.Tmpl, fn: extractI18nText},
-  {kind: Kind.Tmpl, fn: extractI18nICUs},
+  {kind: Kind.Tmpl, fn: createI18nIcuExpressions},
   {kind: Kind.Tmpl, fn: applyI18nExpressions},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
@@ -132,6 +132,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
   {kind: Kind.Tmpl, fn: assignI18nSlotDependencies},
+  {kind: Kind.Tmpl, fn: removeI18nContexts},
   {kind: Kind.Both, fn: countVariables},
   {kind: Kind.Tmpl, fn: generateAdvance},
   {kind: Kind.Both, fn: optimizeVariables},
@@ -141,7 +142,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: collapseEmptyInstructions},
   {kind: Kind.Tmpl, fn: disableBindings},
   {kind: Kind.Both, fn: extractPureFunctions},
-  {kind: Kind.Tmpl, fn: removeI18nContexts},
   {kind: Kind.Both, fn: reify},
   {kind: Kind.Both, fn: chain},
 ];

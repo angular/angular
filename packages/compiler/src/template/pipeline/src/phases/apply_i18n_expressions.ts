@@ -18,8 +18,7 @@ export function applyI18nExpressions(job: CompilationJob): void {
       // Only add apply after expressions that are not followed by more expressions.
       if (op.kind === ir.OpKind.I18nExpression && needsApplication(op)) {
         // TODO: what should be the source span for the apply op?
-        ir.OpList.insertAfter<ir.UpdateOp>(
-            ir.createI18nApplyOp(op.target, op.targetSlot, null!), op);
+        ir.OpList.insertAfter<ir.UpdateOp>(ir.createI18nApplyOp(op.target, op.handle, null!), op);
       }
     }
   }
