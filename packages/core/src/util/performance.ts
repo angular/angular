@@ -18,7 +18,5 @@ export function performanceMark(
     markName: string,
     markOptions?: PerformanceMarkOptions|undefined,
     ): PerformanceMark|undefined {
-  return performance && typeof performance.mark === 'function' ?
-      performance.mark(markName, markOptions) :
-      undefined;
+  return performance?.mark?.(markName, markOptions);
 }
