@@ -391,6 +391,75 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if else case with no space after ;', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show;else elseBlock">Content here</span>`,
+        `<ng-template #elseBlock>Else Content</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<span>Content here</span>`,
+        `} @else {`,
+        `Else Content`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate an if then else case with no spaces before ;', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show;then thenBlock;else elseBlock">Ignored</span>`,
+        `<ng-template #thenBlock><div>THEN Stuff</div></ng-template>`,
+        `<ng-template #elseBlock>Else Content</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<div>THEN Stuff</div>`,
+        `} @else {`,
+        `Else Content`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
     it('should migrate an if else case when the template is above the block', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
