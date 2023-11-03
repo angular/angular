@@ -225,6 +225,9 @@ export enum OpKind {
    */
   IcuUpdate,
 
+  /**
+   * An i18n context containing information needed to generate an i18n message.
+   */
   I18nContext,
 }
 

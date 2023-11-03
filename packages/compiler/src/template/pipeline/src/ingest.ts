@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {icuFromI18nMessage, isSingleI18nIcu} from '../../../render3/view/i18n/util';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
@@ -456,9 +457,10 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 }
 
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
-  if (icu.i18n instanceof i18n.Message) {
+  if (icu.i18n instanceof i18n.Message && isSingleI18nIcu(icu.i18n)) {
     const xref = unit.job.allocateXrefId();
-    unit.create.push(ir.createIcuOp(xref, icu.i18n, null!));
+    unit.create.push(ir.createIcuOp(
+        xref, icu.i18n, icu.i18n.nodes[0], icuFromI18nMessage(icu.i18n).name, null!));
     unit.update.push(ir.createIcuUpdateOp(xref, null!));
   } else {
     throw Error(`Unhandled i18n metadata type for ICU: ${icu.i18n?.constructor.name}`);

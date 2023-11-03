@@ -36,40 +36,22 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   const messageConstIndices = new Map<ir.XrefId, ir.ConstIndex>();
 
+  // Remove all of the i18n message ops into a map.
+  const messages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nMessage) {
-        // Serialize the extracted root messages into the const array.
-        assertAllParamsResolved(op);
-
-        const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
-        // Closure Compiler requires const names to start with `MSG_` but disallows any other
-        // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
-        // `goog.getMsg` call
-        const closureVar = i18nGenerateClosureVar(
-            job.pool, op.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
-        let transformFn = undefined;
-
-        // If nescessary, add a post-processing step and resolve any placeholder params that are
-        // set in post-processing.
-        if (op.needsPostprocessing) {
-          const extraTransformFnParams: o.Expression[] = [];
-          if (op.postprocessingParams.size > 0) {
-            extraTransformFnParams.push(o.literalMap(
-                [...op.postprocessingParams].map(([key, value]) => ({key, value, quoted: true}))));
-          }
-          transformFn = (expr: o.ReadVarExpr) =>
-              o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
-        }
-
-        const statements =
-            getTranslationDeclStmts(op.message, mainVar, closureVar, op.params, transformFn);
-
-        messageConstIndices.set(op.owner, job.addConst(mainVar, statements));
-
-        // Remove the extracted messages from the IR now that they have been collected.
+        messages.set(op.xref, op);
         ir.OpList.remove<ir.CreateOp>(op);
       }
+    }
+  }
+
+  // Serialize the extracted messages for root i18n blocks into the const array.
+  for (const op of messages.values()) {
+    if (op.kind === ir.OpKind.I18nMessage && op.messagePlaceholder === null) {
+      const {mainVar, statements} = collectMessage(job, fileBasedI18nSuffix, messages, op);
+      messageConstIndices.set(op.i18nBlock, job.addConst(mainVar, statements));
     }
   }
 
@@ -81,6 +63,54 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
       }
     }
   }
+}
+
+/**
+ * Collects the given message into a set of statements that can be added to the const array.
+ * This will recursively collect any sub-messages referenced from the parent message as well.
+ */
+function collectMessage(
+    job: ComponentCompilationJob, fileBasedI18nSuffix: string,
+    messages: Map<ir.XrefId, ir.I18nMessageOp>,
+    messageOp: ir.I18nMessageOp): {mainVar: o.ReadVarExpr, statements: o.Statement[]} {
+  // Recursively collect any sub-messages, and fill in their placeholders in this message.
+  const statements: o.Statement[] = [];
+  for (const subMessageId of messageOp.subMessages) {
+    const subMessage = messages.get(subMessageId)!;
+    const {mainVar: subMessageVar, statements: subMessageStatements} =
+        collectMessage(job, fileBasedI18nSuffix, messages, subMessage);
+    statements.push(...subMessageStatements);
+    messageOp.params.set(subMessage.messagePlaceholder!, subMessageVar);
+  }
+
+  // Check that the message has all of its parameters filled out.
+  assertAllParamsResolved(messageOp);
+
+  const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
+  // Closure Compiler requires const names to start with `MSG_` but disallows any other
+  // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
+  // `goog.getMsg` call
+  const closureVar = i18nGenerateClosureVar(
+      job.pool, messageOp.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
+  let transformFn = undefined;
+
+  // If nescessary, add a post-processing step and resolve any placeholder params that are
+  // set in post-processing.
+  if (messageOp.needsPostprocessing) {
+    const extraTransformFnParams: o.Expression[] = [];
+    if (messageOp.postprocessingParams.size > 0) {
+      extraTransformFnParams.push(o.literalMap(
+          [...messageOp.postprocessingParams].map(([key, value]) => ({key, value, quoted: true}))));
+    }
+    transformFn = (expr: o.ReadVarExpr) =>
+        o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
+  }
+
+  // Add the message's statements
+  statements.push(...getTranslationDeclStmts(
+      messageOp.message, mainVar, closureVar, messageOp.params, transformFn));
+
+  return {mainVar, statements};
 }
 
 /**
