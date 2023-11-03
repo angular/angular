@@ -13,6 +13,7 @@ import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
 import {assertGreaterThan} from '../util/assert';
+import {performanceMark} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {isPlatformBrowser} from './util/misc_utils';
@@ -224,7 +225,7 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
     return NOOP_AFTER_RENDER_REF;
   }
 
-  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterRender'}});
+  performanceMark('mark_use_counter', {detail: {feature: 'NgAfterRender'}});
 
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
@@ -300,7 +301,7 @@ export function afterNextRender(
     return NOOP_AFTER_RENDER_REF;
   }
 
-  performance.mark('mark_use_counter', {detail: {feature: 'NgAfterNextRender'}});
+  performanceMark('mark_use_counter', {detail: {feature: 'NgAfterNextRender'}});
 
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be

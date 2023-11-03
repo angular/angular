@@ -29,6 +29,7 @@ import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {getConstant, getTNode, removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, removeLViewFromLContainer, shouldAddViewToDom} from '../render3/view_manipulation';
 import {assertDefined, throwError} from '../util/assert';
+import {performanceMark} from '../util/performance';
 
 import {invokeAllTriggerCleanupFns, invokeTriggerCleanupFns, storeTriggerCleanupFn} from './cleanup';
 import {onHover, onInteraction, onViewport, registerDomTrigger} from './dom_triggers';
@@ -129,7 +130,7 @@ export function ɵɵdefer(
   ɵɵtemplate(index, null, 0, 0);
 
   if (tView.firstCreatePass) {
-    performance.mark('mark_use_counter', {detail: {feature: 'NgDefer'}});
+    performanceMark('mark_use_counter', {detail: {feature: 'NgDefer'}});
 
     const tDetails: TDeferBlockDetails = {
       primaryTmplIndex,
