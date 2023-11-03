@@ -214,8 +214,8 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 function migrateNgIf(
     etm: ElementToMigrate, ngTemplates: Map<string, Template>, tmpl: string,
     offset: number): Result {
-  const matchThen = etm.attr.value.match(/;\s+then/gm);
-  const matchElse = etm.attr.value.match(/;\s+else/gm);
+  const matchThen = etm.attr.value.match(/;\s*then/gm);
+  const matchElse = etm.attr.value.match(/;\s*else/gm);
 
   if (matchThen && matchThen.length > 0) {
     return buildIfThenElseBlock(etm, ngTemplates, tmpl, matchThen[0], matchElse![0], offset);
