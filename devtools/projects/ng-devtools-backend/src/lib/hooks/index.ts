@@ -21,6 +21,7 @@ type Method = keyof LifecycleProfile|'changeDetection'|string;
 
 const recordMark = (s: string, method: Method) => {
   if (supportsPerformance) {
+    // tslint:disable-next-line:ban
     performance.mark(`${markName(s, method)}_start`);
   }
 };
@@ -31,6 +32,7 @@ const endMark = (nodeName: string, method: Method) => {
     const start = `${name}_start`;
     const end = `${name}_end`;
     if (performance.getEntriesByName(start).length > 0) {
+      // tslint:disable-next-line:ban
       performance.mark(end);
       performance.measure(name, start, end);
     }

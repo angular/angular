@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// tslint:disable:no-performance
+// tslint:disable:ban
 /**
  * A guarded `performance.mark`.
  *
