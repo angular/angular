@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 /**
  * The escape sequence used indicate message param values.
@@ -54,39 +54,75 @@ const LIST_DELIMITER = '|';
  * Formats the param maps on extracted message ops into a maps of `Expression` objects that can be
  * used in the final output.
  */
-export function extractI18nMessages(job: ComponentCompilationJob): void {
+export function extractI18nMessages(job: CompilationJob): void {
   // Save the i18n context ops for later use.
   const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
+  // Record which contexts represent i18n blocks (any other contexts are assumed to have been
+  // created from ICUs).
+  const i18nBlockContexts = new Set<ir.XrefId>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nContext) {
-        i18nContexts.set(op.xref, op);
+      switch (op.kind) {
+        case ir.OpKind.I18nContext:
+          i18nContexts.set(op.xref, op);
+          break;
+        case ir.OpKind.I18nStart:
+          i18nBlockContexts.add(op.context!);
+          break;
       }
     }
   }
 
+  // Extract messages from root i18n blocks.
+  const i18nBlockMessages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
-    // Extract messages from root i18n blocks.
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart && op.xref === op.root) {
         if (!op.context) {
           throw Error('I18n start op should have its context set.');
         }
-        const i18nContext = i18nContexts.get(op.context)!;
-        // The message will need post-processing if there are any post-processing params, or if
-        // there are any normal params that have multiple values
-        let needsPostprocessing = i18nContext.postprocessingParams.size > 0;
-        for (const values of i18nContext.params.values()) {
-          if (values.length > 1) {
-            needsPostprocessing = true;
-          }
-        }
-        unit.create.push(ir.createI18nMessageOp(
-            i18nContext.i18nBlock, i18nContext.message, formatParams(i18nContext.params),
-            formatParams(i18nContext.postprocessingParams), needsPostprocessing));
+        const i18nMessageOp = createI18nMessage(job, i18nContexts.get(op.context)!);
+        i18nBlockMessages.set(op.xref, i18nMessageOp);
+        unit.create.push(i18nMessageOp);
       }
     }
   }
+
+  // Extract messages from ICUs with their own sub-context.
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.Icu) {
+        if (!op.context) {
+          throw Error('ICU op should have its context set.');
+        }
+        if (!i18nBlockContexts.has(op.context)) {
+          const i18nContext = i18nContexts.get(op.context)!;
+          const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
+          unit.create.push(subMessage);
+          const parentMessage = i18nBlockMessages.get(i18nContext.i18nBlock);
+          parentMessage?.subMessages.push(subMessage.xref);
+        }
+        ir.OpList.remove<ir.CreateOp>(op);
+      }
+    }
+  }
+}
+
+/**
+ * Create an i18n message op from an i18n context op.
+ */
+function createI18nMessage(
+    job: CompilationJob, context: ir.I18nContextOp, messagePlaceholder?: string): ir.I18nMessageOp {
+  let needsPostprocessing = context.postprocessingParams.size > 0;
+  for (const values of context.params.values()) {
+    if (values.length > 1) {
+      needsPostprocessing = true;
+    }
+  }
+  return ir.createI18nMessageOp(
+      job.allocateXrefId(), context.i18nBlock, context.message, messagePlaceholder ?? null,
+      formatParams(context.params), formatParams(context.postprocessingParams),
+      needsPostprocessing);
 }
 
 /**
