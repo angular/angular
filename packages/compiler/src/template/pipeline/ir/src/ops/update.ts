@@ -574,7 +574,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   kind: OpKind.I18nExpression;
 
   /**
-   * The i18n block that this expression belongs to.
+   * The i18n context that this expression belongs to.
    */
   context: XrefId;
 
@@ -584,7 +584,10 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   target: XrefId;
 
-  targetSlot: SlotHandle;
+  /**
+   * A handle for the slot of the i18n block this expression belongs to.
+   */
+  handle: SlotHandle;
 
   /**
    * The expression value.
@@ -608,14 +611,14 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    context: XrefId, target: XrefId, targetSlot: SlotHandle, expression: o.Expression,
+    context: XrefId, target: XrefId, handle: SlotHandle, expression: o.Expression,
     i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
     sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     context,
     target,
-    targetSlot,
+    handle,
     expression,
     i18nPlaceholder,
     resolutionTime,
@@ -633,11 +636,15 @@ export interface I18nApplyOp extends Op<UpdateOp> {
   kind: OpKind.I18nApply;
 
   /**
-   * The i18n block to which expressions are applied
+   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
+   * block. This is necessary so that we run all lifecycle hooks.
    */
   target: XrefId;
 
-  targetSlot: SlotHandle;
+  /**
+   * A handle for the slot of the i18n block this expression belongs to.
+   */
+  handle: SlotHandle;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -646,11 +653,11 @@ export interface I18nApplyOp extends Op<UpdateOp> {
  *Creates an op to apply i18n expression ops
  */
 export function createI18nApplyOp(
-    target: XrefId, targetSlot: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
+    target: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     target,
-    targetSlot,
+    handle,
     sourceSpan,
     ...NEW_OP,
   };

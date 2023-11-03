@@ -13,9 +13,11 @@ import {CompilationJob} from '../compilation';
  * Updates i18n expression ops to depend on the last slot in their owning i18n block.
  */
 export function assignI18nSlotDependencies(job: CompilationJob) {
-  const i18nContextLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
+  const i18nLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   let lastSlotConsumer: ir.XrefId|null = null;
   let currentI18nOp: ir.I18nStartOp|null = null;
+
   for (const unit of job.units) {
     // Record the last consumed slot before each i18n end instruction.
     for (const op of unit.create) {
@@ -25,14 +27,14 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
 
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          if (!op.context) {
-            throw Error('I18n start op should have context set.');
-          }
           currentI18nOp = op;
           break;
         case ir.OpKind.I18nEnd:
-          i18nContextLastSlotConsumers.set(currentI18nOp!.context!, lastSlotConsumer!);
+          i18nLastSlotConsumers.set(currentI18nOp!.xref, lastSlotConsumer!);
           currentI18nOp = null;
+          break;
+        case ir.OpKind.I18nContext:
+          i18nContexts.set(op.xref, op);
           break;
       }
     }
@@ -40,7 +42,8 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
     // Assign i18n expressions to target the last slot in its owning block.
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
-        op.target = i18nContextLastSlotConsumers.get(op.context)!;
+        const i18nContext = i18nContexts.get(op.context)!;
+        op.target = i18nLastSlotConsumers.get(i18nContext.i18nBlock)!;
       }
     }
   }
