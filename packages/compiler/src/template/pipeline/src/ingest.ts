@@ -907,7 +907,10 @@ function ingestControlFlowInsertionPoint(
           SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue);
     }
 
-    return root instanceof t.Element ? root.name : root.tagName;
+    const tagName = root instanceof t.Element ? root.name : root.tagName;
+
+    // Don't pass along `ng-template` tag name since it enables directive matching.
+    return tagName === 'ng-template' ? null : tagName;
   }
 
   return null;

@@ -532,6 +532,23 @@
       ]
     },
     {
+      "description": "should generate an if block with an ng-template root node",
+      "inputFiles": [
+        "if_template_root_node.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_template_root_node_template.js",
+              "generated": "if_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a for block with an element root node",
       "inputFiles": [
         "for_element_root_node.ts"
@@ -542,6 +559,23 @@
             {
               "expected": "for_element_root_node_template.js",
               "generated": "for_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an ng-template root node",
+      "inputFiles": [
+        "for_template_root_node.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_root_node_template.js",
+              "generated": "for_template_root_node.js"
             }
           ],
           "failureMessage": "Incorrect template"

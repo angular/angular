@@ -1690,6 +1690,43 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: if_template_root_node.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.expr = true;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @if (expr) {
+      <ng-template foo="1" bar="2">{{expr}}</ng-template>
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @if (expr) {
+      <ng-template foo="1" bar="2">{{expr}}</ng-template>
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: if_template_root_node.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    expr: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: for_element_root_node.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
@@ -1718,6 +1755,43 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
 /****************************************************************************************************
  * PARTIAL FILE: for_element_root_node.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    items: number[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_template_root_node.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.items = [1, 2, 3];
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @for (item of items; track item) {
+      <ng-template foo="1" bar="2">{{item}}</ng-template>
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (item of items; track item) {
+      <ng-template foo="1" bar="2">{{item}}</ng-template>
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_template_root_node.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyApp {

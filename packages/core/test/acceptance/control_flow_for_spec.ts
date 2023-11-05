@@ -572,5 +572,53 @@ describe('control flow - for', () => {
       expect(directiveCount).toBe(1);
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1');
     });
+
+    it('should invoke a directive on a projected ng-template at the root of an @for once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[templateDir]',
+        standalone: true,
+      })
+      class TemplateDirective implements OnInit {
+        constructor(
+            private viewContainerRef: ViewContainerRef,
+            private templateRef: TemplateRef<any>,
+        ) {
+          directiveCount++;
+        }
+
+        ngOnInit(): void {
+          const view = this.viewContainerRef.createEmbeddedView(this.templateRef);
+          this.viewContainerRef.insert(view);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, TemplateDirective],
+        template: `<test>Before @for (item of items; track $index) {
+        <ng-template templateDir foo>{{item}}</ng-template>
+      } After</test>
+      `
+      })
+      class App {
+        items = [1];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1');
+    });
   });
 });
