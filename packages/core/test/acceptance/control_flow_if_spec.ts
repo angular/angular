@@ -582,5 +582,52 @@ describe('control flow - if', () => {
       expect(directiveCount).toBe(1);
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
     });
+
+    it('should invoke a directive on a projected ng-template at the root of an @if once', () => {
+      let directiveCount = 0;
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Directive({
+        selector: '[templateDir]',
+        standalone: true,
+      })
+      class TemplateDirective implements OnInit {
+        constructor(
+            private viewContainerRef: ViewContainerRef,
+            private templateRef: TemplateRef<any>,
+        ) {
+          directiveCount++;
+        }
+
+        ngOnInit(): void {
+          const view = this.viewContainerRef.createEmbeddedView(this.templateRef);
+          this.viewContainerRef.insert(view);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, TemplateDirective],
+        template: `<test>Before @if (true) {
+          <ng-template templateDir foo>foo</ng-template>
+      } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
   });
 });

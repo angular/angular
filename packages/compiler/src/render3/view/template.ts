@@ -1508,7 +1508,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // that we don't copy any bound attributes since they don't participate in content projection
     // and they can be used in directive matching (in the case of `Template.templateAttrs`).
     if (root !== null) {
-      tagName = root instanceof t.Element ? root.name : root.tagName;
+      const name = root instanceof t.Element ? root.name : root.tagName;
+      // Don't pass along `ng-template` tag name since it enables directive matching.
+      tagName = name === NG_TEMPLATE_TAG_NAME ? null : name;
       attrsExprs =
           this.getAttributeExpressions(NG_TEMPLATE_TAG_NAME, root.attributes, root.inputs, []);
     }
