@@ -347,7 +347,7 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
       // if the aliased variable is the index, then we store it
       if (aliasParts[1].trim() === 'index') {
         // 'let myIndex' -> 'myIndex'
-        aliasedIndex = aliasParts[0].trim().split(/\s+as\s+/)[1];
+        aliasedIndex = aliasParts[0].replace('let', '').trim();
       }
     }
     // declared with `index as myIndex`
