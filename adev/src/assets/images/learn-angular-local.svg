@@ -1,0 +1,55 @@
+<svg viewBox="0 0 345 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="345" height="194" fill="#232125" />
+  <g clip-path="url(#clip0_36_2211)">
+    <g clip-path="url(#clip1_36_2211)">
+      <rect x="72" y="25" width="333" height="240.231" rx="8.30769" fill="white" />
+      <rect x="64.5" y="23.5" width="42" height="244" rx="0.5" fill="#E4E3E6" />
+      <rect
+        x="81.1924"
+        y="38.6539"
+        width="18"
+        height="18"
+        rx="2.5"
+        fill="#F11653"
+        stroke="#0F0F11"
+      />
+      <rect x="81.1924" y="65.6539" width="18" height="18" rx="2.5" stroke="#0F0F11" />
+      <rect x="81.1924" y="92.6539" width="18" height="18" rx="2.5" stroke="#0F0F11" />
+      <rect x="81.1924" y="119.654" width="18" height="18" rx="2.5" stroke="#0F0F11" />
+      <rect x="64.5" y="23.5" width="42" height="244" rx="0.5" stroke="#0F0F11" />
+      <rect x="0.5" y="-0.5" width="151" height="23" rx="0.5" transform="matrix(1 0 0 -1 300 48)" fill="#5C44E4" />
+      <rect x="0.5" y="-0.5" width="151" height="23" rx="0.5" transform="matrix(1 0 0 -1 300 48)" stroke="#0F0F11" />
+      <rect x="232.5" y="65.5" width="96" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="65.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="86.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="107.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="128.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="149.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="170.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="208.5" y="191.5" width="9" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="245.5" y="86.5" width="180" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="245.5" y="107.5" width="289" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="257.5" y="128.5" width="116" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="257.5" y="149.5" width="39" height="9" rx="4.5" stroke="#0F0F11" />
+      <rect x="232.5" y="170.5" width="212" height="8" rx="4" stroke="#0F0F11" />
+      <rect x="245.5" y="190.5" width="279" height="8" rx="4" stroke="#0F0F11" />
+      <rect x="106.5" y="25.5" width="78" height="239" rx="0.5" fill="#F6F5F7" />
+      <rect x="106.5" y="25.5" width="78" height="239" rx="0.5" stroke="#0F0F11" />
+      <path d="M303.745 139.126L303.42 139.151L303.312 139.458L298.803 152.261L291.762 123.992L317.295 138.081L303.745 139.126Z" fill="white" stroke="#0F0F11" />
+    </g>
+    <rect x="72.5" y="25.5" width="332" height="239.231" rx="7.80769" stroke="#0F0F11" />
+  </g>
+  <mask id="path-25-inside-1_36_2211" fill="white">
+    <path d="M52 57.3077C52 52.7195 55.7195 49 60.3077 49H73V194H52V57.3077Z" />
+  </mask>
+  <path d="M52 57.3077C52 52.7195 55.7195 49 60.3077 49H73V194H52V57.3077Z" fill="#F11653" />
+  <path d="M51 57.3077C51 52.1672 55.1672 48 60.3077 48H74L72 50H60.3077C56.2718 50 53 53.2718 53 57.3077H51ZM73 194H52H73ZM51 194V57.3077C51 52.1672 55.1672 48 60.3077 48V50C56.2718 50 53 53.2718 53 57.3077V194H51ZM74 48V194H72V50L74 48Z" fill="#0F0F11" mask="url(#path-25-inside-1_36_2211)" />
+  <defs>
+    <clipPath id="clip0_36_2211">
+      <rect width="281" height="173" fill="white" transform="translate(64 21)" />
+    </clipPath>
+    <clipPath id="clip1_36_2211">
+      <rect x="72" y="25" width="333" height="240.231" rx="8.30769" fill="white" />
+    </clipPath>
+  </defs>
+</svg>

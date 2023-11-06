@@ -1,0 +1,16 @@
+{
+  "description": "View Encapsulation",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "tags": [
+    [
+      "view encapsulation",
+      "shadow DOM",
+      "CSS",
+      "component styling"
+    ]
+  ]
+}

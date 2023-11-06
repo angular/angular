@@ -1,0 +1,28 @@
+<div class="adev-playground-header">
+  <header>
+    <h1 tabindex="-1">Angular Playground</h1>
+  </header>
+  <div class="adev-template-select">
+    <label for="playgroundTemplate">Select a template</label>
+    <button [cdkMenuTriggerFor]="templatesMenu">
+      <span>{{ selectedTemplate.label }}</span>
+      <docs-icon>expand_more</docs-icon>
+    </button>
+  </div>
+</div>
+
+@if (embeddedEditorComponent) {
+<ng-container *ngComponentOutlet="embeddedEditorComponent" />
+}
+
+<ng-template #templatesMenu>
+  <ul class="adev-template-dropdown" cdkMenu>
+    @for (template of templates; track template.path) {
+    <li>
+      <button cdkMenuItem type="button" (click)="changeTemplate(template)">
+        <span>{{ template.label }}</span>
+      </button>
+    </li>
+    }
+  </ul>
+</ng-template>

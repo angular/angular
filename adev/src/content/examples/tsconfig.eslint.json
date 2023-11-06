@@ -1,0 +1,6 @@
+{
+  "extends": "../../tools/examples/shared/boilerplate/cli/tsconfig.json",
+  "include": [
+    "*/**/*.ts",
+  ],
+}

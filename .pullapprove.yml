@@ -1058,6 +1058,22 @@ groups:
         - mgechev
 
   # =========================================================
+  #  Docs: Angular Dev Site
+  # =========================================================
+  angular-dev:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'adev/**/{.*,*}'
+          ])
+    reviewers:
+      users:
+        - twerske
+        - josephperrott
+        - jelbourn
+
+  # =========================================================
   #  Docs-infra
   # =========================================================
   docs-infra:
