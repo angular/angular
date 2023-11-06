@@ -122,7 +122,7 @@ export function migrateTemplate(template: string): {migrated: string|null, error
 
   // count usages of each ng-template
   for (let [key, tmpl] of visitor.templates) {
-    const regex = new RegExp(`\\W${key.slice(1)}\\W`, 'gm');
+    const regex = new RegExp(`[^a-zA-Z0-9-<]+${key.slice(1)}\\W`, 'gm');
     const matches = template.match(regex);
     tmpl.count = matches?.length ?? 0;
     tmpl.generateContents(template);
