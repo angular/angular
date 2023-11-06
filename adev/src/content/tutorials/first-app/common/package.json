@@ -1,0 +1,42 @@
+{
+  "name": "angular.dev",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "NG_BUILD_PARALLEL_TS=0 ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^17.0.0-rc.1",
+    "@angular/common": "^17.0.0-rc.1",
+    "@angular/compiler": "^17.0.0-rc.1",
+    "@angular/core": "^17.0.0-rc.1",
+    "@angular/forms": "^17.0.0-rc.1",
+    "@angular/platform-browser": "^17.0.0-rc.1",
+    "@angular/router": "^17.0.0-rc.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.0.0-rc.2",
+    "@angular/cli": "^17.0.0-rc.2",
+    "@angular/compiler-cli": "^17.0.0-rc.1",
+    "@types/jasmine": "~4.3.0",
+    "@types/node": "^16.11.35",
+    "copyfiles": "^2.4.1",
+    "jasmine-core": "~4.6.0",
+    "jasmine-marbles": "~0.9.2",
+    "jasmine-spec-reporter": "~7.0.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "protractor": "~7.0.0",
+    "ts-node": "~10.9.0",
+    "typescript": "~5.2.0"
+  }
+}

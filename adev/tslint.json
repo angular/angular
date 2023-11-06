@@ -1,0 +1,44 @@
+{
+  "rulesDirectory": [
+    "node_modules/@angular/build-tooling/tslint-rules",
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/vrsource-tslint-rules/rules"
+  ],
+  "rules": {
+    "no-implicit-override-abstract": true,
+    "eofline": true,
+    "file-header": [
+      true,
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false,
+        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.dev/license"
+      }
+    ],
+    "no-console": [true, "log"],
+    "no-construct": true,
+    "no-duplicate-imports": true,
+    "no-duplicate-variable": true,
+    "no-var-keyword": true,
+    "prefer-literal": [true, "object"],
+    "semicolon": [true],
+    "variable-name": [true, "ban-keywords"],
+    "no-inner-declarations": [true, "function"],
+    "no-debugger": true,
+    "ban": [
+      true,
+      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
+      {"name": "fit", "message": "Don't keep jasmine focus methods."}
+    ],
+    "no-unused-expression": true,
+    "no-unused-variable": true
+  },
+  "linterOptions": {
+    "exclude": [
+      "src/content/api-examples/**",
+      "src/content/examples/**",
+      "src/content/tutorials/**/src/**",
+      "src/content/tutorials/**/src-final/**"
+    ]
+  }
+}

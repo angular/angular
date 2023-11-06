@@ -1,0 +1,155 @@
+<div class="docs-example-viewer" role="group">
+  <header class="docs-example-viewer-actions">
+    @if (view() === CodeExampleViewMode.SNIPPET) {
+      <span>{{ exampleMetadata()?.title }}</span>
+    }
+
+    @if (view() === CodeExampleViewMode.MULTI_FILE) {
+      <mat-tab-group
+        #codeTabs
+        animationDuration="0ms"
+        mat-stretch-tabs="false"
+      >
+        @for (tab of tabs(); track tab) {
+          <mat-tab [label]="tab.name"></mat-tab>
+        }
+      </mat-tab-group>
+    }
+
+    <div class="docs-example-viewer-icons">
+      <button
+        type="button"
+        class="docs-example-copy-link"
+        [attr.aria-label]="'Copy link to ' + exampleMetadata()?.title + ' example to the clipboard'"
+        (click)="copyLink()"
+      >
+        <i aria-hidden="true">
+          <svg
+            aria-hidden="true"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="inherit"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- link icon -->
+            <path
+              d="M11 17H7C5.61667 17 4.4375 16.5125 3.4625 15.5375C2.4875 14.5625 2 13.3833 2 12C2 10.6167 2.4875 9.4375 3.4625 8.4625C4.4375 7.4875 5.61667 7 7 7H11V9H7C6.16667 9 5.45833 9.29167 4.875 9.875C4.29167 10.4583 4 11.1667 4 12C4 12.8333 4.29167 13.5417 4.875 14.125C5.45833 14.7083 6.16667 15 7 15H11V17ZM8 13V11H16V13H8ZM13 17V15H17C17.8333 15 18.5417 14.7083 19.125 14.125C19.7083 13.5417 20 12.8333 20 12C20 11.1667 19.7083 10.4583 19.125 9.875C18.5417 9.29167 17.8333 9 17 9H13V7H17C18.3833 7 19.5625 7.4875 20.5375 8.4625C21.5125 9.4375 22 10.6167 22 12C22 13.3833 21.5125 14.5625 20.5375 15.5375C19.5625 16.5125 18.3833 17 17 17H13Z"
+              fill="inherit"
+            />
+          </svg>
+        </i>
+      </button>
+      <ng-container *ngTemplateOutlet="openCodeInExternalProvider" />
+      @if (expandable()) {
+        <button
+          type="button"
+          (click)="toggleExampleVisibility()"
+          [attr.title]="(expanded() ? 'Collapse' : 'Expand') + ' example'"
+          [attr.aria-label]="(expanded() ? 'Collapse' : 'Expand') + ' code example'"
+        >
+          <i aria-hidden="true">
+            @if (!expanded()) {
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <!-- Expand arrow -->
+                <path d="M3 21v-8h2v4.6L17.6 5H13V3h8v8h-2V6.4L6.4 19H11v2H3Z" />
+              </svg>
+            } @else {
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+              >
+                <path
+                  fill="var(--gray-400)"
+                  d="M3.4 22 2 20.6 8.6 14H4v-2h8v8h-2v-4.6L3.4 22ZM12 12V4h2v4.6L20.6 2 22 3.4 15.4 10H20v2h-8Z"
+                />
+              </svg>
+            }
+          </i>
+        </button>
+      }
+    </div>
+  </header>
+
+  <div
+    class="docs-example-viewer-code-wrapper"
+    [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
+    [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
+  >
+    <button docs-copy-source-code></button>
+    <docs-viewer [docContent]="snippetCode()?.content" />
+  </div>
+
+  @if (exampleComponent) {
+    <div class="docs-example-viewer-preview">
+      <ng-container *ngComponentOutlet="exampleComponent" />
+    </div>
+  }
+
+  <ng-template #openCodeInExternalProvider>
+    @if (exampleComponent) {
+      @if (githubUrl) {
+        <a
+          [href]="githubUrl"
+          target="_blank"
+          title="Open example on GitHub"
+          class="docs-example-github-link"
+          aria-label="Open example on GitHub"
+        >
+          <i aria-hidden="true">
+            <svg
+              aria-hidden="true"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="inherit"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9.16141 22.8681C9.16141 22.5894 9.15159 21.8509 9.14614 20.8707C5.96014 21.5798 5.28759 19.296 5.28759 19.296C4.76668 17.9389 4.01559 17.5778 4.01559 17.5778C2.97541 16.8485 4.09414 16.8638 4.09414 16.8638C5.24396 16.9467 5.84886 18.0747 5.84886 18.0747C6.8705 19.8692 8.52923 19.3516 9.18268 19.0505C9.28686 18.2912 9.5825 17.7736 9.90977 17.4801C7.36632 17.184 4.69196 16.176 4.69196 11.6754C4.69196 10.3936 5.13868 9.34523 5.87123 8.52377C5.75396 8.22705 5.36014 7.03305 5.98359 5.41577C5.98359 5.41577 6.94577 5.09996 9.13359 6.61959C10.0467 6.35941 11.0269 6.2285 12.0016 6.22414C12.9741 6.2285 13.9538 6.35941 14.869 6.61959C17.0558 5.09996 18.0163 5.41577 18.0163 5.41577C18.6414 7.0325 18.2481 8.2265 18.1298 8.52377C18.864 9.34523 19.3069 10.3936 19.3069 11.6754C19.3069 16.1874 16.6287 17.1801 14.077 17.4709C14.4889 17.8336 14.8543 18.5503 14.8543 19.6461C14.8543 21.2165 14.8396 22.4836 14.8396 22.8681C14.8396 23.1829 15.0463 23.5478 15.6278 23.4327C20.1758 21.877 23.4545 17.4774 23.4545 12.2907C23.4545 5.80359 18.3256 0.54541 11.9994 0.54541C5.67432 0.54541 0.54541 5.80359 0.54541 12.2907C0.545956 17.479 3.82796 21.8814 8.37977 23.4343C8.95196 23.5418 9.16141 23.179 9.16141 22.8681Z"
+                fill="inherit"
+              />
+            </svg>
+          </i>
+        </a>
+      }
+      @if (stackblitzUrl) {
+        <a
+          [href]="stackblitzUrl"
+          target="_blank"
+          class="docs-example-stackblitz-link"
+          title="Edit this example in StackBlitz"
+          aria-label="Edit this example in StackBlitz"
+        >
+          <i aria-hidden="true">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 356 511"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M138.719 150.22C62.6928 232.614 0.340573 300.4 0.158928 300.856C-0.0227172 301.311 33.9559 301.799 75.6665 301.939L151.505 302.195L117.656 396.511C74.7852 515.966 76.7972 510.288 77.3522 510.288C78.2145 510.288 355.296 209.735 355.296 208.799C355.296 208.245 325.263 207.879 279.943 207.879C233.709 207.879 204.591 207.518 204.591 206.943C204.591 206.428 220.136 162.751 239.137 109.883C279.06 -1.20153 278.545 0.264614 277.638 0.347453C277.26 0.382384 214.746 67.8247 138.719 150.22Z"
+              />
+            </svg>
+          </i>
+        </a>
+      }
+    }
+  </ng-template>
+</div>
