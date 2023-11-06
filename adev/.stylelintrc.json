@@ -1,0 +1,130 @@
+{
+  "customSyntax": "postcss-scss",
+  "defaultSeverity": "error",
+  "reportNeedlessDisables": true,
+  "reportInvalidScopeDisables": true,
+  "plugins": [
+    "./tools/stylelint/loader-rule.js",
+    "./tools/stylelint/no-concrete-rules.ts",
+    "./tools/stylelint/no-import.ts",
+    "./tools/stylelint/no-unused-import.ts",
+    "./tools/stylelint/selector-no-deep.ts",
+    "./tools/stylelint/single-line-comment-only.ts"
+  ],
+  "rules": {
+    "@angular/selector-no-deep": true,
+    "@angular/no-unused-import": true,
+    "@angular/single-line-comment-only": true,
+    "@angular/no-import": true,
+
+    "color-hex-case": "lower",
+    "color-no-invalid-hex": true,
+
+    "function-calc-no-unspaced-operator": true,
+    "function-comma-space-after": "always-single-line",
+    "function-comma-space-before": "never",
+    "function-name-case": "lower",
+    "function-url-quotes": "always",
+    "function-url-scheme-disallowed-list": ["data"],
+    "function-whitespace-after": "always",
+
+    "number-leading-zero": "always",
+    "number-no-trailing-zeros": true,
+    "length-zero-no-unit": true,
+
+    "string-no-newline": true,
+    "string-quotes": "single",
+
+    "unit-case": "lower",
+    "unit-no-unknown": true,
+    "unit-allowed-list": [
+      "px",
+      "%",
+      "deg",
+      "s",
+      "ms",
+      "em",
+      "rem",
+      "vh",
+      "vw",
+      "vmin",
+      "fr",
+      "ch",
+      "lvh",
+      "svh",
+      "dvh"
+    ],
+
+    "value-list-comma-space-after": "always-single-line",
+    "value-list-comma-space-before": "never",
+
+    "shorthand-property-no-redundant-values": true,
+
+    "property-case": "lower",
+    "no-duplicate-at-import-rules": true,
+
+    "declaration-block-no-duplicate-properties": [
+      true,
+      {
+        "ignore": ["consecutive-duplicates-with-different-values"]
+      }
+    ],
+    "declaration-block-trailing-semicolon": "always",
+    "declaration-block-single-line-max-declarations": 1,
+    "declaration-block-semicolon-space-before": "never",
+    "declaration-block-semicolon-space-after": "always-single-line",
+    "declaration-block-semicolon-newline-before": "never-multi-line",
+    "declaration-block-semicolon-newline-after": "always-multi-line",
+    "declaration-colon-space-after": "always-single-line",
+    "declaration-property-value-disallowed-list": [
+      {"/.*/": ["initial"]},
+      {"message": "The `initial` value is not supported in IE."}
+    ],
+
+    "block-closing-brace-newline-after": "always",
+    "block-closing-brace-newline-before": "always-multi-line",
+    "block-opening-brace-newline-after": "always-multi-line",
+    "block-opening-brace-space-before": "always-multi-line",
+
+    "selector-attribute-brackets-space-inside": "never",
+    "selector-attribute-operator-space-after": "never",
+    "selector-attribute-operator-space-before": "never",
+    "selector-combinator-space-after": "always",
+    "selector-combinator-space-before": "always",
+    "selector-pseudo-class-case": "lower",
+    "selector-pseudo-class-parentheses-space-inside": "never",
+    "selector-pseudo-element-case": "lower",
+    "selector-pseudo-element-colon-notation": "double",
+    "selector-pseudo-element-no-unknown": true,
+    "selector-type-case": "lower",
+    "selector-max-id": 0,
+    "no-missing-end-of-source-newline": true,
+    "no-eol-whitespace": true,
+    "max-line-length": [
+      100,
+      {
+        "ignorePattern": "/https?://.*/"
+      }
+    ],
+    "linebreaks": "unix",
+    "selector-class-pattern": [
+      "^_?(docs-|adev-|cm-|mat-|mdc-|xterm|ͼ3|ͼ2u|ͼ1|ng-|hljs-|as-|cdk-)",
+      {
+        "resolveNestedSelectors": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["projects/shared/src/lib/styles/_split.scss"],
+      "rules": {
+        "selector-pseudo-element-no-unknown": [
+          true,
+          {
+            "ignorePseudoElements": ["ng-deep"]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+@use '../../../../../../shared/src/lib/styles/media-queries' as mq;
+
+:host {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  @include mq.for-desktop-down {
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
+  h4 {
+    font-size: 0.95rem;
+  }
+  h5 {
+    font-size: 0.875rem;
+  }
+  h6 {
+    font-size: 0.6rem;
+  }
+}
+
+// stylelint-disable-next-line
+::ng-deep {
+  .adev-header-and-tabs {
+    padding: var(--layout-padding) 0 1rem var(--layout-padding);
+    box-sizing: border-box;
+
+    @include mq.for-desktop-up {
+      // this section should only be independently scrollable if
+      // the API tab is active & the screen is wide enough
+      &:has(.adev-reference-api-tab),
+      &.adev-cli-content {
+        position: sticky;
+        top: 0;
+        padding-inline-end: 1rem;
+        max-height: 100vh;
+        height: max-content;
+        overflow-y: scroll;
+        width: 50%;
+      }
+      &:has(.adev-reference-api-tab) {
+        width: 60%;
+      }
+      &:not(.adev-reference-api-tab) {
+        max-width: var(--page-width);
+      }
+    }
+    @include mq.for-desktop-down {
+      padding: var(--layout-padding);
+      width: 100%;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--septenary-contrast);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+  }
+
+  .docs-code {
+    pre {
+      margin-block: 0;
+      padding-block: 1rem;
+    }
+  }
+
+  .adev-reference-header {
+    > p {
+      color: var(--secondary-contrast);
+      margin-block-start: 0;
+      margin-block-end: 1.5rem;
+    }
+
+    .docs-code {
+      margin-block-end: 1.5rem;
+    }
+  }
+
+  .adev-reference-tab-body {
+    margin-block-start: 1.5rem;
+    docs-viewer > div {
+      :first-child {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .adev-reference-api-tab {
+    display: flex;
+    gap: 1.81rem;
+    align-items: flex-start;
+    @include mq.for-desktop-down {
+      flex-direction: column;
+    }
+
+    & > .docs-code {
+      width: 100%;
+      max-height: 93vh;
+      overflow: hidden;
+      padding: 0;
+
+      @include mq.for-desktop-down {
+        width: 100%;
+        position: static;
+      }
+
+      button {
+        transition: background-color 0.3s ease;
+
+        &.hljs-ln-line {
+          font-weight: 400;
+          text-align: left;
+          padding-block: 0.25rem;
+        }
+
+        &.hljs-ln-line-highlighted {
+          background-color: var(--senary-contrast);
+        }
+        &:hover {
+          background-color: var(--septenary-contrast);
+        }
+        &:focus {
+          background-color: var(--senary-contrast);
+        }
+      }
+
+      // Hide copy source code button
+      button[docs-copy-source-code] {
+        display: none;
+      }
+    }
+
+    code {
+      margin-block: 0;
+    }
+
+    pre {
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0;
+    }
+  }
+
+  .adev-reference-tab {
+    min-width: 50ch;
+    margin-block-start: 2.5rem;
+  }
+
+  .adev-reference-members-container {
+    width: 40%;
+    padding: 0 var(--layout-padding) 1rem 0;
+    box-sizing: border-box;
+    max-width: 60ch;
+    @include mq.for-desktop-down {
+      width: 100%;
+      padding: var(--layout-padding);
+      max-width: none;
+      // override javascript-applied margin-top:
+      // determined by how much space the sticky header takes up
+      // to align the selected card member with the code block
+      margin-block-start: 0 !important;
+    }
+  }
+
+  // Sidebar
+  .adev-reference-members {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    @include mq.for-desktop-down {
+      width: 100%;
+    }
+  }
+
+  .adev-reference-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-block-end: 0;
+    gap: 0.5rem;
+
+    > div {
+      margin-block: 0.67em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+
+      h1 {
+        margin-block: 0;
+      }
+    }
+
+    a {
+      fill: var(--quinary-contrast);
+      transition: fill 0.3s ease;
+
+      &:hover {
+        fill: var(--primary-contrast);
+      }
+    }
+  }
+
+  .adev-reference-labels {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .adev-reference-category {
+    color: var(--gray-400);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+  }
+
+  .adev-reference-member-card {
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    position: relative;
+    transition: border 0.3s ease;
+
+    &::before {
+      content: '';
+      inset: -1px;
+      position: absolute;
+      background: transparent;
+      border-radius: 0.35rem;
+      z-index: 0;
+    }
+
+    &:focus {
+      box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.01);
+
+      &::before {
+        background: var(--red-to-pink-to-purple-horizontal-gradient);
+      }
+    }
+
+    &:has(.adev-reference-card-body) {
+      header {
+        border-radius: 0.25rem 0.25rem 0 0;
+        border-bottom: 1px solid var(--senary-contrast);
+      }
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      padding: 0.7rem 1rem;
+      border-radius: 0.25rem;
+      background-color: var(--octonary-contrast);
+      position: relative;
+      z-index: 10;
+      transition: background-color 0.3s ease, border 0.3s ease;
+
+      // h3 + code || # of overloads
+      .adev-reference-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        div {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+      }
+
+      h3 {
+        display: inline-block;
+        font-family: var(--code-font);
+        font-size: 1.25rem;
+        letter-spacing: -0.025rem;
+        margin: 0;
+      }
+
+      code,
+      span {
+        font-size: 0.875rem;
+      }
+    }
+
+    > p {
+      padding-inline: 1.25rem;
+      margin-block-end: 0;
+    }
+  }
+
+  .adev-reference-card-body {
+    padding: 0.25rem 1.25rem;
+    background: var(--septenary-contrast);
+    transition: background-color 0.3s ease;
+    color: var(--quaternary-contrast);
+    border-radius: 0 0 0.25rem 0.25rem;
+    position: relative;
+    z-index: 10;
+    hr {
+      margin-block: 2rem;
+    }
+    .docs-code {
+      margin-block-end: 1rem;
+    }
+  }
+
+  // when it's not the only card...
+  .adev-reference-card-item:has(~ .adev-reference-card-item) {
+    border: 1px solid var(--senary-contrast);
+    margin-block: 1rem;
+    border-radius: 0.25rem;
+    padding-inline: 1rem;
+  }
+  // & the last card
+  .adev-reference-card-item:last-child {
+    &:not(:first-of-type) {
+      border: 1px solid var(--senary-contrast);
+      margin-block: 1rem;
+      border-radius: 0.25rem;
+      padding-inline: 1rem;
+    }
+  }
+
+  .adev-reference-card-item {
+    span {
+      display: inline-block;
+      font-size: 0.875rem;
+    }
+    code {
+      font-size: 0.875rem;
+    }
+  }
+
+  .adev-function-definition {
+    &:has(*) {
+      border-block-end: 1px solid var(--senary-contrast);
+    }
+  }
+
+  .adev-param-group {
+    margin-block-start: 1rem;
+  }
+
+  // If it's the only param group...
+  .adev-param-group:not(:has(~ .adev-param-group)) {
+    margin-block: 1rem;
+  }
+
+  .adev-return-type {
+    padding-block: 1rem;
+
+    // & does not follow a function definition
+    &:not(.adev-function-definition + .adev-return-type) {
+      border-block-start: 1px solid var(--senary-contrast);
+    }
+  }
+
+  .adev-param-keyword {
+    color: var(--primary-contrast);
+    font-family: var(--code-font);
+    margin-inline-end: 0.5rem;
+  }
+
+  .adev-param-name {
+    color: var(--vivid-pink);
+    font-family: var(--code-font);
+    margin-inline-end: 0.25rem;
+    &::after {
+      content: ':';
+    }
+  }
+
+  .adev-deprecated {
+    color: var(--page-background);
+    background-color: var(--quaternary-contrast);
+    width: max-content;
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.25rem;
+    margin-block-start: 1rem;
+  }
+
+  // deprecated markers beside header
+  .adev-reference-header ~ .adev-deprecated {
+    margin-block-start: 0.5rem;
+  }
+
+  .adev-parameter-description {
+    p:first-child {
+      margin-block-start: 0;
+    }
+  }
+}

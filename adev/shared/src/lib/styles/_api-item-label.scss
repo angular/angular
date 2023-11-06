@@ -1,0 +1,87 @@
+@mixin api-item-label() {
+  .adev-api-item-label {
+    --label-theme: var(--symbolic-purple);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    color: var(--label-theme);
+    background: color-mix(in srgb, var(--label-theme) 10%, white);
+    border-radius: 0.25rem;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    text-transform: capitalize;
+
+    &[data-mode='short'] {
+      height: 22px;
+      width: 22px;
+    }
+
+    &[data-mode='full'] {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    @media screen and (prefers-color-scheme: dark) {
+      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
+    }
+
+    .adev-dark-mode & {
+      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
+    }
+
+    .adev-light-mode & {
+      background: color-mix(in srgb, var(--label-theme) 10%, white);
+    }
+
+    &[data-type='undecorated_class'],
+    &[data-type='class'] {
+      --label-theme: var(--symbolic-purple);
+    }
+
+    &[data-type='constant'],
+    &[data-type='const'] {
+      --label-theme: var(--symbolic-gray);
+    }
+
+    &[data-type='decorator'] {
+      --label-theme: var(--symbolic-blue);
+    }
+
+    &[data-type='directive'] {
+      --label-theme: var(--symbolic-pink);
+    }
+
+    &[data-type='element'] {
+      --label-theme: var(--symbolic-orange);
+    }
+
+    &[data-type='enum'] {
+      --label-theme: var(--symbolic-yellow);
+    }
+
+    &[data-type='function'] {
+      --label-theme: var(--symbolic-green);
+    }
+
+    &[data-type='interface'] {
+      --label-theme: var(--symbolic-cyan);
+    }
+
+    &[data-type='pipe'] {
+      --label-theme: var(--symbolic-teal);
+    }
+
+    &[data-type='ng_module'] {
+      --label-theme: var(--symbolic-brown);
+    }
+
+    &[data-type='type_alias'] {
+      --label-theme: var(--symbolic-lime);
+    }
+
+    &[data-type='block'] {
+      --label-theme: var(--vivid-pink);
+    }
+  }
+}

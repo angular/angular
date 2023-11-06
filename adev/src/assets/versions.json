@@ -1,0 +1,18 @@
+{
+  "currentVersion": "stable",
+  "historicalVersionsLinkPattern": "https://v{{version}}.angular.dev",
+  "mainVersions": [
+    {
+      "version": "stable",
+      "url": "https://angular.dev"
+    },
+    {
+      "version": "rc",
+      "url": "https://rc.angular.dev"
+    },
+    {
+      "version": "next",
+      "url": "https://next.angular.dev"
+    }
+  ]
+}

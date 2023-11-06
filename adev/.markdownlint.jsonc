@@ -1,0 +1,42 @@
+{
+  // Default state for all rules
+  "default": true,
+
+  // MD013/line-length - Line length
+  "MD013": {
+    // Number of characters
+    "line_length": 750,
+    // Include code blocks
+    "code_blocks": false,
+    // Include tables
+    "tables": false
+  },
+
+  // MD034/bare-URL-used - Do not lint bare url - we display links in config code that does not match linter styles
+  "MD034": false,
+
+  // MD038 - Spaces inside code span elements - We display inline templates in codeblocks
+  "MD038": false,
+
+  // MD046/code-block-style - Do not lint inline code blocks - we display formatted CLI output in code that does not match linter styles
+  "MD046": false,
+
+  // MD049/emphasis-style - Emphasis style should be consistent
+  "MD049": false,
+
+  // TODO: Enable the following rules as MD improvements:
+  // MD024/no-duplicate-heading/no-duplicate-header - Multiple headings with the same content
+  "MD024": false,
+
+  // MD033/no-inline-html - Inline HTML
+  "MD033": false,
+
+  // MD051/link-fragments - Link fragments should be valid
+  "MD051": false,
+
+  // MD052/reference-links-images - Reference links and images should use a label that is defined
+  "MD052": false,
+
+  // MD037/no-space-in-emphasis - Inline lists (such as in tables) incorrectly trigger this warning.
+  "MD037": false
+}

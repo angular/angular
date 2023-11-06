@@ -1,0 +1,16 @@
+load("//aio/content/examples:examples.bzl", "docs_example")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+
+package(default_visibility = ["//visibility:public"])
+
+docs_example(
+    name = "upgrade-phonecat-2-hybrid",
+    flaky = True,  # TODO: figure out why this is flaky or times out
+    # This example downloads and inlines resources
+    test_exec_properties = ENABLE_NETWORK,
+    test_tags = [
+        "requires-network",
+        # This is currently broken due to usage of ESM2022 which does not work out-of-the-box with system.js.
+        "broken",
+    ],
+)

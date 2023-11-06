@@ -1,0 +1,478 @@
+@use './media-queries' as mq;
+
+@mixin resets() {
+  :root {
+    --fallback-font-stack: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --page-width: 80ch;
+    --layout-padding: 3.12rem; // a common padding value throughout the layout
+    --primary-nav-width: 110px;
+    --secondary-nav-width: 16.25rem;
+    --fixed-content-height: calc(100vh - var(--layout-padding) * 2);
+
+    @include mq.for-tablet-landscape-down {
+      --layout-padding: 2rem;
+    }
+    @include mq.for-phone-only {
+      --layout-padding: 1rem;
+    }
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    // Define the default font for the document
+    font-family: var(--inter-font);
+    font-size: 16px;
+    background-color: var(--page-background);
+    color: var(--primary-contrast);
+    transition: color 0.3s ease, background-color 0.3s ease;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  html,
+  body {
+    // Ensures that these elements extend to the full height of the viewport
+    height: 100vh;
+    min-height: 100vh;
+
+    @supports (height: 100svh) {
+      height: 100svh;
+    }
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  img {
+    width: 100%;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin: 1rem 0;
+
+    &[src$='#small'] {
+      max-width: 250px;
+    }
+
+    &[src$='#medium'] {
+      max-width: 450px;
+    }
+  }
+
+  abbr[title] {
+    text-decoration: none;
+  }
+
+  // Select & Input
+  .adev-form-element {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    background-color: var(--page-background);
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+
+    docs-icon,
+    label {
+      color: var(--quinary-contrast);
+      transition: color 0.3s ease;
+    }
+
+    label {
+      font-size: 0.875rem;
+    }
+
+    select,
+    input {
+      width: 16rem;
+      -webkit-appearance: none;
+      display: flex;
+      flex: 1;
+      font-size: 0.875rem;
+      border: none;
+      outline: none;
+      height: 100%;
+      background-color: var(--page-background);
+      color: var(--tertiary-contrast);
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    select {
+      width: 10rem;
+      background-image: url('../icons/chevron.svg');
+      background-size: 0.7rem;
+      background-repeat: no-repeat;
+      background-position: right center;
+      margin-inline-end: 0.3rem;
+    }
+
+    &:focus-within {
+      border: 1px solid var(--french-violet);
+      docs-icon {
+        color: var(--tertiary-contrast);
+      }
+    }
+  }
+
+  // Progress bar styling
+  .ng-spinner {
+    display: none !important;
+  }
+
+  .ng-progress-bar {
+    .ng-bar {
+      background: var(--red-to-pink-to-purple-horizontal-gradient) !important;
+    }
+  }
+
+  // Material tab styling
+  .mat-mdc-tab-header {
+    --mat-tab-header-disabled-ripple-color: transparent;
+    --mat-tab-header-pagination-icon-color: var(--secondary-contrast);
+    --mat-tab-header-inactive-label-text-color: var(--secondary-contrast);
+    --mat-tab-header-inactive-ripple-color: transparent;
+    --mat-tab-header-inactive-hover-label-text-color: var(--tertiary-contrast);
+    --mat-tab-header-inactive-focus-label-text-color: var(--secondary-contrast);
+    --mat-tab-header-active-label-text-color: var(--primary-contrast);
+    --mat-tab-header-active-ripple-color: transparent;
+    --mdc-tab-indicator-active-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white);
+    --mat-tab-header-active-focus-label-text-color: var(--primary-contrast);
+    --mat-tab-header-active-hover-label-text-color: var(--primary-contrast);
+    --mat-tab-header-active-focus-indicator-color: var(--bright-blue);
+    --mat-tab-header-active-hover-indicator-color: color-mix(
+      in srgb,
+      var(--bright-blue) 40%,
+      white
+    );
+
+    .mdc-tab {
+      --mat-tab-header-label-text-font: Inter, sans-serif;
+      --mat-tab-header-label-text-letter-spacing: -0.00875rem;
+      --mat-tab-header-label-text-size: 0.875rem;
+      --mat-tab-header-label-text-weight: 500;
+    }
+
+    .mdc-tab__text-label {
+      user-select: none;
+      letter-spacing: -0.00875rem;
+    }
+
+    .mdc-tab--active {
+      --mat-tab-header-label-text-weight: 500;
+    }
+  }
+
+  // Material tab styling on Reference page
+  .adev-reference-tabs {
+    .mat-mdc-tab-labels {
+      gap: 20px;
+      border-bottom: 1px solid var(--senary-contrast);
+      transition: border-color 0.3s ease;
+    }
+    .mdc-tab__text-label {
+      letter-spacing: -0.00875rem;
+    }
+
+    .mdc-tab {
+      min-width: min-content !important;
+      padding-inline: 2px !important;
+    }
+  }
+
+  // Tabs on Tutorials page, Tutorials Playground
+  .adev-tutorial-editor,
+  .adev-code-editor-tabs,
+  .adev-editor-tabs {
+    .mat-mdc-tab-header {
+      --mdc-tab-indicator-active-indicator-color: transparent;
+      --mat-tab-header-active-focus-indicator-color: transparent;
+      --mat-tab-header-active-hover-indicator-color: transparent;
+      --mat-tab-header-label-text-font: InterTight, sans-serif;
+      --mat-tab-header-label-text-tracking: -0.00875rem;
+      --mat-tab-header-label-text-size: 0.8125rem;
+
+      .mat-mdc-tab-labels {
+        gap: 0;
+        transition: border-color 0.3s ease;
+        width: 100%;
+      }
+
+      .mdc-tab {
+        padding-inline: 18px !important;
+      }
+
+      .mdc-tab--active {
+        border: 0;
+        border-block-end-width: 2px;
+        border-style: solid;
+        border-image: var(--pink-to-purple-horizontal-gradient) 1;
+
+        &.cdk-keyboard-focused {
+          border-image: var(--blue-to-cyan-vertical-gradient) 1;
+        }
+
+        &:has(.adev-delete-file) {
+          padding-inline-start: 18px !important;
+          padding-inline-end: 0.5px !important;
+        }
+      }
+    }
+  }
+
+  .adev-editor-tabs {
+    .mat-mdc-tab-header {
+      border-block-end: 1px solid var(--senary-contrast);
+    }
+  }
+
+  .adev-code-editor-tabs {
+    .mat-mdc-tab-group {
+      // adjust width for + (add file) button
+      max-width: calc(100% - 40px);
+    }
+  }
+
+  .adev-editor-tabs,
+  .adev-code-editor-tabs {
+    .mat-mdc-tab-header {
+      background-color: var(--octonary-contrast);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .mdc-tab__text-label {
+      i {
+        color: var(--bright-blue);
+        margin-inline-start: 0.5rem;
+        margin-inline-end: 0.25rem;
+        font-size: 1.25rem;
+      }
+      span {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+
+  // Tabs inside Example Viewer Header
+  .docs-example-viewer-actions {
+    .mat-mdc-tab-labels {
+      width: 100%;
+    }
+
+    .mat-mdc-tab-header {
+      --mdc-tab-indicator-active-indicator-color: transparent;
+      --mat-tab-header-active-focus-indicator-color: transparent;
+      --mat-tab-header-active-hover-indicator-color: transparent;
+      --mat-tab-header-active-focus-label-text-color: transparent;
+      --mat-tab-header-active-hover-label-text-color: transparent;
+      --mat-tab-header-active-label-text-color: transparent;
+      --mat-tab-header-label-text-font: InterTight, sans-serif;
+      --mat-tab-header-label-text-letter-spacing: -0.00875rem;
+      --mat-tab-header-label-text-size: 0.8125rem;
+
+      .mat-mdc-tab-labels {
+        gap: 0;
+        border-bottom: 0;
+      }
+
+      .mdc-tab {
+        padding-inline: 15px !important;
+      }
+
+      .mdc-tab--active {
+        border: 0;
+        border-block-end-width: 2px;
+        border-style: solid;
+        border-image: var(--purple-to-blue-horizontal-gradient) 1;
+
+        span {
+          background-image: var(--purple-to-blue-horizontal-gradient);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
+      }
+    }
+  }
+}
+
+// TODO: Find better solution
+// Temporary overrides for mat-tab in API Ref
+.adev-app-main-content {
+  .mat-mdc-tab-body-wrapper,
+  .mat-mdc-tab-body-content,
+  .mat-mdc-tab-body {
+    display: contents;
+  }
+}
+
+.cm-editor,
+.ͼ3 .cm-gutters,
+.cm-scroller {
+  background-color: var(--page-background);
+  transition: background-color 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.ͼ1.cm-focused {
+  outline: none;
+}
+
+.ͼ2u {
+  .cm-line.cm-activeLine,
+  .cm-activeLineGutter {
+    background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+    transition: background-color 0.3s ease;
+  }
+}
+
+.ͼ1 .cm-button {
+  background-image: linear-gradient(var(--octonary-contrast), var(--page-background));
+
+  &:focus {
+    background-image: linear-gradient(var(--senary-contrast), var(--page-background));
+  }
+}
+
+.cm-scroller,
+.xterm-viewport,
+.xterm-screen {
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+    margin: 2px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--senary-contrast);
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--quaternary-contrast);
+  }
+}
+
+// Override terminal styles
+.xterm {
+  height: 100%;
+  width: 100%;
+}
+
+.xterm-viewport {
+  overflow-y: auto !important;
+  height: 100% !important;
+  width: 100% !important;
+  background-color: var(--octonary-contrast) !important;
+  transition: background-color 0.3s ease;
+}
+
+.xterm-screen {
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: visible !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.xterm-rows {
+  height: 100% !important;
+  overflow: visible !important;
+  color: var(--primary-contrast) !important;
+  transition: color 0.3s ease;
+  // It is important to not alter the font-size or the selection would lose in precision
+
+  .xterm-cursor {
+    &.xterm-cursor-outline {
+      outline-color: var(--primary-contrast) !important;
+    }
+    &.xterm-cursor-block {
+      background: var(--primary-contrast) !important;
+    }
+  }
+}
+
+.xterm-selection {
+  top: 10px !important;
+  left: 10px !important;
+  div {
+    background-color: transparent !important;
+  }
+}
+
+.xterm-decoration-top {
+  background-color: var(--quinary-contrast) !important;
+}
+
+.xterm-fg-11 {
+  color: var(--electric-violet) !important;
+}
+
+.xterm-fg-4 {
+  color: var(--bright-blue) !important;
+}
+
+// progress ###
+.xterm-fg-15 {
+  color: var(--secondary-contrast) !important;
+}
+
+.xterm-fg-14 {
+  color: var(--vivid-pink) !important;
+}
+
+// > in terminal
+.xterm-fg-5 {
+  color: var(--electric-violet) !important;
+}
+
+// error text, warning text
+.xterm-fg-9,
+.xterm-fg-3 {
+  color: var(--vivid-pink) !important;
+}
+
+.xterm-fg-10,
+.xterm-fg-2 {
+  color: var(--symbolic-green) !important;
+}
+
+// error bg
+.xterm-bg-1 {
+  background-color: var(--orange-red) !important;
+}
+
+// error text
+.xterm-fg-257 {
+  color: var(--octonary-contrast) !important;
+}
+
+.xterm-fg-8 {
+  color: var(--tertiary-contrast) !important;
+}
+
+[docs-breadcrumb] {
+  height: 2.5625rem;
+}
