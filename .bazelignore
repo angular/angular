@@ -38,3 +38,7 @@ integration/typings_test_ts49/node_modules
 integration/typings_test_ts50/node_modules
 integration/typings_test_ts51/node_modules
 integration/typings_test_ts52/node_modules
+
+
+# Temporarily ignore all of adev
+adev/
