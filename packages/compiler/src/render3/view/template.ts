@@ -1118,7 +1118,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // inside ICUs)
     // - all ICU vars (such as `VAR_SELECT` or `VAR_PLURAL`) are replaced with correct values
     const transformFn = (raw: o.ReadVarExpr) => {
-      const params = {...vars, ...placeholders};
+      // Sort the map entries in the compiled output. This makes it easy to acheive identical output
+      // in the template pipeline compiler.
+      const params = Object.fromEntries(Object.entries({...vars, ...placeholders}).sort());
       const formatted = formatI18nPlaceholderNamesInMap(params, /* useCamelCase */ false);
       return invokeInstruction(null, R3.i18nPostprocess, [raw, mapLiteral(formatted, true)]);
     };
