@@ -2260,6 +2260,69 @@ describe('control flow migration', () => {
 
       expect(content).toContain('<ng-template #myTmpl let-greeting>');
     });
+
+    it('should remove a template thats only used in control flow', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div class="statistics">`,
+        `    <ng-container *ngIf="null !== value; else preload">`,
+        `      <div class="statistics__counter"`,
+        `        *ngIf="!isMoney"`,
+        `      >`,
+        `        {{ value | number }}`,
+        `      </div>`,
+        `      <div class="statistics__counter"`,
+        `        *ngIf="isMoney"`,
+        `      >`,
+        `      {{ value | number }}$`,
+        `      </div>`,
+        `    </ng-container>`,
+        `</div>`,
+        `<ng-template #preload>`,
+        `  <preload-rect`,
+        `    height="2rem"`,
+        `    width="6rem" />`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      const result = [
+        `<div class="statistics">`,
+        `    @if (null !== value) {\n`,
+        `      @if (!isMoney) {`,
+        `<div class="statistics__counter"\n       `,
+        `      >`,
+        `        {{ value | number }}`,
+        `      </div>`,
+        `}`,
+        `      @if (isMoney) {`,
+        `<div class="statistics__counter"\n       `,
+        `      >`,
+        `      {{ value | number }}$`,
+        `      </div>`,
+        `}`,
+        `    \n} @else {\n`,
+        `  <preload-rect`,
+        `    height="2rem"`,
+        `    width="6rem" />\n`,
+        `}`,
+        `</div>\n`,
+      ].join('\n');
+
+      expect(content).toBe(result);
+    });
   });
 
   describe('no migration needed', () => {
