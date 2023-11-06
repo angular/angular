@@ -21,7 +21,6 @@ import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCh
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
-import {RUN_IN_CHECK_NO_CHANGES_ANYWAY} from './change_detection_flags';
 import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
 
 /**
@@ -401,9 +400,8 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   // backwards views, it gives an opportunity for `OnPush` components to be marked `Dirty`
   // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
   // current CheckNoChanges bug to surface when making unrelated changes.
-  shouldRefreshView ||=
-      !!(flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global &&
-         (!isInCheckNoChangesPass || RUN_IN_CHECK_NO_CHANGES_ANYWAY));
+  shouldRefreshView ||= !!(
+      flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && !isInCheckNoChangesPass);
 
   // Always refresh views marked for refresh, regardless of mode.
   shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
