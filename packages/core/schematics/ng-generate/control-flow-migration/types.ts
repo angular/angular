@@ -18,6 +18,11 @@ export const switchcase = '*ngSwitchCase';
 export const nakedcase = 'ngSwitchCase';
 export const switchdefault = '*ngSwitchDefault';
 export const nakeddefault = 'ngSwitchDefault';
+export const commaSeparatedSyntax = new Map([
+  ['(', ')'],
+  ['{', '}'],
+  ['[', ']'],
+]);
 
 const attributesToMigrate = [
   ngif,
