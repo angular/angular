@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser, Node, ParseTreeResult, visitAll} from '@angular/compiler';
+import {HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, boundcase, boundngif, ElementCollector, ElementToMigrate, MigrateError, nakedcase, nakeddefault, nakedngif, ngfor, ngif, ngswitch, Result, switchcase, switchdefault, Template} from './types';
+import {AnalyzedFile, boundcase, boundngif, ElementCollector, ElementToMigrate, MigrateError, nakedcase, nakeddefault, nakedngif, ngfor, ngif, ngswitch, Result, switchcase, switchdefault, Template, commaSeparatedSyntax} from './types';
 
 /**
  * Analyzes a source file to find file that need to be migrated and the text ranges within them.
@@ -320,7 +320,7 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
   const aliases = [];
   const lbString = etm.hasLineBreaks ? lb : '';
   const lbSpaces = etm.hasLineBreaks ? `${lb}  ` : '';
-  const parts = etm.attr.value.split(';');
+  const parts = getNgForParts(etm.attr.value);
 
   const originals = getOriginals(etm, tmpl, offset);
 
@@ -382,6 +382,37 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
   const post = originals.end.length - endBlock.length;
 
   return {tmpl: updatedTmpl, offsets: {pre, post}};
+}
+
+function getNgForParts(expression: string): string[] {
+  const parts: string[] = [];
+  const syntaxStack: string[] = [];
+  let current = '';
+
+  for (let i = 0; i < expression.length; i++) {
+    const char = expression[i];
+
+    // Any semicolon is a delimiter, as well as any comma outside of comma-separated syntax.
+    if (current.length > 0 && (char === ';' || (char === ',' && syntaxStack.length === 0))) {
+      parts.push(current);
+      current = '';
+      continue;
+    }
+
+    if (commaSeparatedSyntax.has(char)) {
+      syntaxStack.push(commaSeparatedSyntax.get(char)!);
+    } else if (syntaxStack.length > 0 && syntaxStack[syntaxStack.length - 1] === char) {
+      syntaxStack.pop();
+    }
+
+    current += char;
+  }
+
+  if (current.length > 0) {
+    parts.push(current);
+  }
+
+  return parts;
 }
 
 function getOriginals(

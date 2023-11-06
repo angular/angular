@@ -963,6 +963,50 @@ describe('control flow migration', () => {
           'template: `<ul>@for (itm of items; track itm; let index = $index) {<li>{{itm.text}}</li>}</ul>`');
     });
 
+    it('should migrate with a comma-separated index alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<ul><li *ngFor="let itm of items, let index = index">{{itm.text}}</li></ul>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (itm of items; track itm; let index = $index) {<li>{{itm.text}}</li>}</ul>`');
+    });
+
+    it('should migrate an index alias after an expression containing commas', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+
+        @Component({
+          imports: [NgFor],
+          template: \`<ul><li *ngFor="let itm of foo({a: 1, b: 2}, [1, 2]), let index = index">{{itm.text}}</li></ul>\`
+        })
+        class Comp {}
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (itm of foo({a: 1, b: 2}, [1, 2]); track itm; let index = $index) {<li>{{itm.text}}</li>}</ul>`');
+    });
+
     it('should migrate with an index alias with no spaces', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -1000,6 +1044,31 @@ describe('control flow migration', () => {
         @Component({
           imports: [NgFor],
           template: \`<ul><li *ngFor="let itm of items; index as myIndex">{{itm.text}}</li></ul>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (itm of items; track itm; let myIndex = $index) {<li>{{itm.text}}</li>}</ul>`');
+    });
+
+    it('should migrate with alias declared with a comma-separated `as` expression', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<ul><li *ngFor="let itm of items, index as myIndex">{{itm.text}}</li></ul>\`
         })
         class Comp {
           items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
