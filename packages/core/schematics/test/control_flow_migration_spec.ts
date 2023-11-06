@@ -988,6 +988,53 @@ describe('control flow migration', () => {
           'template: `<ul>@for (itm of items; track itm; let index = $index) {<li>{{itm.text}}</li>}</ul>`');
     });
 
+    it('should migrate with an old style alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <tr *ngFor="let row of field(); let y = index; trackBy: trackByIndex">`,
+        `    <td`,
+        `      *ngFor="let cell of row; let x = index; trackBy: trackByIndex"`,
+        `    ></td>`,
+        `  </tr>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (row of field(); track trackByIndex(y, row); let y = $index) {`,
+        `  <tr>`,
+        `    @for (cell of row; track trackByIndex(x, cell); let x = $index) {`,
+        `  <td\n     `,
+        `    ></td>`,
+        `}`,
+        `  </tr>`,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate an index alias after an expression containing commas', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
