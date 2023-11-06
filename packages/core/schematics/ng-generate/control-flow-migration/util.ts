@@ -10,7 +10,7 @@ import {HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, boundcase, boundngif, ElementCollector, ElementToMigrate, MigrateError, nakedcase, nakeddefault, nakedngif, ngfor, ngif, ngswitch, Result, switchcase, switchdefault, Template, commaSeparatedSyntax} from './types';
+import {AnalyzedFile, boundcase, boundngif, commaSeparatedSyntax, ElementCollector, ElementToMigrate, MigrateError, nakedcase, nakeddefault, nakedngif, ngfor, ngif, ngswitch, Result, stringPairs, switchcase, switchdefault, Template} from './types';
 
 /**
  * Analyzes a source file to find file that need to be migrated and the text ranges within them.
@@ -386,23 +386,36 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
 
 function getNgForParts(expression: string): string[] {
   const parts: string[] = [];
-  const syntaxStack: string[] = [];
+  const commaSeparatedStack: string[] = [];
+  const stringStack: string[] = [];
   let current = '';
 
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
+    const isInString = stringStack.length === 0;
+    const isInCommaSeparated = commaSeparatedStack.length === 0;
 
-    // Any semicolon is a delimiter, as well as any comma outside of comma-separated syntax.
-    if (current.length > 0 && (char === ';' || (char === ',' && syntaxStack.length === 0))) {
+    // Any semicolon is a delimiter, as well as any comma outside
+    // of comma-separated syntax, as long as they're outside of a string.
+    if (isInString && current.length > 0 &&
+        (char === ';' || (char === ',' && isInCommaSeparated))) {
       parts.push(current);
       current = '';
       continue;
     }
 
+    if (stringPairs.has(char)) {
+      stringStack.push(stringPairs.get(char)!);
+    } else if (stringStack.length > 0 && stringStack[stringStack.length - 1] === char) {
+      stringStack.pop();
+    }
+
     if (commaSeparatedSyntax.has(char)) {
-      syntaxStack.push(commaSeparatedSyntax.get(char)!);
-    } else if (syntaxStack.length > 0 && syntaxStack[syntaxStack.length - 1] === char) {
-      syntaxStack.pop();
+      commaSeparatedStack.push(commaSeparatedSyntax.get(char)!);
+    } else if (
+        commaSeparatedStack.length > 0 &&
+        commaSeparatedStack[commaSeparatedStack.length - 1] === char) {
+      commaSeparatedStack.pop();
     }
 
     current += char;

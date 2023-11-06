@@ -23,6 +23,10 @@ export const commaSeparatedSyntax = new Map([
   ['{', '}'],
   ['[', ']'],
 ]);
+export const stringPairs = new Map([
+  [`"`, `"`],
+  [`'`, `'`],
+]);
 
 const attributesToMigrate = [
   ngif,
