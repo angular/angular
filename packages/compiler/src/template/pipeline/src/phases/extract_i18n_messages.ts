@@ -130,7 +130,7 @@ function createI18nMessage(
  */
 function formatParams(params: Map<string, ir.I18nParamValue[]>): Map<string, o.Expression> {
   const result = new Map<string, o.Expression>();
-  for (const [placeholder, placeholderValues] of [...params].sort()) {
+  for (const [placeholder, placeholderValues] of params) {
     const serializedValues = formatParamValues(placeholderValues);
     if (serializedValues !== null) {
       result.set(placeholder, o.literal(formatParamValues(placeholderValues)));
