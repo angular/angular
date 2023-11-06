@@ -83,6 +83,9 @@ function collectMessage(
     messageOp.params.set(subMessage.messagePlaceholder!, subMessageVar);
   }
 
+  // Sort the params for consistency with TemaplateDefinitionBuilder output.
+  messageOp.params = new Map([...messageOp.params.entries()].sort());
+
   // Check that the message has all of its parameters filled out.
   assertAllParamsResolved(messageOp);
 
@@ -97,6 +100,9 @@ function collectMessage(
   // If nescessary, add a post-processing step and resolve any placeholder params that are
   // set in post-processing.
   if (messageOp.needsPostprocessing) {
+    // Sort the post-processing params for consistency with TemaplateDefinitionBuilder output.
+    messageOp.postprocessingParams = new Map([...messageOp.postprocessingParams.entries()].sort());
+
     const extraTransformFnParams: o.Expression[] = [];
     if (messageOp.postprocessingParams.size > 0) {
       extraTransformFnParams.push(o.literalMap(
