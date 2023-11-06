@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.box {
+  width: 300px;
+  border: 5px solid black;
+  display: block;
+  line-height: 300px;
+  text-align: center;
+  font-size: 50px;
+  color: white;
+}

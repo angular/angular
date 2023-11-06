@@ -1,0 +1,11 @@
+.detail {
+  border: 1px solid rgb(25, 118, 210);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+img {
+  max-width: 100px;
+  display: block;
+  padding: 1rem 0;
+}

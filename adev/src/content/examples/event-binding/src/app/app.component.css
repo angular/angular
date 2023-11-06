@@ -1,0 +1,25 @@
+.group {
+  background-color: #dae8f9;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.parent-div {
+  background-color: #bdd1f7;
+  border: solid 1px rgb(25, 118, 210);
+  padding: 1rem;
+}
+
+.parent-div:hover {
+  background-color: #8fb4f9;
+}
+
+.child-div {
+  margin-top: 1rem;
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.child-div:hover {
+  background-color: #eee;
+}

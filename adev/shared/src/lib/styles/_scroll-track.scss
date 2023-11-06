@@ -1,0 +1,78 @@
+@mixin scroll-track {
+  // used on secondary nav
+  .adev-scroll-hide {
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+    }
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+  }
+
+  // used for main page scroll
+  .adev-scroll-track-transparent-large {
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+      cursor: pointer;
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--quinary-contrast);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--quaternary-contrast);
+    }
+  }
+
+  // used on table & secondary navigation
+  .adev-scroll-track-transparent {
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+      cursor: pointer;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--senary-contrast);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--quaternary-contrast);
+    }
+  }
+
+  // used on docs-code blocks
+  .adev-mini-scroll-track {
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--senary-contrast);
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--quinary-contrast);
+    }
+  }
+}

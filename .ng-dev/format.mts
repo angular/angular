@@ -29,6 +29,8 @@ export const format: FormatConfig = {
       '!packages/core/src/i18n/locale_en.ts',
       '!packages/common/locales/closure-locale.ts',
       '!packages/common/src/i18n/currencies.ts',
+      // Temporarily disable formatting for adev
+      '!adev/**',
     ],
   },
   'buildifier': true,

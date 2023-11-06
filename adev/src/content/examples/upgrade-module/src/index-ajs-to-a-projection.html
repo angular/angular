@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>Angular Upgrade</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+
+    <!-- Polyfills -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/bundles/zone.umd.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.1.js"></script>
+    <script>
+      System.import('app/ajs-to-a-projection/app.module')
+            .then(null, console.error.bind(console));
+    </script>
+  </head>
+
+  <body>
+    <hero-app>
+      <!-- #docregion usecomponent -->
+      <div ng-controller="MainController as mainCtrl">
+        <hero-detail [hero]="mainCtrl.hero">
+          <!-- Everything here will get projected -->
+          <p>{{mainCtrl.hero.description}}</p>
+        </hero-detail>
+      </div>
+      <!-- #enddocregion usecomponent -->
+    </hero-app>
+  </body>
+</html>
