@@ -1,0 +1,12 @@
+{
+  "tests": [
+    {
+      "cmd": "yarn",
+      "args": ["tsc", "--project", "tsconfig.spec.json", "--module", "commonjs"]
+    },
+    {
+      "cmd": "yarn",
+      "args": ["jasmine", "out-tsc/**/*.spec.js"]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "forms_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "//packages/zone.js/lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "forms_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    entry_point = ":main.ts",
+    deps = [":forms_examples"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["//packages/examples:index.html"],
+    additional_root_paths = ["angular/packages/examples"],
+    deps = [":app_bundle"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = ":start-server.js",
+    server = ":devserver",
+    deps = [
+        ":forms_e2e_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

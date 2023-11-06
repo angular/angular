@@ -1,0 +1,5 @@
+# Ignoring documentation style examples
+/src/content/api-examples
+/src/content/examples
+/src/content/tutorials
+node_modules/

@@ -1,0 +1,10 @@
+# Missing Token
+
+There is no injection token for a constructor parameter at compile time. [InjectionTokens](api/core/InjectionToken) are tokens that can be used in a Dependency Injection Provider.
+
+## Debugging the error
+
+Look at the parameter that throws the error, and all uses of the class.
+This error is commonly thrown when a constructor defines parameters with primitive types such as `string`, `number`, `boolean`, and `Object`.
+
+Use the `@Injectable` method or `@Inject` decorator from `@angular/core` to ensure that the type you are injecting is reified \(has a runtime representation\). Make sure to add a provider to this decorator so that you do not throw [NG0201: No Provider Found](errors/NG0201).

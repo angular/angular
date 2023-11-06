@@ -1,0 +1,23 @@
+.hero-profile {
+  border: 1px solid gray;
+  padding: 5px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  border-radius: 10px;
+  background-color: lightgreen;
+  color: black;
+}
+
+.job-ad {
+  border: 1px solid gray;
+  padding: 5px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  border-radius: 10px;
+  background-color: lightblue;
+  color: black;
+}
+
+.ad-banner-example {
+  width: 400px;
+}

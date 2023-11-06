@@ -1,0 +1,12 @@
+<!-- #docregion control-binding -->
+<label for="name">Name: </label>
+<input id="name" type="text" [formControl]="name">
+<!-- #enddocregion control-binding -->
+
+<!-- #docregion display-value -->
+<p>Value: {{ name.value }}</p>
+<!-- #enddocregion display-value -->
+
+<!-- #docregion update-value -->
+<button type="button" (click)="updateName()">Update Name</button>
+<!-- #enddocregion update-value -->
