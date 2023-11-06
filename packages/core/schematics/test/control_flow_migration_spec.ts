@@ -1234,6 +1234,44 @@ describe('control flow migration', () => {
       expect(content).toContain(
           'template: `<ul>@for (item of items; track item) {<li>{{item.text}}</li>}</ul>`');
     });
+
+    it('should migrate an ngFor with quoted semicolon in expression', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+
+        @Component({
+          imports: [NgFor],
+          template: \`<ul><li *ngFor="let itm of '1;2;3'">{{itm}}</li></ul>\`
+        })
+        class Comp {}
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (itm of \'1;2;3\'; track itm) {<li>{{itm}}</li>}</ul>`');
+    });
+
+    it('should migrate an ngFor with quoted semicolon in expression', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+
+        @Component({
+          imports: [NgFor],
+          template: \`<ul><li *ngFor="let itm of '1,2,3'">{{itm}}</li></ul>\`
+        })
+        class Comp {}
+      `);
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+          'template: `<ul>@for (itm of \'1,2,3\'; track itm) {<li>{{itm}}</li>}</ul>`');
+    });
   });
 
   describe('ngSwitch', () => {
