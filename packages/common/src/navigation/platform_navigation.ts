@@ -13,5 +13,24 @@ import {Injectable} from '@angular/core';
  * implementations.
  */
 @Injectable({providedIn: 'platform', useFactory: () => window.navigation})
-export abstract class PlatformNavigation extends Navigation {
+export abstract class PlatformNavigation implements Navigation {
+  abstract entries(): NavigationHistoryEntry[];
+  abstract currentEntry: NavigationHistoryEntry|null;
+  abstract updateCurrentEntry(options: NavigationUpdateCurrentEntryOptions): void;
+  abstract transition: NavigationTransition|null;
+  abstract canGoBack: boolean;
+  abstract canGoForward: boolean;
+  abstract navigate(url: string, options?: NavigationNavigateOptions|undefined): NavigationResult;
+  abstract reload(options?: NavigationReloadOptions|undefined): NavigationResult;
+  abstract traverseTo(key: string, options?: NavigationOptions|undefined): NavigationResult;
+  abstract back(options?: NavigationOptions|undefined): NavigationResult;
+  abstract forward(options?: NavigationOptions|undefined): NavigationResult;
+  abstract onnavigate: ((this: Navigation, ev: NavigateEvent) => any)|null;
+  abstract onnavigatesuccess: ((this: Navigation, ev: Event) => any)|null;
+  abstract onnavigateerror: ((this: Navigation, ev: ErrorEvent) => any)|null;
+  abstract oncurrententrychange:
+      ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|null;
+  abstract addEventListener(type: unknown, listener: unknown, options?: unknown): void;
+  abstract removeEventListener(type: unknown, listener: unknown, options?: unknown): void;
+  abstract dispatchEvent(event: Event): boolean;
 }
