@@ -50,13 +50,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "bare_icu.js",
+              "expected": "bare_icu.template.js",
+              "templatePipelineExpected": "bare_icu.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support interpolation with custom interpolation config",
@@ -70,8 +76,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle icus with html",

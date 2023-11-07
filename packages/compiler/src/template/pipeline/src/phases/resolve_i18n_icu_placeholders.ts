@@ -44,7 +44,7 @@ export function resolveI18nIcuPlaceholders(job: CompilationJob) {
  * Visitor for i18n AST that resolves ICU params into the given map.
  */
 class ResolveIcuPlaceholdersVisitor extends i18n.RecurseVisitor {
-  constructor(readonly params: Map<string, ir.I18nParamValue[]>) {
+  constructor(private readonly params: Map<string, ir.I18nParamValue[]>) {
     super();
   }
 
