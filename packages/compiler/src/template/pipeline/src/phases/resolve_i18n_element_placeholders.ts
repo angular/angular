@@ -122,7 +122,7 @@ function getSubTemplateIndexForTemplateTag(
 /** Add a param value to the given params map. */
 function addParam(
     params: Map<string, ir.I18nParamValue[]>, placeholder: string, value: string|number,
-    subTemplateIndex: number|null, flags = ir.I18nParamValueFlags.None) {
+    subTemplateIndex: number|null, flags: ir.I18nParamValueFlags) {
   const values = params.get(placeholder) ?? [];
   values.push({value, subTemplateIndex, flags});
   params.set(placeholder, values);
