@@ -8,11 +8,13 @@
 import {animate, AnimationBuilder, style, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/animations';
 import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
-import {Component, ViewChild} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Component, NgZone, RendererFactory2, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-
+import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
 
 describe('BrowserAnimationBuilder', () => {
   if (isNode) {
@@ -234,6 +236,49 @@ describe('BrowserAnimationBuilder', () => {
       TestBed.resetTestEnvironment();
       TestBed.initTestEnvironment(
           [BrowserDynamicTestingModule, NoopAnimationsModule], platformBrowserDynamicTesting());
+    });
+  });
+
+  describe('with Animations async', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: RendererFactory2,
+            useFactory: (doc: Document, renderer: DomRendererFactory2, zone: NgZone) => {
+              // Using a empty promise to prevent switching to the delegate to  AnimationRenderer
+              return new AsyncAnimationRendererFactory(
+                  doc, renderer, zone, 'noop', new Promise<any>(() => {}));
+            },
+            deps: [DOCUMENT, DomRendererFactory2, NgZone],
+          },
+        ]
+      });
+    });
+
+    it('should be able to build', () => {
+      @Component({
+        selector: 'ani-cmp',
+        template: '...',
+      })
+      class Cmp {
+        @ViewChild('target') public target: any;
+
+        constructor(public builder: AnimationBuilder) {}
+
+        build() {
+          const definition = this.builder.build([style({'transform': `rotate(0deg)`})]);
+
+          return definition.create(this.target);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.build();
     });
   });
 });
