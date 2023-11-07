@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
+import {Attribute, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
@@ -173,6 +173,11 @@ export function countTemplateUsage(template: string): Map<string, Template> {
   return new Map<string, Template>();
 }
 
+function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
+  const i18n = i18nAttr.value === '' ? 'i18n' : `i18n="${i18nAttr.value}"`;
+  return `<ng-container ${i18n}>${content}</ng-container>`;
+}
+
 export function processNgTemplates(template: string): string {
   // count usage
   const templates = countTemplateUsage(template);
@@ -182,7 +187,12 @@ export function processNgTemplates(template: string): string {
     const placeholder = `${name}|`;
 
     if (template.indexOf(placeholder) > -1) {
-      template = template.replace(placeholder, t.children);
+      if (t.i18n !== null) {
+        const container = wrapIntoI18nContainer(t.i18n, t.children);
+        template = template.replace(placeholder, container);
+      } else {
+        template = template.replace(placeholder, t.children);
+      }
       if (t.count <= 2) {
         template = template.replace(t.contents, '');
       }
@@ -213,12 +223,18 @@ export function getOriginals(
 
 export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
     {start: string, middle: string, end: string} {
+  const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
   if ((etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
       etm.el.attrs.length === 1) {
     // this is the case where we're migrating and there's no need to keep the ng-container
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const middle = tmpl.slice(childStart, childEnd);
+    return {start: '', middle, end: ''};
+  } else if (etm.el.name === 'ng-template' && etm.el.attrs.length === 2 && i18nAttr !== undefined) {
+    const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
+    const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
+    const middle = wrapIntoI18nContainer(i18nAttr, tmpl.slice(childStart, childEnd));
     return {start: '', middle, end: ''};
   }
 
