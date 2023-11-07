@@ -356,7 +356,7 @@ Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.c
 The aliases control in the form group instance is now populated with a single control until more controls are added dynamically.
 </docs-step>
 
-<docs-step title="Acesss the `FormArray` control">
+<docs-step title="Access the `FormArray` control">
 A getter provides access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is straightforward to repeat for additional controls. <br />
 
 Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
