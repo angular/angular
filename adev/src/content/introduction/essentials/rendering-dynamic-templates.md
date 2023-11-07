@@ -58,7 +58,7 @@ In this example, because `formIsInvalid` is true, the rendered HTML would be:
 
 ## Dynamic Attributes
 
-In the event you want to dynamically bind custom HTML attributes (e.g., `aria-`, `data-`, etc.), you might be inclined to wrap the custom attributes with the the same square brackets.
+In the event you want to dynamically bind custom HTML attributes (e.g., `aria-`, `data-`, etc.), you might be inclined to wrap the custom attributes with the same square brackets.
 
 ```ts
 @Component({
@@ -88,7 +88,7 @@ export class AppBanner {
 
 ## Next Step
 
-Now that you have dynamic data and templates in the application, time learn how to enhance templates by conditionally hiding or showing certain elements, looping over elements, and more.
+Now that you have dynamic data and templates in the application, it's time to learn how to enhance templates by conditionally hiding or showing certain elements, looping over elements, and more.
 
 <docs-pill-row>
   <docs-pill title="Conditionals and Loops" href="essentials/conditionals-and-loops" />
