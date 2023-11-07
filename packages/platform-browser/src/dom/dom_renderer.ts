@@ -279,6 +279,10 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
+    if (el == null) {
+      return;
+    }
+
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
         checkNoSyntheticProp(name, 'property');
     el[name] = value;
