@@ -31,7 +31,7 @@ Alright, it's your turn to give this a try — you'll create the `ReversePipe`:
 
 <docs-workflow>
 
-<docs-step title="Create the `ReversePipe">
+<docs-step title="Create the `ReversePipe`">
 
 In `reverse.pipe.ts` add the `@Pipe` decorator to the `ReversePipe` class and provide the following configuration:
 
