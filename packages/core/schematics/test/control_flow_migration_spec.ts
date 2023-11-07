@@ -1767,6 +1767,47 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if and switch on the same container', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgFor, NgIf],
+          templateUrl: './comp.html'
+        })
+        class Comp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `  <ng-container *ngIf="thing" [ngSwitch]="value.provider">`,
+        `    <cmp1 *ngSwitchCase="'value1'" />`,
+        `    <cmp2 *ngSwitchCase="'value2'" />`,
+        `  </ng-container>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `<div>`,
+        `  @if (thing) {\n`,
+        `@switch (value.provider) {`,
+        `    @case ('value1') {`,
+        `  <cmp1 />`,
+        `}`,
+        `    @case ('value2') {`,
+        `  <cmp2 />`,
+        `}`,
+        `  }\n`,
+        `}`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate a switch with for inside case', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -2476,6 +2517,48 @@ describe('control flow migration', () => {
       ].join('\n');
 
       expect(content).toBe(result);
+    });
+
+    it('should move templates after they were migrated to new syntax', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `  <ng-container *ngIf="cond; else testTpl">`,
+        `    bla bla`,
+        `  </ng-container>`,
+        `</div>`,
+        `<ng-template #testTpl>`,
+        `  <div class="test" *ngFor="let item of items"></div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @if (cond) {\n`,
+        `    bla bla`,
+        `  `,
+        `} @else {\n`,
+        `  @for (item of items; track item) {`,
+        `  <div class="test"></div>`,
+        `}\n`,
+        `}`,
+        `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
     });
   });
 
