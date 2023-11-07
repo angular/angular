@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../../i18n/i18n_ast';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
@@ -46,15 +47,36 @@ export function createI18nIcuExpressions(job: CompilationJob) {
           }
           const i18nContext = i18nContexts.get(icuOp.context)!;
           const i18nBlock = i18nBlocks.get(i18nContext.i18nBlock)!;
-          ir.OpList.replace<ir.UpdateOp>(
-              op,
-              ir.createI18nExpressionOp(
-                  i18nContext.xref, i18nBlock.xref, i18nBlock.handle,
-                  new ir.LexicalReadExpr(icuOp.icu.expression), icuOp.icu.expressionPlaceholder,
-                  // ICU-based i18n Expressions are resolved during post-processing.
-                  ir.I18nParamResolutionTime.Postproccessing, null!));
+          const expressionOp = ir.createI18nExpressionOp(
+              i18nContext.xref, i18nBlock.xref, i18nBlock.handle,
+              new ir.LexicalReadExpr(icuOp.icu.expression), icuOp.icu.expressionPlaceholder,
+              // ICU-based i18n Expressions are resolved during post-processing.
+              ir.I18nParamResolutionTime.Postproccessing, null!);
+          ir.OpList.replace<ir.UpdateOp>(op, expressionOp);
+          icuOp.icu.visit(new AddIcuExpressionVisitor(
+              i18nContext.xref, i18nBlock.xref, i18nBlock.handle, expressionOp));
           break;
       }
     }
+  }
+}
+
+/**
+ * Visitor for i18n AST that adds i18nExpression ops for expressions nested in an ICU.
+ */
+class AddIcuExpressionVisitor extends i18n.RecurseVisitor {
+  constructor(
+      private contextId: ir.XrefId, private i18nBlockId: ir.XrefId,
+      private i18nBlockHandle: ir.SlotHandle, private insertAfterOp: ir.UpdateOp) {
+    super();
+  }
+
+  override visitPlaceholder(placeholder: i18n.Placeholder) {
+    const expressionOp = ir.createI18nExpressionOp(
+        this.contextId, this.i18nBlockId, this.i18nBlockHandle,
+        new ir.LexicalReadExpr(placeholder.value), placeholder.name,
+        ir.I18nParamResolutionTime.Postproccessing, null!);
+    ir.OpList.insertAfter(expressionOp, this.insertAfterOp);
+    super.visitPlaceholder(placeholder);
   }
 }
