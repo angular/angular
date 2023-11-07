@@ -1,3 +1,25 @@
+<a name="17.0.0-rc.3"></a>
+# 17.0.0-rc.3 (2023-11-06)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [83067b3ef2](https://github.com/angular/angular/commit/83067b3ef257dbc7b1c20d50645615d19023ba51) | fix | ng-template directive invoke twice at the root of control flow ([#52515](https://github.com/angular/angular/pull/52515)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [80e7a0f8fa](https://github.com/angular/angular/commit/80e7a0f8fa13ad72a32b07cd1722efab3722fa49) | fix | guard usages of `performance.mark` ([#52505](https://github.com/angular/angular/pull/52505)) |
+| [a2ba5482c3](https://github.com/angular/angular/commit/a2ba5482c3032df808cb684444f76e2825a4fd36) | fix | use TNode instead of LView for mapping injector providers ([#52436](https://github.com/angular/angular/pull/52436)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09e905ad67](https://github.com/angular/angular/commit/09e905ad672294d36f36eb2728b3483ab2e729fc) | fix | account for separator characters inside strings ([#52525](https://github.com/angular/angular/pull/52525)) |
+| [9c2be715a3](https://github.com/angular/angular/commit/9c2be715a3f6ea6b1d0184f5d79f5a3dfef4b576) | fix | Fixes a bug in the ngFor pre-v5 alias translation ([#52531](https://github.com/angular/angular/pull/52531)) |
+| [57404d4723](https://github.com/angular/angular/commit/57404d4723d3634f2b5dfdc9af1af50d8f61da70) | fix | handle comma-separated syntax in ngFor ([#52525](https://github.com/angular/angular/pull/52525)) |
+| [6988a0070e](https://github.com/angular/angular/commit/6988a0070e9849b58738bba82d6f9eb9e3b27330) | fix | handle ngIf else condition with no whitespaces ([#52504](https://github.com/angular/angular/pull/52504)) |
+| [c267f54bc3](https://github.com/angular/angular/commit/c267f54bc36e1c92f526071e2d78455daf8a588c) | fix | Update regex to better match ng-templates ([#52529](https://github.com/angular/angular/pull/52529)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0-rc.2"></a>
 # 17.0.0-rc.2 (2023-11-02)
 ## Deprecations
