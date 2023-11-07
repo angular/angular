@@ -20,34 +20,13 @@ Angular's continuous integration process runs unit tests of the framework on all
 
 ## Polyfills
 
-Angular is built on the latest standards of the web platform.
-Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
-You compensate by loading polyfill scripts \("polyfills"\) for the browsers that you must support.
-See instructions on how to include polyfills into your project below.
-
-<div class="alert is-important">
-
-The suggested polyfills are the ones that run full Angular applications.
-You might need additional polyfills to support features not covered by this list.
-
-</div>
-
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-Polyfills cannot magically transform an old, slow browser into a modern, fast one.
-
-</div>
-
-## Enabling polyfills with CLI projects
-
 The [Angular CLI](cli) provides support for polyfills.
-If you are not using the CLI to create your projects, see [Polyfill instructions for non-CLI users](#non-cli).
+When a new project is created, the CLI also creates an `src/polyfills.ts` file.
+If your application requires any polyfills, you can add them to the `src/polyfills.ts` file.
 
-The `polyfills` options of the [browser](cli/build) and [test](cli/test) builder can be a full path for a file \(Example: `src/polyfills.ts`\) or,
-relative to the current workspace or module specifier \(Example: `zone.js`\).
+If you are not using the CLI to create your projects, see [Polyfills for non-CLI users](#non-cli) section.
 
-If you create a TypeScript file, make sure to include it in the `files` property of your `tsconfig` file.
+If you create a TypeScript file for a custom polyfill, make sure to include it in the `files` property of your `tsconfig` file.
 
 <code-example language="jsonc" syntax="jsonc">
 
