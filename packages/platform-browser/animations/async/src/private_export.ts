@@ -6,10 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @module
- * @description
- * Entry point for all animation APIs of the animation browser package.
- */
-export {provideAnimationsAsync} from './providers';
-export * from './private_export';
+export {AsyncAnimationRendererFactory as ɵAsyncAnimationRendererFactory} from './async_animation_renderer';
