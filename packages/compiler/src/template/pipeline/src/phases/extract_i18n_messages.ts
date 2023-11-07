@@ -156,6 +156,11 @@ function formatParamValues(values: ir.I18nParamValue[]): string|null {
  * Formats a single `I18nParamValue` into a string
  */
 function formatValue(value: ir.I18nParamValue): string {
+  // If there are no special flags, just return the raw value.
+  if (value.flags === ir.I18nParamValueFlags.None) {
+    return `${value.value}`;
+  }
+
   let tagMarker = '';
   let closeMarker = '';
   if (value.flags & ir.I18nParamValueFlags.ElementTag) {
