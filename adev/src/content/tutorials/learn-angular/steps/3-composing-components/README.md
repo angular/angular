@@ -13,7 +13,7 @@ In this example, there are two components `UserComponent` and `AppComponent`.
 <docs-workflow>
 
 <docs-step title="Add a reference to `UserComponent`">
-Update the `AppComponent` template to include a reference to the `UserComponent` which uses the selector `app-user`. Be sure to add `AppComponent` to the imports array of `AppComponent`, this makes it available for use in the `AppComponent` template.
+Update the `AppComponent` template to include a reference to the `UserComponent` which uses the selector `app-user`. Be sure to add `UserComponent` to the imports array of `AppComponent`, this makes it available for use in the `AppComponent` template.
 
 ```ts
 template: `<app-user>`,
