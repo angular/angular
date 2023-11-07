@@ -80,9 +80,11 @@ export class Template {
   count: number = 0;
   contents: string = '';
   children: string = '';
+  i18n: Attribute|null = null;
 
-  constructor(el: Element) {
+  constructor(el: Element, i18n: Attribute|null) {
     this.el = el;
+    this.i18n = i18n;
   }
 
   generateContents(tmpl: string) {
@@ -155,11 +157,19 @@ export class TemplateCollector extends RecursiveVisitor {
 
   override visitElement(el: Element): void {
     if (el.name === ngtemplate) {
+      let i18n = null;
+      let templateAttr = null;
       for (const attr of el.attrs) {
-        if (attr.name.startsWith('#')) {
-          this.elements.push(new ElementToMigrate(el, attr));
-          this.templates.set(attr.name, new Template(el));
+        if (attr.name === 'i18n') {
+          i18n = attr;
         }
+        if (attr.name.startsWith('#')) {
+          templateAttr = attr;
+        }
+      }
+      if (templateAttr !== null) {
+        this.elements.push(new ElementToMigrate(el, templateAttr));
+        this.templates.set(templateAttr.name, new Template(el, i18n));
       }
     }
     super.visitElement(el, null);

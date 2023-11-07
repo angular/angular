@@ -357,6 +357,130 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if case with an ng-template with i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template *ngIf="show" i18n="@@something"><span>Content here</span></ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate an if case with an ng-template with empty i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template *ngIf="show" i18n><span>Content here</span></ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n><span>Content here</span></ng-container>`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate an if case with an ng-container with i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-container *ngIf="show" i18n="@@something"><span>Content here</span></ng-container>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate an if case with an ng-container with empty i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-container *ngIf="show" i18n><span>Content here</span></ng-container>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n><span>Content here</span></ng-container>`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+    });
+
     it('should migrate an if else case', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -2554,6 +2678,50 @@ describe('control flow migration', () => {
         `  @for (item of items; track item) {`,
         `  <div class="test"></div>`,
         `}\n`,
+        `}`,
+        `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should preserve i18n attribute on ng-templates in an if/else', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `  <ng-container *ngIf="cond; else testTpl">`,
+        `    bla bla`,
+        `  </ng-container>`,
+        `</div>`,
+        `<ng-template #testTpl i18n="@@test_key">`,
+        `  <div class="test" *ngFor="let item of items"></div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @if (cond) {\n`,
+        `    bla bla`,
+        `  `,
+        `} @else {`,
+        `<ng-container i18n="@@test_key">`,
+        `  @for (item of items; track item) {`,
+        `  <div class="test"></div>`,
+        `}`,
+        `</ng-container>`,
         `}`,
         `</div>\n`,
       ].join('\n');
