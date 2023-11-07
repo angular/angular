@@ -58,7 +58,7 @@ In this example, because `formIsInvalid` is true, the rendered HTML would be:
 
 ## Dynamic Attributes
 
-In the event you want to dynamically bind custom HTML attributes (e.g., `aria-`, `data-`, etc.), you might be inclined to wrap the custom attributes with the the same square brackets.
+In the event you want to dynamically bind custom HTML attributes (e.g., `aria-`, `data-`, etc.), you might be inclined to wrap the custom attributes with the same square brackets.
 
 ```ts
 @Component({
