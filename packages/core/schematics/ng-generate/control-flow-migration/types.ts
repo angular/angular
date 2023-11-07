@@ -8,38 +8,7 @@
 
 import {Attribute, Element, RecursiveVisitor} from '@angular/compiler';
 
-export const ngif = '*ngIf';
-export const boundngif = '[ngIf]';
-export const nakedngif = 'ngIf';
-export const ngfor = '*ngFor';
-export const ngswitch = '[ngSwitch]';
-export const boundcase = '[ngSwitchCase]';
-export const switchcase = '*ngSwitchCase';
-export const nakedcase = 'ngSwitchCase';
-export const switchdefault = '*ngSwitchDefault';
-export const nakeddefault = 'ngSwitchDefault';
-export const commaSeparatedSyntax = new Map([
-  ['(', ')'],
-  ['{', '}'],
-  ['[', ']'],
-]);
-export const stringPairs = new Map([
-  [`"`, `"`],
-  [`'`, `'`],
-]);
-
-const attributesToMigrate = [
-  ngif,
-  nakedngif,
-  boundngif,
-  ngfor,
-  ngswitch,
-  boundcase,
-  switchcase,
-  nakedcase,
-  switchdefault,
-  nakeddefault,
-];
+export const ngtemplate = 'ng-template';
 
 /**
  * Represents a range of text within a file. Omitting the end
@@ -111,7 +80,6 @@ export class Template {
   count: number = 0;
   contents: string = '';
   children: string = '';
-  used: boolean = false;
 
   constructor(el: Element) {
     this.el = el;
@@ -160,20 +128,33 @@ export class AnalyzedFile {
   }
 }
 
-/** Finds all elements with control flow structural directives. */
+/** Finds all elements with ngif structural directives. */
 export class ElementCollector extends RecursiveVisitor {
   readonly elements: ElementToMigrate[] = [];
-  readonly templates: Map<string, Template> = new Map();
+
+  constructor(private _attributes: string[] = []) {
+    super();
+  }
 
   override visitElement(el: Element): void {
     if (el.attrs.length > 0) {
       for (const attr of el.attrs) {
-        if (attributesToMigrate.includes(attr.name)) {
+        if (this._attributes.includes(attr.name)) {
           this.elements.push(new ElementToMigrate(el, attr));
         }
       }
     }
-    if (el.name === 'ng-template') {
+    super.visitElement(el, null);
+  }
+}
+
+/** Finds all elements with ngif structural directives. */
+export class TemplateCollector extends RecursiveVisitor {
+  readonly elements: ElementToMigrate[] = [];
+  readonly templates: Map<string, Template> = new Map();
+
+  override visitElement(el: Element): void {
+    if (el.name === ngtemplate) {
       for (const attr of el.attrs) {
         if (attr.name.startsWith('#')) {
           this.elements.push(new ElementToMigrate(el, attr));
