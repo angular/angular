@@ -43,8 +43,11 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
             i18nContext.params :
             i18nContext.postprocessingParams;
         const values = params.get(op.i18nPlaceholder) || [];
-        values.push(
-            {value: index, subTemplateIndex: subTemplateIndex, flags: ir.I18nParamValueFlags.None});
+        values.push({
+          value: index,
+          subTemplateIndex: subTemplateIndex,
+          flags: ir.I18nParamValueFlags.ExpressionIndex
+        });
         params.set(op.i18nPlaceholder, values);
 
         expressionIndices.set(op.context, index + 1);
