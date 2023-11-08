@@ -417,6 +417,37 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before one1two1one2two2 After Slot: ');
     });
 
+    it('should project an @for with an ng-container root node', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <ng-container foo>
+            <span>{{item}}</span>
+            <span>|</span>
+          </ng-container>
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1|2|3|');
+    });
+
     // Right now the template compiler doesn't collect comment nodes.
     // This test is to ensure that we don't regress if it happens in the future.
     it('should project an @for with single root node and comments into the root node slot', () => {
