@@ -72,9 +72,9 @@ common use cases include:
 - Measuring element geometry, such as with `getBoundingClientRect`
 - Reading an element's text content
 - Setting up native observers such
-  as `[MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)`,
-  `[ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)`, or
-  `[IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)`.
+  as [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver),
+  [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver), or
+  [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 
 Avoid inserting, removing, and modifying DOM elements. In particular, **never directly set an
 element's `innerHTML` property**, which can make your application vulnerable
