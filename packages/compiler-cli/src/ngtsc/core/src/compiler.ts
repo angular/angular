@@ -258,6 +258,7 @@ export class NgCompiler {
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
+  private readonly enableBlockSyntax: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -322,6 +323,7 @@ export class NgCompiler {
   ) {
     this.enableTemplateTypeChecker =
         enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
+    this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -1107,7 +1109,7 @@ export class NgCompiler {
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           supportTestBed, compilationMode, deferredSymbolsTracker,
-          !!this.options.forbidOrphanComponents),
+          !!this.options.forbidOrphanComponents, this.enableBlockSyntax),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).

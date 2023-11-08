@@ -66,6 +66,14 @@ export interface InternalOptions {
    * @internal
    */
   supportJitMode?: boolean;
+
+  /**
+   * Whether block syntax is enabled in the compiler. Defaults to true.
+   * Used in the language service to disable the new syntax for projects that aren't on v17.
+   *
+   * @internal
+   */
+  _enableBlockSyntax?: boolean;
 }
 
 /**

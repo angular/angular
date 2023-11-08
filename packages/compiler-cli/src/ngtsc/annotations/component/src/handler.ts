@@ -83,11 +83,13 @@ export class ComponentDecoratorHandler implements
       private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
       private readonly deferredSymbolTracker: DeferredSymbolTracker,
-      private readonly forbidOrphanRendering: boolean) {
+      private readonly forbidOrphanRendering: boolean,
+      private readonly enableBlockSyntax: boolean) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       usePoisonedData: this.usePoisonedData,
+      enableBlockSyntax: this.enableBlockSyntax,
     };
   }
 
@@ -106,6 +108,7 @@ export class ComponentDecoratorHandler implements
     enableI18nLegacyMessageIdFormat: boolean,
     i18nNormalizeLineEndingsInICUs: boolean,
     usePoisonedData: boolean,
+    enableBlockSyntax: boolean,
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -360,6 +363,7 @@ export class ComponentDecoratorHandler implements
             enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
             i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
             usePoisonedData: this.usePoisonedData,
+            enableBlockSyntax: this.enableBlockSyntax,
           },
           this.compilationMode);
     }
