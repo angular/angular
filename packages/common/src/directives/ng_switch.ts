@@ -167,7 +167,7 @@ export class NgSwitch {
   }
 }
 
-/**
+**
  * @ngModule CommonModule
  *
  * @description
@@ -199,7 +199,7 @@ export class NgSwitch {
  * @see {@link NgSwitch}
  * @see {@link NgSwitchDefault}
  *
- */
+ *
 @Directive({
   selector: '[ngSwitchCase]',
   standalone: true,
