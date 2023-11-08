@@ -347,17 +347,16 @@ Live long and prosper 🖖🏻
   
   Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
 ### common
-- 
 - the NgSwitch directive now defaults to the === equality operator,
-  migrating from the previously used ==. NgSwitch expressions and / or
+  migrating from the previously used == operator. NgSwitch expressions and / or
   individual condition values need adjusting to this stricter equality
-  check. The added warning message should help pinpointing NgSwitch
-  usages where adjustements are needed.
+  check. The added warning message should help pin-pointing NgSwitch
+  usages where adjustments are needed.
 ### core
-- Angular now required `zone.js` version `~0.14.0`
+- Angular now requires `zone.js` version `~0.14.0`
 - Versions of TypeScript older than 5.2 are no longer supported.
 - The  `mutate` method was removed from the `WritableSignal` interface and completely
-  dropped from the public API surface. As an alternative please use the update method and
+  dropped from the public API surface. As an alternative, please use the `update` method and
   make immutable changes to the object.
   
   Example before:
@@ -455,7 +454,7 @@ Live long and prosper 🖖🏻
 - Swapping out the context object for `EmbeddedViewRef`
   is no longer supported. Support for this was introduced with v12.0.0, but
   this pattern is rarely used. There is no replacement, but you can use
-  simple assignments in most cases, or `Object.assign , or alternatively
+  simple assignments in most cases, or `Object.assign` , or alternatively
   still replace the full object by using a `Proxy` (see `NgTemplateOutlet`
   as an example).
   
