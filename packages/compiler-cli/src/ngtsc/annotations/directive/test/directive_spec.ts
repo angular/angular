@@ -110,6 +110,8 @@ runInEachFileSystem(() => {
         selector: '[dir]',
         isStructural: false,
         animationTriggerNames: null,
+        ngContentSelectors: null,
+        preserveWhitespaces: false,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), [dirMeta]);
 
