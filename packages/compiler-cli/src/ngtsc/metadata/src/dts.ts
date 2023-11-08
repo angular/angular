@@ -96,6 +96,9 @@ export class DtsMetadataReader implements MetadataReader {
           param.typeValueReference.importedName === 'TemplateRef';
     });
 
+    const ngContentSelectors =
+        def.type.typeArguments.length > 6 ? readStringArrayType(def.type.typeArguments[6]) : null;
+
     const isStandalone =
         def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
@@ -126,6 +129,7 @@ export class DtsMetadataReader implements MetadataReader {
       isPoisoned: false,
       isStructural,
       animationTriggerNames: null,
+      ngContentSelectors,
       isStandalone,
       isSignal,
       // Imports are tracked in metadata only for template type-checking purposes,
@@ -136,6 +140,9 @@ export class DtsMetadataReader implements MetadataReader {
       decorator: null,
       // Assume that standalone components from .d.ts files may export providers.
       assumedToExportProviders: isComponent && isStandalone,
+      // `preserveWhitespaces` isn't encoded in the .d.ts and is only
+      // used to increase the accuracy of a diagnostic.
+      preserveWhitespaces: false,
     };
   }
 

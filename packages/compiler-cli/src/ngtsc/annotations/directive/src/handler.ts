@@ -169,7 +169,9 @@ export class DirectiveDecoratorHandler implements
       isSignal: analysis.meta.isSignal,
       imports: null,
       schemas: null,
+      ngContentSelectors: null,
       decorator: analysis.decorator,
+      preserveWhitespaces: false,
       // Directives analyzed within our own compilation are not _assumed_ to export providers.
       // Instead, we statically analyze their imports to make a direct determination.
       assumedToExportProviders: false,
