@@ -492,7 +492,7 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
     const xref = unit.job.allocateXrefId();
     const icuNode = icu.i18n.nodes[0];
     unit.create.push(ir.createIcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
-    const {expressionPlaceholder} = icuNode;
+    const expressionPlaceholder = icuNode.expressionPlaceholder?.trimEnd();
     if (expressionPlaceholder === undefined || icu.vars[expressionPlaceholder] === undefined) {
       throw Error('ICU should have a text binding');
     }

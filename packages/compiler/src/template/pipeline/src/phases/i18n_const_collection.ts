@@ -204,12 +204,14 @@ function i18nGenerateClosureVar(
  * Asserts that all of the message's placeholders have values.
  */
 function assertAllParamsResolved(op: ir.I18nMessageOp): asserts op is ir.I18nMessageOp {
-  for (const placeholder in op.message.placeholders) {
+  for (let placeholder in op.message.placeholders) {
+    placeholder = placeholder.trimEnd();
     if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
     }
   }
-  for (const placeholder in op.message.placeholderToMessage) {
+  for (let placeholder in op.message.placeholderToMessage) {
+    placeholder = placeholder.trimEnd();
     if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n message placeholder: ${placeholder}`);
     }
