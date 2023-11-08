@@ -8,8 +8,10 @@
 
 import {ConstantPool} from '../../constant_pool';
 import {BindingType, Interpolation} from '../../expression_parser/ast';
+import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
+import {CssSelector} from '../../selector';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
@@ -278,6 +280,31 @@ export class DefinitionMap<T = any> {
 }
 
 /**
+ * Creates a `CssSelector` from an AST node.
+ */
+export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelector {
+  const elementName = node instanceof t.Element ? node.name : 'ng-template';
+  const attributes = getAttrsForDirectiveMatching(node);
+  const cssSelector = new CssSelector();
+  const elementNameNoNs = splitNsName(elementName)[1];
+
+  cssSelector.setElement(elementNameNoNs);
+
+  Object.getOwnPropertyNames(attributes).forEach((name) => {
+    const nameNoNs = splitNsName(name)[1];
+    const value = attributes[name];
+
+    cssSelector.addAttribute(nameNoNs, value);
+    if (name.toLowerCase() === 'class') {
+      const classes = value.trim().split(/\s+/);
+      classes.forEach(className => cssSelector.addClassName(className));
+    }
+  });
+
+  return cssSelector;
+}
+
+/**
  * Extract a map of properties to values for a given element or template node, which can be used
  * by the directive matching machinery.
  *
@@ -286,8 +313,7 @@ export class DefinitionMap<T = any> {
  * object maps a property name to its (static) value. For any bindings, this map simply maps the
  * property name to an empty string.
  */
-export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
-                                             t.Template): {[name: string]: string} {
+function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
 

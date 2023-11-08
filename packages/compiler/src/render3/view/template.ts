@@ -2582,30 +2582,6 @@ class TrackByBindingScope extends BindingScope {
 }
 
 /**
- * Creates a `CssSelector` given a tag name and a map of attributes
- */
-export function createCssSelector(
-    elementName: string, attributes: {[name: string]: string}): CssSelector {
-  const cssSelector = new CssSelector();
-  const elementNameNoNs = splitNsName(elementName)[1];
-
-  cssSelector.setElement(elementNameNoNs);
-
-  Object.getOwnPropertyNames(attributes).forEach((name) => {
-    const nameNoNs = splitNsName(name)[1];
-    const value = attributes[name];
-
-    cssSelector.addAttribute(nameNoNs, value);
-    if (name.toLowerCase() === 'class') {
-      const classes = value.trim().split(/\s+/);
-      classes.forEach(className => cssSelector.addClassName(className));
-    }
-  });
-
-  return cssSelector;
-}
-
-/**
  * Creates an array of expressions out of an `ngProjectAs` attributes
  * which can be added to the instruction parameters.
  */
