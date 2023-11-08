@@ -17,7 +17,9 @@ export function extractI18nText(job: CompilationJob): void {
     // Remove all text nodes within i18n blocks, their content is already captured in the i18n
     // message.
     let currentI18n: ir.I18nStartOp|null = null;
+    let currentIcu: ir.IcuStartOp|null = null;
     const textNodeI18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
+    const textNodeIcus = new Map<ir.XrefId, ir.IcuStartOp|null>();
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
@@ -29,9 +31,19 @@ export function extractI18nText(job: CompilationJob): void {
         case ir.OpKind.I18nEnd:
           currentI18n = null;
           break;
+        case ir.OpKind.IcuStart:
+          if (op.context === null) {
+            throw Error('Icu op should have its context set.');
+          }
+          currentIcu = op;
+          break;
+        case ir.OpKind.IcuEnd:
+          currentIcu = null;
+          break;
         case ir.OpKind.Text:
           if (currentI18n !== null) {
             textNodeI18nBlocks.set(op.xref, currentI18n);
+            textNodeIcus.set(op.xref, currentIcu);
             ir.OpList.remove<ir.CreateOp>(op);
           }
           break;
@@ -48,15 +60,18 @@ export function extractI18nText(job: CompilationJob): void {
           }
 
           const i18nOp = textNodeI18nBlocks.get(op.target)!;
+          const icuOp = textNodeIcus.get(op.target);
+          const contextId = icuOp ? icuOp.context : i18nOp.context;
+          const resolutionTime = icuOp ? ir.I18nParamResolutionTime.Postproccessing :
+                                         ir.I18nParamResolutionTime.Creation;
           const ops: ir.UpdateOp[] = [];
           for (let i = 0; i < op.interpolation.expressions.length; i++) {
             const expr = op.interpolation.expressions[i];
-            const placeholder = op.i18nPlaceholders[i];
             // For now, this i18nExpression depends on the slot context of the enclosing i18n block.
             // Later, we will modify this, and advance to a different point.
             ops.push(ir.createI18nExpressionOp(
-                i18nOp.context!, i18nOp.xref, i18nOp.handle, expr, placeholder.name,
-                ir.I18nParamResolutionTime.Creation, expr.sourceSpan ?? op.sourceSpan));
+                contextId!, i18nOp.xref, i18nOp.handle, expr, op.i18nPlaceholders[i],
+                resolutionTime, expr.sourceSpan ?? op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;

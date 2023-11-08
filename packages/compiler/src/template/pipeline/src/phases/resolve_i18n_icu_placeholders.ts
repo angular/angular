@@ -28,12 +28,14 @@ export function resolveI18nIcuPlaceholders(job: CompilationJob) {
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
-        case ir.OpKind.Icu:
+        case ir.OpKind.IcuStart:
           if (op.context === null) {
             throw Error('Icu should have its i18n context set.');
           }
           const i18nContext = contextOps.get(op.context)!;
-          op.icu.visit(new ResolveIcuPlaceholdersVisitor(i18nContext.postprocessingParams));
+          for (const node of op.message.nodes) {
+            node.visit(new ResolveIcuPlaceholdersVisitor(i18nContext.postprocessingParams));
+          }
           break;
       }
     }
