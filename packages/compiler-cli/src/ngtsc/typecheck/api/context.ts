@@ -37,13 +37,15 @@ export interface TypeCheckContext {
    * @param file the `ParseSourceFile` associated with the template.
    * @param parseErrors the `ParseError`'s associated with the template.
    * @param isStandalone a boolean indicating whether the component is standalone.
+   * @param preserveWhitespaces a boolean indicating whether the component's template preserves
+   * whitespaces.
    */
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean): void;
+      parseErrors: ParseError[]|null, isStandalone: boolean, preserveWhitespaces: boolean): void;
 }
 
 /**
