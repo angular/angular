@@ -317,6 +317,36 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before onetwo After Slot: ');
     });
 
+    it('should project an @if with an ng-container root node', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @if (true) {
+          <ng-container foo>
+            <span>foo</span>
+            <span>bar</span>
+          </ng-container>
+        } After</test>
+      `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foobar');
+    });
+
     // Right now the template compiler doesn't collect comment nodes.
     // This test is to ensure that we don't regress if it happens in the future.
     it('should project an @if with a single root node and comments into the root node slot', () => {
