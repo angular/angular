@@ -103,7 +103,7 @@ describe('effects', () => {
     expect(cleanupCount).toBe(2);
   });
 
-  it('should run effects created in ngAfterViewInit', async () => {
+  it('should run effects created in ngAfterViewInit', () => {
     let didRun = false;
 
     @Component({
@@ -273,7 +273,7 @@ describe('effects', () => {
     expect(fixture.nativeElement.textContent).toBe('1');
   });
 
-  it('should not execute query setters in the reactive context', async () => {
+  it('should not execute query setters in the reactive context', () => {
     const state = signal('initial');
 
     @Component({
@@ -325,7 +325,7 @@ describe('effects', () => {
     expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
   });
 
-  it('should allow toObservable subscription in template (with async pipe)', async () => {
+  it('should allow toObservable subscription in template (with async pipe)', () => {
     @Component({
       selector: 'test-cmp',
       standalone: true,
@@ -338,7 +338,6 @@ describe('effects', () => {
 
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges(true)).not.toThrow();
-    fixture.detectChanges();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('0');
