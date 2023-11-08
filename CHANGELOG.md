@@ -1,3 +1,42 @@
+<a name="17.0.1"></a>
+# 17.0.1 (2023-11-08)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c6f3f8ec0](https://github.com/angular/angular/commit/5c6f3f8ec0f1dd9b5505f3c94e654a675e75f147) | fix | Don't override the backend when using the InMemoryWebAPI ([#52425](https://github.com/angular/angular/pull/52425)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [70d30c28e0](https://github.com/angular/angular/commit/70d30c28e04f4ead51145e4e47df342492bfb336) | fix | Add support for ng-templates with i18n attributes ([#52597](https://github.com/angular/angular/pull/52597)) |
+| [4f125c5f9a](https://github.com/angular/angular/commit/4f125c5f9ae572a8216ec1fbb88f52e47b875e1e) | fix | Switches to multiple passes to fix several reported bugs ([#52592](https://github.com/angular/angular/pull/52592)) |
+
+Web Frameworks: the internet frontier.<br/>  
+These are the voyages of the framework Angular.<br/>
+Its continuing mission:<br/>
+To explore strange, new technologies.<br/>
+To seek out new users and new applications.<br/>
+To boldly go where no web framework has gone before.<br/>
+
+In honor of v17.0.1
+
+```
+                                                  ______
+                                     ___.--------'------`---------.____
+                               _.---'----------------------------------`---.__
+                             .'___=]===========================================
+,-----------------------..__/.'         >--.______        _______.---'
+]====================<==||(__)        .'          `------'
+`-----------------------`' ----.___--/
+     /       /---'                 `/
+    /_______(______________________/
+    `-------------.--------------.'
+                   \________|_.-'
+```
+
+Live long and prosper 🖖🏻
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.0"></a>
 # 17.0.0 (2023-11-08)
 
