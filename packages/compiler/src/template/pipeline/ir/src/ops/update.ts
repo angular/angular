@@ -7,7 +7,6 @@
  */
 
 import {SecurityContext} from '../../../../../core';
-import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
@@ -24,7 +23,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|IcuUpdateOp|RepeaterOp|DeferWhenOp;
+    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|RepeaterOp|DeferWhenOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -49,7 +48,7 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
   /**
    * The i18n placeholders associated with this interpolation.
    */
-  i18nPlaceholders: i18n.Placeholder[];
+  i18nPlaceholders: string[];
 
   sourceSpan: ParseSourceSpan;
 }
@@ -58,7 +57,7 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: i18n.Placeholder[],
+    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: string[],
     sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
@@ -693,32 +692,6 @@ export function createI18nApplyOp(
     kind: OpKind.I18nApply,
     target,
     handle,
-    sourceSpan,
-    ...NEW_OP,
-  };
-}
-
-/**
- * An op that represents updating an ICU expression.
- */
-export interface IcuUpdateOp extends Op<UpdateOp> {
-  kind: OpKind.IcuUpdate;
-
-  /**
-   * The ID of the ICU being updated.
-   */
-  xref: XrefId;
-
-  sourceSpan: ParseSourceSpan;
-}
-
-/**
- * Creates an op to update an ICU expression.
- */
-export function createIcuUpdateOp(xref: XrefId, sourceSpan: ParseSourceSpan): IcuUpdateOp {
-  return {
-    kind: OpKind.IcuUpdate,
-    xref,
     sourceSpan,
     ...NEW_OP,
   };

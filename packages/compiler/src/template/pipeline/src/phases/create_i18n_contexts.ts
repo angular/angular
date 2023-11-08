@@ -35,7 +35,7 @@ export function createI18nContexts(job: CompilationJob) {
         case ir.OpKind.I18nEnd:
           currentI18nOp = null;
           break;
-        case ir.OpKind.Icu:
+        case ir.OpKind.IcuStart:
           // If an ICU represents a different message than its containing block, we give it its own
           // i18n context.
           if (currentI18nOp === null) {

@@ -1014,8 +1014,8 @@ export function transformExpressionsInOp(
     case OpKind.I18nContext:
     case OpKind.I18nEnd:
     case OpKind.I18nStart:
-    case OpKind.Icu:
-    case OpKind.IcuUpdate:
+    case OpKind.IcuEnd:
+    case OpKind.IcuStart:
     case OpKind.Namespace:
     case OpKind.Pipe:
     case OpKind.Projection:

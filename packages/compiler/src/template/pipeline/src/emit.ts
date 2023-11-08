@@ -24,7 +24,6 @@ import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
 import {createDeferDepsFns} from './phases/create_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
-import {createI18nIcuExpressions} from './phases/create_i18n_icu_expressions';
 import {configureDeferInstructions} from './phases/defer_configs';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
@@ -104,7 +103,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
   {kind: Kind.Tmpl, fn: extractI18nText},
-  {kind: Kind.Tmpl, fn: createI18nIcuExpressions},
   {kind: Kind.Tmpl, fn: applyI18nExpressions},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},

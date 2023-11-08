@@ -26,7 +26,7 @@ export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|Eleme
     ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
     DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
     ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
-    I18nStartOp|I18nEndOp|IcuOp|I18nContextOp;
+    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|I18nContextOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -1001,10 +1001,10 @@ export function createI18nEndOp(xref: XrefId): I18nEndOp {
 }
 
 /**
- * An op that represents an ICU expression.
+ * An op that represents the start of an ICU expression.
  */
-export interface IcuOp extends Op<CreateOp> {
-  kind: OpKind.Icu;
+export interface IcuStartOp extends Op<CreateOp> {
+  kind: OpKind.IcuStart;
 
   /**
    * The ID of the ICU.
@@ -1015,11 +1015,6 @@ export interface IcuOp extends Op<CreateOp> {
    * The i18n message for this ICU.
    */
   message: i18n.Message;
-
-  /**
-   * The ICU associated with this op.
-   */
-  icu: i18n.Icu;
 
   /**
    * Placeholder used to reference this ICU in other i18n messages.
@@ -1035,19 +1030,41 @@ export interface IcuOp extends Op<CreateOp> {
 }
 
 /**
- * Creates an op to create an ICU expression.
+ * Creates an ICU start op.
  */
-export function createIcuOp(
-    xref: XrefId, message: i18n.Message, icu: i18n.Icu, messagePlaceholder: string,
-    sourceSpan: ParseSourceSpan): IcuOp {
+export function createIcuStartOp(
+    xref: XrefId, message: i18n.Message, messagePlaceholder: string,
+    sourceSpan: ParseSourceSpan): IcuStartOp {
   return {
-    kind: OpKind.Icu,
+    kind: OpKind.IcuStart,
     xref,
     message,
-    icu,
     messagePlaceholder,
     context: null,
     sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that represents the end of an ICU expression.
+ */
+export interface IcuEndOp extends Op<CreateOp> {
+  kind: OpKind.IcuEnd;
+
+  /**
+   * The ID of the corresponding IcuStartOp.
+   */
+  xref: XrefId;
+}
+
+/**
+ * Creates an ICU end op.
+ */
+export function createIcuEndOp(xref: XrefId): IcuEndOp {
+  return {
+    kind: OpKind.IcuEnd,
+    xref,
     ...NEW_OP,
   };
 }
