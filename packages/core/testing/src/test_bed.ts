@@ -27,7 +27,7 @@ import {
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
-  ɵgetAsyncClassMetadata as getAsyncClassMetadata,
+  ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
   ɵRender3ComponentFactory as ComponentFactory,
@@ -616,7 +616,7 @@ export class TestBedImpl implements TestBed {
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
-    if (getAsyncClassMetadata(type)) {
+    if (getAsyncClassMetadataFn(type)) {
       throw new Error(
           `Component '${type.name}' has unresolved metadata. ` +
           `Please call \`await TestBed.compileComponents()\` before running this test.`);
