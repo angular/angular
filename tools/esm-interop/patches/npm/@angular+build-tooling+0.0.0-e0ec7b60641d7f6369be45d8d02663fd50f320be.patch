@@ -1,5 +1,5 @@
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
-index afe4e5c..095a8f0 100755
+index bde72eb..50912e9 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
 @@ -1,5 +1,5 @@
@@ -9,16 +9,16 @@ index afe4e5c..095a8f0 100755
  load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
 
  package(default_visibility = ["@npm//@angular/build-tooling/bazel/api-gen:__subpackages__"])
-@@ -16,7 +16,7 @@ esbuild(
+@@ -17,7 +17,7 @@ esbuild(
      target = "es2022",
      deps = [
          ":extract_api_to_json_lib",
 -        "@npm//@angular/compiler-cli",
 +        "@angular//packages/compiler-cli",
+         "@npm//typescript",
      ],
  )
-
-@@ -26,8 +26,8 @@ ts_library(
+@@ -28,8 +28,8 @@ ts_library(
      devmode_module = "commonjs",
      tsconfig = "@npm//@angular/build-tooling:tsconfig.json",
      deps = [
@@ -28,8 +28,8 @@ index afe4e5c..095a8f0 100755
 +        "@angular//packages/compiler-cli",
          "@npm//@bazel/runfiles",
          "@npm//@types/node",
-     ],
-@@ -38,8 +38,8 @@ nodejs_binary(
+         "@npm//typescript",
+@@ -41,8 +41,8 @@ nodejs_binary(
      name = "extract_api_to_json",
      data = [
          ":bin",
@@ -37,9 +37,9 @@ index afe4e5c..095a8f0 100755
 -        "@npm//@angular/compiler-cli",
 +        "@angular//packages/compiler",
 +        "@angular//packages/compiler-cli",
+         "@npm//typescript",
      ],
      entry_point = "bin.mjs",
-     # Note: Using the linker here as we need it for ESM. The linker is not
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
 index 26563a7..f7bc080 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
@@ -72,7 +72,7 @@ index 26563a7..f7bc080 100755
      entry_point = "bin.mjs",
      # Note: Using the linker here as we need it for ESM. The linker is not
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
-index 850265d..68146c8 100755
+index 43cc587..7cf566e 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 @@ -1,5 +1,5 @@
