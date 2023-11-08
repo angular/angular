@@ -81,6 +81,17 @@ describe('language service adapter', () => {
         strictTemplates: true,
       }));
     });
+
+    it('should always disable block syntax if enableBlockSyntax is false', () => {
+      const {project, tsLS, configFileFs} = setup();
+      const ngLS = new LanguageService(project, tsLS, {
+        enableBlockSyntax: false,
+      });
+
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        '_enableBlockSyntax': false,
+      }));
+    });
   });
 
   describe('compiler options diagnostics', () => {
