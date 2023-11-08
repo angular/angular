@@ -1,5 +1,8 @@
 <a name="17.0.0"></a>
 # 17.0.0 (2023-11-08)
+
+[Blog post "Angular v17 is now available"](http://goo.gle/angular-v17).
+
 ## Breaking Changes
 ### 
 - Node.js v16 support has been removed and the minimum support version has been bumped to 18.13.0.
