@@ -223,12 +223,12 @@ export enum OpKind {
   /**
    * An instruction to create an ICU expression.
    */
-  Icu,
+  IcuStart,
 
   /**
    * An instruction to update an ICU expression.
    */
-  IcuUpdate,
+  IcuEnd,
 
   /**
    * An i18n context containing information needed to generate an i18n message.
