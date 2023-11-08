@@ -155,7 +155,7 @@ function logLazyLCPWarning(src: string) {
   console.warn(formatRuntimeError(
       RuntimeErrorCode.IMAGE_PERFORMANCE_WARNING,
       `An image with src ${src} is the Largest Contentful Paint (LCP) element ` +
-          `but was given a "loading" value of "lazy", which can negatively impact` +
+          `but was given a "loading" value of "lazy", which can negatively impact ` +
           `application loading performance. This warning can be addressed by ` +
           `changing the loading value of the LCP image to "eager", or by using the ` +
           `NgOptimizedImage directive's prioritization utilities. For more ` +
