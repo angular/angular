@@ -104,7 +104,9 @@ Many of the warnings will provide suggestions on how to remedy that problem.
 If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
 Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
 
-For applications that are already using SSR, additional manual adjustments to code will be needed to update the SSR server code to support the new integrated SSR capabilities.
+For applications new to SSR, the [Angular SSR Guide](guide/ssr) provides additional information regarding the setup process for adding SSR to an application.
+
+For applications that are already using SSR, additional manual adjustments will be needed to update the application server to support the new integrated SSR capabilities.
 The `application` builder now provides the integrated functionality for all of the following preexisting builders:
 
 - `app-shell`
@@ -112,7 +114,28 @@ The `application` builder now provides the integrated functionality for all of t
 - `server`
 - `ssr-dev-server`
 
-The [Angular SSR Guide](/guide/ssr) provides additional information regarding the new setup process for SSR. In the future, a schematic will make this migration process easier for existing applications.
+The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
+The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
+The `@angular/ssr` package supports the `browser` builder as well as the `application` builder.
+To convert from the separate SSR builders to the integrated capabilities of the `application` builder, there are several required manual steps.
+However, as each application is different, there may be more application specific changes needed beyond these to complete the process.
+
+1.  Combine the options for the above mentioned SSR builders into the `application` builder options within the `angular.json` file.
+    The previously used builders and their target configurations can then be fully removed from the file.
+2.  Combine server TypeScript configuration from `tsconfig.server.json` into `tsconfig.app.json`.
+    The `types` and `files` options are typically the only setting that needs to be combined but others may be needed based on application specific customizations.
+    You should also add the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+    The `tsconfig.server.json` can then be removed as it will no longer be used during builds.
+3.  Remove and/or update any `npm` scripts referencing the now removed builder targets.
+    The `ng build` and `ng serve` commands provide equivalent functionality when using the `application` builder.
+4.  Update application server code to remove Webpack specific elements.
+5.  Update application server code to use new bootstrapping and output directory structure.
+    An example of the changes for a v16 project that has been converted can be found [here](https://github.com/alan-agius4/angular-cli-use-application-builder/commit/1defdb93a7f508662bc427439e51505668bf84cd#diff-1ba718c1eb8aa39cd20c2562d92523068c734d75f54655e97d652b992d9b4259).
+6.  Remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope).
+    All application code should be ESM compatible.
+    This does not apply to third-party dependencies.
+
+In the future, a schematic will make this migration process easier for existing applications.
 
 ## Executing a build
 
