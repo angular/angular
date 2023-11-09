@@ -220,6 +220,13 @@ describe('TypeScriptAstFactory', () => {
       expect(generate(literal)).toEqual('42');
     });
 
+    it('should create a negative number literal', () => {
+      const {generate} = setupStatements();
+      const literal = factory.createLiteral(-42);
+      expect(ts.isPrefixUnaryExpression(literal)).toBe(true);
+      expect(generate(literal)).toEqual('-42');
+    });
+
     it('should create a number literal for `NaN`', () => {
       const {generate} = setupStatements();
       const literal = factory.createLiteral(NaN);

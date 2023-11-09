@@ -14,6 +14,7 @@ import {ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';
+import {tsNumericExpression} from './ts_util';
 import {TypeEmitter} from './type_emitter';
 
 
@@ -133,7 +134,7 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       return ts.factory.createLiteralTypeNode(
           ast.value ? ts.factory.createTrue() : ts.factory.createFalse());
     } else if (typeof ast.value === 'number') {
-      return ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(ast.value));
+      return ts.factory.createLiteralTypeNode(tsNumericExpression(ast.value));
     } else {
       return ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(ast.value));
     }
