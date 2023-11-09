@@ -88,6 +88,6 @@ A single HTML element can have its CSS class list and style values bound to mult
 ## What’s next
 
 <docs-pill-row>
-  <docs-pill href="/guide/components/component-styles" title="Component styles"/>
+  <docs-pill href="/guide/components/styling" title="Component Styling"/>
   <docs-pill href="/guide/animations" title="Introduction to Angular animations"/>
 </docs-pill-row>
