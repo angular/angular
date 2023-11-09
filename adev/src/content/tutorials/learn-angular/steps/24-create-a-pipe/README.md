@@ -12,7 +12,7 @@ A pipe is a TypeScript class with a `@Pipe` decorator. Here's an example:
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  standaone: true,
+  standalone: true,
   name: 'star',
 })
 export class StarPipe implements PipeTransform {
