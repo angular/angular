@@ -4477,10 +4477,10 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         ]);
       });
@@ -4513,10 +4513,10 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
-          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         ]);
       });
