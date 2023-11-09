@@ -6,15 +6,59 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, RecursiveVisitor} from '@angular/compiler';
+import {Attribute, Element, RecursiveVisitor, Text} from '@angular/compiler';
+import ts from 'typescript';
 
 export const ngtemplate = 'ng-template';
+
+function allFormsOf(selector: string): string[] {
+  return [
+    selector,
+    `*${selector}`,
+    `[${selector}]`,
+  ];
+}
+
+const commonModuleDirectives = new Set([
+  ...allFormsOf('ngComponentOutlet'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngClass'),
+  ...allFormsOf('ngPlural'),
+  ...allFormsOf('ngPluralCase'),
+  ...allFormsOf('ngStyle'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngComponentOutlet'),
+]);
+
+function pipeMatchRegExpFor(name: string): RegExp {
+  return new RegExp(`\\|\\s*${name}`);
+}
+
+const commonModulePipes = [
+  'date',
+  'async',
+  'currency',
+  'number',
+  'i18nPlural',
+  'i18nSelect',
+  'json',
+  'keyvalue',
+  'slice',
+  'lowercase',
+  'uppercase',
+  'titlecase',
+  'percent',
+  'titlecase',
+].map(name => pipeMatchRegExpFor(name));
 
 /**
  * Represents a range of text within a file. Omitting the end
  * means that it's until the end of the file.
  */
-type Range = [start: number, end?: number];
+type Range = {
+  start: number,
+  end?: number, node: ts.Node, type: string,
+};
 
 export type Offsets = {
   pre: number,
@@ -104,10 +148,17 @@ export class Template {
 /** Represents a file that was analyzed by the migration. */
 export class AnalyzedFile {
   private ranges: Range[] = [];
+  removeCommonModule = false;
 
   /** Returns the ranges in the order in which they should be migrated. */
   getSortedRanges(): Range[] {
-    return this.ranges.slice().sort(([aStart], [bStart]) => bStart - aStart);
+    const templateRanges = this.ranges.slice()
+                               .filter(x => x.type === 'template')
+                               .sort((aStart, bStart) => bStart.start - aStart.start);
+    const importRanges = this.ranges.slice()
+                             .filter(x => x.type === 'import')
+                             .sort((aStart, bStart) => bStart.start - aStart.start);
+    return [...templateRanges, ...importRanges];
   }
 
   /**
@@ -125,11 +176,41 @@ export class AnalyzedFile {
     }
 
     const duplicate =
-        analysis.ranges.find(current => current[0] === range[0] && current[1] === range[1]);
+        analysis.ranges.find(current => current.start === range.start && current.end === range.end);
 
     if (!duplicate) {
       analysis.ranges.push(range);
     }
+  }
+}
+
+/** Finds all non-control flow elements from common module. */
+export class CommonCollector extends RecursiveVisitor {
+  count = 0;
+
+  override visitElement(el: Element): void {
+    if (el.attrs.length > 0) {
+      for (const attr of el.attrs) {
+        if (this.hasDirectives(attr.name) || this.hasPipes(attr.value)) {
+          this.count++;
+        }
+      }
+    }
+    super.visitElement(el, null);
+  }
+
+  override visitText(ast: Text) {
+    if (this.hasPipes(ast.value)) {
+      this.count++;
+    }
+  }
+
+  private hasDirectives(input: string): boolean {
+    return commonModuleDirectives.has(input);
+  }
+
+  private hasPipes(input: string): boolean {
+    return commonModulePipes.some(regexp => regexp.test(input));
   }
 }
 

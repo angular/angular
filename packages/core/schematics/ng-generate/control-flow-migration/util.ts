@@ -10,7 +10,10 @@ import {Attribute, HtmlParser, ParseTreeResult, visitAll} from '@angular/compile
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, ElementCollector, ElementToMigrate, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, Template, TemplateCollector} from './types';
+
+const importRemovals = ['NgIf', 'NgFor', 'NgSwitch', 'NgSwitchCase', 'NgSwitchDefault'];
+const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
 
 /**
  * Analyzes a source file to find file that need to be migrated and the text ranges within them.
@@ -19,48 +22,129 @@ import {AnalyzedFile, ElementCollector, ElementToMigrate, Template, TemplateColl
  */
 export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>) {
   forEachClass(sourceFile, node => {
-    // Note: we have a utility to resolve the Angular decorators from a class declaration already.
-    // We don't use it here, because it requires access to the type checker which makes it more
-    // time-consuming to run internally.
-    const decorator = ts.getDecorators(node)?.find(dec => {
-      return ts.isCallExpression(dec.expression) && ts.isIdentifier(dec.expression.expression) &&
-          dec.expression.expression.text === 'Component';
-    }) as (ts.Decorator & {expression: ts.CallExpression}) |
-        undefined;
-
-    const metadata = decorator && decorator.expression.arguments.length > 0 &&
-            ts.isObjectLiteralExpression(decorator.expression.arguments[0]) ?
-        decorator.expression.arguments[0] :
-        null;
-
-    if (!metadata) {
-      return;
-    }
-
-    for (const prop of metadata.properties) {
-      // All the properties we care about should have static
-      // names and be initialized to a static string.
-      if (!ts.isPropertyAssignment(prop) || !ts.isStringLiteralLike(prop.initializer) ||
-          (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))) {
-        continue;
-      }
-
-      switch (prop.name.text) {
-        case 'template':
-          // +1/-1 to exclude the opening/closing characters from the range.
-          AnalyzedFile.addRange(
-              sourceFile.fileName, analyzedFiles,
-              [prop.initializer.getStart() + 1, prop.initializer.getEnd() - 1]);
-          break;
-
-        case 'templateUrl':
-          // Leave the end as undefined which means that the range is until the end of the file.
-          const path = join(dirname(sourceFile.fileName), prop.initializer.text);
-          AnalyzedFile.addRange(path, analyzedFiles, [0]);
-          break;
-      }
+    if (ts.isClassDeclaration(node)) {
+      analyzeDecorators(node, sourceFile, analyzedFiles);
+    } else {
+      analyzeImportDeclarations(node, sourceFile, analyzedFiles);
     }
   });
+}
+
+function updateImportDeclaration(decl: ts.ImportDeclaration, removeCommonModule: boolean): string {
+  const clause = decl.getChildAt(1) as ts.ImportClause;
+  const updatedClause = updateImportClause(clause, removeCommonModule);
+  if (updatedClause === null) {
+    return '';
+  }
+  const printer = ts.createPrinter();
+  const updated = ts.factory.updateImportDeclaration(
+      decl, decl.modifiers, updatedClause, decl.moduleSpecifier, undefined);
+  return printer.printNode(ts.EmitHint.Unspecified, updated, clause.getSourceFile());
+}
+
+function updateImportClause(clause: ts.ImportClause, removeCommonModule: boolean): ts.ImportClause|
+    null {
+  if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+    const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
+    const elements = clause.namedBindings.elements.filter(el => !removals.includes(el.getText()));
+    if (elements.length === 0) {
+      return null;
+    }
+    clause = ts.factory.updateImportClause(
+        clause, clause.isTypeOnly, clause.name, ts.factory.createNamedImports(elements));
+  }
+  return clause;
+}
+
+function updateClassImports(
+    propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string {
+  const printer = ts.createPrinter();
+  const importList = propAssignment.initializer as ts.ArrayLiteralExpression;
+  const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
+  const elements = importList.elements.filter(el => !removals.includes(el.getText()));
+  const updatedElements = ts.factory.updateArrayLiteralExpression(importList, elements);
+  const updatedAssignment =
+      ts.factory.updatePropertyAssignment(propAssignment, propAssignment.name, updatedElements);
+  return printer.printNode(
+      ts.EmitHint.Unspecified, updatedAssignment, updatedAssignment.getSourceFile());
+}
+
+function analyzeImportDeclarations(
+    node: ts.ImportDeclaration, sourceFile: ts.SourceFile,
+    analyzedFiles: Map<string, AnalyzedFile>) {
+  if (node.getText().indexOf('@angular/common') === -1) {
+    return;
+  }
+  const clause = node.getChildAt(1) as ts.ImportClause;
+  if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+    const elements =
+        clause.namedBindings.elements.filter(el => importWithCommonRemovals.includes(el.getText()));
+    if (elements.length > 0) {
+      AnalyzedFile.addRange(
+          sourceFile.fileName, analyzedFiles,
+          {start: node.getStart(), end: node.getEnd(), node, type: 'import'});
+    }
+  }
+}
+
+function analyzeDecorators(
+    node: ts.ClassDeclaration, sourceFile: ts.SourceFile,
+    analyzedFiles: Map<string, AnalyzedFile>) {
+  // Note: we have a utility to resolve the Angular decorators from a class declaration already.
+  // We don't use it here, because it requires access to the type checker which makes it more
+  // time-consuming to run internally.
+  const decorator = ts.getDecorators(node)?.find(dec => {
+    return ts.isCallExpression(dec.expression) && ts.isIdentifier(dec.expression.expression) &&
+        dec.expression.expression.text === 'Component';
+  }) as (ts.Decorator & {expression: ts.CallExpression}) |
+      undefined;
+
+  const metadata = decorator && decorator.expression.arguments.length > 0 &&
+          ts.isObjectLiteralExpression(decorator.expression.arguments[0]) ?
+      decorator.expression.arguments[0] :
+      null;
+
+  if (!metadata) {
+    return;
+  }
+
+  for (const prop of metadata.properties) {
+    // All the properties we care about should have static
+    // names and be initialized to a static string.
+    if (!ts.isPropertyAssignment(prop) ||
+        (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))) {
+      continue;
+    }
+
+    switch (prop.name.text) {
+      case 'template':
+        // +1/-1 to exclude the opening/closing characters from the range.
+        AnalyzedFile.addRange(sourceFile.fileName, analyzedFiles, {
+          start: prop.initializer.getStart() + 1,
+          end: prop.initializer.getEnd() - 1,
+          node: prop,
+          type: 'template'
+        });
+        break;
+
+      case 'imports':
+        AnalyzedFile.addRange(sourceFile.fileName, analyzedFiles, {
+          start: prop.name.getStart(),
+          end: prop.initializer.getEnd(),
+          node: prop,
+          type: 'import'
+        });
+        break;
+
+      case 'templateUrl':
+        // Leave the end as undefined which means that the range is until the end of the file.
+        if (ts.isStringLiteralLike(prop.initializer)) {
+          const path = join(dirname(sourceFile.fileName), prop.initializer.text);
+          AnalyzedFile.addRange(path, analyzedFiles, {start: 0, node: prop, type: 'template'});
+        }
+        break;
+    }
+  }
 }
 
 /**
@@ -217,6 +301,33 @@ export function processNgTemplates(template: string): string {
 }
 
 /**
+ * determines if the CommonModule can be safely removed from imports
+ */
+export function canRemoveCommonModule(template: string): boolean {
+  const parsed = parseTemplate(template);
+  let removeCommonModule = false;
+  if (parsed !== null) {
+    const visitor = new CommonCollector();
+    visitAll(visitor, parsed.rootNodes);
+    removeCommonModule = visitor.count === 0;
+  }
+  return removeCommonModule;
+}
+
+/**
+ * removes imports from template imports and import declarations
+ */
+export function removeImports(
+    template: string, node: ts.Node, removeCommonModule: boolean): string {
+  if (template.startsWith('imports') && ts.isPropertyAssignment(node)) {
+    return updateClassImports(node, removeCommonModule);
+  } else if (ts.isImportDeclaration(node)) {
+    return updateImportDeclaration(node, removeCommonModule);
+  }
+  return template;
+}
+
+/**
  * retrieves the original block of text in the template for length comparison during migration
  * processing
  */
@@ -283,9 +394,10 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
 }
 
 /** Executes a callback on each class declaration in a file. */
-function forEachClass(sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration) => void) {
+function forEachClass(
+    sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration|ts.ImportDeclaration) => void) {
   sourceFile.forEachChild(function walk(node) {
-    if (ts.isClassDeclaration(node)) {
+    if (ts.isClassDeclaration(node) || ts.isImportDeclaration(node)) {
       callback(node);
     }
     node.forEachChild(walk);

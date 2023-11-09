@@ -105,14 +105,12 @@ describe('control flow migration', () => {
     });
 
     it('should only migrate the paths that were passed in', async () => {
-      let error: string|null = null;
-
       writeFile('comp.ts', `
         import {Component} from '@angular/core';
         import {NgIf} from '@angular/common';
 
         @Component({
-          imports: [NgIf],
+          imports: [NgIf, NgFor,NgSwitch,NgSwitchCase ,NgSwitchDefault],
           template: \`<div><span *ngIf="toggle">This should be hidden</span></div>\`
         })
         class Comp {
@@ -139,7 +137,11 @@ describe('control flow migration', () => {
 
       expect(migratedContent)
           .toContain('template: `<div>@if (toggle) {<span>This should be hidden</span>}</div>`');
+      expect(migratedContent).toContain('imports: []');
+      expect(migratedContent).not.toContain(`import {NgIf} from '@angular/common';`);
       expect(skippedContent).toContain('template: `<div *ngIf="show">Show me</div>`');
+      expect(skippedContent).toContain('imports: [NgIf]');
+      expect(skippedContent).toContain(`import {NgIf} from '@angular/common';`);
     });
   });
 
@@ -2724,6 +2726,126 @@ describe('control flow migration', () => {
         `</ng-container>`,
         `}`,
         `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+  });
+
+  describe('imports', () => {
+    it('should remove common module imports post migration', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {NgIf} from '@angular/common';`,
+        `@Component({`,
+        `  imports: [NgIf],`,
+        `  template: \`<div><span *ngIf="toggle">shrug</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [],`,
+        `  template: \`<div>@if (toggle) {<span>shrug</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should leave non-cf common module imports post migration', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {NgIf, AsyncPipe} from '@angular/common';\n`,
+        `@Component({`,
+        `  imports: [NgIf, AsyncPipe],`,
+        `  template: \`<div><span *ngIf="toggle">shrug</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';`,
+        `import { AsyncPipe } from '@angular/common';\n`,
+        `@Component({`,
+        `  imports: [AsyncPipe],`,
+        `  template: \`<div>@if (toggle) {<span>shrug</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should remove common module post migration', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`<div><span *ngIf="toggle">shrug</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [],`,
+        `  template: \`<div>@if (toggle) {<span>shrug</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should leave common module post migration if other common module deps exist', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`<div><span *ngIf="toggle">{{ shrug | lowercase }}</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';`,
+        `import { CommonModule } from '@angular/common';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`<div>@if (toggle) {<span>{{ shrug | lowercase }}</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
       ].join('\n');
 
       expect(actual).toBe(expected);
