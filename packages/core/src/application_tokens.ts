@@ -76,7 +76,7 @@ export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages
 // include extra dependencies. See #44970 for more context.
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that indicates which animations
+ * A DI token that indicates which animations
  * module has been loaded.
  * @publicApi
  */
