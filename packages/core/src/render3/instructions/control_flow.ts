@@ -12,7 +12,7 @@ import {TrackByFunction} from '../../change_detection';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined} from '../../util/assert';
-import {performanceMark} from '../../util/performance';
+import {performanceMarkFeature} from '../../util/performance';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
@@ -27,10 +27,6 @@ import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContain
 
 import {ɵɵtemplate} from './template';
 
-const PERF_MARK_CONTROL_FLOW = {
-  detail: {feature: 'NgControlFlow'}
-};
-
 /**
  * The conditional instruction represents the basic building block on the runtime side to support
  * built-in "if" and "switch". On the high level this instruction is responsible for adding and
@@ -43,7 +39,7 @@ const PERF_MARK_CONTROL_FLOW = {
  * @codeGenApi
  */
 export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
-  performanceMark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performanceMarkFeature('NgControlFlow');
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
@@ -149,7 +145,7 @@ export function ɵɵrepeaterCreate(
     tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
     trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
     emptyDecls?: number, emptyVars?: number): void {
-  performanceMark('mark_use_counter', PERF_MARK_CONTROL_FLOW);
+  performanceMarkFeature('NgControlFlow');
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?
