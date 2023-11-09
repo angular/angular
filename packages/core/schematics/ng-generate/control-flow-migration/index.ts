@@ -82,11 +82,11 @@ function runControlFlowMigration(
     const content = tree.readText(relativePath);
     const update = tree.beginUpdate(relativePath);
 
-    for (const [start, end] of ranges) {
+    for (const {start, end, node, type} of ranges) {
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} = migrateTemplate(template);
+      const {migrated, errors} = migrateTemplate(template, type, node, file);
 
       if (migrated !== null) {
         update.remove(start, length);
