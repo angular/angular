@@ -18,6 +18,7 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8106` | [`suffixNotSupported`](extended-diagnostics/NG8106)           |
 | `NG8107` | [`optionalChainNotNullable`](extended-diagnostics/NG8107)     |
 | `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)       |
+| `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109) |
 
 ## Configuration
 
