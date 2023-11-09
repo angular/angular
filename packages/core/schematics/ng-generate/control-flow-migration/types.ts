@@ -75,6 +75,9 @@ export class ElementToMigrate {
   }
 }
 
+/**
+ * Represents an ng-template inside a template being migrated to new control flow
+ */
 export class Template {
   el: Element;
   count: number = 0;

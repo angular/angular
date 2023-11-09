@@ -82,6 +82,9 @@ function getNestedCount(etm: ElementToMigrate, aggregator: number[]) {
   }
 }
 
+/**
+ * parses the template string into the Html AST
+ */
 export function parseTemplate(template: string): ParseTreeResult|null {
   let parsed: ParseTreeResult;
   try {
@@ -108,6 +111,9 @@ export function parseTemplate(template: string): ParseTreeResult|null {
   return parsed;
 }
 
+/**
+ * calculates the level of nesting of the items in the collector
+ */
 export function calculateNesting(
     visitor: ElementCollector|TemplateCollector, hasLineBreaks: boolean): void {
   // start from top of template
@@ -133,10 +139,16 @@ function escapeRegExp(val: string) {
   return val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  // $& means the whole matched string
 }
 
+/**
+ * determines if a given template string contains line breaks
+ */
 export function hasLineBreaks(template: string): boolean {
   return /\r|\n/.test(template);
 }
 
+/**
+ * properly adjusts template offsets based on current nesting levels
+ */
 export function reduceNestingOffset(
     el: ElementToMigrate, nestLevel: number, offset: number, postOffsets: number[]): number {
   if (el.nestCount <= nestLevel) {
@@ -178,6 +190,9 @@ function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
   return `<ng-container ${i18n}>${content}</ng-container>`;
 }
 
+/**
+ * Counts, replaces, and removes any necessary ng-templates post control flow migration
+ */
 export function processNgTemplates(template: string): string {
   // count usage
   const templates = countTemplateUsage(template);
@@ -201,6 +216,10 @@ export function processNgTemplates(template: string): string {
   return template;
 }
 
+/**
+ * retrieves the original block of text in the template for length comparison during migration
+ * processing
+ */
 export function getOriginals(
     etm: ElementToMigrate, tmpl: string, offset: number): {start: string, end: string} {
   // original opening block
@@ -221,6 +240,9 @@ export function getOriginals(
   return {start, end: ''};
 }
 
+/**
+ * builds the proper contents of what goes inside a given control flow block after migration
+ */
 export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
     {start: string, middle: string, end: string} {
   const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
