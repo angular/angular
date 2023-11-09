@@ -408,9 +408,6 @@
     "name": "PARAM_REGEX"
   },
   {
-    "name": "PERF_MARK_STANDALONE"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -1210,6 +1207,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "markedFeatures"
   },
   {
     "name": "maybeWrapInNotSelector"
