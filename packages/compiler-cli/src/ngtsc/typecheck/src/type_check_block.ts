@@ -1572,6 +1572,18 @@ class Scope {
    */
   private statements: ts.Statement[] = [];
 
+  /**
+   * Names of the for loop context variables and their types.
+   */
+  private static readonly forLoopContextVariableTypes = new Map<string, ts.KeywordTypeSyntaxKind>([
+    ['$first', ts.SyntaxKind.BooleanKeyword],
+    ['$last', ts.SyntaxKind.BooleanKeyword],
+    ['$even', ts.SyntaxKind.BooleanKeyword],
+    ['$odd', ts.SyntaxKind.BooleanKeyword],
+    ['$index', ts.SyntaxKind.NumberKeyword],
+    ['$count', ts.SyntaxKind.NumberKeyword],
+  ]);
+
   private constructor(
       private tcb: Context, private parent: Scope|null = null,
       private guard: ts.Expression|null = null) {}
@@ -1628,9 +1640,12 @@ class Scope {
           new TcbBlockVariableOp(
               tcb, scope, ts.factory.createIdentifier(scopedNode.item.name), scopedNode.item));
 
-      for (const variable of Object.values(scopedNode.contextVariables)) {
-        // Note: currently all context variables are assumed to be number types.
-        const type = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+      for (const [name, variable] of Object.entries(scopedNode.contextVariables)) {
+        if (!this.forLoopContextVariableTypes.has(name)) {
+          throw new Error(`Unrecognized for loop context variable ${name}`);
+        }
+
+        const type = ts.factory.createKeywordTypeNode(this.forLoopContextVariableTypes.get(name)!);
         this.registerVariable(
             scope, variable, new TcbBlockImplicitVariableOp(tcb, scope, type, variable));
       }
