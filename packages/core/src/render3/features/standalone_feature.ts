@@ -10,7 +10,7 @@ import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs'
 import {internalImportProvidersFrom} from '../../di/provider_collection';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {OnDestroy} from '../../interface/lifecycle_hooks';
-import {performanceMark} from '../../util/performance';
+import {performanceMarkFeature} from '../../util/performance';
 import {ComponentDef} from '../interfaces/definition';
 import {createEnvironmentInjector} from '../ng_module_ref';
 
@@ -61,9 +61,6 @@ class StandaloneService implements OnDestroy {
   });
 }
 
-const PERF_MARK_STANDALONE = {
-  detail: {feature: 'NgStandalone'}
-};
 
 /**
  * A feature that acts as a setup code for the {@link StandaloneService}.
@@ -76,7 +73,7 @@ const PERF_MARK_STANDALONE = {
  * @codeGenApi
  */
 export function ɵɵStandaloneFeature(definition: ComponentDef<unknown>) {
-  performanceMark('mark_use_counter', PERF_MARK_STANDALONE);
+  performanceMarkFeature('NgStandalone');
   definition.getStandaloneInjector = (parentInjector: EnvironmentInjector) => {
     return parentInjector.get(StandaloneService).getOrCreateStandaloneInjector(definition);
   };
