@@ -85,6 +85,9 @@ The Angular CLI installs the necessary Angular npm packages and other dependenci
 This can take a few minutes.
 
 The CLI creates a new workspace and a small welcome app in a new directory with the same name as the workspace, ready to run.
+
+NOTE: New Angular projects are initially generated as standalone by default. However, if you specifically seek the root module, known as `AppModule`, responsible for registering the `AppComponent`, you can create it by using the `--no-standalone` option during project generation. This option tailors the project setup to include the essential `AppModule` along with its associated components.
+
 Navigate to the new directory so subsequent commands use this workspace.
 
 <docs-code language="shell">
