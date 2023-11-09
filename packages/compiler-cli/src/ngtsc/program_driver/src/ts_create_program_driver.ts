@@ -46,6 +46,7 @@ export class DelegatingCompilerHost implements
   hasInvalidatedResolutions;
   resolveModuleNameLiterals;
   resolveTypeReferenceDirectiveReferences;
+  jsDocParsingMode;
 
   constructor(protected delegate: ts.CompilerHost) {
     // Excluded are 'getSourceFile', 'fileExists' and 'writeFile', which are actually implemented by
@@ -75,6 +76,9 @@ export class DelegatingCompilerHost implements
     this.resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
     this.resolveTypeReferenceDirectiveReferences =
         this.delegateMethod('resolveTypeReferenceDirectiveReferences');
+    // TODO(crisbeto): can be removed when we drop support for TS 5.2.
+    // @ts-ignore
+    this.jsDocParsingMode = this.delegateMethod('jsDocParsingMode');
   }
 
   private delegateMethod<M extends keyof ts.CompilerHost>(name: M): ts.CompilerHost[M] {

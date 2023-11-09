@@ -136,3 +136,17 @@ export function isAccessExpression(node: ts.Node): node is ts.ElementAccessExpre
     ts.PropertyAccessExpression {
   return ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
 }
+
+/**
+ * Creates a TypeScript node representing a numeric value.
+ */
+export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixUnaryExpression {
+  // As of TypeScript 5.3 negative numbers are represented as `prefixUnaryOperator` and passing a
+  // negative number (even as a string) into `createNumericLiteral` will result in an error.
+  if (value < 0) {
+    const operand = ts.factory.createNumericLiteral(Math.abs(value));
+    return ts.factory.createPrefixUnaryExpression(ts.SyntaxKind.MinusToken, operand);
+  }
+
+  return ts.factory.createNumericLiteral(value);
+}

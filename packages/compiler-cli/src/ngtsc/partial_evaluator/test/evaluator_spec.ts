@@ -198,6 +198,10 @@ runInEachFileSystem(() => {
       expect(evaluate('const a = null;', 'a')).toEqual(null);
     });
 
+    it('supports negative numbers', () => {
+      expect(evaluate('const a = -123;', 'a')).toEqual(-123);
+    });
+
     it('supports destructuring array variable declarations', () => {
       const code = `
         const [a, b, c, d] = [0, 1, 2, 3];
