@@ -1,3 +1,19 @@
+<a name="17.0.2"></a>
+# 17.0.2 (2023-11-09)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a95cccf50](https://github.com/angular/angular/commit/7a95cccf50c01a3733c6015551f8864e246d9239) | fix | add interpolatedSignalNotInvoked to diagnostics ([#52687](https://github.com/angular/angular/pull/52687)) |
+| [a548c0333e](https://github.com/angular/angular/commit/a548c0333ecc993073ee7df054119a6fdde1d27b) | fix | incorrect inferred type of for loop implicit variables ([#52732](https://github.com/angular/angular/pull/52732)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2cea80c6e2](https://github.com/angular/angular/commit/2cea80c6e21c113d12c38c4b3219c5f3f5944bd8) | fix | error code in image performance warning ([#52727](https://github.com/angular/angular/pull/52727)) |
+| [b16fc2610a](https://github.com/angular/angular/commit/b16fc2610a37b7407713e1e0018d92372f1349e9) | fix | limit rate of markers invocations ([#52742](https://github.com/angular/angular/pull/52742)) |
+| [44c48a4835](https://github.com/angular/angular/commit/44c48a48358c92c32301b578966a8e1ee9a867d8) | fix | properly update collection with repeated keys in `@for` ([#52697](https://github.com/angular/angular/pull/52697)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.1"></a>
 # 17.0.1 (2023-11-08)
 ### http
@@ -10,7 +26,7 @@
 | [70d30c28e0](https://github.com/angular/angular/commit/70d30c28e04f4ead51145e4e47df342492bfb336) | fix | Add support for ng-templates with i18n attributes ([#52597](https://github.com/angular/angular/pull/52597)) |
 | [4f125c5f9a](https://github.com/angular/angular/commit/4f125c5f9ae572a8216ec1fbb88f52e47b875e1e) | fix | Switches to multiple passes to fix several reported bugs ([#52592](https://github.com/angular/angular/pull/52592)) |
 
-Web Frameworks: the internet frontier.<br/>  
+Web Frameworks: the internet frontier.<br/>
 These are the voyages of the framework Angular.<br/>
 Its continuing mission:<br/>
 To explore strange, new technologies.<br/>
