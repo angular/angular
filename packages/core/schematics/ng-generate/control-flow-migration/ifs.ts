@@ -64,7 +64,7 @@ export function migrateIf(template: string): {migrated: string, errors: MigrateE
   return {migrated: result, errors};
 }
 
-export function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const matchThen = etm.attr.value.match(/;\s*then/gm);
   const matchElse = etm.attr.value.match(/;\s*else/gm);
 

@@ -13,11 +13,9 @@ import {normalizePath} from '../../utils/change_tracker';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
-import {migrateFor} from './fors';
-import {migrateIf} from './ifs';
-import {migrateSwitch} from './switches';
+import {migrateTemplate} from './migration';
 import {AnalyzedFile, MigrateError} from './types';
-import {analyze, processNgTemplates} from './util';
+import {analyze} from './util';
 
 interface Options {
   path: string;
@@ -88,17 +86,7 @@ function runControlFlowMigration(
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const ifResult = migrateIf(template);
-      const forResult = migrateFor(ifResult.migrated);
-      const switchResult = migrateSwitch(forResult.migrated);
-
-      const errors = [
-        ...ifResult.errors,
-        ...forResult.errors,
-        ...switchResult.errors,
-      ];
-
-      const migrated = processNgTemplates(switchResult.migrated);
+      const {migrated, errors} = migrateTemplate(template);
 
       if (migrated !== null) {
         update.remove(start, length);
