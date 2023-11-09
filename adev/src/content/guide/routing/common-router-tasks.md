@@ -144,7 +144,7 @@ To get information from a route:
 
 <docs-workflow>
 
-<docs-step title="Add `withComponentInputBinding">
+<docs-step title="Add `withComponentInputBinding`">
 
 Add the `withComponentInputBinding` feature to the `provideRouter` method.
 
