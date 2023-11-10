@@ -33,7 +33,7 @@ When you want to update state, this is typically accomplished by defining method
 ```ts
 // todo-list-item.component.ts
 @Component({ ... })
-export class TodoList {
+export class TodoListItem {
   taskTitle = '';
   isComplete = false;
 
