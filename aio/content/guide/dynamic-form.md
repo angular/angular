@@ -155,7 +155,7 @@ The following figure shows the final form.
 
 <div class="lightbox">
 
-<img alt="Dynamic-Form" src="generated/images/guide/dynamic-form/dynamic-form.png">
+<img alt="Dynamic-Form" src="/aio/content/images/guide/dynamic-form/dynamic-form.png">
 
 </div>
 
