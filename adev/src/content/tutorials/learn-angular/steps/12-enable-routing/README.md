@@ -29,7 +29,7 @@ In `app.config.ts`, configure the app to Angular Router with the following steps
 
 1. Import the `provideRouter` function from `@angular/router`.
 1. Import `routes` from the `./app.routes.ts`.
-1. Call the `providerRouter` function with `routes` passed in as an argument in the `providers` array.
+1. Call the `provideRouter` function with `routes` passed in as an argument in the `providers` array.
 
 <docs-code language="ts" highlight="[2,3,6]">
 import {ApplicationConfig} from '@angular/core';
