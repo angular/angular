@@ -1,6 +1,6 @@
 # Migrations
 
-Migrate an existing Angular project
+Migrations is a process of moving an Angular application from one version to another.
 
 <docs-card-container>
   <docs-card title="Standalone" link="Migrate now" href="reference/migrations/standalone">
