@@ -119,6 +119,7 @@ export interface ExtractTemplateOptions {
   usePoisonedData: boolean;
   enableI18nLegacyMessageIdFormat: boolean;
   i18nNormalizeLineEndingsInICUs: boolean;
+  enableBlockSyntax: boolean;
 }
 
 export function extractTemplate(
@@ -237,6 +238,7 @@ function parseExtractedTemplate(
     enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
     i18nNormalizeLineEndingsInICUs,
     alwaysAttemptHtmlToR3AstConversion: options.usePoisonedData,
+    enableBlockSyntax: options.enableBlockSyntax,
   });
 
   // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -264,6 +266,7 @@ function parseExtractedTemplate(
     i18nNormalizeLineEndingsInICUs,
     leadingTriviaChars: [],
     alwaysAttemptHtmlToR3AstConversion: options.usePoisonedData,
+    enableBlockSyntax: options.enableBlockSyntax,
   });
 
   return {

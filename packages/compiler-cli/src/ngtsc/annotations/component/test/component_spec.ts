@@ -103,6 +103,7 @@ function setup(
       compilationMode,
       new DeferredSymbolTracker(checker),
       /* forbidOrphanRenderering */ false,
+      /* enableBlockSyntax */ true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

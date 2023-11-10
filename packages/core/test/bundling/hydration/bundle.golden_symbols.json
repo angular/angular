@@ -381,9 +381,6 @@
     "name": "Observable"
   },
   {
-    "name": "PERF_MARK_STANDALONE"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -427,9 +424,6 @@
   },
   {
     "name": "RendererStyleFlags2"
-  },
-  {
-    "name": "RootViewRef"
   },
   {
     "name": "RuntimeError"
@@ -742,9 +736,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -1116,6 +1107,9 @@
     "name": "markViewForRefresh"
   },
   {
+    "name": "markedFeatures"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1179,7 +1173,7 @@
     "name": "onLeave"
   },
   {
-    "name": "performanceMark"
+    "name": "performanceMarkFeature"
   },
   {
     "name": "populateDehydratedViewsInLContainerImpl"

@@ -17,7 +17,7 @@ export class AppComponent {
 }
 ```
 
-The `city` property is of type `string` but you can omit the type because of [type inference in TypeScript](typescript.org/type-inference). The `city` property can be used in the `AppComponent` class and can be referenced in the component template.
+The `city` property is of type `string` but you can omit the type because of [type inference in TypeScript](https://www.typescriptlang.org/docs/handbook/type-inference.html). The `city` property can be used in the `AppComponent` class and can be referenced in the component template.
 
 <br>
 

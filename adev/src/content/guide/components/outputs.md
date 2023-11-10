@@ -57,7 +57,7 @@ The `@Output` decorator accepts a parameter that lets you specify a different na
 <docs-code language="ts" highlight="">
 @Component({...})
 export class CustomSlider {
-  @Input('valueChanged') changed = new EventEmitter<number>();
+  @Output('valueChanged') changed = new EventEmitter<number>();
 }
 </docs-code>
 

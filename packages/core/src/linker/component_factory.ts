@@ -83,8 +83,6 @@ export abstract class ComponentRef<C> {
  * Instantiate a factory for a given type of component with `resolveComponentFactory()`.
  * Use the resulting `ComponentFactory.create()` method to create a component of that type.
  *
- * @see [Dynamic Components](guide/dynamic-component-loader)
- *
  * @publicApi
  *
  * @deprecated Angular no longer requires Component factories. Please use other APIs where

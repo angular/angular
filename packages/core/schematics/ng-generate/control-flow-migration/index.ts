@@ -13,8 +13,9 @@ import {normalizePath} from '../../utils/change_tracker';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
+import {migrateTemplate} from './migration';
 import {AnalyzedFile, MigrateError} from './types';
-import {analyze, migrateTemplate} from './util';
+import {analyze} from './util';
 
 interface Options {
   path: string;
@@ -84,6 +85,7 @@ function runControlFlowMigration(
     for (const [start, end] of ranges) {
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
+
       const {migrated, errors} = migrateTemplate(template);
 
       if (migrated !== null) {

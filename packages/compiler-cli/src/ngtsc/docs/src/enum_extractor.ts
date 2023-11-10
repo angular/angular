@@ -43,7 +43,10 @@ function extractEnumMembers(
 function getEnumMemberValue(memberNode: ts.EnumMember): string {
   // If the enum member has a child number literal or string literal,
   // we use that literal as the "value" of the member.
-  const literal =
-      memberNode.getChildren().find(n => ts.isNumericLiteral(n) || ts.isStringLiteral(n));
+  const literal = memberNode.getChildren().find(n => {
+    return ts.isNumericLiteral(n) || ts.isStringLiteral(n) ||
+        (ts.isPrefixUnaryExpression(n) && n.operator === ts.SyntaxKind.MinusToken &&
+         ts.isNumericLiteral(n.operand));
+  });
   return literal?.getText() ?? '';
 }

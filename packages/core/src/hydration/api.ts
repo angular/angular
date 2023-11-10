@@ -20,7 +20,7 @@ import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {getDocument} from '../render3/interfaces/document';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
-import {performanceMark} from '../util/performance';
+import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
@@ -137,7 +137,7 @@ export function withDomHydration(): EnvironmentProviders {
           }
         }
         if (isEnabled) {
-          performanceMark('mark_use_counter', {detail: {feature: 'NgHydration'}});
+          performanceMarkFeature('NgHydration');
         }
         return isEnabled;
       },

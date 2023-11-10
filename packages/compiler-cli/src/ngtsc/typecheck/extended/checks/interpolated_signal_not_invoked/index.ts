@@ -50,7 +50,7 @@ function buildDiagnosticForSignal(
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
 
-    const errorString = `${node.name} is a function and should be invoked : ${node.name}()`;
+    const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
   }

@@ -28,7 +28,7 @@ export class CustomDialog {
   @Input() user: User;
 
   getBioComponent() {
-    return this.user.isAdmin ? AdminBio : StardardBio;
+    return this.user.isAdmin ? AdminBio : StandardBio;
   }
 }
 ```
