@@ -88,54 +88,57 @@ export function getDirectivesFromElement(element: HTMLElement):
 
 export const getLatestComponentState =
     (query: ComponentExplorerViewQuery, directiveForest?: ComponentTreeNode[]):
-        {directiveProperties: DirectivesProperties;}|undefined => {
-          // if a directive forest is passed in we don't have to build the forest again.
-          directiveForest = directiveForest ?? buildDirectiveForest();
+        {directiveProperties: DirectivesProperties;}|
+    undefined => {
+      // if a directive forest is passed in we don't have to build the forest again.
+      directiveForest = directiveForest ?? buildDirectiveForest();
 
-          const node = queryDirectiveForest(query.selectedElement, directiveForest);
-          if (!node) {
-            return;
-          }
+      const node = queryDirectiveForest(query.selectedElement, directiveForest);
+      if (!node) {
+        return;
+      }
 
-          const directiveProperties: DirectivesProperties = {};
+      const directiveProperties: DirectivesProperties = {};
 
-          const injector = ngDebug().getInjector(node.nativeElement);
+      const injector = ngDebug().getInjector(node.nativeElement);
 
-          const resolutionPathWithProviders = getInjectorResolutionPath(injector).map(
-              injector => ({injector, providers: getInjectorProviders(injector)}));
+      let resolutionPathWithProviders: {injector: Injector; providers: ProviderRecord[];}[] = [];
+      if (hasDiDebugAPIs()) {
+        resolutionPathWithProviders = getInjectorResolutionPath(injector).map(
+            injector => ({injector, providers: getInjectorProviders(injector)}));
+      }
 
+      const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
+        const {instance, name} = dir;
+        const metadata = getDirectiveMetadata(instance);
+        metadata.dependencies = getDependenciesForDirective(
+            injector, resolutionPathWithProviders, instance.constructor);
 
-          const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
-            const {instance, name} = dir;
-            const metadata = getDirectiveMetadata(instance);
-            metadata.dependencies = getDependenciesForDirective(
-                injector, resolutionPathWithProviders, instance.constructor);
-
-            if (query.propertyQuery.type === PropertyQueryTypes.All) {
-              directiveProperties[dir.name] = {
-                props: serializeDirectiveState(instance),
-                metadata,
-              };
-            }
-
-            if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
-              directiveProperties[name] = {
-                props: deeplySerializeSelectedProperties(
-                    instance, query.propertyQuery.properties[name] || []),
-                metadata,
-              };
-            }
+        if (query.propertyQuery.type === PropertyQueryTypes.All) {
+          directiveProperties[dir.name] = {
+            props: serializeDirectiveState(instance),
+            metadata,
           };
+        }
 
-          node.directives.forEach((dir) => populateResultSet(dir));
-          if (node.component) {
-            populateResultSet(node.component);
-          }
-
-          return {
-            directiveProperties,
+        if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
+          directiveProperties[name] = {
+            props: deeplySerializeSelectedProperties(
+                instance, query.propertyQuery.properties[name] || []),
+            metadata,
           };
-        };
+        }
+      };
+
+      node.directives.forEach((dir) => populateResultSet(dir));
+      if (node.component) {
+        populateResultSet(node.component);
+      }
+
+      return {
+        directiveProperties,
+      };
+    };
 
 export function serializeElementInjectorWithId(injector: Injector): SerializedInjector|null {
   let id: string;
