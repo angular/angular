@@ -405,16 +405,15 @@ function getEnvironmentInjectorProviders(injector: EnvironmentInjector): Provide
 
   const providerImportsContainer = getProviderImportsContainer(injector);
   if (providerImportsContainer === null) {
-    // There is a special case where the bootstrapped component does not
-    // import any NgModules. In this case the environment injector connected to
-    // that component is the root injector, which does not have a provider imports
-    // container (and thus no concept of module import paths). Therefore we simply
-    // return the provider records as is.
-    if (isRootInjector(injector)) {
-      return providerRecordsWithoutImportPaths;
-    }
-
-    throwError('Could not determine where injector providers were configured.');
+    // We assume that if an environment injector exists without an associated provider imports
+    // container, it was created without such a container. Some examples cases where this could
+    // happen:
+    // - The root injector of a standalone application
+    // - A router injector created by using the providers array in a lazy loaded route
+    // - A manually created injector that is attached to the injector tree
+    // Since each of these cases has no provider container, there is no concept of import paths,
+    // so we can simply return the provider records.
+    return providerRecordsWithoutImportPaths;
   }
 
   const providerToPath = getProviderImportPaths(providerImportsContainer);
@@ -446,10 +445,6 @@ function getEnvironmentInjectorProviders(injector: EnvironmentInjector): Provide
 
 function isPlatformInjector(injector: Injector) {
   return injector instanceof R3Injector && injector.scopes.has('platform');
-}
-
-function isRootInjector(injector: Injector) {
-  return injector instanceof R3Injector && injector.scopes.has('root');
 }
 
 /**
