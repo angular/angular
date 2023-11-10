@@ -1,7 +1,7 @@
 <h1 align="center">Angular - The modern web developer's platform</h1>
 
 <p align="center">
-  <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
+  <img src="aio/src/assets/images/logos/angular/angular_renaissance.png" alt="angular-logo" width="120px" height="120px"/>
   <br>
   <em>Angular is a development platform for building mobile and desktop web applications
     <br> using TypeScript/JavaScript and other languages.</em>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
+  <a href="https://angular.dev/"><strong>angular.dev</strong></a>
   <br>
 </p>
 
@@ -141,20 +141,20 @@ Join the conversation and help the community.
 **Love Angular? Give our repo a star :star: :arrow_up:.**
 
 [contributing]: CONTRIBUTING.md
-[quickstart]: https://angular.io/start
+[quickstart]: https://angular.dev/tutorials/learn-angular
 [changelog]: CHANGELOG.md
-[ng]: https://angular.io
-[documentation]: https://angular.io/docs
+[ng]: https://angular.dev
+[documentation]: https://angular.dev/overview
 [angularmaterial]: https://material.angular.io/
-[cli]: https://cli.angular.io/
-[architecture]: https://angular.io/guide/architecture
-[componentstemplates]: https://angular.io/guide/displaying-data
-[forms]: https://angular.io/guide/forms-overview
-[api]: https://angular.io/api
-[angularelements]: https://angular.io/guide/elements
-[ssr]: https://angular.io/guide/ssr
-[schematics]: https://angular.io/guide/schematics
-[lazyloading]: https://angular.io/guide/lazy-loading-ngmodules
+[cli]: https://angular.dev/tools/cli
+[architecture]: https://angular.dev/essentials
+[componentstemplates]: https://angular.dev/tutorials/learn-angular/components-in-angular
+[forms]: https://angular.dev/tutorials/learn-angular/forms
+[api]: https://angular.dev/api
+[angularelements]: https://angular.dev/guide/elements
+[ssr]: https://angular.dev/guide/ssr
+[schematics]: https://angular.dev/tools/cli/schematics
+[lazyloading]: https://angular.dev/guide/ngmodules/lazy-loading
 [node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
@@ -164,4 +164,4 @@ Join the conversation and help the community.
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
 [youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular
-[animations]: https://angular.io/guide/animations
+[animations]: https://angular.dev/guide/animations
