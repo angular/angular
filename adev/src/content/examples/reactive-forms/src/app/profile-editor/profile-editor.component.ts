@@ -13,18 +13,18 @@ import { FormArray } from '@angular/forms';
 })
 export class ProfileEditorComponent {
 // #docregion required-validator, aliases
-  profileForm = this.fb.group({
+  profileForm = this.formBuilder.group({
     firstName: ['', Validators.required],
     lastName: [''],
-    address: this.fb.group({
+    address: this.formBuilder.group({
       street: [''],
       city: [''],
       state: [''],
       zip: ['']
     }),
 // #enddocregion required-validator
-    aliases: this.fb.array([
-      this.fb.control('')
+    aliases: this.formBuilder.array([
+      this.formBuilder.control('')
     ])
 // #docregion required-validator
   });
@@ -36,7 +36,7 @@ export class ProfileEditorComponent {
   }
 
 // #enddocregion aliases-getter
-  constructor(private fb: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder) { }
 
   updateProfile() {
     this.profileForm.patchValue({
@@ -49,7 +49,7 @@ export class ProfileEditorComponent {
 // #docregion add-alias
 
   addAlias() {
-    this.aliases.push(this.fb.control(''));
+    this.aliases.push(this.formBuilder.control(''));
   }
 // #enddocregion add-alias
 // #docregion on-submit
