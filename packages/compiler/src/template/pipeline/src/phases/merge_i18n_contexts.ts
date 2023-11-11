@@ -33,13 +33,13 @@ export function mergeI18nContexts(job: ComponentCompilationJob) {
   }
 
   // For each non-root i18n op, merge its context into the root i18n op's context.
-  for (const childI18nOp of i18nOps.values()) {
-    if (childI18nOp.xref !== childI18nOp.root) {
-      const childContext = i18nContexts.get(childI18nOp.context!)!;
-      const rootI18nOp = i18nOps.get(childI18nOp.root)!;
+  for (const context of i18nContexts.values()) {
+    if (context.contextKind === ir.I18nContextKind.ChildI18n) {
+      const childI18n = i18nOps.get(context.i18nBlock)!;
+      const rootI18nOp = i18nOps.get(childI18n.root)!;
       const rootContext = i18nContexts.get(rootI18nOp.context!)!;
-      mergeParams(rootContext.params, childContext.params);
-      mergeParams(rootContext.postprocessingParams, childContext.postprocessingParams);
+      mergeParams(rootContext.params, context.params);
+      mergeParams(rootContext.postprocessingParams, context.postprocessingParams);
     }
   }
 }

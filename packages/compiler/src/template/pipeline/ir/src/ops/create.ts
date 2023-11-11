@@ -10,7 +10,7 @@ import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {R3DeferBlockMetadata} from '../../../../../render3/view/api';
-import {BindingKind, DeferTriggerKind, I18nParamValueFlags, Namespace, OpKind} from '../enums';
+import {BindingKind, DeferTriggerKind, I18nContextKind, I18nParamValueFlags, Namespace, OpKind} from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
 import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
@@ -1088,6 +1088,8 @@ export function createIcuEndOp(xref: XrefId): IcuEndOp {
 export interface I18nContextOp extends Op<CreateOp> {
   kind: OpKind.I18nContext;
 
+  contextKind: I18nContextKind;
+
   /**
    *  The id of this context.
    */
@@ -1120,10 +1122,11 @@ export interface I18nContextOp extends Op<CreateOp> {
 }
 
 export function createI18nContextOp(
-    xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
+    contextKind: I18nContextKind, xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
     sourceSpan: ParseSourceSpan): I18nContextOp {
   return {
     kind: OpKind.I18nContext,
+    contextKind,
     xref,
     i18nBlock,
     message,
