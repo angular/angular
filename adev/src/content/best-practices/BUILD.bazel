@@ -65,7 +65,6 @@ generate_guides(
         "//adev/src/content/examples/styleguide:src/06-01/app/app.component.html",
         "//adev/src/content/examples/styleguide:src/06-01/app/shared/highlight.directive.ts",
         "//adev/src/content/examples/styleguide:src/06-03/app/shared/validator.directive.ts",
-        "//adev/src/content/examples/styleguide:src/06-03/app/shared/validator2.directive.ts",
         "//adev/src/content/examples/styleguide:src/07-01/app/heroes/shared/hero.service.ts",
         "//adev/src/content/examples/styleguide:src/07-04/app/heroes/shared/hero-arena.service.avoid.ts",
         "//adev/src/content/examples/styleguide:src/07-04/app/heroes/shared/hero-arena.service.ts",

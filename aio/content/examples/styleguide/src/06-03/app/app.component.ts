@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'sg-app',
   template: `
   <input type="text" tohValidator>
-  <textarea tohValidator2></textarea>`
+  <textarea tohValidator></textarea>`
 })
 export class AppComponent { }
