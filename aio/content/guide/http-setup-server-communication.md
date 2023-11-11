@@ -2,9 +2,9 @@
 
 Before you can use `HttpClient`, you must add it to the application's [root dependency injector](guide/dependency-injection). 
 
-Most apps do so in the `providers` array of `bootstrapApplication()` in `main.ts`.
+Most apps do so in the `providers` array of `ApplicationConfig` in `app.config.ts`.
 
-<code-example header="main.ts (excerpt)" path="http/src/main.ts" region="sketch"></code-example>
+<code-example header="app.config.ts (excerpt)" path="http/src/app/app.config.ts" region="sketch"></code-example>
 
 You can then inject the `HttpClient` service as a dependency of an application class, as shown in the following `ConfigService` example.
 

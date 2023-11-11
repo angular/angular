@@ -7,9 +7,9 @@ Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSON
 Angular JSONP requests return an `Observable`.
 Follow the pattern for subscribing to observables and use the RxJS `map` operator to transform the response before using the [async pipe](api/common/AsyncPipe) to manage the results.
 
-Enable JSONP by providing the `HttpClientJsonpModule` in the `bootstrapApplication` providers array in `main.ts` like this:
+Enable JSONP by providing the `HttpClientJsonpModule` in the `ApplicationConfig` providers array in `app.config.ts` like this:
 
-<code-example path="http/src/main.ts" region="jsonp"></code-example>
+<code-example header="app.config.ts (excerpt)" path="http/src/app/app.config.ts" region="jsonp"></code-example>
 
 In the following example, the `searchHeroesJsonp()` method uses a JSONP request to query for heroes whose names contain the search term acquired from the user.
 
