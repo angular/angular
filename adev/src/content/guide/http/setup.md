@@ -4,12 +4,14 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 
 ## Providing `HttpClient` through dependency injection
 
-`HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `main.ts`.
+`HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `app.config.ts`.
 
 <docs-code language="ts">
-bootstrapApplication(App, {providers: [
-  provideHttpClient(),
-]});
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+  ]
+};
 </docs-code>
 
 If your app is using NgModule-based bootstrap instead, you can include `provideHttpClient` in the providers of your app's NgModule:
