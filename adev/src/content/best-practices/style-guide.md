@@ -752,26 +752,24 @@ An element may have more than one attribute directive applied.
 
 <docs-code header="app/app.component.html" path="styleguide/src/06-01/app/app.component.html"/>
 
-### `HostListener`/`HostBinding` decorators versus `host` metadata
+### `Host` metadata versus `HostListener`/`HostBinding` decorators
 
 #### Style 06-03
 
-**Consider** preferring the `@HostListener` and `@HostBinding` to the `host` property of the `@Directive` and `@Component` decorators.
 
-**Do** be consistent in your choice.
+**Do** use the `host` property of the `@Directive` and `@Component` decorators instead of the `@HostListener` and `@HostBinding` decorators.
+
+
 
 **Why**? <br />
-The property associated with `@HostBinding` or the method associated with `@HostListener` can be modified only in a single place &mdash;in the directive's class.
-If you use the `host` metadata property, you must modify both the property/method declaration in the directive's class and the metadata in the decorator associated with the directive.
+TypeScript preserves the type information of methods with decorators, and when one of the arguments for the method is a native Event type, this preserved type information can lead to runtime errors in non-browser environments (e.g., server-side pre-rendering).
+
+**Why**? <br />
+The `@HostListener` and `@HostBinding` decorators exist exclusively for backwards compatibility.
+
 
 <docs-code header="app/shared/validator.directive.ts" path="styleguide/src/06-03/app/shared/validator.directive.ts"/>
 
-Compare with the less preferred `host` metadata alternative.
-
-**Why**? <br />
-The `host` metadata is only one term to remember and doesn't require extra ES imports.
-
-<docs-code header="app/shared/validator2.directive.ts" path="styleguide/src/06-03/app/shared/validator2.directive.ts"/>
 ## Services
 
 ### Services are singletons

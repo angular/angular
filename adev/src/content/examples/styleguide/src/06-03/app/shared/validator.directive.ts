@@ -1,13 +1,18 @@
+/* eslint-disable @angular-eslint/no-host-metadata-property */
 // #docregion
-import { Directive, HostBinding, HostListener } from '@angular/core';
+import { Directive } from '@angular/core';
 
 @Directive({
   standalone: true,
-  selector: '[tohValidator]'
+  selector: '[tohValidator]',
+  host: {
+    '[attr.role]': 'role',
+    '(mouseenter)': 'onMouseEnter()'
+  }
 })
 export class ValidatorDirective {
-  @HostBinding('attr.role') role = 'button';
-  @HostListener('mouseenter') onMouseEnter() {
+  role = 'button';
+  onMouseEnter() {
     // do work
   }
 }
