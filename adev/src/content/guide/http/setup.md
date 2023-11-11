@@ -7,7 +7,7 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 `HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `main.ts`.
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
+bootstrapApplication(App, {providers: [
   provideHttpClient(),
 ]});
 </docs-code>
@@ -42,7 +42,7 @@ export class ConfigService {
 ### `withFetch`
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
+bootstrapApplication(App, {providers: [
   provideHttpClient(
     withFetch(),
   ),
