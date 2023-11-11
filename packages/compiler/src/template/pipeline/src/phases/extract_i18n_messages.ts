@@ -55,13 +55,17 @@ const LIST_DELIMITER = '|';
  * used in the final output.
  */
 export function extractI18nMessages(job: CompilationJob): void {
-  // Save the i18n context ops for later use.
+  // Save the i18n start and i18n context ops for later use.
   const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
+  const i18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nContext:
           i18nContexts.set(op.xref, op);
+          break;
+        case ir.OpKind.I18nStart:
+          i18nBlocks.set(op.xref, op);
           break;
       }
     }
@@ -94,7 +98,8 @@ export function extractI18nMessages(job: CompilationJob): void {
           if (i18nContext.contextKind === ir.I18nContextKind.Icu) {
             const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
             unit.create.push(subMessage);
-            const parentMessage = i18nBlockMessages.get(i18nContext.i18nBlock);
+            const rootI18nId = i18nBlocks.get(i18nContext.i18nBlock)!.root;
+            const parentMessage = i18nBlockMessages.get(rootI18nId);
             parentMessage?.subMessages.push(subMessage.xref);
           }
           ir.OpList.remove<ir.CreateOp>(op);

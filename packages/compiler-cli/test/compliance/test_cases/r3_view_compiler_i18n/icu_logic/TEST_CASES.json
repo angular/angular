@@ -178,7 +178,7 @@
           ]
         }
       ],
-      "skipForTemplatePipeline": true
+      "focusTest": true
     },
     {
       "description": "should handle icus with interpolations",
