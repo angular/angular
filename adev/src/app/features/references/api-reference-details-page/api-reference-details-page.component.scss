@@ -52,6 +52,7 @@
         width: 60%;
       }
       &:not(.adev-reference-api-tab) {
+        width: 100%;
         max-width: var(--page-width);
       }
     }
