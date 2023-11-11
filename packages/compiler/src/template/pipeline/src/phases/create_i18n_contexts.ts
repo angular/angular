@@ -28,7 +28,9 @@ export function createI18nContexts(job: CompilationJob) {
         case ir.OpKind.I18nStart:
           // Each i18n block gets its own context.
           xref = job.allocateXrefId();
-          unit.create.push(ir.createI18nContextOp(xref, op.xref, op.message, null!));
+          const contextKind =
+              op.xref === op.root ? ir.I18nContextKind.RootI18n : ir.I18nContextKind.ChildI18n;
+          unit.create.push(ir.createI18nContextOp(contextKind, xref, op.xref, op.message, null!));
           op.context = xref;
           currentI18nOp = op;
           break;
@@ -44,7 +46,8 @@ export function createI18nContexts(job: CompilationJob) {
           if (op.message.id !== currentI18nOp.message.id) {
             // There was an enclosing i18n block around this ICU somewhere.
             xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(xref, currentI18nOp.xref, op.message, null!));
+            unit.create.push(ir.createI18nContextOp(
+                ir.I18nContextKind.Icu, xref, currentI18nOp.xref, op.message, null!));
             op.context = xref;
           } else {
             // The i18n block was generated because of this ICU, OR it was explicit, but the ICU is

@@ -553,3 +553,9 @@ export enum DerivedRepeaterVarIdentity {
   Even,
   Odd,
 }
+
+export enum I18nContextKind {
+  RootI18n,
+  ChildI18n,
+  Icu
+}

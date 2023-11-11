@@ -57,17 +57,11 @@ const LIST_DELIMITER = '|';
 export function extractI18nMessages(job: CompilationJob): void {
   // Save the i18n context ops for later use.
   const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
-  // Record which contexts represent i18n blocks (any other contexts are assumed to have been
-  // created from ICUs).
-  const i18nBlockContexts = new Set<ir.XrefId>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nContext:
           i18nContexts.set(op.xref, op);
-          break;
-        case ir.OpKind.I18nStart:
-          i18nBlockContexts.add(op.context!);
           break;
       }
     }
@@ -96,8 +90,8 @@ export function extractI18nMessages(job: CompilationJob): void {
           if (!op.context) {
             throw Error('ICU op should have its context set.');
           }
-          if (!i18nBlockContexts.has(op.context)) {
-            const i18nContext = i18nContexts.get(op.context)!;
+          const i18nContext = i18nContexts.get(op.context)!;
+          if (i18nContext.contextKind === ir.I18nContextKind.Icu) {
             const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
             unit.create.push(subMessage);
             const parentMessage = i18nBlockMessages.get(i18nContext.i18nBlock);

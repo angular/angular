@@ -14,29 +14,12 @@ import {CompilationJob} from '../compilation';
  * Resolves placeholders for element tags inside of an ICU.
  */
 export function resolveI18nIcuPlaceholders(job: CompilationJob) {
-  const contextOps = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nContext:
-          contextOps.set(op.xref, op);
-          break;
-      }
-    }
-  }
-
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.IcuStart:
-          if (op.context === null) {
-            throw Error('Icu should have its i18n context set.');
-          }
-          const i18nContext = contextOps.get(op.context)!;
-          for (const node of op.message.nodes) {
-            node.visit(new ResolveIcuPlaceholdersVisitor(i18nContext.postprocessingParams));
-          }
-          break;
+      if (op.kind === ir.OpKind.I18nContext && op.contextKind === ir.I18nContextKind.Icu) {
+        for (const node of op.message.nodes) {
+          node.visit(new ResolveIcuPlaceholdersVisitor(op.postprocessingParams));
+        }
       }
     }
   }
