@@ -272,7 +272,7 @@ it('should render a defer block in different states', async () => {
 });
 ```
 
-## Behavior with Server-side rendering (SSR) and Static side generation (SSG)
+## Behavior with Server-side rendering (SSR) and Static site generation (SSG)
 
 When rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified). Triggers are ignored on the server.
 

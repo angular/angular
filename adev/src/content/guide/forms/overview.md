@@ -206,7 +206,7 @@ flowchart TB
         direction TB
         FC2(FormControl)
         O(Observers)
-        CVA(ControlValueAccesor)
+        CVA(ControlValueAccessor)
         I("&lt;input&gt;")
         FC2-.->|Fires a 'valueChanges' event to observers|O
         O-->|ControlValueAccessor receives valueChanges event|CVA
