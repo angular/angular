@@ -39,7 +39,7 @@ If your backend service uses different names for the XSRF token cookie or header
 Add it to the `provideHttpClient` call as follows:
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
+bootstrapApplication(App, {providers: [
   provideHttpClient(
     withXsrfConfiguration({
       cookieName: 'CUSTOM_XSRF_TOKEN',
@@ -54,7 +54,7 @@ boostrapApplication(App, {providers: [
 If the built-in XSRF protection mechanism doesn't work for your application, you can disable it using the `withNoXsrfProtection` feature:
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
+bootstrapApplication(App, {providers: [
   provideHttpClient(
     withNoXsrfProtection(),
   ),
