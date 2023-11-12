@@ -41,7 +41,7 @@ describe('Lazy Loading AngularJS Tests', () => {
 
   // Workaround for https://github.com/angular/protractor/issues/4724
   async function loadAngularJS() {
-    // Abort if `resumeBootstrap` has already occured
+    // Abort if `resumeBootstrap` has already occurred
     if (await browser.executeScript(`return '__TESTABILITY__NG1_APP_ROOT_INJECTOR__' in window;`)) {
         return;
     }
