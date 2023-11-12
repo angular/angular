@@ -145,7 +145,8 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        body = this.parseBody(request, chunksAll);
+        const contentType = response.headers.get('Content-Type') ?? '';
+        body = this.parseBody(request, chunksAll, contentType);
       } catch (error) {
         // Body loading or parsing failed
         observer.error(new HttpErrorResponse({
@@ -193,8 +194,8 @@ export class FetchBackend implements HttpBackend {
     }
   }
 
-  private parseBody(request: HttpRequest<any>, binContent: Uint8Array): string|ArrayBuffer|Blob
-      |object|null {
+  private parseBody(request: HttpRequest<any>, binContent: Uint8Array, contentType: string): string
+      |ArrayBuffer|Blob|object|null {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
@@ -203,7 +204,7 @@ export class FetchBackend implements HttpBackend {
       case 'text':
         return new TextDecoder().decode(binContent);
       case 'blob':
-        return new Blob([binContent]);
+        return new Blob([binContent], {type: contentType});
       case 'arraybuffer':
         return binContent.buffer;
     }
