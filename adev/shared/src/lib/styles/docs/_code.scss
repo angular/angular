@@ -14,6 +14,8 @@
       position: relative;
       padding: 0 0.3rem;
       background: var(--red-to-orange-horizontal-gradient);
+      // Fallback
+      background-color: var(--red-to-orange-horizontal-gradient-fallback);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;

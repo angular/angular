@@ -51,6 +51,9 @@
   --gray-100: oklch(97.12% 0.002 325.59); // #f6f5f6
   --gray-50: oklch(98.81% 0 0); // #fbfbfb
 
+  // FALLBACKS
+  --red-to-orange-horizontal-gradient-fallback: #e8b3cd;
+
   // GRADIENTS
   --red-to-pink-horizontal-gradient: linear-gradient(
     90deg,
