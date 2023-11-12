@@ -259,7 +259,7 @@ export class UserProfile {
       nativeElement.style.padding = computePadding();
     }, {phase: AfterRenderPhase.Write});
 
-    // Use the `Read` phase to read geometric properties after all writes have occured.
+    // Use the `Read` phase to read geometric properties after all writes have occurred.
     afterNextRender(() => {
       this.elementHeight = nativeElement.getBoundingClientRect().height;
     }, {phase: AfterRenderPhase.Read});

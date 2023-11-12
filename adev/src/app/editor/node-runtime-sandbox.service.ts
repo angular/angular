@@ -26,7 +26,7 @@ export const DEV_SERVER_READY_MSG = 'Watch mode enabled. Watching for file chang
 export const OUT_OF_MEMORY_MSG = 'Out of memory';
 
 const enum PROCESS_EXIT_CODE {
-  SUCCESS = 0, // process exited succesfully
+  SUCCESS = 0, // process exited successfully
   ERROR = 10, // process exited with error
   SIGTERM = 143, // 143 = gracefully terminated by SIGTERM, e.g. Ctrl + C
 }
@@ -73,7 +73,7 @@ export class NodeRuntimeSandbox {
   }
 
   async init(): Promise<void> {
-    // Note: the error state can already be set when loading the NodeRuntimeSanbox
+    // Note: the error state can already be set when loading the NodeRuntimeSandbox
     // in an unsupported environment.
     if (this.nodeRuntimeState.error()) {
       return;
@@ -155,7 +155,7 @@ export class NodeRuntimeSandbox {
    * Initialize the WebContainer for an Angular project
    */
   private async initProject(): Promise<void> {
-    // prevent re-initializion
+    // prevent re-initialization
     if (this._isProjectInitialized()) return;
 
     // clean up the sandbox if it was initialized before so that the CLI can
@@ -230,7 +230,7 @@ export class NodeRuntimeSandbox {
    * Initialize the WebContainer for the Angular CLI
    */
   private async initAngularCli() {
-    // prevent re-initializion
+    // prevent re-initialization
     if (this._isAngularCliInitialized()) return;
 
     // clean up the sandbox if a project was initialized before so the CLI can
@@ -292,7 +292,7 @@ export class NodeRuntimeSandbox {
 
     const terminal = this.terminalHandler.interactiveTerminalInstance;
 
-    // use WebContainer spawn directly so that the proccess isn't killed on
+    // use WebContainer spawn directly so that the process isn't killed on
     // cleanup
     const shellProcess = await webContainer.spawn('bash');
 
@@ -516,10 +516,10 @@ export class NodeRuntimeSandbox {
 
   /**
    * Kill existing processes and remove files from the WebContainer
-   * when switching tutorials that have diferent requirements
+   * when switching tutorials that have different requirements
    */
   private async cleanup() {
-    // await the proccess to be killed before removing the files because
+    // await the process to be killed before removing the files because
     // a process can create files during the promise
     await this.killExistingProcesses();
     await this.removeFiles();

@@ -15,7 +15,7 @@ directives and pipes used inside a component template.
   <img alt="loading image" src="loading.gif" />
 } @error {
   <!-- error template fragment -->
-  <p>An loading error occured</p>
+  <p>An loading error occurred</p>
 }
 ```
 
