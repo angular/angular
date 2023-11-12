@@ -5,7 +5,7 @@ This tutorial shows you how to create a template-driven form. The control elemen
 Template-driven forms use [two-way data binding](guide/templates/two-way-binding) to update the data model in the component as changes are made in the template and vice versa.
 
 <docs-callout helpful title="Template vs Reactive forms">
-Angular supports two design approaches for interactive forms. Template-driven forms allow you to use form-specific directives in your Angular template.Reactive forms provide a model-driven approach to buildin forms.
+Angular supports two design approaches for interactive forms. Template-driven forms allow you to use form-specific directives in your Angular template.Reactive forms provide a model-driven approach to building forms.
 
 Template-driven forms are a great choice for small or simple forms, while reactive forms are more scalable and suitable for complex forms. For a comparison of the two approaches, see [Choosing an approach](guide/forms#choosing-an-approach)
 </docs-callout>

@@ -1,4 +1,4 @@
-// TODO: Feature Componetized like HeroCenter
+// TODO: Feature Componentized like HeroCenter
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 

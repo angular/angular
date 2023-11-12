@@ -45,7 +45,7 @@ export default function(options: Options): Rule {
     }
 
     if (errors.length > 0) {
-      context.logger.warn(`WARNING: ${errors.length} errors occured during your migration:\n`);
+      context.logger.warn(`WARNING: ${errors.length} errors occurred during your migration:\n`);
       errors.forEach((err: string) => {
         context.logger.warn(err);
       });

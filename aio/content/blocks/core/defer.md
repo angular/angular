@@ -14,7 +14,7 @@ A type of [block](api/core/defer) that can be used to defer load the JavaScript 
   <img alt="loading image" src="loading.gif" />
 } @error {
   <!-- error template fragment -->
-  <p>An loading error occured</p>
+  <p>An loading error occurred</p>
 }
 ```
 
