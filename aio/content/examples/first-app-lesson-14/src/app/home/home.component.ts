@@ -45,6 +45,7 @@ export class HomeComponent {
   filterResults(text: string) {
     if (!text) {
       this.filteredLocationList = this.housingLocationList;
+      return;
     }
 
     this.filteredLocationList = this.housingLocationList.filter(
