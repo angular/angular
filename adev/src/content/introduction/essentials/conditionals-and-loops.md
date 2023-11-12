@@ -32,13 +32,13 @@ export class UserControls {
 }
 ```
 
-In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear page.
+In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear in the page.
 
 ### `@else` block
 
 While the `@if` block can be helpful in many situations, it's common to also show fallback UI when the condition is not met.
 
-For example, in the `UserControls` component, rather than show a blank screen, it would be helpful to users to know that they're not able to see anything because they're not authenticated.
+For example, in the `UserControls` component, rather than showing a blank screen, it would be helpful to users to know that they're not able to see anything because they're not authenticated.
 
 When you need a fallback, similar to JavaScript's `else` clause, add an `@else` block to accomplish the same effect.
 
