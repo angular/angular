@@ -38,13 +38,13 @@ export class ThemeManager {
     }
 
     this.loadThemePreference();
-    this.watchPreferedColorScheme();
+    this.watchPreferredColorScheme();
   }
 
   setTheme(theme: Theme): void {
     this.theme.set(theme);
     this.setThemeInLocalStorage();
-    this.setThemeBodyClasses(theme === 'auto' ? preferedScheme() : theme);
+    this.setThemeBodyClasses(theme === 'auto' ? preferredScheme() : theme);
   }
 
   // 1. Read theme preferences stored in localStorage
@@ -54,7 +54,7 @@ export class ThemeManager {
     const useTheme = savedUserPreference ?? 'auto';
 
     this.theme.set(useTheme);
-    this.setThemeBodyClasses(useTheme === 'auto' ? preferedScheme() : useTheme);
+    this.setThemeBodyClasses(useTheme === 'auto' ? preferredScheme() : useTheme);
   }
 
   // Set theme classes on the body element
@@ -81,14 +81,14 @@ export class ThemeManager {
     }
   }
 
-  private watchPreferedColorScheme() {
+  private watchPreferredColorScheme() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-      const preferedScheme = event.matches ? 'dark' : 'light';
-      this.setThemeBodyClasses(preferedScheme);
+      const preferredScheme = event.matches ? 'dark' : 'light';
+      this.setThemeBodyClasses(preferredScheme);
     });
   }
 }
 
-function preferedScheme(): 'dark' | 'light' {
+function preferredScheme(): 'dark' | 'light' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
