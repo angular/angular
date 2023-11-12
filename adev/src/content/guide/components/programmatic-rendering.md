@@ -33,7 +33,7 @@ export class CustomDialog {
 }
 ```
 
-See the [NgComponentOutlet API reference](api/core/NgComponentOutlet) for more information on the
+See the [NgComponentOutlet API reference](api/common/NgComponentOutlet) for more information on the
 directive's capabilities.
 
 ## Using ViewContainerRef
