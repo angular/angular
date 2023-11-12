@@ -80,7 +80,7 @@ export class TypingsLoader {
         .readFile(`./node_modules/${library}/package.json`, 'utf-8')
         .catch((error) => {
           // Note: "ENOENT" errors occurs:
-          //    - While reseting the NodeRuntimeSandbox.
+          //    - While resetting the NodeRuntimeSandbox.
           //    - When the library is not a dependency in the project, its package.json won't exist.
           //
           // In both cases we ignore the error to continue the process.
