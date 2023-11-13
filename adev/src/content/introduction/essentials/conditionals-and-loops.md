@@ -32,7 +32,7 @@ export class UserControls {
 }
 ```
 
-In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear in the page.
+In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear page.
 
 ### `@else` block
 
