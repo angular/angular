@@ -246,7 +246,7 @@ jobs:
   bazel-saucelabs:
     # TODO: Replace legacy job with Bazel saucelabs job.
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest-4-cores
+    runs-on: ubuntu-latest-4core
     env:
       JOBS: 2
     steps:
