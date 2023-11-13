@@ -28,8 +28,7 @@ import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCo
  */
 const MAXIMUM_REFRESH_RERUNS = 100;
 
-export function detectChangesInternal<T>(
-    tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
+export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
   const afterRenderEventManager = environment.afterRenderEventManager;
@@ -45,6 +44,8 @@ export function detectChangesInternal<T>(
   }
 
   try {
+    const tView = lView[TVIEW];
+    const context = lView[CONTEXT];
     refreshView(tView, lView, tView.template, context);
     detectChangesInViewWhileDirty(lView);
   } catch (error) {
@@ -89,11 +90,10 @@ function detectChangesInViewWhileDirty(lView: LView) {
   }
 }
 
-export function checkNoChangesInternal<T>(
-    tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
+export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) {
   setIsInCheckNoChangesMode(true);
   try {
-    detectChangesInternal(tView, lView, context, notifyErrorHandler);
+    detectChangesInternal(lView, notifyErrorHandler);
   } finally {
     setIsInCheckNoChangesMode(false);
   }
@@ -108,7 +108,7 @@ export function checkNoChangesInternal<T>(
  */
 export function detectChanges(component: {}): void {
   const view = getComponentViewByInstance(component);
-  detectChangesInternal(view[TVIEW], view, component);
+  detectChangesInternal(view);
 }
 
 /**
