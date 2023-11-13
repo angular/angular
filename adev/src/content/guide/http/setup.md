@@ -42,11 +42,13 @@ export class ConfigService {
 ### `withFetch`
 
 <docs-code language="ts">
-bootstrapApplication(App, {providers: [
-  provideHttpClient(
-    withFetch(),
-  ),
-]});
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(
+      withFetch(),
+    ),
+  ]
+};
 </docs-code>
 
 By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API instead.
