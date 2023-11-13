@@ -85,7 +85,7 @@ export class CustomSlider extends BaseSlider {}
 You can additionally specify an output alias in the `outputs` list by putting the alias after a colon in the string:
 
 <docs-code language="ts" highlight="">
-// `CustomSlider` inherits the `disabled` property from `BaseSlider`.
+// `CustomSlider` inherits the `valueChanged` property from `BaseSlider`.
 @Component({
   ...,
   outputs: ['valueChanged: volumeChanged'],
