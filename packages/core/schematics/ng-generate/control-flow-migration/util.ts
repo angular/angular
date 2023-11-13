@@ -283,16 +283,18 @@ export function processNgTemplates(template: string): string {
 
   // swap placeholders and remove
   for (const [name, t] of templates) {
-    const placeholder = `${name}|`;
-
-    if (template.indexOf(placeholder) > -1) {
+    const replaceRegex = new RegExp(`${name}\\|`, 'g');
+    const matches = [...template.matchAll(replaceRegex)];
+    if (matches.length > 0) {
       if (t.i18n !== null) {
         const container = wrapIntoI18nContainer(t.i18n, t.children);
-        template = template.replace(placeholder, container);
+        template = template.replace(replaceRegex, container);
       } else {
-        template = template.replace(placeholder, t.children);
+        template = template.replace(replaceRegex, t.children);
       }
-      if (t.count <= 2) {
+
+      // the +1 accounts for the t.count's counting of the original template
+      if (t.count === matches.length + 1) {
         template = template.replace(t.contents, '');
       }
     }
