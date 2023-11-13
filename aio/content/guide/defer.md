@@ -240,7 +240,7 @@ In the example below, the prefetching starts when a browser becomes idle and the
 
 ## Testing
 
-Angular provides TestBed APIs to simplify the process of testing `@defer` blocks and triggering different states during testing. By default, `@defer` blocks in tests are "paused", so that you can manually transition between states.
+Angular provides TestBed APIs to simplify the process of testing `@defer` blocks and triggering different states during testing. By default, `@defer` blocks in tests are in "paused" (`@placeholder`) state, so that you can manually transition between states.
 
 ```typescript
 it('should render a defer block in different states', async () => {
@@ -249,6 +249,8 @@ it('should render a defer block in different states', async () => {
     template: `
       @defer {
         <large-component />
+      } @placeholder {
+        Placeholder
       } @loading {
         Loading...
       }
@@ -260,7 +262,10 @@ it('should render a defer block in different states', async () => {
   const componentFixture = TestBed.createComponent(ComponentA);
 
   // Retrieve the list of all defer block fixtures and get the first block.
-  const deferBlockFixture = componentFixture.getDeferBlocks()[0];
+  const deferBlockFixture = async (componentFixture.getDeferBlocks())[0];
+
+  // Renders placeholder state by default.
+  expect(componentFixture.nativeElement.innerHTML).toContain('Placeholder');
 
   // Render loading state and verify rendered output.
   await deferBlockFixture.render(DeferBlockState.Loading);
@@ -268,7 +273,7 @@ it('should render a defer block in different states', async () => {
 
   // Render final state and verify the output.
   await deferBlockFixture.render(DeferBlockState.Completed);
-  expect(componentFixture.nativeElement.innerHTML).toContain('<large-component>');
+  expect(componentFixture.nativeElement.innerHTML).toContain('large works!');
 });
 ```
 
