@@ -2730,6 +2730,49 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should migrate multiple if/else using the same ng-template', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `  <div *ngIf="hasPermission; else noPermission">presentation</div>`,
+        `  <div *ngIf="someOtherPermission; else noPermission">presentation</div>`,
+        `</div>`,
+        `<ng-template #noPermission>`,
+        `  <p>No Permissions</p>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @if (hasPermission) {`,
+        `<div>presentation</div>`,
+        `} @else {\n`,
+        `  <p>No Permissions</p>\n`,
+        `}`,
+        `  @if (someOtherPermission) {`,
+        `<div>presentation</div>`,
+        `} @else {\n`,
+        `  <p>No Permissions</p>\n`,
+        `}`,
+        `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('imports', () => {
