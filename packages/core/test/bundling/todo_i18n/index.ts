@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵdetectChanges as detectChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Injectable, NgModule, ViewEncapsulation} from '@angular/core';
 import {loadTranslations} from '@angular/localize';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
@@ -129,13 +129,13 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) {
+  constructor(public todoStore: TodoStore, private readonly cdr: ChangeDetectorRef) {
     (window as any).todoAppComponent = this;
   }
 
   cancelEditingTodo(todo: Todo) {
     todo.editing = false;
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   finishUpdatingTodo(todo: Todo, editedTitle: string) {
@@ -151,22 +151,22 @@ class ToDoAppComponent {
 
   editTodo(todo: Todo) {
     todo.editing = true;
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   removeCompleted() {
     this.todoStore.removeCompleted();
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   toggleCompletion(todo: Todo) {
     this.todoStore.toggleCompletion(todo);
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   remove(todo: Todo) {
     this.todoStore.remove(todo);
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   addTodo() {
@@ -174,22 +174,22 @@ class ToDoAppComponent {
       this.todoStore.add(this.newTodoText);
       this.newTodoText = '';
     }
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   toggleAllTodos(checked: boolean) {
     this.todoStore.setAllTo(checked);
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   updateEditedTodoValue(todo: Todo, value: string) {
     todo.title = value;
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   updateNewTodoValue(value: string) {
     this.newTodoText = value;
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 }
 
