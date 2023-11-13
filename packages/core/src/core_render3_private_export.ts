@@ -52,7 +52,6 @@ export {
   ComponentRef as ɵRender3ComponentRef,
   ComponentType as ɵComponentType,
   CssSelectorList as ɵCssSelectorList,
-  detectChanges as ɵdetectChanges,
   DirectiveDef as ɵDirectiveDef,
   DirectiveType as ɵDirectiveType,
   getDirectives as ɵgetDirectives,
