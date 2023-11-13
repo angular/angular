@@ -78,7 +78,7 @@ export function handleCode(text: string): string {
 
   // strip trailing the braces for functions,
   // remove leading @ for decorators
-  let entity = text.replace(/^@|(\(\))$/g, '');
+  let entity = text.replace(/^@|(\(.*\))$/g, '');
   let method: string | undefined;
 
   // We're parsing a class.method
