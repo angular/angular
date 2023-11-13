@@ -11,7 +11,6 @@ import {consumerAfterComputation, consumerBeforeComputation, consumerPollProduce
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainer} from '../assert';
-import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
@@ -99,17 +98,6 @@ export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) 
   }
 }
 
-/**
- * Synchronously perform change detection on a component (and possibly its sub-components).
- *
- * This function triggers change detection in a synchronous way on a component.
- *
- * @param component The component which the change detection should be performed on.
- */
-export function detectChanges(component: {}): void {
-  const view = getComponentViewByInstance(component);
-  detectChangesInternal(view);
-}
 
 /**
  * Different modes of traversing the logical view tree during change detection.
