@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵdetectChanges as detectChanges} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({
@@ -39,7 +39,7 @@ class BoxWithOverriddenStylesComponent {
 
   @HostBinding('style') styles = {};
 
-  constructor() {
+  constructor(private readonly cdr: ChangeDetectorRef) {
     this.onInActive();
   }
 
@@ -50,7 +50,7 @@ class BoxWithOverriddenStylesComponent {
     } else {
       this.onActive();
     }
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 
   onActive() {
@@ -103,7 +103,7 @@ class AnimationWorldComponent {
   private _hostElement: HTMLElement;
   public styles: {[key: string]: any}|null = null;
 
-  constructor(element: ElementRef) {
+  constructor(element: ElementRef, private readonly cdr: ChangeDetectorRef) {
     this._hostElement = element.nativeElement;
   }
 
@@ -114,7 +114,7 @@ class AnimationWorldComponent {
   toggleActive(item: any, makeColorGrey: MakeColorGreyDirective) {
     item.active = !item.active;
     makeColorGrey.toggle();
-    detectChanges(this);
+    this.cdr.detectChanges();
   }
 }
 
