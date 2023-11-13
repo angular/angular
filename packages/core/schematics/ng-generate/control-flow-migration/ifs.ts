@@ -68,11 +68,14 @@ function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Resul
   const matchThen = etm.attr.value.match(/;\s*then/gm);
   const matchElse = etm.attr.value.match(/;\s*else/gm);
 
-  if (matchThen && matchThen.length > 0) {
-    return buildIfThenElseBlock(etm, tmpl, matchThen[0], matchElse![0], offset);
-  } else if (matchElse && matchElse.length > 0) {
+  if (etm.thenAttr !== undefined || etm.elseAttr !== undefined) {
+    // bound if then / if then else
+    return buildBoundIfElseBlock(etm, tmpl, offset);
+  } else if (matchThen && matchThen.length > 0) {
+    return buildStandardIfThenElseBlock(etm, tmpl, matchThen[0], matchElse![0], offset);
+  } else if ((matchElse && matchElse.length > 0)) {
     // just else
-    return buildIfElseBlock(etm, tmpl, matchElse[0], offset);
+    return buildStandardIfElseBlock(etm, tmpl, matchElse![0], offset);
   }
 
   return buildIfBlock(etm, tmpl, offset);
@@ -100,15 +103,32 @@ function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Resu
   return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
-function buildIfElseBlock(
+function buildStandardIfElseBlock(
     etm: ElementToMigrate, tmpl: string, elseString: string, offset: number): Result {
   // includes the mandatory semicolon before as
-  const lbString = etm.hasLineBreaks ? '\n' : '';
   const condition = etm.getCondition(elseString).replace(' as ', '; as ');
+  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
+  return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
+}
+
+function buildBoundIfElseBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  // includes the mandatory semicolon before as
+  const condition = etm.attr.value.replace(' as ', '; as ');
+  const elsePlaceholder = `#${etm.elseAttr!.value}|`;
+  if (etm.thenAttr !== undefined) {
+    const thenPlaceholder = `#${etm.thenAttr!.value}|`;
+    return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
+  }
+  return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
+}
+
+function buildIfElseBlock(
+    etm: ElementToMigrate, tmpl: string, condition: string, elsePlaceholder: string,
+    offset: number): Result {
+  const lbString = etm.hasLineBreaks ? '\n' : '';
 
   const originals = getOriginals(etm, tmpl, offset);
 
-  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
   const startBlock = `@if (${condition}) {${lbString}${start}`;
 
@@ -127,19 +147,25 @@ function buildIfElseBlock(
   return {tmpl: updatedTmpl, offsets: {pre, post}};
 }
 
-function buildIfThenElseBlock(
+function buildStandardIfThenElseBlock(
     etm: ElementToMigrate, tmpl: string, thenString: string, elseString: string,
     offset: number): Result {
+  // includes the mandatory semicolon before as
   const condition = etm.getCondition(thenString).replace(' as ', '; as ');
+  const thenPlaceholder = `#${etm.getTemplateName(thenString, elseString)}|`;
+  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
+  return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
+}
+
+function buildIfThenElseBlock(
+    etm: ElementToMigrate, tmpl: string, condition: string, thenPlaceholder: string,
+    elsePlaceholder: string, offset: number): Result {
   const lbString = etm.hasLineBreaks ? '\n' : '';
 
   const originals = getOriginals(etm, tmpl, offset);
 
   const startBlock = `@if (${condition}) {${lbString}`;
   const elseBlock = `${lbString}} @else {${lbString}`;
-
-  const thenPlaceholder = `#${etm.getTemplateName(thenString, elseString)}|`;
-  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
 
   const postBlock = thenPlaceholder + elseBlock + elsePlaceholder + `${lbString}}`;
   const ifThenElseBlock = startBlock + postBlock;

@@ -360,13 +360,16 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
     {start: string, middle: string, end: string} {
   const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
   if ((etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
-      etm.el.attrs.length === 1) {
+      (etm.el.attrs.length === 1 || (etm.el.attrs.length === 2 && etm.elseAttr !== undefined) ||
+       (etm.el.attrs.length === 3 && etm.elseAttr !== undefined && etm.thenAttr !== undefined))) {
     // this is the case where we're migrating and there's no need to keep the ng-container
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const middle = tmpl.slice(childStart, childEnd);
     return {start: '', middle, end: ''};
-  } else if (etm.el.name === 'ng-template' && etm.el.attrs.length === 2 && i18nAttr !== undefined) {
+  } else if (
+      etm.el.name === 'ng-template' && i18nAttr !== undefined &&
+      (etm.el.attrs.length === 2 || (etm.el.attrs.length === 3 && etm.elseAttr !== undefined))) {
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const middle = wrapIntoI18nContainer(i18nAttr, tmpl.slice(childStart, childEnd));

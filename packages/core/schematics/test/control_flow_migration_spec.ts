@@ -328,6 +328,75 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if else case as bindings', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf,NgIfElse} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template [ngIf]="show" [ngIfElse]="tmplName"><span>Content here</span></ng-template>`,
+        `</div>`,
+        `<ng-template #tmplName><p>Stuff</p></ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<span>Content here</span>`,
+        `} @else {`,
+        `<p>Stuff</p>`,
+        `}`,
+        `</div>\n`,
+      ].join('\n'));
+    });
+
+    it('should migrate an if then else case as bindings', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf,NgIfElse} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template [ngIf]="show" [ngIfElse]="elseTmpl" [ngIfThenElse]="thenTmpl">Ignore Me</ng-template>`,
+        `</div>`,
+        `<ng-template #elseTmpl><p>Stuff</p></ng-template>`,
+        `<ng-template #thenTmpl><span>Content here</span></ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<span>Content here</span>`,
+        `} @else {`,
+        `<p>Stuff</p>`,
+        `}`,
+        `</div>\n`,
+      ].join('\n'));
+    });
+
     it('should migrate an if case on a container', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -480,6 +549,75 @@ describe('control flow migration', () => {
         `<ng-container i18n><span>Content here</span></ng-container>`,
         `}`,
         `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate a bound NgIfThenElse case with ng-templates with i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template [ngIf]="show" [ngIfThenElse]="thenTmpl" [ngIfElse]="elseTmpl">ignored</ng-template>`,
+        `</div>`,
+        `<ng-template #thenTmpl i18n="@@something"><span>Content here</span></ng-template>`,
+        `<ng-template #elseTmpl i18n="@@somethingElse"><p>other</p></ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `} @else {`,
+        `<ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
+        `}`,
+        `</div>\n`,
+      ].join('\n'));
+    });
+
+    it('should migrate a bound NgIfElse case with ng-templates with i18n', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<ng-template [ngIf]="show" [ngIfElse]="elseTmpl" i18n="@@something"><span>Content here</span></ng-template>`,
+        `</div>`,
+        `<ng-template #elseTmpl i18n="@@somethingElse"><p>other</p></ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `} @else {`,
+        `<ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
+        `}`,
+        `</div>\n`,
       ].join('\n'));
     });
 
