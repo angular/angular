@@ -10,6 +10,8 @@ import {Attribute, Element, RecursiveVisitor, Text} from '@angular/compiler';
 import ts from 'typescript';
 
 export const ngtemplate = 'ng-template';
+export const boundngifelse = '[ngIfElse]';
+export const boundngifthenelse = '[ngIfThenElse]';
 
 function allFormsOf(selector: string): string[] {
   return [
@@ -84,12 +86,18 @@ export type MigrateError = {
 export class ElementToMigrate {
   el: Element;
   attr: Attribute;
+  elseAttr: Attribute|undefined;
+  thenAttr: Attribute|undefined;
   nestCount = 0;
   hasLineBreaks = false;
 
-  constructor(el: Element, attr: Attribute) {
+  constructor(
+      el: Element, attr: Attribute, elseAttr: Attribute|undefined = undefined,
+      thenAttr: Attribute|undefined = undefined) {
     this.el = el;
     this.attr = attr;
+    this.elseAttr = elseAttr;
+    this.thenAttr = thenAttr;
   }
 
   getCondition(targetStr: string): string {
@@ -226,7 +234,9 @@ export class ElementCollector extends RecursiveVisitor {
     if (el.attrs.length > 0) {
       for (const attr of el.attrs) {
         if (this._attributes.includes(attr.name)) {
-          this.elements.push(new ElementToMigrate(el, attr));
+          const elseAttr = el.attrs.find(x => x.name === boundngifelse);
+          const thenAttr = el.attrs.find(x => x.name === boundngifthenelse);
+          this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr));
         }
       }
     }
