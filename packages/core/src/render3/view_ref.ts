@@ -284,8 +284,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(
-        this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+    detectChangesInternal(this._lView, this.notifyErrorHandler);
   }
 
   /**
@@ -296,8 +295,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(
-          this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+      checkNoChangesInternal(this._lView, this.notifyErrorHandler);
     }
   }
 
