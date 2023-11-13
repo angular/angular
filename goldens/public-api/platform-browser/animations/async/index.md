@@ -4,10 +4,10 @@
 
 ```ts
 
-import { Provider } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 
 // @public
-export function provideAnimationsAsync(type?: 'animations' | 'noop'): Provider[];
+export function provideAnimationsAsync(type?: 'animations' | 'noop'): EnvironmentProviders;
 
 // (No @packageDocumentation comment for this package)
 
