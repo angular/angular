@@ -49,4 +49,4 @@ You can use this property to dynamically bind attributes. Update the submit `but
 
 You now know the basics around how validation works with reactive forms.
 
-Great job learning these core concepts of working with forms in Angular. If you want to learn more, be sure to refer to the [Angular forms documenation](guide/forms/form-validation).
+Great job learning these core concepts of working with forms in Angular. If you want to learn more, be sure to refer to the [Angular forms documentation](guide/forms/form-validation).
