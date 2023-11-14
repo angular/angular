@@ -21,8 +21,8 @@ export class ContactComponent implements OnInit {
   contactForm: FormGroup;
 
   constructor(
-      private contactService: ContactService, userService: UserService, private fb: FormBuilder) {
-    this.contactForm = this.fb.group({name: ['', Validators.required]});
+      private contactService: ContactService, userService: UserService, private formBuilder: FormBuilder) {
+    this.contactForm = this.formBuilder.group({name: ['', Validators.required]});
     this.userName = userService.userName;
   }
 

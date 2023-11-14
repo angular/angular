@@ -83,6 +83,9 @@ function collectMessage(
     messageOp.params.set(subMessage.messagePlaceholder!, subMessageVar);
   }
 
+  // Sort the params for consistency with TemaplateDefinitionBuilder output.
+  messageOp.params = new Map([...messageOp.params.entries()].sort());
+
   // Check that the message has all of its parameters filled out.
   assertAllParamsResolved(messageOp);
 
@@ -97,6 +100,9 @@ function collectMessage(
   // If nescessary, add a post-processing step and resolve any placeholder params that are
   // set in post-processing.
   if (messageOp.needsPostprocessing) {
+    // Sort the post-processing params for consistency with TemaplateDefinitionBuilder output.
+    messageOp.postprocessingParams = new Map([...messageOp.postprocessingParams.entries()].sort());
+
     const extraTransformFnParams: o.Expression[] = [];
     if (messageOp.postprocessingParams.size > 0) {
       extraTransformFnParams.push(o.literalMap(
@@ -198,12 +204,14 @@ function i18nGenerateClosureVar(
  * Asserts that all of the message's placeholders have values.
  */
 function assertAllParamsResolved(op: ir.I18nMessageOp): asserts op is ir.I18nMessageOp {
-  for (const placeholder in op.message.placeholders) {
+  for (let placeholder in op.message.placeholders) {
+    placeholder = placeholder.trimEnd();
     if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
     }
   }
-  for (const placeholder in op.message.placeholderToMessage) {
+  for (let placeholder in op.message.placeholderToMessage) {
+    placeholder = placeholder.trimEnd();
     if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
       throw Error(`Failed to resolve i18n message placeholder: ${placeholder}`);
     }

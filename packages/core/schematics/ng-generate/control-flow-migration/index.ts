@@ -10,7 +10,6 @@ import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit
 import {join, relative} from 'path';
 
 import {normalizePath} from '../../utils/change_tracker';
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {migrateTemplate} from './migration';
@@ -23,10 +22,12 @@ interface Options {
 
 export default function(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
-    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));
-    const allPaths = options.path !== './' ? [...buildPaths, ...testPaths] : [pathToMigrate];
+    let allPaths = [];
+    if (pathToMigrate.trim() !== '') {
+      allPaths.push(pathToMigrate);
+    }
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -82,11 +83,11 @@ function runControlFlowMigration(
     const content = tree.readText(relativePath);
     const update = tree.beginUpdate(relativePath);
 
-    for (const [start, end] of ranges) {
+    for (const {start, end, node, type} of ranges) {
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} = migrateTemplate(template);
+      const {migrated, errors} = migrateTemplate(template, type, node, file);
 
       if (migrated !== null) {
         update.remove(start, length);

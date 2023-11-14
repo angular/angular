@@ -6,15 +6,61 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, RecursiveVisitor} from '@angular/compiler';
+import {Attribute, Element, RecursiveVisitor, Text} from '@angular/compiler';
+import ts from 'typescript';
 
 export const ngtemplate = 'ng-template';
+export const boundngifelse = '[ngIfElse]';
+export const boundngifthenelse = '[ngIfThenElse]';
+
+function allFormsOf(selector: string): string[] {
+  return [
+    selector,
+    `*${selector}`,
+    `[${selector}]`,
+  ];
+}
+
+const commonModuleDirectives = new Set([
+  ...allFormsOf('ngComponentOutlet'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngClass'),
+  ...allFormsOf('ngPlural'),
+  ...allFormsOf('ngPluralCase'),
+  ...allFormsOf('ngStyle'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngComponentOutlet'),
+]);
+
+function pipeMatchRegExpFor(name: string): RegExp {
+  return new RegExp(`\\|\\s*${name}`);
+}
+
+const commonModulePipes = [
+  'date',
+  'async',
+  'currency',
+  'number',
+  'i18nPlural',
+  'i18nSelect',
+  'json',
+  'keyvalue',
+  'slice',
+  'lowercase',
+  'uppercase',
+  'titlecase',
+  'percent',
+  'titlecase',
+].map(name => pipeMatchRegExpFor(name));
 
 /**
  * Represents a range of text within a file. Omitting the end
  * means that it's until the end of the file.
  */
-type Range = [start: number, end?: number];
+type Range = {
+  start: number,
+  end?: number, node: ts.Node, type: string,
+};
 
 export type Offsets = {
   pre: number,
@@ -40,12 +86,18 @@ export type MigrateError = {
 export class ElementToMigrate {
   el: Element;
   attr: Attribute;
+  elseAttr: Attribute|undefined;
+  thenAttr: Attribute|undefined;
   nestCount = 0;
   hasLineBreaks = false;
 
-  constructor(el: Element, attr: Attribute) {
+  constructor(
+      el: Element, attr: Attribute, elseAttr: Attribute|undefined = undefined,
+      thenAttr: Attribute|undefined = undefined) {
     this.el = el;
     this.attr = attr;
+    this.elseAttr = elseAttr;
+    this.thenAttr = thenAttr;
   }
 
   getCondition(targetStr: string): string {
@@ -104,10 +156,17 @@ export class Template {
 /** Represents a file that was analyzed by the migration. */
 export class AnalyzedFile {
   private ranges: Range[] = [];
+  removeCommonModule = false;
 
   /** Returns the ranges in the order in which they should be migrated. */
   getSortedRanges(): Range[] {
-    return this.ranges.slice().sort(([aStart], [bStart]) => bStart - aStart);
+    const templateRanges = this.ranges.slice()
+                               .filter(x => x.type === 'template')
+                               .sort((aStart, bStart) => bStart.start - aStart.start);
+    const importRanges = this.ranges.slice()
+                             .filter(x => x.type === 'import')
+                             .sort((aStart, bStart) => bStart.start - aStart.start);
+    return [...templateRanges, ...importRanges];
   }
 
   /**
@@ -125,11 +184,41 @@ export class AnalyzedFile {
     }
 
     const duplicate =
-        analysis.ranges.find(current => current[0] === range[0] && current[1] === range[1]);
+        analysis.ranges.find(current => current.start === range.start && current.end === range.end);
 
     if (!duplicate) {
       analysis.ranges.push(range);
     }
+  }
+}
+
+/** Finds all non-control flow elements from common module. */
+export class CommonCollector extends RecursiveVisitor {
+  count = 0;
+
+  override visitElement(el: Element): void {
+    if (el.attrs.length > 0) {
+      for (const attr of el.attrs) {
+        if (this.hasDirectives(attr.name) || this.hasPipes(attr.value)) {
+          this.count++;
+        }
+      }
+    }
+    super.visitElement(el, null);
+  }
+
+  override visitText(ast: Text) {
+    if (this.hasPipes(ast.value)) {
+      this.count++;
+    }
+  }
+
+  private hasDirectives(input: string): boolean {
+    return commonModuleDirectives.has(input);
+  }
+
+  private hasPipes(input: string): boolean {
+    return commonModulePipes.some(regexp => regexp.test(input));
   }
 }
 
@@ -145,7 +234,9 @@ export class ElementCollector extends RecursiveVisitor {
     if (el.attrs.length > 0) {
       for (const attr of el.attrs) {
         if (this._attributes.includes(attr.name)) {
-          this.elements.push(new ElementToMigrate(el, attr));
+          const elseAttr = el.attrs.find(x => x.name === boundngifelse);
+          const thenAttr = el.attrs.find(x => x.name === boundngifthenelse);
+          this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr));
         }
       }
     }
