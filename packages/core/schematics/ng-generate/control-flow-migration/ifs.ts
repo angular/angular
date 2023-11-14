@@ -15,7 +15,7 @@ export const ngif = '*ngIf';
 export const boundngif = '[ngIf]';
 export const nakedngif = 'ngIf';
 
-export const ifs = [
+const ifs = [
   ngif,
   nakedngif,
   boundngif,
