@@ -10,7 +10,7 @@ In this activity, you'll learn how to validate forms with reactive forms.
 
 <docs-step title="Import Validators">
 
-Angular providers a set of validation tools. To use them, first update the component to import `Validators` from `@angular/forms`.
+Angular provides a set of validation tools. To use them, first update the component to import `Validators` from `@angular/forms`.
 
 <docs-code language="ts" highlight="[1]">
 import {ReactiveFormsModule, Validators} from '@angular/forms';
