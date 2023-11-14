@@ -1585,6 +1585,208 @@ describe('control flow migration', () => {
     });
   });
 
+  describe('ngForOf', () => {
+    it('should migrate a basic ngForOf', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <ng-template ngFor let-rowData [ngForOf]="things">`,
+        `    <tr><td>{{rowData}}</td></tr>`,
+        `  </ng-template>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (rowData of things; track rowData) {\n  `,
+        `    <tr><td>{{rowData}}</td></tr>\n  `,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should migrate ngForOf with an alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <ng-template ngFor let-rowData let-rowIndex="index" [ngForOf]="things">`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  </ng-template>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (rowData of things; track rowData; let rowIndex = $index) {\n  `,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should migrate ngForOf with track by', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <ng-template ngFor let-rowData [ngForOf]="things" [ngForTrackBy]="trackMe">`,
+        `    <tr><td>{{rowData}}</td></tr>`,
+        `  </ng-template>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (rowData of things; track trackMe($index, rowData)) {\n  `,
+        `    <tr><td>{{rowData}}</td></tr>\n  `,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should migrate ngForOf with track by and alias', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <ng-template ngFor let-rowData let-rowIndex="index" [ngForOf]="things" [ngForTrackBy]="trackMe">`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  </ng-template>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index) {\n  `,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should migrate ngForOf with track by and multiple aliases', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<tbody>`,
+        `  <ng-template ngFor let-rowData let-rowIndex="index" let-rCount="count" [ngForOf]="things" [ngForTrackBy]="trackMe">`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  </ng-template>`,
+        `</tbody>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<tbody>`,
+        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index; let rCount = $count) {\n  `,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
+        `}`,
+        `</tbody>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+  });
+
   describe('ngSwitch', () => {
     it('should migrate an inline template', async () => {
       writeFile(

@@ -12,6 +12,7 @@ import ts from 'typescript';
 export const ngtemplate = 'ng-template';
 export const boundngifelse = '[ngIfElse]';
 export const boundngifthenelse = '[ngIfThenElse]';
+export const nakedngfor = 'ngFor';
 
 function allFormsOf(selector: string): string[] {
   return [
@@ -30,6 +31,10 @@ const commonModuleDirectives = new Set([
   ...allFormsOf('ngStyle'),
   ...allFormsOf('ngTemplateOutlet'),
   ...allFormsOf('ngComponentOutlet'),
+  '[NgForOf]',
+  '[NgForTrackBy]',
+  '[ngIfElse]',
+  '[ngIfThenElse]',
 ]);
 
 function pipeMatchRegExpFor(name: string): RegExp {
@@ -72,6 +77,13 @@ export type Result = {
   offsets: Offsets,
 };
 
+export interface ForAttributes {
+  forOf: string;
+  trackBy: string;
+  item: string;
+  aliases: Map<string, string>;
+}
+
 /**
  * Represents an error that happened during migration
  */
@@ -88,16 +100,18 @@ export class ElementToMigrate {
   attr: Attribute;
   elseAttr: Attribute|undefined;
   thenAttr: Attribute|undefined;
+  forAttrs: ForAttributes|undefined;
   nestCount = 0;
   hasLineBreaks = false;
 
   constructor(
       el: Element, attr: Attribute, elseAttr: Attribute|undefined = undefined,
-      thenAttr: Attribute|undefined = undefined) {
+      thenAttr: Attribute|undefined = undefined, forAttrs: ForAttributes|undefined = undefined) {
     this.el = el;
     this.attr = attr;
     this.elseAttr = elseAttr;
     this.thenAttr = thenAttr;
+    this.forAttrs = forAttrs;
   }
 
   getCondition(targetStr: string): string {
@@ -236,11 +250,37 @@ export class ElementCollector extends RecursiveVisitor {
         if (this._attributes.includes(attr.name)) {
           const elseAttr = el.attrs.find(x => x.name === boundngifelse);
           const thenAttr = el.attrs.find(x => x.name === boundngifthenelse);
-          this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr));
+          const forAttrs = attr.name === nakedngfor ? this.getForAttrs(el) : undefined;
+          this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs));
         }
       }
     }
     super.visitElement(el, null);
+  }
+
+  private getForAttrs(el: Element): ForAttributes {
+    const aliases = new Map<string, string>();
+    let item = '';
+    let trackBy = '';
+    let forOf = '';
+    for (const attr of el.attrs) {
+      if (attr.name === '[ngForTrackBy]') {
+        trackBy = attr.value;
+      }
+      if (attr.name === '[ngForOf]') {
+        forOf = attr.value;
+      }
+      if (attr.name.startsWith('let-')) {
+        if (attr.value === '') {
+          // item
+          item = attr.name.replace('let-', '');
+        } else {
+          // alias
+          aliases.set(attr.name.replace('let-', ''), attr.value);
+        }
+      }
+    }
+    return {forOf, trackBy, item, aliases};
   }
 }
 
