@@ -175,6 +175,56 @@ describe('TestBed with Standalone types', () => {
     TestBed.resetTestingModule();
   });
 
+  it('should override dependencies of standalone components', () => {
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'main dep',
+    })
+    class MainDep {
+    }
+
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'mock dep',
+    })
+    class MockDep {
+    }
+
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [MainDep],
+      template: '<dep />',
+    })
+    class AppComponent {
+    }
+
+    TestBed.configureTestingModule({imports: [AppComponent]});
+
+    let fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // No overrides defined, expecting main dependency to be used.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>main dep</dep>');
+
+    // Emulate an end of a test.
+    TestBed.resetTestingModule();
+
+    // Emulate the start of a next test, make sure previous overrides
+    // are not persisted across tests.
+    TestBed.configureTestingModule({imports: [AppComponent]});
+    TestBed.overrideComponent(AppComponent, {set: {imports: [MockDep]}});
+
+    fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // Main dependency was overridden, expect to see a mock.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>mock dep</dep>');
+  });
+
+
   it('should override providers on standalone component itself', () => {
     const A = new InjectionToken('A');
 
