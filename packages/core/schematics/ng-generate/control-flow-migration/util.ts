@@ -12,7 +12,10 @@ import ts from 'typescript';
 
 import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, Template, TemplateCollector} from './types';
 
-const importRemovals = ['NgIf', 'NgFor', 'NgSwitch', 'NgSwitchCase', 'NgSwitchDefault'];
+const importRemovals = [
+  'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
+  'NgSwitchCase', 'NgSwitchDefault'
+];
 const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
 
 /**
@@ -353,26 +356,34 @@ export function getOriginals(
   return {start, end: ''};
 }
 
+function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): boolean {
+  return etm.el.name === 'ng-template' && i18nAttr !== undefined &&
+      (etm.el.attrs.length === 2 || (etm.el.attrs.length === 3 && etm.elseAttr !== undefined));
+}
+
+function isRemovableContainer(etm: ElementToMigrate): boolean {
+  return (etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
+      (etm.el.attrs.length === 1 || etm.forAttrs !== undefined ||
+       (etm.el.attrs.length === 2 && etm.elseAttr !== undefined) ||
+       (etm.el.attrs.length === 3 && etm.elseAttr !== undefined && etm.thenAttr !== undefined));
+}
+
 /**
  * builds the proper contents of what goes inside a given control flow block after migration
  */
 export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
     {start: string, middle: string, end: string} {
   const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
-  if ((etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
-      (etm.el.attrs.length === 1 || (etm.el.attrs.length === 2 && etm.elseAttr !== undefined) ||
-       (etm.el.attrs.length === 3 && etm.elseAttr !== undefined && etm.thenAttr !== undefined))) {
+  if (isRemovableContainer(etm)) {
     // this is the case where we're migrating and there's no need to keep the ng-container
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const middle = tmpl.slice(childStart, childEnd);
     return {start: '', middle, end: ''};
-  } else if (
-      etm.el.name === 'ng-template' && i18nAttr !== undefined &&
-      (etm.el.attrs.length === 2 || (etm.el.attrs.length === 3 && etm.elseAttr !== undefined))) {
+  } else if (isI18nTemplate(etm, i18nAttr)) {
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
-    const middle = wrapIntoI18nContainer(i18nAttr, tmpl.slice(childStart, childEnd));
+    const middle = wrapIntoI18nContainer(i18nAttr!, tmpl.slice(childStart, childEnd));
     return {start: '', middle, end: ''};
   }
 
