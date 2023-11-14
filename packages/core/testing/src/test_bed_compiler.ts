@@ -396,6 +396,9 @@ export class TestBedCompiler {
       }
 
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
+      if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+        depsTracker.clearScopeCacheFor(declaration);
+      }
       compileComponent(declaration, metadata);
     });
     this.pendingComponents.clear();
