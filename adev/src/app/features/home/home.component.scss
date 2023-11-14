@@ -143,6 +143,7 @@
     padding: 7px;
     opacity: 0;
     transition: opacity 0.5s linear;
+    pointer-events: none;
 
     button {
       font-size: 1rem;
@@ -307,6 +308,7 @@
     .adev-cta,
     .adev-arrow {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 
