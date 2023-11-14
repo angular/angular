@@ -18,10 +18,12 @@
     transform: translateX(0);
     z-index: 99;
     transition: transform 0.3s ease;
-    &:has(.adev-nav-secondary--open) {
-      transform: translateX(82px);
-      transition: transform 0.3s ease-in 0.3s;
-    }
+    // Quick Fix
+    // Mozilla Doesn't support :has() by default.
+    // &:has(.adev-nav-secondary--open) {
+    //   transform: translateX(82px);
+    //   transition: transform 0.3s ease-in 0.3s;
+    // }
   }
 }
 
@@ -47,7 +49,7 @@
     transform: translateX(-100%);
 
     &.adev-nav-secondary--open {
-      transform: translateX(0);
+      transform: translateX(82px);
     }
   }
 
@@ -57,9 +59,9 @@
     transition: transform 0.45s ease-in;
 
     &.adev-nav-secondary--open {
-      transform: translateX(0);
+      transform: translateX(82px);
       // enter delayed
-      transition: transform 0.45s ease-out 0.2s;
+      transition: transform 0.45s ease-out 0.3s;
     }
   }
 }
