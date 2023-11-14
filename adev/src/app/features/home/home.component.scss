@@ -142,6 +142,7 @@
     display: inline-block;
     padding: 7px;
     opacity: 0;
+    visibility: hidden;
     transition: opacity 0.5s linear;
 
     button {
@@ -307,6 +308,7 @@
     .adev-cta,
     .adev-arrow {
       opacity: 1;
+      visibility: visible;
     }
   }
 
