@@ -43,7 +43,7 @@ import { CalculatorService } from './calculator.service';
 
 @Component({
   selector: 'app-receipt’,
-  template: `<p>The total is {{ totalCost }}</h1>`,
+  template: `<h1>The total is {{ totalCost }}</h1>`,
 })
 
 export class Receipt {
