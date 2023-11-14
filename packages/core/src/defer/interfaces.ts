@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {Provider} from '../di/interface/provider';
 import type {DependencyType} from '../render3/interfaces/definition';
 
 /**
@@ -109,6 +110,12 @@ export interface TDeferBlockDetails {
    * which all await the same set of dependencies.
    */
   loadingPromise: Promise<unknown>|null;
+
+  /**
+   * List of providers collected from all NgModules that were imported by
+   * standalone components used within this defer block.
+   */
+  providers: Provider[]|null;
 }
 
 /**

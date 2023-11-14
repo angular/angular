@@ -8,7 +8,9 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
-import {InjectionToken, Injector} from '../di';
+import {CachedInjectorService} from '../cached_injector_service';
+import {EnvironmentInjector, InjectionToken, Injector} from '../di';
+import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
@@ -145,6 +147,7 @@ export function ɵɵdefer(
       dependencyResolverFn: dependencyResolverFn ?? null,
       loadingState: DeferDependenciesLoadingState.NOT_STARTED,
       loadingPromise: null,
+      providers: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
@@ -518,9 +521,29 @@ function applyDeferBlockState(
     const viewIndex = 0;
 
     removeLViewFromLContainer(lContainer, viewIndex);
+
+    let injector: Injector|undefined;
+    if (newState === DeferBlockState.Complete) {
+      // When we render a defer block in completed state, there might be
+      // newly loaded standalone components used within the block, which may
+      // import NgModules with providers. In order to make those providers
+      // available for components declared in that NgModule, we create an instance
+      // of environment injector to host those providers and pass this injector
+      // to the logic that creates a view.
+      const tDetails = getTDeferBlockDetails(hostTView, tNode);
+      const providers = tDetails.providers;
+      if (providers && providers.length > 0) {
+        const parentInjector = hostLView[INJECTOR] as Injector;
+        const parentEnvInjector = parentInjector.get(EnvironmentInjector);
+        injector =
+            parentEnvInjector.get(CachedInjectorService)
+                .getOrCreateInjector(
+                    tDetails, parentEnvInjector, providers, ngDevMode ? 'DeferBlock Injector' : '');
+      }
+    }
     const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
     const embeddedLView =
-        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView});
+        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView, injector});
     addLViewToLContainer(
         lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
     markViewDirty(embeddedLView);
@@ -725,6 +748,12 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       if (directiveDefs.length > 0) {
         primaryBlockTView.directiveRegistry =
             addDepsToRegistry<DirectiveDefList>(primaryBlockTView.directiveRegistry, directiveDefs);
+
+        // Extract providers from all NgModules imported by standalone components
+        // used within this defer block.
+        const directiveTypes = directiveDefs.map(def => def.type);
+        const providers = internalImportProvidersFrom(false, ...directiveTypes);
+        tDetails.providers = providers;
       }
       if (pipeDefs.length > 0) {
         primaryBlockTView.pipeRegistry =
