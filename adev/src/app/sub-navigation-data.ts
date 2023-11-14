@@ -1269,6 +1269,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics/NG8108',
         contentPath: 'reference/extended-diagnostics/NG8108',
       },
+      {
+        label: 'NG8109: Signals must be invoked in template interpolations',
+        path: 'extended-diagnostics/NG8109',
+        contentPath: 'reference/extended-diagnostics/NG8109',
+      },
     ],
   },
   {

@@ -217,6 +217,16 @@ describe('FetchBackend', async () => {
     expect(res.body!.data).toBe('some data');
   });
 
+  it('handles a blob with a mime type', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'blob'})));
+    const type = 'aplication/pdf';
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', new Blob(), {'Content-Type': type});
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<Blob>;
+    expect(res.body?.type).toBe(type);
+  });
+
   it('emits unsuccessful responses via the error path', done => {
     backend.handle(TEST_POST).subscribe({
       error: (err: HttpErrorResponse) => {
@@ -400,12 +410,18 @@ export class MockFetchFactory extends FetchFactory {
         return this.promise;
       }
 
-  mockFlush(status: number, statusText: string, body?: string): void {
+  mockFlush(
+      status: number, statusText: string, body?: string|Blob, headers?: Record<string, string>):
+      void {
     this.clearWarningTimeout?.();
-    this.response.setupBodyStream(body);
-
-    const response =
-        new Response(this.response.stream, {statusText, headers: this.response.headers});
+    if (typeof body === 'string') {
+      this.response.setupBodyStream(body);
+    } else {
+      this.response.setBody(body);
+    }
+    const response = new Response(
+        this.response.stream,
+        {statusText, headers: {...this.response.headers, ...(headers ?? {})}});
 
     // Have to be set outside the constructor because it might throw
     // RangeError: init["status"] must be in the range of 200 to 599, inclusive
@@ -469,6 +485,11 @@ class MockFetchResponse {
       });
     },
   });
+
+  public setBody(body: any) {
+    this.sub$.next(body);
+    this.sub$.complete();
+  }
 
   public setupBodyStream(body?: string) {
     if (body && this.progress.length) {

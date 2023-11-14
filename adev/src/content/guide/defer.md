@@ -4,7 +4,7 @@
 
 Deferrable views can be used in component template to defer the loading of select dependencies within that template. Those dependencies include components, directives, and pipes, and any associated CSS. To use this feature, you can declaratively wrap a section of your template in a `@defer` block which specifies the loading conditions.
 
-Deferrable views support a series of [triggers](guide/defer#triggers), [prefeching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
+Deferrable views support a series of [triggers](guide/defer#triggers), [prefetching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
 
 ```html
 @defer {
@@ -138,7 +138,7 @@ By default, the placeholder will act as the element watched for entering viewpor
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/glossary#template-reference-variable) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
+Alternatively, you can specify a template reference variable in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
 
 ```html
 <div #greeting>Hello!</div>
@@ -162,7 +162,7 @@ By default, the placeholder will act as the interaction element as long as it is
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/glossary#template-reference-variable) as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
+Alternatively, you can specify a template reference variable as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
 
 ```html
 <button type="button" #greeting>Hello!</button>
@@ -188,7 +188,7 @@ By default, the placeholder will act as the hover element as long as it is a sin
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/glossary#template-reference-variable) as the hover element. This variable is passed in as a parameter on the hover trigger.
+Alternatively, you can specify a template reference variable as the hover element. This variable is passed in as a parameter on the hover trigger.
 
 ```html
 <div #greeting>Hello!</div>

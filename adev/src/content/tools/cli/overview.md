@@ -16,7 +16,7 @@ You don't need to set up your local environment until you're ready.
   <docs-card title="Getting Started" link="Get Started" href="tools/cli/setup-local">
     Install Angular CLI to create and build your first app.
   </docs-card>
-  <docs-card title="Command Reference" link="Learn More" href="cli/commands">
+  <docs-card title="Command Reference" link="Learn More" href="cli">
     Discover CLI commands to make you more productive with Angular.
   </docs-card>
   <docs-card title="Schematics" link="Learn More" href="tools/cli/schematics">

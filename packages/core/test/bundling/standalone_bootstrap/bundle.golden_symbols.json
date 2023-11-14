@@ -147,12 +147,6 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
-  },
-  {
-    "name": "HAS_TRANSPLANTED_VIEWS"
-  },
-  {
     "name": "INJECTOR2"
   },
   {
@@ -178,6 +172,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "LContainerFlags"
   },
   {
     "name": "LOCALE_ID2"
@@ -297,9 +294,6 @@
     "name": "Observable"
   },
   {
-    "name": "PERF_MARK_STANDALONE"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -331,9 +325,6 @@
   },
   {
     "name": "RendererStyleFlags2"
-  },
-  {
-    "name": "RootViewRef"
   },
   {
     "name": "RuntimeError"
@@ -589,9 +580,6 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -895,6 +883,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "markedFeatures"
   },
   {
     "name": "maybeWrapInNotSelector"

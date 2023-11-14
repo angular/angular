@@ -24,7 +24,6 @@ import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
 import {createDeferDepsFns} from './phases/create_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
-import {createI18nIcuExpressions} from './phases/create_i18n_icu_expressions';
 import {configureDeferInstructions} from './phases/defer_configs';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
@@ -61,6 +60,7 @@ import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
+import {resolveI18nIcuPlaceholders} from './phases/resolve_i18n_icu_placeholders';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
 import {saveAndRestoreView} from './phases/save_restore_view';
@@ -103,7 +103,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
   {kind: Kind.Tmpl, fn: extractI18nText},
-  {kind: Kind.Tmpl, fn: createI18nIcuExpressions},
   {kind: Kind.Tmpl, fn: applyI18nExpressions},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
@@ -127,6 +126,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
+  {kind: Kind.Tmpl, fn: resolveI18nIcuPlaceholders},
   {kind: Kind.Tmpl, fn: mergeI18nContexts},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
   {kind: Kind.Tmpl, fn: generateTrackFns},

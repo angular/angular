@@ -34,7 +34,7 @@ import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
-import {InternalViewRef, ViewRef} from './linker/view_ref';
+import {ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
@@ -44,6 +44,7 @@ import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
+import {ViewRef as InternalViewRef} from './render3/view_ref';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
@@ -825,7 +826,7 @@ export class ApplicationRef {
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
   /** @internal */
-  _views: InternalViewRef[] = [];
+  _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
 
@@ -1077,7 +1078,7 @@ export class ApplicationRef {
    */
   attachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef);
+    const view = (viewRef as InternalViewRef<unknown>);
     this._views.push(view);
     view.attachToAppRef(this);
   }
@@ -1087,7 +1088,7 @@ export class ApplicationRef {
    */
   detachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef);
+    const view = (viewRef as InternalViewRef<unknown>);
     remove(this._views, view);
     view.detachFromAppRef();
   }

@@ -17,7 +17,7 @@ import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflectio
 import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, PluginConfig} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
@@ -33,13 +33,7 @@ import {getTargetAtPosition, getTcbNodesOfTemplateAtPosition, TargetNodeKind} fr
 import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
-interface LanguageServiceConfig {
-  /**
-   * If true, enable `strictTemplates` in Angular compiler options regardless
-   * of its value in tsconfig.json.
-   */
-  forceStrictTemplates?: true;
-}
+type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
 export class LanguageService {
   private options: CompilerOptions;
@@ -52,7 +46,7 @@ export class LanguageService {
   constructor(
       private readonly project: ts.server.Project,
       private readonly tsLS: ts.LanguageService,
-      private readonly config: LanguageServiceConfig,
+      private readonly config: Omit<PluginConfig, 'angularOnly'>,
   ) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost, config);
@@ -524,6 +518,9 @@ function parseNgCompilerOptions(
   // regardless of its value in tsconfig.json.
   if (config.forceStrictTemplates === true) {
     options.strictTemplates = true;
+  }
+  if (config.enableBlockSyntax === false) {
+    options['_enableBlockSyntax'] = false;
   }
 
   return options;

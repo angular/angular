@@ -223,12 +223,12 @@ export enum OpKind {
   /**
    * An instruction to create an ICU expression.
    */
-  Icu,
+  IcuStart,
 
   /**
    * An instruction to update an ICU expression.
    */
-  IcuUpdate,
+  IcuEnd,
 
   /**
    * An i18n context containing information needed to generate an i18n message.
@@ -500,12 +500,12 @@ export enum I18nParamValueFlags {
   /**
    *  This value represtents an element tag.
    */
-  ElementTag = 0b001,
+  ElementTag = 0b1,
 
   /**
    * This value represents a template tag.
    */
-  TemplateTag = 0b0010,
+  TemplateTag = 0b10,
 
   /**
    * This value represents the opening of a tag.
@@ -516,6 +516,11 @@ export enum I18nParamValueFlags {
    * This value represents the closing of a tag.
    */
   CloseTag = 0b1000,
+
+  /**
+   * This value represents an i18n expression index.
+   */
+  ExpressionIndex = 0b10000
 }
 
 /**

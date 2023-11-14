@@ -25,6 +25,12 @@ export interface PluginConfig {
    * of its value in tsconfig.json.
    */
   forceStrictTemplates?: true;
+
+  /**
+   * If false, disables parsing control flow blocks in the compiler. Should be used only when older
+   * versions of Angular that do not support blocks (pre-v17) used with the language service.
+   */
+  enableBlockSyntax?: false;
 }
 
 export type GetTcbResponse = {

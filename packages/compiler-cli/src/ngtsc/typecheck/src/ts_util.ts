@@ -77,11 +77,21 @@ export function tsCreateElement(tagName: string): ts.Expression {
  * Unlike with `tsCreateVariable`, the type of the variable is explicitly specified.
  */
 export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.VariableStatement {
+  let initializer: ts.Expression = ts.factory.createNonNullExpression(ts.factory.createNull());
+
+  // When we create a variable like `var _t1: boolean = null!`, TypeScript actually infers `_t1`
+  // to be `never`, instead of a `boolean`. To work around it, we cast the value to boolean again
+  // in the initializer, e.g. `var _t1: boolean = null! as boolean;`.
+  if (type.kind === ts.SyntaxKind.BooleanKeyword) {
+    initializer = ts.factory.createAsExpression(
+        initializer, ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword));
+  }
+
   const decl = ts.factory.createVariableDeclaration(
       /* name */ id,
       /* exclamationToken */ undefined,
       /* type */ type,
-      /* initializer */ ts.factory.createNonNullExpression(ts.factory.createNull()));
+      /* initializer */ initializer);
   return ts.factory.createVariableStatement(
       /* modifiers */ undefined,
       /* declarationList */[decl]);
@@ -135,4 +145,18 @@ export function tsCallMethod(
 export function isAccessExpression(node: ts.Node): node is ts.ElementAccessExpression|
     ts.PropertyAccessExpression {
   return ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
+}
+
+/**
+ * Creates a TypeScript node representing a numeric value.
+ */
+export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixUnaryExpression {
+  // As of TypeScript 5.3 negative numbers are represented as `prefixUnaryOperator` and passing a
+  // negative number (even as a string) into `createNumericLiteral` will result in an error.
+  if (value < 0) {
+    const operand = ts.factory.createNumericLiteral(Math.abs(value));
+    return ts.factory.createPrefixUnaryExpression(ts.SyntaxKind.MinusToken, operand);
+  }
+
+  return ts.factory.createNumericLiteral(value);
 }

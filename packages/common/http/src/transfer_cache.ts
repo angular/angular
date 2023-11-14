@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵformatRuntimeError as formatRuntimeError, ɵperformanceMark as performanceMark, ɵtruncateMiddle as truncateMiddle, ɵwhenStable as whenStable} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵformatRuntimeError as formatRuntimeError, ɵperformanceMarkFeature as performanceMarkFeature, ɵtruncateMiddle as truncateMiddle, ɵwhenStable as whenStable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -227,7 +227,7 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
     {
       provide: CACHE_OPTIONS,
       useFactory: (): CacheOptions => {
-        performanceMark('mark_use_counter', {detail: {feature: 'NgHttpTransferCache'}});
+        performanceMarkFeature('NgHttpTransferCache');
         return {isCacheActive: true, ...cacheOptions};
       }
     },

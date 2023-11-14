@@ -13,7 +13,7 @@ import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainer} from '../assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
 import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
 import {getOrBorrowReactiveLViewConsumer, maybeReturnReactiveLViewConsumer, ReactiveLViewConsumer} from '../reactive_lview_consumer';
@@ -46,26 +46,7 @@ export function detectChangesInternal<T>(
 
   try {
     refreshView(tView, lView, tView.template, context);
-    let retries = 0;
-    // If after running change detection, this view still needs to be refreshed or there are
-    // descendants views that need to be refreshed due to re-dirtying during the change detection
-    // run, detect changes on the view again. We run change detection in `Targeted` mode to only
-    // refresh views with the `RefreshView` flag.
-    while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-           lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
-      if (retries === MAXIMUM_REFRESH_RERUNS) {
-        throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-            ngDevMode &&
-                'Infinite change detection while trying to refresh views. ' +
-                    'There may be components which each cause the other to require a refresh, ' +
-                    'causing an infinite loop.');
-      }
-      retries++;
-      // Even if this view is detached, we still detect changes in targeted mode because this was
-      // the root of the change detection run.
-      detectChangesInView(lView, ChangeDetectionMode.Targeted);
-    }
+    detectChangesInViewWhileDirty(lView);
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -82,6 +63,29 @@ export function detectChangesInternal<T>(
       // Invoke all callbacks registered via `after*Render`, if needed.
       afterRenderEventManager?.end();
     }
+  }
+}
+
+function detectChangesInViewWhileDirty(lView: LView) {
+  let retries = 0;
+  // If after running change detection, this view still needs to be refreshed or there are
+  // descendants views that need to be refreshed due to re-dirtying during the change detection
+  // run, detect changes on the view again. We run change detection in `Targeted` mode to only
+  // refresh views with the `RefreshView` flag.
+  while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+         lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
+    if (retries === MAXIMUM_REFRESH_RERUNS) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+          ngDevMode &&
+              'Infinite change detection while trying to refresh views. ' +
+                  'There may be components which each cause the other to require a refresh, ' +
+                  'causing an infinite loop.');
+    }
+    retries++;
+    // Even if this view is detached, we still detect changes in targeted mode because this was
+    // the root of the change detection run.
+    detectChangesInView(lView, ChangeDetectionMode.Targeted);
   }
 }
 
@@ -320,7 +324,7 @@ function viewShouldHaveReactiveConsumer(tView: TView) {
 function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
-    lContainer[HAS_CHILD_VIEWS_TO_REFRESH] = false;
+    lContainer[FLAGS] &= ~LContainerFlags.HasChildViewsToRefresh;
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
       detectChangesInViewIfAttached(embeddedLView, mode);
@@ -336,7 +340,7 @@ function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
 function markTransplantedViewsForRefresh(lView: LView) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
-    if (!lContainer[HAS_TRANSPLANTED_VIEWS]) continue;
+    if (!(lContainer[FLAGS] & LContainerFlags.HasTransplantedViews)) continue;
 
     const movedViews = lContainer[MOVED_VIEWS]!;
     ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');

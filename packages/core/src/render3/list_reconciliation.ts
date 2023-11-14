@@ -238,8 +238,11 @@ export function reconcile<T, V>(
     liveCollection.destroy(liveCollection.detach(liveEndIdx--));
   }
 
+
   // - destroy items that were detached but never attached again.
-  detachedItems?.forEach(item => liveCollection.destroy(item));
+  detachedItems?.forEach(item => {
+    liveCollection.destroy(item);
+  });
 }
 
 function attachPreviouslyDetached<T, V>(
@@ -285,8 +288,7 @@ class MultiMap<K, V> {
   delete(key: K): boolean {
     const listOfKeys = this.map.get(key);
     if (listOfKeys !== undefined) {
-      // THINK: pop from the end or shift from the front? "Correct" vs. "slow".
-      listOfKeys.pop();
+      listOfKeys.shift();
       return true;
     }
     return false;

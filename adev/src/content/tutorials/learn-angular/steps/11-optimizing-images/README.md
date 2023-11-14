@@ -69,7 +69,7 @@ Note: For the `fill` image to render properly, its parent element must be styled
 
 <docs-step title="Prioritize important images">
 
-One of the most important optimizations for loading performance is to prioritize any image which might be the ["LCP element"(https://web.dev/articles/optimize-lcp)], which is the largest on-screen graphical element when the page loads. To optimize your loading times, make sure to add the `priority` attribute to your "hero image" or any other images that you think could be an LCP element.
+One of the most important optimizations for loading performance is to prioritize any image which might be the ["LCP element"](https://web.dev/articles/optimize-lcp), which is the largest on-screen graphical element when the page loads. To optimize your loading times, make sure to add the `priority` attribute to your "hero image" or any other images that you think could be an LCP element.
 
 ```ts
 <img ngSrc="www.example.com/image.png" height="600" width="800" priority />

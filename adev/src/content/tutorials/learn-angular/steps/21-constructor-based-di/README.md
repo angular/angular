@@ -2,7 +2,7 @@
 
 In previous activities you used the `inject()` function to make resources available, "providing" them to your components. The `inject()` function is one pattern and it is useful to know that there is another pattern for injecting resources called constructor-based dependency injection.
 
-You specify the resources as parameters to the `constructor` function of a component. Angular will make those resources available to your compoonent.
+You specify the resources as parameters to the `constructor` function of a component. Angular will make those resources available to your component.
 <br><br>
 In this activity you will learn to use constructor-based dependency injection.
 
