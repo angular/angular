@@ -85,6 +85,7 @@
     "@types/chrome": "^0.0.248",
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
+    "@types/dom-navigation": "^1.0.2",
     "@types/dom-view-transitions": "^1.0.1",
     "@types/hammerjs": "2.0.43",
     "@types/jasmine": "^5.0.0",
@@ -151,7 +152,7 @@
     "todomvc-common": "^1.0.5",
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
-    "typescript": "5.2.2",
+    "typescript": "5.3.1-rc",
     "webtreemap": "^2.0.1",
     "xhr2": "0.2.1",
     "yargs": "^17.2.1"

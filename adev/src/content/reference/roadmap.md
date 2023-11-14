@@ -22,7 +22,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 | [Explore Angular Signals](guide/signals)                                      | [Migrate your Angular Material to MDC](https://material.angular.io/guide/mdc-migration) |
 | [Learn about Hydration](guide/hydration)                                      | [Migrate to Standalone APIs](reference/migrations/standalone)                           |
 | [Deferrable views](https://github.com/angular/angular/discussions/50716)      | [Improve image performance with NgOptimizedImage](guide/image-optimization)             |
-| [Built-in control flow](https://github.com/angular/angular/discussions/50719) | [Try out Inject](di)                                                                    |
+| [Built-in control flow](https://github.com/angular/angular/discussions/50719) | [Try out Inject](tutorials/learn-angular/inject-based-di)                               |
 |                                                                               | [New CDK directives](https://material.angular.io/cdk/categories)                        |
 
 ## Improving the Angular developer experience

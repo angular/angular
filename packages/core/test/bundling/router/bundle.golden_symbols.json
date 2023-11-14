@@ -276,12 +276,6 @@
     "name": "GuardsCheckStart"
   },
   {
-    "name": "HAS_CHILD_VIEWS_TO_REFRESH"
-  },
-  {
-    "name": "HAS_TRANSPLANTED_VIEWS"
-  },
-  {
     "name": "HistoryStateManager"
   },
   {
@@ -325,6 +319,9 @@
   },
   {
     "name": "ItemComponent"
+  },
+  {
+    "name": "LContainerFlags"
   },
   {
     "name": "LOCALE_ID2"
@@ -535,9 +532,6 @@
   },
   {
     "name": "OutletInjector"
-  },
-  {
-    "name": "PERF_MARK_STANDALONE"
   },
   {
     "name": "PLATFORM_DESTROY_LISTENERS"
@@ -1708,6 +1702,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "markedFeatures"
   },
   {
     "name": "match"

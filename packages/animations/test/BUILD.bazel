@@ -18,10 +18,13 @@ ts_library(
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
+        "//packages/common",
         "//packages/core",
         "//packages/core/testing",
+        "//packages/platform-browser",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",
     ],
 )

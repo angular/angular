@@ -50,13 +50,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "bare_icu.js",
+              "expected": "bare_icu.template.js",
+              "templatePipelineExpected": "bare_icu.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support interpolation with custom interpolation config",
@@ -70,8 +76,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle icus with html",
@@ -85,8 +90,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle icus with expressions",
@@ -100,8 +104,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle multiple icus in one block",
@@ -115,8 +118,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle multiple icus that share same placeholder",
@@ -220,8 +222,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should produce proper messages when `select` or `plural` keywords have spaces after them",
@@ -235,8 +236,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

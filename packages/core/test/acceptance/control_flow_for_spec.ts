@@ -277,6 +277,52 @@ describe('control flow - for', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('5(0)|3(1)|7(2)|');
     });
+
+    it('should correctly attach and detach views with duplicated keys', () => {
+      const BEFORE = [
+        {'name': 'Task 14', 'id': 14},
+        {'name': 'Task 14', 'id': 14},
+        {'name': 'Task 70', 'id': 70},
+        {'name': 'Task 34', 'id': 34},
+
+      ];
+
+      const AFTER = [
+        {'name': 'Task 70', 'id': 70},
+        {'name': 'Task 14', 'id': 14},
+        {'name': 'Task 28', 'id': 28},
+      ];
+
+      @Component({
+        standalone: true,
+        template: ``,
+        selector: 'child-cmp',
+      })
+      class ChildCmp {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildCmp],
+        template: `
+          @for(task of tasks; track task.id) {
+            <child-cmp/>
+          }
+        `,
+      })
+      class TestComponent {
+        tasks = BEFORE;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const cmp = fixture.componentInstance;
+      const nativeElement = fixture.debugElement.nativeElement;
+      cmp.tasks = AFTER;
+      fixture.detectChanges();
+      expect(nativeElement.querySelectorAll('child-cmp').length).toBe(3);
+    });
   });
 
   describe('content projection', () => {

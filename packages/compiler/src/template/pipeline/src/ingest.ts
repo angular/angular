@@ -251,7 +251,8 @@ function ingestText(unit: ViewCompilationUnit, text: t.Text): void {
 /**
  * Ingest an interpolated text node from the AST into the given `ViewCompilation`.
  */
-function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
+function ingestBoundText(
+    unit: ViewCompilationUnit, text: t.BoundText, i18nPlaceholders?: string[]): void {
   let value = text.value;
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
@@ -265,10 +266,17 @@ function ingestBoundText(unit: ViewCompilationUnit, text: t.BoundText): void {
         `Unhandled i18n metadata type for text interpolation: ${text.i18n?.constructor.name}`);
   }
 
-  const i18nPlaceholders = text.i18n instanceof i18n.Container ?
-      text.i18n.children.filter(
-          (node): node is i18n.Placeholder => node instanceof i18n.Placeholder) :
-      [];
+  if (i18nPlaceholders === undefined) {
+    i18nPlaceholders = text.i18n instanceof i18n.Container ?
+        text.i18n.children
+            .filter((node): node is i18n.Placeholder => node instanceof i18n.Placeholder)
+            .map(placeholder => placeholder.name) :
+        [];
+  }
+  if (i18nPlaceholders.length > 0 && i18nPlaceholders.length !== value.expressions.length) {
+    throw Error(`Unexpected number of i18n placeholders (${
+        value.expressions.length}) for BoundText with ${value.expressions.length} expressions`);
+  }
 
   const textXref = unit.job.allocateXrefId();
   unit.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
@@ -482,9 +490,21 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
   if (icu.i18n instanceof i18n.Message && isSingleI18nIcu(icu.i18n)) {
     const xref = unit.job.allocateXrefId();
-    unit.create.push(ir.createIcuOp(
-        xref, icu.i18n, icu.i18n.nodes[0], icuFromI18nMessage(icu.i18n).name, null!));
-    unit.update.push(ir.createIcuUpdateOp(xref, null!));
+    const icuNode = icu.i18n.nodes[0];
+    unit.create.push(ir.createIcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
+    const expressionPlaceholder = icuNode.expressionPlaceholder?.trimEnd();
+    if (expressionPlaceholder === undefined || icu.vars[expressionPlaceholder] === undefined) {
+      throw Error('ICU should have a text binding');
+    }
+    ingestBoundText(unit, icu.vars[expressionPlaceholder], [expressionPlaceholder]);
+    for (const [placeholder, text] of Object.entries(icu.placeholders)) {
+      if (text instanceof t.BoundText) {
+        ingestBoundText(unit, text, [placeholder]);
+      } else {
+        ingestText(unit, text);
+      }
+    }
+    unit.create.push(ir.createIcuEndOp(xref));
   } else {
     throw Error(`Unhandled i18n metadata type for ICU: ${icu.i18n?.constructor.name}`);
   }

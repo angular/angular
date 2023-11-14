@@ -12,7 +12,7 @@ A pipe is a TypeScript class with a `@Pipe` decorator. Here's an example:
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  standaone: true,
+  standalone: true,
   name: 'star',
 })
 export class StarPipe implements PipeTransform {
@@ -31,13 +31,13 @@ Alright, it's your turn to give this a try — you'll create the `ReversePipe`:
 
 <docs-workflow>
 
-<docs-step title="Create the `ReversePipe">
+<docs-step title="Create the `ReversePipe`">
 
 In `reverse.pipe.ts` add the `@Pipe` decorator to the `ReversePipe` class and provide the following configuration:
 
 ```ts
 @Pipe({
-    standaone: true,
+    standalone: true,
     name: 'reverse'
 })
 ```

@@ -10,14 +10,11 @@ import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit
 import {join, relative} from 'path';
 
 import {normalizePath} from '../../utils/change_tracker';
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
-import {migrateFor} from './fors';
-import {migrateIf} from './ifs';
-import {migrateSwitch} from './switches';
+import {migrateTemplate} from './migration';
 import {AnalyzedFile, MigrateError} from './types';
-import {analyze, processNgTemplates} from './util';
+import {analyze} from './util';
 
 interface Options {
   path: string;
@@ -25,10 +22,12 @@ interface Options {
 
 export default function(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
-    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));
-    const allPaths = options.path !== './' ? [...buildPaths, ...testPaths] : [pathToMigrate];
+    let allPaths = [];
+    if (pathToMigrate.trim() !== '') {
+      allPaths.push(pathToMigrate);
+    }
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -84,21 +83,11 @@ function runControlFlowMigration(
     const content = tree.readText(relativePath);
     const update = tree.beginUpdate(relativePath);
 
-    for (const [start, end] of ranges) {
+    for (const {start, end, node, type} of ranges) {
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const ifResult = migrateIf(template);
-      const forResult = migrateFor(ifResult.migrated);
-      const switchResult = migrateSwitch(forResult.migrated);
-
-      const errors = [
-        ...ifResult.errors,
-        ...forResult.errors,
-        ...switchResult.errors,
-      ];
-
-      const migrated = processNgTemplates(switchResult.migrated);
+      const {migrated, errors} = migrateTemplate(template, type, node, file);
 
       if (migrated !== null) {
         update.remove(start, length);

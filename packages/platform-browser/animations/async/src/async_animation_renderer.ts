@@ -6,15 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationRenderer as AnimationRenderer, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
-import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵRuntimeError as RuntimeError, ɵAnimationRendererType as AnimationRendererType} from '@angular/core';
+import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/animations/browser';
+import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
-/**
- * This alias narrows down to only the properties we need when lazy loading (or mock) the module
- */
-type AnimationBrowserModuleImports =
-    Pick<typeof import('@angular/animations/browser'), 'ɵcreateEngine'|'ɵAnimationRendererFactory'>;
-
 
 const ANIMATION_PREFIX = '@';
 
@@ -27,8 +21,10 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
    */
   constructor(
       private doc: Document, private delegate: RendererFactory2, private zone: NgZone,
-      private animationType: 'animations'|'noop',
-      private moduleImpl?: Promise<AnimationBrowserModuleImports>) {}
+      private animationType: 'animations'|'noop', private moduleImpl?: Promise<{
+        ɵcreateEngine: (type: 'animations'|'noop', doc: Document) => AnimationEngine,
+        ɵAnimationRendererFactory: typeof AnimationRendererFactory
+      }>) {}
 
   /**
    * @internal

@@ -31,6 +31,7 @@ ng_module(
     ),
     deps = [
         "//packages/core",
+        "@npm//@types/dom-navigation",
         "@npm//rxjs",
     ],
 )

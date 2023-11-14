@@ -18,7 +18,7 @@ ng test
 The `ng test` command builds the application in *watch mode*,
 and launches the [Karma test runner](https://karma-runner.github.io).
 
-The console output looks the below:
+The console output looks like below:
 
 <docs-code language="shell">
 

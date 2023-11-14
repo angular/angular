@@ -91,18 +91,23 @@ export function extractI18nMessages(job: CompilationJob): void {
   // Extract messages from ICUs with their own sub-context.
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Icu) {
-        if (!op.context) {
-          throw Error('ICU op should have its context set.');
-        }
-        if (!i18nBlockContexts.has(op.context)) {
-          const i18nContext = i18nContexts.get(op.context)!;
-          const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
-          unit.create.push(subMessage);
-          const parentMessage = i18nBlockMessages.get(i18nContext.i18nBlock);
-          parentMessage?.subMessages.push(subMessage.xref);
-        }
-        ir.OpList.remove<ir.CreateOp>(op);
+      switch (op.kind) {
+        case ir.OpKind.IcuStart:
+          if (!op.context) {
+            throw Error('ICU op should have its context set.');
+          }
+          if (!i18nBlockContexts.has(op.context)) {
+            const i18nContext = i18nContexts.get(op.context)!;
+            const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
+            unit.create.push(subMessage);
+            const parentMessage = i18nBlockMessages.get(i18nContext.i18nBlock);
+            parentMessage?.subMessages.push(subMessage.xref);
+          }
+          ir.OpList.remove<ir.CreateOp>(op);
+          break;
+        case ir.OpKind.IcuEnd:
+          ir.OpList.remove<ir.CreateOp>(op);
+          break;
       }
     }
   }
@@ -130,7 +135,7 @@ function createI18nMessage(
  */
 function formatParams(params: Map<string, ir.I18nParamValue[]>): Map<string, o.Expression> {
   const result = new Map<string, o.Expression>();
-  for (const [placeholder, placeholderValues] of [...params].sort()) {
+  for (const [placeholder, placeholderValues] of params) {
     const serializedValues = formatParamValues(placeholderValues);
     if (serializedValues !== null) {
       result.set(placeholder, o.literal(formatParamValues(placeholderValues)));
@@ -156,6 +161,11 @@ function formatParamValues(values: ir.I18nParamValue[]): string|null {
  * Formats a single `I18nParamValue` into a string
  */
 function formatValue(value: ir.I18nParamValue): string {
+  // If there are no special flags, just return the raw value.
+  if (value.flags === ir.I18nParamValueFlags.None) {
+    return `${value.value}`;
+  }
+
   let tagMarker = '';
   let closeMarker = '';
   if (value.flags & ir.I18nParamValueFlags.ElementTag) {
