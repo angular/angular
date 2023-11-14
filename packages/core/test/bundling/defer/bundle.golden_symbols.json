@@ -69,6 +69,9 @@
     "name": "CSP_NONCE"
   },
   {
+    "name": "CachedInjectorService"
+  },
+  {
     "name": "ChainedInjector"
   },
   {
@@ -681,6 +684,9 @@
     "name": "createElementRef"
   },
   {
+    "name": "createEnvironmentInjector"
+  },
+  {
     "name": "createErrorClass"
   },
   {
@@ -1072,6 +1078,9 @@
   },
   {
     "name": "init_bypass"
+  },
+  {
+    "name": "init_cached_injector_service"
   },
   {
     "name": "init_change_detection"
