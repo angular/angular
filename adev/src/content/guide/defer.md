@@ -100,7 +100,7 @@ Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed wit
 ```
 
 <a id="when"></a>
-`when` specifies an imperative condition as an expression that returns a boolean. When this expression becomes truthy, the placeholder is swapped with the lazily loaded content (which may be an asynchronous operation if the dependencies need to be fetched).
+`when` specifies a condition as an expression that returns a boolean. When this expression becomes truthy, the placeholder is swapped with the lazily loaded content (which may be an asynchronous operation if the dependencies need to be fetched).
 
 Note: if the `when` condition switches back to `false`, the defer block is not reverted back to the placeholder. The swap is a one-time operation. If the content within the block should be conditionally rendered, an `if` condition can be used within the block itself.
 
