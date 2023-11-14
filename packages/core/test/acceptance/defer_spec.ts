@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, InjectionToken, Input, NgModule, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -3977,6 +3977,106 @@ describe('@defer', () => {
           .toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
       expect(prefetchSpy)
           .toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
+    });
+  });
+
+  describe('NgModules', () => {
+    it('should provide access to tokens from imported NgModules', async () => {
+      let serviceInitCount = 0;
+
+      const TokenA = new InjectionToken('');
+
+      @Injectable()
+      class Service {
+        id = 'ChartsModule.Service';
+        constructor() {
+          serviceInitCount++;
+        }
+      }
+
+      @Component({
+        selector: 'chart',
+        template: 'Service:{{ svc.id }}|TokenA:{{ tokenA }}',
+      })
+      class Chart {
+        svc = inject(Service);
+        tokenA = inject(TokenA);
+      }
+
+      @NgModule({
+        providers: [Service],
+        declarations: [Chart],
+        exports: [Chart],
+      })
+      class ChartsModule {
+      }
+
+      @Component({
+        selector: 'chart-collection',
+        template: '<chart />',
+        standalone: true,
+        imports: [ChartsModule],
+      })
+      class ChartCollectionComponent {
+      }
+
+      @Component({
+        selector: 'app-root',
+        standalone: true,
+        template: `
+          @for(item of items; track $index) {
+            @defer (when isVisible) {
+              <chart-collection />
+            }
+          }
+        `,
+        imports: [ChartCollectionComponent],
+        providers: [{provide: TokenA, useValue: 'MyCmp.A'}]
+      })
+      class MyCmp {
+        items = [1, 2, 3];
+        isVisible = true;
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            return [dynamicImportOf(ChartCollectionComponent)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      clearDirectiveDefs(MyCmp);
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify that the `Service` injectable was initialized only once,
+      // even though it was injected in 3 instances of the `<chart>` component,
+      // used within defer blocks.
+      expect(serviceInitCount).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('chart').length).toBe(3);
+
+      // Verify that a service defined within an NgModule can inject services
+      // provided within the same NgModule.
+      const serviceFromNgModule = 'Service:ChartsModule.Service';
+
+      // Make sure sure that a nested `<chart>` component from the defer block
+      // can inject tokens provided in parent component (that contains `@defer`
+      // in its template).
+      const tokenFromRootComponent = 'TokenA:MyCmp.A';
+      expect(fixture.nativeElement.innerHTML)
+          .toContain(`<chart>${serviceFromNgModule}|${tokenFromRootComponent}</chart>`);
     });
   });
 });
