@@ -12,6 +12,12 @@ import {ElementCollector, ElementToMigrate, MigrateError, Result} from './types'
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
 export const ngfor = '*ngFor';
+export const nakedngfor = 'ngFor';
+const fors = [
+  ngfor,
+  nakedngfor,
+];
+
 export const commaSeparatedSyntax = new Map([
   ['(', ')'],
   ['{', '}'],
@@ -34,7 +40,7 @@ export function migrateFor(template: string): {migrated: string, errors: Migrate
   }
 
   let result = template;
-  const visitor = new ElementCollector([ngfor]);
+  const visitor = new ElementCollector(fors);
   visitAll(visitor, parsed.rootNodes);
   calculateNesting(visitor, hasLineBreaks(template));
 
@@ -65,8 +71,14 @@ export function migrateFor(template: string): {migrated: string, errors: Migrate
   return {migrated: result, errors};
 }
 
-
 function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  if (etm.forAttrs !== undefined) {
+    return migrateBoundNgFor(etm, tmpl, offset);
+  }
+  return migrateStandardNgFor(etm, tmpl, offset);
+}
+
+function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const aliasWithEqualRegexp = /=\s*(count|index|first|last|even|odd)/gm;
   const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
@@ -126,6 +138,43 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
   const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbSpaces}${start}`;
 
   const endBlock = `${end}${lbString}}`;
+  const forBlock = startBlock + middle + endBlock;
+
+  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
+
+  const pre = originals.start.length - startBlock.length;
+  const post = originals.end.length - endBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
+}
+
+function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  const forAttrs = etm.forAttrs!;
+  const aliasMap = forAttrs.aliases;
+
+  const originals = getOriginals(etm, tmpl, offset);
+  const condition = `${forAttrs.item} of ${forAttrs.forOf}`;
+
+  const aliases = [];
+  let aliasedIndex = '$index';
+  for (const [key, val] of aliasMap) {
+    aliases.push(` let ${key.trim()} = $${val}`);
+    if (val.trim() === 'index') {
+      aliasedIndex = key;
+    }
+  }
+  const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
+
+  let trackBy = forAttrs.item;
+  if (forAttrs.trackBy !== '') {
+    // build trackby value
+    trackBy = `${forAttrs.trackBy.trim()}(${aliasedIndex}, ${forAttrs.item})`;
+  }
+
+  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {\n  ${start}`;
+
+  const endBlock = `${end}\n}`;
   const forBlock = startBlock + middle + endBlock;
 
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
