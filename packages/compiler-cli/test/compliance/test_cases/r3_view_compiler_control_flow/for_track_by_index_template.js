@@ -18,6 +18,7 @@ function MyApp_Template(rf, ctx) {
   if (rf & 2) {
     $r3$.ɵɵadvance(1);
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵrepeater(2, ctx.items);
+    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵrepeater(ctx.items);
   }
 }

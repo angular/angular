@@ -17,8 +17,9 @@ function MyApp_Template(rf, ctx) {
   }
   if (rf & 2) {
     $r3$.ɵɵtextInterpolate4(" ", ctx.$index, " ", ctx.$count, " ", ctx.$first, " ", ctx.$last, " ");
-    $r3$.ɵɵrepeater(1, ctx.items);
-    $r3$.ɵɵadvance(3);
+    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵrepeater(ctx.items);
+    $r3$.ɵɵadvance(2);
     $r3$.ɵɵtextInterpolate4(" ", ctx.$index, " ", ctx.$count, " ", ctx.$first, " ", ctx.$last, " ");
   }
 }

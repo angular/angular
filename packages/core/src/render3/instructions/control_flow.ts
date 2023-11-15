@@ -21,7 +21,7 @@ import {TNode} from '../interfaces/node';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, TVIEW, TView} from '../interfaces/view';
 import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView, detachView} from '../node_manipulation';
-import {getLView, nextBindingIndex} from '../state';
+import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 import {getTNode} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
@@ -56,7 +56,8 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
       // Index -1 is a special case where none of the conditions evaluates to
       // a truthy value and as the consequence we've got no view to show.
       if (matchingTemplateIndex !== -1) {
-        const templateTNode = getExistingTNode(hostLView[TVIEW], matchingTemplateIndex);
+        const templateTNode =
+            getExistingTNode(hostLView[TVIEW], HEADER_OFFSET + matchingTemplateIndex);
 
         const dehydratedView = findMatchingDehydratedView(lContainer, templateTNode.tView!.ssrId);
         const embeddedLView =
@@ -234,23 +235,20 @@ class LiveCollectionLContainerImpl extends
  * The repeater instruction does update-time diffing of a provided collection (against the
  * collection seen previously) and maps changes in the collection to views structure (by adding,
  * removing or moving views as needed).
- * @param metadataSlotIdx - index in data where we can find an instance of RepeaterMetadata with
- *     additional information (ex. differ) needed to process collection diffing and view
- *     manipulation
  * @param collection - the collection instance to be checked for changes
  * @codeGenApi
  */
-export function ɵɵrepeater(
-    metadataSlotIdx: number, collection: Iterable<unknown>|undefined|null): void {
+export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void {
   const prevConsumer = setActiveConsumer(null);
+  const metadataSlotIdx = getSelectedIndex();
   try {
     const hostLView = getLView();
     const hostTView = hostLView[TVIEW];
-    const metadata = hostLView[HEADER_OFFSET + metadataSlotIdx] as RepeaterMetadata;
+    const metadata = hostLView[metadataSlotIdx] as RepeaterMetadata;
 
     if (metadata.liveCollection === undefined) {
       const containerIndex = metadataSlotIdx + 1;
-      const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+      const lContainer = getLContainer(hostLView, containerIndex);
       const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
       metadata.liveCollection =
           new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
@@ -270,7 +268,7 @@ export function ɵɵrepeater(
       const isCollectionEmpty = liveCollection.length === 0;
       if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
         const emptyTemplateIndex = metadataSlotIdx + 2;
-        const lContainerForEmpty = getLContainer(hostLView, HEADER_OFFSET + emptyTemplateIndex);
+        const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
         if (isCollectionEmpty) {
           const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
           const dehydratedView =
@@ -312,7 +310,7 @@ function getExistingLViewFromLContainer<T>(lContainer: LContainer, index: number
 }
 
 function getExistingTNode(tView: TView, index: number): TNode {
-  const tNode = getTNode(tView, index + HEADER_OFFSET);
+  const tNode = getTNode(tView, index);
   ngDevMode && assertTNode(tNode);
 
   return tNode;

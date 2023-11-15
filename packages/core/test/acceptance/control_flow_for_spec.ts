@@ -121,6 +121,40 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent).toBe('1|2|3|');
   });
 
+  it('should be able to access a directive property that is reassigned in a lifecycle hook', () => {
+    @Directive({
+      selector: '[dir]',
+      exportAs: 'dir',
+      standalone: true,
+    })
+    class Dir {
+      data = [1];
+
+      ngDoCheck() {
+        this.data = [2];
+      }
+    }
+
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [Dir],
+      template: `
+        <div [dir] #dir="dir"></div>
+
+        @for (x of dir.data; track $index) {
+          {{x}}
+        }
+      `,
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('2');
+  });
+
   describe('trackBy', () => {
     it('should have access to the host context in the track function', () => {
       let offsetReads = 0;
