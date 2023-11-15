@@ -1,3 +1,21 @@
+<a name="17.1.0-next.0"></a>
+# 17.1.0-next.0 (2023-11-15)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [56a76d73e0](https://github.com/angular/angular/commit/56a76d73e037aeea1975808d5c51608fd23d4fa6) | fix | modify `getConstructorDependencies` helper to work with reflection host after the previous change ([#52215](https://github.com/angular/angular/pull/52215)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [94096c6ede](https://github.com/angular/angular/commit/94096c6ede67436a349ae07901f2bb418bf9f461) | feat | support TypeScript 5.3 ([#52572](https://github.com/angular/angular/pull/52572)) |
+| [bdd61c768a](https://github.com/angular/angular/commit/bdd61c768a28b56c68634b99c036986499829f45) | fix | replace assertion with more intentional error ([#52234](https://github.com/angular/angular/pull/52234)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [726530a9af](https://github.com/angular/angular/commit/726530a9af9c8daf7295cc3548f24e70f380d70e) | feat | Allow `onSameUrlNavigation: 'ignore'` in `navigateByUrl` ([#52265](https://github.com/angular/angular/pull/52265)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.3"></a>
 # 17.0.3 (2023-11-15)
 ### animations
