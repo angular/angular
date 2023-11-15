@@ -534,7 +534,7 @@ export function createConditionalOp(
   };
 }
 
-export interface RepeaterOp extends Op<UpdateOp> {
+export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
   kind: OpKind.Repeater;
 
   /**
@@ -562,6 +562,7 @@ export function createRepeaterOp(
     collection,
     sourceSpan,
     ...NEW_OP,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
   };
 }
 
