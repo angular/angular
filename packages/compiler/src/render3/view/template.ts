@@ -1574,10 +1574,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // because its value isn't stored in the LView.
     const value = block.expression.visit(this._valueConverter);
 
-    // `repeater(0, iterable)`
-    this.updateInstruction(
-        block.sourceSpan, R3.repeater,
-        () => [o.literal(blockIndex), this.convertPropertyBinding(value)]);
+    // `advance(x); repeater(iterable)`
+    this.updateInstructionWithAdvance(
+        blockIndex, block.sourceSpan, R3.repeater, () => [this.convertPropertyBinding(value)]);
   }
 
   private registerComputedLoopVariables(block: t.ForLoopBlock, bindingScope: BindingScope): void {

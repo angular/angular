@@ -5,6 +5,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵtemplate(4, MyApp_ng_template_4_Template, 0, 0, "ng-template");
   }
   if (rf & 2) {
-    $r3$.ɵɵrepeater(1, ctx.items);
+    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵrepeater(ctx.items);
   }
 }

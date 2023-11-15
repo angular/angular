@@ -293,9 +293,8 @@ export function repeaterCreate(
   return call(Identifiers.repeaterCreate, args, sourceSpan);
 }
 
-export function repeater(
-    metadataSlot: number, collection: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
-  return call(Identifiers.repeater, [o.literal(metadataSlot), collection], sourceSpan);
+export function repeater(collection: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  return call(Identifiers.repeater, [collection], sourceSpan);
 }
 
 export function deferWhen(
