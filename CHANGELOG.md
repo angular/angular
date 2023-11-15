@@ -1,3 +1,29 @@
+<a name="17.0.3"></a>
+# 17.0.3 (2023-11-15)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5872c9921](https://github.com/angular/angular/commit/f5872c992181a2c231890b83f92ec03ec9606802) | fix | prevent the AsyncAnimationRenderer from calling the delegate when there is no element. ([#52570](https://github.com/angular/angular/pull/52570)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6a1d4ed667](https://github.com/angular/angular/commit/6a1d4ed6670f5965a654e40997aa266a99925f50) | fix | handle non-container environment injector cases ([#52774](https://github.com/angular/angular/pull/52774)) |
+| [5de7575be8](https://github.com/angular/angular/commit/5de7575be83b9829e65ad245034ee7ab1d966044) | fix | reset cached scope for components that were overridden using TestBed ([#52916](https://github.com/angular/angular/pull/52916)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c066a4af4](https://github.com/angular/angular/commit/7c066a4af4faae25ee722c19576c63c3833066ee) | fix | Use the response `content-type` to set the blob `type`. ([#52840](https://github.com/angular/angular/pull/52840)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e200bf13b](https://github.com/angular/angular/commit/4e200bf13b284fa89bbb0854cbb85dc8fe94d8bb) | fix | Add missing support for ngForOf ([#52903](https://github.com/angular/angular/pull/52903)) |
+| [d033540d0f](https://github.com/angular/angular/commit/d033540d0f874a7a05b79c00e3151ed076fa71c3) | fix | Add support for bound versions of NgIfElse and NgIfThenElse ([#52869](https://github.com/angular/angular/pull/52869)) |
+| [aa2d815648](https://github.com/angular/angular/commit/aa2d815648dbf3303cfe72bf976a4a87de406ee0) | fix | Add support for removing imports post migration ([#52763](https://github.com/angular/angular/pull/52763)) |
+| [3831942771](https://github.com/angular/angular/commit/38319427711f4dab4e4d64ff48aecc7727085031) | fix | Fixes issue with multiple if elses with same template ([#52863](https://github.com/angular/angular/pull/52863)) |
+| [e1f84a31dc](https://github.com/angular/angular/commit/e1f84a31dcac413251329c3b695a253234c6aae6) | fix | passed in paths will be respected in nx workspaces ([#52796](https://github.com/angular/angular/pull/52796)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.2"></a>
 # 17.0.2 (2023-11-09)
 ### compiler-cli
