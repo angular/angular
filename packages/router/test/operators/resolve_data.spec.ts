@@ -46,6 +46,44 @@ describe('resolveData operator', () => {
     expect(TestBed.inject(Router).url).toEqual('/');
   });
 
+  it('should run resolvers in different parts of the tree', async () => {
+    let value = 0;
+    let bValue = 0;
+    TestBed.configureTestingModule({
+      providers: [provideRouter([
+        {
+          path: 'a',
+          runGuardsAndResolvers: () => false,
+          children: [{
+            path: '',
+            resolve: {d0: () => ++value},
+            runGuardsAndResolvers: 'always',
+            children: [],
+          }],
+        },
+        {
+          path: 'b',
+          outlet: 'aux',
+          runGuardsAndResolvers: () => false,
+          children: [{
+            path: '',
+            resolve: {d1: () => ++bValue},
+            runGuardsAndResolvers: 'always',
+            children: [],
+          }]
+        },
+      ])]
+    });
+    const router = TestBed.inject(Router);
+    const harness = await RouterTestingHarness.create('/a(aux:b)');
+    expect(router.routerState.root.children[0]?.firstChild?.snapshot.data).toEqual({d0: 1});
+    expect(router.routerState.root.children[1]?.firstChild?.snapshot.data).toEqual({d1: 1});
+
+    await harness.navigateByUrl('/a(aux:b)#new');
+    expect(router.routerState.root.children[0]?.firstChild?.snapshot.data).toEqual({d0: 2});
+    expect(router.routerState.root.children[1]?.firstChild?.snapshot.data).toEqual({d1: 2});
+  });
+
   it('should update children inherited data when resolvers run', async () => {
     let value = 0;
     TestBed.configureTestingModule({
