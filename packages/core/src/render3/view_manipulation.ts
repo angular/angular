@@ -17,8 +17,9 @@ import {createLView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TNode} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer_dom';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES, RENDERER, T_HOST, TVIEW} from './interfaces/view';
+import {DECLARATION_LCONTAINER, ENVIRONMENT, FLAGS, LView, LViewFlags, QUERIES, RENDERER, T_HOST, TVIEW} from './interfaces/view';
 import {addViewToDOM, destroyLView, detachView, getBeforeNodeForView, insertView, nativeParentNode} from './node_manipulation';
+import {markViewForRefresh} from './util/view_utils';
 
 export function createAndRenderEmbeddedLView<T>(
     declarationLView: LView<unknown>, templateTNode: TNode, context: T,
@@ -79,6 +80,9 @@ export function addLViewToLContainer(
 
   // insert to the view tree so the new view can be change-detected
   insertView(tView, lView, lContainer, index);
+
+  // TODO: figure out the right mechanism here.
+  markViewForRefresh(lView);
 
   // insert to the view to the DOM tree
   if (addToDOM) {

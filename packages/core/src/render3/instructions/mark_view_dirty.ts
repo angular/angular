@@ -7,7 +7,7 @@
  */
 
 import {isRootView} from '../interfaces/type_checks';
-import {FLAGS, LView, LViewFlags} from '../interfaces/view';
+import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {getLViewParent} from '../util/view_traversal_utils';
 
 /**
@@ -22,6 +22,7 @@ import {getLViewParent} from '../util/view_traversal_utils';
  * @returns the root LView
  */
 export function markViewDirty(lView: LView): LView|null {
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   while (lView) {
     lView[FLAGS] |= LViewFlags.Dirty;
     const parent = getLViewParent(lView);

@@ -14,6 +14,7 @@ import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
+import {AnimationFrameScheduler, ChangeDetectionScheduler} from './change_detection/scheduler';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
 import {ENVIRONMENT_INITIALIZER, inject, makeEnvironmentProviders} from './di';
@@ -233,7 +234,7 @@ export function internalCreateApplication(config: {
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
-      provideZoneChangeDetection(),
+      // provideZoneChangeDetection(),
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
@@ -1308,6 +1309,20 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
     zoneProviders,
   ]);
 }
+
+export function
+provideZonelessChangeDetection(): EnvironmentProviders{return makeEnvironmentProviders([
+  {
+    provide: ChangeDetectionScheduler,
+    useFactory: () => new AnimationFrameScheduler(inject(ApplicationRef)),
+  },
+  {
+    provide: NgZone,
+    useClass: NoopNgZone,
+  },
+
+  (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} : []
+])}
 
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
 /**

@@ -24,6 +24,7 @@ import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 import {TDeferBlockDetails} from '../../defer/interfaces';
+import type {ChangeDetectionScheduler} from '../../change_detection/scheduler';
 
 
 
@@ -372,6 +373,9 @@ export interface LViewEnvironment {
 
   /** Container for after render hooks */
   afterRenderEventManager: AfterRenderEventManager|null;
+
+  /** Scheduler for change detection (assuming no zones) */
+  changeDetectionScheduler: ChangeDetectionScheduler|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

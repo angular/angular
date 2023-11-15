@@ -13,7 +13,7 @@ import {LContainer, LContainerFlags, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -220,6 +220,7 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  * flag is already `true` or the `lView` is detached.
  */
 export function markAncestorsForTraversal(lView: LView) {
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   let parent = lView[PARENT];
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
