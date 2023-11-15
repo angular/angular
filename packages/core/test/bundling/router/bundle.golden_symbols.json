@@ -1878,9 +1878,6 @@
     "name": "resetPreOrderHookFlags"
   },
   {
-    "name": "resolveData"
-  },
-  {
     "name": "resolveForwardRef"
   },
   {
