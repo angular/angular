@@ -20,6 +20,7 @@ import {DestroyRef} from '../../linker/destroy_ref';
 import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
+import {NgZone} from '../../zone';
 
 
 /**
@@ -40,7 +41,7 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 export interface SchedulableEffect {
   run(): void;
-  creationZone: unknown;
+  runInAngularZone: boolean;
 }
 
 /**
@@ -87,15 +88,12 @@ export interface FlushableEffectRunner {
  */
 export class ZoneAwareQueueingScheduler implements EffectScheduler, FlushableEffectRunner {
   private queuedEffectCount = 0;
-  private queues = new Map<Zone|null, Set<SchedulableEffect>>();
+  private zoneQueue = new Set<SchedulableEffect>();
+  private noZoneQueue = new Set<SchedulableEffect>();
+  private ngZone = inject(NgZone);
 
   scheduleEffect(handle: SchedulableEffect): void {
-    const zone = handle.creationZone as Zone | null;
-    if (!this.queues.has(zone)) {
-      this.queues.set(zone, new Set());
-    }
-
-    const queue = this.queues.get(zone)!;
+    const queue = handle.runInAngularZone ? this.zoneQueue : this.noZoneQueue;
     if (queue.has(handle)) {
       return;
     }
@@ -111,14 +109,8 @@ export class ZoneAwareQueueingScheduler implements EffectScheduler, FlushableEff
    */
   flush(): void {
     while (this.queuedEffectCount > 0) {
-      for (const [zone, queue] of this.queues) {
-        // `zone` here must be defined.
-        if (zone === null) {
-          this.flushQueue(queue);
-        } else {
-          zone.run(() => this.flushQueue(queue));
-        }
-      }
+      this.ngZone.run(() => this.flushQueue(this.zoneQueue));
+      this.ngZone.runOutsideAngular(() => this.flushQueue(this.noZoneQueue));
     }
   }
 
@@ -182,7 +174,7 @@ class EffectHandle implements EffectRef, SchedulableEffect {
   constructor(
       private scheduler: EffectScheduler,
       private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-      public creationZone: Zone|null, destroyRef: DestroyRef|null,
+      public runInAngularZone: boolean, destroyRef: DestroyRef|null,
       private errorHandler: ErrorHandler|null, allowSignalWrites: boolean) {
     this.watcher = createWatch(
         (onCleanup) => this.runEffect(onCleanup), () => this.schedule(), allowSignalWrites);
@@ -277,9 +269,8 @@ export function effect(
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
 
   const handle = new EffectHandle(
-      injector.get(APP_EFFECT_SCHEDULER), effectFn,
-      (typeof Zone === 'undefined') ? null : Zone.current, destroyRef, errorHandler,
-      options?.allowSignalWrites ?? false);
+      injector.get(APP_EFFECT_SCHEDULER), effectFn, NgZone.isInAngularZone(), destroyRef,
+      errorHandler, options?.allowSignalWrites ?? false);
 
   // Effects need to be marked dirty manually to trigger their initial run. The timing of this
   // marking matters, because the effects may read signals that track component inputs, which are
