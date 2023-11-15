@@ -78,7 +78,14 @@ export class TestBedCompiler {
 
   private resolvers: Resolvers = initResolvers();
 
-  private componentToModuleScope = new Map<Type<any>, Type<any>|TestingModuleOverride>();
+  // Map of component type to an NgModule that declares it.
+  //
+  // There are a couple special cases:
+  // - for standalone components, the module scope value is `null`
+  // - when a component is declared in `TestBed.configureTestingModule()` call or
+  //   a component's template is overridden via `TestBed.overrideTemplateUsingTestingModule()`.
+  //   we use a special value from the `TestingModuleOverride` enum.
+  private componentToModuleScope = new Map<Type<any>, Type<any>|TestingModuleOverride|null>();
 
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
@@ -457,15 +464,20 @@ export class TestBedCompiler {
         };
 
     this.componentToModuleScope.forEach((moduleType, componentType) => {
-      const moduleScope = getScopeOfModule(moduleType);
-      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'directiveDefs');
-      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'pipeDefs');
+      if (moduleType !== null) {
+        const moduleScope = getScopeOfModule(moduleType);
+        this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'directiveDefs');
+        this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'pipeDefs');
+        patchComponentDefWithScope(getComponentDef(componentType)!, moduleScope);
+      }
       // `tView` that is stored on component def contains information about directives and pipes
       // that are in the scope of this component. Patching component scope will cause `tView` to be
       // changed. Store original `tView` before patching scope, so the `tView` (including scope
       // information) is restored back to its previous/original state before running next test.
+      // Resetting `tView` is also needed for cases when we apply provider overrides and those
+      // providers are defined on component's level, in which case they may end up included into
+      // `tView.blueprint`.
       this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'tView');
-      patchComponentDefWithScope((componentType as any).ɵcmp, moduleScope);
     });
 
     this.componentToModuleScope.clear();
@@ -604,10 +616,7 @@ export class TestBedCompiler {
       // real module, which was imported. This pattern is understood to mean that the component
       // should use its original scope, but that the testing module should also contain the
       // component in its scope.
-      //
-      // Note: standalone components have no associated NgModule, so the `moduleType` can be `null`.
-      if (moduleType !== null &&
-          (!this.componentToModuleScope.has(type) ||
+      if ((!this.componentToModuleScope.has(type) ||
            this.componentToModuleScope.get(type) === TestingModuleOverride.DECLARATION)) {
         this.componentToModuleScope.set(type, moduleType);
       }
