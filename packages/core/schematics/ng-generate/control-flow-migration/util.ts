@@ -409,6 +409,64 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   return {start, middle, end};
 }
 
+/**
+ * re-indents all the lines in the template properly post migration
+ */
+export function formatTemplate(tmpl: string): string {
+  if (tmpl.indexOf('\n') > -1) {
+    // match any type of control flow block as start of string ignoring whitespace
+    // @if | @switch | @case | @default | @for | } @else
+    const openBlockRegex = /^\s*\@(if|switch|case|default|for)|^\s*\}\s\@else/;
+
+    // regex for matching an html element opening
+    // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
+    const openElRegex = /^\s*<([a-z]+)(?![^>]*\/>)[^>]*>?/;
+
+    // match closing block or else block
+    // } | } @else
+    const closeBlockRegex = /^\s*\}\s*$|^\s*\}\s\@else/;
+
+    // matches closing of an html element
+    // </element>
+    const closeElRegex = /\s*<\/([a-z\-]+)*>/;
+
+    // matches closing of a self closing html element when the element is on multiple lines
+    // [binding]="value" />
+    const closeMultiLineElRegex = /^\s*([a-z0-9\-\[\]]+)?=?"?([^”<]+)?"?\s?\/>$/;
+
+    // matches an open and close of an html element on a single line with no breaks
+    // <div>blah</div>
+    const singleLineElRegex = /^\s*<([a-z]+)(?![^>]*\/>)[^>]*>.*<\/([a-z\-]+)*>/;
+    const lines = tmpl.split('\n');
+    const formatted = [];
+    let indent = '';
+    for (let line of lines) {
+      if (line.trim() === '') {
+        // skip blank lines
+        continue;
+      }
+      if ((closeBlockRegex.test(line) ||
+           (closeElRegex.test(line) &&
+            (!singleLineElRegex.test(line) && !closeMultiLineElRegex.test(line)))) &&
+          indent !== '') {
+        // close block, reduce indent
+        indent = indent.slice(2);
+      }
+      formatted.push(indent + line.trim());
+      if (closeMultiLineElRegex.test(line)) {
+        // multi line self closing tag
+        indent = indent.slice(2);
+      }
+      if ((openBlockRegex.test(line) || openElRegex.test(line)) && !singleLineElRegex.test(line)) {
+        // open block, increase indent
+        indent += '  ';
+      }
+    }
+    tmpl = formatted.join('\n');
+  }
+  return tmpl;
+}
+
 /** Executes a callback on each class declaration in a file. */
 function forEachClass(
     sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration|ts.ImportDeclaration) => void) {
