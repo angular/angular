@@ -9,6 +9,7 @@ function MyApp_Template(rf, ctx) {
   if (rf & 2) {
     $r3$.ɵɵadvance(1);
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵrepeater(2, $r3$.ɵɵpipeBind1(4, 1, ctx.items));
+    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵrepeater($r3$.ɵɵpipeBind1(4, 1, ctx.items));
   }
 }
