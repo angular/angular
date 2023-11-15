@@ -26,8 +26,8 @@ describe('control flow migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration(path: string|undefined = undefined) {
-    return runner.runSchematic('control-flow-migration', {path}, tree);
+  function runMigration(path: string|undefined = undefined, format: boolean = true) {
+    return runner.runSchematic('control-flow-migration', {path, format}, tree);
   }
 
   beforeEach(() => {
@@ -220,9 +220,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -259,9 +259,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -290,9 +290,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -321,9 +321,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -353,12 +353,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `} @else {`,
-        `<p>Stuff</p>`,
-        `}`,
-        `</div>\n`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    <p>Stuff</p>`,
+        `  }`,
+        `</div>`,
       ].join('\n'));
     });
 
@@ -388,12 +388,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `} @else {`,
-        `<p>Stuff</p>`,
-        `}`,
-        `</div>\n`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    <p>Stuff</p>`,
+        `  }`,
+        `</div>`,
       ].join('\n'));
     });
 
@@ -421,9 +421,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -452,9 +452,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
-        `}`,
+        `  @if (show) {`,
+        `    <ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -483,9 +483,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n><span>Content here</span></ng-container>`,
-        `}`,
+        `  @if (show) {`,
+        `    <ng-container i18n><span>Content here</span></ng-container>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -514,9 +514,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
-        `}`,
+        `  @if (show) {`,
+        `    <ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -545,9 +545,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n><span>Content here</span></ng-container>`,
-        `}`,
+        `  @if (show) {`,
+        `    <ng-container i18n><span>Content here</span></ng-container>`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -578,12 +578,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
-        `} @else {`,
-        `<ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
-        `}`,
-        `</div>\n`,
+        `  @if (show) {`,
+        `    <ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `  } @else {`,
+        `    <ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
+        `  }`,
+        `</div>`,
       ].join('\n'));
     });
 
@@ -612,12 +612,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<ng-container i18n="@@something"><span>Content here</span></ng-container>`,
-        `} @else {`,
-        `<ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
-        `}`,
-        `</div>\n`,
+        `  @if (show) {`,
+        `    <ng-container i18n="@@something"><span>Content here</span></ng-container>`,
+        `  } @else {`,
+        `    <ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
+        `  }`,
+        `</div>`,
       ].join('\n'));
     });
 
@@ -646,11 +646,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -680,11 +680,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -715,11 +715,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<div>THEN Stuff</div>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <div>THEN Stuff</div>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -749,11 +749,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<span>Content here</span>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -784,11 +784,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<div>THEN Stuff</div>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <div>THEN Stuff</div>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -819,11 +819,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<div>THEN Stuff</div>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
+        `  @if (show) {`,
+        `    <div>THEN Stuff</div>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -855,12 +855,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (show) {`,
-        `<div>THEN Stuff</div>`,
-        `} @else {`,
-        `Else Content`,
-        `}`,
-        `<ng-template #elseBlock>Else Content</ng-template>`,
+        `  @if (show) {`,
+        `    <div>THEN Stuff</div>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
+        `  <ng-template #elseBlock>Else Content</ng-template>`,
         `</div>`,
         `<ng-container *ngTemplateOutlet="elseBlock"></ng-container>`,
       ].join('\n'));
@@ -939,11 +939,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (user$ | async; as user) {`,
-        `<div>{{ user.name }}</div>`,
-        `} @else {`,
-        `No user`,
-        `}`,
+        `  @if (user$ | async; as user) {`,
+        `    <div>{{ user.name }}</div>`,
+        `  } @else {`,
+        `    No user`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -974,11 +974,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@if (user$ | async; as user) {`,
-        `User`,
-        `} @else {`,
-        `No user`,
-        `}`,
+        `  @if (user$ | async; as user) {`,
+        `    User`,
+        `  } @else {`,
+        `    No user`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -1119,9 +1119,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<ul>`,
-        `@for (item of items; track item) {`,
-        `  <li>{{item.text}}</li>`,
-        `}`,
+        `  @for (item of items; track item) {`,
+        `    <li>{{item.text}}</li>`,
+        `  }`,
         `</ul>`,
       ].join('\n'));
     });
@@ -1170,9 +1170,9 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<ul>`,
-        `@for (item of items; track item) {`,
-        `  <li>{{item.text}}</li>`,
-        `}`,
+        `  @for (item of items; track item) {`,
+        `    <li>{{item.text}}</li>`,
+        `  }`,
         `</ul>`,
       ].join('\n'));
     });
@@ -1286,13 +1286,13 @@ describe('control flow migration', () => {
       const expected = [
         `<tbody>`,
         `  @for (row of field(); track trackByIndex(y, row); let y = $index) {`,
-        `  <tr>`,
-        `    @for (cell of row; track trackByIndex(x, cell); let x = $index) {`,
-        `  <td\n     `,
-        `    ></td>`,
-        `}`,
-        `  </tr>`,
-        `}`,
+        `    <tr>`,
+        `      @for (cell of row; track trackByIndex(x, cell); let x = $index) {`,
+        `        <td`,
+        `        ></td>`,
+        `      }`,
+        `    </tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1617,9 +1617,9 @@ describe('control flow migration', () => {
 
       const expected = [
         `<tbody>`,
-        `  @for (rowData of things; track rowData) {\n  `,
-        `    <tr><td>{{rowData}}</td></tr>\n  `,
-        `}`,
+        `  @for (rowData of things; track rowData) {`,
+        `    <tr><td>{{rowData}}</td></tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1657,9 +1657,9 @@ describe('control flow migration', () => {
 
       const expected = [
         `<tbody>`,
-        `  @for (rowData of things; track rowData; let rowIndex = $index) {\n  `,
-        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
-        `}`,
+        `  @for (rowData of things; track rowData; let rowIndex = $index) {`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1697,9 +1697,9 @@ describe('control flow migration', () => {
 
       const expected = [
         `<tbody>`,
-        `  @for (rowData of things; track trackMe($index, rowData)) {\n  `,
-        `    <tr><td>{{rowData}}</td></tr>\n  `,
-        `}`,
+        `  @for (rowData of things; track trackMe($index, rowData)) {`,
+        `    <tr><td>{{rowData}}</td></tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1737,9 +1737,9 @@ describe('control flow migration', () => {
 
       const expected = [
         `<tbody>`,
-        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index) {\n  `,
-        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
-        `}`,
+        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index) {`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1777,9 +1777,9 @@ describe('control flow migration', () => {
 
       const expected = [
         `<tbody>`,
-        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index; let rCount = $count) {\n  `,
-        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>\n  `,
-        `}`,
+        `  @for (rowData of things; track trackMe(rowIndex, rowData); let rowIndex = $index; let rCount = $count) {`,
+        `    <tr><td>{{rowIndex}}</td><td>{{rowData}}</td></tr>`,
+        `  }`,
         `</tbody>`,
       ].join('\n');
 
@@ -1875,17 +1875,17 @@ describe('control flow migration', () => {
       const content = tree.readContent('/comp.html');
       expect(content).toBe([
         `<div>`,
-        `@switch (testOpts) {`,
-        `@case (1) {`,
-        `  <p>Option 1</p>`,
-        `}`,
-        `@case (2) {`,
-        `  <p>Option 2</p>`,
-        `}`,
-        `@default {`,
-        `  <p>Option 3</p>`,
-        `}`,
-        `}`,
+        `  @switch (testOpts) {`,
+        `    @case (1) {`,
+        `      <p>Option 1</p>`,
+        `    }`,
+        `    @case (2) {`,
+        `      <p>Option 2</p>`,
+        `    }`,
+        `    @default {`,
+        `      <p>Option 3</p>`,
+        `    }`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -1928,17 +1928,17 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div>`,
-        `@switch (testOpts) {`,
-        `@case (1) {`,
-        `  <p>Option 1</p>`,
-        `}`,
-        `@case (2) {`,
-        `  <p>Option 2</p>`,
-        `}`,
-        `@default {`,
-        `  <p>Option 3</p>`,
-        `}`,
-        `}`,
+        `  @switch (testOpts) {`,
+        `    @case (1) {`,
+        `      <p>Option 1</p>`,
+        `    }`,
+        `    @case (2) {`,
+        `      <p>Option 2</p>`,
+        `    }`,
+        `    @default {`,
+        `      <p>Option 3</p>`,
+        `    }`,
+        `  }`,
         `</div>`,
       ].join('\n'));
     });
@@ -2138,14 +2138,14 @@ describe('control flow migration', () => {
 
          expect(content).toBe([
            `@if (show) {`,
-           `<div>`,
-           `<span>things</span>`,
-           `@if (nest) {`,
-           `<div>`,
-           `<span>stuff</span>`,
-           `</div>`,
-           `}`,
-           `</div>`,
+           `  <div>`,
+           `    <span>things</span>`,
+           `    @if (nest) {`,
+           `      <div>`,
+           `        <span>stuff</span>`,
+           `      </div>`,
+           `    }`,
+           `  </div>`,
            `}`,
          ].join('\n'));
        });
@@ -2182,14 +2182,14 @@ describe('control flow migration', () => {
 
          expect(content).toBe([
            `@if (show) {`,
-           `<div>`,
-           `<span>things</span>`,
-           `@if (nest) {`,
-           `<div>`,
-           `<span>stuff</span>`,
-           `</div>`,
-           `}`,
-           `</div>`,
+           `  <div>`,
+           `    <span>things</span>`,
+           `    @if (nest) {`,
+           `      <div>`,
+           `        <span>stuff</span>`,
+           `      </div>`,
+           `    }`,
+           `  </div>`,
            `}`,
          ].join('\n'));
        });
@@ -2223,12 +2223,12 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `@if (show) {`,
-        `<div>`,
-        `@if (nest) {`,
-        `<div>`,
-        `</div>`,
-        `}`,
-        `</div>`,
+        `  <div>`,
+        `    @if (nest) {`,
+        `      <div>`,
+        `      </div>`,
+        `    }`,
+        `  </div>`,
         `}`,
       ].join('\n'));
     });
@@ -2258,16 +2258,16 @@ describe('control flow migration', () => {
       const actual = tree.readContent('/comp.html');
       const expected = [
         `<div>`,
-        `  @if (thing) {\n`,
-        `@switch (value.provider) {`,
-        `    @case ('value1') {`,
-        `  <cmp1 />`,
-        `}`,
-        `    @case ('value2') {`,
-        `  <cmp2 />`,
-        `}`,
-        `  }\n`,
-        `}`,
+        `  @if (thing) {`,
+        `    @switch (value.provider) {`,
+        `      @case ('value1') {`,
+        `        <cmp1 />`,
+        `      }`,
+        `      @case ('value2') {`,
+        `        <cmp2 />`,
+        `      }`,
+        `    }`,
+        `  }`,
         `</div>`,
       ].join('\n');
 
@@ -2296,7 +2296,7 @@ describe('control flow migration', () => {
         `<label [attr.for]="question.key">{{question.label}}</label>`,
         `<div [ngSwitch]="question.controlType">`,
         `  <input *ngSwitchCase="'textbox'" [formControlName]="question.key"`,
-        `          [id]="question.key" [type]="question.type">`,
+        `          [id]="question.key" [type]="question.type" />`,
         `  <select [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key">`,
         `    <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>`,
         `  </select>`,
@@ -2309,22 +2309,22 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<div [formGroup]="form">`,
-        `<label [attr.for]="question.key">{{question.label}}</label>`,
-        `<div>`,
-        `@switch (question.controlType) {`,
-        `  @case ('textbox') {`,
-        `  <input [formControlName]="question.key"`,
-        `          [id]="question.key" [type]="question.type">`,
-        `}`,
-        `  @case ('dropdown') {`,
-        `  <select [id]="question.key" [formControlName]="question.key">`,
-        `    @for (opt of question.options; track opt) {`,
-        `  <option [value]="opt.key">{{opt.value}}</option>`,
-        `}`,
-        `  </select>`,
-        `}`,
-        `}`,
-        `</div>`,
+        `  <label [attr.for]="question.key">{{question.label}}</label>`,
+        `  <div>`,
+        `    @switch (question.controlType) {`,
+        `      @case ('textbox') {`,
+        `        <input [formControlName]="question.key"`,
+        `          [id]="question.key" [type]="question.type" />`,
+        `      }`,
+        `      @case ('dropdown') {`,
+        `        <select [id]="question.key" [formControlName]="question.key">`,
+        `          @for (opt of question.options; track opt) {`,
+        `            <option [value]="opt.key">{{opt.value}}</option>`,
+        `          }`,
+        `        </select>`,
+        `      }`,
+        `    }`,
+        `  </div>`,
         `</div>`,
       ].join('\n'));
     });
@@ -2357,11 +2357,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `@if (show) {`,
-        `<ul>`,
-        `@for (h of heroes; track h) {`,
-        `  <li [ngValue]="h">{{h.name}} ({{h.emotion}})</li>`,
-        `}`,
-        `</ul>`,
+        `  <ul>`,
+        `    @for (h of heroes; track h) {`,
+        `      <li [ngValue]="h">{{h.name}} ({{h.emotion}})</li>`,
+        `    }`,
+        `  </ul>`,
         `}`,
       ].join('\n'));
     });
@@ -2396,15 +2396,15 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<select id="hero">`,
-        `@for (h of heroes; track h) {`,
-        `  <span>`,
-        `@if (show) {`,
-        `<span>`,
-        `<option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>`,
-        `</span>`,
-        `}`,
-        `</span>`,
-        `}`,
+        `  @for (h of heroes; track h) {`,
+        `    <span>`,
+        `      @if (show) {`,
+        `        <span>`,
+        `          <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>`,
+        `        </span>`,
+        `      }`,
+        `    </span>`,
+        `  }`,
         `</select>`,
       ].join('\n'));
     });
@@ -2439,12 +2439,11 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `<select id="hero">`,
-        `@for (h of heroes; track h) {`,
-        `  `,
-        `@if (show) {\n`,
-        `<option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>\n`,
-        `}\n`,
-        `}`,
+        `  @for (h of heroes; track h) {`,
+        `    @if (show) {`,
+        `      <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>`,
+        `    }`,
+        `  }`,
         `</select>`,
       ].join('\n'));
     });
@@ -2482,15 +2481,15 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `@if (show) {`,
-        `<div>`,
-        `@if (nest) {`,
-        `<ul>`,
-        `@for (item of items; track item) {`,
-        `  <li>{{item.text}}</li>`,
-        `}`,
-        `</ul>`,
-        `}`,
-        `</div>`,
+        `  <div>`,
+        `    @if (nest) {`,
+        `      <ul>`,
+        `        @for (item of items; track item) {`,
+        `          <li>{{item.text}}</li>`,
+        `        }`,
+        `      </ul>`,
+        `    }`,
+        `  </div>`,
         `}`,
       ].join('\n'));
     });
@@ -2529,17 +2528,17 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `@if (show) {`,
-        `<div>`,
-        `@if (nest) {`,
-        `<ul>`,
-        `@for (item of items; track item) {`,
-        `  <li>{{item.text}}</li>`,
-        `}`,
-        `</ul>`,
-        `} @else {`,
-        `<p>Else content</p>`,
-        `}`,
-        `</div>`,
+        `  <div>`,
+        `    @if (nest) {`,
+        `      <ul>`,
+        `        @for (item of items; track item) {`,
+        `          <li>{{item.text}}</li>`,
+        `        }`,
+        `      </ul>`,
+        `    } @else {`,
+        `      <p>Else content</p>`,
+        `    }`,
+        `  </div>`,
         `}`,
       ].join('\n'));
     });
@@ -2589,36 +2588,36 @@ describe('control flow migration', () => {
 
       expect(content).toBe([
         `@if (show) {`,
-        `<div>`,
-        `@if (again) {`,
-        `<div>`,
-        `@if (more) {`,
-        `<div>`,
-        `<div>`,
-        `@switch (testOpts) {`,
-        `@case (1) {`,
-        `  <p>Option 1</p>`,
-        `}`,
-        `@case (2) {`,
-        `  <p>Option 2</p>`,
-        `}`,
-        `@default {`,
-        `  <p>Option 3</p>`,
-        `}`,
-        `}`,
-        `</div>`,
-        `</div>`,
-        `}`,
-        `</div>`,
-        `}`,
-        `@if (nest) {`,
-        `<ul>`,
-        `@for (item of items; track item) {`,
-        `  <li>{{item.text}}</li>`,
-        `}`,
-        `</ul>`,
-        `}`,
-        `</div>`,
+        `  <div>`,
+        `    @if (again) {`,
+        `      <div>`,
+        `        @if (more) {`,
+        `          <div>`,
+        `            <div>`,
+        `              @switch (testOpts) {`,
+        `                @case (1) {`,
+        `                  <p>Option 1</p>`,
+        `                }`,
+        `                @case (2) {`,
+        `                  <p>Option 2</p>`,
+        `                }`,
+        `                @default {`,
+        `                  <p>Option 3</p>`,
+        `                }`,
+        `              }`,
+        `            </div>`,
+        `          </div>`,
+        `        }`,
+        `      </div>`,
+        `    }`,
+        `    @if (nest) {`,
+        `      <ul>`,
+        `        @for (item of items; track item) {`,
+        `          <li>{{item.text}}</li>`,
+        `        }`,
+        `      </ul>`,
+        `    }`,
+        `  </div>`,
         `}`,
       ].join('\n'));
     });
@@ -2661,16 +2660,16 @@ describe('control flow migration', () => {
       const result = [
         `@for (breadcrumb of breadcrumbItems(); track breadcrumb) {`,
         `  <div class="docs-breadcrumb">`,
-        `@if (breadcrumb.path) {\n`,
-        `@if (breadcrumb.isExternal) {\n`,
-        `<a [href]="breadcrumb.path">{{ breadcrumb.label }}</a>\n`,
-        `} @else {\n`,
-        `<a [routerLink]="'/' + breadcrumb.path">{{ breadcrumb.label }}</a>\n`,
-        `}\n`,
-        `} @else {\n`,
-        `<span>{{ breadcrumb.label }}</span>\n`,
-        `}`,
-        `</div>`,
+        `    @if (breadcrumb.path) {`,
+        `      @if (breadcrumb.isExternal) {`,
+        `        <a [href]="breadcrumb.path">{{ breadcrumb.label }}</a>`,
+        `      } @else {`,
+        `        <a [routerLink]="'/' + breadcrumb.path">{{ breadcrumb.label }}</a>`,
+        `      }`,
+        `    } @else {`,
+        `      <span>{{ breadcrumb.label }}</span>`,
+        `    }`,
+        `  </div>`,
         `}`,
       ].join('\n');
 
@@ -2751,61 +2750,61 @@ describe('control flow migration', () => {
       const content = tree.readContent('/comp.html');
       const result = [
         `<div class="class">`,
-        `@if (stuff) {`,
-        `<iframe `,
-        `#preview `,
-        `class="special-class"  `,
-        `></iframe>`,
-        `}`,
-        `@if (shouldDoIt) {\n`,
-        `<ng-container `,
-        `*ngComponentOutlet="outletComponent; inputs: {errorMessage: errorMessage()}" `,
-        `/>\n`,
-        `}`,
-        `@if (`,
-        `shouldWhat`,
-        `) {`,
-        `<div `,
-        `class="what"`,
-        `>\n`,
-        `@switch (currentCase()) {`,
-        `@case (A) {`,
-        `  <span `,
-        `class="case-stuff"`,
-        `>`,
-        `Case A`,
-        `</span>`,
-        `}`,
-        `@case (B) {`,
-        `  <span class="b-class">`,
-        `Case B`,
-        `</span>`,
-        `}`,
-        `@case (C) {`,
-        `  <span `,
-        `class="thing-1"  `,
-        `>`,
-        `Case C`,
-        `</span>`,
-        `}`,
-        `@case (D) {`,
-        `  <span `,
-        `class="thing-2"`,
-        `>`,
-        `Case D`,
-        `</span>`,
-        `}`,
-        `@case (E) {`,
-        `  <span `,
-        `class="thing-3"  `,
-        `>`,
-        `Case E`,
-        `</span>`,
-        `}`,
-        `}\n`,
-        `<progress [value]="progress()" [max]="ready"></progress>`,
-        `</div>`,
-        `}`,
+        `  @if (stuff) {`,
+        `    <iframe`,
+        `      #preview`,
+        `      class="special-class"`,
+        `    ></iframe>`,
+        `  }`,
+        `  @if (shouldDoIt) {`,
+        `    <ng-container`,
+        `      *ngComponentOutlet="outletComponent; inputs: {errorMessage: errorMessage()}"`,
+        `      />`,
+        `  }`,
+        `  @if (`,
+        `    shouldWhat`,
+        `    ) {`,
+        `    <div`,
+        `      class="what"`,
+        `      >`,
+        `      @switch (currentCase()) {`,
+        `        @case (A) {`,
+        `          <span`,
+        `            class="case-stuff"`,
+        `            >`,
+        `            Case A`,
+        `          </span>`,
+        `        }`,
+        `        @case (B) {`,
+        `          <span class="b-class">`,
+        `            Case B`,
+        `          </span>`,
+        `        }`,
+        `        @case (C) {`,
+        `          <span`,
+        `            class="thing-1"`,
+        `            >`,
+        `            Case C`,
+        `          </span>`,
+        `        }`,
+        `        @case (D) {`,
+        `          <span`,
+        `            class="thing-2"`,
+        `            >`,
+        `            Case D`,
+        `          </span>`,
+        `        }`,
+        `        @case (E) {`,
+        `          <span`,
+        `            class="thing-3"`,
+        `            >`,
+        `            Case E`,
+        `          </span>`,
+        `        }`,
+        `      }`,
+        `      <progress [value]="progress()" [max]="ready"></progress>`,
+        `    </div>`,
+        `  }`,
         `</div>`,
       ].join('\n');
 
@@ -2875,22 +2874,21 @@ describe('control flow migration', () => {
       const result = [
         `<div class="content">`,
         `  <ng-container *ngTemplateOutlet="navigation" />`,
-        `  @if (content()) {\n`,
-        `    <div class="class-1"></div>\n  `,
-        `}`,
+        `  @if (content()) {`,
+        `    <div class="class-1"></div>`,
+        `  }`,
         `</div>`,
         `<ng-template #navigation>`,
         `  <div class="cont">`,
-        `      @if (shouldShowMe()) {`,
-        `<button\n       `,
+        `    @if (shouldShowMe()) {`,
+        `      <button`,
         `        class="holy-classname-batman"`,
-        `      >`,
+        `        >`,
         `        Wow...a button!`,
         `      </button>`,
-        `}`,
+        `    }`,
         `  </div>`,
         `</ng-template>`,
-
       ].join('\n');
 
       expect(content).toBe(result);
@@ -2961,25 +2959,25 @@ describe('control flow migration', () => {
 
       const result = [
         `<div class="statistics">`,
-        `    @if (null !== value) {\n`,
-        `      @if (!isMoney) {`,
-        `<div class="statistics__counter"\n       `,
-        `      >`,
+        `  @if (null !== value) {`,
+        `    @if (!isMoney) {`,
+        `      <div class="statistics__counter"`,
+        `        >`,
         `        {{ value | number }}`,
         `      </div>`,
-        `}`,
-        `      @if (isMoney) {`,
-        `<div class="statistics__counter"\n       `,
-        `      >`,
-        `      {{ value | number }}$`,
+        `    }`,
+        `    @if (isMoney) {`,
+        `      <div class="statistics__counter"`,
+        `        >`,
+        `        {{ value | number }}$`,
         `      </div>`,
-        `}`,
-        `    \n} @else {\n`,
-        `  <preload-rect`,
-        `    height="2rem"`,
-        `    width="6rem" />\n`,
-        `}`,
-        `</div>\n`,
+        `    }`,
+        `  } @else {`,
+        `    <preload-rect`,
+        `      height="2rem"`,
+        `      width="6rem" />`,
+        `  }`,
+        `</div>`,
       ].join('\n');
 
       expect(content).toBe(result);
@@ -3013,15 +3011,14 @@ describe('control flow migration', () => {
 
       const expected = [
         `<div>`,
-        `  @if (cond) {\n`,
+        `  @if (cond) {`,
         `    bla bla`,
-        `  `,
-        `} @else {\n`,
-        `  @for (item of items; track item) {`,
-        `  <div class="test"></div>`,
-        `}\n`,
-        `}`,
-        `</div>\n`,
+        `  } @else {`,
+        `    @for (item of items; track item) {`,
+        `      <div class="test"></div>`,
+        `    }`,
+        `  }`,
+        `</div>`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3055,17 +3052,16 @@ describe('control flow migration', () => {
 
       const expected = [
         `<div>`,
-        `  @if (cond) {\n`,
+        `  @if (cond) {`,
         `    bla bla`,
-        `  `,
-        `} @else {`,
-        `<ng-container i18n="@@test_key">`,
-        `  @for (item of items; track item) {`,
-        `  <div class="test"></div>`,
-        `}`,
-        `</ng-container>`,
-        `}`,
-        `</div>\n`,
+        `  } @else {`,
+        `    <ng-container i18n="@@test_key">`,
+        `      @for (item of items; track item) {`,
+        `        <div class="test"></div>`,
+        `      }`,
+        `    </ng-container>`,
+        `  }`,
+        `</div>`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3099,19 +3095,136 @@ describe('control flow migration', () => {
       const expected = [
         `<div>`,
         `  @if (hasPermission) {`,
-        `<div>presentation</div>`,
-        `} @else {\n`,
-        `  <p>No Permissions</p>\n`,
-        `}`,
+        `    <div>presentation</div>`,
+        `  } @else {`,
+        `    <p>No Permissions</p>`,
+        `  }`,
         `  @if (someOtherPermission) {`,
-        `<div>presentation</div>`,
-        `} @else {\n`,
-        `  <p>No Permissions</p>\n`,
-        `}`,
-        `</div>\n`,
+        `    <div>presentation</div>`,
+        `  } @else {`,
+        `    <p>No Permissions</p>`,
+        `  }`,
+        `</div>`,
       ].join('\n');
 
       expect(actual).toBe(expected);
+    });
+  });
+  describe('formatting', () => {
+    it('should reformat else if', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `@if (stuff) {`,
+        `<p>Stuff</p>`,
+        `} @else if (things) {`,
+        `<p>Things</p>`,
+        `} @else {`,
+        `<p>Huh</p>`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @if (stuff) {`,
+        `    <p>Stuff</p>`,
+        `  } @else if (things) {`,
+        `    <p>Things</p>`,
+        `  } @else {`,
+        `    <p>Huh</p>`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should reformat self closing tags', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `@if (stuff) {`,
+        `<img src="path.png" alt="stuff" />`,
+        `} @else {`,
+        `<img src="path.png"`,
+        `alt="stuff" />`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @if (stuff) {`,
+        `    <img src="path.png" alt="stuff" />`,
+        `  } @else {`,
+        `    <img src="path.png"`,
+        `      alt="stuff" />`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should migrate an if else case and not format', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show;else elseBlock">Content here</span>`,
+        `<ng-template #elseBlock>Else Content</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration(undefined, false);
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `@if (show) {`,
+        `<span>Content here</span>`,
+        `} @else {`,
+        `Else Content`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
     });
   });
 

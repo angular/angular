@@ -12,14 +12,14 @@ import {migrateFor} from './fors';
 import {migrateIf} from './ifs';
 import {migrateSwitch} from './switches';
 import {AnalyzedFile, MigrateError} from './types';
-import {canRemoveCommonModule, processNgTemplates, removeImports} from './util';
+import {canRemoveCommonModule, formatTemplate, processNgTemplates, removeImports} from './util';
 
 /**
  * Actually migrates a given template to the new syntax
  */
 export function migrateTemplate(
-    template: string, templateType: string, node: ts.Node,
-    file: AnalyzedFile): {migrated: string, errors: MigrateError[]} {
+    template: string, templateType: string, node: ts.Node, file: AnalyzedFile,
+    format: boolean = false): {migrated: string, errors: MigrateError[]} {
   let errors: MigrateError[] = [];
   let migrated = template;
   if (templateType === 'template') {
@@ -27,6 +27,9 @@ export function migrateTemplate(
     const forResult = migrateFor(ifResult.migrated);
     const switchResult = migrateSwitch(forResult.migrated);
     migrated = processNgTemplates(switchResult.migrated);
+    if (format) {
+      migrated = formatTemplate(migrated);
+    }
     file.removeCommonModule = canRemoveCommonModule(template);
 
     errors = [

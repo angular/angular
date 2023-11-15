@@ -83,7 +83,6 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
   const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const lbSpaces = etm.hasLineBreaks ? `\n  ` : '';
   const parts = getNgForParts(etm.attr.value);
 
   const originals = getOriginals(etm, tmpl, offset);
@@ -135,7 +134,7 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
   const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbSpaces}${start}`;
+  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}${start}`;
 
   const endBlock = `${end}${lbString}}`;
   const forBlock = startBlock + middle + endBlock;
@@ -172,7 +171,7 @@ function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number):
   }
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {\n  ${start}`;
+  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {\n${start}`;
 
   const endBlock = `${end}\n}`;
   const forBlock = startBlock + middle + endBlock;
