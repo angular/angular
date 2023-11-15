@@ -109,15 +109,13 @@ function migrateNgSwitch(etm: ElementToMigrate, tmpl: string, offset: number): R
 function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const lbSpaces = etm.hasLineBreaks ? '  ' : '';
   const leadingSpace = etm.hasLineBreaks ? '' : ' ';
   const condition = etm.attr.value;
 
   const originals = getOriginals(etm, tmpl, offset);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock =
-      `${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${lbSpaces}${start}`;
+  const startBlock = `${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
   const endBlock = `${end}${lbString}${leadingSpace}}`;
 
   const defaultBlock = startBlock + middle + endBlock;
@@ -134,13 +132,12 @@ function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number
 function migrateNgSwitchDefault(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const lbSpaces = etm.hasLineBreaks ? '  ' : '';
   const leadingSpace = etm.hasLineBreaks ? '' : ' ';
 
   const originals = getOriginals(etm, tmpl, offset);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${leadingSpace}@default {${leadingSpace}${lbString}${lbSpaces}${start}`;
+  const startBlock = `${leadingSpace}@default {${leadingSpace}${lbString}${start}`;
   const endBlock = `${end}${lbString}${leadingSpace}}`;
 
   const defaultBlock = startBlock + middle + endBlock;

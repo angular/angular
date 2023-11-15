@@ -18,6 +18,7 @@ import {analyze} from './util';
 
 interface Options {
   path: string;
+  format: boolean;
 }
 
 export default function(options: Options): Rule {
@@ -87,7 +88,8 @@ function runControlFlowMigration(
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} = migrateTemplate(template, type, node, file);
+      const {migrated, errors} =
+          migrateTemplate(template, type, node, file, schematicOptions.format);
 
       if (migrated !== null) {
         update.remove(start, length);
