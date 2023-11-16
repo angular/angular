@@ -109,12 +109,11 @@ export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) 
 const enum ChangeDetectionMode {
   /**
    * In `Global` mode, `Dirty` and `CheckAlways` views are refreshed as well as views with the
-   * `RefreshTransplantedView` flag.
+   * `RefreshView` flag.
    */
   Global,
   /**
-   * In `Targeted` mode, only views with the `RefreshTransplantedView`
-   * flag are refreshed.
+   * In `Targeted` mode, only views with the `RefreshView` flag are refreshed.
    */
   Targeted,
 }
@@ -371,7 +370,7 @@ function detectChangesInViewIfAttached(lView: LView, mode: ChangeDetectionMode) 
  *
  * The view is refreshed if:
  * - If the view is CheckAlways or Dirty and ChangeDetectionMode is `Global`
- * - If the view has the `RefreshTransplantedView` flag
+ * - If the view has the `RefreshView` flag
  *
  * The view is not refreshed, but descendants are traversed in `ChangeDetectionMode.Targeted` if the
  * view HasChildViewsToRefresh flag is set.
