@@ -86,13 +86,16 @@ export class Comment implements BaseNode {
   }
 }
 
-export class Block implements BaseNode {
+export class Block extends NodeWithI18n {
   constructor(
       public name: string, public parameters: BlockParameter[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null = null) {}
+      sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null = null,
+      i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
 
-  visit(visitor: Visitor, context: any) {
+  override visit(visitor: Visitor, context: any) {
     return visitor.visitBlock(this, context);
   }
 }

@@ -164,6 +164,15 @@ class _WriteVisitor implements i18n.Visitor {
     return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name, 'equiv-text': `{{${ph.value}}}`})];
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context?: any): xml.Node[] {
+    const ctype = `x-${ph.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    const startTagPh =
+        new xml.Tag(_PLACEHOLDER_TAG, {id: ph.startName, ctype, 'equiv-text': `@${ph.name}`});
+    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.closeName, ctype, 'equiv-text': `}`});
+
+    return [startTagPh, ...this.serialize(ph.children), closeTagPh];
+  }
+
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
     const equivText = `{${ph.value.expression}, ${ph.value.type}, ${
         Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ')}}`;

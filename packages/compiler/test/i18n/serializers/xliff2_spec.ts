@@ -11,8 +11,8 @@ import {escapeRegExp} from '@angular/compiler/src/util';
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {Xliff2} from '../../../src/i18n/serializers/xliff2';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
 
 const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
@@ -26,6 +26,7 @@ const HTML = `
 <p i18n>Test: { count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} } =other {a lot}}</p>
 <p i18n>multi
 lines</p>
+<p i18n>translatable element @if (foo) {with} @else if (bar) {blocks}</p>
 `;
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -123,6 +124,14 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <segment>
         <source>multi
 lines</source>
+      </segment>
+    </unit>
+    <unit id="6618832065070552029">
+      <notes>
+        <note category="location">file.ts:13</note>
+      </notes>
+      <segment>
+        <source>translatable element <pc id="0" equivStart="START_BLOCK_IF" equivEnd="CLOSE_BLOCK_IF" type="other" dispStart="@if" dispEnd="}">with</pc> <pc id="1" equivStart="START_BLOCK_ELSE_IF" equivEnd="CLOSE_BLOCK_ELSE_IF" type="other" dispStart="@else if" dispEnd="}">blocks</pc></source>
       </segment>
     </unit>
   </file>
@@ -238,6 +247,15 @@ lines</source>
 lignes</target>
       </segment>
     </unit>
+    <unit id="6618832065070552029">
+      <notes>
+        <note category="location">file.ts:13</note>
+      </notes>
+      <segment>
+        <source>translatable element <pc id="0" equivStart="START_BLOCK_IF" equivEnd="CLOSE_BLOCK_IF" type="other" dispStart="@if" dispEnd="}">with</pc> <pc id="1" equivStart="START_BLOCK_ELSE_IF" equivEnd="CLOSE_BLOCK_ELSE_IF" type="other" dispStart="@else if" dispEnd="}">blocks</pc></source>
+        <target>élément traduisible <pc id="0" equivStart="START_BLOCK_IF" equivEnd="CLOSE_BLOCK_IF" type="other" dispStart="@if" dispEnd="}">avec</pc> <pc id="1" equivStart="START_BLOCK_ELSE_IF" equivEnd="CLOSE_BLOCK_ELSE_IF" type="other" dispStart="@else if" dispEnd="}">des blocs</pc></target>
+      </segment>
+    </unit>
     <unit id="mrk-test">
      <notes>
       <note id="n1" appliesTo="target">Please check the translation for 'namespace'. On also can use 'espace de nom',but I think most technical manuals use the English term.</note>
@@ -260,26 +278,25 @@ lignes</target>
 </xliff>
 `;
 
-(function() {
-const serializer = new Xliff2();
-
-function toXliff(html: string, locale: string|null = null): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
-  return catalog.write(serializer);
-}
-
-function loadAsMap(xliff: string): {[id: string]: string} {
-  const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
-
-  const msgMap: {[id: string]: string} = {};
-  Object.keys(i18nNodesByMsgId)
-      .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
-
-  return msgMap;
-}
-
 describe('XLIFF 2.0 serializer', () => {
+  const serializer = new Xliff2();
+
+  function toXliff(html: string, locale: string|null = null): string {
+    const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
+    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+    return catalog.write(serializer);
+  }
+
+  function loadAsMap(xliff: string): {[id: string]: string} {
+    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
+
+    const msgMap: {[id: string]: string} = {};
+    Object.keys(i18nNodesByMsgId)
+        .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
+
+    return msgMap;
+  }
+
   describe('write', () => {
     it('should write a valid xliff 2.0 file', () => {
       expect(toXliff(HTML)).toEqual(WRITE_XLIFF);
@@ -309,6 +326,8 @@ describe('XLIFF 2.0 serializer', () => {
             ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
         '2340165783990709777': `multi
 lignes`,
+        '6618832065070552029':
+            'élément traduisible <ph name="START_BLOCK_IF"/>avec<ph name="CLOSE_BLOCK_IF"/> <ph name="START_BLOCK_ELSE_IF"/>des blocs<ph name="CLOSE_BLOCK_ELSE_IF"/>',
         'mrk-test': 'Vous pouvez utiliser votre propre namespace.',
         'mrk-test2': 'Vous pouvez utiliser votre propre namespace.'
       });
@@ -439,4 +458,3 @@ lignes`,
     });
   });
 });
-})();

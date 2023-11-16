@@ -11,8 +11,8 @@ import {escapeRegExp} from '@angular/compiler/src/util';
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {Xliff} from '../../../src/i18n/serializers/xliff';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
 
 const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
@@ -27,6 +27,7 @@ const HTML = `
 <p i18n>Test: { count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} } =other {a lot}}</p>
 <p i18n>multi
 lines</p>
+<p i18n>translatable element @if (foo) {with} @else if (bar) {blocks}</p>
 `;
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -118,6 +119,13 @@ lines</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3e17847a6823c7777ca57c7338167badca0f4d19" datatype="html">
+        <source>translatable element <x id="START_BLOCK_IF" ctype="x-if" equiv-text="@if"/>with<x id="CLOSE_BLOCK_IF" ctype="x-if" equiv-text="}"/> <x id="START_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="@else if"/>blocks<x id="CLOSE_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
     </body>
@@ -221,6 +229,14 @@ lignes</target>
           <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="3e17847a6823c7777ca57c7338167badca0f4d19" datatype="html">
+        <source>translatable element <x id="START_BLOCK_IF" ctype="x-if" equiv-text="@if"/>with<x id="CLOSE_BLOCK_IF" ctype="x-if" equiv-text="}"/> <x id="START_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="@else if"/>blocks<x id="CLOSE_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="}"/></source>
+        <target>élément traduisible <x id="START_BLOCK_IF" ctype="x-if" equiv-text="@if"/>avec<x id="CLOSE_BLOCK_IF" ctype="x-if" equiv-text="}"/> <x id="START_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="@else if"/>des blocs<x id="CLOSE_BLOCK_ELSE_IF" ctype="x-else-if" equiv-text="}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="mrk-test">
         <source>First sentence.</source>
         <seg-source>
@@ -240,26 +256,25 @@ lignes</target>
 </xliff>
 `;
 
-(function() {
-const serializer = new Xliff();
-
-function toXliff(html: string, locale: string|null = null): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
-  return catalog.write(serializer);
-}
-
-function loadAsMap(xliff: string): {[id: string]: string} {
-  const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
-
-  const msgMap: {[id: string]: string} = {};
-  Object.keys(i18nNodesByMsgId)
-      .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
-
-  return msgMap;
-}
-
 describe('XLIFF serializer', () => {
+  const serializer = new Xliff();
+
+  function toXliff(html: string, locale: string|null = null): string {
+    const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
+    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+    return catalog.write(serializer);
+  }
+
+  function loadAsMap(xliff: string): {[id: string]: string} {
+    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
+
+    const msgMap: {[id: string]: string} = {};
+    Object.keys(i18nNodesByMsgId)
+        .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
+
+    return msgMap;
+  }
+
   describe('write', () => {
     it('should write a valid xliff file', () => {
       expect(toXliff(HTML)).toEqual(WRITE_XLIFF);
@@ -291,6 +306,8 @@ describe('XLIFF serializer', () => {
             ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
         'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
 lignes`,
+        '3e17847a6823c7777ca57c7338167badca0f4d19':
+            'élément traduisible <ph name="START_BLOCK_IF"/>avec<ph name="CLOSE_BLOCK_IF"/> <ph name="START_BLOCK_ELSE_IF"/>des blocs<ph name="CLOSE_BLOCK_ELSE_IF"/>',
         'mrk-test': 'Translated first sentence.',
         'mrk-test2': 'Translated first sentence.'
       });
@@ -426,4 +443,3 @@ lignes`,
     });
   });
 });
-})();
