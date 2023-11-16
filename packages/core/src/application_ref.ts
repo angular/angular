@@ -48,7 +48,7 @@ import {ViewRef as InternalViewRef} from './render3/view_ref';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
-import {isStableFactory, NgZone, NoopNgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
+import {NgZone, NoopNgZone, zoneIsStableFactory} from './zone/ng_zone';
 
 let _platformInjector: Injector|null = null;
 
@@ -828,7 +828,6 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-  private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -851,13 +850,7 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> =
-      inject(InitialRenderPendingTasks)
-          .hasPendingTasks.pipe(
-              switchMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
-              distinctUntilChanged(),
-              share(),
-          );
+  public readonly isStable: Observable<boolean> = inject(IS_STABLE);
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
@@ -1257,8 +1250,7 @@ const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
 
 export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
   return [
-    {provide: NgZone, useFactory: ngZoneFactory},
-    {
+    {provide: NgZone, useFactory: ngZoneFactory}, {
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
       useFactory: () => {
@@ -1275,9 +1267,27 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
       },
     },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
-    {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
+    {
+      provide: IS_STABLE,
+      useFactory: () => {
+        const zoneIsStable = zoneIsStableFactory();
+        const hasPendingRenderTasks = inject(InitialRenderPendingTasks).hasPendingTasks;
+        return hasPendingRenderTasks.pipe(
+            switchMap(hasPendingTasks => hasPendingTasks ? of(false) : zoneIsStable),
+            distinctUntilChanged(),
+            share(),
+        );
+      },
+    }
   ];
 }
+
+export const IS_STABLE =
+    new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
+      providedIn: 'root',
+      factory: () =>
+          inject(InitialRenderPendingTasks).hasPendingTasks.pipe(distinctUntilChanged(), share()),
+    });
 
 /**
  * Provides `NgZone`-based change detection for the application bootstrapped using

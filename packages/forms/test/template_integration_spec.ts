@@ -267,7 +267,7 @@ describe('template-driven forms integration tests', () => {
          });
        }));
 
-    it('should set status classes involving nested FormGroups', () => {
+    it('should set status classes involving nested FormGroups', async () => {
       const fixture = initTest(NgModelNestedForm);
       fixture.componentInstance.first = '';
       fixture.componentInstance.other = '';
@@ -277,7 +277,7 @@ describe('template-driven forms integration tests', () => {
       const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
 
-      fixture.whenStable().then(() => {
+      await fixture.whenStable().then(() => {
         fixture.detectChanges();
         expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
 

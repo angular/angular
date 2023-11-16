@@ -177,6 +177,9 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -456,9 +459,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -655,6 +655,9 @@
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "distinctUntilChanged"
   },
   {
     "name": "empty"
@@ -958,9 +961,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

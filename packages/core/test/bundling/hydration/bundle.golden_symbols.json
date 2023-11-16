@@ -228,6 +228,9 @@
     "name": "IS_HYDRATION_DOM_REUSE_ENABLED"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -534,9 +537,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -736,6 +736,9 @@
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "distinctUntilChanged"
   },
   {
     "name": "empty"
@@ -981,6 +984,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invertObject"
   },
   {
@@ -1045,9 +1051,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

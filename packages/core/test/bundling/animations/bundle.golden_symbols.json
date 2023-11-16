@@ -273,6 +273,9 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -609,9 +612,6 @@
     "name": "WebAnimationsStyleNormalizer"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_CACHED_BODY"
   },
   {
@@ -874,6 +874,9 @@
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "distinctUntilChanged"
   },
   {
     "name": "documentElement"
@@ -1210,9 +1213,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

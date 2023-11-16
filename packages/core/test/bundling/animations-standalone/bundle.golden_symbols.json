@@ -252,6 +252,9 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -552,9 +555,6 @@
     "name": "WebAnimationsStyleNormalizer"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_CACHED_BODY"
   },
   {
@@ -810,6 +810,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "distinctUntilChanged"
+  },
+  {
     "name": "documentElement"
   },
   {
@@ -1062,6 +1065,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "interpolateParams"
   },
   {
@@ -1141,9 +1147,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

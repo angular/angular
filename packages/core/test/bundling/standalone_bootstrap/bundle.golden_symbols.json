@@ -162,6 +162,9 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -405,9 +408,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -583,6 +583,9 @@
   },
   {
     "name": "diPublicInInjector"
+  },
+  {
+    "name": "distinctUntilChanged"
   },
   {
     "name": "empty"
@@ -792,6 +795,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invertObject"
   },
   {
@@ -838,9 +844,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

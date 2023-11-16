@@ -124,7 +124,7 @@ describe('ComponentFixture', () => {
     });
   }));
 
-  it('should auto detect changes if autoDetectChanges is called', () => {
+  it('should auto detect changes if autoDetectChanges is called', async () => {
     const componentFixture = TestBed.createComponent(AutoDetectComp);
     expect(componentFixture.ngZone).not.toBeNull();
     componentFixture.autoDetectChanges();
@@ -133,6 +133,7 @@ describe('ComponentFixture', () => {
     const element = componentFixture.debugElement.children[0];
     dispatchEvent(element.nativeElement, 'click');
 
+    await componentFixture.whenStable();
     expect(componentFixture.isStable()).toBe(true);
     expect(componentFixture.nativeElement).toHaveText('11');
   });

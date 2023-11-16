@@ -303,6 +303,9 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
+    "name": "IS_STABLE"
+  },
+  {
     "name": "InitialRenderPendingTasks"
   },
   {
@@ -843,9 +846,6 @@
     "name": "XSS_SECURITY_URL"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -1168,6 +1168,9 @@
   },
   {
     "name": "dispatch"
+  },
+  {
+    "name": "distinctUntilChanged"
   },
   {
     "name": "empty"
@@ -1636,9 +1639,6 @@
   },
   {
     "name": "isScheduler"
-  },
-  {
-    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"

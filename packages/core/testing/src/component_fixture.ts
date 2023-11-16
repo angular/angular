@@ -7,7 +7,8 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 
@@ -44,19 +45,15 @@ export class ComponentFixture<T> {
   changeDetectorRef: ChangeDetectorRef;
 
   private _renderer: RendererFactory2|null|undefined;
-  private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
-  private _resolve: ((result: boolean) => void)|null = null;
-  private _promise: Promise<boolean>|null = null;
-  private _onUnstableSubscription: Subscription|null = null;
-  private _onStableSubscription: Subscription|null = null;
-  private _onMicrotaskEmptySubscription: Subscription|null = null;
-  private _onErrorSubscription: Subscription|null = null;
+  private _isStable = true;
+  private subscriptions = new Subscription();
 
   /** @nodoc */
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
-      private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean) {
+      private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean,
+      private isStableObservable: Observable<boolean>|null) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -65,16 +62,15 @@ export class ComponentFixture<T> {
     this.componentRef = componentRef;
     this.ngZone = ngZone;
 
+    this.subscriptions.add(this.isStableObservable?.subscribe(v => {
+      this._isStable = v;
+    }));
+
     if (ngZone) {
       // Create subscriptions outside the NgZone so that the callbacks run oustide
       // of NgZone.
       ngZone.runOutsideAngular(() => {
-        this._onUnstableSubscription = ngZone.onUnstable.subscribe({
-          next: () => {
-            this._isStable = false;
-          }
-        });
-        this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
+        this.subscriptions.add(ngZone.onMicrotaskEmpty.subscribe({
           next: () => {
             if (this._autoDetect) {
               // Do a change detection run with checkNoChanges set to true to check
@@ -82,33 +78,13 @@ export class ComponentFixture<T> {
               this.detectChanges(true);
             }
           }
-        });
-        this._onStableSubscription = ngZone.onStable.subscribe({
-          next: () => {
-            this._isStable = true;
-            // Check whether there is a pending whenStable() completer to resolve.
-            if (this._promise !== null) {
-              // If so check whether there are no pending macrotasks before resolving.
-              // Do this check in the next tick so that ngZone gets a chance to update the state of
-              // pending macrotasks.
-              queueMicrotask(() => {
-                if (!ngZone.hasPendingMacrotasks) {
-                  if (this._promise !== null) {
-                    this._resolve!(true);
-                    this._resolve = null;
-                    this._promise = null;
-                  }
-                }
-              });
-            }
-          }
-        });
+        }));
 
-        this._onErrorSubscription = ngZone.onError.subscribe({
+        this.subscriptions.add(ngZone.onError.subscribe({
           next: (error: any) => {
             throw error;
           }
-        });
+        }));
       });
     }
   }
@@ -165,7 +141,7 @@ export class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
-    return this._isStable && !this.ngZone!.hasPendingMacrotasks;
+    return this._isStable;
   }
 
   /**
@@ -175,16 +151,12 @@ export class ComponentFixture<T> {
    * asynchronous change detection.
    */
   whenStable(): Promise<any> {
-    if (this.isStable()) {
+    if (!this.isStableObservable || this.isStable()) {
       return Promise.resolve(false);
-    } else if (this._promise !== null) {
-      return this._promise;
-    } else {
-      this._promise = new Promise(res => {
-        this._resolve = res;
-      });
-      return this._promise;
     }
+    return this.isStableObservable.pipe(first(stable => stable))
+        .toPromise()
+        .then(() => Promise.resolve(true));
   }
 
   /**
@@ -230,22 +202,7 @@ export class ComponentFixture<T> {
   destroy(): void {
     if (!this._isDestroyed) {
       this.componentRef.destroy();
-      if (this._onUnstableSubscription != null) {
-        this._onUnstableSubscription.unsubscribe();
-        this._onUnstableSubscription = null;
-      }
-      if (this._onStableSubscription != null) {
-        this._onStableSubscription.unsubscribe();
-        this._onStableSubscription = null;
-      }
-      if (this._onMicrotaskEmptySubscription != null) {
-        this._onMicrotaskEmptySubscription.unsubscribe();
-        this._onMicrotaskEmptySubscription = null;
-      }
-      if (this._onErrorSubscription != null) {
-        this._onErrorSubscription.unsubscribe();
-        this._onErrorSubscription = null;
-      }
+      this.subscriptions.unsubscribe();
       this._isDestroyed = true;
     }
   }

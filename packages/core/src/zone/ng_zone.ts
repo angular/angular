@@ -525,7 +525,6 @@ export class NoopNgZone implements NgZone {
     return fn.apply(applyThis, applyArgs);
   }
 }
-
 /**
  * Token used to drive ApplicationRef.isStable
  *
@@ -533,16 +532,7 @@ export class NoopNgZone implements NgZone {
  * for `NoopNgZone` which is always just an `Observable` of `true`. Additionally, we should consider
  * whether the property on `NgZone` should be `Observable` or `Signal`.
  */
-export const ZONE_IS_STABLE_OBSERVABLE =
-    new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
-      providedIn: 'root',
-      // TODO(atscott): Replace this with a suitable default like `new
-      // BehaviorSubject(true).asObservable`. Again, long term this won't exist on ApplicationRef at
-      // all but until we can remove it, we need a default value zoneless.
-      factory: isStableFactory,
-    });
-
-export function isStableFactory() {
+export function zoneIsStableFactory() {
   const zone = inject(NgZone);
   let _stable = true;
   const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {

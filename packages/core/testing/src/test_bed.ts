@@ -30,6 +30,7 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
+  ɵIS_STABLE as IS_STABLE,
   ɵRender3ComponentFactory as ComponentFactory,
   ɵRender3NgModuleRef as NgModuleRef,
   ɵresetCompiledComponents as resetCompiledComponents,
@@ -632,11 +633,13 @@ export class TestBedImpl implements TestBed {
     const autoDetect: boolean = this.inject(ComponentFixtureAutoDetect, false);
     const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
+    const isStable = this.inject(IS_STABLE);
     const initComponent = () => {
       const componentRef =
           componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
       return new ComponentFixture<any>(
-          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect);
+          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect,
+          isStable);
     };
     const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
     this._activeFixtures.push(fixture);
