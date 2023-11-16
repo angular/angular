@@ -190,6 +190,39 @@ describe('DeferFixture', () => {
     expect(el.querySelector('.more')).toBeDefined();
   });
 
+  it('should work with templates that have local refs', async () => {
+    @Component({
+      selector: 'defer-comp',
+      standalone: true,
+      imports: [SecondDeferredComp],
+      template: `
+        <ng-template #template>Hello</ng-template>
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
+    })
+    class DeferComp {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [
+        DeferComp,
+        SecondDeferredComp,
+      ],
+      providers: COMMON_PROVIDERS,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+
+    const componentFixture = TestBed.createComponent(DeferComp);
+    const deferBlock = (await componentFixture.getDeferBlocks())[0];
+    const el = componentFixture.nativeElement as HTMLElement;
+    await deferBlock.render(DeferBlockState.Complete);
+    expect(el.querySelector('.more')).toBeDefined();
+  });
+
   it('should render a placeholder defer state', async () => {
     @Component({
       selector: 'defer-comp',
