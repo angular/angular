@@ -50,11 +50,9 @@ class ResolveIcuPlaceholdersVisitor extends i18n.RecurseVisitor {
     super();
   }
 
-  override visitTagPlaceholder(placeholder: i18n.TagPlaceholder) {
-    super.visitTagPlaceholder(placeholder);
-
-    // Add the start and end source span for tag placeholders. These need to be recorded for
-    // elements inside ICUs. The slots for the elements were recorded separately under the i18n
+  private visitContainerPlaceholder(placeholder: i18n.TagPlaceholder|i18n.BlockPlaceholder) {
+    // Add the start and end source span for container placeholders. These need to be recorded for
+    // elements inside ICUs. The slots for the nodes were recorded separately under the i18n
     // block's context as part of the `resolveI18nElementPlaceholders` phase.
     if (placeholder.startName && placeholder.startSourceSpan &&
         !this.params.has(placeholder.startName)) {
@@ -72,5 +70,15 @@ class ResolveIcuPlaceholdersVisitor extends i18n.RecurseVisitor {
                         flags: ir.I18nParamValueFlags.None
                       }]);
     }
+  }
+
+  override visitTagPlaceholder(placeholder: i18n.TagPlaceholder) {
+    super.visitTagPlaceholder(placeholder);
+    this.visitContainerPlaceholder(placeholder);
+  }
+
+  override visitBlockPlaceholder(placeholder: i18n.BlockPlaceholder) {
+    super.visitBlockPlaceholder(placeholder);
+    this.visitContainerPlaceholder(placeholder);
   }
 }

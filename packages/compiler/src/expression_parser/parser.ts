@@ -7,7 +7,7 @@
  */
 
 import * as chars from '../chars';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/defaults';
 import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType as MlParserTokenType} from '../ml_parser/tokens';
 
 import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';

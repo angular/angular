@@ -81,6 +81,11 @@ class _SerializerVisitor implements i18n.Visitor {
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return `<ph icu name="${ph.name}">${ph.value.visit(this)}</ph>`;
   }
+
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context: any): any {
+    return `<ph block name="${ph.startName}">${
+        ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+  }
 }
 
 const serializerVisitor = new _SerializerVisitor();

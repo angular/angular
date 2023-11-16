@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
-import {InterpolationConfig} from '../../ml_parser/interpolation_config';
+import {InterpolationConfig} from '../../ml_parser/defaults';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
