@@ -19,7 +19,7 @@ import {canRemoveCommonModule, formatTemplate, processNgTemplates, removeImports
  */
 export function migrateTemplate(
     template: string, templateType: string, node: ts.Node, file: AnalyzedFile,
-    format: boolean = false): {migrated: string, errors: MigrateError[]} {
+    format: boolean = true): {migrated: string, errors: MigrateError[]} {
   let errors: MigrateError[] = [];
   let migrated = template;
   if (templateType === 'template') {
