@@ -141,6 +141,6 @@ export function assertDeferredDependenciesLoaded(tDetails: TDeferBlockDetails) {
  * that a primary template exists. All the other template options are optional.
  */
 export function isTDeferBlockDetails(value: unknown): value is TDeferBlockDetails {
-  return (typeof value === 'object') &&
+  return value !== null && (typeof value === 'object') &&
       (typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number');
 }
