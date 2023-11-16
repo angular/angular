@@ -37,6 +37,11 @@ class IcuSerializerVisitor implements i18n.Visitor {
     return this.formatPh(ph.name);
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder): any {
+    return `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
+        this.formatPh(ph.closeName)}`;
+  }
+
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return this.formatPh(ph.name);
   }

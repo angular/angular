@@ -129,6 +129,17 @@ export class IcuPlaceholder implements Node {
   }
 }
 
+export class BlockPlaceholder implements Node {
+  constructor(
+      public name: string, public parameters: string[], public startName: string,
+      public closeName: string, public children: Node[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null) {}
+
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitBlockPlaceholder(this, context);
+  }
+}
+
 /**
  * Each HTML node that is affect by an i18n tag will also have an `i18n` property that is of type
  * `I18nMeta`.
@@ -144,6 +155,7 @@ export interface Visitor {
   visitTagPlaceholder(ph: TagPlaceholder, context?: any): any;
   visitPlaceholder(ph: Placeholder, context?: any): any;
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any;
+  visitBlockPlaceholder(ph: BlockPlaceholder, context?: any): any;
 }
 
 // Clone the AST
@@ -178,6 +190,13 @@ export class CloneVisitor implements Visitor {
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): IcuPlaceholder {
     return new IcuPlaceholder(ph.value, ph.name, ph.sourceSpan);
   }
+
+  visitBlockPlaceholder(ph: BlockPlaceholder, context?: any): BlockPlaceholder {
+    const children = ph.children.map(n => n.visit(this, context));
+    return new BlockPlaceholder(
+        ph.name, ph.parameters, ph.startName, ph.closeName, children, ph.sourceSpan,
+        ph.startSourceSpan, ph.endSourceSpan);
+  }
 }
 
 // Visit all the nodes recursively
@@ -201,6 +220,10 @@ export class RecurseVisitor implements Visitor {
   visitPlaceholder(ph: Placeholder, context?: any): any {}
 
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any {}
+
+  visitBlockPlaceholder(ph: BlockPlaceholder, context?: any): any {
+    ph.children.forEach(child => child.visit(this));
+  }
 }
 
 
@@ -239,5 +262,10 @@ class LocalizeMessageStringVisitor implements Visitor {
 
   visitIcuPlaceholder(ph: IcuPlaceholder): any {
     return `{$${ph.name}}`;
+  }
+
+  visitBlockPlaceholder(ph: BlockPlaceholder): any {
+    const children = ph.children.map(child => child.visit(this)).join('');
+    return `{$${ph.startName}}${children}{$${ph.closeName}}`;
   }
 }

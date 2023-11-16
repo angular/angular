@@ -23,3 +23,5 @@ export class InterpolationConfig {
 
 export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig =
     new InterpolationConfig('{{', '}}');
+
+export const DEFAULT_CONTAINER_BLOCKS = new Set(['switch']);

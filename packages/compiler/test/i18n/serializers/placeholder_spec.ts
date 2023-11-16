@@ -86,4 +86,16 @@ describe('PlaceholderRegistry', () => {
       expect(reg.getPlaceholderName('name2', 'content')).toEqual('NAME2');
     });
   });
+
+  describe('block placeholders', () => {
+    it('should generate placeholders for a plain block', () => {
+      expect(reg.getStartBlockPlaceholderName('if', [])).toBe('START_BLOCK_IF');
+      expect(reg.getCloseBlockPlaceholderName('if')).toBe('CLOSE_BLOCK_IF');
+    });
+
+    it('should generate placeholders for a block with spaces in its name', () => {
+      expect(reg.getStartBlockPlaceholderName('else if', [])).toBe('START_BLOCK_ELSE_IF');
+      expect(reg.getCloseBlockPlaceholderName('else if')).toBe('CLOSE_BLOCK_ELSE_IF');
+    });
+  });
 });

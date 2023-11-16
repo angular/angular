@@ -148,6 +148,20 @@ class _Visitor implements i18n.Visitor {
     ];
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context?: any): xml.Node[] {
+    const startAsText = new xml.Text(`@${ph.name}`);
+    const startEx = new xml.Tag(_EXAMPLE_TAG, {}, [startAsText]);
+    // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
+    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [startEx, startAsText]);
+
+    const closeAsText = new xml.Text(`}`);
+    const closeEx = new xml.Tag(_EXAMPLE_TAG, {}, [closeAsText]);
+    // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
+    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.closeName}, [closeEx, closeAsText]);
+
+    return [startTagPh, ...this.serialize(ph.children), closeTagPh];
+  }
+
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
     const icuExpression = ph.value.expression;
     const icuType = ph.value.type;
