@@ -178,6 +178,25 @@ class _WriteVisitor implements i18n.Visitor {
     })];
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context?: any): xml.Node[] {
+    const tagPc = new xml.Tag(_PLACEHOLDER_SPANNING_TAG, {
+      id: (this._nextPlaceholderId++).toString(),
+      equivStart: ph.startName,
+      equivEnd: ph.closeName,
+      type: 'other',
+      dispStart: `@${ph.name}`,
+      dispEnd: `}`,
+    });
+    const nodes: xml.Node[] = [].concat(...ph.children.map(node => node.visit(this)));
+    if (nodes.length) {
+      nodes.forEach((node: xml.Node) => tagPc.children.push(node));
+    } else {
+      tagPc.children.push(new xml.Text(''));
+    }
+
+    return [tagPc];
+  }
+
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
     const cases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
     const idStr = (this._nextPlaceholderId++).toString();

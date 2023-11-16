@@ -9,8 +9,8 @@
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import * as html from '../ml_parser/ast';
+import {InterpolationConfig} from '../ml_parser/defaults';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -29,9 +29,9 @@ export interface I18nMessageFactory {
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
-export function createI18nMessageFactory(interpolationConfig: InterpolationConfig):
-    I18nMessageFactory {
-  const visitor = new _I18nVisitor(_expParser, interpolationConfig);
+export function createI18nMessageFactory(
+    interpolationConfig: InterpolationConfig, containerBlocks: Set<string>): I18nMessageFactory {
+  const visitor = new _I18nVisitor(_expParser, interpolationConfig, containerBlocks);
   return (nodes, meaning, description, customId, visitNodeFn) =>
              visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
@@ -52,7 +52,9 @@ function noopVisitNodeFn(_html: html.Node, i18n: i18n.Node): i18n.Node {
 class _I18nVisitor implements html.Visitor {
   constructor(
       private _expressionParser: ExpressionParser,
-      private _interpolationConfig: InterpolationConfig) {}
+      private _interpolationConfig: InterpolationConfig,
+      private _containerBlocks: Set<string>,
+  ) {}
 
   public toI18nMessage(
       nodes: html.Node[], meaning = '', description = '', customId = '',
@@ -164,11 +166,35 @@ class _I18nVisitor implements html.Visitor {
 
   visitBlock(block: html.Block, context: I18nMessageVisitorContext) {
     const children = html.visitAll(this, block.children, context);
-    const node = new i18n.Container(children, block.sourceSpan);
+
+    if (this._containerBlocks.has(block.name)) {
+      return new i18n.Container(children, block.sourceSpan);
+    }
+
+    const parameters = block.parameters.map(param => param.expression);
+    const startPhName =
+        context.placeholderRegistry.getStartBlockPlaceholderName(block.name, parameters);
+    const closePhName = context.placeholderRegistry.getCloseBlockPlaceholderName(block.name);
+
+    context.placeholderToContent[startPhName] = {
+      text: block.startSourceSpan.toString(),
+      sourceSpan: block.startSourceSpan,
+    };
+
+    context.placeholderToContent[closePhName] = {
+      text: block.endSourceSpan ? block.endSourceSpan.toString() : '}',
+      sourceSpan: block.endSourceSpan ?? block.sourceSpan,
+    };
+
+    const node = new i18n.BlockPlaceholder(
+        block.name, parameters, startPhName, closePhName, children, block.sourceSpan,
+        block.startSourceSpan, block.endSourceSpan);
     return context.visitNodeFn(block, node);
   }
 
-  visitBlockParameter(_parameter: html.BlockParameter, _context: I18nMessageVisitorContext) {}
+  visitBlockParameter(_parameter: html.BlockParameter, _context: I18nMessageVisitorContext) {
+    throw new Error('Unreachable code');
+  }
 
   /**
    * Convert, text and interpolated tokens up into text and placeholder pieces.

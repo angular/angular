@@ -168,7 +168,13 @@ describe('Extractor', () => {
 
     it('should handle blocks inside of translated elements', () => {
       expect(extract('<span i18n="a|b|c">@if (cond) {main content} @else {else content}</span>`'))
-          .toEqual([[['[main content]', ' ', '[else content]'], 'a', 'b|c', '']]);
+          .toEqual([[
+            [
+              '<ph block name="START_BLOCK_IF">main content</ph name="CLOSE_BLOCK_IF">', ' ',
+              '<ph block name="START_BLOCK_ELSE">else content</ph name="CLOSE_BLOCK_ELSE">'
+            ],
+            'a', 'b|c', ''
+          ]]);
     });
   });
 

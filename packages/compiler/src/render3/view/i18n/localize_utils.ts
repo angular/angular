@@ -68,6 +68,13 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
     this.pieces.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder): any {
+    this.pieces.push(
+        this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
+    ph.children.forEach(child => child.visit(this));
+    this.pieces.push(this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
+  }
+
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder): any {
     this.pieces.push(
         this.createPlaceholderPiece(ph.name, ph.sourceSpan, this.placeholderToMessage[ph.name]));

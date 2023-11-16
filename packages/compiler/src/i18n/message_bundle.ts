@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InterpolationConfig} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
 import {extractMessages} from './extractor_merger';
@@ -97,6 +97,16 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
     return new i18n.TagPlaceholder(
         ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan,
         ph.startSourceSpan, ph.endSourceSpan);
+  }
+
+  override visitBlockPlaceholder(ph: i18n.BlockPlaceholder, mapper: PlaceholderMapper):
+      i18n.BlockPlaceholder {
+    const startName = mapper.toPublicName(ph.startName)!;
+    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName)! : ph.closeName;
+    const children = ph.children.map(n => n.visit(this, mapper));
+    return new i18n.BlockPlaceholder(
+        ph.name, ph.parameters, startName, closeName, children, ph.sourceSpan, ph.startSourceSpan,
+        ph.endSourceSpan);
   }
 
   override visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
