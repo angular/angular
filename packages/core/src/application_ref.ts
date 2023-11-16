@@ -9,7 +9,7 @@
 import './util/ng_jit_mode';
 
 import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {Observable, of, Subscription} from 'rxjs';
+import {Observable, of, Subject, Subscription} from 'rxjs';
 import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
@@ -829,6 +829,10 @@ export class ApplicationRef {
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
+  private readonly scheduler = inject(SCHEDULER);
+  private readonly tickSubscription = this.scheduler.flush.subscribe(() => {
+    this.tick();
+  });
 
   /**
    * Indicates whether this instance was destroyed.
@@ -1114,6 +1118,7 @@ export class ApplicationRef {
   ngOnDestroy() {
     if (this._destroyed) return;
 
+    this.tickSubscription.unsubscribe();
     try {
       // Call all the lifecycle hooks.
       this._destroyListeners.forEach(listener => listener());
@@ -1222,29 +1227,26 @@ function ngZoneApplicationErrorHandlerFactory() {
   return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
 }
 
+interface ChangeDetectionScheduler {
+  flush: Observable<void>;
+}
+
+export const SCHEDULER =
+    new InjectionToken<ChangeDetectionScheduler>(ngDevMode ? 'Change detection scheduler' : '');
+
 @Injectable({providedIn: 'root'})
-export class NgZoneChangeDetectionScheduler {
+export class NgZoneChangeDetectionScheduler implements ChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  private readonly applicationRef = inject(ApplicationRef);
-
-  private _onMicrotaskEmptySubscription?: Subscription;
-
-  initialize(): void {
-    if (this._onMicrotaskEmptySubscription) {
-      return;
-    }
-
-    this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
-      next: () => {
-        this.zone.run(() => {
-          this.applicationRef.tick();
-        });
-      }
+  private _onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe(() => {
+    this.zone.run(() => {
+      this.flush.next();
     });
-  }
+  });
+
+  readonly flush = new Subject<void>();
 
   ngOnDestroy() {
-    this._onMicrotaskEmptySubscription?.unsubscribe();
+    this._onMicrotaskEmptySubscription.unsubscribe();
   }
 }
 
@@ -1258,24 +1260,9 @@ const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
 export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
   return [
     {provide: NgZone, useFactory: ngZoneFactory},
-    {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const ngZoneChangeDetectionScheduler =
-            inject(NgZoneChangeDetectionScheduler, {optional: true});
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-            ngZoneChangeDetectionScheduler === null) {
-          throw new RuntimeError(
-              RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-              `A required Injectable was not found in the dependency injection tree. ` +
-                  'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.');
-        }
-        return () => ngZoneChangeDetectionScheduler!.initialize();
-      },
-    },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
     {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
+    {provide: SCHEDULER, useExisting: NgZoneChangeDetectionScheduler},
   ];
 }
 

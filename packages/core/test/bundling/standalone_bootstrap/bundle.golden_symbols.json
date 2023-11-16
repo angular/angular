@@ -330,6 +330,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SCHEDULER"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
 
@@ -50,13 +50,14 @@ export class ComponentFixture<T> {
   private _promise: Promise<boolean>|null = null;
   private _onUnstableSubscription: Subscription|null = null;
   private _onStableSubscription: Subscription|null = null;
-  private _onMicrotaskEmptySubscription: Subscription|null = null;
+  private onFlushSubscription?: Subscription;
   private _onErrorSubscription: Subscription|null = null;
 
-  /** @nodoc */
+  /** @nodoc @internal */
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
-      private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean) {
+      private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean,
+      private scheduler: {flush: Observable<void>}|null) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -74,13 +75,11 @@ export class ComponentFixture<T> {
             this._isStable = false;
           }
         });
-        this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
-          next: () => {
-            if (this._autoDetect) {
-              // Do a change detection run with checkNoChanges set to true to check
-              // there are no changes on the second run.
-              this.detectChanges(true);
-            }
+        this.onFlushSubscription = this.scheduler?.flush.subscribe(() => {
+          if (this._autoDetect) {
+            // Do a change detection run with checkNoChanges set to true to check
+            // there are no changes on the second run.
+            this.detectChanges(true);
           }
         });
         this._onStableSubscription = ngZone.onStable.subscribe({
@@ -238,10 +237,7 @@ export class ComponentFixture<T> {
         this._onStableSubscription.unsubscribe();
         this._onStableSubscription = null;
       }
-      if (this._onMicrotaskEmptySubscription != null) {
-        this._onMicrotaskEmptySubscription.unsubscribe();
-        this._onMicrotaskEmptySubscription = null;
-      }
+      this.onFlushSubscription?.unsubscribe();
       if (this._onErrorSubscription != null) {
         this._onErrorSubscription.unsubscribe();
         this._onErrorSubscription = null;

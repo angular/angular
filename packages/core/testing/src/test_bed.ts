@@ -33,6 +33,7 @@ import {
   ɵRender3ComponentFactory as ComponentFactory,
   ɵRender3NgModuleRef as NgModuleRef,
   ɵresetCompiledComponents as resetCompiledComponents,
+  ɵSCHEDULER as SCHEDULER,
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
@@ -630,13 +631,15 @@ export class TestBedImpl implements TestBed {
 
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const autoDetect: boolean = this.inject(ComponentFixtureAutoDetect, false);
+    const scheduler = this.inject(SCHEDULER);
     const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =
           componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
       return new ComponentFixture<any>(
-          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect);
+          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect,
+          scheduler);
     };
     const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
     this._activeFixtures.push(fixture);
