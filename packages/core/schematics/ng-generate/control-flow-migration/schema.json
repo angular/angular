@@ -14,7 +14,7 @@
       "type": "boolean",
       "description": "Enables reformatting of your templates",
       "x-prompt": "Should the migration reformat your templates?",
-      "default": "false"
+      "default": "true"
     }
   }
 }
