@@ -287,6 +287,21 @@ export enum ErrorCode {
   INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT = 8010,
 
   /**
+   * A control flow node is projected at the root of a component and is preventing its direct
+   * descendants from being projected, because it has more than one root node.
+   *
+   * ```
+   * <comp>
+   *  @if (expr) {
+   *    <div projectsIntoSlot></div>
+   *    Text preventing the div from being projected
+   *  }
+   * </comp>
+   * ```
+   */
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
