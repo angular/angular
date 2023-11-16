@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as core from '../../core';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/defaults';
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {RecursiveVisitor, visitAll} from '../r3_ast';
