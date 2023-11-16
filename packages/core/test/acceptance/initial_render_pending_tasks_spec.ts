@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, of} from 'rxjs';
 import {map, withLatestFrom} from 'rxjs/operators';
 
 import {InitialRenderPendingTasks} from '../../src/initial_render_pending_tasks';
+import {ComponentFixtureNoNgZone} from '../../testing/src/test_bed_common';
 
 describe('InitialRenderPendingTasks', () => {
   it('should wait until all tasks are completed', async () => {
@@ -48,6 +50,25 @@ describe('InitialRenderPendingTasks', () => {
     pendingTasks.remove(Math.random());
 
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+  });
+
+  it('should tie into ComponentFixture stableness even without zones', async () => {
+    TestBed.configureTestingModule(
+        {providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]});
+    const pendingTasks = TestBed.inject(InitialRenderPendingTasks);
+    @Component({standalone: true})
+    class App {
+    }
+    const fixture = TestBed.createComponent(App);
+    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(fixture.isStable()).toBe(true);
+
+    const taskA = pendingTasks.add();
+    expect(fixture.isStable()).toBe(false);
+
+    pendingTasks.remove(taskA);
+    await fixture.whenStable();
+    expect(fixture.isStable()).toBe(true);
   });
 });
 
