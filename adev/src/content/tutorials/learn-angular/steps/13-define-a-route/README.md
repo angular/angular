@@ -40,7 +40,7 @@ Use `'user'` for the path of `UserComponent`.
 
 In addition to defining the routes correctly, Angular Router also enables you to set the page title whenever users are navigating by adding the `title` property to each route.
 
-In `app.routes.ts` the `title` property to the default route (`path: ''`) and the `user` route. Here's an example:
+In `app.routes.ts`, add the `title` property to the default route (`path: ''`) and the `user` route. Here's an example:
 
 <docs-code language="ts" highlight="[8]">
 import {Routes} from '@angular/router';

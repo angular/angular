@@ -43,7 +43,7 @@ export const appConfig: ApplicationConfig = {
 
 </docs-step>
 
-<docs-step title="Import `RouterOutlet` component">
+<docs-step title="Import `RouterOutlet` in the component">
 
 Finally, to make sure your app is ready to use the Angular Router, you need to tell the app where you expect the router to display the desired content. Accomplish that by using the `RouterOutlet` directive from `@angular/router`.
 
