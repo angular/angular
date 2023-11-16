@@ -7,7 +7,7 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {DEFAULT_CONTAINER_BLOCKS, InterpolationConfig} from '../ml_parser/defaults';
 import {ParseTreeResult} from '../ml_parser/parser';
 
 import * as i18n from './i18n_ast';
@@ -308,7 +308,8 @@ class _Visitor implements html.Visitor {
     this._errors = [];
     this._messages = [];
     this._inImplicitNode = false;
-    this._createI18nMessage = createI18nMessageFactory(interpolationConfig);
+    this._createI18nMessage =
+        createI18nMessageFactory(interpolationConfig, DEFAULT_CONTAINER_BLOCKS);
   }
 
   // looks for translatable attributes
