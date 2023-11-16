@@ -20,6 +20,7 @@
       <button
         type="button"
         class="docs-example-copy-link"
+        [attr.title]="'Copy Example Link'"
         [attr.aria-label]="'Copy link to ' + exampleMetadata()?.title + ' example to the clipboard'"
         (click)="copyLink()"
       >
