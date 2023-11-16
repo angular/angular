@@ -15,6 +15,10 @@ import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
 import {ApiLabel} from '../pipes/api-label.pipe';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Subject, debounceTime} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 export const ALL_STATUSES_KEY = 'All';
 
@@ -37,8 +41,13 @@ export const ALL_STATUSES_KEY = 'All';
 })
 export default class ApiReferenceList {
   private readonly apiReferenceManager = inject(ApiReferenceManager);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private snackBar = inject(MatSnackBar);
 
   private readonly allGroups = this.apiReferenceManager.apiGroups;
+
+  private readonly querySubject = new Subject<string>();
 
   query = signal('');
   includeDeprecated = signal(false);
@@ -46,6 +55,7 @@ export default class ApiReferenceList {
 
   featuredGroup = this.apiReferenceManager.featuredGroup;
   filteredGroups = computed(() => {
+    console.log(this.type());
     return this.allGroups()
       .map((group) => ({
         title: group.title,
@@ -65,6 +75,39 @@ export default class ApiReferenceList {
   itemTypes = Object.values(ApiItemType);
 
   filterByItemType(itemType: ApiItemType): void {
-    this.type.set(this.type() === itemType ? ALL_STATUSES_KEY : itemType);
+    this.type.update((currentType) => (currentType === itemType ? ALL_STATUSES_KEY : itemType));
+  }
+
+  updateQuery(queryStr: string): void {
+    this.querySubject.next(queryStr);
+  }
+
+  createLink(): void {
+    const urlTree = this.router.createUrlTree([], {
+      queryParams: {
+        query: this.query() || undefined,
+        type: this.type() || undefined,
+      },
+    });
+    this.router.navigateByUrl(urlTree, {replaceUrl: true});
+
+    navigator.clipboard.writeText(urlTree.toString());
+    this.snackBar.open('Link copied to clipboard');
+  }
+
+  constructor() {
+    this.querySubject.pipe(debounceTime(300), takeUntilDestroyed()).subscribe((queryStr) => {
+      this.query.set(queryStr ?? '');
+    });
+
+    const routeQuery = this.activatedRoute.snapshot.queryParamMap.get('query');
+    if (routeQuery) {
+      this.query.set(routeQuery);
+    }
+
+    const routeType = this.activatedRoute.snapshot.queryParamMap.get('type');
+    if (routeType) {
+      this.type.set(routeType);
+    }
   }
 }
