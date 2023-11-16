@@ -266,7 +266,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], ngContentSelectorsOffset: number = 0,
-      i18n?: i18n.I18nMeta): o.FunctionExpr {
+      i18n?: i18n.I18nMeta, variableAliases?: Record<string, string>): o.FunctionExpr {
     this._ngContentSelectorsOffset = ngContentSelectorsOffset;
 
     if (this._namespace !== R3.namespaceHTML) {
@@ -274,7 +274,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // Create variable bindings
-    variables.forEach(v => this.registerContextVariables(v));
+    variables.forEach(v => {
+      const alias = variableAliases?.[v.name];
+      this.registerContextVariables(v.name, v.value);
+      if (alias) {
+        this.registerContextVariables(alias, v.value);
+      }
+    });
 
     // Initiate i18n context in case:
     // - this template has parent i18n context
@@ -394,14 +400,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return _ref;
   }
 
-  private registerContextVariables(variable: t.Variable) {
+  private registerContextVariables(name: string, value: string) {
     const scopedName = this._bindingScope.freshReferenceName();
     const retrievalLevel = this.level;
-    const isDirect = variable.value === DIRECT_CONTEXT_REFERENCE;
-    const lhs = o.variable(variable.name + scopedName);
+    const isDirect = value === DIRECT_CONTEXT_REFERENCE;
+    const lhs = o.variable(name + scopedName);
 
     this._bindingScope.set(
-        retrievalLevel, variable.name,
+        retrievalLevel, name,
         scope => {
           // If we're at the top level and we're referring to the context variable directly, we
           // can do so through the implicit receiver, instead of renaming it. Note that this does
@@ -439,7 +445,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           return [
             // e.g. const $items$ = x(2) for direct context references and
             // const $item$ = x(2).$implicit for indirect ones.
-            lhs.set(isDirect ? rhs : rhs.prop(variable.value || IMPLICIT_REFERENCE)).toConstDecl()
+            lhs.set(isDirect ? rhs : rhs.prop(value || IMPLICIT_REFERENCE)).toConstDecl()
           ];
         });
   }
@@ -934,7 +940,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private prepareEmbeddedTemplateFn(
       children: t.Node[], contextNameSuffix: string, variables: t.Variable[] = [],
-      i18n?: i18n.I18nMeta) {
+      i18n?: i18n.I18nMeta, variableAliases?: Record<string, string>) {
     const index = this.allocateDataSlot();
 
     if (this.i18n && i18n) {
@@ -957,7 +963,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = visitor.buildTemplateFunction(
           children, variables, this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
-          i18n);
+          i18n, variableAliases);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(name));
       if (visitor._ngContentReservedSlots.length) {
         this._ngContentReservedSlots.push(...visitor._ngContentReservedSlots);
@@ -1531,7 +1537,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const {tagName, attrsExprs} = this.inferProjectionDataFromInsertionPoint(block);
     const primaryData = this.prepareEmbeddedTemplateFn(
         block.children, '_For',
-        [block.item, block.contextVariables.$index, block.contextVariables.$count]);
+        [block.item, block.contextVariables.$index, block.contextVariables.$count], undefined, {
+          // We need to provide level-specific versions of `$index` and `$count`, because
+          // they're used when deriving the remaining variables (`$odd`, `$even` etc.) while at the
+          // same time being available implicitly. Without these aliases, we wouldn't be able to
+          // access the `$index` of a parent loop from inside of a nested loop.
+          [block.contextVariables.$index.name]:
+              this.getLevelSpecificVariableName('$index', this.level + 1),
+          [block.contextVariables.$count.name]:
+              this.getLevelSpecificVariableName('$count', this.level + 1),
+        });
     const {expression: trackByExpression, usesComponentInstance: trackByUsesComponentInstance} =
         this.createTrackByFunction(block);
     let emptyData: TemplateData|null = null;
@@ -1580,26 +1595,48 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private registerComputedLoopVariables(block: t.ForLoopBlock, bindingScope: BindingScope): void {
-    const indexLocalName = block.contextVariables.$index.name;
-    const countLocalName = block.contextVariables.$count.name;
     const level = bindingScope.bindingLevel;
 
-    bindingScope.set(
-        level, block.contextVariables.$odd.name,
-        scope => scope.get(indexLocalName)!.modulo(o.literal(2)).notIdentical(o.literal(0)));
+    bindingScope.set(level, block.contextVariables.$odd.name, (scope, retrievalLevel) => {
+      return this.getLevelSpecificForLoopVariable(block, scope, retrievalLevel, '$index')
+          .modulo(o.literal(2))
+          .notIdentical(o.literal(0));
+    });
 
-    bindingScope.set(
-        level, block.contextVariables.$even.name,
-        scope => scope.get(indexLocalName)!.modulo(o.literal(2)).identical(o.literal(0)));
+    bindingScope.set(level, block.contextVariables.$even.name, (scope, retrievalLevel) => {
+      return this.getLevelSpecificForLoopVariable(block, scope, retrievalLevel, '$index')
+          .modulo(o.literal(2))
+          .identical(o.literal(0));
+    });
 
-    bindingScope.set(
-        level, block.contextVariables.$first.name,
-        scope => scope.get(indexLocalName)!.identical(o.literal(0)));
+    bindingScope.set(level, block.contextVariables.$first.name, (scope, retrievalLevel) => {
+      return this.getLevelSpecificForLoopVariable(block, scope, retrievalLevel, '$index')
+          .identical(o.literal(0));
+    });
 
-    bindingScope.set(
-        level, block.contextVariables.$last.name,
-        scope =>
-            scope.get(indexLocalName)!.identical(scope.get(countLocalName)!.minus(o.literal(1))));
+    bindingScope.set(level, block.contextVariables.$last.name, (scope, retrievalLevel) => {
+      const index = this.getLevelSpecificForLoopVariable(block, scope, retrievalLevel, '$index');
+      const count = this.getLevelSpecificForLoopVariable(block, scope, retrievalLevel, '$count');
+      return index.identical(count.minus(o.literal(1)));
+    });
+  }
+
+  private getLevelSpecificVariableName(name: string, level: number): string {
+    // We use the `ɵ` here to ensure that there are no name conflicts with user-defined variables.
+    return `ɵ${name}_${level}`;
+  }
+
+  /**
+   * Gets the name of a for loop variable at a specific binding level. This allows us to look
+   * up implicitly shadowed variables like `$index` and `$count` at a specific level.
+   */
+  private getLevelSpecificForLoopVariable(
+      block: t.ForLoopBlock, scope: BindingScope, retrievalLevel: number,
+      name: keyof t.ForLoopBlockContext): o.Expression {
+    const scopeName = scope.bindingLevel === retrievalLevel ?
+        block.contextVariables[name].name :
+        this.getLevelSpecificVariableName(name, retrievalLevel);
+    return scope.get(scopeName)!;
   }
 
   private optimizeTrackByFunction(block: t.ForLoopBlock) {
@@ -2223,7 +2260,7 @@ type DeclareLocalVarCallback = (scope: BindingScope, relativeLevel: number) => o
  * Function that is executed whenever a variable is referenced. It allows for the variable to be
  * renamed depending on its location.
  */
-type LocalVarRefCallback = (scope: BindingScope) => o.Expression;
+type LocalVarRefCallback = (scope: BindingScope, retrievalLevel: number) => o.Expression;
 
 /** The prefix used to get a shared context in BindingScope's map. */
 const SHARED_CONTEXT_KEY = '$$shared_ctx$$';
@@ -2302,7 +2339,7 @@ export class BindingScope implements LocalResolver {
         if (value.declareLocalCallback && !value.declare) {
           value.declare = true;
         }
-        return typeof value.lhs === 'function' ? value.lhs(this) : value.lhs;
+        return typeof value.lhs === 'function' ? value.lhs(this, value.retrievalLevel) : value.lhs;
       }
       current = current.parent;
     }
@@ -2421,8 +2458,9 @@ export class BindingScope implements LocalResolver {
     const componentValue = this.map.get(SHARED_CONTEXT_KEY + 0)!;
     componentValue.declare = true;
     this.maybeRestoreView();
-    const lhs =
-        typeof componentValue.lhs === 'function' ? componentValue.lhs(this) : componentValue.lhs;
+    const lhs = typeof componentValue.lhs === 'function' ?
+        componentValue.lhs(this, componentValue.retrievalLevel) :
+        componentValue.lhs;
     return name === DIRECT_CONTEXT_REFERENCE ? lhs : lhs.prop(name);
   }
 
