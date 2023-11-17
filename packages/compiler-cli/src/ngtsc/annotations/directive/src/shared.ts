@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
 import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
@@ -819,9 +819,11 @@ function assertEmittableInputType(
         // exported, otherwise TS won't emit it to the .d.ts.
         if (declaration.node.getSourceFile() !== contextFile) {
           const emittedType = refEmitter.emit(
-              new Reference(declaration.node), contextFile,
+              new Reference(
+                  declaration.node, declaration.viaModule === AmbientImport ? AmbientImport : null),
+              contextFile,
               ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-                  ImportFlags.AllowRelativeDtsImports);
+                  ImportFlags.AllowRelativeDtsImports | ImportFlags.AllowAmbientReferences);
 
           assertSuccessfulReferenceEmit(emittedType, node, 'type');
         } else if (!reflector.isStaticallyExported(declaration.node)) {
