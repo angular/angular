@@ -117,43 +117,113 @@ export function extractI18nMessages(job: CompilationJob): void {
  */
 function createI18nMessage(
     job: CompilationJob, context: ir.I18nContextOp, messagePlaceholder?: string): ir.I18nMessageOp {
-  let needsPostprocessing = context.postprocessingParams.size > 0;
-  for (const values of context.params.values()) {
-    if (values.length > 1) {
-      needsPostprocessing = true;
-    }
-  }
+  let [formattedParams, needsPostprocessing] = formatParams(context.params);
+  const [formattedPostprocessingParams] = formatParams(context.postprocessingParams);
+  needsPostprocessing ||= formattedPostprocessingParams.size > 0;
   return ir.createI18nMessageOp(
       job.allocateXrefId(), context.i18nBlock, context.message, messagePlaceholder ?? null,
-      formatParams(context.params), formatParams(context.postprocessingParams),
-      needsPostprocessing);
+      formattedParams, formattedPostprocessingParams, needsPostprocessing);
 }
 
 /**
  * Formats a map of `I18nParamValue[]` values into a map of `Expression` values.
+ * @return A tuple of the formatted params and a boolean indicating whether postprocessing is needed
+ *     for any of the params
  */
-function formatParams(params: Map<string, ir.I18nParamValue[]>): Map<string, o.Expression> {
-  const result = new Map<string, o.Expression>();
+function formatParams(params: Map<string, ir.I18nParamValue[]>):
+    [Map<string, o.Expression>, boolean] {
+  const formattedParams = new Map<string, o.Expression>();
+  let needsPostprocessing = false;
   for (const [placeholder, placeholderValues] of params) {
-    const serializedValues = formatParamValues(placeholderValues);
+    const [serializedValues, paramNeedsPostprocessing] = formatParamValues(placeholderValues);
+    needsPostprocessing ||= paramNeedsPostprocessing;
     if (serializedValues !== null) {
-      result.set(placeholder, o.literal(formatParamValues(placeholderValues)));
+      formattedParams.set(placeholder, o.literal(serializedValues));
     }
   }
-  return result;
+  return [formattedParams, needsPostprocessing];
 }
 
 /**
  * Formats an `I18nParamValue[]` into a string (or null for empty array).
+ * @return A tuple of the formatted value and a boolean indicating whether postprocessing is needed
+ *     for the value
  */
-function formatParamValues(values: ir.I18nParamValue[]): string|null {
+function formatParamValues(values: ir.I18nParamValue[]): [string|null, boolean] {
   if (values.length === 0) {
-    return null;
+    return [null, false];
   }
+  collapseElementTemplatePairs(values);
   const serializedValues = values.map(value => formatValue(value));
   return serializedValues.length === 1 ?
-      serializedValues[0] :
-      `${LIST_START_MARKER}${serializedValues.join(LIST_DELIMITER)}${LIST_END_MARKER}`;
+      [serializedValues[0], false] :
+      [`${LIST_START_MARKER}${serializedValues.join(LIST_DELIMITER)}${LIST_END_MARKER}`, true];
+}
+
+/**
+ * Collapses element/template pairs that refer to the same subTemplateIndex, i.e. elements and
+ * templates that refer to the same element instance.
+ *
+ * This accounts for the case of a structural directive inside an i18n block, e.g.:
+ * ```
+ * <div i18n>
+ *   <div *ngIf="condition">
+ * </div>
+ * ```
+ *
+ * In this case, both the element start and template start placeholders are the same,
+ * and we collapse them down into a single compound placeholder value. Rather than produce
+ * `[\uFFFD#1:1\uFFFD|\uFFFD*2:1\uFFFD]`, we want to produce `\uFFFD#1:1\uFFFD\uFFFD*2:1\uFFFD`,
+ * likewise for the closing of the element/template.
+ */
+function collapseElementTemplatePairs(values: ir.I18nParamValue[]) {
+  // Record the indicies of element and template values in the values array by subTemplateIndex.
+  const valueIndiciesBySubTemplateIndex = new Map<number, number[]>();
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i];
+    if (value.subTemplateIndex !== null &&
+        (value.flags & (ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.TemplateTag))) {
+      const valueIndicies = valueIndiciesBySubTemplateIndex.get(value.subTemplateIndex) ?? [];
+      valueIndicies.push(i);
+      valueIndiciesBySubTemplateIndex.set(value.subTemplateIndex, valueIndicies);
+    }
+  }
+
+  // For each subTemplateIndex, check if any values can be collapsed.
+  for (const [subTemplateIndex, valueIndicies] of valueIndiciesBySubTemplateIndex) {
+    if (valueIndicies.length > 1) {
+      const elementIndex =
+          valueIndicies.find(index => values[index].flags & ir.I18nParamValueFlags.ElementTag);
+      const templateIndex =
+          valueIndicies.find(index => values[index].flags & ir.I18nParamValueFlags.TemplateTag);
+      // If the values list contains both an element and template value, we can collapse.
+      if (elementIndex !== undefined && templateIndex !== undefined) {
+        const elementValue = values[elementIndex];
+        const templateValue = values[templateIndex];
+        // Replace the element value with the combined value.
+        values.splice(elementIndex, 1, {
+          // To match the TemplateDefinitionBuilder output, flip the order dependind on whether the
+          // values represent a closing or opening tag.
+          // TODO(mmalerba): Figure out if this makes a difference in terms of either functionality,
+          // or the resulting message ID. If not, we can remove the special-casing in the future.
+          value: elementValue.flags & ir.I18nParamValueFlags.CloseTag ?
+              `${formatValue(elementValue)}${formatValue(templateValue)}` :
+              `${formatValue(templateValue)}${formatValue(elementValue)}`,
+          subTemplateIndex,
+          flags: ir.I18nParamValueFlags.None
+        });
+        // Replace the template value with null to preserve the indicies we calculated earlier.
+        values.splice(templateIndex, 1, null!);
+      }
+    }
+  }
+
+  // Strip out any nulled out values we introduced above.
+  for (let i = values.length - 1; i >= 0; i--) {
+    if (values[i] === null) {
+      values.splice(i, 1);
+    }
+  }
 }
 
 /**
