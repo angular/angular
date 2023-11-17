@@ -240,6 +240,7 @@ export interface TestDirective extends Partial<Pick<
           classPropertyName: string;
           bindingPropertyName: string;
           required: boolean;
+          isSignal: boolean;
           transform: InputTransform|null;
         }
   };

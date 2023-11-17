@@ -2210,10 +2210,12 @@ class Scope {
 
 interface TcbBoundAttribute {
   attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
-  inputs:
-      {fieldName: ClassPropertyName,
-       required: boolean,
-       transformType: Reference<ts.TypeNode>|null}[];
+  inputs: {
+    fieldName: ClassPropertyName,
+    required: boolean,
+    isSignal: boolean,
+    transformType: Reference<ts.TypeNode>|null
+  }[];
 }
 
 /**
@@ -2426,7 +2428,8 @@ function getBoundAttributes(
         inputs: inputs.map(input => ({
                              fieldName: input.classPropertyName,
                              required: input.required,
-                             transformType: input.transform?.type || null
+                             transformType: input.transform?.type || null,
+                             isSignal: input.isSignal,
                            }))
       });
     }
