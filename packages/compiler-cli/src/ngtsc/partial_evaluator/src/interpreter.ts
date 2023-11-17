@@ -739,7 +739,7 @@ function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
   absoluteModuleName?: string,
   resolutionContext?: string,
 } {
-  if (decl.viaModule !== null && decl.viaModule !== existing.absoluteModuleName) {
+  if (typeof decl.viaModule === 'string' && decl.viaModule !== existing.absoluteModuleName) {
     return {
       absoluteModuleName: decl.viaModule,
       resolutionContext: node.getSourceFile().fileName,
