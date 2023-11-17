@@ -463,7 +463,10 @@ export class ComponentDecoratorHandler implements
         rawHostDirectives,
         meta: {
           ...metadata,
-          template,
+          template: {
+            nodes: template.nodes,
+            ngContentSelectors: template.ngContentSelectors,
+          },
           encapsulation,
           changeDetection,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
@@ -543,8 +546,6 @@ export class ComponentDecoratorHandler implements
       schemas: analysis.schemas,
       decorator: analysis.decorator,
       assumedToExportProviders: false,
-      ngContentSelectors: analysis.template.ngContentSelectors,
-      preserveWhitespaces: analysis.template.preserveWhitespaces ?? false,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -613,7 +614,7 @@ export class ComponentDecoratorHandler implements
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
         meta.template.sourceMapping, meta.template.file, meta.template.errors,
-        meta.meta.isStandalone, meta.meta.template.preserveWhitespaces ?? false);
+        meta.meta.isStandalone);
   }
 
   extendedTemplateCheck(

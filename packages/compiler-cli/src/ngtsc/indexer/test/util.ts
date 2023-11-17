@@ -56,8 +56,6 @@ export function getBoundTemplate(
                              exportAs: null,
                              isStructural: false,
                              animationTriggerNames: null,
-                             ngContentSelectors: null,
-                             preserveWhitespaces: false,
                            }]);
   });
   const binder = new R3TargetBinder(matcher);
