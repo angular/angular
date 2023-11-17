@@ -10,7 +10,7 @@ import * as o from '@angular/compiler';
 import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportFlags, OwningModule, Reference, ReferenceEmitter} from '../../imports';
-import {ReflectionHost} from '../../reflection';
+import {AmbientImport, ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';
@@ -271,14 +271,15 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     }
 
     let owningModule = viaModule;
-    if (declaration.viaModule !== null) {
+    if (typeof declaration.viaModule === 'string') {
       owningModule = {
         specifier: declaration.viaModule,
         resolutionContext: type.getSourceFile().fileName,
       };
     }
 
-    const reference = new Reference(declaration.node, owningModule, declaration.isAmbient);
+    const reference =
+        new Reference(declaration.node, owningModule, declaration.viaModule === AmbientImport);
     const emittedType = this.refEmitter.emit(
         reference, this.contextFile,
         ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowAmbientReferences);

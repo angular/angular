@@ -407,7 +407,6 @@ runInEachFileSystem(() => {
         expect(decl).toEqual({
           node: targetDecl,
           viaModule: 'absolute',
-          isAmbient: false,
         });
       });
 
@@ -437,7 +436,6 @@ runInEachFileSystem(() => {
         expect(decl).toEqual({
           node: targetDecl,
           viaModule: 'absolute',
-          isAmbient: false,
         });
       });
     });
