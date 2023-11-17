@@ -18,7 +18,7 @@ import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView,
 import {getOrBorrowReactiveLViewConsumer, maybeReturnReactiveLViewConsumer, ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, requiresRefreshOrTraversal, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
 
@@ -72,8 +72,7 @@ function detectChangesInViewWhileDirty(lView: LView) {
   // descendants views that need to be refreshed due to re-dirtying during the change detection
   // run, detect changes on the view again. We run change detection in `Targeted` mode to only
   // refresh views with the `RefreshView` flag.
-  while (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-         lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
+  while (requiresRefreshOrTraversal(lView)) {
     if (retries === MAXIMUM_REFRESH_RERUNS) {
       throw new RuntimeError(
           RuntimeErrorCode.INFINITE_CHANGE_DETECTION,

@@ -1881,6 +1881,9 @@
     "name": "replaceSegment"
   },
   {
+    "name": "requiresRefreshOrTraversal"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {
