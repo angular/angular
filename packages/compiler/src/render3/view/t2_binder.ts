@@ -11,7 +11,8 @@ import {SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundEvent, BoundText, Comment, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
-import {createCssSelectorFromNode} from './util';
+import {createCssSelector} from './template';
+import {getAttrsForDirectiveMatching} from './util';
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -306,17 +307,17 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitElement(element: Element): void {
-    this.visitElementOrTemplate(element);
+    this.visitElementOrTemplate(element.name, element);
   }
 
   visitTemplate(template: Template): void {
-    this.visitElementOrTemplate(template);
+    this.visitElementOrTemplate('ng-template', template);
   }
 
-  visitElementOrTemplate(node: Element|Template): void {
+  visitElementOrTemplate(elementName: string, node: Element|Template): void {
     // First, determine the HTML shape of the node for the purpose of directive matching.
     // Do this by building up a `CssSelector` for the node.
-    const cssSelector = createCssSelectorFromNode(node);
+    const cssSelector = createCssSelector(elementName, getAttrsForDirectiveMatching(node));
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
