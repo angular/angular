@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getEnsureDirtyViewsAreAlwaysReachable} from '../../change_detection/flags';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
@@ -206,6 +207,12 @@ export function requiresRefreshOrTraversal(lView: LView) {
  * parents above.
  */
 export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
+  // When we attach a view that's marked `Dirty`, we should ensure that it is reached during the
+  // next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
+  if (lView[FLAGS] & LViewFlags.Dirty && getEnsureDirtyViewsAreAlwaysReachable()) {
+    lView[FLAGS] |= LViewFlags.RefreshView;
+  }
+
   if (!requiresRefreshOrTraversal(lView)) {
     return;
   }

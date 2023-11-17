@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ɵgetEnsureDirtyViewsAreAlwaysReachable, ɵsetEnsureDirtyViewsAreAlwaysReachable} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
@@ -184,16 +184,17 @@ describe('change detection', () => {
 
   describe('markForCheck', () => {
     it('should mark OnPush ancestor of dynamically created component views as dirty', () => {
+      const previous = ɵgetEnsureDirtyViewsAreAlwaysReachable();
+      ɵsetEnsureDirtyViewsAreAlwaysReachable(true);
       @Component({
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: true,
       })
       class TestCmpt {
         counter = 0;
         @ViewChild('vc', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
-
-        constructor() {}
 
         createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
           return this.vcRef.createComponent(cmptType);
@@ -202,17 +203,13 @@ describe('change detection', () => {
 
       @Component({
         selector: 'dynamic-cmpt',
-        template: `dynamic`,
+        template: `dynamic|{{binding}}`,
+        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class DynamicCmpt {
+        @Input() binding = 'binding';
       }
-
-      @NgModule({declarations: [DynamicCmpt]})
-      class DynamicModule {
-      }
-
-      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [TestCmpt]});
 
       const fixture = TestBed.createComponent(TestCmpt);
 
@@ -221,20 +218,34 @@ describe('change detection', () => {
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('0|');
 
-      // insert a dynamic component
+      // insert a dynamic component, but do not specifically mark parent dirty
+      // (dynamic components with OnPush flag are created with the `Dirty` flag)
       const dynamicCmptRef = fixture.componentInstance.createComponentView(DynamicCmpt);
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('0|dynamic');
+      expect(fixture.nativeElement).toHaveText('0|dynamic|binding');
 
       // update model in the OnPush component - should not update UI
       fixture.componentInstance.counter = 1;
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('0|dynamic');
+      expect(fixture.nativeElement).toHaveText('0|dynamic|binding');
 
       // now mark the dynamically inserted component as dirty
       dynamicCmptRef.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('1|dynamic');
+      expect(fixture.nativeElement).toHaveText('1|dynamic|binding');
+
+      // Update, mark for check, and detach before change detection, should not update
+      dynamicCmptRef.setInput('binding', 'updatedBinding');
+      dynamicCmptRef.changeDetectorRef.markForCheck();
+      dynamicCmptRef.changeDetectorRef.detach();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('1|dynamic|binding');
+
+      // reattaching and run CD from the top should update
+      dynamicCmptRef.changeDetectorRef.reattach();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('1|dynamic|updatedBinding');
+      ɵsetEnsureDirtyViewsAreAlwaysReachable(previous);
     });
 
     it('should support re-enterant change detection', () => {
