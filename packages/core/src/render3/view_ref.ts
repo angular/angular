@@ -46,10 +46,8 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
        *
        * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
        * view.
-       *
-       * @internal
        */
-      public _lView: LView,
+      readonly _lView: LView,
 
       /**
        * This represents the `LView` associated with the point where `ChangeDetectorRef` was
