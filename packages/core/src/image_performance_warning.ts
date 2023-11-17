@@ -22,7 +22,6 @@ const SCAN_DELAY = 200;
 
 const OVERSIZED_IMAGE_TOLERANCE = 1200;
 
-
 @Injectable({providedIn: 'root'})
 export class ImagePerformanceWarning implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
@@ -38,7 +37,8 @@ export class ImagePerformanceWarning implements OnDestroy {
       return;
     }
     this.observer = this.initPerformanceObserver();
-    const win = getDocument().defaultView;
+    const doc = getDocument();
+    const win = doc.defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
       // Wait to avoid race conditions where LCP image triggers
@@ -49,7 +49,16 @@ export class ImagePerformanceWarning implements OnDestroy {
       // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
       // the scope of this functionality.
       this.ngZone.runOutsideAngular(() => {
-        this.window?.addEventListener('load', waitToScan, {once: true});
+        // Consider the case when the application is created and destroyed multiple times.
+        // Typically, applications are created instantly once the page is loaded, and the
+        // `window.load` listener is always triggered. However, the `window.load` event will never
+        // be fired if the page is loaded, and the application is created later. Checking for
+        // `readyState` is the easiest way to determine whether the page has been loaded or not.
+        if (doc.readyState === 'complete') {
+          waitToScan();
+        } else {
+          this.window?.addEventListener('load', waitToScan, {once: true});
+        }
       });
     }
   }
