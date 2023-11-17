@@ -60,7 +60,7 @@ export function createIfBlock(
     branches.push(new t.IfBlockBranch(
         mainBlockParams.expression, html.visitAll(visitor, ast.children, ast.children),
         mainBlockParams.expressionAlias, ast.sourceSpan, ast.startSourceSpan, ast.endSourceSpan,
-        ast.nameSpan));
+        ast.nameSpan, ast.i18n));
   }
 
   for (const block of connectedBlocks) {
@@ -71,13 +71,13 @@ export function createIfBlock(
         const children = html.visitAll(visitor, block.children, block.children);
         branches.push(new t.IfBlockBranch(
             params.expression, children, params.expressionAlias, block.sourceSpan,
-            block.startSourceSpan, block.endSourceSpan, block.nameSpan));
+            block.startSourceSpan, block.endSourceSpan, block.nameSpan, block.i18n));
       }
     } else if (block.name === 'else') {
       const children = html.visitAll(visitor, block.children, block.children);
       branches.push(new t.IfBlockBranch(
           null, children, null, block.sourceSpan, block.startSourceSpan, block.endSourceSpan,
-          block.nameSpan));
+          block.nameSpan, block.i18n));
     }
   }
 
@@ -118,7 +118,7 @@ export function createForLoop(
       } else {
         empty = new t.ForLoopBlockEmpty(
             html.visitAll(visitor, block.children, block.children), block.sourceSpan,
-            block.startSourceSpan, block.endSourceSpan, block.nameSpan);
+            block.startSourceSpan, block.endSourceSpan, block.nameSpan, block.i18n);
       }
     } else {
       errors.push(new ParseError(block.sourceSpan, `Unrecognized @for loop block "${block.name}"`));
@@ -140,7 +140,7 @@ export function createForLoop(
       node = new t.ForLoopBlock(
           params.itemName, params.expression, params.trackBy.expression, params.trackBy.keywordSpan,
           params.context, html.visitAll(visitor, ast.children, ast.children), empty, sourceSpan,
-          ast.sourceSpan, ast.startSourceSpan, endSpan, ast.nameSpan);
+          ast.sourceSpan, ast.startSourceSpan, endSpan, ast.nameSpan, ast.i18n);
     }
   }
 
@@ -175,7 +175,7 @@ export function createSwitchBlock(
         null;
     const ast = new t.SwitchBlockCase(
         expression, html.visitAll(visitor, node.children, node.children), node.sourceSpan,
-        node.startSourceSpan, node.endSourceSpan, node.nameSpan);
+        node.startSourceSpan, node.endSourceSpan, node.nameSpan, node.i18n);
 
     if (expression === null) {
       defaultCase = ast;
