@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -904,100 +904,6 @@ class TcbDomSchemaCheckerOp extends TcbOp {
   }
 }
 
-
-/**
- * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
- *
- * Context:
- * `@if` and `@for` try to emulate the content projection behavior of `*ngIf` and `*ngFor`
- * in order to reduce breakages when moving from one syntax to the other (see #52414), however the
- * approach only works if there's only one element at the root of the control flow expression.
- * This means that a stray sibling node (e.g. text) can prevent an element from being projected
- * into the right slot. The purpose of the `TcbOp` is to find any places where a node at the root
- * of a control flow expression *would have been projected* into a specific slot, if the control
- * flow node didn't exist.
- */
-class TcbControlFlowContentProjectionOp extends TcbOp {
-  constructor(
-      private tcb: Context, private element: TmplAstElement, private ngContentSelectors: string[],
-      private componentName: string) {
-    super();
-  }
-
-  override readonly optional = false;
-
-  override execute(): null {
-    const controlFlowToCheck = this.findPotentialControlFlowNodes();
-
-    if (controlFlowToCheck.length > 0) {
-      const matcher = new SelectorMatcher<string>();
-
-      for (const selector of this.ngContentSelectors) {
-        // `*` is a special selector for the catch-all slot.
-        if (selector !== '*') {
-          matcher.addSelectables(CssSelector.parse(selector), selector);
-        }
-      }
-
-      for (const root of controlFlowToCheck) {
-        for (const child of root.children) {
-          if (child instanceof TmplAstElement || child instanceof TmplAstTemplate) {
-            matcher.match(createCssSelectorFromNode(child), (_, originalSelector) => {
-              this.tcb.oobRecorder.controlFlowPreventingContentProjection(
-                  this.tcb.id, child, this.componentName, originalSelector, root,
-                  this.tcb.hostPreserveWhitespaces);
-            });
-          }
-        }
-      }
-    }
-
-    return null;
-  }
-
-  private findPotentialControlFlowNodes() {
-    const result: Array<TmplAstIfBlockBranch|TmplAstForLoopBlock> = [];
-
-    for (const child of this.element.children) {
-      let eligibleNode: TmplAstForLoopBlock|TmplAstIfBlockBranch|null = null;
-
-      // Only `@for` blocks and the first branch of `@if` blocks participate in content projection.
-      if (child instanceof TmplAstForLoopBlock) {
-        eligibleNode = child;
-      } else if (child instanceof TmplAstIfBlock) {
-        eligibleNode = child.branches[0];  // @if blocks are guaranteed to have at least one branch.
-      }
-
-      // Skip nodes with less than two children since it's impossible
-      // for them to run into the issue that we're checking for.
-      if (eligibleNode === null || eligibleNode.children.length < 2) {
-        continue;
-      }
-
-      // Count the number of root nodes while skipping empty text where relevant.
-      const rootNodeCount = eligibleNode.children.reduce((count, node) => {
-        // Normally `preserveWhitspaces` would have been accounted for during parsing, however
-        // in `ngtsc/annotations/component/src/resources.ts#parseExtractedTemplate` we enable
-        // `preserveWhitespaces` to preserve the accuracy of source maps diagnostics. This means
-        // that we have to account for it here since the presence of text nodes affects the
-        // content projection behavior.
-        if (!(node instanceof TmplAstText) || this.tcb.hostPreserveWhitespaces ||
-            node.value.trim().length > 0) {
-          count++;
-        }
-
-        return count;
-      }, 0);
-
-      // Content projection can only be affected if there is more than one root node.
-      if (rootNodeCount > 1) {
-        result.push(eligibleNode);
-      }
-    }
-
-    return result;
-  }
-}
 
 /**
  * Mapping between attributes names that don't correspond to their element property names.
@@ -1931,7 +1837,6 @@ class Scope {
     if (node instanceof TmplAstElement) {
       const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
       this.elementOpMap.set(node, opIndex);
-      this.appendContentProjectionCheckOp(node);
       this.appendDirectivesAndInputsOfNode(node);
       this.appendOutputsOfNode(node);
       this.appendChildren(node);
@@ -2124,22 +2029,6 @@ class Scope {
     for (const placeholder of Object.values(node.placeholders)) {
       if (placeholder instanceof TmplAstBoundText) {
         this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value));
-      }
-    }
-  }
-
-  private appendContentProjectionCheckOp(root: TmplAstElement): void {
-    const meta =
-        this.tcb.boundTarget.getDirectivesOfNode(root)?.find(meta => meta.isComponent) || null;
-
-    if (meta !== null && meta.ngContentSelectors !== null && meta.ngContentSelectors.length > 0) {
-      const selectors = meta.ngContentSelectors;
-
-      // We don't need to generate anything for components that don't have projection
-      // slots, or they only have one catch-all slot (represented by `*`).
-      if (selectors.length > 1 || (selectors.length === 1 && selectors[0] !== '*')) {
-        this.opQueue.push(
-            new TcbControlFlowContentProjectionOp(this.tcb, root, selectors, meta.name));
       }
     }
   }
