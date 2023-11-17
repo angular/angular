@@ -495,6 +495,11 @@ export interface Declaration<T extends ts.Declaration = ts.Declaration> {
    * TypeScript reference to the declaration itself, if one exists.
    */
   node: T;
+
+  /**
+   * Whether the node is a reference to an ambient type.
+   */
+  isAmbient: boolean;
 }
 
 /**

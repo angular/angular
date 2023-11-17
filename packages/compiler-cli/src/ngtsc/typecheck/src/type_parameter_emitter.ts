@@ -100,7 +100,7 @@ export class TypeParameterEmitter {
       };
     }
 
-    return new Reference(declaration.node, owningModule);
+    return new Reference(declaration.node, owningModule, declaration.isAmbient);
   }
 
   private translateTypeReference(

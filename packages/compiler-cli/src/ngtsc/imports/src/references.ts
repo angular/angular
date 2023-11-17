@@ -54,7 +54,9 @@ export class Reference<T extends ts.Node = ts.Node> {
 
   private _alias: Expression|null = null;
 
-  constructor(readonly node: T, bestGuessOwningModule: OwningModule|null = null) {
+  constructor(
+      readonly node: T, bestGuessOwningModule: OwningModule|null = null,
+      readonly isAmbient = false) {
     this.bestGuessOwningModule = bestGuessOwningModule;
 
     const id = identifierOfNode(node);
@@ -160,14 +162,14 @@ export class Reference<T extends ts.Node = ts.Node> {
   }
 
   cloneWithAlias(alias: Expression): Reference<T> {
-    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    const ref = new Reference(this.node, this.bestGuessOwningModule, this.isAmbient);
     ref.identifiers = [...this.identifiers];
     ref._alias = alias;
     return ref;
   }
 
   cloneWithNoIdentifiers(): Reference<T> {
-    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    const ref = new Reference(this.node, this.bestGuessOwningModule, this.isAmbient);
     ref._alias = this._alias;
     ref.identifiers = [];
     return ref;

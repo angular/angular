@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain, makeRelatedInforma
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
-import {getSourceFile, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {getSourceFile, identifierOfNode, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {Reference} from './references';
@@ -64,6 +64,11 @@ export enum ImportFlags {
    * declaration file.
    */
   AllowRelativeDtsImports = 0x08,
+
+  /**
+   * Indicates that references coming from ambient imports are allowed.
+   */
+  AllowAmbientReferences = 0x010,
 }
 
 /**
@@ -225,6 +230,15 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
       return {
         kind: ReferenceEmitKind.Success,
         expression: new WrappedNodeExpr(ref.node),
+        importedFile: null,
+      };
+    }
+
+    // If the reference is to an ambient type, it can be referenced directly.
+    if (ref.isAmbient && importFlags & ImportFlags.AllowAmbientReferences) {
+      return {
+        kind: ReferenceEmitKind.Success,
+        expression: new WrappedNodeExpr(identifierOfNode(ref.node)),
         importedFile: null,
       };
     }

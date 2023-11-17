@@ -278,9 +278,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       };
     }
 
-    const reference = new Reference(declaration.node, owningModule);
+    const reference = new Reference(declaration.node, owningModule, declaration.isAmbient);
     const emittedType = this.refEmitter.emit(
-        reference, this.contextFile, ImportFlags.NoAliasing | ImportFlags.AllowTypeImports);
+        reference, this.contextFile,
+        ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowAmbientReferences);
 
     assertSuccessfulReferenceEmit(emittedType, target, 'type');
 

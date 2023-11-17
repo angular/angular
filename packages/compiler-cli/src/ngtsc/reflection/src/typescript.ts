@@ -355,11 +355,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return {
         node: symbol.valueDeclaration,
         viaModule,
+        isAmbient: this._isAmbient(symbol.valueDeclaration, originalId, importInfo)
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
         viaModule,
+        isAmbient: this._isAmbient(symbol.declarations[0], originalId, importInfo)
       };
     } else {
       return null;
@@ -496,6 +498,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     return exportSet;
+  }
+
+  private _isAmbient(
+      declaration: ts.Declaration, originalId: ts.Identifier|null,
+      importInfo: Import|null): boolean {
+    return importInfo === null && originalId !== null &&
+        declaration.getSourceFile() !== originalId.getSourceFile();
   }
 }
 
