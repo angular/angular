@@ -75,19 +75,9 @@ export type ResourceLoader = {
   get(url: string): Promise<string>|string;
 };
 
-export type InputMap = {
-  [key: string]: {
-    bindingPropertyName: string,
-    classPropertyName: string,
-    required: boolean,
-    transformFunction: InputTransformFunction,
-  };
-};
-
 export type Provider = unknown;
 export type Type = Function;
 export type OpaqueValue = unknown;
-export type InputTransformFunction = any;
 
 export enum FactoryTarget {
   Directive = 0,
@@ -195,8 +185,7 @@ export interface R3DeclareDirectiveFacade {
   type: Type;
   inputs?: {
     [classPropertyName: string]: string|
-    [bindingPropertyName: string,
-        classPropertyName: string, transformFunction?: InputTransformFunction]
+    [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function]
   };
   outputs?: {[classPropertyName: string]: string};
   host?: {
