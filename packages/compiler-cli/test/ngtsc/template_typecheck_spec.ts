@@ -2317,6 +2317,44 @@ export declare class AnimationEvent {
           `    Type 'string' is not assignable to type 'number'.`
         ]);
       });
+
+      it('should type check inputs with transforms referring to an ambient type', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          export class ElementRef<T> {
+            nativeElement: T;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class Dir {
+            @Input({transform: (val: HTMLInputElement | ElementRef<HTMLInputElement>) => {
+              return val instanceof ElementRef ? val.nativeElement.value : val.value;
+            }})
+            expectsInput: string | null = null;
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: '<div dir [expectsInput]="someDiv"></div>',
+          })
+          export class App {
+            someDiv!: HTMLDivElement;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getDiagnosticLines(diags[0]).join('\n'))
+            .toContain(
+                `Type 'HTMLDivElement' is not assignable to type ` +
+                `'HTMLInputElement | ElementRef<HTMLInputElement>'`);
+      });
     });
 
     describe('restricted inputs', () => {

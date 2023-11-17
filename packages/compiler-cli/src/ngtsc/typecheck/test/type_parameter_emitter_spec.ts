@@ -9,13 +9,13 @@ import ts from 'typescript';
 
 import {absoluteFrom, LogicalFileSystem} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, ImportFlags, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {Environment} from '../src/environment';
 import {TypeCheckFile} from '../src/type_check_file';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
-import {ALL_ENABLED_CONFIG, angularCoreDts} from '../testing';
+import {ALL_ENABLED_CONFIG, angularCoreDts, typescriptLibDts} from '../testing';
 
 
 runInEachFileSystem(() => {
@@ -48,12 +48,13 @@ runInEachFileSystem(() => {
       return {emitter, env};
     }
 
-    function emit({emitter, env}: {emitter: TypeParameterEmitter; env: Environment}) {
-      const canEmit = emitter.canEmit(ref => env.canReferenceType(ref));
+    function emit(
+        {emitter, env}: {emitter: TypeParameterEmitter; env: Environment}, flags?: ImportFlags) {
+      const canEmit = emitter.canEmit(ref => env.canReferenceType(ref, flags));
 
       let emitted: ts.TypeParameterDeclaration[]|undefined;
       try {
-        emitted = emitter.emit(ref => env.referenceType(ref));
+        emitted = emitter.emit(ref => env.referenceType(ref, flags));
         expect(canEmit).toBe(true);
       } catch (e) {
         expect(canEmit).toBe(false);
@@ -373,6 +374,13 @@ runInEachFileSystem(() => {
           export class TestClass<T extends object = Local> {}`);
 
       expect(() => emit(emitter)).toThrow();
+    });
+
+    it('can opt into emitting references to ambient types', () => {
+      const emitter =
+          createEmitter(`export class TestClass<T extends HTMLElement> {}`, [typescriptLibDts()]);
+
+      expect(emit(emitter, ImportFlags.AllowAmbientReferences)).toBe('<T extends HTMLElement>');
     });
   });
 });

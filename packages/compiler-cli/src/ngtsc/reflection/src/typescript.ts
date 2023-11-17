@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
 
@@ -339,10 +339,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     const importInfo = originalId && this.getImportOfIdentifier(originalId);
-    const viaModule =
-        importInfo !== null && importInfo.from !== null && !importInfo.from.startsWith('.') ?
-        importInfo.from :
-        null;
 
     // Now, resolve the Symbol to its declaration by following any and all aliases.
     while (symbol.flags & ts.SymbolFlags.Alias) {
@@ -354,12 +350,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol.valueDeclaration !== undefined) {
       return {
         node: symbol.valueDeclaration,
-        viaModule,
+        viaModule: this._viaModule(symbol.valueDeclaration, originalId, importInfo),
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
-        viaModule,
+        viaModule: this._viaModule(symbol.declarations[0], originalId, importInfo),
       };
     } else {
       return null;
@@ -496,6 +492,19 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     return exportSet;
+  }
+
+  private _viaModule(
+      declaration: ts.Declaration, originalId: ts.Identifier|null, importInfo: Import|null): string
+      |AmbientImport|null {
+    if (importInfo === null && originalId !== null &&
+        declaration.getSourceFile() !== originalId.getSourceFile()) {
+      return AmbientImport;
+    }
+
+    return importInfo !== null && importInfo.from !== null && !importInfo.from.startsWith('.') ?
+        importInfo.from :
+        null;
   }
 }
 

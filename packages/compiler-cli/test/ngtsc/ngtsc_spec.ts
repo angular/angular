@@ -8863,6 +8863,35 @@ function allTests(os: string) {
             .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵInheritDefinitionFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
+
+      it('should compile an input with using an ambient type in the transform function', () => {
+        env.write('node_modules/external/index.d.ts', `
+          import {ElementRef} from '@angular/core';
+
+          export declare function coerceElement(value: HTMLElement | ElementRef<HTMLElement>): HTMLElement;
+        `);
+
+        env.write('/test.ts', `
+          import {Directive, Input, Component} from '@angular/core';
+          import {coerceElement} from 'external';
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: coerceElement}) element!: HTMLElement;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { element: ["element", "element", coerceElement] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents)
+            .toContain(
+                'static ngAcceptInputType_element: HTMLElement | i0.ElementRef<HTMLElement>;');
+      });
     });
 
     describe('deferred blocks', () => {
