@@ -330,8 +330,6 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     decorator: null,
     hostDirectives: null,
     assumedToExportProviders: false,
-    ngContentSelectors: null,
-    preserveWhitespaces: false,
   };
 }
 
