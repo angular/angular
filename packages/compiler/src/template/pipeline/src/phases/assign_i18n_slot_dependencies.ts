@@ -24,11 +24,11 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
         lastSlotConsumer = op.xref;
       }
 
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
+      switch (true) {
+        case op instanceof ir.I18nStartOp:
           currentI18nOp = op;
           break;
-        case ir.OpKind.I18nEnd:
+        case op instanceof ir.I18nEndOp:
           i18nLastSlotConsumers.set(currentI18nOp!.xref, lastSlotConsumer!);
           currentI18nOp = null;
           break;
@@ -37,7 +37,7 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
 
     // Assign i18n expressions to target the last slot in its owning block.
     for (const op of unit.update) {
-      if (op.kind === ir.OpKind.I18nExpression) {
+      if (op instanceof ir.I18nExpressionOp) {
         op.target = i18nLastSlotConsumers.get(op.target)!;
       }
     }

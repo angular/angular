@@ -18,9 +18,9 @@ import type {ComponentCompilationJob} from '../compilation';
 export function liftLocalRefs(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.ElementStart:
-        case ir.OpKind.Template:
+      switch (true) {
+        case op instanceof ir.ElementStartOp:
+        case op instanceof ir.TemplateOp:
           if (!Array.isArray(op.localRefs)) {
             throw new Error(`AssertionError: expected localRefs to be an array still`);
           }

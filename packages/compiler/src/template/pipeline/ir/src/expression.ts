@@ -10,12 +10,13 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn} from './enums';
+import {DerivedRepeaterVarIdentity, ExpressionKind, SanitizerFn} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
-import type {CreateOp} from './ops/create';
-import {Interpolation, type UpdateOp} from './ops/update';
-import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import * as create from './ops/create';
+import {StatementOp, VariableOp} from './ops/shared';
+import * as update from './ops/update';
+import {ConsumesVarsTrait, UsesVarOffsetTrait} from './traits';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -337,8 +338,8 @@ export class ReadVariableExpr extends ExpressionBase {
 export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrait,
                                                                 UsesVarOffsetTrait {
   override readonly kind = ExpressionKind.PureFunctionExpr;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  consumesVars: true = true;
+  usesVarOffset: true = true;
 
   varOffset: number|null = null;
 
@@ -439,8 +440,8 @@ export class PureFunctionParameterExpr extends ExpressionBase {
 export class PipeBindingExpr extends ExpressionBase implements ConsumesVarsTrait,
                                                                UsesVarOffsetTrait {
   override readonly kind = ExpressionKind.PipeBinding;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  consumesVars: true = true;
+  usesVarOffset: true = true;
 
   varOffset: number|null = null;
 
@@ -482,8 +483,8 @@ export class PipeBindingExpr extends ExpressionBase implements ConsumesVarsTrait
 export class PipeBindingVariadicExpr extends ExpressionBase implements ConsumesVarsTrait,
                                                                        UsesVarOffsetTrait {
   override readonly kind = ExpressionKind.PipeBindingVariadic;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  consumesVars: true = true;
+  usesVarOffset: true = true;
 
   varOffset: number|null = null;
 
@@ -882,7 +883,8 @@ export class ConstCollectedExpr extends ExpressionBase {
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
 export function visitExpressionsInOp(
-    op: CreateOp|UpdateOp, visitor: (expr: o.Expression, flags: VisitorContextFlag) => void): void {
+    op: create.CreateOp|update.UpdateOp,
+    visitor: (expr: o.Expression, flags: VisitorContextFlag) => void): void {
   transformExpressionsInOp(op, (expr, flags) => {
     visitor(expr, flags);
     return expr;
@@ -895,7 +897,8 @@ export enum VisitorContextFlag {
 }
 
 function transformExpressionsInInterpolation(
-    interpolation: Interpolation, transform: ExpressionTransform, flags: VisitorContextFlag) {
+    interpolation: update.Interpolation, transform: ExpressionTransform,
+    flags: VisitorContextFlag) {
   for (let i = 0; i < interpolation.expressions.length; i++) {
     interpolation.expressions[i] =
         transformExpressionsInExpression(interpolation.expressions[i], transform, flags);
@@ -907,25 +910,29 @@ function transformExpressionsInInterpolation(
  *
  * All such operations will be replaced with the result of applying `transform`, which may be an
  * identity transformation.
+ *
+ * TODO: We could move these into the op classes, which would perform a bit better and also be
+ * cleaner to read.
  */
 export function transformExpressionsInOp(
-    op: CreateOp|UpdateOp, transform: ExpressionTransform, flags: VisitorContextFlag): void {
-  switch (op.kind) {
-    case OpKind.StyleProp:
-    case OpKind.StyleMap:
-    case OpKind.ClassProp:
-    case OpKind.ClassMap:
-    case OpKind.Binding:
-    case OpKind.HostProperty:
-      if (op.expression instanceof Interpolation) {
+    op: create.CreateOp|update.UpdateOp, transform: ExpressionTransform,
+    flags: VisitorContextFlag): void {
+  switch (true) {
+    case op instanceof update.StylePropOp:
+    case op instanceof update.StyleMapOp:
+    case op instanceof update.ClassPropOp:
+    case op instanceof update.ClassMapOp:
+    case op instanceof update.BindingOp:
+    case op instanceof update.HostPropertyOp:
+      if (op.expression instanceof update.Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
         op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       }
       break;
-    case OpKind.Property:
-    case OpKind.Attribute:
-      if (op.expression instanceof Interpolation) {
+    case op instanceof update.PropertyOp:
+    case op instanceof update.AttributeOp:
+      if (op.expression instanceof update.Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
         op.expression = transformExpressionsInExpression(op.expression, transform, flags);
@@ -933,19 +940,19 @@ export function transformExpressionsInOp(
       op.sanitizer =
           op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
-    case OpKind.I18nExpression:
+    case op instanceof update.I18nExpressionOp:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
-    case OpKind.InterpolateText:
+    case op instanceof update.InterpolateTextOp:
       transformExpressionsInInterpolation(op.interpolation, transform, flags);
       break;
-    case OpKind.Statement:
+    case op instanceof StatementOp:
       transformExpressionsInStatement(op.statement, transform, flags);
       break;
-    case OpKind.Variable:
+    case op instanceof VariableOp:
       op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);
       break;
-    case OpKind.Conditional:
+    case op instanceof update.ConditionalOp:
       for (const condition of op.conditions) {
         if (condition.expr === null) {
           // This is a default case.
@@ -960,25 +967,25 @@ export function transformExpressionsInOp(
         op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
-    case OpKind.Listener:
+    case op instanceof create.ListenerOp:
       for (const innerOp of op.handlerOps) {
         transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
       }
       break;
-    case OpKind.ExtractedAttribute:
+    case op instanceof create.ExtractedAttributeOp:
       op.expression =
           op.expression && transformExpressionsInExpression(op.expression, transform, flags);
       break;
-    case OpKind.RepeaterCreate:
+    case op instanceof create.RepeaterCreateOp:
       op.track = transformExpressionsInExpression(op.track, transform, flags);
       if (op.trackByFn !== null) {
         op.trackByFn = transformExpressionsInExpression(op.trackByFn, transform, flags);
       }
       break;
-    case OpKind.Repeater:
+    case op instanceof update.RepeaterOp:
       op.collection = transformExpressionsInExpression(op.collection, transform, flags);
       break;
-    case OpKind.Defer:
+    case op instanceof create.DeferOp:
       if (op.loadingConfig !== null) {
         op.loadingConfig = transformExpressionsInExpression(op.loadingConfig, transform, flags);
       }
@@ -987,7 +994,7 @@ export function transformExpressionsInOp(
             transformExpressionsInExpression(op.placeholderConfig, transform, flags);
       }
       break;
-    case OpKind.I18nMessage:
+    case op instanceof create.I18nMessageOp:
       for (const [placeholder, expr] of op.params) {
         op.params.set(placeholder, transformExpressionsInExpression(expr, transform, flags));
       }
@@ -996,36 +1003,37 @@ export function transformExpressionsInOp(
             placeholder, transformExpressionsInExpression(expr, transform, flags));
       }
       break;
-    case OpKind.DeferWhen:
+    case op instanceof update.DeferWhenOp:
       op.expr = transformExpressionsInExpression(op.expr, transform, flags);
       break;
-    case OpKind.Advance:
-    case OpKind.Container:
-    case OpKind.ContainerEnd:
-    case OpKind.ContainerStart:
-    case OpKind.DeferOn:
-    case OpKind.DisableBindings:
-    case OpKind.Element:
-    case OpKind.ElementEnd:
-    case OpKind.ElementStart:
-    case OpKind.EnableBindings:
-    case OpKind.I18n:
-    case OpKind.I18nApply:
-    case OpKind.I18nContext:
-    case OpKind.I18nEnd:
-    case OpKind.I18nStart:
-    case OpKind.IcuEnd:
-    case OpKind.IcuStart:
-    case OpKind.Namespace:
-    case OpKind.Pipe:
-    case OpKind.Projection:
-    case OpKind.ProjectionDef:
-    case OpKind.Template:
-    case OpKind.Text:
+    case op instanceof update.AdvanceOp:
+    case op instanceof create.ContainerOp:
+    case op instanceof create.ContainerEndOp:
+    case op instanceof create.ContainerStartOp:
+    case op instanceof create.DeferOnOp:
+    case op instanceof create.DisableBindingsOp:
+    case op instanceof create.ElementOp:
+    case op instanceof create.ElementEndOp:
+    case op instanceof create.ElementStartOp:
+    case op instanceof create.EnableBindingsOp:
+    case op instanceof create.I18nOp:
+    case op instanceof update.I18nApplyOp:
+    case op instanceof create.I18nContextOp:
+    case op instanceof create.I18nEndOp:
+    case op instanceof create.I18nStartOp:
+    case op instanceof create.IcuEndOp:
+    case op instanceof create.IcuStartOp:
+    case op instanceof create.NamespaceOp:
+    case op instanceof create.PipeOp:
+    case op instanceof create.ProjectionOp:
+    case op instanceof create.ProjectionDefOp:
+    case op instanceof create.TemplateOp:
+    case op instanceof create.TextOp:
       // These operations contain no expressions.
       break;
     default:
-      throw new Error(`AssertionError: transformExpressionsInOp doesn't handle ${OpKind[op.kind]}`);
+      throw new Error(
+          `AssertionError: transformExpressionsInOp doesn't handle ${op.constructor.name}`);
   }
 }
 

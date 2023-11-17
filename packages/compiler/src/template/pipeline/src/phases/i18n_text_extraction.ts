@@ -21,26 +21,26 @@ export function extractI18nText(job: CompilationJob): void {
     const textNodeI18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
     const textNodeIcus = new Map<ir.XrefId, ir.IcuStartOp|null>();
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
+      switch (true) {
+        case op instanceof ir.I18nStartOp:
           if (op.context === null) {
             throw Error('I18n op should have its context set.');
           }
           currentI18n = op;
           break;
-        case ir.OpKind.I18nEnd:
+        case op instanceof ir.I18nEndOp:
           currentI18n = null;
           break;
-        case ir.OpKind.IcuStart:
+        case op instanceof ir.IcuStartOp:
           if (op.context === null) {
             throw Error('Icu op should have its context set.');
           }
           currentIcu = op;
           break;
-        case ir.OpKind.IcuEnd:
+        case op instanceof ir.IcuEndOp:
           currentIcu = null;
           break;
-        case ir.OpKind.Text:
+        case op instanceof ir.TextOp:
           if (currentI18n !== null) {
             textNodeI18nBlocks.set(op.xref, currentI18n);
             textNodeIcus.set(op.xref, currentIcu);
@@ -53,8 +53,8 @@ export function extractI18nText(job: CompilationJob): void {
     // Update any interpolations to the removed text, and instead represent them as a series of i18n
     // expressions that we then apply.
     for (const op of unit.update) {
-      switch (op.kind) {
-        case ir.OpKind.InterpolateText:
+      switch (true) {
+        case op instanceof ir.InterpolateTextOp:
           if (!textNodeI18nBlocks.has(op.target)) {
             continue;
           }
@@ -69,7 +69,7 @@ export function extractI18nText(job: CompilationJob): void {
             const expr = op.interpolation.expressions[i];
             // For now, this i18nExpression depends on the slot context of the enclosing i18n block.
             // Later, we will modify this, and advance to a different point.
-            ops.push(ir.createI18nExpressionOp(
+            ops.push(new ir.I18nExpressionOp(
                 contextId!, i18nOp.xref, i18nOp.handle, expr, op.i18nPlaceholders[i],
                 resolutionTime, expr.sourceSpan ?? op.sourceSpan));
           }

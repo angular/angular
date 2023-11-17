@@ -60,11 +60,11 @@ export function extractI18nMessages(job: CompilationJob): void {
   const i18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nContext:
+      switch (true) {
+        case op instanceof ir.I18nContextOp:
           i18nContexts.set(op.xref, op);
           break;
-        case ir.OpKind.I18nStart:
+        case op instanceof ir.I18nStartOp:
           i18nBlocks.set(op.xref, op);
           break;
       }
@@ -75,7 +75,7 @@ export function extractI18nMessages(job: CompilationJob): void {
   const i18nBlockMessages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart && op.xref === op.root) {
+      if (op instanceof ir.I18nStartOp && op.xref === op.root) {
         if (!op.context) {
           throw Error('I18n start op should have its context set.');
         }
@@ -89,8 +89,8 @@ export function extractI18nMessages(job: CompilationJob): void {
   // Extract messages from ICUs with their own sub-context.
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.IcuStart:
+      switch (true) {
+        case op instanceof ir.IcuStartOp:
           if (!op.context) {
             throw Error('ICU op should have its context set.');
           }
@@ -104,7 +104,7 @@ export function extractI18nMessages(job: CompilationJob): void {
           }
           ir.OpList.remove<ir.CreateOp>(op);
           break;
-        case ir.OpKind.IcuEnd:
+        case op instanceof ir.IcuEndOp:
           ir.OpList.remove<ir.CreateOp>(op);
           break;
       }
@@ -120,7 +120,7 @@ function createI18nMessage(
   let [formattedParams, needsPostprocessing] = formatParams(context.params);
   const [formattedPostprocessingParams] = formatParams(context.postprocessingParams);
   needsPostprocessing ||= formattedPostprocessingParams.size > 0;
-  return ir.createI18nMessageOp(
+  return new ir.I18nMessageOp(
       job.allocateXrefId(), context.i18nBlock, context.message, messagePlaceholder ?? null,
       formattedParams, formattedPostprocessingParams, needsPostprocessing);
 }

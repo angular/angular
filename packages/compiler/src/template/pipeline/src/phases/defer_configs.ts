@@ -17,7 +17,7 @@ import {literalOrArrayLiteral} from '../conversion';
 export function configureDeferInstructions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.Defer) {
+      if (!(op instanceof ir.DeferOp)) {
         continue;
       }
 

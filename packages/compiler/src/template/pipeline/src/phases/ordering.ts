@@ -9,19 +9,16 @@
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
-function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
-  return (op: ir.UpdateOp) => op.kind === kind;
+function test(instanceTest: (op: ir.UpdateOp) => boolean, interpolation?: boolean):
+    (op: ir.UpdateOp) => boolean {
+  return (op: ir.UpdateOp) =>
+             (instanceTest(op) &&
+              (interpolation === undefined ?
+                   true :
+                   interpolation === (op as any).expression instanceof ir.Interpolation));
 }
 
-function kindWithInterpolationTest(
-    kind: ir.OpKind.Attribute|ir.OpKind.Property|ir.OpKind.HostProperty,
-    interpolation: boolean): (op: ir.UpdateOp) => boolean {
-  return (op: ir.UpdateOp) => {
-    return op.kind === kind && interpolation === op.expression instanceof ir.Interpolation;
-  };
-}
-
-interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
+interface Rule<T extends ir.Op> {
   test: (op: T) => boolean;
   transform?: (ops: Array<T>) => Array<T>;
 }
@@ -32,8 +29,8 @@ interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
  * the groups in the order defined here.
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
-  {test: op => op.kind === ir.OpKind.Listener && op.hostListener && op.isAnimationListener},
-  {test: op => op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)},
+  {test: op => op instanceof ir.ListenerOp && op.hostListener && op.isAnimationListener},
+  {test: op => op instanceof ir.ListenerOp && !(op.hostListener && op.isAnimationListener)},
 ];
 
 /**
@@ -41,25 +38,27 @@ const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
  * op kinds.
  */
 const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
-  {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
-  {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
-  {test: kindTest(ir.OpKind.StyleProp)},
-  {test: kindTest(ir.OpKind.ClassProp)},
-  {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.Attribute, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.Property, false)},
-  {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
+  {test: test(op => op instanceof ir.HostPropertyOp, true)},
+  {test: test(op => op instanceof ir.HostPropertyOp, false)},
+  {test: test(op => op instanceof ir.StyleMapOp), transform: keepLast},
+  {test: test(op => op instanceof ir.ClassMapOp), transform: keepLast},
+  {test: test(op => op instanceof ir.StylePropOp)},
+  {test: test(op => op instanceof ir.ClassPropOp)},
+  {test: test(op => op instanceof ir.PropertyOp, true)},
+  {test: test(op => op instanceof ir.AttributeOp, true)},
+  {test: test(op => op instanceof ir.PropertyOp, false)},
+  {test: test(op => op instanceof ir.AttributeOp, false)},
 ];
 
 /**
  * The set of all op kinds we handle in the reordering phase.
  */
-const handledOpKinds = new Set([
-  ir.OpKind.Listener, ir.OpKind.StyleMap, ir.OpKind.ClassMap, ir.OpKind.StyleProp,
-  ir.OpKind.ClassProp, ir.OpKind.Property, ir.OpKind.HostProperty, ir.OpKind.Attribute
-]);
+function handled(op: ir.Op) {
+  return op instanceof ir.ListenerOp || op instanceof ir.StyleMapOp ||
+      op instanceof ir.ClassMapOp || op instanceof ir.StylePropOp || op instanceof ir.ClassPropOp ||
+      op instanceof ir.PropertyOp || op instanceof ir.HostPropertyOp ||
+      op instanceof ir.AttributeOp;
+}
 
 /**
  * Many type of operations have ordering constraints that must be respected. For example, a
@@ -73,32 +72,31 @@ export function orderOps(job: CompilationJob) {
     // still have ops pulled at the end, put them back in the correct order.
 
     // Create mode:
-    orderWithin(unit.create, CREATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
+    orderWithin(unit.create, CREATE_ORDERING);
 
 
     // Update mode:
-    orderWithin(unit.update, UPDATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
+    orderWithin(unit.update, UPDATE_ORDERING);
   }
 }
 
 /**
  * Order all the ops within the specified group.
  */
-function orderWithin(
-    opList: ir.OpList<ir.CreateOp|ir.UpdateOp>, ordering: Array<Rule<ir.CreateOp|ir.UpdateOp>>) {
-  let opsToOrder: Array<ir.CreateOp|ir.UpdateOp> = [];
+function orderWithin(opList: ir.OpList<ir.Op>, ordering: Array<Rule<ir.Op>>) {
+  let opsToOrder: Array<ir.Op> = [];
   // Only reorder ops that target the same xref; do not mix ops that target different xrefs.
   let firstTargetInGroup: ir.XrefId|null = null;
   for (const op of opList) {
     const currentTarget = ir.hasDependsOnSlotContextTrait(op) ? op.target : null;
-    if (!handledOpKinds.has(op.kind) ||
+    if (!handled(op) ||
         (currentTarget !== firstTargetInGroup &&
          (firstTargetInGroup !== null && currentTarget !== null))) {
       ir.OpList.insertBefore(reorder(opsToOrder, ordering), op);
       opsToOrder = [];
       firstTargetInGroup = null;
     }
-    if (handledOpKinds.has(op.kind)) {
+    if (handled(op)) {
       opsToOrder.push(op);
       ir.OpList.remove(op);
       firstTargetInGroup = currentTarget ?? firstTargetInGroup;
@@ -110,8 +108,7 @@ function orderWithin(
 /**
  * Reorders the given list of ops according to the ordering defined by `ORDERING`.
  */
-function reorder<T extends ir.CreateOp|ir.UpdateOp>(
-    ops: Array<T>, ordering: Array<Rule<T>>): Array<T> {
+function reorder<T extends ir.Op>(ops: Array<T>, ordering: Array<Rule<T>>): Array<T> {
   // Break the ops list into groups based on OpKind.
   const groups = Array.from(ordering, () => new Array<T>());
   for (const op of ops) {

@@ -517,10 +517,11 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
   return interpolationArgs;
 }
 
-function call<OpT extends ir.CreateOp|ir.UpdateOp>(
+function call<OpT extends ir.Op>(
     instruction: o.ExternalReference, args: o.Expression[], sourceSpan: ParseSourceSpan|null): OpT {
   const expr = o.importExpr(instruction).callFn(args, sourceSpan);
-  return ir.createStatementOp(new o.ExpressionStatement(expr, sourceSpan)) as OpT;
+  // TODO: Get rid of this unknown
+  return new ir.StatementOp(new o.ExpressionStatement(expr, sourceSpan)) as unknown as OpT;
 }
 
 export function conditional(
@@ -724,7 +725,7 @@ function callVariadicInstructionExpr(
 function callVariadicInstruction(
     config: VariadicInstructionConfig, baseArgs: o.Expression[], interpolationArgs: o.Expression[],
     extraArgs: o.Expression[], sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
-  return ir.createStatementOp(
+  return new ir.StatementOp(
       callVariadicInstructionExpr(config, baseArgs, interpolationArgs, extraArgs, sourceSpan)
           .toStmt());
 }

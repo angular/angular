@@ -16,11 +16,11 @@ import {CompilationJob} from '../compilation';
 export function removeI18nContexts(job: CompilationJob) {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nContext:
+      switch (true) {
+        case op instanceof ir.I18nContextOp:
           ir.OpList.remove<ir.CreateOp>(op);
           break;
-        case ir.OpKind.I18nStart:
+        case op instanceof ir.I18nStartOp:
           op.context = null;
           break;
       }

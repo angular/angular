@@ -48,7 +48,7 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
         // When not in compatibility mode, we just add the pipe to the end of the create block. This
         // is not only simpler and faster, but allows more chaining opportunities for other
         // instructions.
-        unit.create.push(ir.createPipeOp(expr.target, expr.targetSlot, expr.name));
+        unit.create.push(new ir.PipeOp(expr.target, expr.targetSlot, expr.name));
       }
     });
   }
@@ -59,7 +59,7 @@ function addPipeToCreationBlock(
   // Find the appropriate point to insert the Pipe creation operation.
   // We're looking for `afterTargetXref` (and also want to insert after any other pipe operations
   // which might be beyond it).
-  for (let op = unit.create.head.next!; op.kind !== ir.OpKind.ListEnd; op = op.next!) {
+  for (let op = unit.create.head.next!; !ir.isListEnd(op); op = op.next!) {
     if (!ir.hasConsumesSlotTrait<ir.CreateOp>(op)) {
       continue;
     }
@@ -70,11 +70,11 @@ function addPipeToCreationBlock(
 
     // We've found a tentative insertion point; however, we also want to skip past any _other_ pipe
     // operations present.
-    while (op.next!.kind === ir.OpKind.Pipe) {
+    while (op.next instanceof ir.PipeOp) {
       op = op.next!;
     }
 
-    const pipe = ir.createPipeOp(binding.target, binding.targetSlot, binding.name) as ir.CreateOp;
+    const pipe = new ir.PipeOp(binding.target, binding.targetSlot, binding.name) as ir.CreateOp;
     ir.OpList.insertBefore(pipe, op.next!);
 
     // This completes adding the pipe to the creation block.

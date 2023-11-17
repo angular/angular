@@ -27,7 +27,7 @@ export function generateProjectionDefs(job: ComponentCompilationJob): void {
   let projectionSlotIndex = 0;
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Projection) {
+      if (op instanceof ir.ProjectionOp) {
         selectors.push(op.selector);
         op.projectionSlotIndex = projectionSlotIndex++;
       }
@@ -48,6 +48,6 @@ export function generateProjectionDefs(job: ComponentCompilationJob): void {
 
     // The projection def instruction goes at the beginning of the root view, before any
     // `projection` instructions.
-    job.root.create.prepend([ir.createProjectionDefOp(defExpr)]);
+    job.root.create.prepend([new ir.ProjectionDefOp(defExpr)]);
   }
 }

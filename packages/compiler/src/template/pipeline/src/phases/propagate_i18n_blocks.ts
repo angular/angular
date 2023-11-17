@@ -27,15 +27,15 @@ function propagateI18nBlocksToTemplates(
     unit: ViewCompilationUnit, subTemplateIndex: number): number {
   let i18nBlock: ir.I18nStartOp|null = null;
   for (const op of unit.create) {
-    switch (op.kind) {
-      case ir.OpKind.I18nStart:
+    switch (true) {
+      case op instanceof ir.I18nStartOp:
         op.subTemplateIndex = subTemplateIndex === 0 ? null : subTemplateIndex;
         i18nBlock = op;
         break;
-      case ir.OpKind.I18nEnd:
+      case op instanceof ir.I18nEndOp:
         i18nBlock = null;
         break;
-      case ir.OpKind.Template:
+      case op instanceof ir.TemplateOp:
         const templateView = unit.job.views.get(op.xref)!;
 
         // We found an <ng-template> inside an i18n block; increment the sub-template counter and
@@ -60,10 +60,10 @@ function propagateI18nBlocksToTemplates(
  */
 function wrapTemplateWithI18n(unit: ViewCompilationUnit, parentI18n: ir.I18nStartOp) {
   // Only add i18n ops if they have not already been propagated to this template.
-  if (unit.create.head.next?.kind !== ir.OpKind.I18nStart) {
+  if (!(unit.create.head.next instanceof ir.I18nStartOp)) {
     const id = unit.job.allocateXrefId();
-    ir.OpList.insertAfter(
-        ir.createI18nStartOp(id, parentI18n.message, parentI18n.root), unit.create.head);
-    ir.OpList.insertBefore(ir.createI18nEndOp(id), unit.create.tail);
+    ir.OpList.insertAfter<ir.CreateOp>(
+        new ir.I18nStartOp(id, parentI18n.message, parentI18n.root), unit.create.head);
+    ir.OpList.insertBefore<ir.CreateOp>(new ir.I18nEndOp(id), unit.create.tail);
   }
 }

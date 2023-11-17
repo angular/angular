@@ -18,15 +18,17 @@ export function generateNgContainerOps(job: CompilationJob): void {
   for (const unit of job.units) {
     const updatedElementXrefs = new Set<ir.XrefId>();
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ElementStart && op.tag === CONTAINER_TAG) {
-        // Transmute the `ElementStart` instruction to `ContainerStart`.
-        (op as ir.Op<ir.CreateOp>).kind = ir.OpKind.ContainerStart;
+      if (op instanceof ir.ElementStartOp && op.tag === CONTAINER_TAG) {
+        ir.OpList.replace<ir.CreateOp>(
+            op,
+            new ir.ContainerStartOp(
+                op.xref, op.handle, op.attributes, op.localRefs, op.nonBindable, op.sourceSpan));
         updatedElementXrefs.add(op.xref);
       }
 
-      if (op.kind === ir.OpKind.ElementEnd && updatedElementXrefs.has(op.xref)) {
+      if (op instanceof ir.ElementEndOp && updatedElementXrefs.has(op.xref)) {
         // This `ElementEnd` is associated with an `ElementStart` we already transmuted.
-        (op as ir.Op<ir.CreateOp>).kind = ir.OpKind.ContainerEnd;
+        ir.OpList.replace<ir.CreateOp>(op, new ir.ContainerEndOp(op.xref, op.sourceSpan!));
       }
     }
   }

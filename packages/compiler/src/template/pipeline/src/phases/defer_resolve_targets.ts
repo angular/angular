@@ -26,7 +26,7 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
     const scope = new Scope();
     for (const op of view.create) {
       // add everything that can be referenced.
-      if (!ir.isElementOrContainerOp(op) || op.localRefs === null) {
+      if (!(op instanceof ir.ElementOrContainerOp) || op.localRefs === null) {
         continue;
       }
       if (!Array.isArray(op.localRefs)) {
@@ -69,8 +69,8 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
           }
           for (const placeholderOp of placeholder.create) {
             if (ir.hasConsumesSlotTrait(placeholderOp) &&
-                (ir.isElementOrContainerOp(placeholderOp) ||
-                 placeholderOp.kind === ir.OpKind.Projection)) {
+                (placeholderOp instanceof ir.ElementOrContainerOp ||
+                 placeholderOp instanceof ir.ProjectionOp)) {
               op.trigger.targetXref = placeholderOp.xref;
               op.trigger.targetView = placeholderView;
               op.trigger.targetSlotViewSteps = -1;
@@ -109,11 +109,11 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     const defers = new Map<ir.XrefId, ir.DeferOp>();
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.Defer:
+      switch (true) {
+        case op instanceof ir.DeferOp:
           defers.set(op.xref, op);
           break;
-        case ir.OpKind.DeferOn:
+        case op instanceof ir.DeferOnOp:
           const deferOp = defers.get(op.defer)!;
           resolveTrigger(unit, op, deferOp.placeholderView);
           break;

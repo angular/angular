@@ -81,7 +81,7 @@ export function countVariables(job: CompilationJob): void {
     // an embedded view).
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind !== ir.OpKind.Template && op.kind !== ir.OpKind.RepeaterCreate) {
+        if (!(op instanceof ir.TemplateOp) && !(op instanceof ir.RepeaterCreateOp)) {
           continue;
         }
 
@@ -96,12 +96,12 @@ export function countVariables(job: CompilationJob): void {
  * Different operations that implement `ir.UsesVarsTrait` use different numbers of variables, so
  * count the variables used by any particular `op`.
  */
-function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): number {
+function varsUsedByOp(op: (ir.Op)&ir.ConsumesVarsTrait): number {
   let slots: number;
-  switch (op.kind) {
-    case ir.OpKind.Property:
-    case ir.OpKind.HostProperty:
-    case ir.OpKind.Attribute:
+  switch (true) {
+    case op instanceof ir.PropertyOp:
+    case op instanceof ir.HostPropertyOp:
+    case op instanceof ir.AttributeOp:
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.
       slots = 1;
@@ -109,10 +109,10 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
         slots += op.expression.expressions.length;
       }
       return slots;
-    case ir.OpKind.StyleProp:
-    case ir.OpKind.ClassProp:
-    case ir.OpKind.StyleMap:
-    case ir.OpKind.ClassMap:
+    case op instanceof ir.StylePropOp:
+    case op instanceof ir.ClassPropOp:
+    case op instanceof ir.StyleMapOp:
+    case op instanceof ir.ClassMapOp:
       // Style & class bindings use 2 variable slots, plus 1 slot for every interpolated expression,
       // if any.
       slots = 2;
@@ -120,14 +120,14 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
         slots += op.expression.expressions.length;
       }
       return slots;
-    case ir.OpKind.InterpolateText:
+    case op instanceof ir.InterpolateTextOp:
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.interpolation.expressions.length;
-    case ir.OpKind.I18nExpression:
-    case ir.OpKind.Conditional:
+    case op instanceof ir.I18nExpressionOp:
+    case op instanceof ir.ConditionalOp:
       return 1;
     default:
-      throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
+      throw new Error(`Unhandled op: ${op.constructor.name}`);
   }
 }
 

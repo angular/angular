@@ -15,14 +15,14 @@ import type {CompilationJob} from '../compilation';
 export function removeEmptyBindings(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      switch (op.kind) {
-        case ir.OpKind.Attribute:
-        case ir.OpKind.Binding:
-        case ir.OpKind.ClassProp:
-        case ir.OpKind.ClassMap:
-        case ir.OpKind.Property:
-        case ir.OpKind.StyleProp:
-        case ir.OpKind.StyleMap:
+      switch (true) {
+        case op instanceof ir.AttributeOp:
+        case op instanceof ir.BindingOp:
+        case op instanceof ir.ClassPropOp:
+        case op instanceof ir.ClassMapOp:
+        case op instanceof ir.PropertyOp:
+        case op instanceof ir.StylePropOp:
+        case op instanceof ir.StyleMapOp:
           if (op.expression instanceof ir.EmptyExpr) {
             ir.OpList.remove<ir.UpdateOp>(op);
           }

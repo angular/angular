@@ -64,10 +64,10 @@ export function chain(job: CompilationJob): void {
   }
 }
 
-function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
+function chainOperationsInList(opList: ir.OpList<ir.Op>): void {
   let chain: Chain|null = null;
   for (const op of opList) {
-    if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement)) {
+    if (!(op instanceof ir.StatementOp) || !(op.statement instanceof o.ExpressionStatement)) {
       // This type of statement isn't chainable.
       chain = null;
       continue;
@@ -94,7 +94,7 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void
           op.statement.expr.args, op.statement.expr.sourceSpan, op.statement.expr.pure);
       chain.expression = expression;
       chain.op.statement = expression.toStmt();
-      ir.OpList.remove(op as ir.Op<ir.CreateOp|ir.UpdateOp>);
+      ir.OpList.remove(op);
     } else {
       // Leave this instruction alone for now, but consider it the start of a new chain.
       chain = {
@@ -113,7 +113,7 @@ interface Chain {
   /**
    * The statement which holds the entire chain.
    */
-  op: ir.StatementOp<ir.CreateOp|ir.UpdateOp>;
+  op: ir.StatementOp<ir.Op>;
 
   /**
    * The expression representing the whole current chained call.

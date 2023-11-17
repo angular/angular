@@ -55,7 +55,7 @@ export function generateAdvance(job: CompilationJob): void {
         }
 
         ir.OpList.insertBefore<ir.UpdateOp>(
-            ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
+            new ir.AdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
         slotContext = slot;
       }
     }

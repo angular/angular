@@ -16,7 +16,7 @@ import {ComponentCompilationJob} from '../compilation';
 export function generateConditionalExpressions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind !== ir.OpKind.Conditional) {
+      if (!(op instanceof ir.ConditionalOp)) {
         continue;
       }
 

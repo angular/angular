@@ -18,7 +18,7 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
 export function saveAndRestoreView(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     unit.create.prepend([
-      ir.createVariableOp<ir.CreateOp>(
+      new ir.VariableOp<ir.CreateOp>(
           unit.job.allocateXrefId(), {
             kind: ir.SemanticVariableKind.SavedView,
             name: null,
@@ -28,7 +28,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
     ]);
 
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.Listener) {
+      if (!(op instanceof ir.ListenerOp)) {
         continue;
       }
 
@@ -55,7 +55,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
 
 function addSaveRestoreViewOperationToListener(unit: ViewCompilationUnit, op: ir.ListenerOp) {
   op.handlerOps.prepend([
-    ir.createVariableOp<ir.UpdateOp>(
+    new ir.VariableOp<ir.UpdateOp>(
         unit.job.allocateXrefId(), {
           kind: ir.SemanticVariableKind.Context,
           name: null,
@@ -68,8 +68,7 @@ function addSaveRestoreViewOperationToListener(unit: ViewCompilationUnit, op: ir
   // context prior to returning from the listener operation. Find any `return` statements in
   // the listener body and wrap them in a call to reset the view.
   for (const handlerOp of op.handlerOps) {
-    if (handlerOp.kind === ir.OpKind.Statement &&
-        handlerOp.statement instanceof o.ReturnStatement) {
+    if (handlerOp instanceof ir.StatementOp && handlerOp.statement instanceof o.ReturnStatement) {
       handlerOp.statement.value = new ir.ResetViewExpr(handlerOp.statement.value);
     }
   }

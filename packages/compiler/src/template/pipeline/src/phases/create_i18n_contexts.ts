@@ -26,23 +26,23 @@ export function createI18nContexts(job: CompilationJob) {
 
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
+      switch (true) {
+        case op instanceof ir.I18nStartOp:
           currentI18nOp = op;
           // Each root i18n block gets its own context, child ones refer to the context for their
           // root block.
           if (op.xref === op.root) {
             xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
+            unit.create.push(new ir.I18nContextOp(
                 ir.I18nContextKind.RootI18n, xref, op.xref, op.message, null!));
             op.context = xref;
             rootContexts.set(op.xref, xref);
           }
           break;
-        case ir.OpKind.I18nEnd:
+        case op instanceof ir.I18nEndOp:
           currentI18nOp = null;
           break;
-        case ir.OpKind.IcuStart:
+        case op instanceof ir.IcuStartOp:
           // If an ICU represents a different message than its containing block, we give it its own
           // i18n context.
           if (currentI18nOp === null) {
@@ -51,7 +51,7 @@ export function createI18nContexts(job: CompilationJob) {
           if (op.message.id !== currentI18nOp.message.id) {
             // There was an enclosing i18n block around this ICU somewhere.
             xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
+            unit.create.push(new ir.I18nContextOp(
                 ir.I18nContextKind.Icu, xref, currentI18nOp.xref, op.message, null!));
             op.context = xref;
           } else {
@@ -68,7 +68,7 @@ export function createI18nContexts(job: CompilationJob) {
   // assigned.
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart && op.xref !== op.root) {
+      if (op instanceof ir.I18nStartOp && op.xref !== op.root) {
         op.context = rootContexts.get(op.root)!;
       }
     }
