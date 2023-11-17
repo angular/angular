@@ -220,12 +220,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
         createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
-    // Signal components use the granular "RefreshView"  for change detection
-    const signalFlags = (LViewFlags.SignalView | LViewFlags.IsRoot);
-    // Non-signal components use the traditional "CheckAlways or OnPush/Dirty" change detection
-    const nonSignalFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                                      LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootFlags = this.componentDef.signals ? signalFlags : nonSignalFlags;
+    let rootFlags = LViewFlags.IsRoot;
+    if (this.componentDef.signals) {
+      rootFlags |= LViewFlags.SignalView;
+    } else if (!this.componentDef.onPush) {
+      rootFlags |= LViewFlags.CheckAlways;
+    }
 
     let hydrationInfo: DehydratedView|null = null;
     if (hostRNode !== null) {
