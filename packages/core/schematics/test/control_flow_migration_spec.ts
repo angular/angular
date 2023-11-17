@@ -2072,6 +2072,58 @@ describe('control flow migration', () => {
       expect(content).toContain(
           'template: `<div>@switch (testOpts) { @case (1) { <p>Option 1</p> } @case (2) { <p>Option 2</p> }}</div>`');
     });
+
+    it('should migrate nested switches', async () => {
+      writeFile('/comp.ts', `
+      import {Component} from '@angular/core';
+      import {NgIf} from '@angular/common';
+
+      @Component({
+        imports: [NgFor, NgIf],
+        templateUrl: './comp.html'
+      })
+      class Comp {
+        show = false;
+        nest = true;
+        again = true;
+        more = true;
+      }`);
+
+      writeFile('/comp.html', [
+        `<div [ngSwitch]="thing">`,
+        `  <div *ngSwitchCase="'item'" [ngSwitch]="anotherThing">`,
+        `    <img *ngSwitchCase="'png'" src="/img.png" alt="PNG" />`,
+        `    <img *ngSwitchDefault src="/default.jpg" alt="default" />`,
+        `  </div>`,
+        `  <img *ngSwitchDefault src="/default.jpg" alt="default" />`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `  @switch (thing) {`,
+        `    @case ('item') {`,
+        `      <div>`,
+        `        @switch (anotherThing) {`,
+        `          @case ('png') {`,
+        `            <img src="/img.png" alt="PNG" />`,
+        `          }`,
+        `          @default {`,
+        `            <img src="/default.jpg" alt="default" />`,
+        `          }`,
+        `        }`,
+        `      </div>`,
+        `    }`,
+        `    @default {`,
+        `      <img src="/default.jpg" alt="default" />`,
+        `    }`,
+        `  }`,
+        `</div>`,
+      ].join('\n'));
+    });
   });
 
   describe('nested structures', () => {
