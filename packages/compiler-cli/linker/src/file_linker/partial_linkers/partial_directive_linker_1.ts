@@ -88,6 +88,8 @@ function toInputMapping<TExpression>(
       classPropertyName: key,
       required: false,
       transformFunction: null,
+      // TODO: Handle `isSignal` information for inputs.
+      isSignal: false,
     };
   }
 
@@ -103,6 +105,8 @@ function toInputMapping<TExpression>(
     classPropertyName: values[1].getString(),
     transformFunction: values.length > 2 ? values[2].getOpaque() : null,
     required: false,
+    // TODO: Handle `isSignal` information for inputs.
+    isSignal: false,
   };
 }
 

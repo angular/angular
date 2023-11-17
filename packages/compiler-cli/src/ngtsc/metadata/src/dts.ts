@@ -203,26 +203,25 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           bindingPropertyName: stringValue,
           classPropertyName,
           required: false,
+          // Signal inputs were not supported pre v16- so those inputs are never signal based.
+          isSignal: false,
           // Input transform are only tracked for locally-compiled directives. Directives coming
           // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
-          // TODO: Propagate this via `.d.ts`.
-          isSignal: false,
         };
       } else {
         const config = readMapType(member.type, innerValue => {
                          return readStringType(innerValue) ?? readBooleanType(innerValue);
-                       }) as {alias: string, required: boolean};
+                       }) as {alias: string, required: boolean, isSignal?: boolean};
 
         inputsMap[classPropertyName] = {
           classPropertyName,
           bindingPropertyName: config.alias,
           required: config.required,
+          isSignal: !!config.isSignal,
           // Input transform are only tracked for locally-compiled directives. Directives coming
           // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
-          // TODO: Propagate this via `.d.ts`.
-          isSignal: false,
         };
       }
     }
