@@ -183,7 +183,7 @@ export class DeferredBlockPlaceholder extends BlockNode implements Node {
   constructor(
       public children: Node[], public minimumTime: number|null, nameSpan: ParseSourceSpan,
       sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
-      endSourceSpan: ParseSourceSpan|null) {
+      endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -196,7 +196,7 @@ export class DeferredBlockLoading extends BlockNode implements Node {
   constructor(
       public children: Node[], public afterTime: number|null, public minimumTime: number|null,
       nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
-      endSourceSpan: ParseSourceSpan|null) {
+      endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -208,7 +208,8 @@ export class DeferredBlockLoading extends BlockNode implements Node {
 export class DeferredBlockError extends BlockNode implements Node {
   constructor(
       public children: Node[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null) {
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
+      public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -238,7 +239,8 @@ export class DeferredBlock extends BlockNode implements Node {
       prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
       public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
       nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan, public mainBlockSpan: ParseSourceSpan,
-      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null) {
+      startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
+      public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
@@ -289,7 +291,7 @@ export class SwitchBlockCase extends BlockNode implements Node {
   constructor(
       public expression: AST|null, public children: Node[], sourceSpan: ParseSourceSpan,
       startSourceSpan: ParseSourceSpan, endSourceSpan: ParseSourceSpan|null,
-      nameSpan: ParseSourceSpan) {
+      nameSpan: ParseSourceSpan, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -310,7 +312,7 @@ export class ForLoopBlock extends BlockNode implements Node {
       public trackKeywordSpan: ParseSourceSpan, public contextVariables: ForLoopBlockContext,
       public children: Node[], public empty: ForLoopBlockEmpty|null, sourceSpan: ParseSourceSpan,
       public mainBlockSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
-      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -322,7 +324,7 @@ export class ForLoopBlock extends BlockNode implements Node {
 export class ForLoopBlockEmpty extends BlockNode implements Node {
   constructor(
       public children: Node[], sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
-      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
@@ -348,7 +350,7 @@ export class IfBlockBranch extends BlockNode implements Node {
   constructor(
       public expression: AST|null, public children: Node[], public expressionAlias: Variable|null,
       sourceSpan: ParseSourceSpan, startSourceSpan: ParseSourceSpan,
-      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan) {
+      endSourceSpan: ParseSourceSpan|null, nameSpan: ParseSourceSpan, public i18n?: I18nMeta) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 

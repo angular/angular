@@ -13,12 +13,12 @@ import {CommonModule, DOCUMENT, registerLocaleData} from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
-import {Attribute, Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Attribute, Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
-import {TestBed} from '@angular/core/testing';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
 
@@ -359,6 +359,163 @@ describe('runtime i18n', () => {
       </div>
     `);
     expect(fixture.nativeElement.textContent).toBe(' Deux ');
+  });
+
+  it('should support conditional blocks', () => {
+    loadTranslations({
+      [computeMsgId(
+          'Content: {$START_BLOCK_IF}before{$START_TAG_SPAN}zero{$CLOSE_TAG_SPAN}after' +
+              '{$CLOSE_BLOCK_IF}{$START_BLOCK_ELSE_IF}before{$START_TAG_DIV}one{$CLOSE_TAG_DIV}' +
+              'after{$CLOSE_BLOCK_ELSE_IF}{$START_BLOCK_ELSE}before{$START_TAG_BUTTON}' +
+              'otherwise{$CLOSE_TAG_BUTTON}after{$CLOSE_BLOCK_ELSE}!',
+          '')]: 'Contenido: {$START_BLOCK_IF}antes{$START_TAG_SPAN}cero{$CLOSE_TAG_SPAN}después' +
+          '{$CLOSE_BLOCK_IF}{$START_BLOCK_ELSE_IF}antes{$START_TAG_DIV}uno{$CLOSE_TAG_DIV}' +
+          'después{$CLOSE_BLOCK_ELSE_IF}{$START_BLOCK_ELSE}antes{$START_TAG_BUTTON}' +
+          'si no{$CLOSE_TAG_BUTTON}después{$CLOSE_BLOCK_ELSE}!'
+    });
+
+    const fixture = initWithTemplate(
+        AppComp,
+        '<div i18n>Content: @if (count === 0) {before<span>zero</span>after} ' +
+            '@else if (count === 1) {before<div>one</div>after} ' +
+            '@else {before<button>otherwise</button>after}!</div>');
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<span>cero</span>después<!--container--><!--container-->' +
+            '<!--container-->!</div>');
+
+    fixture.componentInstance.count = 1;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<div>uno</div>después<!--container--><!--container-->' +
+            '<!--container-->!</div>');
+
+    fixture.componentInstance.count = 2;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<button>si no</button>después<!--container--><!--container-->' +
+            '<!--container-->!</div>');
+  });
+
+  it('should support switch blocks', () => {
+    loadTranslations({
+      [computeMsgId(
+          'Content: {$START_BLOCK_CASE}before{$START_TAG_SPAN}zero{$CLOSE_TAG_SPAN}after' +
+              '{$CLOSE_BLOCK_CASE}{$START_BLOCK_CASE_1}before{$START_TAG_DIV}one' +
+              '{$CLOSE_TAG_DIV}after{$CLOSE_BLOCK_CASE}{$START_BLOCK_DEFAULT}before' +
+              '{$START_TAG_BUTTON}otherwise{$CLOSE_TAG_BUTTON}after{$CLOSE_BLOCK_DEFAULT}',
+          '')]: 'Contenido: {$START_BLOCK_CASE}antes{$START_TAG_SPAN}cero{$CLOSE_TAG_SPAN}después' +
+          '{$CLOSE_BLOCK_CASE}{$START_BLOCK_CASE_1}antes{$START_TAG_DIV}uno' +
+          '{$CLOSE_TAG_DIV}después{$CLOSE_BLOCK_CASE}{$START_BLOCK_DEFAULT}antes' +
+          '{$START_TAG_BUTTON}si no{$CLOSE_TAG_BUTTON}después{$CLOSE_BLOCK_DEFAULT}'
+    });
+
+    const fixture = initWithTemplate(
+        AppComp,
+        '<div i18n>Content: @switch (count) {' +
+            '@case (0) {before<span>zero</span>after}' +
+            '@case (1) {before<div>one</div>after}' +
+            '@default {before<button>otherwise</button>after}' +
+            '}</div>');
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<span>cero</span>después<!--container--><!--container-->' +
+            '<!--container--></div>');
+
+    fixture.componentInstance.count = 1;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<div>uno</div>después<!--container--><!--container-->' +
+            '<!--container--></div>');
+
+    fixture.componentInstance.count = 2;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<button>si no</button>después<!--container--><!--container-->' +
+            '<!--container--></div>');
+  });
+
+  it('should support for loop blocks', () => {
+    loadTranslations({
+      [computeMsgId(
+          'Content: {$START_BLOCK_FOR}before{$START_TAG_SPAN}' +
+          'middle{$CLOSE_TAG_SPAN}after{$CLOSE_BLOCK_FOR}{$START_BLOCK_EMPTY}' +
+          'before{$START_TAG_DIV}empty{$CLOSE_TAG_DIV}after{$CLOSE_BLOCK_EMPTY}!')]:
+          'Contenido: {$START_BLOCK_FOR}antes{$START_TAG_SPAN}' +
+          'medio{$CLOSE_TAG_SPAN}después{$CLOSE_BLOCK_FOR}{$START_BLOCK_EMPTY}' +
+          'antes{$START_TAG_DIV}vacío{$CLOSE_TAG_DIV}después{$CLOSE_BLOCK_EMPTY}!'
+    });
+
+    const fixture = initWithTemplate(
+        AppComp,
+        '<div i18n>Content: @for (item of items; track item) {before<span>middle</span>after}' +
+            '@empty {before<div>empty</div>after}!</div>');
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: antes<span>medio</span>' +
+            'despuésantes<span>medio</span>despuésantes<span>medio</span>' +
+            'después<!--container--><!--container-->!</div>');
+
+    fixture.componentInstance.items = [];
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: <!--container-->antes<div>' +
+            'vacío</div>después<!--container-->!</div>');
+  });
+
+  it('should support deferred blocks', async () => {
+    loadTranslations({
+      [computeMsgId(
+          'Content: {$START_BLOCK_DEFER}before{$START_TAG_SPAN}middle' +
+              '{$CLOSE_TAG_SPAN}after{$CLOSE_BLOCK_DEFER}{$START_BLOCK_PLACEHOLDER}before' +
+              '{$START_TAG_DIV}placeholder{$CLOSE_TAG_DIV}after{$CLOSE_BLOCK_PLACEHOLDER}!',
+          '')]: 'Contenido: {$START_BLOCK_DEFER}before{$START_TAG_SPAN}medio' +
+          '{$CLOSE_TAG_SPAN}after{$CLOSE_BLOCK_DEFER}{$START_BLOCK_PLACEHOLDER}before' +
+          '{$START_TAG_DIV}marcador de posición{$CLOSE_TAG_DIV}after{$CLOSE_BLOCK_PLACEHOLDER}!'
+    });
+
+    @Component({
+      selector: 'defer-comp',
+      standalone: true,
+      template: '<div i18n>Content: @defer (when isLoaded) {before<span>middle</span>after} ' +
+          '@placeholder {before<div>placeholder</div>after}!</div>'
+    })
+    class DeferComp {
+      isLoaded = false;
+    }
+
+    TestBed.configureTestingModule({
+      imports: [DeferComp],
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+      teardown: {destroyAfterEach: true},
+    });
+
+    const fixture = TestBed.createComponent(DeferComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: <!--container-->' +
+            '<!--container-->!before<div>marcador de posición</div>after<!--container--></div>');
+
+    const deferBlock = (await fixture.getDeferBlocks())[0];
+    fixture.componentInstance.isLoaded = true;
+    fixture.detectChanges();
+    await deferBlock.render(DeferBlockState.Complete);
+
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(
+            '<div>Contenido: <!--container-->' +
+            '<!--container-->!before<span>medio</span>after<!--container--></div>');
   });
 
   describe('ng-container and ng-template support', () => {
@@ -3061,6 +3218,7 @@ class AppComp {
   description = `Web Framework`;
   visible = true;
   count = 0;
+  items = [1, 2, 3];
 }
 
 @Component({
