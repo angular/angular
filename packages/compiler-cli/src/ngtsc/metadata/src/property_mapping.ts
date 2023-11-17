@@ -37,6 +37,9 @@ export interface InputOrOutput {
    * The property name used to bind this input or output in an Angular template.
    */
   readonly bindingPropertyName: BindingPropertyName;
+
+  /** Whether the input or output is signal based. */
+  readonly isSignal: boolean;
 }
 
 /**
@@ -79,24 +82,27 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    * to either binding property names or an array that contains both names, which is used in on-disk
    * metadata formats (e.g. in .d.ts files).
    */
-  static fromMappedObject<T extends InputOrOutput>(obj: {
-    [classPropertyName: string]: BindingPropertyName|[ClassPropertyName, BindingPropertyName]|T
-  }): ClassPropertyMapping<T> {
+  static fromMappedObject<T extends InputOrOutput>(
+      obj: {[classPropertyName: string]: BindingPropertyName|T}): ClassPropertyMapping<T> {
     const forwardMap = new Map<ClassPropertyName, T>();
 
     for (const classPropertyName of Object.keys(obj)) {
       const value = obj[classPropertyName];
-      let inputOrOutput: T;
+      let inputOrOutput: InputOrOutput;
 
       if (typeof value === 'string') {
-        inputOrOutput = {classPropertyName, bindingPropertyName: value} as T;
-      } else if (Array.isArray(value)) {
-        inputOrOutput = {classPropertyName, bindingPropertyName: value[0]} as T;
+        inputOrOutput = {
+          classPropertyName,
+          bindingPropertyName: value,
+          // Inputs/outputs not captured via an explicit `InputOrOutput` mapping
+          // value are always considered non-signal. This is the string shorthand.
+          isSignal: false,
+        };
       } else {
         inputOrOutput = value;
       }
 
-      forwardMap.set(classPropertyName, inputOrOutput);
+      forwardMap.set(classPropertyName, inputOrOutput as T);
     }
 
     return new ClassPropertyMapping(forwardMap);
