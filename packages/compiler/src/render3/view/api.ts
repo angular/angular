@@ -319,6 +319,7 @@ export interface R3InputMetadata {
   classPropertyName: string;
   bindingPropertyName: string;
   required: boolean;
+  isSignal: boolean;
   transformFunction: o.Expression|null;
 }
 

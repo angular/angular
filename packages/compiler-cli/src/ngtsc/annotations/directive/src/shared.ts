@@ -1081,6 +1081,7 @@ function toR3InputMetadata(mapping: InputMapping): R3InputMetadata {
     bindingPropertyName: mapping.bindingPropertyName,
     required: mapping.required,
     transformFunction: mapping.transform !== null ? new WrappedNodeExpr(mapping.transform.node) :
-                                                    null
+                                                    null,
+    isSignal: mapping.isSignal,
   };
 }
