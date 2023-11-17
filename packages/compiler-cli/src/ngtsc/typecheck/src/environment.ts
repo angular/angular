@@ -126,11 +126,11 @@ export class Environment implements ReferenceEmitEnvironment {
     return translateExpression(ngExpr.expression, this.importManager);
   }
 
-  canReferenceType(ref: Reference): boolean {
-    const result = this.refEmitter.emit(
-        ref, this.contextFile,
-        ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-            ImportFlags.AllowRelativeDtsImports);
+  canReferenceType(
+      ref: Reference,
+      flags: ImportFlags = ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
+          ImportFlags.AllowRelativeDtsImports): boolean {
+    const result = this.refEmitter.emit(ref, this.contextFile, flags);
     return result.kind === ReferenceEmitKind.Success;
   }
 
@@ -139,11 +139,11 @@ export class Environment implements ReferenceEmitEnvironment {
    *
    * This may involve importing the node into the file if it's not declared there already.
    */
-  referenceType(ref: Reference): ts.TypeNode {
-    const ngExpr = this.refEmitter.emit(
-        ref, this.contextFile,
-        ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-            ImportFlags.AllowRelativeDtsImports);
+  referenceType(
+      ref: Reference,
+      flags: ImportFlags = ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
+          ImportFlags.AllowRelativeDtsImports): ts.TypeNode {
+    const ngExpr = this.refEmitter.emit(ref, this.contextFile, flags);
     assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'symbol');
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
