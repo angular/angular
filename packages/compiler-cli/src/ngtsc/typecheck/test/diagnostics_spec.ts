@@ -875,6 +875,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             },
           }]);
@@ -907,12 +908,14 @@ class TestComponent {
                   bindingPropertyName: 'input',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 },
                 otherInput: {
                   classPropertyName: 'otherInput',
                   bindingPropertyName: 'otherInput',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 }
               }
             },
@@ -926,6 +929,7 @@ class TestComponent {
                   bindingPropertyName: 'otherDirInput',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 }
               },
             }
@@ -955,6 +959,7 @@ class TestComponent {
                 bindingPropertyName: 'inputAlias',
                 required: true,
                 transform: null,
+                isSignal: false,
               }
             }
           }]);
@@ -984,6 +989,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             }
           }]);
@@ -1012,6 +1018,7 @@ class TestComponent {
                    bindingPropertyName: 'inputAlias',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  },
                },
              }]);
@@ -1037,6 +1044,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             }
           }]);
@@ -1065,6 +1073,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             },
             outputs: {inputChange: 'inputChange'},
@@ -1092,6 +1101,7 @@ class TestComponent {
                    bindingPropertyName: 'dir',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  }
                }
              }]);
@@ -1122,6 +1132,7 @@ class TestComponent {
                     bindingPropertyName: 'hostAlias',
                     required: true,
                     transform: null,
+                    isSignal: false,
                   },
                 },
                 isStandalone: true,
@@ -1154,6 +1165,7 @@ class TestComponent {
                    bindingPropertyName: 'maxlength',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  },
                },
              }]);
