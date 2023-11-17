@@ -609,6 +609,7 @@ describe('type check blocks', () => {
           bindingPropertyName: 'fieldA',
           classPropertyName: 'fieldA',
           required: false,
+          isSignal: false,
           transform: {
             node: ts.factory.createFunctionDeclaration(
                 undefined, undefined, undefined, undefined, [], undefined, undefined),

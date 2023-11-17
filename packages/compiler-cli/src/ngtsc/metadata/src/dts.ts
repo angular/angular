@@ -206,6 +206,8 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           // Input transform are only tracked for locally-compiled directives. Directives coming
           // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
+          // TODO: Propagate this via `.d.ts`.
+          isSignal: false,
         };
       } else {
         const config = readMapType(member.type, innerValue => {
@@ -219,6 +221,8 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           // Input transform are only tracked for locally-compiled directives. Directives coming
           // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
+          // TODO: Propagate this via `.d.ts`.
+          isSignal: false,
         };
       }
     }

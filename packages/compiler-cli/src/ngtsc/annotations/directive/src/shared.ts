@@ -643,6 +643,8 @@ function parseInputsArray(
         classPropertyName,
         required: false,
         transform: null,
+        // Note: Signal inputs are not allowed with the array form.
+        isSignal: false,
       };
     } else if (value instanceof Map) {
       // If it's a map, we treat it as a config object.
@@ -673,6 +675,8 @@ function parseInputsArray(
         classPropertyName: name,
         bindingPropertyName: typeof alias === 'string' ? alias : name,
         required: required === true,
+        // Note: Signal inputs are not allowed with the array form.
+        isSignal: false,
         transform,
       };
     } else {
@@ -756,6 +760,7 @@ function tryParseInputFieldMapping(
     }
 
     return {
+      isSignal: false,
       classPropertyName,
       bindingPropertyName: publicInputName,
       transform,
@@ -775,6 +780,7 @@ function tryParseInputFieldMapping(
     }
 
     return {
+      isSignal: true,
       classPropertyName,
       bindingPropertyName,
       required: signalInput.isRequired,
