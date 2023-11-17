@@ -226,11 +226,6 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
      * element without selector is present.
      */
     ngContentSelectors: string[];
-
-    /**
-     * Whether the template preserves whitespaces from the user's code.
-     */
-    preserveWhitespaces?: boolean;
   };
 
   declarations: DeclarationT[];

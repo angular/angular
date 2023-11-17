@@ -84,7 +84,7 @@ export function generateTypeCheckBlock(
     genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas,
-      meta.isStandalone, meta.preserveWhitespaces);
+      meta.isStandalone);
   const scope = Scope.forNodes(tcb, null, null, tcb.boundTarget.target.template!, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -1582,8 +1582,7 @@ export class Context {
       readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean,
-      readonly hostPreserveWhitespaces: boolean) {}
+      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.

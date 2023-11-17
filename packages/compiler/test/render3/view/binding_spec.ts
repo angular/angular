@@ -41,8 +41,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: true,
                            selector: '[ngFor][ngForOf]',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
   matcher.addSelectables(CssSelector.parse('[dir]'), [{
                            name: 'Dir',
@@ -53,8 +51,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: false,
                            selector: '[dir]',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), [{
                            name: 'HasOutput',
@@ -65,8 +61,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: false,
                            selector: '[hasOutput]',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
   matcher.addSelectables(CssSelector.parse('[hasInput]'), [{
                            name: 'HasInput',
@@ -77,8 +71,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: false,
                            selector: '[hasInput]',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
   matcher.addSelectables(CssSelector.parse('[sameSelectorAsInput]'), [{
                            name: 'SameSelectorAsInput',
@@ -89,8 +81,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: false,
                            selector: '[sameSelectorAsInput]',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
   matcher.addSelectables(CssSelector.parse('comp'), [{
                            name: 'Comp',
@@ -101,8 +91,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            isStructural: false,
                            selector: 'comp',
                            animationTriggerNames: null,
-                           ngContentSelectors: null,
-                           preserveWhitespaces: false,
                          }]);
 
   const simpleDirectives = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -118,8 +106,6 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                              isStructural: true,
                              selector: `[${dir}]`,
                              animationTriggerNames: null,
-                             ngContentSelectors: null,
-                             preserveWhitespaces: false,
                            }]);
   }
 
@@ -169,8 +155,6 @@ describe('t2 binding', () => {
                              isStructural: false,
                              selector: 'text[dir]',
                              animationTriggerNames: null,
-                             ngContentSelectors: null,
-                             preserveWhitespaces: false,
                            }]);
     const binder = new R3TargetBinder(matcher);
     const res = binder.bind({template: template.nodes});
