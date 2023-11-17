@@ -175,7 +175,9 @@ function buildIfThenElseBlock(
 
   const updatedTmpl = tmplStart + ifThenElseBlock + tmplEnd;
 
-  const pre = originals.start.length - startBlock.length;
+  // We ignore the contents of the element on if then else.
+  // If there's anything there, we need to account for the length in the offset.
+  const pre = originals.start.length + originals.childLength - startBlock.length;
   const post = originals.end.length - postBlock.length;
 
   return {tmpl: updatedTmpl, offsets: {pre, post}};

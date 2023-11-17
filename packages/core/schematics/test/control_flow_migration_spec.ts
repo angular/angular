@@ -828,6 +828,59 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate a complex if then else case on ng-containers', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container>`,
+        `  <ng-container`,
+        `    *ngIf="loading; then loadingTmpl; else showTmpl"`,
+        `  >`,
+        `  </ng-container>`,
+        `<ng-template #showTmpl>`,
+        `  <ng-container`,
+        `    *ngIf="selected; else emptyTmpl"`,
+        `  >`,
+        `    <div></div>`,
+        `  </ng-container>`,
+        `</ng-template>`,
+        `<ng-template #emptyTmpl>`,
+        `  Empty`,
+        `</ng-template>`,
+        `</ng-container>`,
+        `<ng-template #loadingTmpl>`,
+        `  <p>Loading</p>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<ng-container>`,
+        `  @if (loading) {`,
+        `    <p>Loading</p>`,
+        `  } @else {`,
+        `    @if (selected) {`,
+        `      <div></div>`,
+        `    } @else {`,
+        `      Empty`,
+        `    }`,
+        `  }`,
+        `</ng-container>`,
+      ].join('\n'));
+    });
+
     it('should migrate but not remove ng-templates when referenced elsewhere', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
