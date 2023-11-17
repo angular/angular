@@ -170,6 +170,7 @@ TestClass.ngTypeCtor({value: 'test'});
                     classPropertyName: 'baz',
                     bindingPropertyName: 'baz',
                     required: false,
+                    isSignal: false,
                     transform: {
                       type: new Reference(ts.factory.createUnionTypeNode([
                         ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
