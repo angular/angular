@@ -357,7 +357,7 @@ describe('control flow migration', () => {
         `  } @else {`,
         `    <p>Stuff</p>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n'));
     });
 
@@ -392,7 +392,7 @@ describe('control flow migration', () => {
         `  } @else {`,
         `    <p>Stuff</p>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n'));
     });
 
@@ -582,7 +582,7 @@ describe('control flow migration', () => {
         `  } @else {`,
         `    <ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n'));
     });
 
@@ -616,7 +616,7 @@ describe('control flow migration', () => {
         `  } @else {`,
         `    <ng-container i18n="@@somethingElse"><p>other</p></ng-container>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n'));
     });
 
@@ -876,7 +876,7 @@ describe('control flow migration', () => {
         `      Empty`,
         `    }`,
         `  }`,
-        `</ng-container>`,
+        `</ng-container>\n`,
       ].join('\n'));
     });
 
@@ -3081,7 +3081,7 @@ describe('control flow migration', () => {
         `      height="2rem"`,
         `      width="6rem" />`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n');
 
       expect(content).toBe(result);
@@ -3122,7 +3122,7 @@ describe('control flow migration', () => {
         `      <div class="test"></div>`,
         `    }`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3165,7 +3165,7 @@ describe('control flow migration', () => {
         `      }`,
         `    </ng-container>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3208,7 +3208,7 @@ describe('control flow migration', () => {
         `  } @else {`,
         `    <p>No Permissions</p>`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3228,8 +3228,10 @@ describe('control flow migration', () => {
       `);
 
       writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
         `<div>`,
         `@if (stuff) {`,
+        `<h2>Title</h2>`,
         `<p>Stuff</p>`,
         `} @else if (things) {`,
         `<p>Things</p>`,
@@ -3243,8 +3245,12 @@ describe('control flow migration', () => {
       const actual = tree.readContent('/comp.html');
 
       const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
         `<div>`,
         `  @if (stuff) {`,
+        `    <h2>Title</h2>`,
         `    <p>Stuff</p>`,
         `  } @else if (things) {`,
         `    <p>Things</p>`,
@@ -3270,6 +3276,7 @@ describe('control flow migration', () => {
       `);
 
       writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
         `<div>`,
         `@if (stuff) {`,
         `<img src="path.png" alt="stuff" />`,
@@ -3277,13 +3284,16 @@ describe('control flow migration', () => {
         `<img src="path.png"`,
         `alt="stuff" />`,
         `}`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n'));
 
       await runMigration();
       const actual = tree.readContent('/comp.html');
 
       const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
         `<div>`,
         `  @if (stuff) {`,
         `    <img src="path.png" alt="stuff" />`,
@@ -3291,7 +3301,7 @@ describe('control flow migration', () => {
         `    <img src="path.png"`,
         `      alt="stuff" />`,
         `  }`,
-        `</div>`,
+        `</div>\n`,
       ].join('\n');
 
       expect(actual).toBe(expected);
@@ -3353,6 +3363,68 @@ describe('control flow migration', () => {
         `@Component({`,
         `  imports: [],`,
         `  template: \`<div>@if (toggle) {<span>shrug</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not remove common module imports post migration if other items used', async () => {
+      writeFile('/comp.ts', [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [NgIf, DatePipe],`,
+        `  template: \`<div><span *ngIf="toggle">{{ d | date }}</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [DatePipe],`,
+        `  template: \`<div>@if (toggle) {<span>{{ d | date }}</span>}</div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not duplicate comments post migration if other items used', async () => {
+      writeFile('/comp.ts', [
+        `// comment here`,
+        `import {NgIf, CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [NgIf, DatePipe],`,
+        `  template: \`<div><span *ngIf="toggle">{{ d | date }}</span></div>\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `// comment here`,
+        `import { CommonModule } from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [DatePipe],`,
+        `  template: \`<div>@if (toggle) {<span>{{ d | date }}</span>}</div>\``,
         `})`,
         `class Comp {`,
         `  toggle = false;`,
@@ -3438,7 +3510,7 @@ describe('control flow migration', () => {
       const actual = tree.readContent('/comp.ts');
       const expected = [
         `import {Component} from '@angular/core';`,
-        `import { CommonModule } from '@angular/common';\n`,
+        `import {CommonModule} from '@angular/common';\n`,
         `@Component({`,
         `  imports: [CommonModule],`,
         `  template: \`<div>@if (toggle) {<span>{{ shrug | lowercase }}</span>}</div>\``,

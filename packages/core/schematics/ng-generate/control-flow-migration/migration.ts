@@ -29,7 +29,9 @@ export function migrateTemplate(
     const switchResult = migrateSwitch(forResult.migrated);
     const caseResult = migrateCase(switchResult.migrated);
     migrated = processNgTemplates(caseResult.migrated);
-    if (format) {
+    const changed =
+        ifResult.changed || forResult.changed || switchResult.changed || caseResult.changed;
+    if (format && changed) {
       migrated = formatTemplate(migrated);
     }
     file.removeCommonModule = canRemoveCommonModule(template);
