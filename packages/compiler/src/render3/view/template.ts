@@ -940,11 +940,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private prepareEmbeddedTemplateFn(
       children: t.Node[], contextNameSuffix: string, variables: t.Variable[] = [],
-      i18n?: i18n.I18nMeta, variableAliases?: Record<string, string>) {
+      i18nMeta?: i18n.I18nMeta, variableAliases?: Record<string, string>) {
     const index = this.allocateDataSlot();
 
-    if (this.i18n && i18n) {
-      this.i18n.appendTemplate(i18n, index);
+    if (this.i18n && i18nMeta) {
+      if (i18nMeta instanceof i18n.BlockPlaceholder) {
+        this.i18n.appendBlock(i18nMeta, index);
+      } else {
+        this.i18n.appendTemplate(i18nMeta, index);
+      }
     }
 
     const contextName = `${this.contextName}${contextNameSuffix}_${index}`;
@@ -963,7 +967,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = visitor.buildTemplateFunction(
           children, variables, this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
-          i18n, variableAliases);
+          i18nMeta, variableAliases);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(name));
       if (visitor._ngContentReservedSlots.length) {
         this._ngContentReservedSlots.push(...visitor._ngContentReservedSlots);
@@ -1184,7 +1188,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note: the template needs to be created *before* we process the expression,
       // otherwise pipes injecting some symbols won't work (see #52102).
       const templateIndex = this.createEmbeddedTemplateFn(
-          tagName, children, '_Conditional', sourceSpan, variables, attrsExprs);
+          tagName, children, '_Conditional', sourceSpan, variables, attrsExprs, undefined,
+          branch.i18n);
       const processedExpression =
           expression === null ? null : expression.visit(this._valueConverter);
       return {index: templateIndex, expression: processedExpression, alias: expressionAlias};
@@ -1248,7 +1253,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // callback in order to generate the correct expressions when pipes or pure functions are used.
     const caseData = block.cases.map(currentCase => {
       const index = this.createEmbeddedTemplateFn(
-          null, currentCase.children, '_Case', currentCase.sourceSpan);
+          null, currentCase.children, '_Case', currentCase.sourceSpan, undefined, undefined,
+          undefined, currentCase.i18n);
       const expression = currentCase.expression === null ?
           null :
           currentCase.expression.visit(this._valueConverter);
@@ -1308,18 +1314,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       throw new Error('Could not resolve `defer` block metadata. Block may need to be analyzed.');
     }
 
-    const primaryTemplateIndex =
-        this.createEmbeddedTemplateFn(null, deferred.children, '_Defer', deferred.sourceSpan);
-    const loadingIndex = loading ?
-        this.createEmbeddedTemplateFn(null, loading.children, '_DeferLoading', loading.sourceSpan) :
-        null;
+    const primaryTemplateIndex = this.createEmbeddedTemplateFn(
+        null, deferred.children, '_Defer', deferred.sourceSpan, undefined, undefined, undefined,
+        deferred.i18n);
+    const loadingIndex = loading ? this.createEmbeddedTemplateFn(
+                                       null, loading.children, '_DeferLoading', loading.sourceSpan,
+                                       undefined, undefined, undefined, loading.i18n) :
+                                   null;
     const loadingConsts = loading ?
         trimTrailingNulls([o.literal(loading.minimumTime), o.literal(loading.afterTime)]) :
         null;
 
     const placeholderIndex = placeholder ?
         this.createEmbeddedTemplateFn(
-            null, placeholder.children, '_DeferPlaceholder', placeholder.sourceSpan) :
+            null, placeholder.children, '_DeferPlaceholder', placeholder.sourceSpan, undefined,
+            undefined, undefined, placeholder.i18n) :
         null;
     const placeholderConsts = placeholder && placeholder.minimumTime !== null ?
         // TODO(crisbeto): potentially pass the time directly instead of storing it in the `consts`
@@ -1327,9 +1336,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         o.literalArr([o.literal(placeholder.minimumTime)]) :
         null;
 
-    const errorIndex = error ?
-        this.createEmbeddedTemplateFn(null, error.children, '_DeferError', error.sourceSpan) :
-        null;
+    const errorIndex = error ? this.createEmbeddedTemplateFn(
+                                   null, error.children, '_DeferError', error.sourceSpan, undefined,
+                                   undefined, undefined, error.i18n) :
+                               null;
 
     // Note: we generate this last so the index matches the instruction order.
     const deferredIndex = this.allocateDataSlot();
@@ -1537,7 +1547,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const {tagName, attrsExprs} = this.inferProjectionDataFromInsertionPoint(block);
     const primaryData = this.prepareEmbeddedTemplateFn(
         block.children, '_For',
-        [block.item, block.contextVariables.$index, block.contextVariables.$count], undefined, {
+        [block.item, block.contextVariables.$index, block.contextVariables.$count], block.i18n, {
           // We need to provide level-specific versions of `$index` and `$count`, because
           // they're used when deriving the remaining variables (`$odd`, `$even` etc.) while at the
           // same time being available implicitly. Without these aliases, we wouldn't be able to
@@ -1552,7 +1562,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     let emptyData: TemplateData|null = null;
 
     if (block.empty !== null) {
-      emptyData = this.prepareEmbeddedTemplateFn(block.empty.children, '_ForEmpty');
+      emptyData = this.prepareEmbeddedTemplateFn(
+          block.empty.children, '_ForEmpty', undefined, block.empty.i18n);
       // Allocate an extra slot for the empty block tracking.
       this.allocateBindingSlots(null);
     }
