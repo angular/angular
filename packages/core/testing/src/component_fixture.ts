@@ -12,7 +12,6 @@ import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 
-
 /**
  * Fixture for debugging and testing a component.
  *
@@ -49,11 +48,14 @@ export class ComponentFixture<T> {
   private _isStable = true;
   private subscriptions = new Subscription();
 
+  private _resolve: ((result: boolean) => void)|null = null;
+  private _promise: Promise<boolean>|null = null;
+
   /** @nodoc */
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
       private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean,
-      private isStableObservable: Observable<boolean>|null) {
+      private isStableObservable: Observable<boolean>, private useLegacyStableIndicator: boolean) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -62,11 +64,40 @@ export class ComponentFixture<T> {
     this.componentRef = componentRef;
     this.ngZone = ngZone;
 
-    this.subscriptions.add(this.isStableObservable?.subscribe(v => {
-      this._isStable = v;
-    }));
+    if (!useLegacyStableIndicator) {
+      this.subscriptions.add(this.isStableObservable.subscribe(v => {
+        this._isStable = v;
+      }));
+    }
 
     if (ngZone) {
+      if (useLegacyStableIndicator) {
+        this.subscriptions.add(ngZone.onUnstable.subscribe({
+          next: () => {
+            this._isStable = false;
+          }
+        }));
+        this.subscriptions.add(ngZone.onStable.subscribe({
+          next: () => {
+            this._isStable = true;
+            // Check whether there is a pending whenStable() completer to resolve.
+            if (this._promise !== null) {
+              // If so check whether there are no pending macrotasks before resolving.
+              // Do this check in the next tick so that ngZone gets a chance to update the state of
+              // pending macrotasks.
+              queueMicrotask(() => {
+                if (!ngZone.hasPendingMacrotasks) {
+                  if (this._promise !== null) {
+                    this._resolve!(true);
+                    this._resolve = null;
+                    this._promise = null;
+                  }
+                }
+              });
+            }
+          }
+        }));
+      }
       // Create subscriptions outside the NgZone so that the callbacks run oustide
       // of NgZone.
       ngZone.runOutsideAngular(() => {
@@ -141,6 +172,9 @@ export class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
+    if (this.useLegacyStableIndicator) {
+      return this._isStable && !this.ngZone?.hasPendingMacrotasks;
+    }
     return this._isStable;
   }
 
@@ -151,9 +185,19 @@ export class ComponentFixture<T> {
    * asynchronous change detection.
    */
   whenStable(): Promise<any> {
-    if (!this.isStableObservable || this.isStable()) {
+    if (this.isStable()) {
       return Promise.resolve(false);
+    } else if (this.useLegacyStableIndicator) {
+      if (this._promise !== null) {
+        return this._promise;
+      } else {
+        this._promise = new Promise(res => {
+          this._resolve = res;
+        });
+        return this._promise;
+      }
     }
+
     return this.isStableObservable.pipe(first(stable => stable))
         .toPromise()
         .then(() => Promise.resolve(true));

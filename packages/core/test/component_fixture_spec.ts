@@ -11,6 +11,8 @@ import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAs
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {UseLegacyFixtureStable} from '../testing/src/test_bed_common';
+
 @Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
 @Injectable()
 class SimpleComp {
@@ -123,6 +125,21 @@ describe('ComponentFixture', () => {
       ]
     });
   }));
+
+  it('should auto detect changes if autoDetectChanges is called (legacy)', () => {
+    TestBed.configureTestingModule(
+        {providers: [{provide: UseLegacyFixtureStable, useValue: true}]});
+    const componentFixture = TestBed.createComponent(AutoDetectComp);
+    expect(componentFixture.ngZone).not.toBeNull();
+    componentFixture.autoDetectChanges();
+    expect(componentFixture.nativeElement).toHaveText('1');
+
+    const element = componentFixture.debugElement.children[0];
+    dispatchEvent(element.nativeElement, 'click');
+
+    expect(componentFixture.isStable()).toBe(true);
+    expect(componentFixture.nativeElement).toHaveText('11');
+  });
 
   it('should auto detect changes if autoDetectChanges is called', async () => {
     const componentFixture = TestBed.createComponent(AutoDetectComp);

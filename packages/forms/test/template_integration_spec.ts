@@ -14,6 +14,8 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs';
 
+import {UseLegacyFixtureStable} from '../../core/testing/src/test_bed_common';
+
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
 describe('template-driven forms integration tests', () => {
@@ -266,6 +268,43 @@ describe('template-driven forms integration tests', () => {
            ]);
          });
        }));
+
+    it('should set status classes involving nested FormGroups (legacy stable)', () => {
+      TestBed.configureTestingModule(
+          {providers: [{provide: UseLegacyFixtureStable, useValue: true}]});
+      const fixture = initTest(NgModelNestedForm);
+      fixture.componentInstance.first = '';
+      fixture.componentInstance.other = '';
+      fixture.detectChanges();
+
+      const form = fixture.debugElement.query(By.css('form')).nativeElement;
+      const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
+      const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+
+        expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        dispatchEvent(formEl, 'submit');
+        fixture.detectChanges();
+
+        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+        expect(sortedClassList(form)).toEqual([
+          'ng-pristine', 'ng-submitted', 'ng-untouched', 'ng-valid'
+        ]);
+        expect(sortedClassList(input)).not.toContain('ng-submitted');
+
+        dispatchEvent(formEl, 'reset');
+        fixture.detectChanges();
+
+        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+        expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+        expect(sortedClassList(input)).not.toContain('ng-submitted');
+      });
+    });
 
     it('should set status classes involving nested FormGroups', async () => {
       const fixture = initTest(NgModelNestedForm);

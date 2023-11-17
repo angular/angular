@@ -17,6 +17,7 @@ import { InjectionToken } from '@angular/core';
 import { InjectOptions } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { NgZone } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Pipe } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { ProviderToken } from '@angular/core';
@@ -33,7 +34,7 @@ export function async(fn: Function): (done: any) => any;
 
 // @public
 export class ComponentFixture<T> {
-    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, effectRunner: ɵFlushableEffectRunner | null, _autoDetect: boolean);
+    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, effectRunner: ɵFlushableEffectRunner | null, _autoDetect: boolean, isStableObservable: Observable<boolean>, useLegacyStableIndicator: boolean);
     autoDetectChanges(autoDetect?: boolean): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;

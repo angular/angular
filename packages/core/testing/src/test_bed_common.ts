@@ -34,6 +34,31 @@ export class TestComponentRenderer {
 export const ComponentFixtureAutoDetect = new InjectionToken<boolean>('ComponentFixtureAutoDetect');
 
 /**
+ * Providing this option will opt-in to legacy stableness behavior for `ComponentFixture`.
+ *
+ * While almost the same as ApplicationRef.isStable, this option is slightly different in
+ * subtle ways. Primarily, it will synchronously update the `isStable` value even before the
+ * `whenStable` Promise resolves. In addition, it sometimes ignores additional microtasks that
+ * should prevent stableness until they are resolved.
+ *
+ * @usageNotes
+ *
+ * Enable this option on a per-test basis by providing the token in `configureTestingModule`:
+ *
+ * ```
+ *  TestBed.configureTestingModule(
+ *        {providers: [{provide: UseLegacyFixtureStable, useValue: true}]});
+ * ```
+ *
+ * @publicApi
+ *
+ * @deprecated - Will be removed in v18. Use this option to opt-out of the correct fixture
+ *     stableness behavior while fixing tests that might have broken when fixture stableness was
+ *     updated to match the behavior of ApplicationRef.
+ */
+export const UseLegacyFixtureStable = new InjectionToken<boolean>('UseLegacyFixtureStable');
+
+/**
  * @publicApi
  */
 export const ComponentFixtureNoNgZone = new InjectionToken<boolean>('ComponentFixtureNoNgZone');
