@@ -29,11 +29,12 @@ const cases = [
  * Replaces structural directive ngSwitch instances with new switch.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateCase(template: string): {migrated: string, errors: MigrateError[]} {
+export function migrateCase(template: string):
+    {migrated: string, errors: MigrateError[], changed: boolean} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed === null) {
-    return {migrated: template, errors};
+    return {migrated: template, errors, changed: false};
   }
 
   let result = template;
@@ -73,7 +74,9 @@ export function migrateCase(template: string): {migrated: string, errors: Migrat
     nestLevel = el.nestCount;
   }
 
-  return {migrated: result, errors};
+  const changed = visitor.elements.length > 0;
+
+  return {migrated: result, errors, changed};
 }
 
 function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number): Result {
