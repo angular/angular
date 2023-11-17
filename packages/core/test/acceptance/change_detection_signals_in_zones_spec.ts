@@ -793,7 +793,9 @@ describe('OnPush components with signals', () => {
 
     @Component({
       selector: 'on-push-parent',
-      template: `<signal-component></signal-component>{{incrementChecks()}}`,
+      template: `
+      <signal-component></signal-component>
+      {{incrementChecks()}}`,
       changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: true,
       imports: [SignalComponent],
@@ -825,6 +827,18 @@ describe('OnPush components with signals', () => {
       fixture.componentInstance.signalChild.cdr.detach();
       fixture.detectChanges();
       expect(trim(fixture.nativeElement.textContent)).toEqual('initial');
+    });
+
+    it('refreshes when reattached if already dirty', () => {
+      const fixture = TestBed.createComponent(OnPushParent);
+      fixture.detectChanges();
+      fixture.componentInstance.signalChild.value.set('new');
+      fixture.componentInstance.signalChild.cdr.detach();
+      fixture.detectChanges();
+      expect(trim(fixture.nativeElement.textContent)).toEqual('initial');
+      fixture.componentInstance.signalChild.cdr.reattach();
+      fixture.detectChanges();
+      expect(trim(fixture.nativeElement.textContent)).toEqual('new');
     });
 
     // Note: Design decision for signals because that's how the hooks work today

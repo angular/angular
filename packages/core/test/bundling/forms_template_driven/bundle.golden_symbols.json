@@ -1524,6 +1524,9 @@
     "name": "requiredValidator"
   },
   {
+    "name": "requiresRefreshOrTraversal"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {

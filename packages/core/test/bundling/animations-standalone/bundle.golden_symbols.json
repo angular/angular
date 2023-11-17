@@ -1329,6 +1329,9 @@
     "name": "replacePostStylesAsPre"
   },
   {
+    "name": "requiresRefreshOrTraversal"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {

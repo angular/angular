@@ -1221,6 +1221,9 @@
     "name": "renderView"
   },
   {
+    "name": "requiresRefreshOrTraversal"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {
