@@ -12,19 +12,9 @@ import {ElementCollector, ElementToMigrate, MigrateError, Result} from './types'
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
 export const ngswitch = '[ngSwitch]';
-export const boundcase = '[ngSwitchCase]';
-export const switchcase = '*ngSwitchCase';
-export const nakedcase = 'ngSwitchCase';
-export const switchdefault = '*ngSwitchDefault';
-export const nakeddefault = 'ngSwitchDefault';
 
 const switches = [
   ngswitch,
-  boundcase,
-  switchcase,
-  nakedcase,
-  switchdefault,
-  nakeddefault,
 ];
 
 /**
@@ -61,19 +51,6 @@ export function migrateSwitch(template: string): {migrated: string, errors: Migr
       } catch (error: unknown) {
         errors.push({type: ngswitch, error});
       }
-    } else if (
-        el.attr.name === switchcase || el.attr.name === nakedcase || el.attr.name === boundcase) {
-      try {
-        migrateResult = migrateNgSwitchCase(el, result, offset);
-      } catch (error: unknown) {
-        errors.push({type: ngswitch, error});
-      }
-    } else if (el.attr.name === switchdefault || el.attr.name === nakeddefault) {
-      try {
-        migrateResult = migrateNgSwitchDefault(el, result, offset);
-      } catch (error: unknown) {
-        errors.push({type: ngswitch, error});
-      }
     }
 
     result = migrateResult.tmpl;
@@ -97,51 +74,6 @@ function migrateNgSwitch(etm: ElementToMigrate, tmpl: string, offset: number): R
 
   const switchBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + switchBlock + tmpl.slice(etm.end(offset));
-
-  // this should be the difference between the starting element up to the start of the closing
-  // element and the mainblock sans }
-  const pre = originals.start.length - startBlock.length;
-  const post = originals.end.length - endBlock.length;
-
-  return {tmpl: updatedTmpl, offsets: {pre, post}};
-}
-
-function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number): Result {
-  // includes the mandatory semicolon before as
-  const lbString = etm.hasLineBreaks ? '\n' : '';
-  const leadingSpace = etm.hasLineBreaks ? '' : ' ';
-  const condition = etm.attr.value;
-
-  const originals = getOriginals(etm, tmpl, offset);
-
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
-  const endBlock = `${end}${lbString}${leadingSpace}}`;
-
-  const defaultBlock = startBlock + middle + endBlock;
-  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
-
-  // this should be the difference between the starting element up to the start of the closing
-  // element and the mainblock sans }
-  const pre = originals.start.length - startBlock.length;
-  const post = originals.end.length - endBlock.length;
-
-  return {tmpl: updatedTmpl, offsets: {pre, post}};
-}
-
-function migrateNgSwitchDefault(etm: ElementToMigrate, tmpl: string, offset: number): Result {
-  // includes the mandatory semicolon before as
-  const lbString = etm.hasLineBreaks ? '\n' : '';
-  const leadingSpace = etm.hasLineBreaks ? '' : ' ';
-
-  const originals = getOriginals(etm, tmpl, offset);
-
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${leadingSpace}@default {${leadingSpace}${lbString}${start}`;
-  const endBlock = `${end}${lbString}${leadingSpace}}`;
-
-  const defaultBlock = startBlock + middle + endBlock;
-  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
 
   // this should be the difference between the starting element up to the start of the closing
   // element and the mainblock sans }
