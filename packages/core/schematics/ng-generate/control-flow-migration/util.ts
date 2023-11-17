@@ -336,10 +336,12 @@ export function removeImports(
  * retrieves the original block of text in the template for length comparison during migration
  * processing
  */
-export function getOriginals(
-    etm: ElementToMigrate, tmpl: string, offset: number): {start: string, end: string} {
+export function getOriginals(etm: ElementToMigrate, tmpl: string, offset: number):
+    {start: string, end: string, childLength: number} {
   // original opening block
   if (etm.el.children.length > 0) {
+    const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
+    const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const start = tmpl.slice(
         etm.el.sourceSpan.start.offset - offset,
         etm.el.children[0].sourceSpan.start.offset - offset);
@@ -347,13 +349,14 @@ export function getOriginals(
     const end = tmpl.slice(
         etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset,
         etm.el.sourceSpan.end.offset - offset);
-    return {start, end};
+    const childLength = childEnd - childStart;
+    return {start, end, childLength};
   }
   // self closing or no children
   const start =
       tmpl.slice(etm.el.sourceSpan.start.offset - offset, etm.el.sourceSpan.end.offset - offset);
   // original closing block
-  return {start, end: ''};
+  return {start, end: '', childLength: 0};
 }
 
 function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): boolean {
