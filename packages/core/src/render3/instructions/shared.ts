@@ -94,7 +94,8 @@ export function createLView<T>(
     hydrationInfo: DehydratedView|null): LView<T> {
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
-  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
+  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass |
+      LViewFlags.Dirty;
   if (embeddedViewInjector !== null ||
       (parentLView && (parentLView[FLAGS] & LViewFlags.HasEmbeddedViewInjector))) {
     lView[FLAGS] |= LViewFlags.HasEmbeddedViewInjector;
