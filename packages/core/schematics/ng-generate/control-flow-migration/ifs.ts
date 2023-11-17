@@ -25,11 +25,12 @@ const ifs = [
  * Replaces structural directive ngif instances with new if.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateIf(template: string): {migrated: string, errors: MigrateError[]} {
+export function migrateIf(template: string):
+    {migrated: string, errors: MigrateError[], changed: boolean} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed === null) {
-    return {migrated: template, errors};
+    return {migrated: template, errors, changed: false};
   }
 
   let result = template;
@@ -61,7 +62,9 @@ export function migrateIf(template: string): {migrated: string, errors: MigrateE
     nestLevel = el.nestCount;
   }
 
-  return {migrated: result, errors};
+  const changed = visitor.elements.length > 0;
+
+  return {migrated: result, errors, changed};
 }
 
 function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Result {
