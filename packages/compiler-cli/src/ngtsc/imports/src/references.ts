@@ -9,6 +9,7 @@
 import {Expression} from '@angular/compiler';
 import ts from 'typescript';
 
+import {AmbientImport} from '../../reflection';
 import {identifierOfNode} from '../../util/src/typescript';
 
 export interface OwningModule {
@@ -54,8 +55,16 @@ export class Reference<T extends ts.Node = ts.Node> {
 
   private _alias: Expression|null = null;
 
-  constructor(readonly node: T, bestGuessOwningModule: OwningModule|null = null) {
-    this.bestGuessOwningModule = bestGuessOwningModule;
+  readonly isAmbient: boolean;
+
+  constructor(readonly node: T, bestGuessOwningModule: OwningModule|AmbientImport|null = null) {
+    if (bestGuessOwningModule === AmbientImport) {
+      this.isAmbient = true;
+      this.bestGuessOwningModule = null;
+    } else {
+      this.isAmbient = false;
+      this.bestGuessOwningModule = bestGuessOwningModule as OwningModule | null;
+    }
 
     const id = identifierOfNode(node);
     if (id !== null) {
@@ -160,14 +169,16 @@ export class Reference<T extends ts.Node = ts.Node> {
   }
 
   cloneWithAlias(alias: Expression): Reference<T> {
-    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    const ref =
+        new Reference(this.node, this.isAmbient ? AmbientImport : this.bestGuessOwningModule);
     ref.identifiers = [...this.identifiers];
     ref._alias = alias;
     return ref;
   }
 
   cloneWithNoIdentifiers(): Reference<T> {
-    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    const ref =
+        new Reference(this.node, this.isAmbient ? AmbientImport : this.bestGuessOwningModule);
     ref._alias = this._alias;
     ref.identifiers = [];
     return ref;

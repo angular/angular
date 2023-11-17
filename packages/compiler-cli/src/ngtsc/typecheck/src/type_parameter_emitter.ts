@@ -8,7 +8,7 @@
 import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {AmbientImport, DeclarationNode, ReflectionHost} from '../../reflection';
 import {canEmitType, TypeEmitter} from '../../translator';
 
 /**
@@ -93,14 +93,15 @@ export class TypeParameterEmitter {
     }
 
     let owningModule: OwningModule|null = null;
-    if (declaration.viaModule !== null) {
+    if (typeof declaration.viaModule === 'string') {
       owningModule = {
         specifier: declaration.viaModule,
         resolutionContext: type.getSourceFile().fileName,
       };
     }
 
-    return new Reference(declaration.node, owningModule);
+    return new Reference(
+        declaration.node, declaration.viaModule === AmbientImport ? AmbientImport : owningModule);
   }
 
   private translateTypeReference(
