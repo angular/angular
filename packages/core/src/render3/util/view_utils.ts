@@ -13,7 +13,7 @@ import {LContainer, LContainerFlags, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
 
 
 
@@ -195,21 +195,22 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
   return currentView;
 }
 
+export function requiresRefreshOrTraversal(lView: LView) {
+  return lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty;
+}
+
 
 /**
- * Updates the `DESCENDANT_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the
- * parents above that whose
- *  1. counter goes from 0 to 1, indicating that there is a new child that has a view to refresh
- *  or
- *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
- * When attaching/re-attaching an `LView` to the change detection tree, we need to ensure that the
- * views above it are traversed during change detection if this one is marked for refresh or has
- * some child or descendant that needs to be refreshed.
+ * Updates the `HasChildViewsToRefresh` flag on the parents of the `LView` as well as the
+ * parents above.
  */
 export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
-  if (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh)) {
-    markAncestorsForTraversal(lView);
+  if (!requiresRefreshOrTraversal(lView)) {
+    return;
   }
+
+  markAncestorsForTraversal(lView);
 }
 
 /**
