@@ -101,7 +101,7 @@ function setup(
       hostDirectivesResolver,
       true,
       compilationMode,
-      new DeferredSymbolTracker(checker),
+      new DeferredSymbolTracker(checker, /* onlyExplicitDeferDependencyImports */ false),
       /* forbidOrphanRenderering */ false,
       /* enableBlockSyntax */ true,
   );

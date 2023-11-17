@@ -38,6 +38,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
       // A standalone component always has itself in scope, so add `clazzMeta` during
       // initialization.
       const dependencies = new Set<DirectiveMeta|PipeMeta|NgModuleMeta>([clazzMeta]);
+      const deferredDependencies = new Set<DirectiveMeta|PipeMeta>();
       const seen = new Set<ClassDeclaration>([clazz]);
       let isPoisoned = clazzMeta.isPoisoned;
 
@@ -95,10 +96,29 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
         }
       }
 
+      if (clazzMeta.deferredImports !== null) {
+        for (const ref of clazzMeta.deferredImports) {
+          const dirMeta = this.metaReader.getDirectiveMetadata(ref);
+          if (dirMeta !== null) {
+            deferredDependencies.add({...dirMeta, ref, isExplicitlyDeferred: true});
+            isPoisoned = isPoisoned || dirMeta.isPoisoned || !dirMeta.isStandalone;
+            continue;
+          }
+
+          const pipeMeta = this.metaReader.getPipeMetadata(ref);
+          if (pipeMeta !== null) {
+            deferredDependencies.add({...pipeMeta, ref, isExplicitlyDeferred: true});
+            isPoisoned = isPoisoned || !pipeMeta.isStandalone;
+            continue;
+          }
+        }
+      }
+
       this.cache.set(clazz, {
         kind: ComponentScopeKind.Standalone,
         component: clazz,
         dependencies: Array.from(dependencies),
+        deferredDependencies: Array.from(deferredDependencies),
         isPoisoned,
         schemas: clazzMeta.schemas ?? [],
       });

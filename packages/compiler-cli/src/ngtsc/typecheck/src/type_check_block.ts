@@ -10,7 +10,7 @@ import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromN
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {BindingPropertyName, ClassPropertyName} from '../../metadata';
+import {BindingPropertyName, ClassPropertyName, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
@@ -1620,9 +1620,8 @@ export class Context {
       readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker,
       readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean,
-      readonly hostPreserveWhitespaces: boolean) {}
+      private pipes: Map<string, PipeMeta>, readonly schemas: SchemaMetadata[],
+      readonly hostIsStandalone: boolean, readonly hostPreserveWhitespaces: boolean) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -1634,7 +1633,7 @@ export class Context {
     return ts.factory.createIdentifier(`_t${this.nextId++}`);
   }
 
-  getPipeByName(name: string): Reference<ClassDeclaration<ts.ClassDeclaration>>|null {
+  getPipeByName(name: string): PipeMeta|null {
     if (!this.pipes.has(name)) {
       return null;
     }
@@ -2051,6 +2050,16 @@ class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs));
       }
       return;
+    } else {
+      if (node instanceof TmplAstElement) {
+        const isDeferred = this.tcb.boundTarget.isDeferred(node);
+        if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
+          // This node has directives/components that were defer-loaded (included into
+          // `@Component.deferredImports`), but the node itself was used outside of a
+          // `@defer` block, which is the error.
+          this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+        }
+      }
     }
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
@@ -2320,17 +2329,27 @@ class TcbExpressionTranslator {
       return ts.factory.createThis();
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
-      const pipeRef = this.tcb.getPipeByName(ast.name);
+      const pipeMeta = this.tcb.getPipeByName(ast.name);
       let pipe: ts.Expression|null;
-      if (pipeRef === null) {
+      if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = NULL_AS_ANY;
+      } else if (
+          pipeMeta.isExplicitlyDeferred &&
+          this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)) {
+        // This pipe was defer-loaded (included into `@Component.deferredImports`),
+        // but was used outside of a `@defer` block, which is the error.
+        this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
+
+        // Use an 'any' value to at least allow the rest of the expression to be checked.
+        pipe = NULL_AS_ANY;
       } else {
         // Use a variable declared as the pipe's type.
-        pipe = this.tcb.env.pipeInst(pipeRef);
+        pipe =
+            this.tcb.env.pipeInst(pipeMeta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
       const args = ast.args.map(arg => this.translate(arg));
       let methodAccess: ts.Expression =

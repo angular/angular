@@ -161,6 +161,7 @@ export class PipeDecoratorHandler implements
       nameExpr: analysis.pipeNameExpr,
       isStandalone: analysis.meta.isStandalone,
       decorator: analysis.decorator,
+      isExplicitlyDeferred: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {
