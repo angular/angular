@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../definition';
-import {DirectiveDef, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
+import {DirectiveDef, DirectiveDefFeature, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
 type HostDirectiveConfig = Type<unknown>|{
@@ -42,9 +42,8 @@ type HostDirectiveConfig = Type<unknown>|{
  */
 export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig[]|
                                         (() => HostDirectiveConfig[])) {
-  return (definition: DirectiveDef<unknown>) => {
-    definition.findHostDirectiveDefs = findHostDirectiveDefs;
-    definition.hostDirectives =
+  const feature: DirectiveDefFeature = (definition: DirectiveDef<unknown>) => {
+    const resolved =
         (Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()).map(dir => {
           return typeof dir === 'function' ?
               {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} :
@@ -54,7 +53,15 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig
                 outputs: bindingArrayToMap(dir.outputs)
               };
         });
+    if (definition.hostDirectives === null) {
+      definition.findHostDirectiveDefs = findHostDirectiveDefs;
+      definition.hostDirectives = resolved;
+    } else {
+      definition.hostDirectives.unshift(...resolved);
+    }
   };
+  feature.ngInherit = true;
+  return feature;
 }
 
 function findHostDirectiveDefs(

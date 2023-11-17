@@ -118,6 +118,12 @@ function addFeatures(
       break;
     }
   }
+  // Note: host directives feature needs to be inserted before the
+  // inheritance feature to ensure the correct execution order.
+  if (meta.hostDirectives?.length) {
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
+        meta.hostDirectives)]));
+  }
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
@@ -130,10 +136,6 @@ function addFeatures(
   // TODO: better way of differentiating component vs directive metadata.
   if (meta.hasOwnProperty('template') && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
-  }
-  if (meta.hostDirectives?.length) {
-    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
-        meta.hostDirectives)]));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
