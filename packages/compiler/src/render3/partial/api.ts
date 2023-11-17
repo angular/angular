@@ -32,6 +32,11 @@ export interface R3PartialDeclaration {
   type: o.Expression;
 }
 
+// TODO(legacy-partial-output-inputs): Remove in v18.
+// https://github.com/angular/angular/blob/d4b423690210872b5c32a322a6090beda30b05a3/packages/core/src/compiler/compiler_facade_interface.ts#L197-L199
+export type LegacyInputPartialMapping = string|
+    [bindingPropertyName: string, classPropertyName: string, transformFunction?: o.Expression];
+
 /**
  * Describes the shape of the object that the `ɵɵngDeclareDirective()` function accepts.
  */
@@ -46,8 +51,13 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * binding property name and class property name if the names are different.
    */
   inputs?: {
-    [classPropertyName: string]: string|
-    [bindingPropertyName: string, classPropertyName: string, transformFunction?: o.Expression]
+    [fieldName: string]: {
+      classPropertyName: string,
+      publicName: string,
+      isSignal: boolean,
+      isRequired: boolean,
+      transformFunction: o.Expression|null,
+    }|LegacyInputPartialMapping;
   };
 
   /**
