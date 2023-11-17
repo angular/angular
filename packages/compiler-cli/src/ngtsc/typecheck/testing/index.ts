@@ -249,8 +249,6 @@ export interface TestDirective extends Partial<Pick<
   undeclaredInputFields?: string[];
   isGeneric?: boolean;
   code?: string;
-  ngContentSelectors?: string[]|null;
-  preserveWhitespaces?: boolean;
   hostDirectives?: {
     directive: TestDirective&{isStandalone: true},
     inputs?: string[],
@@ -304,8 +302,7 @@ export function tcb(
   const boundTarget = binder.bind({template: nodes});
 
   const id = 'tcb' as TemplateId;
-  const meta: TypeCheckBlockMetadata =
-      {id, boundTarget, pipes, schemas: [], isStandalone: false, preserveWhitespaces: false};
+  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: [], isStandalone: false};
 
   const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
@@ -509,7 +506,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         };
 
         ctx.addTemplate(
-            classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors, false, false);
+            classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors, false);
       }
     }
   });
@@ -680,8 +677,6 @@ function getDirectiveMetaFromDeclaration(
     baseClass: null,
     animationTriggerNames: null,
     decorator: null,
-    ngContentSelectors: decl.ngContentSelectors || null,
-    preserveWhitespaces: decl.preserveWhitespaces ?? false,
     hostDirectives: decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
       return {
         directive: new Reference(resolveDeclaration(hostDecl.directive)),
@@ -737,8 +732,6 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         schemas: null,
         decorator: null,
         assumedToExportProviders: false,
-        ngContentSelectors: decl.ngContentSelectors || null,
-        preserveWhitespaces: decl.preserveWhitespaces ?? false,
         hostDirectives:
             decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
               return {
