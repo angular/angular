@@ -39,9 +39,6 @@ const compilerCoreEnvironment: compiler.CoreEnvironment = null! as core.CoreEnvi
 const coreResourceLoader: core.ResourceLoader = null! as compiler.ResourceLoader;
 const compilerResourceLoader: compiler.ResourceLoader = null! as core.ResourceLoader;
 
-const coreInputMap: core.InputMap = null! as compiler.InputMap;
-const compilerInputMap: compiler.InputMap = null! as core.InputMap;
-
 const coreProvider: core.Provider = null! as compiler.Provider;
 const compilerProvider: compiler.Provider = null! as core.Provider;
 
