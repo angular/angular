@@ -23,7 +23,8 @@ export function propagateI18nBlocks(job: ComponentCompilationJob): void {
 /**
  * Propagates i18n ops in the given view through to any child views recursively.
  */
-function propagateI18nBlocksToTemplates(unit: ViewCompilationUnit, subTemplateIndex: number) {
+function propagateI18nBlocksToTemplates(
+    unit: ViewCompilationUnit, subTemplateIndex: number): number {
   let i18nBlock: ir.I18nStartOp|null = null;
   for (const op of unit.create) {
     switch (op.kind) {
@@ -48,9 +49,10 @@ function propagateI18nBlocksToTemplates(unit: ViewCompilationUnit, subTemplateIn
         }
 
         // Continue traversing inside the template's view.
-        propagateI18nBlocksToTemplates(templateView, subTemplateIndex);
+        subTemplateIndex = propagateI18nBlocksToTemplates(templateView, subTemplateIndex);
     }
   }
+  return subTemplateIndex;
 }
 
 /**
