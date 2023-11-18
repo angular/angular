@@ -943,6 +943,7 @@ export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     path: DefaultPage.TUTORIALS,
     contentPath: 'tutorials/home',
+    label: 'Tutorials'
   },
 ];
 
