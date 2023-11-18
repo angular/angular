@@ -54,6 +54,10 @@
       &:not(.adev-reference-api-tab) {
         max-width: var(--page-width);
       }
+      &:not(:has(+ .adev-reference-members-container)) {
+        width: 100%;
+        max-width: 100ch;
+      }
     }
     @include mq.for-desktop-down {
       padding: var(--layout-padding);
