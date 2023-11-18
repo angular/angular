@@ -125,6 +125,7 @@ export const routes: Route[] = [
       {
         path: '',
         loadComponent: () => import('./features/home/home.component'),
+        data: {label: 'Home'}
       },
       {
         path: PagePrefix.DOCS,
@@ -141,7 +142,7 @@ export const routes: Route[] = [
       {
         path: PagePrefix.PLAYGROUND,
         loadComponent: () => import('./features/playground/playground.component'),
-        data: {...commonTutorialRouteData},
+        data: {...commonTutorialRouteData, label: 'Playground'},
       },
       ...SUB_NAVIGATION_ROUTES,
       ...API_REFERENCE_ROUTES,
