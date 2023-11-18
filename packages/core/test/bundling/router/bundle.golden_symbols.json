@@ -1140,6 +1140,9 @@
     "name": "defer"
   },
   {
+    "name": "destroyInjectorsOnFinalize"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -1897,6 +1900,9 @@
   },
   {
     "name": "routes"
+  },
+  {
+    "name": "runInInjectionContext"
   },
   {
     "name": "rxSubscriber"

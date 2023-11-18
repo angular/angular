@@ -8,7 +8,7 @@
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, Type, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, Type, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -5177,20 +5177,33 @@ describe('Integration', () => {
          }
          const router = TestBed.inject(Router);
          const fixture = createRoot(router, RootCmp);
+
+         // Spies to ensure that DestroyRef is fired after the guard execution is done
+         const canActivateDestroySpy = jasmine.createSpy('canActivate');
+         const canActivateChildDestroySpy = jasmine.createSpy('canActivateChildDestroy');
+         const canDeactivateDestroySpy = jasmine.createSpy('canDeactivateDestroy');
+         const canMatchDestroySpy = jasmine.createSpy('canMatchDestroy');
+         const canLoadDestroySpy = jasmine.createSpy('canLoadDestroy');
+
          const guards = {
            canActivate() {
+             coreInject(DestroyRef).onDestroy(canActivateDestroySpy);
              return coreInject(State).value;
            },
            canDeactivate() {
+             coreInject(DestroyRef).onDestroy(canDeactivateDestroySpy);
              return coreInject(State).value;
            },
            canActivateChild() {
+             coreInject(DestroyRef).onDestroy(canActivateChildDestroySpy);
              return coreInject(State).value;
            },
            canMatch() {
+             coreInject(DestroyRef).onDestroy(canMatchDestroySpy);
              return coreInject(State).value;
            },
            canLoad() {
+             coreInject(DestroyRef).onDestroy(canLoadDestroySpy);
              return coreInject(State).value;
            }
          };
@@ -5219,13 +5232,21 @@ describe('Integration', () => {
          router.navigateByUrl('/');
          advance(fixture);
          expect(guards.canMatch).toHaveBeenCalled();
+         expect(canMatchDestroySpy).toHaveBeenCalled();
+
          expect(guards.canLoad).toHaveBeenCalled();
+         expect(canLoadDestroySpy).toHaveBeenCalled();
+
          expect(guards.canActivate).toHaveBeenCalled();
+         expect(canActivateDestroySpy).toHaveBeenCalled();
+
          expect(guards.canActivateChild).toHaveBeenCalled();
+         expect(canActivateChildDestroySpy).toHaveBeenCalled();
 
          router.navigateByUrl('/other');
          advance(fixture);
          expect(guards.canDeactivate).toHaveBeenCalled();
+         expect(canDeactivateDestroySpy).toHaveBeenCalled();
        }));
 
     it('can run functional guards serially', fakeAsync(() => {

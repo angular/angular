@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ProviderToken} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
-import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, finalize, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Route} from '../models';
@@ -109,18 +109,24 @@ function runCanActivate(
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
+  const destroyableInjectors: EnvironmentInjector[] = [];
   const canActivateObservables =
       canActivate.map((canActivate: CanActivateFn|ProviderToken<unknown>) => {
         return defer(() => {
           const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
           const guard = getTokenOrFunctionIdentity<CanActivate>(canActivate, closestInjector);
+
+          const destroyableInjector = createEnvironmentInjector([], closestInjector);
+          destroyableInjectors.push(destroyableInjector);
           const guardVal = isCanActivate(guard) ?
               guard.canActivate(futureARS, futureRSS) :
-              closestInjector.runInContext(() => (guard as CanActivateFn)(futureARS, futureRSS));
+              runInInjectionContext(
+                  destroyableInjector, () => (guard as CanActivateFn)(futureARS, futureRSS));
           return wrapIntoObservable(guardVal).pipe(first());
         });
       });
-  return of(canActivateObservables).pipe(prioritizedGuardValue());
+  return of(canActivateObservables)
+      .pipe(prioritizedGuardValue(), destroyInjectorsOnFinalize(destroyableInjectors));
 }
 
 function runCanActivateChild(
@@ -128,6 +134,7 @@ function runCanActivateChild(
     injector: EnvironmentInjector): Observable<boolean|UrlTree> {
   const futureARS = path[path.length - 1];
 
+  const destroyableInjectors: EnvironmentInjector[] = [];
   const canActivateChildGuards = path.slice(0, path.length - 1)
                                      .reverse()
                                      .map(p => getCanActivateChild(p))
@@ -140,16 +147,20 @@ function runCanActivateChild(
             const closestInjector = getClosestRouteInjector(d.node) ?? injector;
             const guard = getTokenOrFunctionIdentity<{canActivateChild: CanActivateChildFn}>(
                 canActivateChild, closestInjector);
+
+            const destroyableInjector = createEnvironmentInjector([], closestInjector);
+            destroyableInjectors.push(destroyableInjector);
             const guardVal = isCanActivateChild(guard) ?
                 guard.canActivateChild(futureARS, futureRSS) :
-                closestInjector.runInContext(
-                    () => (guard as CanActivateChildFn)(futureARS, futureRSS));
+                runInInjectionContext(
+                    destroyableInjector, () => (guard as CanActivateChildFn)(futureARS, futureRSS));
             return wrapIntoObservable(guardVal).pipe(first());
           });
       return of(guardsMapped).pipe(prioritizedGuardValue());
     });
   });
-  return of(canActivateChildGuardsMapped).pipe(prioritizedGuardValue());
+  return of(canActivateChildGuardsMapped)
+      .pipe(prioritizedGuardValue(), destroyInjectorsOnFinalize(destroyableInjectors));
 }
 
 function runCanDeactivate(
@@ -157,16 +168,23 @@ function runCanDeactivate(
     futureRSS: RouterStateSnapshot, injector: EnvironmentInjector): Observable<boolean|UrlTree> {
   const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
+
+  const destroyableInjectors: EnvironmentInjector[] = [];
   const canDeactivateObservables = canDeactivate.map((c: any) => {
     const closestInjector = getClosestRouteInjector(currARS) ?? injector;
     const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
+
+    const destroyableInjector = createEnvironmentInjector([], closestInjector);
+    destroyableInjectors.push(destroyableInjector);
     const guardVal = isCanDeactivate(guard) ?
         guard.canDeactivate(component, currARS, currRSS, futureRSS) :
-        closestInjector.runInContext(
+        runInInjectionContext(
+            destroyableInjector,
             () => (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS));
     return wrapIntoObservable(guardVal).pipe(first());
   });
-  return of(canDeactivateObservables).pipe(prioritizedGuardValue());
+  return of(canDeactivateObservables)
+      .pipe(prioritizedGuardValue(), destroyInjectorsOnFinalize(destroyableInjectors));
 }
 
 export function runCanLoadGuards(
@@ -177,11 +195,13 @@ export function runCanLoadGuards(
     return of(true);
   }
 
+  const destroyableInjector = createEnvironmentInjector([], injector);
+
   const canLoadObservables = canLoad.map((injectionToken: any) => {
     const guard = getTokenOrFunctionIdentity<any>(injectionToken, injector);
     const guardVal = isCanLoad(guard) ?
         guard.canLoad(route, segments) :
-        injector.runInContext(() => (guard as CanLoadFn)(route, segments));
+        runInInjectionContext(destroyableInjector, () => (guard as CanLoadFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
@@ -189,6 +209,7 @@ export function runCanLoadGuards(
       .pipe(
           prioritizedGuardValue(),
           redirectIfUrlTree(urlSerializer),
+          destroyInjectorsOnFinalize([destroyableInjector]),
       );
 }
 
@@ -210,11 +231,12 @@ export function runCanMatchGuards(
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
 
+  const destroyableInjector = createEnvironmentInjector([], injector);
   const canMatchObservables = canMatch.map(injectionToken => {
     const guard = getTokenOrFunctionIdentity(injectionToken, injector);
     const guardVal = isCanMatch(guard) ?
         guard.canMatch(route, segments) :
-        injector.runInContext(() => (guard as CanMatchFn)(route, segments));
+        runInInjectionContext(destroyableInjector, () => (guard as CanMatchFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
@@ -222,5 +244,16 @@ export function runCanMatchGuards(
       .pipe(
           prioritizedGuardValue(),
           redirectIfUrlTree(urlSerializer),
+          destroyInjectorsOnFinalize([destroyableInjector]),
       );
+}
+
+
+function destroyInjectorsOnFinalize<T>(injectors: EnvironmentInjector[]):
+    MonoTypeOperatorFunction<T> {
+  return finalize(() => {
+    for (const injector of injectors) {
+      injector.destroy();
+    }
+  });
 }
