@@ -7,14 +7,16 @@
  */
 
 import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/animations/browser';
-import {inject, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, NgZone, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
 const ANIMATION_PREFIX = '@';
 
-export class AsyncAnimationRendererFactory implements RendererFactory2 {
+@Injectable()
+export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory>|null = null;
   private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private _engine?: AnimationEngine;
 
   /**
    *
@@ -28,6 +30,17 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
              scheduler: ChangeDetectionScheduler|null) => AnimationEngine,
         ɵAnimationRendererFactory: typeof AnimationRendererFactory
       }>) {}
+
+  /** @nodoc */
+  ngOnDestroy(): void {
+    // When the root view is removed, the renderer defers the actual work to the
+    // `TransitionAnimationEngine` to do this, and the `TransitionAnimationEngine` doesn't actually
+    // remove the DOM node, but just calls `markElementAsRemoved()`. The actual DOM node is not
+    // removed until `TransitionAnimationEngine` "flushes".
+    // Note: we already flush on destroy within the `InjectableAnimationEngine`. The injectable
+    // engine is not provided when async animations are used.
+    this._engine?.flush();
+  }
 
   /**
    * @internal
@@ -47,8 +60,9 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
         .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
           // We can't create the renderer yet because we might need the hostElement and the type
           // Both are provided in createRenderer().
-          const engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
-          const rendererFactory = new ɵAnimationRendererFactory(this.delegate, engine, this.zone);
+          this._engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
+          const rendererFactory =
+              new ɵAnimationRendererFactory(this.delegate, this._engine, this.zone);
           this.delegate = rendererFactory;
           return rendererFactory;
         });
