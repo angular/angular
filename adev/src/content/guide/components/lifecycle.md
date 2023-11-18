@@ -257,12 +257,12 @@ export class UserProfile {
     // Use the `Write` phase to write to a geometric property.
     afterNextRender(() => {
       nativeElement.style.padding = computePadding();
-    }, AfterRenderPhase.Write);
+    }, {phase: AfterRenderPhase.Write});
 
     // Use the `Read` phase to read geometric properties after all writes have occured.
     afterNextRender(() => {
       this.elementHeight = nativeElement.getBoundingClientRect().height;
-    }, AfterRenderPhase.Read);
+    }, {phase: AfterRenderPhase.Read});
   }
 }
 ```
