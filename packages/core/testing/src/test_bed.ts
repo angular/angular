@@ -23,6 +23,7 @@ import {
   Pipe,
   PlatformRef,
   ProviderToken,
+  runInInjectionContext,
   Type,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
@@ -557,7 +558,7 @@ export class TestBedImpl implements TestBed {
   }
 
   runInInjectionContext<T>(fn: () => T): T {
-    return this.inject(EnvironmentInjector).runInContext(fn);
+    return runInInjectionContext(this.inject(EnvironmentInjector), fn);
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {

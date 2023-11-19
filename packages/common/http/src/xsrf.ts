@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
-import {EnvironmentInjector, Inject, inject, Injectable, InjectionToken, PLATFORM_ID} from '@angular/core';
+import {EnvironmentInjector, Inject, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpHandler} from './backend';
@@ -104,7 +104,8 @@ export class HttpXsrfInterceptor implements HttpInterceptor {
   constructor(private injector: EnvironmentInjector) {}
 
   intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return this.injector.runInContext(
+    return runInInjectionContext(
+        this.injector,
         () =>
             xsrfInterceptorFn(initialRequest, downstreamRequest => next.handle(downstreamRequest)));
   }

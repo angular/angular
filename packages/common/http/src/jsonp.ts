@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {EnvironmentInjector, Inject, inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, Inject, inject, Injectable, runInInjectionContext} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
@@ -278,7 +278,8 @@ export class JsonpInterceptor {
    * @returns An observable of the event stream.
    */
   intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return this.injector.runInContext(
+    return runInInjectionContext(
+        this.injector,
         () => jsonpInterceptorFn(
             initialRequest, downstreamRequest => next.handle(downstreamRequest)));
   }
