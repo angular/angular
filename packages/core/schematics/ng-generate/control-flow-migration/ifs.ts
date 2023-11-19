@@ -84,7 +84,10 @@ function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Resul
 function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const condition = etm.attr.value.replace(' as ', '; as ');
+  const condition = etm.attr.value
+                        .replace(' as ', '; as ')
+                        // replace 'let' with 'as' whatever spaces are between ; and 'let'
+                        .replace(/;\s*let/g, '; as');
 
   const originals = getOriginals(etm, tmpl, offset);
 
@@ -106,7 +109,10 @@ function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Resu
 function buildStandardIfElseBlock(
     etm: ElementToMigrate, tmpl: string, elseString: string, offset: number): Result {
   // includes the mandatory semicolon before as
-  const condition = etm.getCondition(elseString).replace(' as ', '; as ');
+  const condition = etm.getCondition(elseString)
+                        .replace(' as ', '; as ')
+                        // replace 'let' with 'as' whatever spaces are between ; and 'let'
+                        .replace(/;\s*let/g, '; as');
   const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
   return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
 }
@@ -151,7 +157,10 @@ function buildStandardIfThenElseBlock(
     etm: ElementToMigrate, tmpl: string, thenString: string, elseString: string,
     offset: number): Result {
   // includes the mandatory semicolon before as
-  const condition = etm.getCondition(thenString).replace(' as ', '; as ');
+  const condition = etm.getCondition(thenString)
+                        .replace(' as ', '; as ')
+                        // replace 'let' with 'as' whatever spaces are between ; and 'let'
+                        .replace(/;\s*let/g, '; as');
   const thenPlaceholder = `#${etm.getTemplateName(thenString, elseString)}|`;
   const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
   return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);

@@ -100,7 +100,6 @@ describe('control flow migration', () => {
       } catch (e: any) {
         error = e.message;
       }
-
       expect(error).toBe('Cannot run control flow migration outside of the current project.');
     });
 
@@ -3408,5 +3407,68 @@ describe('control flow migration', () => {
       expect(content).toContain(
           'template: `<div>@if (toggle) {<div>@if (show) {<span>shrug</span>}</div>}</div>`');
     });
+
+    it('should update let value in a build if block to as value for the new control flow',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          template: \`<ng-container *ngIf="value$ | async; let value"> {{value}} </ng-container>\`
+        })
+        class Comp {
+          value$ = of('Rica');
+        }
+      `);
+
+         await runMigration();
+         const content = tree.readContent('/comp.ts');
+         expect(content).toContain('template: `@if (value$ | async; as value) { {{value}} }`');
+       });
+
+    it('should update let value in a standard if else block to as value for the new control flow',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          imports: [CommonModule],
+          template: \`<div *ngIf="(logStatus$ | async)?.name; let userName; else loggedOut"> Hello {{ userName }} ! </div><ng-template #loggedOut></ng-template>\`
+        })
+        class Comp {
+          logStatus$ =  of({ name: 'Robert' });
+        }
+      `);
+
+         await runMigration();
+         const content = tree.readContent('/comp.ts');
+         expect(content).toContain(
+             'template: `@if ((logStatus$ | async)?.name; as userName) {<div> Hello {{ userName }} ! </div>} @else {}`');
+       });
+
+    it('should update let value in a standard if else, then block to as value for the new control flow',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          imports: [CommonModule],
+          template: \`<div *ngIf="isLoggedIn$ | async; let logIn; then loggedIn; else loggedOut"></div><ng-template #loggedIn>Log In</ng-template>
+          <ng-template #loggedOut>Log Out</ng-template>\`
+        })
+        class Comp {
+          isLoggedIn$ = of(true);
+        }
+      `);
+
+         await runMigration();
+         const content = tree.readContent('/comp.ts');
+         expect(content).toContain(
+             'template: `@if (isLoggedIn$ | async; as logIn) {\n  Log In\n} @else {\n  Log Out\n}`');
+       });
   });
 });
