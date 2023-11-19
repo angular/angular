@@ -37,7 +37,6 @@ import {parseHostStyleProperties} from './phases/host_style_property_parsing';
 import {collectI18nConsts} from './phases/i18n_const_collection';
 import {extractI18nText} from './phases/i18n_text_extraction';
 import {liftLocalRefs} from './phases/local_refs';
-import {mergeI18nContexts} from './phases/merge_i18n_contexts';
 import {emitNamespaceChanges} from './phases/namespace';
 import {nameFunctionsAndVariables} from './phases/naming';
 import {mergeNextContextExpressions} from './phases/next_context_merging';
@@ -127,7 +126,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nIcuPlaceholders},
-  {kind: Kind.Tmpl, fn: mergeI18nContexts},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
   {kind: Kind.Tmpl, fn: generateTrackFns},
   {kind: Kind.Tmpl, fn: collectI18nConsts},
