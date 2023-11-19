@@ -7,7 +7,7 @@
  */
 
 import {isPlatformServer} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
@@ -162,7 +162,7 @@ function chainedInterceptorFn(
     chainTailFn: ChainedInterceptorFn<unknown>, interceptorFn: HttpInterceptorFn,
     injector: EnvironmentInjector): ChainedInterceptorFn<unknown> {
   // clang-format off
-  return (initialRequest, finalHandlerFn) => injector.runInContext(() =>
+  return (initialRequest, finalHandlerFn) => runInInjectionContext(injector, () =>
     interceptorFn(
       initialRequest,
       downstreamRequest => chainTailFn(downstreamRequest, finalHandlerFn)
