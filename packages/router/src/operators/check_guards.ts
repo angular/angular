@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ProviderToken} from '@angular/core';
+import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
@@ -116,7 +116,8 @@ function runCanActivate(
           const guard = getTokenOrFunctionIdentity<CanActivate>(canActivate, closestInjector);
           const guardVal = isCanActivate(guard) ?
               guard.canActivate(futureARS, futureRSS) :
-              closestInjector.runInContext(() => (guard as CanActivateFn)(futureARS, futureRSS));
+              runInInjectionContext(
+                  closestInjector, () => (guard as CanActivateFn)(futureARS, futureRSS));
           return wrapIntoObservable(guardVal).pipe(first());
         });
       });
@@ -142,8 +143,8 @@ function runCanActivateChild(
                 canActivateChild, closestInjector);
             const guardVal = isCanActivateChild(guard) ?
                 guard.canActivateChild(futureARS, futureRSS) :
-                closestInjector.runInContext(
-                    () => (guard as CanActivateChildFn)(futureARS, futureRSS));
+                runInInjectionContext(
+                    closestInjector, () => (guard as CanActivateChildFn)(futureARS, futureRSS));
             return wrapIntoObservable(guardVal).pipe(first());
           });
       return of(guardsMapped).pipe(prioritizedGuardValue());
@@ -162,7 +163,8 @@ function runCanDeactivate(
     const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
     const guardVal = isCanDeactivate(guard) ?
         guard.canDeactivate(component, currARS, currRSS, futureRSS) :
-        closestInjector.runInContext(
+        runInInjectionContext(
+            closestInjector,
             () => (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS));
     return wrapIntoObservable(guardVal).pipe(first());
   });
@@ -181,7 +183,7 @@ export function runCanLoadGuards(
     const guard = getTokenOrFunctionIdentity<any>(injectionToken, injector);
     const guardVal = isCanLoad(guard) ?
         guard.canLoad(route, segments) :
-        injector.runInContext(() => (guard as CanLoadFn)(route, segments));
+        runInInjectionContext(injector, () => (guard as CanLoadFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
@@ -214,7 +216,7 @@ export function runCanMatchGuards(
     const guard = getTokenOrFunctionIdentity(injectionToken, injector);
     const guardVal = isCanMatch(guard) ?
         guard.canMatch(route, segments) :
-        injector.runInContext(() => (guard as CanMatchFn)(route, segments));
+        runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
