@@ -36,8 +36,8 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
         const i18nContext = i18nContexts.get(op.context)!;
-        const index = expressionIndices.get(i18nContext.i18nBlock) || 0;
-        const subTemplateIndex = subTemplateIndicies.get(i18nContext.i18nBlock)!;
+        const index = expressionIndices.get(op.target) || 0;
+        const subTemplateIndex = subTemplateIndicies.get(op.target)!;
         // Add the expression index in the appropriate params map.
         const params = op.resolutionTime === ir.I18nParamResolutionTime.Creation ?
             i18nContext.params :
@@ -50,7 +50,7 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
         });
         params.set(op.i18nPlaceholder, values);
 
-        expressionIndices.set(i18nContext.i18nBlock, index + 1);
+        expressionIndices.set(op.target, index + 1);
       }
     }
   }

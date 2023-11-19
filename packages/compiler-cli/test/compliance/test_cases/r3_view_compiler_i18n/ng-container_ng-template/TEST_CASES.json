@@ -180,6 +180,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle structural directives with same placeholder",
+      "inputFiles": [
+        "structural_directives_same_placeholder.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }
