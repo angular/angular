@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ProviderToken} from '@angular/core';
+import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
@@ -106,6 +106,6 @@ function getResolver(
   const resolver = getTokenOrFunctionIdentity(injectionToken, closestInjector);
   const resolverValue = resolver.resolve ?
       resolver.resolve(futureARS, futureRSS) :
-      closestInjector.runInContext(() => resolver(futureARS, futureRSS));
+      runInInjectionContext(closestInjector, () => resolver(futureARS, futureRSS));
   return wrapIntoObservable(resolverValue);
 }
