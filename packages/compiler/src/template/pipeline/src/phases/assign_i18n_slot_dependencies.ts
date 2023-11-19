@@ -14,7 +14,6 @@ import {CompilationJob} from '../compilation';
  */
 export function assignI18nSlotDependencies(job: CompilationJob) {
   const i18nLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
-  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   let lastSlotConsumer: ir.XrefId|null = null;
   let currentI18nOp: ir.I18nStartOp|null = null;
 
@@ -33,17 +32,13 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
           i18nLastSlotConsumers.set(currentI18nOp!.xref, lastSlotConsumer!);
           currentI18nOp = null;
           break;
-        case ir.OpKind.I18nContext:
-          i18nContexts.set(op.xref, op);
-          break;
       }
     }
 
     // Assign i18n expressions to target the last slot in its owning block.
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
-        const i18nContext = i18nContexts.get(op.context)!;
-        op.target = i18nLastSlotConsumers.get(i18nContext.i18nBlock)!;
+        op.target = i18nLastSlotConsumers.get(op.target)!;
       }
     }
   }
