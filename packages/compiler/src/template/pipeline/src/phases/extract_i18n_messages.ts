@@ -200,18 +200,26 @@ function collapseElementTemplatePairs(values: ir.I18nParamValue[]) {
       if (elementIndex !== undefined && templateIndex !== undefined) {
         const elementValue = values[elementIndex];
         const templateValue = values[templateIndex];
+        // To match the TemplateDefinitionBuilder output, flip the order depending on whether the
+        // values represent a closing or opening tag (or both).
+        // TODO(mmalerba): Figure out if this makes a difference in terms of either functionality,
+        // or the resulting message ID. If not, we can remove the special-casing in the future.
+        let compundValue: string;
+        if ((elementValue.flags & ir.I18nParamValueFlags.OpenTag) &&
+            (elementValue.flags & ir.I18nParamValueFlags.CloseTag)) {
+          // TODO(mmalerba): Is this a TDB bug? I don't understand why it would put the template
+          // value twice.
+          compundValue = `${formatValue(templateValue)}${formatValue(elementValue)}${
+              formatValue(templateValue)}`;
+        } else if (elementValue.flags & ir.I18nParamValueFlags.OpenTag) {
+          compundValue = `${formatValue(templateValue)}${formatValue(elementValue)}`;
+        } else {
+          compundValue = `${formatValue(elementValue)}${formatValue(templateValue)}`;
+        }
         // Replace the element value with the combined value.
-        values.splice(elementIndex, 1, {
-          // To match the TemplateDefinitionBuilder output, flip the order dependind on whether the
-          // values represent a closing or opening tag.
-          // TODO(mmalerba): Figure out if this makes a difference in terms of either functionality,
-          // or the resulting message ID. If not, we can remove the special-casing in the future.
-          value: elementValue.flags & ir.I18nParamValueFlags.CloseTag ?
-              `${formatValue(elementValue)}${formatValue(templateValue)}` :
-              `${formatValue(templateValue)}${formatValue(elementValue)}`,
-          subTemplateIndex,
-          flags: ir.I18nParamValueFlags.None
-        });
+        values.splice(
+            elementIndex, 1,
+            {value: compundValue, subTemplateIndex, flags: ir.I18nParamValueFlags.None});
         // Replace the template value with null to preserve the indicies we calculated earlier.
         values.splice(templateIndex, 1, null!);
       }

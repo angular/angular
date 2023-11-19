@@ -20,19 +20,24 @@ import {CompilationJob} from '../compilation';
  * message.)
  */
 export function createI18nContexts(job: CompilationJob) {
+  const rootContexts = new Map<ir.XrefId, ir.XrefId>();
   let currentI18nOp: ir.I18nStartOp|null = null;
   let xref: ir.XrefId;
+
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          // Each i18n block gets its own context.
-          xref = job.allocateXrefId();
-          const contextKind =
-              op.xref === op.root ? ir.I18nContextKind.RootI18n : ir.I18nContextKind.ChildI18n;
-          unit.create.push(ir.createI18nContextOp(contextKind, xref, op.xref, op.message, null!));
-          op.context = xref;
           currentI18nOp = op;
+          // Each root i18n block gets its own context, child ones refer to the context for their
+          // root block.
+          if (op.xref === op.root) {
+            xref = job.allocateXrefId();
+            unit.create.push(ir.createI18nContextOp(
+                ir.I18nContextKind.RootI18n, xref, op.xref, op.message, null!));
+            op.context = xref;
+            rootContexts.set(op.xref, xref);
+          }
           break;
         case ir.OpKind.I18nEnd:
           currentI18nOp = null;
@@ -55,6 +60,16 @@ export function createI18nContexts(job: CompilationJob) {
             op.context = currentI18nOp.context;
           }
           break;
+      }
+    }
+  }
+
+  // Assign contexts to child i18n blocks, now that all root i18n blocks have their context
+  // assigned.
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.I18nStart && op.xref !== op.root) {
+        op.context = rootContexts.get(op.root)!;
       }
     }
   }
