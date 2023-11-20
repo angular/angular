@@ -9,7 +9,9 @@ Examples of binding include:
 * event binding
 * two-way binding
 
-Bindings always have two parts: a _target_ which will receive the bound value, and a _template expression_ which produces a value from the model.## Syntax
+Bindings always have two parts: a _target_ which will receive the bound value, and a _template expression_ which produces a value from the model.
+
+## Syntax
 
 Template expressions are similar to JavaScript expressions.
 Many JavaScript expressions are legal template expressions, with the following exceptions.
