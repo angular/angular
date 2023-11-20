@@ -259,9 +259,10 @@
     }
 
     pre {
-      overflow-x: auto;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
+      width: fit-content;
     }
   }
 

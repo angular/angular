@@ -105,7 +105,7 @@
     & > .docs-code {
       width: 100%;
       max-height: 93vh;
-      overflow: hidden;
+      overflow: auto;
       padding: 0;
 
       @include mq.for-desktop-down {
@@ -145,7 +145,6 @@
 
     pre {
       white-space: pre;
-      overflow-x: auto;
       margin: 0;
     }
   }

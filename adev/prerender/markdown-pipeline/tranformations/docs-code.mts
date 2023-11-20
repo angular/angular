@@ -243,9 +243,9 @@ function formatDocsCode(token: Partial<DocsCodeToken>): string {
 
   const header = token.header ? `<div class="docs-code-header"><h3>${token.header}</h3></div>` : '';
   return `
-  <div class="docs-code${classes}"${attributes}>
+  <div class="docs-code${classes} adev-mini-scroll-track"${attributes}>
     ${header}
-    <pre class="adev-mini-scroll-track">
+    <pre>
       <code>${code}</code>
     </pre>
   </div>
