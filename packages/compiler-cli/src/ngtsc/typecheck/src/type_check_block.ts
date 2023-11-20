@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -707,12 +707,18 @@ class TcbDirectiveInputsOp extends TcbOp {
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
-      for (const {fieldName, required, transformType} of attr.inputs) {
+      for (const {fieldName, required, transformType, isSignal} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
 
         if (required) {
           seenRequiredInputs.add(fieldName);
         }
+
+        // Note: There is no special logic for transforms/coercion with signal inputs.
+        // For signal inputs, a `transformType` will never be set as we do not capture
+        // the transform in the compiler metadata. Signal inputs incorporate their
+        // transform write type into their member type, and we extract it below when
+        // unwrapping the `InputSignal<ReadT, WriteT>`.
 
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: ts.TypeNode;
@@ -779,6 +785,24 @@ class TcbDirectiveInputsOp extends TcbOp {
                   dirId, ts.factory.createStringLiteral(fieldName)) :
               ts.factory.createPropertyAccessExpression(
                   dirId, ts.factory.createIdentifier(fieldName));
+        }
+
+        // For signal inputs, we unwrap the target `InputSignal`. Note that
+        // we intentionally do the following things:
+        //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
+        //   2. follow the existing pattern where multiple targets assign a single expression.
+        //      This is a significant requirement for language service auto-completion.
+        if (isSignal) {
+          const inputSignalBrandWriteSymbol = this.tcb.env.referenceExternalSymbol(
+              R3Identifiers.InputSignalBrandWriteType.moduleName,
+              R3Identifiers.InputSignalBrandWriteType.name);
+          if (!ts.isIdentifier(inputSignalBrandWriteSymbol) &&
+              !ts.isPropertyAccessExpression(inputSignalBrandWriteSymbol)) {
+            throw new Error(`Expected identifier or property access for reference to ${
+                R3Identifiers.InputSignalBrandWriteType.name}`);
+          }
+
+          target = ts.factory.createElementAccessExpression(target, inputSignalBrandWriteSymbol);
         }
 
         if (attr.attribute.keySpan !== undefined) {
