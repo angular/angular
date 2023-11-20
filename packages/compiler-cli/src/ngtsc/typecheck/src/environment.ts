@@ -173,6 +173,15 @@ export class Environment implements ReferenceEmitEnvironment {
   }
 
   /**
+   * Generate a `ts.Expression` that refers to the external symbol. This
+   * may result in new imports being generated.
+   */
+  referenceExternalSymbol(moduleName: string, name: string): ts.Expression {
+    const external = new ExternalExpr({moduleName, name});
+    return translateExpression(external, this.importManager);
+  }
+
+  /**
    * Generates a `ts.TypeNode` representing a type that is being referenced from a different place
    * in the program. Any type references inside the transplanted type will be rewritten so that
    * they can be imported in the context file.
