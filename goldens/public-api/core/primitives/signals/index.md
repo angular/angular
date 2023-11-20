@@ -84,9 +84,6 @@ export interface ReactiveNode {
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;
 
 // @public (undocumented)
-export function setAlternateWeakRefImpl(impl: unknown): void;
-
-// @public (undocumented)
 export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null;
 
 // @public (undocumented)
