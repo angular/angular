@@ -278,7 +278,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
 <docs-code header="src/app/app.component.html (ngif-ngcontainer)" path="structural-directives/src/app/app.component.html" visibleRegion="ngif-ngcontainer"/>
 
-<img alt="ngcontainer paragraph with proper style" src="assets/content/images/guide/directives/structural-directives/good-paragraph.png">
+<img alt="ngcontainer paragraph with proper style" src="assets/content/images/guide/structural-directives/good-paragraph.png">
 
 1. Import the `ngModel` directive from `FormsModule`.
 
@@ -288,7 +288,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
     <docs-code header="src/app/app.component.html (select-ngcontainer)" path="structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
 
-    <img alt="ngcontainer options work properly" src="assets/content/images/guide/directives/structural-directives/select-ngcontainer-anim.gif">
+    <img alt="ngcontainer options work properly" src="assets/content/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
 ## Switching cases with `NgSwitch`
 
