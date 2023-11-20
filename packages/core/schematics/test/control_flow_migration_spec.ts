@@ -1000,6 +1000,74 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate if/else with semicolon at end', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<div *ngIf="user$ | async as user; else noUserBlock;">{{ user.name }}</div>`,
+        `<ng-template #noUserBlock>No user</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `  @if (user$ | async; as user) {`,
+        `    <div>{{ user.name }}</div>`,
+        `  } @else {`,
+        `    No user`,
+        `  }`,
+        `</div>`,
+      ].join('\n'));
+    });
+
+    it('should migrate if/else with let variable', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<div *ngIf="user of users; else noUserBlock; let tooltipContent;">{{ user.name }}</div>`,
+        `<ng-template #noUserBlock>No user</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `<div>`,
+        `  @if (user of users; as tooltipContent) {`,
+        `    <div>{{ user.name }}</div>`,
+        `  } @else {`,
+        `    No user`,
+        `  }`,
+        `</div>`,
+      ].join('\n'));
+    });
+
     it('should migrate if/then/else with alias', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -3263,6 +3331,158 @@ describe('control flow migration', () => {
       expect(actual).toBe(expected);
     });
 
+    it('should reformat properly with svg', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
+        `<div>`,
+        `<svg class="filterthing">`,
+        `<filter id="stuff">`,
+        `<feGaussianBlur in="SourceAlpha" stdDeviation="3"/>`,
+        `<feOffset dx="0" dy="0" result="offsetblur"/>`,
+        `<feFlood flood-color="rgba(60,64,67,0.15)"/>`,
+        `<feComposite in2="offsetblur" operator="in"/>`,
+        `<feMerge>`,
+        `<feMergeNode/>`,
+        `<feMergeNode in="SourceGraphic"/>`,
+        `</feMerge>`,
+        `</filter>`,
+        `</svg>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
+        `<div>`,
+        `  <svg class="filterthing">`,
+        `    <filter id="stuff">`,
+        `      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>`,
+        `      <feOffset dx="0" dy="0" result="offsetblur"/>`,
+        `      <feFlood flood-color="rgba(60,64,67,0.15)"/>`,
+        `      <feComposite in2="offsetblur" operator="in"/>`,
+        `      <feMerge>`,
+        `        <feMergeNode/>`,
+        `        <feMergeNode in="SourceGraphic"/>`,
+        `      </feMerge>`,
+        `    </filter>`,
+        `  </svg>`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should reformat properly with if else and containers', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
+        `<div>`,
+        `@if (!ruleGroupDropdownLabels?.get(JoinOperator.AND)) {`,
+        `<ng-container`,
+        `i18n="{{i18n}}"`,
+        `>`,
+        `Match <strong>EVERY</strong> rule in this group`,
+        `</ng-container>`,
+        `} @else {`,
+        `{{ruleGroupDropdownLabels?.get(JoinOperator.AND)}}`,
+        `}`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
+        `<div>`,
+        `  @if (!ruleGroupDropdownLabels?.get(JoinOperator.AND)) {`,
+        `    <ng-container`,
+        `      i18n="{{i18n}}"`,
+        `      >`,
+        `      Match <strong>EVERY</strong> rule in this group`,
+        `    </ng-container>`,
+        `  } @else {`,
+        `    {{ruleGroupDropdownLabels?.get(JoinOperator.AND)}}`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should reformat properly with if else and mixed content', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
+        `<button`,
+        `class="things"`,
+        `(click)="stuff">`,
+        `@if (aCondition) {`,
+        `Match <strong>EVERY</strong> rule group`,
+        `} @else {`,
+        `{{ruleGroupDropdownLabels?.get(JoinOperator.AND)}}`,
+        `}`,
+        `</button>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
+        `<button`,
+        `  class="things"`,
+        `  (click)="stuff">`,
+        `  @if (aCondition) {`,
+        `    Match <strong>EVERY</strong> rule group`,
+        `  } @else {`,
+        `    {{ruleGroupDropdownLabels?.get(JoinOperator.AND)}}`,
+        `  }`,
+        `</button>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should reformat self closing tags', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
@@ -3302,6 +3522,98 @@ describe('control flow migration', () => {
         `      alt="stuff" />`,
         `  }`,
         `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should format input tags without self closing slash', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="true">changed</div>`,
+        `<div>`,
+        `@if (stuff) {`,
+        `<img src="path.png" alt="stuff">`,
+        `} @else {`,
+        `<img src="path.png"`,
+        `alt="stuff">`,
+        `}`,
+        `</div>\n`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
+        `<div>`,
+        `  @if (stuff) {`,
+        `    <img src="path.png" alt="stuff">`,
+        `  } @else {`,
+        `    <img src="path.png"`,
+        `      alt="stuff">`,
+        `  }`,
+        `</div>\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should preserve inline template indentation', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {NgIf} from '@angular/common';\n`,
+        `@Component({`,
+        `  selector: 'declare-comp',`,
+        `  template: \``,
+        `    <div *ngIf="true">changed</div>`,
+        `    <div>`,
+        `    @if (stuff) {`,
+        `    <img src="path.png" alt="stuff" />`,
+        `    } @else {`,
+        `    <img src="path.png"`,
+        `    alt="stuff" />`,
+        `    }`,
+        `    </div>`,
+        ` \`,`,
+        `})`,
+        `class DeclareComp {}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+
+      const expected = [
+        `import {Component} from '@angular/core';\n\n`,
+        `@Component({`,
+        `  selector: 'declare-comp',`,
+        `  template: \``,
+        `    @if (true) {`,
+        `      <div>changed</div>`,
+        `    }`,
+        `    <div>`,
+        `      @if (stuff) {`,
+        `        <img src="path.png" alt="stuff" />`,
+        `      } @else {`,
+        `        <img src="path.png"`,
+        `          alt="stuff" />`,
+        `      }`,
+        `    </div>`,
+        `    \`,`,
+        `})`,
+        `class DeclareComp {}`,
       ].join('\n');
 
       expect(actual).toBe(expected);

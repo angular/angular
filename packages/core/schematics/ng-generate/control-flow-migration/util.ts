@@ -160,7 +160,7 @@ function analyzeDecorators(
         // Leave the end as undefined which means that the range is until the end of the file.
         if (ts.isStringLiteralLike(prop.initializer)) {
           const path = join(dirname(sourceFile.fileName), prop.initializer.text);
-          AnalyzedFile.addRange(path, analyzedFiles, {start: 0, node: prop, type: 'template'});
+          AnalyzedFile.addRange(path, analyzedFiles, {start: 0, node: prop, type: 'templateUrl'});
         }
         break;
     }
@@ -429,11 +429,16 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   return {start, middle, end};
 }
 
+const selfClosingList = 'input|br|img|base|wbr|area|col|embed|hr|link|meta|param|source|track';
+
 /**
  * re-indents all the lines in the template properly post migration
  */
-export function formatTemplate(tmpl: string): string {
+export function formatTemplate(tmpl: string, templateType: string): string {
   if (tmpl.indexOf('\n') > -1) {
+    // tracks if a self closing element opened without closing yet
+    let openSelfClosingEl = false;
+
     // match any type of control flow block as start of string ignoring whitespace
     // @if | @switch | @case | @default | @for | } @else
     const openBlockRegex = /^\s*\@(if|switch|case|default|for)|^\s*\}\s\@else/;
@@ -442,29 +447,54 @@ export function formatTemplate(tmpl: string): string {
     // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
     const openElRegex = /^\s*<([a-z0-9]+)(?![^>]*\/>)[^>]*>?/;
 
+    // regex for matching a self closing html element that has no />
+    // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
+    const selfClosingRegex = new RegExp(`^\\s*<(${selfClosingList}).+\\/?>`);
+
+    // regex for matching a self closing html element that is on multi lines
+    // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
+    const openSelfClosingRegex = new RegExp(`^\\s*<(${selfClosingList})(?![^>]*\\/>)[^>]*$`);
+
     // match closing block or else block
     // } | } @else
     const closeBlockRegex = /^\s*\}\s*$|^\s*\}\s\@else/;
 
     // matches closing of an html element
     // </element>
-    const closeElRegex = /\s*<\/([a-z0-9\-]+)*>/;
+    const closeElRegex = /\s*<\/([a-zA-Z0-9\-]+)*>/;
 
     // matches closing of a self closing html element when the element is on multiple lines
     // [binding]="value" />
-    const closeMultiLineElRegex = /^\s*([a-z0-9\-\[\]]+)?=?"?([^”<]+)?"?\s?\/>$/;
+    const closeMultiLineElRegex = /^\s*([a-zA-Z0-9\-\[\]]+)?=?"?([^”<]+)?"?\s?\/>$/;
+
+    // matches closing of a self closing html element when the element is on multiple lines
+    // with no / in the closing: [binding]="value">
+    const closeSelfClosingMultiLineRegex = /^\s*([a-zA-Z0-9\-\[\]]+)?=?"?([^”\/<]+)?"?\s?>$/;
 
     // matches an open and close of an html element on a single line with no breaks
     // <div>blah</div>
-    const singleLineElRegex = /^\s*<([a-z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-z0-9\-]+)*>/;
+    const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-]+)*>/;
     const lines = tmpl.split('\n');
     const formatted = [];
+    // the indent applied during formatting
     let indent = '';
+    // the pre-existing indent in an inline template that we'd like to preserve
+    let mindent = '';
     for (let [index, line] of lines.entries()) {
       if (line.trim() === '' && index !== 0 && index !== lines.length - 1) {
         // skip blank lines except if it's the first line or last line
+        // this preserves leading and trailing spaces if they are already present
         continue;
       }
+      // preserves the indentation of an inline template
+      if (templateType === 'template' && index <= 1) {
+        // first real line of an inline template
+        const ind = line.search(/\S/);
+        mindent = (ind > -1) ? line.slice(0, ind) : '';
+      }
+
+      // if a block closes, an element closes, and it's not an element on a single line or the end
+      // of a self closing tag
       if ((closeBlockRegex.test(line) ||
            (closeElRegex.test(line) &&
             (!singleLineElRegex.test(line) && !closeMultiLineElRegex.test(line)))) &&
@@ -472,13 +502,36 @@ export function formatTemplate(tmpl: string): string {
         // close block, reduce indent
         indent = indent.slice(2);
       }
-      formatted.push(indent + line.trim());
+
+      formatted.push(mindent + indent + line.trim());
+
+      // this matches any self closing element that actually has a />
       if (closeMultiLineElRegex.test(line)) {
         // multi line self closing tag
         indent = indent.slice(2);
+        if (openSelfClosingEl) {
+          openSelfClosingEl = false;
+        }
       }
-      if ((openBlockRegex.test(line) || openElRegex.test(line)) && !singleLineElRegex.test(line)) {
+
+      // this matches a self closing element that doesn't have a / in the >
+      if (closeSelfClosingMultiLineRegex.test(line) && openSelfClosingEl) {
+        openSelfClosingEl = false;
+        indent = indent.slice(2);
+      }
+
+      // this matches an open control flow block, an open HTML element, but excludes single line
+      // self closing tags
+      if ((openBlockRegex.test(line) || openElRegex.test(line)) && !singleLineElRegex.test(line) &&
+          !selfClosingRegex.test(line) && !openSelfClosingRegex.test(line)) {
         // open block, increase indent
+        indent += '  ';
+      }
+
+      // This is a self closing element that is definitely not fully closed and is on multiple lines
+      if (openSelfClosingRegex.test(line)) {
+        openSelfClosingEl = true;
+        // add to the indent for the properties on it to look nice
         indent += '  ';
       }
     }

@@ -114,18 +114,22 @@ export class ElementToMigrate {
     this.forAttrs = forAttrs;
   }
 
-  getCondition(targetStr: string): string {
-    const targetLocation = this.attr.value.indexOf(targetStr);
-    return this.attr.value.slice(0, targetLocation);
+  getCondition(): string {
+    const chunks = this.attr.value.split(';');
+    let letVar = chunks.find(c => c.search(/\s*let\s/) > -1);
+    return chunks[0] + (letVar ? ';' + letVar : '');
   }
 
   getTemplateName(targetStr: string, secondStr?: string): string {
     const targetLocation = this.attr.value.indexOf(targetStr);
     if (secondStr) {
       const secondTargetLocation = this.attr.value.indexOf(secondStr);
-      return this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation).trim();
+      return this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation)
+          .trim()
+          .split(';')[0]
+          .trim();
     }
-    return this.attr.value.slice(targetLocation + targetStr.length).trim();
+    return this.attr.value.slice(targetLocation + targetStr.length).trim().split(';')[0].trim();
   }
 
   start(offset: number): number {
@@ -175,7 +179,7 @@ export class AnalyzedFile {
   /** Returns the ranges in the order in which they should be migrated. */
   getSortedRanges(): Range[] {
     const templateRanges = this.ranges.slice()
-                               .filter(x => x.type === 'template')
+                               .filter(x => x.type !== 'import')
                                .sort((aStart, bStart) => bStart.start - aStart.start);
     const importRanges = this.ranges.slice()
                              .filter(x => x.type === 'import')
