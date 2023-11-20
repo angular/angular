@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
 import localeDa from '@angular/common/locales/da';
 import localeDeAt from '@angular/common/locales/de-AT';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
-import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import { Component, ɵregisterLocaleData, ɵunregisterLocaleData } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 describe('Number pipes', () => {
   beforeAll(() => {
@@ -47,6 +47,7 @@ describe('Number pipes', () => {
         expect(pipe.transform('1.1', '3.4-5')).toEqual('001.1000');
         expect(pipe.transform('1.123456', '3.4-5')).toEqual('001.12346');
         expect(pipe.transform('1.1234')).toEqual('1.123');
+        expect(pipe.transform('123456789.123456789', '0.0-9')).toEqual('123456789.123456789');
       });
 
       it('should return null for NaN', () => {
