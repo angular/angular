@@ -262,7 +262,7 @@ it('should render a defer block in different states', async () => {
   const componentFixture = TestBed.createComponent(ComponentA);
 
   // Retrieve the list of all defer block fixtures and get the first block.
-  const deferBlockFixture = async (componentFixture.getDeferBlocks())[0];
+  const deferBlockFixture = (await componentFixture.getDeferBlocks())[0];
 
   // Renders placeholder state by default.
   expect(componentFixture.nativeElement.innerHTML).toContain('Placeholder');
@@ -272,7 +272,7 @@ it('should render a defer block in different states', async () => {
   expect(componentFixture.nativeElement.innerHTML).toContain('Loading');
 
   // Render final state and verify the output.
-  await deferBlockFixture.render(DeferBlockState.Completed);
+  await deferBlockFixture.render(DeferBlockState.Complete);
   expect(componentFixture.nativeElement.innerHTML).toContain('large works!');
 });
 ```
