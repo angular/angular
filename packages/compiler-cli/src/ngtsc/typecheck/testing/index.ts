@@ -20,7 +20,7 @@ import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} fro
 import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
+import {OptimizeFor, ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
@@ -104,6 +104,14 @@ export function angularCoreDts(): TestFile {
     }
 
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+    export declare const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
+    export declare const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
+
+    export declare type InputSignal<ReadT, WriteT = ReadT> = (() => ReadT)&{
+      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+    };
    `
   };
 }
@@ -582,6 +590,44 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     program,
     programStrategy,
   };
+}
+
+/**
+ * Diagnoses the given template with the specified declarations.
+ *
+ * @returns a list of error diagnostics.
+ */
+export function diagnose(
+    template: string, source: string, declarations?: TestDeclaration[],
+    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
+    options?: ts.CompilerOptions): string[] {
+  const sfPath = absoluteFrom('/main.ts');
+  const {program, templateTypeChecker} = setup(
+      [
+        {
+          fileName: sfPath,
+          templates: {
+            'TestComponent': template,
+          },
+          source,
+          declarations,
+        },
+        ...additionalSources.map(testFile => ({
+                                   fileName: testFile.name,
+                                   source: testFile.contents,
+                                   templates: {},
+                                 })),
+      ],
+      {config, options});
+  const sf = getSourceFileOrError(program, sfPath);
+  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+
+  return diagnostics.map(diag => {
+    const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+    const fileName = diag.file!.fileName;
+    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
+    return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
+  });
 }
 
 function createTypeCheckAdapter(fn: (sf: ts.SourceFile, ctx: TypeCheckContext) => void):
