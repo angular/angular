@@ -23,7 +23,7 @@ export function migrateTemplate(
     format: boolean = true): {migrated: string, errors: MigrateError[]} {
   let errors: MigrateError[] = [];
   let migrated = template;
-  if (templateType === 'template') {
+  if (templateType === 'template' || templateType === 'templateUrl') {
     const ifResult = migrateIf(template);
     const forResult = migrateFor(ifResult.migrated);
     const switchResult = migrateSwitch(forResult.migrated);
@@ -32,7 +32,7 @@ export function migrateTemplate(
     const changed =
         ifResult.changed || forResult.changed || switchResult.changed || caseResult.changed;
     if (format && changed) {
-      migrated = formatTemplate(migrated);
+      migrated = formatTemplate(migrated, templateType);
     }
     file.removeCommonModule = canRemoveCommonModule(template);
 
