@@ -1,3 +1,36 @@
+<a name="17.0.4"></a>
+# 17.0.4 (2023-11-20)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f1c55755d](https://github.com/angular/angular/commit/7f1c55755d94444aa2c07fc62c276bb158e69f24) | fix | remove `load` on image once it fails to load ([#52990](https://github.com/angular/angular/pull/52990)) |
+| [fafcb0d23f](https://github.com/angular/angular/commit/fafcb0d23f1f687a2fe5c8349b916586ffadc375) | fix | scan images once page is loaded ([#52991](https://github.com/angular/angular/pull/52991)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98376f2c09](https://github.com/angular/angular/commit/98376f2c09e9c28d1473123a2a1f4fb1c9d1cb1e) | fix | changed after checked error in for loops ([#52935](https://github.com/angular/angular/pull/52935)) |
+| [291deac663](https://github.com/angular/angular/commit/291deac6636a6f99a98dd0c9096ebe3b0547bb9e) | fix | generate i18n instructions for blocks ([#52958](https://github.com/angular/angular/pull/52958)) |
+| [49dca36880](https://github.com/angular/angular/commit/49dca36880a1c1c394533e8a94db9c5ef412ebd2) | fix | nested for loops incorrectly calculating computed variables ([#52931](https://github.com/angular/angular/pull/52931)) |
+| [f01b7183d2](https://github.com/angular/angular/commit/f01b7183d2064f41c0f5e30ee976cc91c15e06c5) | fix | produce placeholder for blocks in i18n bundles ([#52958](https://github.com/angular/angular/pull/52958)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f671f86ac2](https://github.com/angular/angular/commit/f671f86ac28d434b2fd492ef005749fe0275ece9) | fix | add diagnostic for control flow that prevents content projection ([#52726](https://github.com/angular/angular/pull/52726)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db1a8ebdb4](https://github.com/angular/angular/commit/db1a8ebdb4da8673107ba4ba08c42d484b733c03) | fix | cleanup loading promise when no dependencies are defined ([#53031](https://github.com/angular/angular/pull/53031)) |
+| [31a1575334](https://github.com/angular/angular/commit/31a1575334ef78822d947ed858d8365ca5665f2f) | fix | handle local refs when `getDeferBlocks` is invoked in tests ([#52973](https://github.com/angular/angular/pull/52973)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ac9cd6108f](https://github.com/angular/angular/commit/ac9cd6108f6fe25e9c7a11db9816c6e07d241515) | fix | control flow migration fails for async pipe with unboxing of observable ([#52756](https://github.com/angular/angular/pull/52756)) ([#52972](https://github.com/angular/angular/pull/52972)) |
+| [13bf5b7007](https://github.com/angular/angular/commit/13bf5b700739aadb2e5a210441fb815a8501ad65) | fix | Fixes control flow migration if then else case ([#53006](https://github.com/angular/angular/pull/53006)) |
+| [492ad4698a](https://github.com/angular/angular/commit/492ad4698aaef51a3d24ae90f617a2ba3fae901e) | fix | fixes migrations of nested switches in control flow ([#53010](https://github.com/angular/angular/pull/53010)) |
+| [0fad36eff2](https://github.com/angular/angular/commit/0fad36eff2b228baa3b8868810d4ac86eb6db459) | fix | tweaks to formatting in control flow migration ([#53058](https://github.com/angular/angular/pull/53058)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.1.0-next.0"></a>
 # 17.1.0-next.0 (2023-11-15)
 ### compiler-cli
