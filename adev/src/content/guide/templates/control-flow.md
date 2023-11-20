@@ -122,7 +122,7 @@ The `@switch` block replaces `ngSwitch` with major benefits:
 
 The `@for` block replaces `*ngFor` for iteration, and has several differences compared to its structural directive `NgFor` predecessor:
 
-* tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomic (it is enough to write an expression instead of creating the `trackBy` method);
+* tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomics (it is enough to write an expression instead of creating the `trackBy` method);
 * uses a new optimized algorithm for calculating a minimal number of DOM operations to be performed in response to changes in a collection, instead of Angular’s customizable diffing implementation (`IterableDiffer`);
 * has support for `@empty` blocks.
 
