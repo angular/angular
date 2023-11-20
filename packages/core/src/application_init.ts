@@ -121,7 +121,7 @@ import {isPromise, isSubscribable} from './util/lang';
  *     provideHttpClient(),
  *     {
  *       provide: APP_INITIALIZER,
- *       useFactory: initializeApp,
+ *       useFactory: initializeAppFactory,
  *       multi: true,
  *       deps: [HttpClient],
  *     },
