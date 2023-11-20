@@ -112,7 +112,7 @@ function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Resu
 function buildStandardIfElseBlock(
     etm: ElementToMigrate, tmpl: string, elseString: string, offset: number): Result {
   // includes the mandatory semicolon before as
-  const condition = etm.getCondition(elseString)
+  const condition = etm.getCondition()
                         .replace(' as ', '; as ')
                         // replace 'let' with 'as' whatever spaces are between ; and 'let'
                         .replace(/;\s*let/g, '; as');
@@ -160,7 +160,7 @@ function buildStandardIfThenElseBlock(
     etm: ElementToMigrate, tmpl: string, thenString: string, elseString: string,
     offset: number): Result {
   // includes the mandatory semicolon before as
-  const condition = etm.getCondition(thenString)
+  const condition = etm.getCondition()
                         .replace(' as ', '; as ')
                         // replace 'let' with 'as' whatever spaces are between ; and 'let'
                         .replace(/;\s*let/g, '; as');
