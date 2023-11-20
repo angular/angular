@@ -10,4 +10,4 @@
 // https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0.
 
 export {InputFunction as ɵInputFunction, inputFunction as ɵinputFunctionForApiGuard, inputRequiredFunction as ɵinputFunctionRequiredForApiGuard} from './authoring/input';
-export {InputOptions as ɵInputOptions, InputOptionsWithoutTransform as ɵInputOptionsWithoutTransform, InputOptionsWithTransform as ɵInputOptionsWithTransform, InputSignal} from './authoring/input_signal';
+export {InputOptions as ɵInputOptions, InputOptionsWithoutTransform as ɵInputOptionsWithoutTransform, InputOptionsWithTransform as ɵInputOptionsWithTransform, InputSignal, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from './authoring/input_signal';
