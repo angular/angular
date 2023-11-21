@@ -239,7 +239,9 @@ The index property of the `NgFor` directive context returns the zero-based index
 Angular translates this instruction into an `<ng-template>` around the host element,
 then uses this template repeatedly to create a new set of elements and bindings for each `item`
 in the list.
-For more information about shorthand, see the [Structural Directives](guide/directives/structural-directives#structural-directive-shorthand) guide.## Repeating elements when a condition is true
+For more information about shorthand, see the [Structural Directives](guide/directives/structural-directives#structural-directive-shorthand) guide.
+
+## Repeating elements when a condition is true
 
 To repeat a block of HTML when a particular condition is true, put the `*ngIf` on a container element that wraps an `*ngFor` element.
 
