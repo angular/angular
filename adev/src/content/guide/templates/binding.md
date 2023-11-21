@@ -58,11 +58,11 @@ If you reference a name that belongs to more than one of these namespaces, Angul
 To avoid variables shadowing variables in another context, keep variable names unique.
 In the following example, the `AppComponent` template greets the `customer`, Padma.
 
-An `ngFor` then lists each `customer` in the `customers` array.
+The `@for` then lists each `customer` in the `customers` array.
 
 <docs-code path="interpolation/src/app/app.component.1.ts" visibleRegion="var-collision" header="src/app/app.component.ts"/>
 
-The `customer` within the `ngFor` is in the context of the implicit `<ng-template>` defined by the _ngFor_.  It refers to each `customer` in the `customers` array and displays "Ebony" and "Chiho".  "Padma" is not displayed because that name is not in that array.
+The `customer` within the `@for` is in the context of the implicit `<ng-template>` defined by the _@for_.  It refers to each `customer` in the `customers` array and displays "Ebony" and "Chiho".  "Padma" is not displayed because that name is not in that array.
 
 On the other hand, the `<h1>` displays "Padma" which is bound to the value of the `customer` property in the component class.
 

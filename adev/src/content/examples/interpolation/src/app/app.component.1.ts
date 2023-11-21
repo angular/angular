@@ -16,7 +16,6 @@ import { NgFor } from '@angular/common';
       </ul>
     </div>
   `,
-  imports: [NgFor]
 })
 export class AppComponent {
   customers = [{value: 'Ebony'}, {value: 'Chiho'}];
