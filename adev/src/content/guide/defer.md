@@ -52,7 +52,7 @@ The `@placeholder` block accepts an optional parameter to specify the `minimum` 
 }
 ```
 
-Note: Certain triggers may require the presence of either a `@placeholder` or a template reference variable to function. See the [Triggers](guide/defer#triggers) section for more details.
+Note: Certain triggers may require the presence of either a `@placeholder` or a [template reference variable](guide/templates/reference-variables) to function. See the [Triggers](guide/defer#triggers) section for more details.
 
 ### `@loading`
 
@@ -138,7 +138,7 @@ By default, the placeholder will act as the element watched for entering viewpor
 }
 ```
 
-Alternatively, you can specify a template reference variable in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
 
 ```html
 <div #greeting>Hello!</div>
@@ -162,7 +162,7 @@ By default, the placeholder will act as the interaction element as long as it is
 }
 ```
 
-Alternatively, you can specify a template reference variable as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
 
 ```html
 <button type="button" #greeting>Hello!</button>
@@ -188,7 +188,7 @@ By default, the placeholder will act as the hover element as long as it is a sin
 }
 ```
 
-Alternatively, you can specify a template reference variable as the hover element. This variable is passed in as a parameter on the hover trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the hover element. This variable is passed in as a parameter on the hover trigger.
 
 ```html
 <div #greeting>Hello!</div>
