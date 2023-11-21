@@ -135,7 +135,7 @@ export class EffectiveCounterComponent {
   constructor() {
     // Register a new effect.
     effect(() => {
-      console.log(`The count is: ${this.count()})`);
+      console.log(`The count is: ${this.count()}`);
     });
   }
 }
@@ -149,7 +149,7 @@ export class EffectiveCounterComponent {
   readonly count = signal(0);
 
   private loggingEffect = effect(() => {
-    console.log(`The count is: ${this.count()})`);
+    console.log(`The count is: ${this.count()}`);
   });
 }
 ```
@@ -164,7 +164,7 @@ export class EffectiveCounterComponent {
 
   initializeLogging(): void {
     effect(() => {
-      console.log(`The count is: ${this.count()})`);
+      console.log(`The count is: ${this.count()}`);
     }, {injector: this.injector});
   }
 }
@@ -205,7 +205,7 @@ For example, suppose that when `currentUser` changes, the value of a `counter` s
 
 ```ts
 effect(() => {
-  console.log(`User set to `${currentUser()}` and the counter is ${counter()}`);
+  console.log(`User set to ${currentUser()} and the counter is ${counter()}`);
 });
 ```
 
@@ -215,7 +215,7 @@ You can prevent a signal read from being tracked by calling its getter with `unt
 
 ```ts
 effect(() => {
-  console.log(`User set to `${currentUser()}` and the counter is ${untracked(counter)}`);
+  console.log(`User set to ${currentUser()} and the counter is ${untracked(counter)}`);
 });
 ```
 
