@@ -107,7 +107,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "markdownlint-cli": "^0.36.0",
-    "marked": "^5.1.1",
+    "marked": "^10.0.0",
     "ng-packagr": "17.0.0-next.1",
     "postcss-scss": "^4.0.4",
     "prettier": "^2.8.4",
