@@ -95,6 +95,7 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
   const loopVar = condition.split(' of ')[0];
   let trackBy = loopVar;
   let aliasedIndex: string|null = null;
+  let tmplPlaceholder = '';
   for (let i = 1; i < parts.length; i++) {
     const part = parts[i].trim();
 
@@ -102,6 +103,12 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
       // build trackby value
       const trackByFn = part.replace('trackBy:', '').trim();
       trackBy = `${trackByFn}($index, ${loopVar})`;
+    }
+    // template
+    if (part.startsWith('template:')) {
+      // this generates a special template placeholder just for this use case
+      // which has a # at the end instead of the standard | in other placeholders
+      tmplPlaceholder = `#${part.split(':')[1].trim()}#`;
     }
     // aliases
     // declared with `let myIndex = index`
@@ -136,11 +143,19 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
 
   const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}${start}`;
+  let startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
+  let endBlock = `${lbString}}`;
+  let forBlock = '';
 
-  const endBlock = `${end}${lbString}}`;
-  const forBlock = startBlock + middle + endBlock;
+  if (tmplPlaceholder !== '') {
+    startBlock = startBlock + tmplPlaceholder;
+    forBlock = startBlock + endBlock;
+  } else {
+    const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+    startBlock += start;
+    endBlock = end + endBlock;
+    forBlock = startBlock + middle + endBlock;
+  }
 
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
 
