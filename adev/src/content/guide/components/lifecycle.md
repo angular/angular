@@ -69,11 +69,11 @@ process.
     <tr>
       <td rowspan="2">Rendering</td>
       <td><code>afterNextRender</code></td>
-      <td>Runs once the next time that **all* components have been rendered to the DOM.</td>
+      <td>Runs once the next time that <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
       <td><code>afterRender</code></td>
-      <td>Runs every time **all** components have been rendered to the DOM.</td>
+      <td>Runs every time <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
       <td>Destruction</td>
