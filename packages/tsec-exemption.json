@@ -12,7 +12,8 @@
     "core/src/sanitization/inert_body.ts"
   ],
   "ban-element-setattribute": [
-    "platform-browser/src/browser/meta.ts"
+    "platform-browser/src/browser/meta.ts",
+    "platform-browser/src/browser/browser_adapter.ts"
   ],
   "ban-domparser-parsefromstring": [
     "core/src/sanitization/inert_body.ts"

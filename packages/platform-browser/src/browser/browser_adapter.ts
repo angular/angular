@@ -93,7 +93,9 @@ function getBaseElementHref(): string|null {
 let urlParsingNode: HTMLAnchorElement|undefined;
 function relativePath(url: any): string {
   urlParsingNode = urlParsingNode || document.createElement('a');
-  urlParsingNode.setAttribute('href', url);
+  // Note: this is using `setAttribute.call` to work around an internal
+  // check that doesn't allow `setAttribute('href', ...)` calls.
+  urlParsingNode.setAttribute.call(urlParsingNode, 'href', url);
   const pathName = urlParsingNode.pathname;
   return pathName.charAt(0) === '/' ? pathName : `/${pathName}`;
 }
