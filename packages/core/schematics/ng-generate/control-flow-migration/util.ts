@@ -269,7 +269,7 @@ export function reduceNestingOffset(
  * Replaces structural directive control flow instances with block control flow equivalents.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function countTemplateUsage(template: string): Map<string, Template> {
+export function getTemplates(template: string): Map<string, Template> {
   const parsed = parseTemplate(template);
   if (parsed !== null) {
     const visitor = new TemplateCollector();
@@ -299,22 +299,33 @@ function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
  */
 export function processNgTemplates(template: string): string {
   // count usage
-  const templates = countTemplateUsage(template);
+  const templates = getTemplates(template);
 
   // swap placeholders and remove
   for (const [name, t] of templates) {
     const replaceRegex = new RegExp(`${name}\\|`, 'g');
-    const matches = [...template.matchAll(replaceRegex)];
+    const forRegex = new RegExp(`${name}\\#`, 'g');
+    const forMatches = [...template.matchAll(forRegex)];
+    const matches = [...forMatches, ...template.matchAll(replaceRegex)];
+    let safeToRemove = true;
     if (matches.length > 0) {
       if (t.i18n !== null) {
         const container = wrapIntoI18nContainer(t.i18n, t.children);
         template = template.replace(replaceRegex, container);
+      } else if (t.children.trim() === '' && t.isNgTemplateOutlet) {
+        template = template.replace(replaceRegex, t.generateTemplateOutlet());
+      } else if (forMatches.length > 0) {
+        if (t.count === 2) {
+          template = template.replace(forRegex, t.children);
+        } else {
+          template = template.replace(forRegex, t.generateTemplateOutlet());
+          safeToRemove = false;
+        }
       } else {
         template = template.replace(replaceRegex, t.children);
       }
-
       // the +1 accounts for the t.count's counting of the original template
-      if (t.count === matches.length + 1) {
+      if (t.count === matches.length + 1 && safeToRemove) {
         template = template.replace(t.contents, '');
       }
     }

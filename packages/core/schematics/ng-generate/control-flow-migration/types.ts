@@ -116,8 +116,19 @@ export class ElementToMigrate {
 
   getCondition(): string {
     const chunks = this.attr.value.split(';');
+    let condition = chunks[0];
+
+    // checks for case of no usage of `;` in if else / if then else
+    const elseIx = condition.indexOf(' else ');
+    const thenIx = condition.indexOf(' then ');
+    if (thenIx > -1) {
+      condition = condition.slice(0, thenIx);
+    } else if (elseIx > -1) {
+      condition = condition.slice(0, elseIx);
+    }
+
     let letVar = chunks.find(c => c.search(/\s*let\s/) > -1);
-    return chunks[0] + (letVar ? ';' + letVar : '');
+    return condition + (letVar ? ';' + letVar : '');
   }
 
   getTemplateName(targetStr: string, secondStr?: string): string {
@@ -150,14 +161,33 @@ export class ElementToMigrate {
  */
 export class Template {
   el: Element;
+  name: string;
   count: number = 0;
   contents: string = '';
   children: string = '';
   i18n: Attribute|null = null;
+  attributes: Attribute[];
 
-  constructor(el: Element, i18n: Attribute|null) {
+  constructor(el: Element, name: string, i18n: Attribute|null) {
     this.el = el;
+    this.name = name;
+    this.attributes = el.attrs;
     this.i18n = i18n;
+  }
+
+  get isNgTemplateOutlet() {
+    return this.attributes.find(attr => attr.name === '*ngTemplateOutlet') !== undefined;
+  }
+
+  get outletContext() {
+    const letVar = this.attributes.find(attr => attr.name.startsWith('let-'));
+    return letVar ? `; context: {$implicit: ${letVar.name.split('-')[1]}}` : '';
+  }
+
+  generateTemplateOutlet() {
+    const attr = this.attributes.find(attr => attr.name === '*ngTemplateOutlet');
+    const outletValue = attr?.value ?? this.name.slice(1);
+    return `<ng-container *ngTemplateOutlet="${outletValue}${this.outletContext}"></ng-container>`;
   }
 
   generateContents(tmpl: string) {
@@ -307,7 +337,7 @@ export class TemplateCollector extends RecursiveVisitor {
       }
       if (templateAttr !== null) {
         this.elements.push(new ElementToMigrate(el, templateAttr));
-        this.templates.set(templateAttr.name, new Template(el, i18n));
+        this.templates.set(templateAttr.name, new Template(el, templateAttr.name, i18n));
       }
     }
     super.visitElement(el, null);
