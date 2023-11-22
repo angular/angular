@@ -200,4 +200,4 @@ Summary: In this lesson, you updated your app to use a local web server (`json-s
 
 Congratulations! You've successfully completed this tutorial and are ready to continue your journey with building even more complex Angular Apps.
 
-If you would like to learn more, please consider completing some of Angular's other developer [tutorials](tutorial) and [guides](overview).
+If you would like to learn more, please consider completing some of Angular's other developer [tutorials](tutorials) and [guides](overview).
