@@ -77,11 +77,21 @@ function updateImportClause(clause: ts.ImportClause, removeCommonModule: boolean
 }
 
 function updateClassImports(
-    propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string {
-  const printer = ts.createPrinter();
+    propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string|null {
+  // removeComments is set to true to prevent duplication of comments
+  // when the import declaration is at the top of the file, but right after a comment
+  // without this, the comment gets duplicated when the declaration is updated.
+  // the typescript AST includes that preceding comment as part of the import declaration full text.
+  const printer = ts.createPrinter({
+    removeComments: true,
+  });
   const importList = propAssignment.initializer as ts.ArrayLiteralExpression;
   const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
   const elements = importList.elements.filter(el => !removals.includes(el.getText()));
+  if (elements.length === importList.elements.length) {
+    // nothing changed
+    return null;
+  }
   const updatedElements = ts.factory.updateArrayLiteralExpression(importList, elements);
   const updatedAssignment =
       ts.factory.updatePropertyAssignment(propAssignment, propAssignment.name, updatedElements);
@@ -101,7 +111,7 @@ function analyzeImportDeclarations(
         clause.namedBindings.elements.filter(el => importWithCommonRemovals.includes(el.getText()));
     if (elements.length > 0) {
       AnalyzedFile.addRange(
-          sourceFile.fileName, analyzedFiles,
+          sourceFile.fileName, sourceFile.fileName, analyzedFiles,
           {start: node.getStart(), end: node.getEnd(), node, type: 'import'});
     }
   }
@@ -139,7 +149,7 @@ function analyzeDecorators(
     switch (prop.name.text) {
       case 'template':
         // +1/-1 to exclude the opening/closing characters from the range.
-        AnalyzedFile.addRange(sourceFile.fileName, analyzedFiles, {
+        AnalyzedFile.addRange(sourceFile.fileName, sourceFile.fileName, analyzedFiles, {
           start: prop.initializer.getStart() + 1,
           end: prop.initializer.getEnd() - 1,
           node: prop,
@@ -148,7 +158,7 @@ function analyzeDecorators(
         break;
 
       case 'imports':
-        AnalyzedFile.addRange(sourceFile.fileName, analyzedFiles, {
+        AnalyzedFile.addRange(sourceFile.fileName, sourceFile.fileName, analyzedFiles, {
           start: prop.name.getStart(),
           end: prop.initializer.getEnd(),
           node: prop,
@@ -160,7 +170,9 @@ function analyzeDecorators(
         // Leave the end as undefined which means that the range is until the end of the file.
         if (ts.isStringLiteralLike(prop.initializer)) {
           const path = join(dirname(sourceFile.fileName), prop.initializer.text);
-          AnalyzedFile.addRange(path, analyzedFiles, {start: 0, node: prop, type: 'templateUrl'});
+          AnalyzedFile.addRange(
+              path, sourceFile.fileName, analyzedFiles,
+              {start: 0, node: prop, type: 'templateUrl'});
         }
         break;
     }
@@ -353,7 +365,8 @@ export function canRemoveCommonModule(template: string): boolean {
 export function removeImports(
     template: string, node: ts.Node, removeCommonModule: boolean): string {
   if (template.startsWith('imports') && ts.isPropertyAssignment(node)) {
-    return updateClassImports(node, removeCommonModule);
+    const updatedImport = updateClassImports(node, removeCommonModule);
+    return updatedImport ?? template;
   } else if (ts.isImportDeclaration(node) && checkIfShouldChange(node, removeCommonModule)) {
     return updateImportDeclaration(node, removeCommonModule);
   }

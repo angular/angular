@@ -78,7 +78,12 @@ function runControlFlowMigration(
     analyze(sourceFile, analysis);
   }
 
-  for (const [path, file] of analysis) {
+  // sort files with .html files first
+  // this ensures class files know if it's safe to remove CommonModule
+  const paths = sortFilePaths([...analysis.keys()]);
+
+  for (const path of paths) {
+    const file = analysis.get(path)!;
     const ranges = file.getSortedRanges();
     const relativePath = relative(basePath, path);
     const content = tree.readText(relativePath);
@@ -89,7 +94,7 @@ function runControlFlowMigration(
       const length = (end ?? content.length) - start;
 
       const {migrated, errors} =
-          migrateTemplate(template, type, node, file, schematicOptions.format);
+          migrateTemplate(template, type, node, file, schematicOptions.format, analysis);
 
       if (migrated !== null) {
         update.remove(start, length);
@@ -111,6 +116,12 @@ function runControlFlowMigration(
   }
 
   return errorList;
+}
+
+function sortFilePaths(names: string[]): string[] {
+  const templateFiles = names.filter(n => n.endsWith('.html'));
+  const classFiles = names.filter(n => !n.endsWith('.html'));
+  return [...templateFiles, ...classFiles];
 }
 
 function generateErrorMessage(path: string, errors: MigrateError[]): string {
