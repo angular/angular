@@ -1,6 +1,7 @@
 # Create a new project
 
-Use the `ng new` command to start creating your **Tour of Heroes** application.
+Use the `ng new` command to start creating your **Tour of Heroes** application. <br>
+<b>Please note:</b> From version 17 of Angular a standalone project will be created by default. To create a project with the old scaffolding you need to use the option `ng new --no-standalone`
 
 This tutorial:
 
