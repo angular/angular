@@ -4020,6 +4020,41 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should remove common module post migration if using external template', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n'));
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show">Content here</span>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';\n\n`,
+        `@Component({`,
+        `  imports: [],`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {

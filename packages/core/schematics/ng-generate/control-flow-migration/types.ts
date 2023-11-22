@@ -205,9 +205,11 @@ export class Template {
 export class AnalyzedFile {
   private ranges: Range[] = [];
   removeCommonModule = false;
+  sourceFilePath: string = '';
 
   /** Returns the ranges in the order in which they should be migrated. */
   getSortedRanges(): Range[] {
+    // templates first for checking on whether certain imports can be safely removed
     const templateRanges = this.ranges.slice()
                                .filter(x => x.type !== 'import')
                                .sort((aStart, bStart) => bStart.start - aStart.start);
@@ -223,11 +225,14 @@ export class AnalyzedFile {
    * @param analyzedFiles Map keeping track of all the analyzed files.
    * @param range Range to be added.
    */
-  static addRange(path: string, analyzedFiles: Map<string, AnalyzedFile>, range: Range): void {
+  static addRange(
+      path: string, sourceFilePath: string, analyzedFiles: Map<string, AnalyzedFile>,
+      range: Range): void {
     let analysis = analyzedFiles.get(path);
 
     if (!analysis) {
       analysis = new AnalyzedFile();
+      analysis.sourceFilePath = sourceFilePath;
       analyzedFiles.set(path, analysis);
     }
 

@@ -20,7 +20,8 @@ import {canRemoveCommonModule, formatTemplate, processNgTemplates, removeImports
  */
 export function migrateTemplate(
     template: string, templateType: string, node: ts.Node, file: AnalyzedFile,
-    format: boolean = true): {migrated: string, errors: MigrateError[]} {
+    format: boolean = true,
+    analyzedFiles: Map<string, AnalyzedFile>|null): {migrated: string, errors: MigrateError[]} {
   let errors: MigrateError[] = [];
   let migrated = template;
   if (templateType === 'template' || templateType === 'templateUrl') {
@@ -35,6 +36,15 @@ export function migrateTemplate(
       migrated = formatTemplate(migrated, templateType);
     }
     file.removeCommonModule = canRemoveCommonModule(template);
+
+    // when migrating an external template, we have to pass back
+    // whether it's safe to remove the CommonModule to the
+    // original component class source file
+    if (templateType === 'templateUrl' && analyzedFiles !== null &&
+        analyzedFiles.has(file.sourceFilePath)) {
+      const componentFile = analyzedFiles.get(file.sourceFilePath)!;
+      componentFile.removeCommonModule = file.removeCommonModule;
+    }
 
     errors = [
       ...ifResult.errors,
