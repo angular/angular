@@ -1,0 +1,28 @@
+i'm trying to do this:
+
+// typescript
+get getWidth(): number {
+    // this._el is an inject(ElementRef);
+    const width = +this._el.nativeElement.querySelector(
+      '[id="fs-img-container"]'
+    ).clientWidth;
+
+    return (80 / 100) * width - 1;
+}
+get getHeight(): number {
+    const height = +this._el.nativeElement.querySelector(
+      '[id="fs-img-container"]'
+    ).clientHeight;
+
+    return (80 / 100) * height - 1;
+}
+
+// html
+<img
+  ngSrc="assets/hero-illustration.svg"
+  [width]="getWidth"
+  [height]="getHeight"
+/>
+
+This works perfectly and the expected result is obtained, however in the console it shows the following error:
+ERROR RuntimeError: NG02952: The NgOptimizedImage directive (activated on an <img> element with the `ngSrc="assets/hero-illustration.svg"`) has detected that `height` has an invalid value. To fix this, provide `height` as a number greater than 0.
