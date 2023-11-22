@@ -53,8 +53,8 @@ As a library developer, you can create your own collections of custom schematics
 For more details of what these look like and how to create them, see:
 
 <docs-pill-row>
-  <docs-pill href="guide/schematics-authoring" title="Authoring Schematics"/>
-  <docs-pill href="guide/schematics-for-libraries" title="Schematics for Libraries"/>
+  <docs-pill href="tools/cli/schematics-authoring" title="Authoring Schematics"/>
+  <docs-pill href="tools/cli/schematics-for-libraries" title="Schematics for Libraries"/>
 </docs-pill-row>
 
 ### Add schematics
