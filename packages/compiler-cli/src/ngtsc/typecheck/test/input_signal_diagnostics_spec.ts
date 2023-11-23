@@ -399,6 +399,79 @@ runInEachFileSystem(() => {
               `TestComponent.html(3, 63): Type 'number' is not assignable to type 'null'.`,
             ],
           },
+          // differing Write and ReadT
+          {
+            id: 'differing WriteT and ReadT, superset union, valid binding',
+            inputs: {
+              bla: {
+                type: 'InputSignal<boolean, boolean|string>',
+                isSignal: true,
+              },
+            },
+            template: `<div dir bla="string value">`,
+            expected: [],
+          },
+          {
+            id: 'differing WriteT and ReadT, superset union, invalid binding',
+            inputs: {
+              bla: {
+                type: 'InputSignal<boolean, boolean|string>',
+                isSignal: true,
+              },
+            },
+            template: `<div dir [bla]="2">`,
+            expected: [
+              `TestComponent.html(1, 11): Type '2' is not assignable to type 'string | boolean'.`,
+            ],
+          },
+          {
+            id: 'differing WriteT and ReadT, divergent, valid binding',
+            inputs: {
+              bla: {
+                type: 'InputSignal<boolean, string>',
+                isSignal: true,
+              },
+            },
+            template: `<div dir bla="works">`,
+            expected: [],
+          },
+          {
+            id: 'differing WriteT and ReadT, divergent, invalid binding',
+            inputs: {
+              bla: {
+                type: 'InputSignal<boolean, string>',
+                isSignal: true,
+              },
+            },
+            template: `<div dir [bla]="true">`,
+            expected: [
+              `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
+            ],
+          },
+          {
+            id: 'differing WriteT and ReadT, generic ctor inference',
+            inputs: {
+              bla: {
+                type: 'InputSignal<string, T>',
+                isSignal: true,
+              },
+            },
+            extraDirectiveMembers: [
+              `tester: {t: T, blaValue: never} = null!`,
+            ],
+            directiveGenerics: '<T>',
+            template: `
+              <div dir [bla]="prop" #ref="dir"
+                   (click)="ref.tester = {t: 0, blaValue: ref.bla()}">`,
+            component: `prop: HTMLElement = null!`,
+            expected: [
+              // This verifies that the `ref.tester.t` is correctly inferred to be `HTMLElement`.
+              `TestComponent.html(3, 46): Type 'number' is not assignable to type 'HTMLElement'.`,
+              // This verifies that the `bla` input value is still a `string` when accessed.
+              `TestComponent.html(3, 59): Type 'string' is not assignable to type 'never'.`,
+            ],
+          },
+          // TODO(devversion): inline constructor test
         ];
 
     for (const c of bindingCases) {
