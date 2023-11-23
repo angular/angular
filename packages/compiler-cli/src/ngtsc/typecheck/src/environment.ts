@@ -84,7 +84,7 @@ export class Environment extends ReferenceEmitEnvironment {
         coercedInputFields: dir.coercedInputFields,
       };
       const typeParams = this.emitTypeParameters(node);
-      const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName, typeParams);
+      const typeCtor = generateTypeCtorDeclarationFn(this, meta, nodeTypeRef.typeName, typeParams);
       this.typeCtorStatements.push(typeCtor);
       const fnId = ts.factory.createIdentifier(fnName);
       this.typeCtors.set(node, fnId);

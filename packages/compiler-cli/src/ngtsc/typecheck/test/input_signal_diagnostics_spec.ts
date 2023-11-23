@@ -18,6 +18,7 @@ runInEachFileSystem(() => {
       inputs: Record<string, {type: string, isSignal: boolean, restrictionModifier?: string}>,
       template: string,
       extraDirectiveMembers?: string[],
+      directiveGenerics?: string,
       component?: string, expected: (string|jasmine.AsymmetricMatcher<string>)[],
       options?: Partial<TypeCheckingConfig>,
       focus?: boolean,
@@ -253,6 +254,151 @@ runInEachFileSystem(() => {
             template: `<div dir [pattern]="false">`,
             expected: [],
           },
+          // with generics (type constructor tests)
+          {
+            id: 'generic inference and binding to directive, all signal inputs',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              }
+            },
+            directiveGenerics: '<T>',
+            template: `<div dir [gen]="false" [other]="'invalid'">`,
+            expected: [
+              `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
+            ],
+          },
+          {
+            id: 'generic inference and binding to directive, mix of zone and signal',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'T',
+                isSignal: false,
+              }
+            },
+            directiveGenerics: '<T>',
+            template: `<div dir [gen]="false" [other]="'invalid'">`,
+            expected: [
+              `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
+            ],
+          },
+          {
+            id: 'generic inference and binding to directive (with `extends boolean`), all signal inputs',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              }
+            },
+            directiveGenerics: '<T extends boolean>',
+            template: `<div dir [gen]="false" [other]="'invalid'">`,
+            expected: [
+              `TestComponent.html(1, 25): Type '"invalid"' is not assignable to type 'false'.`,
+            ],
+          },
+          {
+            id: 'generic inference and binding to directive (with `extends boolean`), mix of zone and signal inputs',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'T',
+                isSignal: false,
+              }
+            },
+            directiveGenerics: '<T extends boolean>',
+            template: `<div dir [gen]="false" [other]="'invalid'">`,
+            expected: [
+              `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
+            ],
+          },
+          {
+            id: 'generic multi-inference and bindings to directive, all signal inputs',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'InputSignal<U, U>',
+                isSignal: true,
+              }
+            },
+            extraDirectiveMembers: [
+              'tester: {t: T, u: U} = null!',
+            ],
+            directiveGenerics: '<T, U>',
+            template: `
+              <div dir [gen]="false" [other]="'text'"
+                       #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
+            expected: [
+              `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
+              `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+            ],
+          },
+          {
+            id: 'generic multi-inference and bindings to directive, mix of zone and signal inputs',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'U',
+                isSignal: false,
+              }
+            },
+            extraDirectiveMembers: [
+              'tester: {t: T, u: U} = null!',
+            ],
+            directiveGenerics: '<T, U>',
+            template: `
+              <div dir [gen]="false" [other]="'text'"
+                       #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
+            expected: [
+              `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
+              `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+            ],
+          },
+          {
+            id: 'generic multi-inference and bindings to directive, more complicated generic inference',
+            inputs: {
+              gen: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+              other: {
+                type: 'InputSignal<{u: U}, {u: U}>',
+                isSignal: true,
+              }
+            },
+            extraDirectiveMembers: [
+              'tester: {t: T, u: U} = null!',
+            ],
+            directiveGenerics: '<T, U>',
+            template: `
+              <div dir [gen]="false" [other]="{u: null}"
+                   #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
+            expected: [
+              `TestComponent.html(3, 57): Type 'number' is not assignable to type 'boolean'.`,
+              `TestComponent.html(3, 63): Type 'number' is not assignable to type 'null'.`,
+            ],
+          },
         ];
 
     for (const c of bindingCases) {
@@ -264,7 +410,7 @@ runInEachFileSystem(() => {
         const testComponent = `
               import {InputSignal} from '@angular/core';
 
-              class Dir {
+              class Dir${c.directiveGenerics ?? ''} {
                 ${inputFields.join('\n')}
                 ${c.extraDirectiveMembers?.join('\n') ?? ''}
               }
@@ -294,7 +440,7 @@ runInEachFileSystem(() => {
                 name: 'Dir',
                 selector: '[dir]',
                 exportAs: ['dir'],
-                isGeneric: false,
+                isGeneric: c.directiveGenerics !== undefined,
                 inputs: inputDeclarations,
                 restrictedInputFields: Object.entries(c.inputs)
                                            .filter(([_, i]) => i.restrictionModifier !== undefined)

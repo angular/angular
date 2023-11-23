@@ -112,6 +112,9 @@ export function angularCoreDts(): TestFile {
       [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
       [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
     };
+
+    export type ɵUnwrapInputSignalWriteType<Field> = Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {[P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>};
    `
   };
 }
