@@ -612,6 +612,9 @@
     "name": "SEGMENT_RE"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {

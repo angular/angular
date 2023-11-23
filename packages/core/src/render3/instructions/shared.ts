@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer, SIGNAL} from '@angular/core/primitives/signals';
 
+import {InputSignal} from '../../authoring';
+import {InputSignalNode} from '../../authoring/input_signal_node';
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -39,7 +41,7 @@ import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingRange} from '../interfaces/styling';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -1304,7 +1306,16 @@ function writeToDirectiveInput<T>(
     if (def.setInput !== null) {
       def.setInput(instance, value, publicName, privateName);
     } else {
-      (instance as any)[privateName] = value;
+      // TODO: temporary hack for development testing
+      if ((instance as any)[privateName]?.[SIGNAL] !== undefined &&
+          (instance as any)[privateName]?.constructor?.name === 'InputSignal') {
+        const node =
+            (((instance as any)[privateName] as InputSignal<unknown, unknown>)[SIGNAL] as
+             InputSignalNode<unknown, unknown>);
+        node.applyValueToInputSignal(node, value);
+      } else {
+        (instance as any)[privateName] = value;
+      }
     }
   } finally {
     setActiveConsumer(prevConsumer);
