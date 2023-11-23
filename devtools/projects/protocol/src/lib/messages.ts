@@ -81,6 +81,8 @@ export enum PropType {
   Date,
   Array,
   Set,
+  ReadonlySignal,
+  WritableSignal,
   Unknown,
 }
 

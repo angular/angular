@@ -31,6 +31,7 @@ ts_test_library(
     deps = [
         ":state-serializer",
         "//devtools/projects/protocol",
+        "//packages/core",
         "@npm//@types",
     ],
 )

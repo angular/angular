@@ -9,6 +9,7 @@
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
 import {getDescriptor, getKeys} from './object-utils';
+import {getPropType} from './state-serializer';
 
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';
@@ -51,6 +52,8 @@ const serializable: {[key in PropType]: boolean} = {
   [PropType.HTMLNode]: false,
   [PropType.Symbol]: false,
   [PropType.Date]: false,
+  [PropType.ReadonlySignal]: false,
+  [PropType.WritableSignal]: false,
 };
 
 const typeToDescriptorPreview: Formatter<string> = {
@@ -72,6 +75,15 @@ const typeToDescriptorPreview: Formatter<string> = {
     }
     return prop;
   },
+  [PropType.ReadonlySignal]: (prop: any) => {
+    const signalValue = prop();
+    return `Signal(${typeToDescriptorPreview[getPropType(signalValue)](signalValue)})`
+  },
+  [PropType.WritableSignal]: (prop: any) => {
+    const signalValue = prop();
+    return `WritableSignal(${typeToDescriptorPreview[getPropType(signalValue)](signalValue)})`
+  },
+  // [PropType.WritableSignal]: (prop: any) => `Signal(...)`,
   [PropType.Unknown]: (_: any) => 'unknown',
 };
 
@@ -125,6 +137,14 @@ const shallowPropTypeToTreeMetaData:
         expandable: false,
       },
       [PropType.Set]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.ReadonlySignal]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.WritableSignal]: {
         editable: false,
         expandable: false,
       },

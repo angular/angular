@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Signal, WritableSignal} from '@angular/core';
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
 import {getKeys} from './object-utils';
@@ -27,7 +28,22 @@ const commonTypes = {
 
 const MAX_LEVEL = 1;
 
-const getPropType = (prop: any): PropType => {
+const isSignal =
+    (prop: unknown) => {
+      if (typeof prop == 'function') {
+        const symbols = Object.getOwnPropertySymbols(prop);
+        const isSignal = symbols.some((s) => s.description === 'SIGNAL');
+        return isSignal
+      }
+      return false
+    }
+
+const isWritableSignal = <T>(s: Signal<T>):
+    s is WritableSignal<T> => {
+      return typeof s['set'] === 'function';
+    }
+
+export const getPropType = (prop: any): PropType => {
   if (prop === undefined) {
     return PropType.Undefined;
   }
@@ -36,6 +52,9 @@ const getPropType = (prop: any): PropType => {
   }
   if (prop instanceof HTMLElement) {
     return PropType.HTMLNode;
+  }
+  if (isSignal(prop)) {
+    return isWritableSignal(prop) ? PropType.WritableSignal : PropType.ReadonlySignal;
   }
   const type = typeof prop;
   if (commonTypes[type] !== undefined) {

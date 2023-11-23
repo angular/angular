@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {computed, signal} from '@angular/core';
 import {PropType} from 'protocol';
 
 import {getDescriptor, getKeys} from './object-utils';
@@ -512,5 +513,74 @@ describe('deeplySerializeSelectedProperties', () => {
     };
 
     expect(getKeys(instance)).toEqual(['baz']);
+  });
+
+  it('ordinary signals should be considered as WritableSignal', () => {
+    const result = deeplySerializeSelectedProperties(
+        {
+          signal: signal(125),
+        },
+        []);
+
+    expect(result).toEqual({
+      signal: {
+        type: PropType.WritableSignal,
+        editable: false,
+        expandable: false,
+        preview: 'WritableSignal(125)',
+      }
+    });
+  });
+
+  it('readonly signals should be considered as ReadonlySignal', () => {
+    const writable = signal(125)
+    const result = deeplySerializeSelectedProperties(
+        {
+          signal: writable.asReadonly(),
+        },
+        []);
+
+    expect(result).toEqual({
+      signal: {
+        type: PropType.ReadonlySignal,
+        editable: false,
+        expandable: false,
+        preview: 'Signal(125)',
+      }
+    });
+  });
+
+  it('computed signals should be considered as ReadonlySignal', () => {
+    const result = deeplySerializeSelectedProperties(
+        {
+          computed: computed(() => 126),
+        },
+        []);
+
+    expect(result).toEqual({
+      computed: {
+        type: PropType.ReadonlySignal,
+        editable: false,
+        expandable: false,
+        preview: 'Signal(126)',
+      },
+    });
+  });
+
+  it('ReadonlySignal should not be editable', () => {
+    const result = deeplySerializeSelectedProperties(
+        {
+          signal: signal(125),
+        },
+        []);
+
+    expect(result).toEqual({
+      signal: {
+        type: PropType.WritableSignal,
+        editable: false,
+        expandable: false,
+        preview: 'WritableSignal(125)',
+      },
+    });
   });
 });
