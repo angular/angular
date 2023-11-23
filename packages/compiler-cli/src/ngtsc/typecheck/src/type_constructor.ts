@@ -143,14 +143,15 @@ function constructTypeCtorParameter(
       plainKeys.push(
           ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)));
     } else {
+      const coercionType = transform != null ?
+          transform.type.node :
+          tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName);
+
       coercedKeys.push(ts.factory.createPropertySignature(
           /* modifiers */ undefined,
           /* name */ classPropertyName,
           /* questionToken */ undefined,
-          /* type */
-          transform == null ?
-              tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName) :
-              transform.type.node));
+          /* type */ coercionType));
     }
   }
   if (plainKeys.length > 0) {

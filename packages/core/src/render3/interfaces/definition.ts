@@ -115,6 +115,9 @@ export interface DirectiveDef<T> {
    * A dictionary mapping the private names of inputs to their transformation functions.
    * Note: the private names are used for the keys, rather than the public ones, because public
    * names can be re-aliased in host directives which would invalidate the lookup.
+   *
+   * Note: Signal inputs will not have transforms captured here. This is because their
+   * transform function is already integrated into the `InputSignal`.
    */
   readonly inputTransforms: {[classPropertyName: string]: InputTransformFunction}|null;
 
