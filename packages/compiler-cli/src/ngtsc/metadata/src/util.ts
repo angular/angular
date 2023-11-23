@@ -124,7 +124,6 @@ export function extractDirectiveTypeCheckMeta(
       staticMembers.map(extractCoercedInput).filter((inputName): inputName is ClassPropertyName => {
         // If the input refers to a signal input, we will not respect coercion members.
         // A transform function should be used instead.
-        // TODO(signals): consider throwing a diagnostic?
         if (inputName === null || inputs.getByClassPropertyName(inputName)?.isSignal) {
           return false;
         }
