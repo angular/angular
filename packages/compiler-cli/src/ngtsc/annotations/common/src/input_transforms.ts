@@ -17,6 +17,9 @@ export function compileInputTransformFields(inputs: ClassPropertyMapping<InputMa
   const extraFields: CompileResult[] = [];
 
   for (const input of inputs) {
+    // Note: Signal inputs capture their transform `WriteT` as part of the `InputSignal`.
+    // Such inputs will not have a `transform` captured and not generate coercion members.
+
     if (input.transform) {
       extraFields.push({
         name: `ngAcceptInputType_${input.classPropertyName}`,
