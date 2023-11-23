@@ -1686,9 +1686,6 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "urlParsingNode"
-  },
-  {
     "name": "viewAttachedToChangeDetector"
   },
   {
