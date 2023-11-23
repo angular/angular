@@ -6,6 +6,7 @@
 
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
+import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -874,10 +875,14 @@ export interface InputDecorator {
 }
 
 // @public
-export type InputSignal<ReadT, WriteT = ReadT> = Signal<ReadT> & {
+export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+    // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+    // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
-};
+    // (undocumented)
+    [SIGNAL]: InputSignalNode<ReadT, WriteT>;
+}
 
 // @public
 export function isDevMode(): boolean;

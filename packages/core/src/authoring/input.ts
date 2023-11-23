@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal} from './input_signal';
+import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal} from './input_signal';
+import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 /**
  * Initializes an input with an initial value. If no explicit value
@@ -35,9 +36,9 @@ export function inputFunction<ReadT, WriteT>(
     initialValue: ReadT,
     opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
 export function inputFunction<ReadT, WriteT>(
-    _initialValue?: ReadT,
-    _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
-  throw new Error('TODO');
+    initialValue?: ReadT,
+    opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+  return createInputSignal(initialValue, opts);
 }
 
 /**
@@ -61,9 +62,9 @@ export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform
     InputSignal<ReadT>;
 export function inputRequiredFunction<ReadT, WriteT>(
     opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
+export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
     InputSignal<ReadT, WriteT> {
-  throw new Error('TODO');
+  return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
 
 /**
