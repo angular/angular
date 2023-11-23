@@ -2082,9 +2082,6 @@
     "name": "updateSegmentGroupChildren"
   },
   {
-    "name": "urlParsingNode"
-  },
-  {
     "name": "viewAttachedToChangeDetector"
   },
   {
