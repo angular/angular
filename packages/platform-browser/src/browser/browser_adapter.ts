@@ -89,11 +89,8 @@ function getBaseElementHref(): string|null {
   return baseElement ? baseElement.getAttribute('href') : null;
 }
 
-// based on urlUtils.js in AngularJS 1
-let urlParsingNode: HTMLAnchorElement|undefined;
-function relativePath(url: any): string {
-  urlParsingNode = urlParsingNode || document.createElement('a');
-  urlParsingNode.setAttribute('href', url);
-  const pathName = urlParsingNode.pathname;
-  return pathName.charAt(0) === '/' ? pathName : `/${pathName}`;
+function relativePath(url: string): string {
+  // The base URL doesn't really matter, we just need it so relative paths have something
+  // to resolve against. In the browser `HTMLBaseElement.href` is always absolute.
+  return new URL(url, 'http://a').pathname;
 }
