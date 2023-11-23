@@ -11,9 +11,9 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
-import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
+import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
-import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, FunctionDefinition, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
@@ -651,7 +651,7 @@ function parseInputsArray(
       const name = value.get('name');
       const alias = value.get('alias');
       const required = value.get('required');
-      let transform: InputTransform|null = null;
+      let transform: DecoratorInputTransform|null = null;
 
       if (typeof name !== 'string') {
         throw createValueHasWrongTypeError(
@@ -668,7 +668,8 @@ function parseInputsArray(
               `Transform of value at position ${i} of @Directive.inputs array must be a function`);
         }
 
-        transform = parseInputTransformFunction(clazz, name, transformValue, reflector, refEmitter);
+        transform = parseDecoratorInputTransformFunction(
+            clazz, name, transformValue, reflector, refEmitter);
       }
 
       inputs[name] = {
@@ -746,7 +747,7 @@ function tryParseInputFieldMapping(
 
     const publicInputName = alias ?? classPropertyName;
 
-    let transform: InputTransform|null = null;
+    let transform: DecoratorInputTransform|null = null;
     if (options instanceof Map && options.has('transform')) {
       const transformValue = options.get('transform');
 
@@ -755,7 +756,7 @@ function tryParseInputFieldMapping(
             optionsNode!, transformValue, `Input transform must be a function`);
       }
 
-      transform = parseInputTransformFunction(
+      transform = parseDecoratorInputTransformFunction(
           clazz, classPropertyName, transformValue, reflector, refEmitter);
     }
 
@@ -784,7 +785,8 @@ function tryParseInputFieldMapping(
       classPropertyName,
       bindingPropertyName,
       required: signalInput.isRequired,
-      // TODO: signal inputs- followup.
+      // Signal inputs do not capture complex transform metadata.
+      // See more details in the `transform` type of `InputMapping`.
       transform: null,
     };
   }
@@ -821,10 +823,20 @@ function parseInputFields(
   return inputs;
 }
 
-/** Parses the `transform` function and its type of a specific input. */
-export function parseInputTransformFunction(
+/**
+ * Parses the `transform` function and its type for a decorator `@Input`.
+ *
+ * This logic verifies feasibility of extracting the transform write type
+ * into a different place, so that the input write type can be captured at
+ * a later point in a static acceptance member.
+ *
+ * Note: This is not needed for signal inputs where the transform type is
+ * automatically captured in the type of the `InputSignal`.
+ *
+ */
+export function parseDecoratorInputTransformFunction(
     clazz: ClassDeclaration, classPropertyName: string, value: DynamicValue|Reference,
-    reflector: ReflectionHost, refEmitter: ReferenceEmitter): InputTransform {
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter): DecoratorInputTransform {
   const definition = reflector.getDefinitionOfFunction(value.node);
 
   if (definition === null) {

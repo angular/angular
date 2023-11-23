@@ -134,12 +134,35 @@ export enum MatchSource {
 /** Metadata for a single input mapping. */
 export type InputMapping = InputOrOutput&{
   required: boolean;
-  transform: InputTransform|null
+
+  /**
+   * Transform for the input. Null if no transform is configured.
+   *
+   * For signal-based inputs, this is always `null` even if a transform
+   * is configured. Signal inputs capture their transform write type
+   * automatically in the `InputSignal`, nor is there a need to emit a
+   * reference to the transform.
+   *
+   * For zone-based decorator `@Input`s this is different because the transform
+   * write type needs to be captured in a coercion member as the decorator information
+   * is lost in the `.d.ts` for type-checking.
+   */
+  transform: DecoratorInputTransform|null
 };
 
-/** Metadata for an input's transform function. */
-export interface InputTransform {
+/** Metadata for an `@Input()` transform function. */
+export interface DecoratorInputTransform {
+  /**
+   * Reference to the transform function so that it can be
+   * referenced when the input metadata is emitted in the declaration.
+   */
   node: ts.Node;
+  /**
+   * Emittable type for the input transform. Null for signal inputs
+   *
+   * This type will be used for inputs to capture the transform type
+   * for type-checking in corresponding `ngAcceptInputType_` members.
+   */
   type: Reference<ts.TypeNode>;
 }
 
