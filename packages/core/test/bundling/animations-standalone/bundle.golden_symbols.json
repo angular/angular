@@ -432,6 +432,9 @@
     "name": "SELF_TOKEN_REGEX"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {

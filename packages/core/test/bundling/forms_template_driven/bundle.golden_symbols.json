@@ -483,6 +483,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
