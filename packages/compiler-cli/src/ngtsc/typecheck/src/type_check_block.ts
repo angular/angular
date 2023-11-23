@@ -650,9 +650,13 @@ class TcbDirectiveCtorOp extends TcbOp {
         }
 
         const expression = translateInput(attr.attribute, this.tcb, this.scope);
-        genericInputs.set(
-            fieldName,
-            {type: 'binding', field: fieldName, expression, sourceSpan: attr.attribute.sourceSpan});
+
+        genericInputs.set(fieldName, {
+          type: 'binding',
+          field: fieldName,
+          expression,
+          sourceSpan: attr.attribute.sourceSpan,
+        });
       }
     }
 
@@ -2412,7 +2416,6 @@ function tcbCallTypeCtor(
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
       const expr = widenBinding(input.expression, tcb);
-
       const assignment =
           ts.factory.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
