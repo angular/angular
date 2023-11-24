@@ -1141,7 +1141,7 @@ export class NgCompiler {
     const traitCompiler = new TraitCompiler(
         handlers, reflector, this.delegatingPerfRecorder, this.incrementalCompilation,
         this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms,
-        semanticDepGraphUpdater, this.adapter);
+        semanticDepGraphUpdater, this.adapter, !!this.options.generateExtraImportsInLocalMode);
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this
     // happens, they need to be tracked by the `NgCompiler`.

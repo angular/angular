@@ -95,6 +95,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private handlersByName =
       new Map<string, DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>>();
 
+  private readonly shouldRunRegisterPhase =
+      this.compilationMode !== CompilationMode.LOCAL || this.generateExtraImportsInLocalMode;
+
+  private readonly shouldRunResolvePhase =
+      this.compilationMode !== CompilationMode.LOCAL || this.generateExtraImportsInLocalMode;
+
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[],
       private reflector: ReflectionHost,
@@ -105,6 +111,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       private dtsTransforms: DtsTransformRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
+      private readonly generateExtraImportsInLocalMode: boolean,
   ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
@@ -411,7 +418,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
-    if (this.compilationMode !== CompilationMode.LOCAL && result.analysis !== undefined &&
+    if (this.shouldRunRegisterPhase && result.analysis !== undefined &&
         trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
@@ -421,7 +428,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   resolve(): void {
     // No resolving needed for local compilation (only analysis and compile will be done in this
     // mode)
-    if (this.compilationMode === CompilationMode.LOCAL) {
+    if (!this.shouldRunResolvePhase) {
       return;
     }
 
@@ -596,17 +603,17 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     for (const trait of record.traits) {
       let compileRes: CompileResult|CompileResult[];
-      if (this.compilationMode === CompilationMode.LOCAL) {
+      if (!this.shouldRunResolvePhase) {
+        // This branch is only possible for local compilation mode, since only in this mode we can
+        // skip the resolve phase.
         if (trait.state !== TraitState.Analyzed || trait.analysis === null ||
             containsErrors(trait.analysisDiagnostics)) {
           // Cannot compile a trait in local mode that is not analyzed, or had any errors in its
           // declaration.
           continue;
         }
-        // `trait.analysis` is non-null asserted here because TypeScript does not recognize that
-        // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
-        // `Readonly` works.
-        compileRes = trait.handler.compileLocal(clazz, trait.analysis!, constantPool);
+
+        compileRes = trait.handler.compileLocal(clazz, trait.analysis, constantPool);
       } else {
         if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
             containsErrors(trait.resolveDiagnostics)) {
@@ -614,10 +621,11 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           // declaration.
           continue;
         }
-        // `trait.resolution` is non-null asserted below because TypeScript does not recognize that
-        // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
-        // `Readonly` works.
-        if (this.compilationMode === CompilationMode.PARTIAL &&
+
+        if (this.compilationMode === CompilationMode.LOCAL) {
+          compileRes = trait.handler.compileLocal(clazz, trait.analysis, constantPool);
+        } else if (
+            this.compilationMode === CompilationMode.PARTIAL &&
             trait.handler.compilePartial !== undefined) {
           compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution!);
         } else {
@@ -658,7 +666,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     for (const trait of record.traits) {
       // In global compilation mode skip the non-resolved traits.
-      if (this.compilationMode !== CompilationMode.LOCAL && trait.state !== TraitState.Resolved) {
+      if (this.shouldRunResolvePhase && trait.state !== TraitState.Resolved) {
         continue;
       }
 
