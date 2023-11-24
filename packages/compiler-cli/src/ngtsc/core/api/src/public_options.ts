@@ -317,6 +317,8 @@ export interface BazelAndG3Options {
    * Insert JSDoc type annotations needed by Closure Compiler
    */
   annotateForClosureCompiler?: boolean;
+
+  generateExtraImportsInLocalMode?: boolean;
 }
 
 /**
