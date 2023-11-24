@@ -110,7 +110,7 @@ You can think of `.metadata.json` as a diagram of the overall structure of a dec
 
 <div class="alert is-helpful">
 
-Angular's [schema.ts](https://github.com/angular/angular/blob/main/packages/compiler-cli/src/metadata/schema.ts) describes the JSON format as a collection of TypeScript interfaces.
+Angular's [schema.ts](https://github.com/angular/angular/blob/main/packages/core/src/metadata/schema.ts) describes the JSON format as a collection of TypeScript interfaces.
 
 </div>
 
