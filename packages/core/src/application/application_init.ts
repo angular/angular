@@ -8,7 +8,7 @@
 
 import {Observable} from 'rxjs';
 
-import {inject, Injectable, InjectionToken} from '../di';
+import {inject, Injectable, InjectionToken, Injector, Provider, runInInjectionContext} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {isPromise, isSubscribable} from '../util/lang';
 
@@ -134,6 +134,38 @@ import {isPromise, isSubscribable} from '../util/lang';
 export const APP_INITIALIZER =
     new InjectionToken<ReadonlyArray<() => Observable<unknown>| Promise<unknown>| void>>(
         'Application Initializer');
+
+/**
+ * @publicApi
+ *
+ * This is syntactic sugar for the following:
+ * ```
+ * {
+ *   provide: APP_INITIALIZER,
+ *   multi: true,
+ *   useFactory: () => {
+ *      return () => {
+ *         myInitializer();
+ *      }
+ *   }
+ * }
+ * ```
+ *
+ * The provided initializer is run in the injection context.
+ */
+export function provideAppInitializer(
+    initializerFn: () => Observable<unknown>| Promise<unknown>| void): Provider {
+  return {
+    provide: APP_INITIALIZER,
+    multi: true,
+    useFactory: () => {
+      const injector = inject(Injector);
+      return () => {
+        return runInInjectionContext(injector, initializerFn);
+      };
+    }
+  };
+}
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.

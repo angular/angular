@@ -1239,6 +1239,9 @@ export interface Predicate<T> {
 }
 
 // @public
+export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): Provider;
+
+// @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
 
 // @public
