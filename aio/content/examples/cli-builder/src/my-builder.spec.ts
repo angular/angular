@@ -3,6 +3,7 @@ import { Architect } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';
 import { schema } from '@angular-devkit/core';
 import { promises as fs } from 'fs';
+import { join } from 'path';
 
 describe('Copy File Builder', () => {
   let architect: Architect;
@@ -19,7 +20,7 @@ describe('Copy File Builder', () => {
 
     // This will either take a Node package name, or a path to the directory
     // for the package.json file.
-    await architectHost.addBuilderFromPackage('..');
+    await architectHost.addBuilderFromPackage(join(__dirname, '..'));
   });
 
   it('can copy files', async () => {
