@@ -43,6 +43,8 @@ ng_module(
         "demo-app.component.ts",
         "demo-app.module.ts",
         "heavy.component.ts",
+        "sample.service.ts",
+        "sample-properties.component.ts",
         "zippy.component.ts",
     ],
     angular_assets = [
