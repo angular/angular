@@ -1072,6 +1072,7 @@ groups:
         - twerske
         - josephperrott
         - jelbourn
+        - JeanMeche
 
   # =========================================================
   #  Docs-infra
@@ -1394,6 +1395,7 @@ groups:
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
+        - JeanMeche # Matthieu Riegler
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li
@@ -1405,3 +1407,4 @@ groups:
         - pkozlowski-opensource # Pawel Kozlowski
         - twerske # Emma Twersky
         - zarend # Zach Arend
+
