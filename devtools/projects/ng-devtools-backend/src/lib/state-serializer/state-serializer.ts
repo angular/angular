@@ -9,6 +9,7 @@
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
 import {getKeys} from './object-utils';
+import {getPropType} from './prop-type';
 import {createLevelSerializedDescriptor, createNestedSerializedDescriptor, createShallowSerializedDescriptor, PropertyData,} from './serialized-descriptor-factory';
 
 // todo(aleksanderbodurri) pull this out of this file
@@ -16,46 +17,7 @@ const METADATA_PROPERTY_NAME = '__ngContext__';
 
 const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
-const commonTypes = {
-  boolean: PropType.Boolean,
-  bigint: PropType.BigInt,
-  function: PropType.Function,
-  number: PropType.Number,
-  string: PropType.String,
-  symbol: PropType.Symbol,
-};
-
 const MAX_LEVEL = 1;
-
-const getPropType = (prop: any): PropType => {
-  if (prop === undefined) {
-    return PropType.Undefined;
-  }
-  if (prop === null) {
-    return PropType.Null;
-  }
-  if (prop instanceof HTMLElement) {
-    return PropType.HTMLNode;
-  }
-  const type = typeof prop;
-  if (commonTypes[type] !== undefined) {
-    return commonTypes[type];
-  }
-  if (type === 'object') {
-    if (Array.isArray(prop)) {
-      return PropType.Array;
-    } else if (prop instanceof Set) {
-      return PropType.Set;
-    } else if (Object.prototype.toString.call(prop) === '[object Date]') {
-      return PropType.Date;
-    } else if (prop instanceof Node) {
-      return PropType.HTMLNode;
-    } else {
-      return PropType.Object;
-    }
-  }
-  return PropType.Unknown;
-};
 
 const nestedSerializer =
     (instance: any, propName: string|number, nodes: NestedProp[], currentLevel = 0,

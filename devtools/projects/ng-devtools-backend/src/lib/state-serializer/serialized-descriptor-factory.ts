@@ -46,6 +46,7 @@ const serializable: {[key in PropType]: boolean} = {
   [PropType.Unknown]: true,
   [PropType.Array]: false,
   [PropType.Set]: false,
+  [PropType.Map]: false,
   [PropType.BigInt]: false,
   [PropType.Function]: false,
   [PropType.HTMLNode]: false,
@@ -54,23 +55,24 @@ const serializable: {[key in PropType]: boolean} = {
 };
 
 const typeToDescriptorPreview: Formatter<string> = {
-  [PropType.Array]: (prop: any) => `Array(${prop.length})`,
-  [PropType.Set]: (prop: any) => `Set(${prop.size})`,
-  [PropType.BigInt]: (prop: any) => truncate(prop.toString()),
-  [PropType.Boolean]: (prop: any) => truncate(prop.toString()),
-  [PropType.String]: (prop: any) => `"${prop}"`,
-  [PropType.Function]: (prop: any) => `${prop.name}(...)`,
-  [PropType.HTMLNode]: (prop: any) => prop.constructor.name,
-  [PropType.Null]: (_: any) => 'null',
+  [PropType.Array]: (prop: Array<unknown>) => `Array(${prop.length})`,
+  [PropType.Set]: (prop: Set<unknown>) => `Set(${prop.size})`,
+  [PropType.Map]: (prop: Map<unknown, unknown>) => `Map(${prop.size})`,
+  [PropType.BigInt]: (prop: bigint) => truncate(prop.toString()),
+  [PropType.Boolean]: (prop: boolean) => truncate(prop.toString()),
+  [PropType.String]: (prop: string) => `"${prop}"`,
+  [PropType.Function]: (prop: Function) => `${prop.name}(...)`,
+  [PropType.HTMLNode]: (prop: Node) => prop.constructor.name,
+  [PropType.Null]: (_: null) => 'null',
   [PropType.Number]: (prop: any) => parseInt(prop, 10).toString(),
-  [PropType.Object]: (prop: any) => (getKeys(prop).length > 0 ? '{...}' : '{}'),
-  [PropType.Symbol]: (_: any) => 'Symbol()',
-  [PropType.Undefined]: (_: any) => 'undefined',
-  [PropType.Date]: (prop: any) => {
+  [PropType.Object]: (prop: Object) => (getKeys(prop).length > 0 ? '{...}' : '{}'),
+  [PropType.Symbol]: (symbol: symbol) => `Symbol(${symbol.description})`,
+  [PropType.Undefined]: (_: undefined) => 'undefined',
+  [PropType.Date]: (prop: unknown) => {
     if (prop instanceof Date) {
       return `Date(${new Date(prop).toISOString()})`;
     }
-    return prop;
+    return `${prop}`;
   },
   [PropType.Unknown]: (_: any) => 'unknown',
 };
@@ -125,6 +127,10 @@ const shallowPropTypeToTreeMetaData:
         expandable: false,
       },
       [PropType.Set]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Map]: {
         editable: false,
         expandable: false,
       },

@@ -58,7 +58,7 @@ export interface SerializedProviderRecord {
 
 /**
  * Duplicate of the InjectedService interface from Angular framework to prevent
- * needing to publically expose the interface from the framework.
+ * needing to publicly expose the interface from the framework.
  */
 export interface InjectedService {
   token?: Type<unknown>|InjectionToken<unknown>;
@@ -81,6 +81,7 @@ export enum PropType {
   Date,
   Array,
   Set,
+  Map,
   Unknown,
 }
 
