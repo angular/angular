@@ -44,7 +44,7 @@ HELPFUL: Sometimes there are differences between the name of property and an att
 `colspan` is an attribute of `<td>`, while `colSpan`  with a capital "S" is a property.
 When using attribute binding, use `colspan` with a lowercase "s".
 
-For more information on how to bind to the `colSpan` property, see the [`colspan` and `colSpan`](guide/templates/property-binding#colspan) section of [Property Binding](guide/templates/property-binding).
+For more information on how to bind to the `colSpan` property, see the [`colspan` and `colSpan`](guide/templates/property-binding#colspan-and-colspan) section of [Property Binding](guide/templates/property-binding).
 
 ## What’s next
 
