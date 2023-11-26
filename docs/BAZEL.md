@@ -7,6 +7,10 @@ The Bazel build tool (https://bazel.build) provides fast, reliable
 incremental builds. We plan to migrate Angular's build scripts to
 Bazel.
 
+## Quickstart
+
+If you're inexperienced with Bazel, see [`BAZEL_QUICKSTART.md`](./BAZEL_QUICKSTART.md).
+
 ## Installation
 
 In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
