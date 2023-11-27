@@ -309,40 +309,44 @@ function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
 /**
  * Counts, replaces, and removes any necessary ng-templates post control flow migration
  */
-export function processNgTemplates(template: string): string {
+export function processNgTemplates(template: string): {migrated: string, err: Error|undefined} {
   // count usage
-  const templates = getTemplates(template);
+  try {
+    const templates = getTemplates(template);
 
-  // swap placeholders and remove
-  for (const [name, t] of templates) {
-    const replaceRegex = new RegExp(`${name}\\|`, 'g');
-    const forRegex = new RegExp(`${name}\\#`, 'g');
-    const forMatches = [...template.matchAll(forRegex)];
-    const matches = [...forMatches, ...template.matchAll(replaceRegex)];
-    let safeToRemove = true;
-    if (matches.length > 0) {
-      if (t.i18n !== null) {
-        const container = wrapIntoI18nContainer(t.i18n, t.children);
-        template = template.replace(replaceRegex, container);
-      } else if (t.children.trim() === '' && t.isNgTemplateOutlet) {
-        template = template.replace(replaceRegex, t.generateTemplateOutlet());
-      } else if (forMatches.length > 0) {
-        if (t.count === 2) {
-          template = template.replace(forRegex, t.children);
+    // swap placeholders and remove
+    for (const [name, t] of templates) {
+      const replaceRegex = new RegExp(`${name}\\|`, 'g');
+      const forRegex = new RegExp(`${name}\\#`, 'g');
+      const forMatches = [...template.matchAll(forRegex)];
+      const matches = [...forMatches, ...template.matchAll(replaceRegex)];
+      let safeToRemove = true;
+      if (matches.length > 0) {
+        if (t.i18n !== null) {
+          const container = wrapIntoI18nContainer(t.i18n, t.children);
+          template = template.replace(replaceRegex, container);
+        } else if (t.children.trim() === '' && t.isNgTemplateOutlet) {
+          template = template.replace(replaceRegex, t.generateTemplateOutlet());
+        } else if (forMatches.length > 0) {
+          if (t.count === 2) {
+            template = template.replace(forRegex, t.children);
+          } else {
+            template = template.replace(forRegex, t.generateTemplateOutlet());
+            safeToRemove = false;
+          }
         } else {
-          template = template.replace(forRegex, t.generateTemplateOutlet());
-          safeToRemove = false;
+          template = template.replace(replaceRegex, t.children);
         }
-      } else {
-        template = template.replace(replaceRegex, t.children);
-      }
-      // the +1 accounts for the t.count's counting of the original template
-      if (t.count === matches.length + 1 && safeToRemove) {
-        template = template.replace(t.contents, '');
+        // the +1 accounts for the t.count's counting of the original template
+        if (t.count === matches.length + 1 && safeToRemove) {
+          template = template.replace(t.contents, '');
+        }
       }
     }
+    return {migrated: template, err: undefined};
+  } catch (err) {
+    return {migrated: template, err: err as Error};
   }
-  return template;
 }
 
 /**

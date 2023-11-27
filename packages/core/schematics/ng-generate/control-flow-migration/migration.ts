@@ -29,7 +29,11 @@ export function migrateTemplate(
     const forResult = migrateFor(ifResult.migrated);
     const switchResult = migrateSwitch(forResult.migrated);
     const caseResult = migrateCase(switchResult.migrated);
-    migrated = processNgTemplates(caseResult.migrated);
+    const templateResult = processNgTemplates(caseResult.migrated);
+    if (templateResult.err !== undefined) {
+      return {migrated: template, errors: [{type: 'template', error: templateResult.err}]};
+    }
+    migrated = templateResult.migrated;
     const changed =
         ifResult.changed || forResult.changed || switchResult.changed || caseResult.changed;
     if (format && changed) {

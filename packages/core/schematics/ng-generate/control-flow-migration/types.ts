@@ -338,9 +338,13 @@ export class TemplateCollector extends RecursiveVisitor {
           templateAttr = attr;
         }
       }
-      if (templateAttr !== null) {
-        this.elements.push(new ElementToMigrate(el, templateAttr));
+      if (templateAttr !== null && !this.templates.has(templateAttr.name)) {
         this.templates.set(templateAttr.name, new Template(el, templateAttr.name, i18n));
+        this.elements.push(new ElementToMigrate(el, templateAttr));
+      } else if (templateAttr !== null) {
+        throw new Error(
+            `A duplicate ng-template name "${templateAttr.name}" was found. ` +
+            `The control flow migration requires unique ng-template names within a component.`);
       }
     }
     super.visitElement(el, null);
