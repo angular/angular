@@ -26,7 +26,7 @@ import {
   getBaseUrlAfterRedirects,
   isApple,
   IS_SEARCH_DIALOG_OPEN,
-} from '@angular/docs-shared';
+} from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';

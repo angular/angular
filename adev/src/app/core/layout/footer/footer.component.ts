@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ExternalLink} from '@angular/docs-shared';
+import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 import {GITHUB, X, MEDIUM, YOUTUBE} from './../../constants/links';
 

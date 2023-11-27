@@ -8,7 +8,7 @@
 
 import type {FileSystemTree} from '@webcontainer/api';
 import type {TutorialNavigationItemWithStep} from './generate-tutorials-routes';
-import {NavigationItem} from '@angular/docs-shared';
+import {NavigationItem} from '@angular/docs';
 import {TutorialType} from './utils/web-constants';
 
 /**

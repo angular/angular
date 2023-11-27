@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {NavigationItem} from '@angular/docs-shared';
+import {NavigationItem} from '@angular/docs';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy} from '@angular/router';
 
