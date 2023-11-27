@@ -100,7 +100,7 @@
     "http-server": "^14.1.1",
     "husky": "^8.0.0",
     "jasmine-core": "~4.5.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.0.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
