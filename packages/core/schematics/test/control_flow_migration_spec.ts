@@ -3190,6 +3190,36 @@ describe('control flow migration', () => {
       expect(warnOutput.join(' '))
           .toContain('IMPORTANT! This migration is in developer preview. Use with caution.');
     });
+
+    it('should log a migration error when duplicate ng-template names are detected', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          toggle = false;
+        }
+      `);
+
+      writeFile('./comp.html', [
+        `<div *ngIf="show; else elseTmpl">Content</div>`,
+        `<div *ngIf="hide; else elseTmpl">Content</div>`,
+        `<ng-template #elseTmpl>Else Content</ng-template>`,
+        `<ng-template #elseTmpl>Duplicate</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      tree.readContent('/comp.ts');
+
+      expect(warnOutput.join(' '))
+          .toContain(
+              `A duplicate ng-template name "#elseTmpl" was found. ` +
+              `The control flow migration requires unique ng-template names within a component.`);
+    });
   });
 
   describe('template', () => {
