@@ -29,6 +29,7 @@
         height: 100%;
         background: var(--subtle-purple);
         border-radius: 0.25rem;
+        pointer-events: none;
       }
 
       a:not(.docs-anchor) > & {
