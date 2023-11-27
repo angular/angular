@@ -4,7 +4,8 @@ Learn about how you can migrate your existing angular project to the latest feat
 
 <docs-card-container>
   <docs-card title="Standalone" link="Migrate now" href="reference/migrations/standalone">
-    Standalone components provide a simplified way to build Angular applications. 
+    Standalone components provide a simplified way to build Angular applications. Standalone components specify their dependencies directly instead of getting them through NgModules.
+    
     Standalone components, directives, and pipes aim to streamline the authoring experience by reducing the need for NgModules.
   </docs-card>
   <docs-card title="`ModuleWithProviders`" link="Migrate now" href="reference/migrations/module-with-providers">
