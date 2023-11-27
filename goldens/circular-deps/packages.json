@@ -86,6 +86,16 @@
     "packages/core/src/di/jit/injectable.ts"
   ],
   [
+    "packages/core/src/di/injectable.ts",
+    "packages/core/src/di/jit/injectable.ts",
+    "packages/core/src/di/jit/util.ts",
+    "packages/core/src/di/metadata_attr.ts",
+    "packages/core/src/render3/instructions/di_attr.ts",
+    "packages/core/src/render3/di.ts",
+    "packages/core/src/render3/hooks.ts",
+    "packages/core/src/initial_render_pending_tasks.ts"
+  ],
+  [
     "packages/core/src/di/provider_collection.ts",
     "packages/core/src/render3/definition.ts",
     "packages/core/src/render3/interfaces/definition.ts",

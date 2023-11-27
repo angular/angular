@@ -8,14 +8,16 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
+import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+import {isPromise} from '../util/lang';
 
 import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, InitPhaseState, INJECTOR, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
 import {profiler, ProfilerEvent} from './profiler';
 import {isInCheckNoChangesMode} from './state';
 
@@ -245,11 +247,22 @@ function callHooks(
  * - it is called in the non-reactive context;
  * - profiling data are registered.
  */
-function callHookInternal(directive: any, hook: () => void) {
+function callHookInternal(directive: any, hook: () => void, currentView: LView) {
   profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
   const prevConsumer = setActiveConsumer(null);
   try {
-    hook.call(directive);
+    const result = hook.call(directive) as unknown;
+    // Hooks can be async, in which case we need to wait until they are resolved/rejected before we
+    // finalize rendering. Otherwise, during SSR the application might stablize before time which
+    // causes components to be missing from the response.
+    if (isPromise(result)) {
+      const injector = currentView[INJECTOR];
+      if (injector) {
+        const initialRender = injector.get(InitialRenderPendingTasks);
+        const taskId = initialRender.add();
+        result.finally(() => initialRender.remove(taskId));
+      }
+    }
   } finally {
     setActiveConsumer(prevConsumer);
     profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
@@ -276,9 +289,9 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-      callHookInternal(directive, hook);
+      callHookInternal(directive, hook, currentView);
     }
   } else {
-    callHookInternal(directive, hook);
+    callHookInternal(directive, hook, currentView);
   }
 }

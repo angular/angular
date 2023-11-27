@@ -8,7 +8,7 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {Injectable} from './di';
+import {Injectable} from './di/injectable';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
 /**

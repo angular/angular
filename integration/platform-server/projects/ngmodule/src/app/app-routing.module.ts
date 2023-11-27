@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {HelloWorldComponent} from './helloworld/hello-world.component';
 import {TransferStateComponent} from './transferstate/transfer-state.component';
+import {DynamicComponentRoot} from './dynamic-component/dynamic-component-root.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,10 @@ const routes: Routes = [
       import('./http-transferstate-lazy-on-init/http-transferstate-lazy-on-init.module').then(
         (m) => m.HttpTransferStateOnInitModule
       ),
+  },
+  {
+    path: 'dynamic-component',
+    component: DynamicComponentRoot,
   },
   {
     path: 'error',
