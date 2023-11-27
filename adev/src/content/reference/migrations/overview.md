@@ -1,6 +1,6 @@
 # Migrations
 
-Intro lorem ipsum we provide migrations!
+Learn about how you can migrate your existing angular project to the latest features incrementally.
 
 <docs-card-container>
   <docs-card title="Standalone" link="Migrate now" href="reference/migrations/standalone">
