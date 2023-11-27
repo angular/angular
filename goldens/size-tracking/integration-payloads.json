@@ -46,20 +46,6 @@
       "src_app_open-close_component_ts": 1321
     }
   },
-  "platform-server/standalone/browser": {
-    "uncompressed": {
-      "runtime": 2694,
-      "main": 238273,
-      "polyfills": 33782
-    }
-  },
-  "platform-server/ngmodule/browser": {
-    "uncompressed": {
-      "runtime": 2688,
-      "main": 256333,
-      "polyfills": 33778
-    }
-  },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
