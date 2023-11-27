@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isMobile} from '@angular/docs-shared';
+import {isMobile} from '@angular/docs';
 import type {OGLRenderingContext} from 'ogl';
 
 import {View} from './view';

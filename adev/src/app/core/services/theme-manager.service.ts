@@ -8,7 +8,7 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {Injectable, PLATFORM_ID, inject, signal} from '@angular/core';
-import {LOCAL_STORAGE} from '@angular/docs-shared';
+import {LOCAL_STORAGE} from '@angular/docs';
 import {Subject} from 'rxjs';
 
 // Keep these constants in sync with the code in index.html

@@ -12,7 +12,7 @@ import {
   ENVIRONMENT_INITIALIZER,
   ApplicationRef,
 } from '@angular/core';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 import {ɵafterNextNavigation as afterNextNavigation, Router} from '@angular/router';
 import {firstValueFrom, filter, take} from 'rxjs';
 

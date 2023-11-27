@@ -7,7 +7,7 @@
  */
 
 import {Injectable, signal} from '@angular/core';
-import {isFirefox, isIos} from '@angular/docs-shared';
+import {isFirefox, isIos} from '@angular/docs';
 
 import {LoadingStep} from './enums/loading-steps';
 import {OUT_OF_MEMORY_MSG} from './node-runtime-sandbox.service';

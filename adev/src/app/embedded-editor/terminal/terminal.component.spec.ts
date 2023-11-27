@@ -11,7 +11,7 @@ import {By} from '@angular/platform-browser';
 
 import {Terminal} from './terminal.component';
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
-import {FakeEventTarget, WINDOW} from '@angular/docs-shared';
+import {FakeEventTarget, WINDOW} from '@angular/docs';
 
 describe('Terminal', () => {
   let component: Terminal;

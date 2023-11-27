@@ -16,7 +16,7 @@ import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {Version, signal} from '@angular/core';
 import {of} from 'rxjs';
 import {VersionManager} from '../../services/version-manager.service';
-import {Search, WINDOW} from '@angular/docs-shared';
+import {Search, WINDOW} from '@angular/docs';
 
 describe('Navigation', () => {
   let component: Navigation;
