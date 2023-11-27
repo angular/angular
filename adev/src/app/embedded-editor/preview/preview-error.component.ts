@@ -8,7 +8,7 @@
 
 import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {isFirefox, isIos} from '@angular/docs-shared';
+import {isFirefox, isIos} from '@angular/docs';
 
 import {ErrorType, NodeRuntimeState} from '../node-runtime-state.service';
 

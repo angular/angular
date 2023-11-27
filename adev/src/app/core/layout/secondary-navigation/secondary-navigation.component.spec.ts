@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SecondaryNavigation} from './secondary-navigation.component';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 
 describe('SecondaryNavigation', () => {
   let component: SecondaryNavigation;
