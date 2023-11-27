@@ -25,7 +25,7 @@ import {
   API_TAB_ACTIVE_CODE_LINE,
   MEMBER_ID_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 
 export const SCROLL_EVENT_DELAY = 20;
 export const SCROLL_THRESHOLD = 20;

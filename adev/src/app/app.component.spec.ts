@@ -10,7 +10,7 @@ import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {provideRouter} from '@angular/router';
 import {routes} from './routes';
-import {Search, WINDOW} from '@angular/docs-shared';
+import {Search, WINDOW} from '@angular/docs';
 
 describe('AppComponent', () => {
   const fakeSearch = {};

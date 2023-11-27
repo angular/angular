@@ -8,7 +8,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 import {RouterTestingModule} from '@angular/router/testing';
 import {Footer} from './footer.component';
 
