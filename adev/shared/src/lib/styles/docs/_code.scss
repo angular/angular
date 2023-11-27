@@ -29,6 +29,7 @@
         height: 100%;
         background: var(--subtle-purple);
         border-radius: 0.25rem;
+        z-index: -1;
       }
 
       a:not(.docs-anchor) > & {
@@ -50,6 +51,7 @@
           background: var(--subtle-purple);
           border-radius: 0.25rem;
           transition: background 0.3s ease;
+          z-index: -1;
         }
 
         &:hover {
@@ -232,6 +234,7 @@
       background: var(--subtle-purple);
       border-radius: 0.25rem 0.25rem 0 0;
       transition: background 0.3s ease;
+      z-index: -1;
     }
   }
 
