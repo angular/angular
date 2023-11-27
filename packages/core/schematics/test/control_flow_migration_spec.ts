@@ -620,6 +620,45 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an NgIfElse case with ng-templates with multiple i18n attributes',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+         writeFile('/comp.html', [
+           `<ng-template *ngIf="false; else barTempl" i18n="@@foo">`,
+           `  Foo`,
+           `</ng-template>`,
+           `<ng-template i18n="@@bar" #barTempl> Bar </ng-template>`,
+           `<a *ngIf="true" i18n="@@bam">Bam</a>`,
+         ].join('\n'));
+
+         await runMigration();
+         const content = tree.readContent('/comp.html');
+
+         expect(content).toBe([
+           `@if (false) {`,
+           `  <ng-container i18n="@@foo">`,
+           `    Foo`,
+           `  </ng-container>`,
+           `} @else {`,
+           `  <ng-container i18n="@@bar"> Bar </ng-container>`,
+           `}`,
+           `@if (true) {`,
+           `  <a i18n="@@bam">Bam</a>`,
+           `}`,
+         ].join('\n'));
+       });
+
     it('should migrate an if else case', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
