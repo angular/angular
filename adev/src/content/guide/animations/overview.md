@@ -47,12 +47,12 @@ bootstrapApplication(AppComponent, {
 
 For `NgModule` based applications import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
 
-<docs-code header="src/app/app.module.ts" path="animations/src/app/app.module.1.ts"/>
+<docs-code header="src/app/app.module.ts" path="adev/src/content/examples/animations/src/app/app.module.1.ts"/>
 </docs-step>
 <docs-step title="Importing animation functions into component files">
 If you plan to use specific animation functions in component files, import those functions from `@angular/animations`.
 
-<docs-code header="src/app/app.component.ts" path="animations/src/app/app.component.ts" visibleRegion="imports"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="imports"/>
 
 See all [available animation functions](guide/animations#animations-api-summary) at the end of this guide.
 
@@ -61,7 +61,7 @@ See all [available animation functions](guide/animations#animations-api-summary)
 In the component file, add a metadata property called `animations:` within the `@Component()` decorator.
 You put the trigger that defines an animation within the `animations` metadata property.
 
-<docs-code header="src/app/app.component.ts" path="animations/src/app/app.component.ts" visibleRegion="decorator"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="decorator"/>
 </docs-step>
 </docs-workflow>
 
@@ -101,11 +101,11 @@ Let's see how Angular's [`state()`](api/animations/state) function works with th
 In this code snippet, multiple style attributes are set at the same time for the state.
 In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
 
-<docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="state1"/>
+<docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="state1"/>
 
 In the following `closed` state, the button has a height of 100 pixels, an opacity of 0.8, and a background color of blue.
 
-<docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="state2"/>
+<docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="state2"/>
 
 ### Transitions and timing
 
@@ -177,7 +177,7 @@ HELPFUL: See the Material Design website's topic on [Natural easing curves](http
 
 This example provides a state transition from `open` to `closed` with a 1-second transition between states.
 
-<docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="transition1"/>
+<docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="transition1"/>
 
 In the preceding code snippet, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional.
 Within the transition, `animate()` specifies how long the transition takes.
@@ -185,7 +185,7 @@ In this case, the state change from `open` to `closed` takes 1 second, expressed
 
 This example adds a state transition from the `closed` state to the `open` state with a 0.5-second transition animation arc.
 
-<docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="transition2"/>
+<docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="transition2"/>
 
 HELPFUL: Some additional notes on using styles within [`state`](api/animations/state) and `transition` functions.
 
@@ -220,7 +220,7 @@ However, it's possible for multiple triggers to be active at once.
 Animations are defined in the metadata of the component that controls the HTML element to be animated.
 Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
 
-<docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="component"/>
+<docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="component"/>
 
 When you've defined an animation trigger for a component, attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol.
 Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
@@ -235,7 +235,7 @@ The animation is executed or triggered when the expression value changes to a ne
 
 The following code snippet binds the trigger to the value of the `isOpen` property.
 
-<docs-code header="src/app/open-close.component.html" path="animations/src/app/open-close.component.1.html" visibleRegion="trigger"/>
+<docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.1.html" visibleRegion="trigger"/>
 
 In this example, when the `isOpen` expression evaluates to a defined state of `open` or `closed`, it notifies the trigger `openClose` of a state change.
 Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
@@ -252,9 +252,9 @@ In the HTML template file, use the trigger name to attach the defined animations
 Here are the code files discussed in the transition example.
 
 <docs-code-multifile>
-    <docs-code header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" visibleRegion="component"/>
-    <docs-code header="src/app/open-close.component.html" path="animations/src/app/open-close.component.1.html" visibleRegion="trigger"/>
-    <docs-code header="src/app/open-close.component.css" path="animations/src/app/open-close.component.css"/>
+    <docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="component"/>
+    <docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.1.html" visibleRegion="trigger"/>
+    <docs-code header="src/app/open-close.component.css" path="adev/src/content/examples/animations/src/app/open-close.component.css"/>
 </docs-code-multifile>
 
 ### Summary

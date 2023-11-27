@@ -46,7 +46,7 @@ For feature modules, call the `RouterModule.forChild` method instead.
 
 The following configuration defines the possible routes for the application.
 
-<docs-code header="src/app/app.routes.ts" path="animations/src/app/app.routes.ts" visibleRegion="route-animation-data"/>
+<docs-code header="src/app/app.routes.ts" path="adev/src/content/examples/animations/src/app/app.routes.ts" visibleRegion="route-animation-data"/>
 
 The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views.
 The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
@@ -65,13 +65,13 @@ The `<router-outlet>` directive tells the Angular router where to render the vie
 The `ChildrenOutletContexts` holds information about outlets and activated routes.
 The `data` property of each `Route` can be used to animate routing transitions.
 
-<docs-code header="src/app/app.component.html" path="animations/src/app/app.component.html" visibleRegion="route-animations-outlet"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/animations/src/app/app.component.html" visibleRegion="route-animations-outlet"/>
 
 `AppComponent` defines a method that can detect when a view changes.
 The method assigns an animation state value to the animation trigger \(`@routeAnimation`\) based on the route configuration `data` property value.
 Here's an example of an `AppComponent` method that detects when a route change happens.
 
-<docs-code header="src/app/app.component.ts" path="animations/src/app/app.component.ts" visibleRegion="get-route-animations-data"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="get-route-animations-data"/>
 
 The `getRouteAnimationData()` method takes the value of the outlet. It returns a string that represents the state of the animation based on the custom data of the current active route.
 Use this data to control which transition to run for each route.
@@ -83,7 +83,7 @@ For this example you are defining the animations in a separate file, which allow
 
 The following code snippet defines a reusable animation named `slideInAnimation`.
 
-<docs-code header="src/app/animations.ts" path="animations/src/app/animations.ts" visibleRegion="route-animations"/>
+<docs-code header="src/app/animations.ts" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="route-animations"/>
 
 The animation definition performs the following tasks:
 
@@ -97,7 +97,7 @@ HELPFUL: The transition states must match the `data` property value defined in t
 
 Make the animation definition available in your application by adding the reusable animation \(`slideInAnimation`\) to the `animations` metadata of the `AppComponent`.
 
-<docs-code header="src/app/app.component.ts" path="animations/src/app/app.component.ts" visibleRegion="define"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="define"/>
 
 ### Style the host and child components
 
@@ -106,7 +106,7 @@ To prevent this behavior, update the host view to use relative positioning.
 Then, update the removed and inserted child views to use absolute positioning.
 Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the other on the page.
 
-<docs-code header="src/app/animations.ts (excerpt)" path="animations/src/app/animations.ts" visibleRegion="style-view"/>
+<docs-code header="src/app/animations.ts (excerpt)" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="style-view"/>
 
 ### Query the view containers
 
@@ -115,7 +115,7 @@ The `query(":enter")` statement returns the view that is being inserted, and `qu
 
 Assume that you are routing from the *Home =&gt; About*.
 
-<docs-code header="src/app/animations.ts (excerpt)" path="animations/src/app/animations.ts" visibleRegion="query"/>
+<docs-code header="src/app/animations.ts (excerpt)" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="query"/>
 
 The animation code does the following after styling the views:
 
