@@ -302,8 +302,14 @@ export function getTemplates(template: string): Map<string, Template> {
 }
 
 function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
+  const {start, middle, end} = generatei18nContainer(i18nAttr, content);
+  return `${start}${middle}${end}`;
+}
+
+function generatei18nContainer(
+    i18nAttr: Attribute, middle: string): {start: string, middle: string, end: string} {
   const i18n = i18nAttr.value === '' ? 'i18n' : `i18n="${i18nAttr.value}"`;
-  return `<ng-container ${i18n}>${content}</ng-container>`;
+  return {start: `<ng-container ${i18n}>`, middle, end: `</ng-container>`};
 }
 
 /**
@@ -427,8 +433,7 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   } else if (isI18nTemplate(etm, i18nAttr)) {
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
-    const middle = wrapIntoI18nContainer(i18nAttr!, tmpl.slice(childStart, childEnd));
-    return {start: '', middle, end: ''};
+    return generatei18nContainer(i18nAttr!, tmpl.slice(childStart, childEnd));
   }
 
   const attrStart = etm.attr.keySpan!.start.offset - 1 - offset;
