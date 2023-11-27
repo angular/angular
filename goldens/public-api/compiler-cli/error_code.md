@@ -25,6 +25,7 @@ export enum ErrorCode {
     // (undocumented)
     CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK = 4002,
     CONFLICTING_INPUT_TRANSFORM = 2020,
+    CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
     // (undocumented)
     DECORATOR_ARG_NOT_LITERAL = 1001,
     // (undocumented)

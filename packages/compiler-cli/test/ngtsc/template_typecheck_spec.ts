@@ -5020,5 +5020,304 @@ suppress
         ]);
       });
     });
+
+    describe('control flow content projection diagnostics', () => {
+      it('should report when an @if block prevents an element from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`);
+      });
+
+      it('should report when an @if block prevents a template from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <ng-template foo></ng-template>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`);
+      });
+
+      it('should report when an @for block prevents content from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @for (i of [1, 2, 3]; track i) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @for has more than one node at its root.`);
+      });
+
+      it('should report nodes that are targeting different slots but cannot be projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/> <ng-content select="[bar]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <div bar></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(2);
+        expect(diags[0]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+        expect(diags[1]).toContain(
+            `Node matches the "[bar]" slot of the "Comp" component, but will not be projected`);
+      });
+
+      it('should report nodes that are targeting the same slot but cannot be projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <span foo></span>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(2);
+        expect(diags[0]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+        expect(diags[1]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+      });
+
+      it('should report when preserveWhitespaces may affect content projection', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            preserveWhitespaces: true,
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(`Node matches the "[foo]" slot of the "Comp" component`);
+        expect(diags[0]).toContain(
+            `Note: the host component has \`preserveWhitespaces: true\` which may cause ` +
+            `whitespace to affect content projection.`);
+      });
+
+      it('should not report when there is only one root node', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when there are comments at the root of the control flow node', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <!-- before -->
+                  <div foo></div>
+                  <!-- after -->
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when the component only has a catch-all slot', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
   });
 });

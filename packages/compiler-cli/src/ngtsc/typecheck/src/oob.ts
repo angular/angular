@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingPipe, PropertyRead, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
+import {BindingPipe, PropertyRead, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
@@ -100,6 +100,14 @@ export interface OutOfBandDiagnosticRecorder {
       templateId: TemplateId,
       trigger: TmplAstHoverDeferredTrigger|TmplAstInteractionDeferredTrigger|
       TmplAstViewportDeferredTrigger): void;
+
+  /**
+   * Reports cases where control flow nodes prevent content projection.
+   */
+  controlFlowPreventingContentProjection(
+      templateId: TemplateId, projectionNode: TmplAstElement|TmplAstTemplate, componentName: string,
+      slotSelector: string, controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      preservesWhitespaces: boolean): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -339,6 +347,34 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         templateId, this.resolver.getSourceMapping(templateId), trigger.sourceSpan,
         ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT),
         message));
+  }
+
+  controlFlowPreventingContentProjection(
+      templateId: TemplateId, projectionNode: TmplAstElement|TmplAstTemplate, componentName: string,
+      slotSelector: string, controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      preservesWhitespaces: boolean): void {
+    const blockName = controlFlowNode instanceof TmplAstIfBlockBranch ? '@if' : '@for';
+    const lines = [
+      `Node matches the "${slotSelector}" slot of the "${
+          componentName}" component, but will not be projected into the specific slot because the surrounding ${
+          blockName} has more than one node at its root. To project the node in the right slot, you can:\n`,
+      `1. Wrap the content of the ${blockName} block in an <ng-container/> that matches the "${
+          slotSelector}" selector.`,
+      `2. Split the content of the ${blockName} block across multiple ${
+          blockName} blocks such that each one only has a single projectable node at its root.`,
+      `3. Remove all content from the ${blockName} block, except for the node being projected.`
+    ];
+
+    if (preservesWhitespaces) {
+      lines.push(
+          `Note: the host component has \`preserveWhitespaces: true\` which may ` +
+          `cause whitespace to affect content projection.`);
+    }
+
+    this._diagnostics.push(makeTemplateDiagnostic(
+        templateId, this.resolver.getSourceMapping(templateId), projectionNode.startSourceSpan,
+        ts.DiagnosticCategory.Warning,
+        ngErrorCode(ErrorCode.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION), lines.join('\n')));
   }
 }
 
