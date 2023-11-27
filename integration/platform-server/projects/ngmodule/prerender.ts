@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-import 'zone.js/node';
-import {join} from 'path';
 import {renderModule} from '@angular/platform-server';
-import {readFileSync} from 'fs';
 import {AppServerModule} from './src/main.server';
+import {fileURLToPath} from 'node:url';
+import {dirname, join, resolve} from 'node:path';
+import {readFileSync} from 'node:fs';
 
-const distFolder = join(process.cwd(), 'dist/ngmodule/browser');
-const indexHtml = readFileSync(join(distFolder, 'index.html'), 'utf-8');
+const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+const browserDistFolder = resolve(serverDistFolder, '../browser');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.html'), 'utf-8');
 
 async function runTest() {
   // Test and validate the errors are printed in the console.
@@ -34,7 +35,7 @@ async function runTest() {
   if (!errors.some((e) => e.includes('Error in resolver'))) {
     errors.forEach(console.error);
     console.error(
-      '\nError: expected rendering errors ("Error in resolver") to be printed in the console.\n'
+      '\nError: expected rendering errors ("Error in resolver") to be printed in the console.\n',
     );
     process.exit(1);
   }
