@@ -807,4 +807,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingRequiredInputs(): void {}
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
+  controlFlowPreventingContentProjection(): void {}
 }
