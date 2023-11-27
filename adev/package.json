@@ -59,7 +59,7 @@
     "@typescript/vfs": "^1.5.0",
     "@webcontainer/api": "^1.1.5",
     "algoliasearch": "^4.20.0",
-    "angular-split": "16.2.1",
+    "angular-split": "17.1.0",
     "diff": "^5.1.0",
     "express": "^4.15.2",
     "gsap": "^3.12.2",
