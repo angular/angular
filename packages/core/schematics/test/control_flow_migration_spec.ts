@@ -723,6 +723,41 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if else case with a colon after else', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show; else: elseTmpl">Content here</span>`,
+        `<ng-template #elseTmpl>Else Content</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `<div>`,
+        `  @if (show) {`,
+        `    <span>Content here</span>`,
+        `  } @else {`,
+        `    Else Content`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate an if else case with no space after ;', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';

@@ -119,9 +119,8 @@ function runControlFlowMigration(
 }
 
 function sortFilePaths(names: string[]): string[] {
-  const templateFiles = names.filter(n => n.endsWith('.html'));
-  const classFiles = names.filter(n => !n.endsWith('.html'));
-  return [...templateFiles, ...classFiles];
+  names.sort((a, _) => a.endsWith('.html') ? -1 : 0);
+  return names;
 }
 
 function generateErrorMessage(path: string, errors: MigrateError[]): string {

@@ -133,14 +133,12 @@ export class ElementToMigrate {
 
   getTemplateName(targetStr: string, secondStr?: string): string {
     const targetLocation = this.attr.value.indexOf(targetStr);
-    if (secondStr) {
-      const secondTargetLocation = this.attr.value.indexOf(secondStr);
-      return this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation)
-          .trim()
-          .split(';')[0]
-          .trim();
-    }
-    return this.attr.value.slice(targetLocation + targetStr.length).trim().split(';')[0].trim();
+    const secondTargetLocation = secondStr ? this.attr.value.indexOf(secondStr) : undefined;
+    return this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation)
+        .replace(':', '')
+        .trim()
+        .split(';')[0]
+        .trim();
   }
 
   start(offset: number): number {
