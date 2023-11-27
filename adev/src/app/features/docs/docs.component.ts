@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {DocContent, DocViewer} from '@angular/docs-shared';
+import {DocContent, DocViewer} from '@angular/docs';
 import {Component, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ActivatedRoute} from '@angular/router';

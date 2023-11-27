@@ -11,7 +11,7 @@ import {NgFor, NgIf} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
-import {IconComponent} from '@angular/docs-shared';
+import {IconComponent} from '@angular/docs';
 
 @Component({
   selector: 'adev-api-items-section',

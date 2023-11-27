@@ -28,7 +28,7 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
-import {IconComponent} from '@angular/docs-shared';
+import {IconComponent} from '@angular/docs';
 
 export const REQUIRED_FILES = new Set(['src/main.ts', 'src/index.html']);
 
