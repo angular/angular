@@ -7,7 +7,7 @@
  */
 
 import {Injectable, Type, inject} from '@angular/core';
-import {PREVIEWS_COMPONENTS} from '@angular/docs-shared';
+import {PREVIEWS_COMPONENTS} from '@angular/docs';
 
 @Injectable()
 export class ExampleContentLoader {

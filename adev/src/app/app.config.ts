@@ -22,7 +22,7 @@ import {
   PREVIEWS_COMPONENTS,
   WINDOW,
   windowProvider,
-} from '@angular/docs-shared';
+} from '@angular/docs';
 import {provideClientHydration} from '@angular/platform-browser';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {

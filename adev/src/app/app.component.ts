@@ -16,7 +16,7 @@ import {
   IS_SEARCH_DIALOG_OPEN,
   SearchDialog,
   WINDOW,
-} from '@angular/docs-shared';
+} from '@angular/docs';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
 import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';

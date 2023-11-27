@@ -22,7 +22,7 @@ import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 import {debounceTime} from 'rxjs/operators';
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 import {NgIf} from '@angular/common';
 
 @Component({

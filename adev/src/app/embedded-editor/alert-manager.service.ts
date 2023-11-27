@@ -7,7 +7,7 @@
  */
 
 import {Injectable, inject} from '@angular/core';
-import {LOCAL_STORAGE, WINDOW, isMobile} from '@angular/docs-shared';
+import {LOCAL_STORAGE, WINDOW, isMobile} from '@angular/docs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ErrorSnackBar, ErrorSnackBarData} from '../core/services/errors-handling/error-snack-bar';
 

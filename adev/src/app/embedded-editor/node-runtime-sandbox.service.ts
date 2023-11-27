@@ -7,7 +7,7 @@
  */
 
 import {DestroyRef, inject, Injectable, signal} from '@angular/core';
-import {checkFilesInDirectory} from '@angular/docs-shared';
+import {checkFilesInDirectory} from '@angular/docs';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
 

@@ -8,7 +8,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {TerminalHandler} from './terminal-handler.service';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 
 describe('TerminalHandler', () => {
   let service: TerminalHandler;

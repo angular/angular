@@ -16,7 +16,7 @@ import {
   signal,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {DocContent, DocViewer} from '@angular/docs-shared';
+import {DocContent, DocViewer} from '@angular/docs';
 import {ActivatedRoute} from '@angular/router';
 import {map} from 'rxjs';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';

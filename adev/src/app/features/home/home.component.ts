@@ -20,7 +20,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import {WINDOW, shouldReduceMotion, isIos} from '@angular/docs-shared';
+import {WINDOW, shouldReduceMotion, isIos} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 
 import {injectAsync} from '../../core/services/inject-async';

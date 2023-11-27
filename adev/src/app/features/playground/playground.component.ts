@@ -17,7 +17,7 @@ import {
   Type,
   inject,
 } from '@angular/core';
-import {DocViewer, IconComponent} from '@angular/docs-shared';
+import {DocViewer, IconComponent} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 
 import {PlaygroundTemplate} from '../../../../../../scripts/tutorials/tutorials-types';

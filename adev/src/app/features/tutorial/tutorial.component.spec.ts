@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW} from '@angular/docs-shared';
+import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW} from '@angular/docs';
 
 import {Component, Input, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';

@@ -8,7 +8,7 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {EnvironmentInjector, Injectable, PLATFORM_ID, inject} from '@angular/core';
-import {generateZip} from '@angular/docs-shared';
+import {generateZip} from '@angular/docs';
 import {injectAsync} from '../core/services/inject-async';
 
 @Injectable({

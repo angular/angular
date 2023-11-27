@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NavigationItem} from '@angular/docs-shared';
+import {NavigationItem} from '@angular/docs';
 
 import TUTORIALS_SUB_NAVIGATION_DATA_JSON from '../../src/assets/tutorials/routes/tutorials.json';
 

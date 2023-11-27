@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {DestroyRef, Injectable, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {RESIZE_EVENT_DELAY, WEBGL_LOADED_DELAY, WINDOW} from '@angular/docs-shared';
+import {RESIZE_EVENT_DELAY, WEBGL_LOADED_DELAY, WINDOW} from '@angular/docs';
 import {gsap} from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import {debounceTime, fromEvent} from 'rxjs';

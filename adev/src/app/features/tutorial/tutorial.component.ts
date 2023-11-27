@@ -29,7 +29,7 @@ import {
   IconComponent,
   NavigationItem,
   NavigationList,
-} from '@angular/docs-shared';
+} from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {filter} from 'rxjs';
 

@@ -20,7 +20,7 @@ import {DOCUMENT, NgFor, NgIf} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, map} from 'rxjs';
-import {DocContent, DocViewer} from '@angular/docs-shared';
+import {DocContent, DocViewer} from '@angular/docs';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';

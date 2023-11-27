@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 /* tslint:disable:no-console */
-import {NavigationItem} from '@angular/docs-shared';
+import {NavigationItem} from '@angular/docs';
 import {readFileSync} from 'fs';
 import {glob} from 'glob';
 import {join} from 'path';

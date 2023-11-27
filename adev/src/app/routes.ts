@@ -10,7 +10,7 @@ import {
   contentResolver,
   flatNavigationData,
   mapNavigationItemsToRoutes,
-} from '@angular/docs-shared';
+} from '@angular/docs';
 import {Route} from '@angular/router';
 
 import {DefaultPage, PagePrefix} from './core/enums/pages';

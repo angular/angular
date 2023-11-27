@@ -22,7 +22,7 @@ import {
   signal,
 } from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
-import {IconComponent} from '@angular/docs-shared';
+import {IconComponent} from '@angular/docs';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {distinctUntilChanged, map} from 'rxjs';
 

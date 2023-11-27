@@ -10,7 +10,7 @@ import {inject} from '@angular/core';
 import {Subject} from 'rxjs';
 import {Terminal} from 'xterm';
 
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 
 import {CommandValidator} from './command-validator.service';
 import {environment} from '../../../environments/environment';
