@@ -8,7 +8,9 @@ Learn about how you can migrate your existing angular project to the latest feat
     Standalone components, directives, and pipes aim to streamline the authoring experience by reducing the need for NgModules.
   </docs-card>
   <docs-card title="`ModuleWithProviders`" link="Migrate now" href="reference/migrations/module-with-providers">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare ligula nisi
+    ModuleWithProviders has been optional since Angular version 7. But with Ivy the metadata present in metadata.json is no longer required, instead Ivy relies on the generic type for ModuleWithProviders to get the correct type information. 
+   
+    Angular version 9 deprecates ModuleWithProviders without a generic type. A future version of Angular will remove the default generic type, making an explicit type required.
   </docs-card>
   <docs-card title="Typed Forms" link="Migrate now" href="reference/migrations/typed-forms">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare ligula nisi
