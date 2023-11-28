@@ -3445,6 +3445,53 @@ describe('control flow migration', () => {
       expect(content).toBe(result);
     });
 
+    it('should migrate template with ngTemplateOutlet on if else template', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template`,
+        `  [ngIf]="false"`,
+        `  [ngIfElse]="fooTemplate"`,
+        `  [ngTemplateOutlet]="barTemplate"`,
+        `>`,
+        `</ng-template>`,
+        `<ng-template #fooTemplate>`,
+        `  Foo`,
+        `</ng-template>`,
+        `<ng-template #barTemplate>`,
+        `  Bar`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      const result = [
+        `@if (false) {`,
+        `  <ng-template`,
+        `    [ngTemplateOutlet]="barTemplate"`,
+        `    >`,
+        `  </ng-template>`,
+        `} @else {`,
+        `  Foo`,
+        `}`,
+        `<ng-template #barTemplate>`,
+        `  Bar`,
+        `</ng-template>`,
+      ].join('\n');
+
+      expect(content).toBe(result);
+    });
+
     it('should move templates after they were migrated to new syntax', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
