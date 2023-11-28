@@ -3259,6 +3259,34 @@ describe('control flow migration', () => {
               `A duplicate ng-template name "#elseTmpl" was found. ` +
               `The control flow migration requires unique ng-template names within a component.`);
     });
+
+    it('should log a migration error when collection aliasing is detected in ngFor', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          toggle = false;
+        }
+      `);
+
+      writeFile('./comp.html', [
+        `<div *ngFor="let item of list$ | async as list;">Content</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      tree.readContent('/comp.ts');
+
+      expect(warnOutput.join(' '))
+          .toContain(
+              `Found an aliased collection on an ngFor: "item of list$ | async as list". ` +
+              `Collection aliasing is not supported with @for. ` +
+              `Refactor the code to remove the \`as\` alias and re-run the migration.`);
+    });
   });
 
   describe('template', () => {
