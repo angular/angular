@@ -141,6 +141,35 @@ export class ElementToMigrate {
         .trim();
   }
 
+  getValueEnd(offset: number): number {
+    return (this.attr.valueSpan ? (this.attr.valueSpan.end.offset + 1) :
+                                  this.attr.keySpan!.end.offset) -
+        offset;
+  }
+
+  hasChildren(): boolean {
+    return this.el.children.length > 0;
+  }
+
+  getChildSpan(offset: number): {childStart: number, childEnd: number} {
+    const childStart = this.el.children[0].sourceSpan.start.offset - offset;
+    const childEnd = this.el.children[this.el.children.length - 1].sourceSpan.end.offset - offset;
+    return {childStart, childEnd};
+  }
+
+  shouldRemoveElseAttr(): boolean {
+    return (this.el.name === 'ng-template' || this.el.name === 'ng-container') &&
+        this.elseAttr !== undefined;
+  }
+
+  getElseAttrStr(): string {
+    if (this.elseAttr !== undefined) {
+      const elseValStr = this.elseAttr.value !== '' ? `="${this.elseAttr.value}"` : '';
+      return `${this.elseAttr.name}${elseValStr}`;
+    }
+    return '';
+  }
+
   start(offset: number): number {
     return this.el.sourceSpan?.start.offset - offset;
   }
