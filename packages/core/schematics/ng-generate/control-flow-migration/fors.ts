@@ -92,6 +92,12 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
 
   // first portion should always be the loop definition prefixed with `let`
   const condition = parts[0].replace('let ', '');
+  if (condition.indexOf(' as ') > -1) {
+    let errorMessage = `Found an aliased collection on an ngFor: "${condition}".` +
+        ' Collection aliasing is not supported with @for.' +
+        ' Refactor the code to remove the `as` alias and re-run the migration.';
+    throw new Error(errorMessage);
+  }
   const loopVar = condition.split(' of ')[0];
   let trackBy = loopVar;
   let aliasedIndex: string|null = null;
