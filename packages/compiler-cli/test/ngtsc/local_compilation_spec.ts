@@ -229,14 +229,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {NgModule, Component} from '@angular/core';
-          
+
           @Component({
             selector: 'test-main',
             template: '<span>Hello world!</span>',
           })
           export class MainComponent {
           }
-          
+
           @NgModule({
             declarations: [MainComponent],
           })
@@ -257,7 +257,7 @@ runInEachFileSystem(() => {
           import {Component, forwardRef} from '@angular/core';
           import {SomeThing} from 'some-where';
           import {SomeThing2} from 'some-where2';
-          
+
           @Component({
             standalone: true,
             imports: [SomeThing, forwardRef(()=>SomeThing2)],
@@ -284,7 +284,7 @@ runInEachFileSystem(() => {
           import {SomeThing2} from 'some-where2';
 
           const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
-          
+
           @Component({
             standalone: true,
             imports: NG_IMPORTS,
@@ -306,7 +306,7 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         standalone: true,
         imports: [],
@@ -328,7 +328,7 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Component} from '@angular/core';
-          
+
           @Component({
             standalone: true,
             selector: 'test-main',
@@ -350,7 +350,7 @@ runInEachFileSystem(() => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
           import {SomeWeirdThing} from 'some-where';
-          
+
           @Component({
             changeDetection: SomeWeirdThing,
             template: '<span>Hello world!</span>',
@@ -368,8 +368,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with no styles',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.Emulated,
             template: '<span>Hello world!</span>',
@@ -389,8 +389,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with styles',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.Emulated,
             styles: ['color: blue'],
@@ -411,8 +411,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.ShadowDom',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.ShadowDom,
             template: '<span>Hello world!</span>',
@@ -430,8 +430,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.None',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.None,
             template: '<span>Hello world!</span>',
@@ -448,8 +448,8 @@ runInEachFileSystem(() => {
 
       it('should default encapsulation to Emulated', () => {
         env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             template: '<span>Hello world!</span>',
           })
@@ -481,7 +481,7 @@ runInEachFileSystem(() => {
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
-          export class MainComponent {         
+          export class MainComponent {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -489,11 +489,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainComponent],  
+            declarations: [MainComponent],
           })
           export class MainModule {
           }
@@ -522,7 +522,7 @@ runInEachFileSystem(() => {
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
-          export class MainComponent {         
+          export class MainComponent {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -530,7 +530,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -554,7 +554,7 @@ runInEachFileSystem(() => {
 
           @Directive({
           })
-          export class MainDirective {         
+          export class MainDirective {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -562,11 +562,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainDirective],  
+            declarations: [MainDirective],
           })
           export class MainModule {
           }
@@ -593,7 +593,7 @@ runInEachFileSystem(() => {
           @Directive({
             standalone: true,
           })
-          export class MainDirective {         
+          export class MainDirective {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -601,7 +601,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -624,7 +624,7 @@ runInEachFileSystem(() => {
           import * as SomeWhere4 from './some-where4'
 
           @Pipe({name: 'pipe'})
-          export class MainPipe {         
+          export class MainPipe {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -632,11 +632,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainPipe],  
+            declarations: [MainPipe],
           })
           export class MainModule {
           }
@@ -664,7 +664,7 @@ runInEachFileSystem(() => {
             name: 'pipe',
             standalone: true,
           })
-          export class MainPipe {         
+          export class MainPipe {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -672,7 +672,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -697,7 +697,7 @@ runInEachFileSystem(() => {
           @Injectable({
             providedIn: 'root',
           })
-          export class MainService {         
+          export class MainService {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -705,7 +705,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -729,7 +729,7 @@ runInEachFileSystem(() => {
 
           @NgModule({
           })
-          export class MainModule {         
+          export class MainModule {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -737,7 +737,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -755,10 +755,10 @@ runInEachFileSystem(() => {
           import {Injectable} from '@angular/core';
 
           @Injectable()
-          export class MainService<S> {         
+          export class MainService<S> {
             constructor(
               private someService1: S,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -777,10 +777,10 @@ runInEachFileSystem(() => {
           import {type MyService} from './somewhere';
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -799,10 +799,10 @@ runInEachFileSystem(() => {
           type MyService = {a:string};
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -821,10 +821,10 @@ runInEachFileSystem(() => {
           interface MyService {a:string}
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -842,10 +842,10 @@ runInEachFileSystem(() => {
           import {Directive} from '@angular/core';
 
           @Directive()
-          export class MyDirective<S> {         
+          export class MyDirective<S> {
             constructor(
               private myService: S,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -864,10 +864,10 @@ runInEachFileSystem(() => {
           import {type MyService} from './somewhere';
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -883,14 +883,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Directive} from '@angular/core';
-          
+
           type MyService = {a:string};
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -906,14 +906,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Directive} from '@angular/core';
-          
+
           interface MyService {a:string}
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -933,7 +933,7 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
           import {ExternalString} from './some-where';
 
-          @Component({            
+          @Component({
             template: ExternalString,
           })
           export class Main {
@@ -961,7 +961,7 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
           import {ExternalString} from './some-where';
 
-          @Component({            
+          @Component({
             styles: [ExternalString],
             template: '',
 
@@ -1052,7 +1052,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: ["x", "x", externalFunc] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", externalFunc] }');
       });
 
       it('should generate input info for transform function imported externally using namespace',
@@ -1073,12 +1073,12 @@ runInEachFileSystem(() => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
 
-           expect(jsContents).toContain('inputs: { x: ["x", "x", n.externalFunc] }');
+           expect(jsContents).toContain('inputs: { x: [2, "x", "x", n.externalFunc] }');
          });
 
       it('should generate input info for transform function defined locally', () => {
         env.write('test.ts', `
-        import {Component, NgModule, Input} from '@angular/core';        
+        import {Component, NgModule, Input} from '@angular/core';
 
         @Component({
           template: '<span>{{x}}</span>',
@@ -1096,12 +1096,12 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: ["x", "x", localFunc] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", localFunc] }');
       });
 
       it('should generate input info for inline transform function', () => {
         env.write('test.ts', `
-        import {Component, NgModule, Input} from '@angular/core';        
+        import {Component, NgModule, Input} from '@angular/core';
 
         @Component({
           template: '<span>{{x}}</span>',
@@ -1115,12 +1115,12 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: ["x", "x", (v) => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
       });
 
       it('should not check inline function param type', () => {
         env.write('test.ts', `
-        import {Component, NgModule, Input} from '@angular/core';        
+        import {Component, NgModule, Input} from '@angular/core';
 
         @Component({
           template: '<span>{{x}}</span>',
@@ -1134,7 +1134,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: ["x", "x", v => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", v => v + \'TRANSFORMED!\'] }');
       });
     });
   });

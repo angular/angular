@@ -9,7 +9,7 @@
 
 import {assertIndexInRange} from '../../util/assert';
 import {isSubscribable} from '../../util/lang';
-import {PropertyAliasValue, TNode, TNodeType} from '../interfaces/node';
+import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
@@ -192,7 +192,7 @@ function listenerInternal(
 
   // subscribe to directive outputs
   const outputs = tNode.outputs;
-  let props: PropertyAliasValue|undefined;
+  let props: NodeOutputBindings[keyof NodeOutputBindings]|undefined;
   if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
