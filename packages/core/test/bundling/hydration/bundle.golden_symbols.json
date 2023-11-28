@@ -222,6 +222,9 @@
     "name": "Injector"
   },
   {
+    "name": "InputFlags"
+  },
+  {
     "name": "LContainerFlags"
   },
   {
@@ -534,7 +537,7 @@
     "name": "activeConsumer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "allocExpando"
@@ -556,6 +559,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -589,6 +595,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -751,9 +760,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getClosureSafeProperty"
@@ -937,9 +943,6 @@
   },
   {
     "name": "internalImportProvidersFrom"
-  },
-  {
-    "name": "invertObject"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
@@ -1126,6 +1129,9 @@
   },
   {
     "name": "operate"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "performanceMarkFeature"

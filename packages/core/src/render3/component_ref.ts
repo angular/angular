@@ -37,8 +37,8 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, setInputsForProperty} from './instructions/shared';
-import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
-import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {ComponentDef, DirectiveDef, HostDirectiveDefs, InputFlags} from './interfaces/definition';
+import {NodeInputBindings, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, TVIEW, TViewType} from './interfaces/view';
@@ -68,13 +68,23 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   }
 }
 
-function toRefArray(map: {[key: string]: string}): {propName: string; templateName: string;}[] {
+function toRefArray<T>(map: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]}):
+    {propName: string; templateName: string}[] {
   const array: {propName: string; templateName: string;}[] = [];
-  for (let nonMinified in map) {
-    if (map.hasOwnProperty(nonMinified)) {
-      const minified = map[nonMinified];
-      array.push({propName: minified, templateName: nonMinified});
+  for (const publicName in map) {
+    if (!map.hasOwnProperty(publicName)) {
+      continue;
     }
+
+    const value = map[publicName];
+    if (value === undefined) {
+      continue;
+    }
+
+    array.push({
+      propName: Array.isArray(value) ? value[0] : value,
+      templateName: publicName,
+    });
   }
   return array;
 }
@@ -331,7 +341,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
   override setInput(name: string, value: unknown): void {
     const inputData = this._tNode.inputs;
-    let dataValue: PropertyAliasValue|undefined;
+    let dataValue: NodeInputBindings[typeof name]|undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
       this.previousInputValues ??= new Map();
       // Do not set the input if it is the same as the last value
