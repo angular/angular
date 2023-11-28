@@ -2391,6 +2391,45 @@ describe('control flow migration', () => {
           'template: `<div>@switch (testOpts) { @case (1) { <p>Option 1</p> } @case (2) { <p>Option 2</p> } @default { <p>Option 3</p> }}</div>');
     });
 
+    it('should handle empty default cases', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {ngSwitch, ngSwitchCase} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          testOpts = "1";
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container [ngSwitch]="type">`,
+        `<ng-container *ngSwitchCase="'foo'"> Foo </ng-container>`,
+        `<ng-container *ngSwitchCase="'bar'"> Bar </ng-container>`,
+        `<ng-container *ngSwitchDefault></ng-container>`,
+        `</ng-container>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `\n@switch (type) {`,
+        `  @case ('foo') {`,
+        `    Foo`,
+        `  }`,
+        `  @case ('bar') {`,
+        `    Bar`,
+        `  }`,
+        `  @default {`,
+        `  }`,
+        `}\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate a nested class', async () => {
       writeFile(
           '/comp.ts',
