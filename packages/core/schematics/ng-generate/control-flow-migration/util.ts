@@ -432,8 +432,12 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   // removable containers are ng-templates or ng-containers that no longer need to exist
   // post migration
   if (isRemovableContainer(etm)) {
-    const {childStart, childEnd} = etm.getChildSpan(offset);
-    return {start: '', middle: tmpl.slice(childStart, childEnd), end: ''};
+    let middle = '';
+    if (etm.hasChildren()) {
+      const {childStart, childEnd} = etm.getChildSpan(offset);
+      middle = tmpl.slice(childStart, childEnd);
+    }
+    return {start: '', middle, end: ''};
   } else if (isI18nTemplate(etm, i18nAttr)) {
     // here we're removing an ng-template used for control flow and i18n and
     // converting it to an ng-container with i18n
