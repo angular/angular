@@ -70,7 +70,8 @@ export function getLViewFromLContainer<T>(lContainer: LContainer, index: number)
  */
 export function shouldAddViewToDom(
     tNode: TNode, dehydratedView?: DehydratedContainerView|null): boolean {
-  return !dehydratedView || hasInSkipHydrationBlockFlag(tNode);
+  return !dehydratedView || !dehydratedView.firstChild?.parentElement ||
+      hasInSkipHydrationBlockFlag(tNode);
 }
 
 export function addLViewToLContainer(

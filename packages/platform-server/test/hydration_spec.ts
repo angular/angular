@@ -6284,6 +6284,52 @@ describe('platform-server hydration integration', () => {
                [4, 5].map(id => compRef.location.nativeElement.querySelector(`[id=${id}]`));
            verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
          });
+
+      it('should handle a reconciliation with swap', async () => {
+        @Component({
+          selector: 'app',
+          standalone: true,
+          template: `
+              @for(item of array2; track item) {
+                <div>{{ item }}</div>
+              }
+            `,
+        })
+        class SimpleComponent {
+          array2 = ['foo', 'bar', 'baz'];
+
+          swap() {
+            this.array2.sort();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        expect(ssrContents).toContain('foo');
+        expect(ssrContents).toContain('bar');
+        expect(ssrContents).toContain('baz');
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const root: HTMLElement = compRef.location.nativeElement;
+        const divs = root.querySelectorAll(`div`);
+        expect(divs.length).toBe(3);
+
+        compRef.instance.swap();
+        compRef.changeDetectorRef.detectChanges();
+
+        const divsAfterSwap = root.querySelectorAll(`div`);
+        expect(divsAfterSwap.length).toBe(3);
+      });
     });
 
     describe('Router', () => {
