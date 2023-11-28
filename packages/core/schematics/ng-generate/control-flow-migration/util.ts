@@ -428,35 +428,40 @@ function isRemovableContainer(etm: ElementToMigrate): boolean {
 export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
     {start: string, middle: string, end: string} {
   const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
+
+  // removable containers are ng-templates or ng-containers that no longer need to exist
+  // post migration
   if (isRemovableContainer(etm)) {
-    // this is the case where we're migrating and there's no need to keep the ng-container
-    const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
-    const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
-    const middle = tmpl.slice(childStart, childEnd);
-    return {start: '', middle, end: ''};
+    const {childStart, childEnd} = etm.getChildSpan(offset);
+    return {start: '', middle: tmpl.slice(childStart, childEnd), end: ''};
   } else if (isI18nTemplate(etm, i18nAttr)) {
-    const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
-    const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
+    // here we're removing an ng-template used for control flow and i18n and
+    // converting it to an ng-container with i18n
+    const {childStart, childEnd} = etm.getChildSpan(offset);
     return generatei18nContainer(i18nAttr!, tmpl.slice(childStart, childEnd));
   }
 
+  // the index of the start of the attribute adjusting for offset shift
   const attrStart = etm.attr.keySpan!.start.offset - 1 - offset;
-  const valEnd =
-      (etm.attr.valueSpan ? (etm.attr.valueSpan.end.offset + 1) : etm.attr.keySpan!.end.offset) -
-      offset;
 
-  let childStart = valEnd;
-  let childEnd = valEnd;
+  // the index of the very end of the attribute value adjusted for offset shift
+  const valEnd = etm.getValueEnd(offset);
 
-  if (etm.el.children.length > 0) {
-    childStart = etm.el.children[0].sourceSpan.start.offset - offset;
-    childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
+  // the index of the children start and end span, if they exist. Otherwise use the value end.
+  const {childStart, childEnd} =
+      etm.hasChildren() ? etm.getChildSpan(offset) : {childStart: valEnd, childEnd: valEnd};
+
+  // the beginning of the updated string in the main block, for example: <div some="attributes">
+  let start = tmpl.slice(etm.start(offset), attrStart) + tmpl.slice(valEnd, childStart);
+
+  if (etm.shouldRemoveElseAttr()) {
+    // this removes a bound ngIfElse attribute that's no longer needed
+    start = start.replace(etm.getElseAttrStr(), '');
   }
 
-  let start = tmpl.slice(etm.start(offset), attrStart);
-  start += tmpl.slice(valEnd, childStart);
-
+  // the middle is the actual contents of the element
   const middle = tmpl.slice(childStart, childEnd);
+  // the end is the closing part of the element, example: </div>
   const end = tmpl.slice(childEnd, etm.end(offset));
 
   return {start, middle, end};
