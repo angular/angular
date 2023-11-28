@@ -282,6 +282,9 @@
     "name": "Injector"
   },
   {
+    "name": "InputFlags"
+  },
+  {
     "name": "ItemComponent"
   },
   {
@@ -813,7 +816,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToArray"
@@ -844,6 +847,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -880,6 +886,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "catchError"
@@ -1183,9 +1192,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getAllRouteGuards"

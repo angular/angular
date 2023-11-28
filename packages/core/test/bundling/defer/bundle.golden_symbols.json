@@ -222,6 +222,9 @@
     "name": "Injector"
   },
   {
+    "name": "InputFlags"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -561,7 +564,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToViewTree"
@@ -589,6 +592,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -619,6 +625,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -781,9 +790,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1020,6 +1026,9 @@
     "name": "init_application_tokens"
   },
   {
+    "name": "init_apply_value_input_field"
+  },
+  {
     "name": "init_arrRemove"
   },
   {
@@ -1198,6 +1207,9 @@
   },
   {
     "name": "init_definition"
+  },
+  {
+    "name": "init_definition2"
   },
   {
     "name": "init_definition_factory"

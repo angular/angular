@@ -8,6 +8,7 @@
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 
+import type {InputFlags} from './definition';
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
@@ -544,13 +545,13 @@ export interface TNode {
    * Input data for all directives on this node. `null` means that there are no directives with
    * inputs on this node.
    */
-  inputs: PropertyAliases|null;
+  inputs: NodeInputBindings|null;
 
   /**
    * Output data for all directives on this node. `null` means that there are no directives with
    * outputs on this node.
    */
-  outputs: PropertyAliases|null;
+  outputs: NodeOutputBindings|null;
 
   /**
    * The TView attached to this node.
@@ -880,29 +881,37 @@ export interface TProjectionNode extends TNode {
 export type TDirectiveHostNode = TElementNode|TContainerNode|TElementContainerNode;
 
 /**
- * This mapping is necessary so we can set input properties and output listeners
- * properly at runtime when property names are minified or aliased.
- *
- * Key: unminified / public input or output name
- * Value: array containing minified / internal name and related directive index
- *
- * The value must be an array to support inputs and outputs with the same name
- * on the same node.
- */
-export type PropertyAliases = {
-  // This uses an object map because using the Map type would be too slow
-  [key: string]: PropertyAliasValue
-};
-
-/**
- * Store the runtime input or output names for all the directives.
+ * Store the runtime output names for all the directives.
  *
  * i+0: directive instance index
  * i+1: privateName
  *
- * e.g. [0, 'change-minified']
+ * e.g.
+ * ```
+ * {
+ *   "publicName": [0, 'change-minified']
+ * }
  */
-export type PropertyAliasValue = (number|string)[];
+export type NodeOutputBindings = Record<string, (number|string)[]>;
+
+/**
+ * Store the runtime input for all directives applied to a node.
+ *
+ * This allows efficiently setting the same input on a directive that
+ * might apply to multiple directives.
+ *
+ * i+0: directive instance index
+ * i+1: privateName
+ * i+2: input flags
+ *
+ * e.g.
+ * ```
+ * {
+ *   "publicName": [0, 'change-minified', <bit-input-flags>]
+ * }
+ * ```
+ */
+export type NodeInputBindings = Record<string, (number|string|InputFlags)[]>;
 
 /**
  * This array contains information about input properties that
@@ -930,11 +939,12 @@ export type InitialInputData = (InitialInputs|null)[];
  *
  * i+0: attribute name
  * i+1: minified/internal input name
- * i+2: initial value
+ * i+2: input flags
+ * i+3: initial value
  *
  * e.g. ['role-min', 'minified-input', 'button']
  */
-export type InitialInputs = string[];
+export type InitialInputs = (string|InputFlags)[];
 
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.

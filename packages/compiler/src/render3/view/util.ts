@@ -7,6 +7,7 @@
  */
 
 import {ConstantPool} from '../../constant_pool';
+import {InputFlags} from '../../core';
 import {BindingType, Interpolation} from '../../expression_parser/ast';
 import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
@@ -179,7 +180,8 @@ export function conditionallyCreateDirectiveBindingLiteral(
       classPropertyName: string;
       bindingPropertyName: string;
       transformFunction: o.Expression|null;
-    }>, keepDeclared?: boolean): o.Expression|null {
+      isSignal: boolean,
+    }>, forInputs?: boolean): o.Expression|null {
   const keys = Object.getOwnPropertyNames(map);
 
   if (keys.length === 0) {
@@ -204,14 +206,29 @@ export function conditionallyCreateDirectiveBindingLiteral(
       declaredName = value.classPropertyName;
       publicName = value.bindingPropertyName;
 
-      if (keepDeclared && (publicName !== declaredName || value.transformFunction != null)) {
-        const expressionKeys = [asLiteral(publicName), asLiteral(declaredName)];
+      const differentDeclaringName = publicName !== declaredName;
+      const hasTransform = value.transformFunction !== null;
 
-        if (value.transformFunction != null) {
-          expressionKeys.push(value.transformFunction);
+      // Build up input flags
+      let flags = 0;
+      if (value.isSignal) {
+        flags = flags | InputFlags.SignalBased;
+      }
+
+      // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), or support
+      // transform functions, or store flag information if there is any.
+      if (forInputs && (differentDeclaringName || hasTransform || flags !== 0)) {
+        const result: o.Expression[] = [o.literal(flags), asLiteral(publicName)];
+
+        if (differentDeclaringName || hasTransform) {
+          result.push(asLiteral(declaredName));
+
+          if (hasTransform) {
+            result.push(value.transformFunction!);
+          }
         }
 
-        expressionValue = o.literalArr(expressionKeys);
+        expressionValue = o.literalArr(result);
       } else {
         expressionValue = asLiteral(publicName);
       }

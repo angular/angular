@@ -285,6 +285,9 @@
     "name": "Injector"
   },
   {
+    "name": "InputFlags"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -654,7 +657,7 @@
     "name": "addClass"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToViewTree"
@@ -682,6 +685,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -724,6 +730,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -910,9 +919,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getBindingsEnabled"

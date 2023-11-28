@@ -87,7 +87,11 @@ export interface PipeType<T> extends Type<T> {
   ɵpipe: unknown;
 }
 
-
+/** Flags describing an input for a directive. */
+export enum InputFlags {
+  None = 0,
+  SignalBased = 1 << 0,
+}
 
 /**
  * Runtime link information for Directives.
@@ -105,11 +109,10 @@ export interface PipeType<T> extends Type<T> {
  */
 export interface DirectiveDef<T> {
   /**
-   * A dictionary mapping the inputs' minified property names to their public API names, which
-   * are their aliases if any, or their original unminified property names
-   * (as in `@Input('alias') propertyName: any;`).
+   * A dictionary mapping the inputs' public name to their minified property names
+   * (along with flags if there are any).
    */
-  readonly inputs: {[P in keyof T]: string};
+  readonly inputs: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]};
 
   /**
    * A dictionary mapping the private names of inputs to their transformation functions.
@@ -126,20 +129,20 @@ export interface DirectiveDef<T> {
    * used to do further processing after the `inputs` have been inverted.
    */
   readonly inputConfig:
-      {[classPropertyName: string]: string|[string, string, InputTransformFunction?]};
+      {[P in keyof T]?: string|[InputFlags, string, string?, InputTransformFunction?]};
 
   /**
    * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
    * public or minified name.
    */
-  readonly declaredInputs: {[P in keyof T]: string};
+  readonly declaredInputs: Record<string, string>;
 
   /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
    */
-  readonly outputs: {[P in keyof T]: string};
+  readonly outputs: {[P in keyof T]?: string};
 
   /**
    * Function to create and refresh content queries associated with a given directive.
@@ -259,8 +262,8 @@ export interface DirectiveDef<T> {
 
   setInput:
       (<U extends T>(
-           this: DirectiveDef<U>, instance: U, value: any, publicName: string,
-           privateName: string) => void)|null;
+           this: DirectiveDef<U>, instance: U, value: any, publicName: string, privateName: string,
+           flags: InputFlags) => void)|null;
 }
 
 /**
