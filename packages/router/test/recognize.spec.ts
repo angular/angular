@@ -653,6 +653,17 @@ describe('recognize', async () => {
       expect(s.root.fragment).toEqual('f1');
     });
   });
+
+  describe('guards', () => {
+    it('should run canMatch guards on wildcard routes', async () => {
+      const config = [
+        {path: '**', component: ComponentA, data: {id: 'a'}, canMatch: [() => false]},
+        {path: '**', component: ComponentB, data: {id: 'b'}}
+      ];
+      const s = await recognize(config, 'a');
+      expect(s.root.firstChild!.data['id']).toEqual('b');
+    });
+  });
 });
 
 async function recognize(
