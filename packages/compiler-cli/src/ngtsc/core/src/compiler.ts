@@ -1135,7 +1135,7 @@ export class NgCompiler {
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
           injectableRegistry, this.delegatingPerfRecorder, supportTestBed, supportJitMode,
-          compilationMode),
+          compilationMode, !!this.options.generateExtraImportsInLocalMode),
     ];
 
     const traitCompiler = new TraitCompiler(
