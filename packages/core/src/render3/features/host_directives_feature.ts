@@ -186,11 +186,11 @@ function validateHostDirective(
  * @param def Definition of the host directive that is being validated against.
  * @param hostDirectiveBindings Host directive mapping object that shold be validated.
  */
-function validateMappings(
-    bindingType: 'input'|'output', def: DirectiveDef<unknown>,
+function validateMappings<T>(
+    bindingType: 'input'|'output', def: DirectiveDef<T>,
     hostDirectiveBindings: HostDirectiveBindingMap) {
   const className = def.type.name;
-  const bindings: Record<string, string> = bindingType === 'input' ? def.inputs : def.outputs;
+  const bindings = bindingType === 'input' ? def.inputs : def.outputs;
 
   for (const publicName in hostDirectiveBindings) {
     if (hostDirectiveBindings.hasOwnProperty(publicName)) {
@@ -203,8 +203,7 @@ function validateMappings(
 
       const remappedPublicName = hostDirectiveBindings[publicName];
 
-      if (bindings.hasOwnProperty(remappedPublicName) && remappedPublicName !== publicName &&
-          bindings[remappedPublicName] !== publicName) {
+      if (bindings.hasOwnProperty(remappedPublicName) && remappedPublicName !== publicName) {
         throw new RuntimeError(
             RuntimeErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
             `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${
