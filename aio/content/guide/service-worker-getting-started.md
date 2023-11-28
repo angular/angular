@@ -67,7 +67,7 @@ You can run it without installing it like this:
 
 <code-example format="shell" language="shell">
 
-npx http-server -p 8080 -c-1 dist/   
+npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
 
 </code-example>
 
@@ -174,7 +174,7 @@ Make a change to the application, and watch the service worker install the updat
     <code-example format="shell" language="shell">
 
     ng build
-    npx http-server -p 8080 -c-1 dist/
+    npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
 
     </code-example>
 
