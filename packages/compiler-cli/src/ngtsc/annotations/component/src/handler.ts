@@ -596,6 +596,10 @@ export class ComponentDecoratorHandler implements
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):
       void {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
+
     if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
       return;
     }
@@ -627,8 +631,6 @@ export class ComponentDecoratorHandler implements
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
     if (this.compilationMode === CompilationMode.LOCAL) {
       console.warn('>>>>> Hey LCM resolve for component!', node.name.getText());
-
-      return {};
     }
 
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
@@ -918,41 +920,44 @@ export class ComponentDecoratorHandler implements
       }
     }
 
-    if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
-      const standaloneDiagnostics = validateStandaloneImports(
-          analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader);
-      diagnostics.push(...standaloneDiagnostics);
-    }
+    // Run diagnostics only in global mode.
+    if (this.compilationMode !== CompilationMode.LOCAL) {
+      if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
+        const standaloneDiagnostics = validateStandaloneImports(
+            analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader);
+        diagnostics.push(...standaloneDiagnostics);
+      }
 
-    if (analysis.providersRequiringFactory !== null &&
-        analysis.meta.providers instanceof WrappedNodeExpr) {
-      const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.meta.providers!.node,
-          this.injectableRegistry);
-      diagnostics.push(...providerDiagnostics);
-    }
+      if (analysis.providersRequiringFactory !== null &&
+          analysis.meta.providers instanceof WrappedNodeExpr) {
+        const providerDiagnostics = getProviderDiagnostics(
+            analysis.providersRequiringFactory, analysis.meta.providers!.node,
+            this.injectableRegistry);
+        diagnostics.push(...providerDiagnostics);
+      }
 
-    if (analysis.viewProvidersRequiringFactory !== null &&
-        analysis.meta.viewProviders instanceof WrappedNodeExpr) {
-      const viewProviderDiagnostics = getProviderDiagnostics(
-          analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
-          this.injectableRegistry);
-      diagnostics.push(...viewProviderDiagnostics);
-    }
+      if (analysis.viewProvidersRequiringFactory !== null &&
+          analysis.meta.viewProviders instanceof WrappedNodeExpr) {
+        const viewProviderDiagnostics = getProviderDiagnostics(
+            analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
+            this.injectableRegistry);
+        diagnostics.push(...viewProviderDiagnostics);
+      }
 
-    const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
-        this.strictCtorDeps, 'Component');
-    if (directiveDiagnostics !== null) {
-      diagnostics.push(...directiveDiagnostics);
-    }
+      const directiveDiagnostics = getDirectiveDiagnostics(
+          node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
+          this.strictCtorDeps, 'Component');
+      if (directiveDiagnostics !== null) {
+        diagnostics.push(...directiveDiagnostics);
+      }
 
-    const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
-        validateHostDirectives(
-            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
-        null;
-    if (hostDirectivesDiagnotics !== null) {
-      diagnostics.push(...hostDirectivesDiagnotics);
+      const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
+          validateHostDirectives(
+              analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
+          null;
+      if (hostDirectivesDiagnotics !== null) {
+        diagnostics.push(...hostDirectivesDiagnotics);
+      }
     }
 
     if (diagnostics.length > 0) {
