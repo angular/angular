@@ -110,7 +110,7 @@ Make a change to the application, and watch the service worker install the updat
     <docs-code language="shell">
 
     ng build
-    npx http-server -p 8080 -c-1 dist/
+    npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
 
     </docs-code>
 
