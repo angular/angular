@@ -3559,6 +3559,46 @@ describe('control flow migration', () => {
       expect(content).toBe(result);
     });
 
+    it('should migrate template with ngIfThen and remove template', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template`,
+        `  [ngIf]="mode === 'foo'"`,
+        `  [ngIfThen]="foo"`,
+        `  [ngIfElse]="bar"`,
+        `></ng-template>`,
+        `<ng-template #foo>`,
+        `  Foo`,
+        `</ng-template>`,
+        `<ng-template #bar>`,
+        `  Bar`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      const result = [
+        `@if (mode === 'foo') {`,
+        `  Foo`,
+        `} @else {`,
+        `  Bar`,
+        `}\n`,
+      ].join('\n');
+
+      expect(content).toBe(result);
+    });
+
     it('should move templates after they were migrated to new syntax', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';

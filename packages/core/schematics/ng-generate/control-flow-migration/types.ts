@@ -12,6 +12,7 @@ import ts from 'typescript';
 export const ngtemplate = 'ng-template';
 export const boundngifelse = '[ngIfElse]';
 export const boundngifthenelse = '[ngIfThenElse]';
+export const boundngifthen = '[ngIfThen]';
 export const nakedngfor = 'ngFor';
 
 function allFormsOf(selector: string): string[] {
@@ -315,7 +316,8 @@ export class ElementCollector extends RecursiveVisitor {
       for (const attr of el.attrs) {
         if (this._attributes.includes(attr.name)) {
           const elseAttr = el.attrs.find(x => x.name === boundngifelse);
-          const thenAttr = el.attrs.find(x => x.name === boundngifthenelse);
+          const thenAttr =
+              el.attrs.find(x => x.name === boundngifthenelse || x.name === boundngifthen);
           const forAttrs = attr.name === nakedngfor ? this.getForAttrs(el) : undefined;
           this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs));
         }
