@@ -81,6 +81,9 @@ export type Result = {
 export interface ForAttributes {
   forOf: string;
   trackBy: string;
+}
+
+export interface AliasAttributes {
   item: string;
   aliases: Map<string, string>;
 }
@@ -102,17 +105,20 @@ export class ElementToMigrate {
   elseAttr: Attribute|undefined;
   thenAttr: Attribute|undefined;
   forAttrs: ForAttributes|undefined;
+  aliasAttrs: AliasAttributes|undefined;
   nestCount = 0;
   hasLineBreaks = false;
 
   constructor(
       el: Element, attr: Attribute, elseAttr: Attribute|undefined = undefined,
-      thenAttr: Attribute|undefined = undefined, forAttrs: ForAttributes|undefined = undefined) {
+      thenAttr: Attribute|undefined = undefined, forAttrs: ForAttributes|undefined = undefined,
+      aliasAttrs: AliasAttributes|undefined = undefined) {
     this.el = el;
     this.attr = attr;
     this.elseAttr = elseAttr;
     this.thenAttr = thenAttr;
     this.forAttrs = forAttrs;
+    this.aliasAttrs = aliasAttrs;
   }
 
   getCondition(): string {
@@ -319,7 +325,9 @@ export class ElementCollector extends RecursiveVisitor {
           const thenAttr =
               el.attrs.find(x => x.name === boundngifthenelse || x.name === boundngifthen);
           const forAttrs = attr.name === nakedngfor ? this.getForAttrs(el) : undefined;
-          this.elements.push(new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs));
+          const aliasAttrs = this.getAliasAttrs(el);
+          this.elements.push(
+              new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs, aliasAttrs));
         }
       }
     }
@@ -327,8 +335,6 @@ export class ElementCollector extends RecursiveVisitor {
   }
 
   private getForAttrs(el: Element): ForAttributes {
-    const aliases = new Map<string, string>();
-    let item = '';
     let trackBy = '';
     let forOf = '';
     for (const attr of el.attrs) {
@@ -338,6 +344,14 @@ export class ElementCollector extends RecursiveVisitor {
       if (attr.name === '[ngForOf]') {
         forOf = attr.value;
       }
+    }
+    return {forOf, trackBy};
+  }
+
+  private getAliasAttrs(el: Element): AliasAttributes {
+    const aliases = new Map<string, string>();
+    let item = '';
+    for (const attr of el.attrs) {
       if (attr.name.startsWith('let-')) {
         if (attr.value === '') {
           // item
@@ -348,7 +362,7 @@ export class ElementCollector extends RecursiveVisitor {
         }
       }
     }
-    return {forOf, trackBy, item, aliases};
+    return {item, aliases};
   }
 }
 
