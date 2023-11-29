@@ -12,7 +12,7 @@
 | [aab7fb8654](https://github.com/angular/angular/commit/aab7fb865486b94d6aabbe548894f8083f4e6cfe) | fix | Add ngForTemplate support to control flow migration ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [dbd6f386ea](https://github.com/angular/angular/commit/dbd6f386ea81e7f29bc1cb34fb8efbba8c290ea8) | fix | allows colons in ngIf else cases to migrate ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [5b9f896009](https://github.com/angular/angular/commit/5b9f896009d9c57c91d44e1cb7adf80c29fbfb4c) | fix | cf migration fix migrating empty switch default ([#53237](https://github.com/angular/angular/pull/53237)) |
-| [2b3d3b0fe1](https://github.com/angular/angular/commit/2b3d3b0fe10134739ec9982a776837a273ec8e1d) | fix | CF migration log warning when collection aliasing detected in @for ([#53238](https://github.com/angular/angular/pull/53238)) |
+| [2b3d3b0fe1](https://github.com/angular/angular/commit/2b3d3b0fe10134739ec9982a776837a273ec8e1d) | fix | CF migration log warning when collection aliasing detected in `@for` ([#53238](https://github.com/angular/angular/pull/53238)) |
 | [dffeac8386](https://github.com/angular/angular/commit/dffeac8386bed73ef0b2337c33f122af9884bb82) | fix | cf migration removes unnecessary bound ngifelse attribute ([#53236](https://github.com/angular/angular/pull/53236)) |
 | [00cb3339ba](https://github.com/angular/angular/commit/00cb3339bab738100e4164339420f2492be91fd1) | fix | control flow migration formatting fixes ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [c22af72f75](https://github.com/angular/angular/commit/c22af72f753b9ad3886561228a0cfd938a2a6de9) | fix | fix off by one issue with template removal in CF migration ([#53255](https://github.com/angular/angular/pull/53255)) |
@@ -98,7 +98,7 @@
 | -- | -- | -- |
 | [2cea80c6e2](https://github.com/angular/angular/commit/2cea80c6e21c113d12c38c4b3219c5f3f5944bd8) | fix | error code in image performance warning ([#52727](https://github.com/angular/angular/pull/52727)) |
 | [b16fc2610a](https://github.com/angular/angular/commit/b16fc2610a37b7407713e1e0018d92372f1349e9) | fix | limit rate of markers invocations ([#52742](https://github.com/angular/angular/pull/52742)) |
-| [44c48a4835](https://github.com/angular/angular/commit/44c48a48358c92c32301b578966a8e1ee9a867d8) | fix | properly update collection with repeated keys in @for ([#52697](https://github.com/angular/angular/pull/52697)) |
+| [44c48a4835](https://github.com/angular/angular/commit/44c48a48358c92c32301b578966a8e1ee9a867d8) | fix | properly update collection with repeated keys in `@for` ([#52697](https://github.com/angular/angular/pull/52697)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
