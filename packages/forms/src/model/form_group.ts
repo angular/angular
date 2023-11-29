@@ -295,12 +295,14 @@ export class FormGroup<
     name: string,
     options?: {
       emitEvent?: boolean;
+      onlySelf?: boolean;
     },
   ): void;
   removeControl<S extends string>(
     name: ɵOptionalKeys<TControl> & S,
     options?: {
       emitEvent?: boolean;
+      onlySelf?: boolean;
     },
   ): void;
 
@@ -313,15 +315,17 @@ export class FormGroup<
    * @param name The control name to remove from the collection
    * @param options Specifies whether this FormGroup instance should emit events after a
    *     control is removed.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * removed. When false, no events are emitted.
    */
-  removeControl(name: string, options: {emitEvent?: boolean} = {}): void {
+  removeControl(name: string, options: {emitEvent?: boolean; onlySelf?: boolean} = {}): void {
     if ((this.controls as any)[name])
       (this.controls as any)[name]._registerOnCollectionChange(() => {});
     delete (this.controls as any)[name];
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity(options);
     this._onCollectionChange();
   }
 
@@ -335,6 +339,8 @@ export class FormGroup<
    * @param control Provides the control for the given name
    * @param options Specifies whether this FormGroup instance should emit events after an
    *     existing control is replaced.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * replaced with a new one. When false, no events are emitted.
@@ -344,13 +350,14 @@ export class FormGroup<
     control: TControl[K],
     options?: {
       emitEvent?: boolean;
+      onlySelf?: boolean;
     },
   ): void;
   setControl(
     this: FormGroup<{[key: string]: AbstractControl<any>}>,
     name: string,
     control: AbstractControl,
-    options?: {emitEvent?: boolean},
+    options?: {emitEvent?: boolean; onlySelf?: boolean},
   ): void;
 
   setControl<K extends string & keyof TControl>(
@@ -358,12 +365,13 @@ export class FormGroup<
     control: TControl[K],
     options: {
       emitEvent?: boolean;
+      onlySelf?: boolean;
     } = {},
   ): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete this.controls[name];
     if (control) this.registerControl(name, control);
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity({emitEvent: options.emitEvent, onlySelf: options.onlySelf});
     this._onCollectionChange();
   }
 
@@ -752,14 +760,18 @@ export interface FormRecord<TControl> {
    *
    * See `FormGroup#removeControl` for additional information.
    */
-  removeControl(name: string, options?: {emitEvent?: boolean}): void;
+  removeControl(name: string, options?: {emitEvent?: boolean; onlySelf?: boolean}): void;
 
   /**
    * Replace an existing control.
    *
    * See `FormGroup#setControl` for additional information.
    */
-  setControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
+  setControl(
+    name: string,
+    control: TControl,
+    options?: {emitEvent?: boolean; onlySelf?: boolean},
+  ): void;
 
   /**
    * Check whether there is an enabled control with the given name in the group.

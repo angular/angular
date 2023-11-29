@@ -170,14 +170,16 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @param control Form control to be inserted
    * @param options Specifies whether this FormArray instance should emit events after a new
    *     control is added.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
    */
-  push(control: TControl, options: {emitEvent?: boolean} = {}): void {
+  push(control: TControl, options: {emitEvent?: boolean; onlySelf?: boolean} = {}): void {
     this.controls.push(control);
     this._registerControl(control);
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity({emitEvent: options.emitEvent, onlySelf: options.onlySelf});
     this._onCollectionChange();
   }
 
@@ -190,15 +192,21 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @param control Form control to be inserted
    * @param options Specifies whether this FormArray instance should emit events after a new
    *     control is inserted.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
    */
-  insert(index: number, control: TControl, options: {emitEvent?: boolean} = {}): void {
+  insert(
+    index: number,
+    control: TControl,
+    options: {emitEvent?: boolean; onlySelf?: boolean} = {},
+  ): void {
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity({emitEvent: options.emitEvent, onlySelf: options.onlySelf});
   }
 
   /**
@@ -209,11 +217,13 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    *     element. This behavior is the same as `Array.splice(index, 1)`.
    * @param options Specifies whether this FormArray instance should emit events after a
    *     control is removed.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * removed. When false, no events are emitted.
    */
-  removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
+  removeAt(index: number, options: {emitEvent?: boolean; onlySelf?: boolean} = {}): void {
     // Adjust the index, then clamp it at no less than 0 to prevent undesired underflows.
     let adjustedIndex = this._adjustIndex(index);
     if (adjustedIndex < 0) adjustedIndex = 0;
@@ -221,7 +231,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     if (this.controls[adjustedIndex])
       this.controls[adjustedIndex]._registerOnCollectionChange(() => {});
     this.controls.splice(adjustedIndex, 1);
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity({emitEvent: options.emitEvent, onlySelf: options.onlySelf});
   }
 
   /**
@@ -233,11 +243,17 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @param control The `AbstractControl` control to replace the existing control
    * @param options Specifies whether this FormArray instance should emit events after an
    *     existing control is replaced with a new one.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * replaced with a new one. When false, no events are emitted.
    */
-  setControl(index: number, control: TControl, options: {emitEvent?: boolean} = {}): void {
+  setControl(
+    index: number,
+    control: TControl,
+    options: {emitEvent?: boolean; onlySelf?: boolean} = {},
+  ): void {
     // Adjust the index, then clamp it at no less than 0 to prevent undesired underflows.
     let adjustedIndex = this._adjustIndex(index);
     if (adjustedIndex < 0) adjustedIndex = 0;
@@ -251,7 +267,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
       this._registerControl(control);
     }
 
-    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this.updateValueAndValidity({emitEvent: options.emitEvent, onlySelf: options.onlySelf});
     this._onCollectionChange();
   }
 
