@@ -3685,7 +3685,59 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should remove a template with no overlap with following elements', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container *ngIf="stuff">`,
+        `  <div>`,
+        `    <ul>`,
+        `      <li>`,
+        `        <span>`,
+        `          <ng-container *ngIf="things; else elseTmpl">`,
+        `            <p>Hmm</p>`,
+        `          </ng-container>`,
+        `          <ng-template #elseTmpl> 0 </ng-template></span>`,
+        `      </li>`,
+        `    </ul>`,
+        `  </div>`,
+        `</ng-container>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (stuff) {`,
+        `  <div>`,
+        `    <ul>`,
+        `      <li>`,
+        `        <span>`,
+        `          @if (things) {`,
+        `            <p>Hmm</p>`,
+        `          } @else {`,
+        `            0`,
+        `          }`,
+        `        </span>`,
+        `      </li>`,
+        `    </ul>`,
+        `  </div>`,
+        `}`,
+      ].join('\n'));
+    });
   });
+
   describe('formatting', () => {
     it('should reformat else if', async () => {
       writeFile('/comp.ts', `
@@ -4052,7 +4104,7 @@ describe('control flow migration', () => {
         `<span>Content here</span>`,
         `} @else {`,
         `Else Content`,
-        `}`,
+        `}\n`,
         `</div>`,
       ].join('\n'));
     });
@@ -4396,7 +4448,7 @@ describe('control flow migration', () => {
          await runMigration();
          const content = tree.readContent('/comp.ts');
          expect(content).toContain(
-             'template: `@if (isLoggedIn$ | async; as logIn) {\n  Log In\n} @else {\n  Log Out\n}`');
+             'template: `@if (isLoggedIn$ | async; as logIn) {\n  Log In\n} @else {\n  Log Out\n}\n`');
        });
   });
 });
