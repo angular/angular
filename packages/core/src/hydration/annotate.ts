@@ -402,6 +402,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
         annotateHostElementForHydration(targetNode as RElement, lView[i], context);
       }
+      // Include node path info to the annotation in case `tNode.next` (which hydration
+      // relies upon by default) is different from the `tNode.projectionNext`. This helps
+      // hydration runtime logic to find the right node.
+      annotateNextNodePath(ngh, tNode, lView);
     } else {
       // <ng-container> case
       if (tNode.type & TNodeType.ElementContainer) {
@@ -462,17 +466,27 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
           }
         }
 
-        if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
-            !isInSkipHydrationBlock(tNode.projectionNext)) {
-          // Check if projection next is not the same as next, in which case
-          // the node would not be found at creation time at runtime and we
-          // need to provide a location for that node.
-          appendSerializedNodePath(ngh, tNode.projectionNext, lView);
-        }
+        // Include node path info to the annotation in case `tNode.next` (which hydration
+        // relies upon by default) is different from the `tNode.projectionNext`. This helps
+        // hydration runtime logic to find the right node.
+        annotateNextNodePath(ngh, tNode, lView);
       }
     }
   }
   return ngh;
+}
+
+/**
+ * If `tNode.projectionNext` is different from `tNode.next` - it means that
+ * the next `tNode` after projection is different from the one in the original
+ * template. In this case we need to serialize a path to that next node, so that
+ * it can be found at the right location at runtime.
+ */
+function annotateNextNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
+  if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
+      !isInSkipHydrationBlock(tNode.projectionNext)) {
+    appendSerializedNodePath(ngh, tNode.projectionNext, lView);
+  }
 }
 
 /**
