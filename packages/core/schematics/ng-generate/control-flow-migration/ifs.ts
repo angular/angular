@@ -85,12 +85,22 @@ function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Resul
 }
 
 function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  const aliasAttrs = etm.aliasAttrs!;
+  const aliases = [...aliasAttrs.aliases.keys()];
+
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const condition = etm.attr.value
-                        .replace(' as ', '; as ')
-                        // replace 'let' with 'as' whatever spaces are between ; and 'let'
-                        .replace(/;\s*let/g, '; as');
+  let condition = etm.attr.value
+                      .replace(' as ', '; as ')
+                      // replace 'let' with 'as' whatever spaces are between ; and 'let'
+                      .replace(/;\s*let/g, '; as');
+  if (aliases.length > 1 || (aliases.length === 1 && condition.indexOf('; as') > -1)) {
+    // only 1 alias allowed
+    throw new Error(
+        'Found more than one alias on your ngIf. Remove one of them and re-run the migration.');
+  } else if (aliases.length === 1) {
+    condition += `; as ${aliases[0]}`;
+  }
 
   const originals = getOriginals(etm, tmpl, offset);
 
@@ -121,8 +131,18 @@ function buildStandardIfElseBlock(
 }
 
 function buildBoundIfElseBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  const aliasAttrs = etm.aliasAttrs!;
+  const aliases = [...aliasAttrs.aliases.keys()];
+
   // includes the mandatory semicolon before as
-  const condition = etm.attr.value.replace(' as ', '; as ');
+  let condition = etm.attr.value.replace(' as ', '; as ');
+  if (aliases.length > 1 || (aliases.length === 1 && condition.indexOf('; as') > -1)) {
+    // only 1 alias allowed
+    throw new Error(
+        'Found more than one alias on your ngIf. Remove one of them and re-run the migration.');
+  } else if (aliases.length === 1) {
+    condition += `; as ${aliases[0]}`;
+  }
   const elsePlaceholder = `#${etm.elseAttr!.value}|`;
   if (etm.thenAttr !== undefined) {
     const thenPlaceholder = `#${etm.thenAttr!.value}|`;

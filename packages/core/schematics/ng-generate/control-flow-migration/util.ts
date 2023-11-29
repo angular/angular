@@ -416,10 +416,24 @@ function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): b
 }
 
 function isRemovableContainer(etm: ElementToMigrate): boolean {
-  return (etm.el.name === 'ng-container' || etm.el.name === 'ng-template') &&
-      (etm.el.attrs.length === 1 || etm.forAttrs !== undefined ||
-       (etm.el.attrs.length === 2 && etm.elseAttr !== undefined) ||
-       (etm.el.attrs.length === 3 && etm.elseAttr !== undefined && etm.thenAttr !== undefined));
+  let attrCount = countAttributes(etm);
+  const safeToRemove = etm.el.attrs.length === attrCount;
+  return (etm.el.name === 'ng-container' || etm.el.name === 'ng-template') && safeToRemove;
+}
+
+function countAttributes(etm: ElementToMigrate): number {
+  let attrCount = 1;
+  if (etm.elseAttr !== undefined) {
+    attrCount++;
+  }
+  if (etm.thenAttr !== undefined) {
+    attrCount++;
+  }
+  attrCount += etm.aliasAttrs?.aliases.size ?? 0;
+  attrCount += etm.aliasAttrs?.item ? 1 : 0;
+  attrCount += etm.forAttrs?.trackBy ? 1 : 0;
+  attrCount += etm.forAttrs?.forOf ? 1 : 0;
+  return attrCount;
 }
 
 /**
