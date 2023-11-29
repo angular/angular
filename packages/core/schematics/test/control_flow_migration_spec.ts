@@ -327,6 +327,35 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if case as a binding with let variables', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template [ngIf]="data$ | async" let-data="ngIf">`,
+        `  {{ data }}`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (data$ | async; as data) {`,
+        `  {{ data }}`,
+        `}`,
+      ].join('\n'));
+    });
+
     it('should migrate an if else case as bindings', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
