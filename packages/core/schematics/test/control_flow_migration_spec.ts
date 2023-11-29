@@ -425,6 +425,37 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if else case with condition that has `then` in the string', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf,NgIfElse} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="!(isAuthenticated$ | async) && !reauthRequired">`,
+        `  Hello!`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (!(isAuthenticated$ | async) && !reauthRequired) {`,
+        `  <div>`,
+        `    Hello!`,
+        `  </div>`,
+        `}`,
+      ].join('\n'));
+    });
+
     it('should migrate an if case on a container', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
