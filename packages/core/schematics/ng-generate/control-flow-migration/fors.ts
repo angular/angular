@@ -173,10 +173,11 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
 
 function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const forAttrs = etm.forAttrs!;
-  const aliasMap = forAttrs.aliases;
+  const aliasAttrs = etm.aliasAttrs!;
+  const aliasMap = aliasAttrs.aliases;
 
   const originals = getOriginals(etm, tmpl, offset);
-  const condition = `${forAttrs.item} of ${forAttrs.forOf}`;
+  const condition = `${aliasAttrs.item} of ${forAttrs.forOf}`;
 
   const aliases = [];
   let aliasedIndex = '$index';
@@ -188,10 +189,10 @@ function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number):
   }
   const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
 
-  let trackBy = forAttrs.item;
+  let trackBy = aliasAttrs.item;
   if (forAttrs.trackBy !== '') {
     // build trackby value
-    trackBy = `${forAttrs.trackBy.trim()}(${aliasedIndex}, ${forAttrs.item})`;
+    trackBy = `${forAttrs.trackBy.trim()}(${aliasedIndex}, ${aliasAttrs.item})`;
   }
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
