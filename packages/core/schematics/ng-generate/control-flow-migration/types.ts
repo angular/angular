@@ -218,7 +218,7 @@ export class Template {
   }
 
   generateContents(tmpl: string) {
-    this.contents = tmpl.slice(this.el.sourceSpan.start.offset, this.el.sourceSpan.end.offset + 1);
+    this.contents = tmpl.slice(this.el.sourceSpan.start.offset, this.el.sourceSpan.end.offset);
     this.children = '';
     if (this.el.children.length > 0) {
       this.children = tmpl.slice(
