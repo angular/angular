@@ -290,7 +290,7 @@ export function getTemplates(template: string): Map<string, Template> {
     // count usages of each ng-template
     for (let [key, tmpl] of visitor.templates) {
       const escapeKey = escapeRegExp(key.slice(1));
-      const regex = new RegExp(`[^a-zA-Z0-9-<]${escapeKey}\\W`, 'gm');
+      const regex = new RegExp(`[^a-zA-Z0-9-<\']${escapeKey}\\W`, 'gm');
       const matches = template.match(regex);
       tmpl.count = matches?.length ?? 0;
       tmpl.generateContents(template);
