@@ -20,7 +20,7 @@
 | [dbca1c9d61](https://github.com/angular/angular/commit/dbca1c9d618be4d195d779ef80606c6d22f7c977) | fix | Add ngForTemplate support to control flow migration ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [53912fdf74](https://github.com/angular/angular/commit/53912fdf74e1224f95edc3dd550c51451e613c44) | fix | allows colons in ngIf else cases to migrate ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [fadfee4324](https://github.com/angular/angular/commit/fadfee43247acec7e450d5cc929a0a6780a54bd1) | fix | cf migration fix migrating empty switch default ([#53237](https://github.com/angular/angular/pull/53237)) |
-| [b2aeaf5d97](https://github.com/angular/angular/commit/b2aeaf5d97327842a5bb657e9f02bb4f1358304b) | fix | CF migration log warning when collection aliasing detected in @for ([#53238](https://github.com/angular/angular/pull/53238)) |
+| [b2aeaf5d97](https://github.com/angular/angular/commit/b2aeaf5d97327842a5bb657e9f02bb4f1358304b) | fix | CF migration log warning when collection aliasing detected in `@for` ([#53238](https://github.com/angular/angular/pull/53238)) |
 | [c6326289f8](https://github.com/angular/angular/commit/c6326289f87089b3415ba0f3e371206b8a396b66) | fix | cf migration removes unnecessary bound ngifelse attribute ([#53236](https://github.com/angular/angular/pull/53236)) |
 | [e6f10e81d2](https://github.com/angular/angular/commit/e6f10e81d2486b5cc1f468777b7e1057d3f09dc5) | fix | control flow migration formatting fixes ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [6291c8db09](https://github.com/angular/angular/commit/6291c8db092c0ab67f6789cc03c19dfa0bdc251d) | fix | fix off by one issue with template removal in CF migration ([#53255](https://github.com/angular/angular/pull/53255)) |
@@ -49,7 +49,7 @@
 | [aab7fb8654](https://github.com/angular/angular/commit/aab7fb865486b94d6aabbe548894f8083f4e6cfe) | fix | Add ngForTemplate support to control flow migration ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [dbd6f386ea](https://github.com/angular/angular/commit/dbd6f386ea81e7f29bc1cb34fb8efbba8c290ea8) | fix | allows colons in ngIf else cases to migrate ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [5b9f896009](https://github.com/angular/angular/commit/5b9f896009d9c57c91d44e1cb7adf80c29fbfb4c) | fix | cf migration fix migrating empty switch default ([#53237](https://github.com/angular/angular/pull/53237)) |
-| [2b3d3b0fe1](https://github.com/angular/angular/commit/2b3d3b0fe10134739ec9982a776837a273ec8e1d) | fix | CF migration log warning when collection aliasing detected in @for ([#53238](https://github.com/angular/angular/pull/53238)) |
+| [2b3d3b0fe1](https://github.com/angular/angular/commit/2b3d3b0fe10134739ec9982a776837a273ec8e1d) | fix | CF migration log warning when collection aliasing detected in `@for` ([#53238](https://github.com/angular/angular/pull/53238)) |
 | [dffeac8386](https://github.com/angular/angular/commit/dffeac8386bed73ef0b2337c33f122af9884bb82) | fix | cf migration removes unnecessary bound ngifelse attribute ([#53236](https://github.com/angular/angular/pull/53236)) |
 | [00cb3339ba](https://github.com/angular/angular/commit/00cb3339bab738100e4164339420f2492be91fd1) | fix | control flow migration formatting fixes ([#53076](https://github.com/angular/angular/pull/53076)) |
 | [c22af72f75](https://github.com/angular/angular/commit/c22af72f753b9ad3886561228a0cfd938a2a6de9) | fix | fix off by one issue with template removal in CF migration ([#53255](https://github.com/angular/angular/pull/53255)) |
