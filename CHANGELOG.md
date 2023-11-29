@@ -1,3 +1,40 @@
+<a name="17.1.0-next.2"></a>
+# 17.1.0-next.2 (2023-11-29)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79ff91a813](https://github.com/angular/angular/commit/79ff91a813e544929cb5eb5f9aab762a9f3d0435) | fix | allow TS jsDocParsingMode host option to be programmatically set ([#53126](https://github.com/angular/angular/pull/53126)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c1d69e288](https://github.com/angular/angular/commit/4c1d69e2880f22745c820eee630d10071e4fa86b) | fix | add diagnostic for control flow that prevents content projection ([#53190](https://github.com/angular/angular/pull/53190)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [58cf389d80](https://github.com/angular/angular/commit/58cf389d8095dd522a998b6b9a7d7b8da1656644) | fix | avoid stale provider info when TestBed.overrideProvider is used ([#52918](https://github.com/angular/angular/pull/52918)) |
+| [c7c7ea9813](https://github.com/angular/angular/commit/c7c7ea9813f6dcf91c096bb37d36bfe0c715a04f) | fix | inherit host directives ([#52992](https://github.com/angular/angular/pull/52992)) |
+| [b35c6731e5](https://github.com/angular/angular/commit/b35c6731e51de9c33707010fc780cbaa559be6c3) | fix | Reattached views that are dirty from a signal update should refresh ([#53001](https://github.com/angular/angular/pull/53001)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbca1c9d61](https://github.com/angular/angular/commit/dbca1c9d618be4d195d779ef80606c6d22f7c977) | fix | Add ngForTemplate support to control flow migration ([#53076](https://github.com/angular/angular/pull/53076)) |
+| [53912fdf74](https://github.com/angular/angular/commit/53912fdf74e1224f95edc3dd550c51451e613c44) | fix | allows colons in ngIf else cases to migrate ([#53076](https://github.com/angular/angular/pull/53076)) |
+| [fadfee4324](https://github.com/angular/angular/commit/fadfee43247acec7e450d5cc929a0a6780a54bd1) | fix | cf migration fix migrating empty switch default ([#53237](https://github.com/angular/angular/pull/53237)) |
+| [b2aeaf5d97](https://github.com/angular/angular/commit/b2aeaf5d97327842a5bb657e9f02bb4f1358304b) | fix | CF migration log warning when collection aliasing detected in @for ([#53238](https://github.com/angular/angular/pull/53238)) |
+| [c6326289f8](https://github.com/angular/angular/commit/c6326289f87089b3415ba0f3e371206b8a396b66) | fix | cf migration removes unnecessary bound ngifelse attribute ([#53236](https://github.com/angular/angular/pull/53236)) |
+| [e6f10e81d2](https://github.com/angular/angular/commit/e6f10e81d2486b5cc1f468777b7e1057d3f09dc5) | fix | control flow migration formatting fixes ([#53076](https://github.com/angular/angular/pull/53076)) |
+| [6291c8db09](https://github.com/angular/angular/commit/6291c8db092c0ab67f6789cc03c19dfa0bdc251d) | fix | fix off by one issue with template removal in CF migration ([#53255](https://github.com/angular/angular/pull/53255)) |
+| [f1b7d40057](https://github.com/angular/angular/commit/f1b7d400575a6a02a2fc2b642c2b8c15cca9b3c4) | fix | fixes CF migration i18n ng-template offsets ([#53212](https://github.com/angular/angular/pull/53212)) |
+| [a738b48717](https://github.com/angular/angular/commit/a738b48717e16613b34c3e50480cd49f2a31858f) | fix | fixes control flow migration common module removal ([#53076](https://github.com/angular/angular/pull/53076)) |
+| [a3599515bb](https://github.com/angular/angular/commit/a3599515bb2513fbcb2899284c7f6b4bc021ddaf) | fix | properly handle ngIfThen cases in CF migration ([#53256](https://github.com/angular/angular/pull/53256)) |
+| [8a52674faa](https://github.com/angular/angular/commit/8a52674faacefd4042726383fdf0aed59a04fb7e) | fix | Update CF migration to skip templates with duplicate ng-template names ([#53204](https://github.com/angular/angular/pull/53204)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29e0834c4d](https://github.com/angular/angular/commit/29e0834c4deecfa8bf384b5e4359796c8123afcd) | fix | Resolvers in different parts of the route tree should be able to execute together ([#52934](https://github.com/angular/angular/pull/52934)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.5"></a>
 # 17.0.5 (2023-11-29)
 ### core
