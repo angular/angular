@@ -4268,6 +4268,108 @@ describe('platform-server hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
 
+      it('should handle multiple nodes projected in a single slot', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <ng-content select="foo" />
+            <ng-content select="bar" />
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({selector: 'foo', standalone: true, template: ''})
+        class FooCmp {
+        }
+
+        @Component({selector: 'bar', standalone: true, template: ''})
+        class BarCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, FooCmp, BarCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <foo />
+              <bar />
+              <foo />
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should handle multiple nodes projected in a single slot (different order)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <ng-content select="foo" />
+            <ng-content select="bar" />
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({selector: 'foo', standalone: true, template: ''})
+        class FooCmp {
+        }
+
+        @Component({selector: 'bar', standalone: true, template: ''})
+        class BarCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, FooCmp, BarCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <bar />
+              <foo />
+              <bar />
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
       it('should handle empty projection slots within <ng-container>', async () => {
         @Component({
           standalone: true,
