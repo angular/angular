@@ -1,4 +1,4 @@
-<docs-decorative-header title="What is Angular?" imgSrc="assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="What is Angular?" imgSrc="adev/src/assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
 <big style="margin-top: 2em">
