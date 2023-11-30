@@ -19,7 +19,7 @@ At first glance, you should be able to understand what the test is testing.
 
 Consider this `LightswitchComponent` which toggles a light on and off (represented by an on-screen message) when the user clicks the button.
 
-<docs-code header="app/demo/demo.ts (LightswitchComp)" path="testing/src/app/demo/demo.ts" visibleRegion="LightswitchComp"/>
+<docs-code header="app/demo/demo.ts (LightswitchComp)" path="adev/src/content/examples/testing/src/app/demo/demo.ts" visibleRegion="LightswitchComp"/>
 
 You might decide only to test that the `clicked()` method toggles the light's *on/off* state and sets the message appropriately.
 
@@ -30,17 +30,17 @@ To test these types of classes, follow the same steps as you would for a service
 1. Poke at its API.
 1. Assert expectations on its public state.
 
-<docs-code header="app/demo/demo.spec.ts (Lightswitch tests)" path="testing/src/app/demo/demo.spec.ts" visibleRegion="Lightswitch"/>
+<docs-code header="app/demo/demo.spec.ts (Lightswitch tests)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="Lightswitch"/>
 
 Here is the `DashboardHeroComponent` from the *Tour of Heroes* tutorial.
 
-<docs-code header="app/dashboard/dashboard-hero.component.ts (component)" path="testing/src/app/dashboard/dashboard-hero.component.ts" visibleRegion="class"/>
+<docs-code header="app/dashboard/dashboard-hero.component.ts (component)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.ts" visibleRegion="class"/>
 
 It appears within the template of a parent component, which binds a *hero* to the `@Input` property and listens for an event raised through the *selected* `@Output` property.
 
 You can test that the class code works without creating the `DashboardHeroComponent` or its parent component.
 
-<docs-code header="app/dashboard/dashboard-hero.component.spec.ts (class tests)" path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="class-only"/>
+<docs-code header="app/dashboard/dashboard-hero.component.spec.ts (class tests)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="class-only"/>
 
 When a component has dependencies, you might want to use the `TestBed` to both create the component and its dependencies.
 
@@ -48,19 +48,19 @@ The following `WelcomeComponent` depends on the `UserService` to know the name o
 
 IMPORTANT: Remember to either *import* or *provide* each standalone component you want to test.
 
-<docs-code header="app/welcome/welcome.component.ts" path="testing/src/app/welcome/welcome.component.ts" visibleRegion="class"/>
+<docs-code header="app/welcome/welcome.component.ts" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.ts" visibleRegion="class"/>
 
 You might start by creating a mock of the `UserService` that meets the minimum needs of this component.
 
-<docs-code header="app/welcome/welcome.component.spec.ts (MockUserService)" path="testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="mock-user-service"/>
+<docs-code header="app/welcome/welcome.component.spec.ts (MockUserService)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="mock-user-service"/>
 
 Then provide and inject *both the* **component** *and the service* in the `TestBed` configuration.
 
-<docs-code header="app/welcome/welcome.component.spec.ts (class-only setup)" path="testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-before-each"/>
+<docs-code header="app/welcome/welcome.component.spec.ts (class-only setup)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-before-each"/>
 
 Then exercise the component class, remembering to call the [lifecycle hook methods](guide/components/lifecycle) as Angular does when running the application.
 
-<docs-code header="app/welcome/welcome.component.spec.ts (class-only tests)" path="testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-tests"/>
+<docs-code header="app/welcome/welcome.component.spec.ts (class-only tests)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-tests"/>
 
 ## Component DOM testing
 
@@ -100,7 +100,7 @@ ng generate component banner --inline-template --inline-style --module app
 
 It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
 
-<docs-code header="app/banner/banner-external.component.spec.ts (initial)" path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
+<docs-code header="app/banner/banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
 
 HELPFUL: Because `compileComponents` is asynchronous, it uses the [`waitForAsync`](api/core/testing/waitForAsync) utility function imported from `@angular/core/testing`.
 
@@ -115,11 +115,11 @@ The rest of the file is boilerplate setup code anticipating more advanced tests 
 You'll learn about these advanced test features in the following sections.
 For now, you can radically reduce this test file to a more manageable size:
 
-<docs-code header="app/banner/banner-initial.component.spec.ts (minimal)" path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
+<docs-code header="app/banner/banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
 
 In this example, the metadata object passed to `TestBed.configureTestingModule` simply declares `BannerComponent`, the component to test.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="configureTestingModule"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="configureTestingModule"/>
 
 HELPFUL: There's no need to declare or import anything else.
 The default test module is pre-configured with something like the `BrowserModule` from `@angular/platform-browser`.
@@ -131,7 +131,7 @@ Optional `override` methods can further fine-tune aspects of the configuration.
 
 After configuring `TestBed`, you call its `createComponent()` method.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="createComponent"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="createComponent"/>
 
 `TestBed.createComponent()` creates an instance of the `BannerComponent`, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#component-fixture).
 
@@ -148,18 +148,18 @@ The [ComponentFixture](api/core/testing/ComponentFixture) is a test harness for 
 
 Access the component instance through the fixture and confirm it exists with a Jasmine expectation:
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="componentInstance"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="componentInstance"/>
 
 ### `beforeEach()`
 
 You will add more tests as this component evolves.
 Rather than duplicate the `TestBed` configuration for each test, you refactor to pull the setup into a Jasmine `beforeEach()` and some supporting variables:
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v3"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v3"/>
 
 Now add a test that gets the component's element from `fixture.nativeElement` and looks for the expected text.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-2"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-2"/>
 
 ### `nativeElement`
 
@@ -175,17 +175,17 @@ Knowing that it is an `HTMLElement` of some sort, use the standard HTML `querySe
 
 Here's another test that calls `HTMLElement.querySelector` to get the paragraph element and look for the banner text:
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-3"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-3"/>
 
 ### `DebugElement`
 
 The Angular *fixture* provides the component's element directly through the `fixture.nativeElement`.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="nativeElement"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="nativeElement"/>
 
 This is actually a convenience method, implemented as `fixture.debugElement.nativeElement`.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="debugElement-nativeElement"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="debugElement-nativeElement"/>
 
 There's a good reason for this circuitous path to the element.
 
@@ -200,13 +200,13 @@ Because the sample tests for this guide are designed to run only in a browser, a
 
 Here's the previous test, re-implemented with `fixture.debugElement.nativeElement`:
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-4"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-4"/>
 
 The `DebugElement` has other methods and properties that are useful in tests, as you'll see elsewhere in this guide.
 
 You import the `DebugElement` symbol from the Angular core library.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-debug-element"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-debug-element"/>
 
 ### `By.css()`
 
@@ -222,11 +222,11 @@ These query methods take a *predicate* function that returns `true` when a node 
 You create a *predicate* with the help of a `By` class imported from a library for the runtime platform.
 Here's the `By` import for the browser platform:
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-by"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-by"/>
 
 The following example re-implements the previous test with `DebugElement.query()` and the browser's `By.css` method.
 
-<docs-code path="testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-5"/>
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-5"/>
 
 Some noteworthy observations:
 
