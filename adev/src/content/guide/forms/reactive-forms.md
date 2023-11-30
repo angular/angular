@@ -38,13 +38,13 @@ In the example, the user enters their name into an input field, captures that in
 <docs-step title="Import the ReactiveFormsModule">
 To use reactive form controls, import `ReactiveFormsModule` from the `@angular/forms` package and add it to your NgModule's `imports` array.
 
-<docs-code header="src/app/app.module.ts (excerpt)" path="reactive-forms/src/app/app.module.ts" visibleRegion="imports" />
+<docs-code header="src/app/app.module.ts (excerpt)" path="adev/src/content/examples/reactive-forms/src/app/app.module.ts" visibleRegion="imports" />
 </docs-step>
 
 <docs-step title="Generate a new component with a FormControl">
 Use the CLI command `ng generate component` to generate a component in your project to host the control.
 
-<docs-code header="src/app/name-editor/name-editor.component.ts" path="reactive-forms/src/app/name-editor/name-editor.component.ts" visibleRegion="create-control"/>
+<docs-code header="src/app/name-editor/name-editor.component.ts" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.ts" visibleRegion="create-control"/>
 
 Use the constructor of `FormControl` to set its initial value, which in this case is an empty string. By creating these controls in your component class, you get immediate access to listen for, update, and validate the state of the form input.
 </docs-step>
@@ -52,7 +52,7 @@ Use the constructor of `FormControl` to set its initial value, which in this cas
 <docs-step title="Register the control in the template">
 After you create the control in the component class, you must associate it with a form control element in the template. Update the template with the form control using the `formControl` binding provided by `FormControlDirective`, which is also included in the `ReactiveFormsModule`.
 
-<docs-code header="src/app/name-editor/name-editor.component.html" path="reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="control-binding" />
+<docs-code header="src/app/name-editor/name-editor.component.html" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="control-binding" />
 
 Using the template binding syntax, the form control is now registered to the `name` input element in the template. The form control and DOM element communicate with each other: the view reflects changes in the model, and the model reflects changes in the view.
 </docs-step>
@@ -60,7 +60,7 @@ Using the template binding syntax, the form control is now registered to the `na
 <docs-step title="Display the component">
 The `FormControl` assigned to the `name` property is displayed when the `<app-name-editor>` component is added to a template.
 
-<docs-code header="src/app/app.component.html (name editor)" path="reactive-forms/src/app/app.component.1.html" visibleRegion="app-name-editor"/>
+<docs-code header="src/app/app.component.html (name editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" visibleRegion="app-name-editor"/>
 </docs-step>
 </docs-workflow>
 
@@ -73,7 +73,7 @@ You can display the value in the following ways.
 
 The following example shows you how to display the current value using interpolation in the template.
 
-<docs-code header="src/app/name-editor/name-editor.component.html (control value)" path="reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="display-value"/>
+<docs-code header="src/app/name-editor/name-editor.component.html (control value)" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="display-value"/>
 
 The displayed value changes as you update the form control element.
 
@@ -90,12 +90,12 @@ For example, when retrieving form data from a backend API or service, use the `s
 
 The following example adds a method to the component class to update the value of the control to *Nancy* using the `setValue()` method.
 
-<docs-code header="src/app/name-editor/name-editor.component.ts (update value)" path="reactive-forms/src/app/name-editor/name-editor.component.ts" visibleRegion="update-value"/>
+<docs-code header="src/app/name-editor/name-editor.component.ts (update value)" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.ts" visibleRegion="update-value"/>
 
 Update the template with a button to simulate a name update.
 When you click the **Update Name** button, the value entered in the form control element is reflected as its current value.
 
-<docs-code header="src/app/name-editor/name-editor.component.html (update value)" path="reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="update-value"/>
+<docs-code header="src/app/name-editor/name-editor.component.html (update value)" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.html" visibleRegion="update-value"/>
 
 The form model is the source of truth for the control, so when you click the button, the value of the input is changed within the component class, overriding its current value.
 
@@ -122,7 +122,7 @@ Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl
 ng generate component ProfileEditor
 </docs-code>
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (imports)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="imports"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (imports)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="imports"/>
 
 To add a form group to this component, take the following steps.
 
@@ -137,7 +137,7 @@ Create a property in the component class named `profileForm` and set the propert
 
 For the profile form, add two form control instances with the names `firstName` and `lastName`
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (form group)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="formgroup"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (form group)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="formgroup"/>
 
 The individual form controls are now collected within a group. A `FormGroup` instance provides its model value as an object reduced from the values of each control in the group. A form group instance has the same properties (such as `value` and `untouched`) and methods (such as `setValue()`) as a form control instance.
 </docs-step>
@@ -145,7 +145,7 @@ The individual form controls are now collected within a group. A `FormGroup` ins
 <docs-step title="Associate the FormGroup model and view">
 A form group tracks the status and changes for each of its controls, so if one of the controls changes, the parent control also emits a new status or value change. The model for the group is maintained from its members. After you define the model, you must update the template to reflect the model in the view.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (template form group)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="formgroup"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (template form group)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="formgroup"/>
 
 Just as a form group contains a group of controls, the *profileForm* `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs.  The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
 </docs-step>
@@ -153,17 +153,17 @@ Just as a form group contains a group of controls, the *profileForm* `FormGroup`
 <docs-step title="Save form data">
 The `ProfileEditor` component accepts input from the user, but in a real scenario you want to capture the form value and make available for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callback method.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (submit event)" path="reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="ng-submit"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (submit event)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="ng-submit"/>
 
 The `onSubmit()` method in the `ProfileEditor` component captures the current value of `profileForm`. Use `EventEmitter` to keep the form encapsulated and to provide the form value outside the component. The following example uses `console.warn` to log a message to the browser console.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (submit method)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="on-submit"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (submit method)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="on-submit"/>
 
 The `submit` event is emitted by the `form` tag using the built-in DOM event. You trigger the event by clicking a button with `submit` type. This lets the user press the **Enter** key to submit the completed form.
 
 Use a `button` element to add a button to the bottom of the form to trigger the form submission.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (submit button)" path="reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="submit-button"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (submit button)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="submit-button"/>
 
 The button in the preceding snippet also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Basic form validation is covered in the [Validating form input](#validating-form-input) section.
 </docs-step>
@@ -171,7 +171,7 @@ The button in the preceding snippet also has a `disabled` binding attached to it
 <docs-step title="Display the component">
 To display the `ProfileEditor` component that contains the form, add it to a component template.
 
-<docs-code header="src/app/app.component.html (profile editor)" path="reactive-forms/src/app/app.component.1.html" visibleRegion="app-profile-editor"/>
+<docs-code header="src/app/app.component.html (profile editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" visibleRegion="app-profile-editor"/>
 
 `ProfileEditor` lets you manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
 
@@ -195,7 +195,7 @@ A name and address are typical examples of such nested groups, and are used in t
 <docs-step title="Create a nested group">
 To create a nested group in `profileForm`, add a nested `address` element to the form group instance.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (nested form group)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="nested-formgroup"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (nested form group)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="nested-formgroup"/>
 
 In this example, `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state`, and `zip` controls. Even though the `address` element in the form group is a child of the overall `profileForm` element in the form group, the same rules apply with value and status changes. Changes in status and value from the nested form group propagate to the parent form group, maintaining consistency with the overall model.
 </docs-step>
@@ -203,7 +203,7 @@ In this example, `address group` combines the current `firstName` and `lastName`
 <docs-step title="Group the nested form in the template">
 After you update the model in the component class, update the template to connect the form group instance and its input elements. Add the `address` form group containing the `street`, `city`, `state`, and `zip` fields to the `ProfileEditor` template.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (template nested form group)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="formgroupname"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (template nested form group)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="formgroupname"/>
 
 The `ProfileEditor` form is displayed as one group, but the model is broken down further to represent the logical grouping areas.
 
@@ -227,11 +227,11 @@ The strict checks of the `setValue()` method help catch nesting errors in comple
 
 In `ProfileEditorComponent`, use the `updateProfile` method with the following example to update the first name and street address for the user.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (patch value)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="patch-value"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (patch value)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="patch-value"/>
 
 Simulate an update by adding a button to the template to update the user profile on demand.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (update value)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="patch-value"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (update value)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.html" visibleRegion="patch-value"/>
 
 When a user clicks the button, the `profileForm` model is updated with new values for `firstName` and `street`. Notice that `street` is provided in an object inside the `address` property.
 This is necessary because the `patchValue()` method applies the update against the model structure.
@@ -254,28 +254,28 @@ The following examples show how to refactor the `ProfileEditor` component to use
 <docs-step title="Import the FormBuilder class">
 Import the `FormBuilder` class from the `@angular/forms` package.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-builder-imports"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-builder-imports"/>
 
 </docs-step>
 
 <docs-step title="Inject the FormBuilder service">
 The `FormBuilder` service is an injectable provider that is provided with the reactive forms module. Inject this dependency by adding it to the component constructor.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (constructor)" path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="inject-form-builder"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (constructor)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="inject-form-builder"/>
 
 </docs-step>
 <docs-step title="Generate form controls">
 The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, and form arrays. Use the `group` method to create the `profileForm` controls.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (form builder)" path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-builder"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (form builder)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-builder"/>
 
 In the preceding example, you use the `group()` method with the same object to define the properties in the model. The value for each control name is an array containing the initial value as the first item in the array.
 
 Tip: You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third items in the array. Compare using the form builder to creating the instances manually.
 
   <docs-code-multifile>
-    <docs-code header="src/app/profile-editor/profile-editor.component.ts (instances)" path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="formgroup-compare"/>
-    <docs-code header="src/app/profile-editor/profile-editor.component.ts (form builder)" path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="formgroup-compare"/>
+    <docs-code header="src/app/profile-editor/profile-editor.component.ts (instances)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="formgroup-compare"/>
+    <docs-code header="src/app/profile-editor/profile-editor.component.ts (form builder)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="formgroup-compare"/>
   </docs-code-multifile>
 </docs-step>
 
@@ -302,13 +302,13 @@ Reactive forms include a set of validator functions for common use cases. These 
 
 Import the `Validators` class from the `@angular/forms` package.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="validator-imports"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="validator-imports"/>
 </docs-step>
 
 <docs-step title="Make a field required">
 In the `ProfileEditor` component, add the `Validators.required` static method as the second item in the array for the `firstName` control.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (required validator)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="required-validator"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (required validator)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="required-validator"/>
 </docs-step>
 
 <docs-step title="Display form status">
@@ -316,7 +316,7 @@ When you add a required field to the form control, its initial status is invalid
 
 Display the current status of `profileForm` using interpolation.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (display status)" path="reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="display-status"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (display status)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="display-status"/>
 
 The **Submit** button is disabled because `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the **Submit** button is enabled.
 
@@ -343,7 +343,7 @@ The following example shows you how to manage an array of *aliases* in `ProfileE
 <docs-step title="Import the `FormArray` class">
 Import the `FormArray` class from `@angular/forms` to use for type information. The `FormBuilder` service is ready to create a `FormArray` instance.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-array-imports"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (import)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" visibleRegion="form-array-imports"/>
 </docs-step>
 
 <docs-step title="Define a `FormArray` control">
@@ -351,7 +351,7 @@ You can initialize a form array with any number of controls, from zero to many, 
 
 Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.control()` method to populate the array with an initial control.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (aliases form array)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="aliases"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (aliases form array)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="aliases"/>
 
 The aliases control in the form group instance is now populated with a single control until more controls are added dynamically.
 </docs-step>
@@ -361,11 +361,11 @@ A getter provides access to the aliases in the form array instance compared to r
 
 Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (aliases getter)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="aliases-getter"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (aliases getter)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="aliases-getter"/>
 
 Because the returned control is of the type `AbstractControl`, you need to provide an explicit type to access the method syntax for the form array instance.  Define a method to dynamically insert an alias control into the alias's form array. The `FormArray.push()` method inserts the control as a new item in the array.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.ts (add alias)" path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="add-alias"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.ts (add alias)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="add-alias"/>
 
 In the template, each control is displayed as a separate input field.
 
@@ -377,7 +377,7 @@ To attach the aliases from your form model, you must add it to the template. Sim
 
 Add the following template HTML after the `<div>` closing the `formGroupName` element.
 
-<docs-code header="src/app/profile-editor/profile-editor.component.html (aliases form array template)" path="reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="formarrayname"/>
+<docs-code header="src/app/profile-editor/profile-editor.component.html (aliases form array template)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="formarrayname"/>
 
 The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
 

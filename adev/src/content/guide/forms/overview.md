@@ -1,4 +1,4 @@
-<docs-decorative-header title="Forms in Angular" imgSrc="assets/images/overview.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Forms in Angular" imgSrc="adev/src/assets/images/overview.svg"> <!-- markdownlint-disable-line -->
 Handling user input with forms is the cornerstone of many common applications.
 </docs-decorative-header>
 
@@ -70,7 +70,7 @@ The `[formControl]` directive links the explicitly created `FormControl` instanc
 The following component implements an input field for a single control, using reactive forms.
 In this example, the form model is the `FormControl` instance.
 
-<docs-code path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.ts"/>
+<docs-code path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.ts"/>
 
 IMPORTANT: In reactive forms, the form model is the source of truth; it provides the value and status of the form element at any given point in time, through the `[formControl]` directive on the `<input>` element.
 
@@ -81,7 +81,7 @@ The directive `NgModel` creates and manages a `FormControl` instance for a given
 
 The following component implements the same input field for a single control, using template-driven forms.
 
-<docs-code path="forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
+<docs-code path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
 
 IMPORTANT: In a template-driven form the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
 
@@ -107,7 +107,8 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TB
     U{User}
     I("&lt;input&gt;")
@@ -127,7 +128,8 @@ The model-to-view diagram shows how a programmatic change to the model is propag
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor on the form input element updates the element with the new value.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TB
     U{User}
     I(&lt;input&gt;)
@@ -154,7 +156,8 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 1. The control value accessor also calls the `NgModel.viewToModelUpdate()` method which emits an `ngModelChange` event.
 1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component is updated to the value emitted by the `ngModelChange` event \(*Blue*\).
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TB
     U{User}
     I(&lt;input&gt;)
@@ -185,7 +188,8 @@ The model-to-view diagram shows how data flows from model to view when the `favo
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor updates the form input element in the view with the latest `favoriteColor` value.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TB
     C(Component)
     P(Property bound to NgModel)
@@ -266,7 +270,7 @@ The first example performs the following steps to verify the view-to-model data 
 1. Set the new value for the input to *Red*, and dispatch the "input" event on the form input element.
 1. Assert that the component's `favoriteColorControl` value matches the value from the input.
 
-<docs-code header="Favorite color test - view to model" path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
+<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
 
 The next example performs the following steps to verify the model-to-view data flow.
 
@@ -274,7 +278,7 @@ The next example performs the following steps to verify the model-to-view data f
 1. Query the view for the form input element.
 1. Assert that the new value set on the control matches the value in the input.
 
-<docs-code header="Favorite color test - model to view" path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
+<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
 
 ### Testing template-driven forms
 
@@ -284,7 +288,7 @@ The following tests use the favorite color components mentioned earlier to verif
 
 The following test verifies the data flow from view to model.
 
-<docs-code header="Favorite color test - view to model" path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
+<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
 
 Here are the steps performed in the view to model test.
 
@@ -295,7 +299,7 @@ Here are the steps performed in the view to model test.
 
 The following test verifies the data flow from model to view.
 
-<docs-code header="Favorite color test - model to view" path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
+<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
 
 Here are the steps performed in the model to view test.
 
