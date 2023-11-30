@@ -23,7 +23,7 @@ The `versionUpdates` is an `Observable` property of `SwUpdate` and emits four ev
 | `VersionReadyEvent`              | Emitted when a new version of the app is available to be activated by clients. It may be used to notify the user of an available update or prompt them to refresh the page. |
 | `VersionInstallationFailedEvent` | Emitted when the installation of a new version failed. It may be used for logging/monitoring purposes.                                                                      |
 
-<docs-code header="log-update.service.ts" path="service-worker-getting-started/src/app/log-update.service.ts" visibleRegion="sw-update"/>
+<docs-code header="log-update.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/log-update.service.ts" visibleRegion="sw-update"/>
 
 ### Checking for updates
 
@@ -33,7 +33,7 @@ However, you might choose to manually check for updates if you have a site that 
 
 Do this with the `checkForUpdate()` method:
 
-<docs-code header="check-for-update.service.ts" path="service-worker-getting-started/src/app/check-for-update.service.ts"/>
+<docs-code header="check-for-update.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/check-for-update.service.ts"/>
 
 This method returns a `Promise<boolean>` which indicates if an update is available for activation.
 The check might fail, which will cause a rejection of the `Promise`.
@@ -55,7 +55,7 @@ Alternatively, you might want to define a different [registration strategy](api/
 You can update an existing tab to the latest version by reloading the page as soon as a new version is ready.
 To avoid disrupting the user's progress, it is generally a good idea to prompt the user and let them confirm that it is OK to reload the page and update to the latest version:
 
-<docs-code header="prompt-update.service.ts" path="service-worker-getting-started/src/app/prompt-update.service.ts" visibleRegion="sw-version-ready"/>
+<docs-code header="prompt-update.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/prompt-update.service.ts" visibleRegion="sw-version-ready"/>
 
 <docs-callout important title="Safety of updating without reloading">
 Calling `activateUpdate()` updates a tab to the latest version without reloading the page, but this could break the application.
@@ -95,7 +95,7 @@ That particular application version is broken and there is no way to fix the sta
 In such cases, the service worker notifies the client by sending an `UnrecoverableStateEvent` event.
 Subscribe to `SwUpdate#unrecoverable` to be notified and handle these errors.
 
-<docs-code header="handle-unrecoverable-state.service.ts" path="service-worker-getting-started/src/app/handle-unrecoverable-state.service.ts" visibleRegion="sw-unrecoverable-state"/>
+<docs-code header="handle-unrecoverable-state.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/handle-unrecoverable-state.service.ts" visibleRegion="sw-unrecoverable-state"/>
 
 ## More on Angular service workers
 
