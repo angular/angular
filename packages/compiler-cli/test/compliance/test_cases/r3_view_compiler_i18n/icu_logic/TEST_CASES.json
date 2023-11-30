@@ -206,8 +206,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should attach metadata in case an ICU represents the whole message",
