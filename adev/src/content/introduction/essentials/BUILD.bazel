@@ -1,0 +1,18 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "essentials",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:components.svg",
+        "//adev/src/assets/images:dependency_injection.svg",
+        "//adev/src/assets/images:directives.svg",
+        "//adev/src/assets/images:overview.svg",
+        "//adev/src/assets/images:roadmap.svg",
+        "//adev/src/assets/images:signals.svg",
+        "//adev/src/assets/images:templates.svg",
+        "//adev/src/assets/images:what_is_angular.svg",
+    ],
+)

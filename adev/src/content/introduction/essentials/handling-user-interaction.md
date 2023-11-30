@@ -1,4 +1,4 @@
-<docs-decorative-header title="Handling User Interaction" imgSrc="assets/images/overview.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Handling User Interaction" imgSrc="adev/src/assets/images/overview.svg"> <!-- markdownlint-disable-line -->
 Handle user interaction in your application.
 </docs-decorative-header>
 
