@@ -4,7 +4,7 @@ To take advantage of the localization features of Angular, use the [Angular CLI]
 
 To add the `@angular/localize` package, use the following command to update the `package.json` and TypeScript configuration files in your project.
 
-<docs-code path="i18n/doc-files/commands.sh" visibleRegion="add-localize"/>
+<docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" visibleRegion="add-localize"/>
 
 It adds `types: ["@angular/localize"]` in the TypeScript configuration files as well as the reference to the type definition of `@angular/localize` at the top of the `main.ts` file.
 
