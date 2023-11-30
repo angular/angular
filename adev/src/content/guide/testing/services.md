@@ -5,7 +5,7 @@ To check that your services are working as you intend, you can write tests speci
 Services are often the smoothest files to unit test.
 Here are some synchronous and asynchronous unit tests of the `ValueService` written without assistance from Angular testing utilities.
 
-<docs-code header="app/demo/demo.spec.ts" path="testing/src/app/demo/demo.spec.ts" visibleRegion="ValueService"/>
+<docs-code header="app/demo/demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="ValueService"/>
 
 ## Services with dependencies
 
@@ -14,13 +14,13 @@ In many cases, you can create and *inject* these dependencies by hand while call
 
 The `MasterService` is a simple example:
 
-<docs-code header="app/demo/demo.ts" path="testing/src/app/demo/demo.ts" visibleRegion="MasterService"/>
+<docs-code header="app/demo/demo.ts" path="adev/src/content/examples/testing/src/app/demo/demo.ts" visibleRegion="MasterService"/>
 
 `MasterService` delegates its only method, `getValue`, to the injected `ValueService`.
 
 Here are several ways to test it.
 
-<docs-code header="app/demo/demo.spec.ts" path="testing/src/app/demo/demo.spec.ts" visibleRegion="MasterService"/>
+<docs-code header="app/demo/demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="MasterService"/>
 
 The first test creates a `ValueService` with `new` and passes it to the `MasterService` constructor.
 
@@ -55,28 +55,28 @@ The `TestBed.configureTestingModule()` method takes a metadata object that can h
 
 To test a service, you set the `providers` metadata property with an array of the services that you'll test or mock.
 
-<docs-code header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach)" path="testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-before-each"/>
+<docs-code header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach)" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-before-each"/>
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
 
 HELPFUL: `TestBed.get()` was deprecated as of Angular version 9.
 To help minimize breaking changes, Angular introduces a new function called `TestBed.inject()`, which you should use instead.
 
-<docs-code path="testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-inject-it"/>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-inject-it"/>
 
 Or inside the `beforeEach()` if you prefer to inject the service as part of your setup.
 
-<docs-code path="testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-inject-before-each"> </docs-code>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-inject-before-each"> </docs-code>
 
 When testing a service with a dependency, provide the mock in the `providers` array.
 
 In the following example, the mock is a spy object.
 
-<docs-code path="testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="master-service-before-each"/>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="master-service-before-each"/>
 
 The test consumes that spy in the same way it did earlier.
 
-<docs-code path="testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="master-service-it"/>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="master-service-it"/>
 
 ## Testing without `beforeEach()`
 
@@ -88,18 +88,18 @@ Here's how you might rewrite one of the `MasterService` tests in that style.
 
 Begin by putting re-usable, preparatory code in a *setup* function instead of `beforeEach()`.
 
-<docs-code header="app/demo/demo.spec.ts (setup)" path="testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup"/>
+<docs-code header="app/demo/demo.spec.ts (setup)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup"/>
 
 The `setup()` function returns an object literal with the variables, such as `masterService`, that a test might reference.
 You don't define *semi-global* variables \(for example, `let masterService: MasterService`\) in the body of the `describe()`.
 
 Then each test invokes `setup()` in its first line, before continuing with steps that manipulate the test subject and assert expectations.
 
-<docs-code path="testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-test"/>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-test"/>
 
 Notice how the test uses [*destructuring assignment*](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) to extract the setup variables that it needs.
 
-<docs-code path="testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup-call"/>
+<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup-call"/>
 
 Many developers feel this approach is cleaner and more explicit than the traditional `beforeEach()` style.
 
@@ -111,7 +111,7 @@ Data services that make HTTP calls to remote servers typically inject and delega
 
 You can test a data service with an injected `HttpClient` spy as you would test any service with a dependency.
 
-<docs-code header="app/model/hero.service.spec.ts (tests with spies)" path="testing/src/app/model/hero.service.spec.ts" visibleRegion="test-with-spies"/>
+<docs-code header="app/model/hero.service.spec.ts (tests with spies)" path="adev/src/content/examples/testing/src/app/model/hero.service.spec.ts" visibleRegion="test-with-spies"/>
 
 IMPORTANT: The `HeroService` methods return `Observables`.
 You must *subscribe* to an observable to \(a\) cause it to execute and \(b\) assert that the method succeeds or fails.
