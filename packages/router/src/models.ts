@@ -1269,4 +1269,30 @@ export interface NavigationBehaviorOptions {
    *
    */
   state?: {[k: string]: any};
+
+  /**
+   * Use this to convey transient information about this particular navigation, such as how it
+   * happened. In this way, it's different from the persisted value `state` that will be set to
+   * `history.state`. This object is assigned directly to the Router's current `Navigation`
+   * (it is not copied or cloned), so it should be mutated with caution.
+   *
+   * One example of how this might be used is to trigger different single-page navigation animations
+   * depending on how a certain route was reached. For example, consider a photo gallery app, where
+   * you can reach the same photo URL and state via various routes:
+   *
+   * - Clicking on it in a gallery view
+   * - Clicking
+   * - "next" or "previous" when viewing another photo in the album
+   * - Etc.
+   *
+   * Each of these wants a different animation at navigate time. This information doesn't make sense
+   * to store in the persistent URL or history entry state, but it's still important to communicate
+   * from the rest of the application, into the router.
+   *
+   * This information could be used in coordination with the View Transitions feature and the
+   * `onViewTransitionCreated` callback. The information might be used in the callback to set
+   * classes on the document in order to control the transition animations and remove the classes
+   * when the transition has finished animating.
+   */
+  readonly info?: unknown;
 }

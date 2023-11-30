@@ -409,6 +409,7 @@ export interface Navigation {
 
 // @public
 export interface NavigationBehaviorOptions {
+    readonly info?: unknown;
     onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
