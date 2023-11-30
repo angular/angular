@@ -411,8 +411,9 @@ export function getOriginals(etm: ElementToMigrate, tmpl: string, offset: number
 }
 
 function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): boolean {
-  return etm.el.name === 'ng-template' && i18nAttr !== undefined &&
-      (etm.el.attrs.length === 2 || (etm.el.attrs.length === 3 && etm.elseAttr !== undefined));
+  let attrCount = countAttributes(etm);
+  const safeToRemove = etm.el.attrs.length === attrCount + (i18nAttr !== undefined ? 1 : 0);
+  return etm.el.name === 'ng-template' && i18nAttr !== undefined && safeToRemove;
 }
 
 function isRemovableContainer(etm: ElementToMigrate): boolean {
