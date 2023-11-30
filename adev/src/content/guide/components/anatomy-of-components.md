@@ -1,4 +1,4 @@
-<docs-decorative-header title="Anatomy of a component" imgSrc="assets/images/components.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Anatomy of a component" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
 Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
@@ -87,7 +87,8 @@ component's **view**.
 
 In composing components in this way, **you can think of your Angular application as a tree of components**.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TD
     A[AccountSettings]-->B
     A-->C
@@ -97,5 +98,6 @@ flowchart TD
     D[ProfilePic]
     E[UserBio]
 ```
+
 
 This tree structure is important to understanding several other Angular concepts, including [dependency injection](guide/di) and [child queries](guide/components/queries).
