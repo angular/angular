@@ -1,4 +1,4 @@
-<docs-decorative-header title="Template syntax" imgSrc="assets/images/templates.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Template syntax" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
 In Angular, a *template* is a chunk of HTML.
 Use special syntax within a template to build on many of Angular's features.
 </docs-decorative-header>
