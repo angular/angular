@@ -5,7 +5,7 @@ With template statements, your application can engage users through actions such
 
 In the following example, the template statement `deleteHero()` appears in quotes to the right of the equals sign `=` character as in `(event)="statement"`.
 
-<docs-code header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" visibleRegion="context-component-statement"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/template-syntax/src/app/app.component.html" visibleRegion="context-component-statement"/>
 
 When the user clicks the **Delete hero** button, Angular calls the `deleteHero()` method in the component class.
 
@@ -35,13 +35,13 @@ Statements have a context &mdash;a particular part of the application to which t
 Statements can refer only to what's in the statement context, which is typically the component instance.
 For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the component in the following snippet.
 
-<docs-code header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" visibleRegion="context-component-statement"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/template-syntax/src/app/app.component.html" visibleRegion="context-component-statement"/>
 
 The statement context may also refer to properties of the template's own context.
 In the following example, the component's event handling method, `onSave()` takes the template's own `$event` object as an argument.
 On the next two lines, the `deleteHero()` method takes a [template input variable](guide/directives/structural-directives#shorthand), `hero`, and `onSubmit()` takes a [template reference variable](guide/templates/reference-variables), `#heroForm`.
 
-<docs-code header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" visibleRegion="context-var-statement"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/template-syntax/src/app/app.component.html" visibleRegion="context-var-statement"/>
 
 In this example, the context of the `$event` object, `hero`, and `#heroForm` is the template.
 

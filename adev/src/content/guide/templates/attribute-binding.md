@@ -22,7 +22,7 @@ One of the primary use cases for attribute binding is to set ARIA attributes.
 
 To bind to an ARIA attribute, type the following:
 
-<docs-code header="src/app/app.component.html" path="attribute-binding/src/app/app.component.html" visibleRegion="attrib-binding-aria"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/attribute-binding/src/app/app.component.html" visibleRegion="attrib-binding-aria"/>
 
 ## Binding to `colspan`
 
@@ -35,7 +35,7 @@ To use attribute binding with the `<td>` attribute `colspan`
 
 In the following example, you bind the `colspan` attribute to the expression `1 + 1`.
 
-<docs-code header="src/app/app.component.html" path="attribute-binding/src/app/app.component.html" visibleRegion="colspan"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/attribute-binding/src/app/app.component.html" visibleRegion="colspan"/>
 
 This binding causes the `<tr>` to span two columns.
 
