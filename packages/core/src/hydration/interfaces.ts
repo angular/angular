@@ -139,6 +139,11 @@ export interface DehydratedView {
   /**
    * A reference to the first child in a DOM segment associated
    * with a given hydration boundary.
+   *
+   * Once a view becomes hydrated, the value is set to `null`, which
+   * indicates that further detaching/attaching view actions should result
+   * in invoking corresponding DOM actions (attaching DOM nodes action is
+   * skipped when we hydrate, since nodes are already in the DOM).
    */
   firstChild: RNode|null;
 
