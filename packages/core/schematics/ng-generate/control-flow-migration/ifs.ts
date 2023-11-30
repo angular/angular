@@ -87,6 +87,9 @@ function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Resul
 function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const aliasAttrs = etm.aliasAttrs!;
   const aliases = [...aliasAttrs.aliases.keys()];
+  if (aliasAttrs.item) {
+    aliases.push(aliasAttrs.item);
+  }
 
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
@@ -133,6 +136,9 @@ function buildStandardIfElseBlock(
 function buildBoundIfElseBlock(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const aliasAttrs = etm.aliasAttrs!;
   const aliases = [...aliasAttrs.aliases.keys()];
+  if (aliasAttrs.item) {
+    aliases.push(aliasAttrs.item);
+  }
 
   // includes the mandatory semicolon before as
   let condition = etm.attr.value.replace(' as ', '; as ');

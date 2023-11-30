@@ -356,6 +356,35 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if case as a binding with let variable with no value', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template [ngIf]="viewModel$ | async" let-vm>`,
+        `  {{vm | json}}`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (viewModel$ | async; as vm) {`,
+        `  {{vm | json}}`,
+        `}`,
+      ].join('\n'));
+    });
+
     it('should migrate an if else case as bindings', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
