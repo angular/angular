@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
-load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//packages/common/locales:index.bzl", "generate_base_locale_file")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -90,6 +90,7 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/core",
     npm_package = "angular/packages/core/npm_package",
+    strip_export_pattern = "^ɵ(?!.*ApiGuard)",
 )
 
 api_golden_test(
