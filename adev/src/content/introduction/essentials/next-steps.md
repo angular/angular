@@ -1,4 +1,4 @@
-<docs-decorative-header title="Next Steps" imgSrc="assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Next Steps" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
 Now that you have been introduced to core concepts of Angular - you're ready to put what you learned into practices with our interactive tutorials and learn more with our in-depth guides.
