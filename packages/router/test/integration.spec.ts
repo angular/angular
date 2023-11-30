@@ -142,6 +142,48 @@ describe('Integration', () => {
       expectEvents(events, []);
     });
 
+    it('should set transient navigation info', async () => {
+      let observedInfo: unknown;
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {
+          path: 'simple',
+          component: SimpleCmp,
+          canActivate: [() => {
+            observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+            return true;
+          }]
+        },
+      ]);
+
+      await router.navigateByUrl('/simple', {info: 'navigation info'});
+      expect(observedInfo).toEqual('navigation info');
+    });
+
+    it('should make transient navigation info available in redirect', async () => {
+      let observedInfo: unknown;
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {
+          path: 'redirect',
+          component: SimpleCmp,
+          canActivate: [() => coreInject(Router).parseUrl('/simple')]
+        },
+        {
+          path: 'simple',
+          component: SimpleCmp,
+          canActivate: [() => {
+            observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+            return true;
+          }]
+        },
+      ]);
+
+      await router.navigateByUrl('/redirect', {info: 'navigation info'});
+      expect(observedInfo).toBe('navigation info');
+      expect(router.url).toEqual('/simple');
+    });
+
     it('should ignore empty paths in relative links',
        fakeAsync(inject([Router], (router: Router) => {
          router.resetConfig([{
