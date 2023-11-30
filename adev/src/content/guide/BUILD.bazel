@@ -1,0 +1,18 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "guide",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/elements:src/app/app.component.ts",
+        "//adev/src/content/examples/elements:src/app/popup.component.ts",
+        "//adev/src/content/examples/elements:src/app/popup.service.ts",
+        "//adev/src/content/examples/security:src/app/bypass-security.component.html",
+        "//adev/src/content/examples/security:src/app/bypass-security.component.ts",
+        "//adev/src/content/examples/security:src/app/inner-html-binding.component.html",
+        "//adev/src/content/examples/security:src/app/inner-html-binding.component.ts",
+        "//adev/src/content/examples/ssr:server.ts",
+    ],
+)
