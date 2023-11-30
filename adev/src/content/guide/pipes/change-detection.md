@@ -3,10 +3,10 @@
 Pipes are often used with data-bound values that might change based on user actions.
 If the data is a primitive input value, such as `String` or `Number`, or an object reference as input, such as `Date` or `Array`, Angular executes the pipe whenever it detects a change for the value.
 
-<docs-code-multifile path="pipes/src/app/power-booster.component.ts">
-  <docs-code header="src/app/exponential-strength.pipe.ts" path="pipes/src/app/exponential-strength.pipe.ts"
+<docs-code-multifile path="adev/src/content/examples/pipes/src/app/power-booster.component.ts">
+  <docs-code header="src/app/exponential-strength.pipe.ts" path="adev/src/content/examples/pipes/src/app/exponential-strength.pipe.ts"
              highlight="[16]" visibleRegion="pipe-class" />
-  <docs-code header="src/app/power-booster.component.ts" path="pipes/src/app/power-booster.component.ts"/>
+  <docs-code header="src/app/power-booster.component.ts" path="adev/src/content/examples/pipes/src/app/power-booster.component.ts"/>
 </docs-code-multifile>
 
 The `exponentialStrength` pipe executes every time the user changes the value or the exponent. See the highlighted line above.
@@ -27,8 +27,8 @@ The example tabs show the following:
 | `flying-heroes.component.ts (v1)`   | Provides heroes, adds heroes into the array, and resets the array. |
 
 <docs-code-multifile>
-    <docs-code header="src/app/flying-heroes.component.html (v1)" path="pipes/src/app/flying-heroes.component.html" visibleRegion="template-1"/>
-    <docs-code header="src/app/flying-heroes.component.ts (v1)" path="pipes/src/app/flying-heroes.component.ts" visibleRegion="v1"/>
+    <docs-code header="src/app/flying-heroes.component.html (v1)" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-1"/>
+    <docs-code header="src/app/flying-heroes.component.ts (v1)" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts" visibleRegion="v1"/>
 </docs-code-multifile>
 
 Angular updates the display every time the user adds a hero.
@@ -60,15 +60,15 @@ The tabs for the example show the following:
 | flying-heroes.component.html   | Template with the new pipe used. |
 | flying-heroes.pipe.ts          | File with custom pipe that filters flying heros. |
 
-<docs-code-multifile path="pipes/src/app/flying-heroes.component.ts_FlyingHeroesComponent" preview>
-    <docs-code header="src/app/flying-heroes.component.html" path="pipes/src/app/flying-heroes.component.html" visibleRegion="template-flying-heroes"/>
-    <docs-code header="src/app/flying-heroes.pipe.ts" path="pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
+<docs-code-multifile path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts_FlyingHeroesComponent" preview>
+    <docs-code header="src/app/flying-heroes.component.html" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-flying-heroes"/>
+    <docs-code header="src/app/flying-heroes.pipe.ts" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
 </docs-code-multifile>
 
 The application now shows unexpected behavior: When the user adds flying heroes, none of them appear under "Heroes who fly."
 This happens because the code that adds a hero does so by pushing it onto the `heroes` array that is used as input for the `flyingHeroes` pipe.
 
-<docs-code header="src/app/flying-heroes.component.ts" path="pipes/src/app/flying-heroes.component.ts" visibleRegion="push"/>
+<docs-code header="src/app/flying-heroes.component.ts" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts" visibleRegion="push"/>
 
 The change detector ignores changes within elements of an array, so the pipe doesn't run.
 The reason Angular ignores the changed array element is that the *reference* to the array hasn't changed.
@@ -93,22 +93,22 @@ A long-running impure pipe could dramatically slow down your application.
 
 Make a pipe impure by setting its `pure` flag to `false`:
 
-<docs-code header="src/app/flying-heroes.pipe.ts" path="pipes/src/app/flying-heroes.pipe.ts"
+<docs-code header="src/app/flying-heroes.pipe.ts" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts"
            visibleRegion="pipe-decorator" highlight="[19]"/>
 
 The following code shows the complete implementation of `FlyingHeroesImpurePipe`, which extends `FlyingHeroesPipe` to inherit its characteristics.
 The example shows that you don't have to change anything else&mdash;the only difference is setting the `pure` flag as `false` in the pipe metadata.
 
 <docs-code-multifile>
-    <docs-code header="src/app/flying-heroes.pipe.ts (FlyingHeroesImpurePipe)" path="pipes/src/app/flying-heroes.pipe.ts" visibleRegion="impure"/>
-    <docs-code header="src/app/flying-heroes.pipe.ts (FlyingHeroesPipe)" path="pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
+    <docs-code header="src/app/flying-heroes.pipe.ts (FlyingHeroesImpurePipe)" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="impure"/>
+    <docs-code header="src/app/flying-heroes.pipe.ts (FlyingHeroesPipe)" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
 </docs-code-multifile>
 
 `FlyingHeroesImpurePipe` is a reasonable candidate for an impure pipe because the `transform` function is trivial and fast:
 
-<docs-code header="src/app/flying-heroes.pipe.ts (filter)" path="pipes/src/app/flying-heroes.pipe.ts" visibleRegion="filter"/>
+<docs-code header="src/app/flying-heroes.pipe.ts (filter)" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="filter"/>
 
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 As shown in the following code, only the pipe in the template changes.
 
-<docs-code header="src/app/flying-heroes-impure.component.html (excerpt)" path="pipes/src/app/flying-heroes-impure.component.html" visibleRegion="template-flying-heroes"/>
+<docs-code header="src/app/flying-heroes-impure.component.html (excerpt)" path="adev/src/content/examples/pipes/src/app/flying-heroes-impure.component.html" visibleRegion="template-flying-heroes"/>
