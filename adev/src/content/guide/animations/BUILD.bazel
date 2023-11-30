@@ -1,7 +1,7 @@
 load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
 
 markdown_to_html(
-    name = "test",
+    name = "animations",
     srcs = glob([
         "*.md",
     ]),
