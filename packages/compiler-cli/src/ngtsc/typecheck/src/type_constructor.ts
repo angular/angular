@@ -11,7 +11,8 @@ import ts from 'typescript';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
 
-import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
+import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
 import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
