@@ -190,6 +190,8 @@ export class Router {
             const mergedTree =
                 this.urlHandlingStrategy.merge(e.url, currentTransition.currentRawUrl);
             const extras = {
+              // Persist transient navigation info from the original navigation request.
+              info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,
               // The URL is already updated at this point if we have 'eager' URL
               // updates or if the navigation was triggered by the browser (back
