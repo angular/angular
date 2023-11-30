@@ -1,0 +1,14 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "service-workers",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/service-worker-getting-started:src/app/check-for-update.service.ts",
+        "//adev/src/content/examples/service-worker-getting-started:src/app/handle-unrecoverable-state.service.ts",
+        "//adev/src/content/examples/service-worker-getting-started:src/app/log-update.service.ts",
+        "//adev/src/content/examples/service-worker-getting-started:src/app/prompt-update.service.ts",
+    ],
+)

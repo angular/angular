@@ -1,0 +1,8 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "ecosystem",
+    srcs = glob([
+        "*.md",
+    ]),
+)
