@@ -1,4 +1,4 @@
-<docs-decorative-header title="Dependency injection in Angular" imgSrc="assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Dependency injection in Angular" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
 "DI" is a design pattern and mechanism for creating and delivering some parts of an app to other parts of an app that require them.
 </docs-decorative-header>
 
