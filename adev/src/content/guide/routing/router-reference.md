@@ -87,7 +87,7 @@ To navigate as a result of some user action such as the click of an anchor tag, 
 
 Consider the following template:
 
-<docs-code header="src/app/app.component.html" path="router/src/app/app.component.1.html"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/router/src/app/app.component.1.html"/>
 
 The `RouterLink` directives on the anchor tags give the router control over those elements.
 The navigation paths are fixed, so you can assign a string as a one-time binding to the `routerLink`.

@@ -37,11 +37,11 @@ In addition to the default Angular application framework, you will also create a
 
 1. In your code editor, locate the file, `profile.component.html` and replace the placeholder content with the following HTML.
 
-    <docs-code header="src/app/profile/profile.component.html" path="routing-with-urlmatcher/src/app/profile/profile.component.html"/>
+    <docs-code header="src/app/profile/profile.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.component.html"/>
 
 1. In your code editor, locate the file, `app.component.html` and replace the placeholder content with the following HTML.
 
-    <docs-code header="src/app/app.component.html" path="routing-with-urlmatcher/src/app/app.component.html"/>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.component.html"/>
 
 ## Configure your routes for your application
 
@@ -62,7 +62,7 @@ This handle is identified by a preceding `@` symbol.
 
 1. Define the custom route matcher by adding the following code to the application routes.
 
-    <docs-code header="src/app/app.routes.ts" path="routing-with-urlmatcher/src/app/app.routes.ts" visibleRegion="matcher"/>
+    <docs-code header="src/app/app.routes.ts" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.routes.ts" visibleRegion="matcher"/>
 
 This custom matcher is a function that performs the following tasks:
 
