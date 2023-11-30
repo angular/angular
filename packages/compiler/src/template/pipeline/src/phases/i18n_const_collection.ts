@@ -99,9 +99,6 @@ function collectMessage(
   // Sort the params for consistency with TemaplateDefinitionBuilder output.
   messageOp.params = new Map([...messageOp.params.entries()].sort());
 
-  // Check that the message has all of its parameters filled out.
-  assertAllParamsResolved(messageOp);
-
   const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
   // Closure Compiler requires const names to start with `MSG_` but disallows any other
   // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
@@ -229,22 +226,4 @@ function i18nGenerateClosureVar(
     name = pool.uniqueName(prefix);
   }
   return o.variable(name);
-}
-
-/**
- * Asserts that all of the message's placeholders have values.
- */
-function assertAllParamsResolved(op: ir.I18nMessageOp): asserts op is ir.I18nMessageOp {
-  for (let placeholder in op.message.placeholders) {
-    placeholder = placeholder.trimEnd();
-    if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
-      throw Error(`Failed to resolve i18n placeholder: ${placeholder}`);
-    }
-  }
-  for (let placeholder in op.message.placeholderToMessage) {
-    placeholder = placeholder.trimEnd();
-    if (!op.params.has(placeholder) && !op.postprocessingParams.has(placeholder)) {
-      throw Error(`Failed to resolve i18n message placeholder: ${placeholder}`);
-    }
-  }
 }
