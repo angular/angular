@@ -17,7 +17,7 @@ import {createLView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TNode} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer_dom';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES, RENDERER, T_HOST, TVIEW} from './interfaces/view';
+import {DECLARATION_LCONTAINER, FLAGS, HYDRATION, LView, LViewFlags, QUERIES, RENDERER, T_HOST, TVIEW} from './interfaces/view';
 import {addViewToDOM, destroyLView, detachView, getBeforeNodeForView, insertView, nativeParentNode} from './node_manipulation';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -70,17 +70,18 @@ export function getLViewFromLContainer<T>(lContainer: LContainer, index: number)
  */
 export function shouldAddViewToDom(
     tNode: TNode, dehydratedView?: DehydratedContainerView|null): boolean {
-  return !dehydratedView || hasInSkipHydrationBlockFlag(tNode);
+  return !dehydratedView || dehydratedView.firstChild === null ||
+      hasInSkipHydrationBlockFlag(tNode);
 }
 
 export function addLViewToLContainer(
     lContainer: LContainer, lView: LView<unknown>, index: number, addToDOM = true): void {
   const tView = lView[TVIEW];
 
-  // insert to the view tree so the new view can be change-detected
+  // Insert into the view tree so the new view can be change-detected
   insertView(tView, lView, lContainer, index);
 
-  // insert to the view to the DOM tree
+  // Insert elements that belong to this view into the DOM tree
   if (addToDOM) {
     const beforeNode = getBeforeNodeForView(index, lContainer);
     const renderer = lView[RENDERER];
@@ -88,6 +89,14 @@ export function addLViewToLContainer(
     if (parentRNode !== null) {
       addViewToDOM(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
     }
+  }
+
+  // When in hydration mode, reset the pointer to the first child in
+  // the dehydrated view. This indicates that the view was hydrated and
+  // further attaching/detaching should work with this view as normal.
+  const hydrationInfo = lView[HYDRATION];
+  if (hydrationInfo !== null && hydrationInfo.firstChild !== null) {
+    hydrationInfo.firstChild = null;
   }
 }
 
