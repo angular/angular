@@ -1,0 +1,11 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "libraries",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/angular-linker-plugin:webpack.config.mjs",
+    ],
+)
