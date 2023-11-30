@@ -1,0 +1,21 @@
+load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+
+markdown_to_html(
+    name = "cli",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/cli-builder:src/my-builder.spec.ts",
+        "//adev/src/content/examples/cli-builder:src/my-builder.ts",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/package.json",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/collection.1.json",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/collection.json",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/my-service/index.1.ts",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/my-service/index.ts",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/my-service/schema.json",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/my-service/schema.ts",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/ng-add/index.ts",
+        "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/tsconfig.schematics.json",
+    ],
+)
