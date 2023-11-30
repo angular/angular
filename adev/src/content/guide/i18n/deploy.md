@@ -9,7 +9,7 @@ To adjust the base `href` for each version of the application, the CLI adds the 
 Specify the `"baseHref"` for each locale in your [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
 The following example displays `"baseHref"` set to an empty string.
 
-<docs-code header="angular.json" path="i18n/angular.json" visibleRegion="i18n-baseHref"/>
+<docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" visibleRegion="i18n-baseHref"/>
 
 Also, to declare the base `href` at compile time, use the CLI `--baseHref` option with [`ng build`][AioCliBuild].
 
@@ -27,13 +27,13 @@ HELPFUL: For more information on how to deploy apps to a remote server, see [Dep
 
 The following example displays an Nginx configuration.
 
-<docs-code path="i18n/doc-files/nginx.conf" language="nginx"/>
+<docs-code path="adev/src/content/examples/i18n/doc-files/nginx.conf" language="nginx"/>
 
 ### Apache example
 
 The following example displays an Apache configuration.
 
-<docs-code path="i18n/doc-files/apache2.conf" language="apache"/>
+<docs-code path="adev/src/content/examples/i18n/doc-files/apache2.conf" language="apache"/>
 
 [AioCliBuild]: cli/build "ng build | CLI | Angular"
 
