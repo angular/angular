@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "nodejs_test", "ts_library")
+
+ts_library(
+    name = "signal_input_signature_test_lib",
+    srcs = ["signal_input_signature_test.ts"],
+    deps = ["//packages/core"],
+)
+
+ts_library(
+    name = "type_tester_lib",
+    srcs = ["type_tester.ts"],
+    deps = [
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+nodejs_test(
+    name = "type_test",
+    data = [
+        ":signal_input_signature_test_lib",
+        ":type_tester_lib",
+    ],
+    entry_point = ":type_tester.ts",
+)
