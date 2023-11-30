@@ -1,4 +1,4 @@
-<docs-decorative-header title="Angular Roadmap" imgSrc="assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Angular Roadmap" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
 Learn how the Angular team is building momentum on the web.
 </docs-decorative-header>
 
