@@ -28,6 +28,14 @@ const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
  */
 const TRANSLATION_VAR_PREFIX = 'i18n_';
 
+/** Prefix of ICU expressions for post processing */
+export const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
+
+/**
+ * The escape sequence used for message param values.
+ */
+const ESCAPE = '\uFFFD';
+
 /**
  * Lifts i18n properties into the consts array.
  * TODO: Can we use `ConstCollectedExpr`?
@@ -76,13 +84,17 @@ function collectMessage(
     messageOp: ir.I18nMessageOp): {mainVar: o.ReadVarExpr, statements: o.Statement[]} {
   // Recursively collect any sub-messages, and fill in their placeholders in this message.
   const statements: o.Statement[] = [];
+  const subMessagePlaceholders = new Map<string, o.Expression[]>();
   for (const subMessageId of messageOp.subMessages) {
     const subMessage = messages.get(subMessageId)!;
     const {mainVar: subMessageVar, statements: subMessageStatements} =
         collectMessage(job, fileBasedI18nSuffix, messages, subMessage);
     statements.push(...subMessageStatements);
-    messageOp.params.set(subMessage.messagePlaceholder!, subMessageVar);
+    const subMessages = subMessagePlaceholders.get(subMessage.messagePlaceholder!) ?? [];
+    subMessages.push(subMessageVar);
+    subMessagePlaceholders.set(subMessage.messagePlaceholder!, subMessages);
   }
+  addSubMessageParams(messageOp, subMessagePlaceholders);
 
   // Sort the params for consistency with TemaplateDefinitionBuilder output.
   messageOp.params = new Map([...messageOp.params.entries()].sort());
@@ -119,6 +131,23 @@ function collectMessage(
       messageOp.message, mainVar, closureVar, messageOp.params, transformFn));
 
   return {mainVar, statements};
+}
+
+/**
+ * Adds the given subMessage placeholders to the given message op.
+ */
+function addSubMessageParams(
+    messageOp: ir.I18nMessageOp, subMessagePlaceholders: Map<string, o.Expression[]>) {
+  for (const [placeholder, subMessages] of subMessagePlaceholders) {
+    if (subMessages.length === 1) {
+      messageOp.params.set(placeholder, subMessages[0]);
+    } else {
+      messageOp.params.set(
+          placeholder, o.literal(`${ESCAPE}${I18N_ICU_MAPPING_PREFIX}${placeholder}${ESCAPE}`));
+      messageOp.postprocessingParams.set(placeholder, o.literalArr(subMessages));
+      messageOp.needsPostprocessing = true;
+    }
+  }
 }
 
 /**
