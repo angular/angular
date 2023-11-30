@@ -74,8 +74,12 @@ function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Resul
   if (etm.thenAttr !== undefined || etm.elseAttr !== undefined) {
     // bound if then / if then else
     return buildBoundIfElseBlock(etm, tmpl, offset);
-  } else if (matchThen && matchThen.length > 0) {
+  } else if (matchThen && matchThen.length > 0 && matchElse && matchElse.length > 0) {
+    // then else
     return buildStandardIfThenElseBlock(etm, tmpl, matchThen[0], matchElse![0], offset);
+  } else if (matchThen && matchThen.length > 0) {
+    // just then
+    return buildStandardIfThenBlock(etm, tmpl, matchThen[0], offset);
   } else if ((matchElse && matchElse.length > 0)) {
     // just else
     return buildStandardIfElseBlock(etm, tmpl, matchElse![0], offset);
@@ -189,6 +193,17 @@ function buildStandardIfThenElseBlock(
   return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
 }
 
+function buildStandardIfThenBlock(
+    etm: ElementToMigrate, tmpl: string, thenString: string, offset: number): Result {
+  // includes the mandatory semicolon before as
+  const condition = etm.getCondition()
+                        .replace(' as ', '; as ')
+                        // replace 'let' with 'as' whatever spaces are between ; and 'let'
+                        .replace(/;\s*let/g, '; as');
+  const thenPlaceholder = `#${etm.getTemplateName(thenString)}|`;
+  return buildIfThenBlock(etm, tmpl, condition, thenPlaceholder, offset);
+}
+
 function buildIfThenElseBlock(
     etm: ElementToMigrate, tmpl: string, condition: string, thenPlaceholder: string,
     elsePlaceholder: string, offset: number): Result {
@@ -206,6 +221,31 @@ function buildIfThenElseBlock(
   const tmplEnd = tmpl.slice(etm.end(offset));
 
   const updatedTmpl = tmplStart + ifThenElseBlock + tmplEnd;
+
+  // We ignore the contents of the element on if then else.
+  // If there's anything there, we need to account for the length in the offset.
+  const pre = originals.start.length + originals.childLength - startBlock.length;
+  const post = originals.end.length - postBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
+}
+
+function buildIfThenBlock(
+    etm: ElementToMigrate, tmpl: string, condition: string, thenPlaceholder: string,
+    offset: number): Result {
+  const lbString = etm.hasLineBreaks ? '\n' : '';
+
+  const originals = getOriginals(etm, tmpl, offset);
+
+  const startBlock = `@if (${condition}) {${lbString}`;
+
+  const postBlock = thenPlaceholder + `${lbString}}`;
+  const ifThenBlock = startBlock + postBlock;
+
+  const tmplStart = tmpl.slice(0, etm.start(offset));
+  const tmplEnd = tmpl.slice(etm.end(offset));
+
+  const updatedTmpl = tmplStart + ifThenBlock + tmplEnd;
 
   // We ignore the contents of the element on if then else.
   // If there's anything there, we need to account for the length in the offset.
