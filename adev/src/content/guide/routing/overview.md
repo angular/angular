@@ -1,4 +1,4 @@
-<docs-decorative-header title="Angular Routing" imgSrc="assets/images/routing.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Angular Routing" imgSrc="adev/src/assets/images/routing.svg"> <!-- markdownlint-disable-line -->
 Routing helps you change what the user sees in a single-page app.
 </docs-decorative-header>
 
