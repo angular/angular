@@ -645,6 +645,45 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate a bound NgIfElse case with ng-templates and remove all unnecessary attributes',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+         writeFile('/comp.html', [
+           `<ng-template`,
+           `  [ngIf]="fooTemplate"`,
+           `  [ngIfElse]="barTemplate"`,
+           `  [ngTemplateOutlet]="fooTemplate"`,
+           `></ng-template>`,
+           `<ng-template #fooTemplate>Foo</ng-template>`,
+           `<ng-template #barTemplate>Bar</ng-template>`,
+         ].join('\n'));
+
+         await runMigration();
+         const content = tree.readContent('/comp.html');
+
+         expect(content).toBe([
+           `@if (fooTemplate) {`,
+           `  <ng-template`,
+           `    [ngTemplateOutlet]="fooTemplate"`,
+           `  ></ng-template>`,
+           `} @else {`,
+           `  Bar`,
+           `}`,
+           `<ng-template #fooTemplate>Foo</ng-template>\n`,
+         ].join('\n'));
+       });
+
     it('should migrate a bound NgIfThenElse case with ng-templates with i18n', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';

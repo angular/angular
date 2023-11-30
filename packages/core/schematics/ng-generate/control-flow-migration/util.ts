@@ -472,16 +472,17 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
 
   // the beginning of the updated string in the main block, for example: <div some="attributes">
   let start = tmpl.slice(etm.start(offset), attrStart) + tmpl.slice(valEnd, childStart);
-
-  if (etm.shouldRemoveElseAttr()) {
-    // this removes a bound ngIfElse attribute that's no longer needed
-    start = start.replace(etm.getElseAttrStr(), '');
-  }
-
   // the middle is the actual contents of the element
   const middle = tmpl.slice(childStart, childEnd);
   // the end is the closing part of the element, example: </div>
-  const end = tmpl.slice(childEnd, etm.end(offset));
+  let end = tmpl.slice(childEnd, etm.end(offset));
+
+  if (etm.shouldRemoveElseAttr()) {
+    // this removes a bound ngIfElse attribute that's no longer needed
+    // this could be on the start or end
+    start = start.replace(etm.getElseAttrStr(), '');
+    end = end.replace(etm.getElseAttrStr(), '');
+  }
 
   return {start, middle, end};
 }
