@@ -8,6 +8,7 @@
 
 import {type ConstantPool} from '../../../../constant_pool';
 import * as i18n from '../../../../i18n/i18n_ast';
+import {mapLiteral} from '../../../../output/map_util';
 import * as o from '../../../../output/output_ast';
 import {sanitizeIdentifier} from '../../../../parse_util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
@@ -101,12 +102,13 @@ function collectMessage(
   // set in post-processing.
   if (messageOp.needsPostprocessing) {
     // Sort the post-processing params for consistency with TemaplateDefinitionBuilder output.
-    messageOp.postprocessingParams = new Map([...messageOp.postprocessingParams.entries()].sort());
-
+    const postprocessingParams =
+        Object.fromEntries([...messageOp.postprocessingParams.entries()].sort());
+    const formattedPostprocessingParams =
+        formatI18nPlaceholderNamesInMap(postprocessingParams, /* useCamelCase */ false);
     const extraTransformFnParams: o.Expression[] = [];
     if (messageOp.postprocessingParams.size > 0) {
-      extraTransformFnParams.push(o.literalMap(
-          [...messageOp.postprocessingParams].map(([key, value]) => ({key, value, quoted: true}))));
+      extraTransformFnParams.push(mapLiteral(formattedPostprocessingParams, /* quoted */ true));
     }
     transformFn = (expr: o.ReadVarExpr) =>
         o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
