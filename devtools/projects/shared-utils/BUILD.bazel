@@ -40,6 +40,6 @@ ts_test_library(
 karma_web_test_suite(
     name = "test",
     deps = [
-        "//devtools/projects/shared-utils:shared_utils_test",
+        ":shared_utils_test",
     ],
 )

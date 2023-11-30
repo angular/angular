@@ -1107,9 +1107,6 @@
     "name": "createUrlTreeFromSegmentGroup"
   },
   {
-    "name": "createWildcardMatchResult"
-  },
-  {
     "name": "deactivateRouteAndItsChildren"
   },
   {

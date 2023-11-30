@@ -50,7 +50,7 @@ The new built-in `@if` conditional supports referencing of expression results to
 
 The value of the `track` expression determines a key used to associate array items with the views in the DOM. Having clear indication of the item identity allows Angular to execute a minimal set of DOM operations as items are added, removed or moved in a collection.
 
-Loops over immutable data without `trackBy` as one of the most common causes for performance issues across Angular applications. Because of the potential for poor performance, the `track` expression is required for the `@for` loops. When in doubt, using `track $index` is a good default.
+Loops over immutable data without `trackBy` are one of the most common causes for performance issues across Angular applications. Because of the potential for poor performance, the `track` expression is required for the `@for` loops. When in doubt, using `track $index` is a good default.
 
 ### `$index` and other contextual variables
 
@@ -122,7 +122,7 @@ The `@switch` block replaces `ngSwitch` with major benefits:
 
 The `@for` block replaces `*ngFor` for iteration, and has several differences compared to its structural directive `NgFor` predecessor:
 
-* tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomic (it is enough to write an expression instead of creating the `trackBy` method);
+* tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomics (it is enough to write an expression instead of creating the `trackBy` method);
 * uses a new optimized algorithm for calculating a minimal number of DOM operations to be performed in response to changes in a collection, instead of Angular’s customizable diffing implementation (`IterableDiffer`);
 * has support for `@empty` blocks.
 

@@ -103,7 +103,6 @@ ts_library(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
-        ":angular_check",
         ":component_tree",
         ":highlighter",
         ":interfaces",
@@ -113,6 +112,7 @@ ts_library(
         "//devtools/projects/ng-devtools-backend/src/lib/hooks",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
         "@npm//rxjs",
     ],
 )
@@ -127,27 +127,4 @@ ts_library(
         "//devtools/projects/protocol",
         "//packages/core",
     ],
-)
-
-karma_web_test_suite(
-    name = "angular_check_test",
-    deps = [
-        ":angular_check_test_lib",
-    ],
-)
-
-ts_test_library(
-    name = "angular_check_test_lib",
-    srcs = [
-        "angular-check.spec.ts",
-    ],
-    deps = [
-        ":angular_check",
-        "@npm//@types",
-    ],
-)
-
-ts_library(
-    name = "angular_check",
-    srcs = ["angular-check.ts"],
 )

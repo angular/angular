@@ -26,6 +26,7 @@ karma_web_test_suite(
 ts_test_library(
     name = "test_lib",
     srcs = [
+        "prop-type.spec.ts",
         "state-serializer.spec.ts",
     ],
     deps = [
