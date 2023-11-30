@@ -1,4 +1,4 @@
-<docs-decorative-header title="Sharing Code" imgSrc="assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Sharing Code" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
 Dependency injection allows you to share code.
 </docs-decorative-header>
 
