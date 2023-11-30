@@ -9,13 +9,12 @@
 import {CommonModule, NgForOf} from '@angular/common';
 import {
   Component,
-  EnvironmentInjector,
-  Input,
-  NgModule,
-  Type,
-  createEnvironmentInjector,
-  importProvidersFrom,
   inject,
+  provideExperimentalZonelessChangeDetection,
+  Input,
+  Signal,
+  Type,
+  NgModule,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
@@ -24,7 +23,8 @@ import {
   RouterModule,
   RouterOutlet,
   withComponentInputBinding,
-} from '@angular/router';
+  ROUTER_OUTLET_DATA,
+} from '@angular/router/src';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {InjectionToken} from '../../../core/src/di';
 
@@ -464,6 +464,127 @@ describe('injectors', () => {
     await TestBed.inject(Router).navigateByUrl('/b');
     fixture.detectChanges();
     expect(childTokenValue).toEqual(null);
+  });
+});
+
+describe('router outlet data', () => {
+  it('is injectable even when not set', async () => {
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      data = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({template: '<router-outlet />', standalone: true, imports: [RouterOutlet]})
+    class App {}
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', component: MyComponent}])],
+    });
+
+    const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/');
+    fixture.detectChanges();
+    const routedComponent = fixture.debugElement.query(
+      (v) => v.componentInstance instanceof MyComponent,
+    ).componentInstance as MyComponent;
+    expect(routedComponent.data()).toEqual(undefined);
+  });
+
+  it('can set and update value', async () => {
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      data = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: '**', component: MyComponent}]),
+        provideExperimentalZonelessChangeDetection(),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('initial');
+    const routedComponent = await harness.navigateByUrl('/', MyComponent);
+
+    expect(routedComponent.data()).toEqual('initial');
+    harness.fixture.componentInstance.routerOutletData.set('new');
+    await harness.fixture.whenStable();
+    expect(routedComponent.data()).toEqual('new');
+  });
+
+  it('overrides parent provided data with nested', async () => {
+    @Component({
+      imports: [RouterOutlet],
+      standalone: true,
+      template: `{{outletData()}}|<router-outlet [routerOutletData]="'child'" />`,
+    })
+    class Child {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({
+      standalone: true,
+      template: '{{outletData()}}',
+    })
+    class GrandChild {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'child',
+            component: Child,
+            children: [{path: 'grandchild', component: GrandChild}],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('parent');
+
+    await harness.navigateByUrl('/child/grandchild');
+    expect(harness.routeNativeElement?.innerText).toContain('parent|child');
+  });
+
+  it('does not inherit ancestor data when not provided in nested', async () => {
+    @Component({
+      imports: [RouterOutlet],
+      standalone: true,
+      template: `{{outletData()}}|<router-outlet />`,
+    })
+    class Child {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({
+      standalone: true,
+      template: '{{outletData() ?? "not provided"}}',
+    })
+    class GrandChild {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'child',
+            component: Child,
+            children: [{path: 'grandchild', component: GrandChild}],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('parent');
+
+    await harness.navigateByUrl('/child/grandchild');
+    expect(harness.routeNativeElement?.innerText).toContain('parent|not provided');
   });
 });
 
