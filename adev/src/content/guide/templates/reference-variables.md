@@ -15,12 +15,12 @@ A template variable can refer to the following:
 In the template, you use the hash symbol, `#`, to declare a template variable.
 The following template variable, `#phone`, declares a `phone` variable with the `<input>` element as its value.
 
-<docs-code path="template-reference-variables/src/app/app.component.html" visibleRegion="ref-var" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="ref-var" header="src/app/app.component.html"/>
 
 Refer to a template variable anywhere in the component's template.
 Here, a `<button>` further down the template refers to the `phone` variable.
 
-<docs-code path="template-reference-variables/src/app/app.component.html" visibleRegion="ref-phone" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="ref-phone" header="src/app/app.component.html"/>
 
 ## How Angular assigns values to template variables
 
@@ -45,7 +45,7 @@ The button's click handler passes the `<input>` value to the component's `callPh
 The `NgForm` directive demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.
 In the following example, the template variable, `itemForm`, appears three times separated by HTML.
 
-<docs-code path="template-reference-variables/src/app/app.component.html" visibleRegion="ngForm" header="src/app/hero-form.component.html"/>
+<docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="ngForm" header="src/app/hero-form.component.html"/>
 
 Without the `ngForm` attribute value, the reference value of `itemForm` would be
 the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement), `<form>`.
@@ -66,7 +66,7 @@ An inner template can access template variables that the outer template defines.
 
 In the following example, changing the text in the `<input>` changes the value in the `<span>` because Angular immediately updates changes through the template variable, `ref1`.
 
-<docs-code path="template-reference-variables/src/app/app.component.html" visibleRegion="template-ref-vars-scope1" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="template-ref-vars-scope1" header="src/app/app.component.html"/>
 
 In this case, the `*ngIf` on `<span>` creates a new template scope, which includes the `ref1` variable from its parent scope.
 
