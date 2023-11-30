@@ -15,16 +15,8 @@ import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-
-/**
- * Represents the origin environment from where reference will be emitted. This interface exists
- * as an indirection for the `Environment` type, which would otherwise introduce a (type-only)
- * import cycle.
- */
-export interface ReferenceEmitEnvironment {
-  canReferenceType(ref: Reference): boolean;
-}
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
