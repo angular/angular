@@ -1,4 +1,4 @@
-<docs-decorative-header title="Managing Dynamic Data" imgSrc="assets/images/signals.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Managing Dynamic Data" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
 Define component state and behavior to manage dynamic data.
 </docs-decorative-header>
 

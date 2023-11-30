@@ -1,4 +1,4 @@
-<docs-decorative-header title="Overview" imgSrc="assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Overview" imgSrc="adev/src/assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
 ## Before you start
