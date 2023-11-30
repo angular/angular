@@ -15,6 +15,7 @@ import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
+import { InputSignal } from '@angular/core';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
@@ -27,6 +28,7 @@ import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { RouterState as RouterState_2 } from '@angular/router';
+import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
@@ -742,6 +744,9 @@ export const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 // @public
+export const ROUTER_OUTLET_DATA: InjectionToken<Signal<unknown>>;
+
+// @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
     defaultQueryParamsHandling?: QueryParamsHandling;
@@ -897,10 +902,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    readonly routerOutletData: InputSignal<unknown>;
     // (undocumented)
     readonly supportsBindingToComponentInputs = true;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; "routerOutletData": { "alias": "routerOutletData"; "required": false; "isSignal": true; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
 }

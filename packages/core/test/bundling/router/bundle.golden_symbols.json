@@ -282,6 +282,9 @@
     "name": "INPUT_BINDER"
   },
   {
+    "name": "INPUT_SIGNAL_NODE"
+  },
+  {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
@@ -564,7 +567,13 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "REQUIRED_UNSET_VALUE"
+  },
+  {
     "name": "ROUTER_CONFIGURATION"
+  },
+  {
+    "name": "ROUTER_OUTLET_DATA"
   },
   {
     "name": "ROUTER_PRELOADER"
@@ -649,6 +658,9 @@
   },
   {
     "name": "SIGNAL"
+  },
+  {
+    "name": "SIGNAL_NODE"
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
@@ -906,6 +918,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertProducerNode"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -993,6 +1008,9 @@
     "name": "consumerIsLive"
   },
   {
+    "name": "consumerMarkDirty"
+  },
+  {
     "name": "consumerPollProducersForChange"
   },
   {
@@ -1044,6 +1062,9 @@
     "name": "createInjectorWithoutInjectorInstances"
   },
   {
+    "name": "createInputSignal"
+  },
+  {
     "name": "createInvalidObservableTypeError"
   },
   {
@@ -1069,6 +1090,9 @@
   },
   {
     "name": "createOperatorSubscriber"
+  },
+  {
+    "name": "createOrReusePlatformInjector"
   },
   {
     "name": "createResultForNode"
@@ -1102,6 +1126,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultEquals"
   },
   {
     "name": "defaultErrorFactory"
@@ -1494,6 +1521,9 @@
     "name": "importProvidersFrom"
   },
   {
+    "name": "inNotificationPhase"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -1539,6 +1569,15 @@
     "name": "innerFrom"
   },
   {
+    "name": "input"
+  },
+  {
+    "name": "inputFunction"
+  },
+  {
+    "name": "inputRequiredFunction"
+  },
+  {
     "name": "insertBloom"
   },
   {
@@ -1576,6 +1615,9 @@
   },
   {
     "name": "isComponentHost"
+  },
+  {
+    "name": "isConsumerNode"
   },
   {
     "name": "isContentQueryHost"
@@ -1863,6 +1905,15 @@
     "name": "processInjectorTypesWithProviders"
   },
   {
+    "name": "producerAccessed"
+  },
+  {
+    "name": "producerAddLiveConsumer"
+  },
+  {
+    "name": "producerNotifyConsumers"
+  },
+  {
     "name": "producerRemoveLiveConsumerAtIndex"
   },
   {
@@ -2077,6 +2128,9 @@
   },
   {
     "name": "throwIfEmpty"
+  },
+  {
+    "name": "throwInvalidWriteToSignalErrorFn"
   },
   {
     "name": "throwProviderNotFoundError"

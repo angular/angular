@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, DebugElement, Injectable, Type, ViewChild} from '@angular/core';
+import {
+  Component,
+  DebugElement,
+  Injectable,
+  Type,
+  ViewChild,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Router, RouterOutlet, ɵafterNextNavigation as afterNextNavigation} from '@angular/router';
 
@@ -35,11 +43,12 @@ export class RootFixtureService {
 
 @Component({
   standalone: true,
-  template: '<router-outlet></router-outlet>',
+  template: '<router-outlet [routerOutletData]="routerOutletData()"></router-outlet>',
   imports: [RouterOutlet],
 })
 export class RootCmp {
   @ViewChild(RouterOutlet) outlet?: RouterOutlet;
+  readonly routerOutletData = signal<unknown>(undefined);
 }
 
 /**
@@ -71,10 +80,10 @@ export class RouterTestingHarness {
   /**
    * Fixture of the root component of the RouterTestingHarness
    */
-  public readonly fixture: ComponentFixture<unknown>;
+  public readonly fixture: ComponentFixture<{routerOutletData: WritableSignal<unknown>}>;
 
   /** @internal */
-  constructor(fixture: ComponentFixture<unknown>) {
+  constructor(fixture: ComponentFixture<{routerOutletData: WritableSignal<unknown>}>) {
     this.fixture = fixture;
   }
 
