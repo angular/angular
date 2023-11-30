@@ -25,7 +25,7 @@ To determine an event target, Angular checks if the name of the target event mat
 
 Create the following example: (Angular checks to see if `myClick` is an event on the custom `ClickDirective`)
 
-<docs-code path="event-binding/src/app/app.component.html" visibleRegion="custom-directive" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/event-binding/src/app/app.component.html" visibleRegion="custom-directive" header="src/app/app.component.html"/>
 
 If the target event name, `myClick` fails to match an output property of `ClickDirective`, Angular will instead bind to the `myClick` event on the underlying DOM element.
 
