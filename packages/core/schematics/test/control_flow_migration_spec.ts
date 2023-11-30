@@ -487,6 +487,38 @@ describe('control flow migration', () => {
       ].join('\n'));
     });
 
+    it('should migrate an if case on an empty container', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container`,
+        `  *ngIf="true; then template"`,
+        `></ng-container>`,
+        `<ng-template #template>`,
+        `  Hello!`,
+        `</ng-template>  `,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (true) {`,
+        `  Hello!`,
+        `}\n`,
+      ].join('\n'));
+    });
+
     it('should migrate an if case with an ng-template with i18n', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
