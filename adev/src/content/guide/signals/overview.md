@@ -1,4 +1,4 @@
-<docs-decorative-header title="Angular Signals" imgSrc="assets/images/signals.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
 Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
 </docs-decorative-header>
 
