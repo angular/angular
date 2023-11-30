@@ -18,7 +18,7 @@ A target property is the DOM property to which you want to assign a value.
 
 To assign a string to a component's property (such as the `childItem` of the `ItemDetailComponent`), you use the same bracket assignment notation:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="property-binding" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="property-binding" header="src/app/app.component.html"/>
 
 In most cases, the target name is the name of a property, even when it appears to be the name of an attribute.
 
@@ -34,7 +34,7 @@ Without the brackets, Angular treats the right-hand side as a string literal and
 
 To assign a string to a property, type the following code:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="no-evaluation" header="src/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="no-evaluation" header="src/app.component.html"/>
 
 Omitting the brackets renders the string `parentItem`, not the value of `parentItem`.
 
@@ -44,11 +44,11 @@ To bind the `src` property of an `<img>` element to a component's property, plac
 
 Using the property `itemImageUrl`, type the following code:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="property-binding" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="property-binding" header="src/app/app.component.html"/>
 
 Declare the `itemImageUrl` property in the class, in this case `AppComponent`.
 
-<docs-code path="property-binding/src/app/app.component.ts" visibleRegion="item-image" header="src/app/app.component.ts"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.ts" visibleRegion="item-image" header="src/app/app.component.ts"/>
 
 ### `colspan` and `colSpan`
 
@@ -56,19 +56,19 @@ A common point of confusion is between the attribute, `colspan`, and the propert
 
 To use property binding using `colSpan`, type the following:
 
-<docs-code path="attribute-binding/src/app/app.component.html" visibleRegion="colSpan" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/attribute-binding/src/app/app.component.html" visibleRegion="colSpan" header="src/app/app.component.html"/>
 
 To disable a button while the component's `isUnchanged` property is `true`, type the following:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="disabled-button" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="disabled-button" header="src/app/app.component.html"/>
 
 To set a property of a directive, type the following:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="class-binding" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="class-binding" header="src/app/app.component.html"/>
 
 To set the model property of a custom component for parent and child components to communicate with each other, type the following:
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="model-property-binding" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="model-property-binding" header="src/app/app.component.html"/>
 
 ## Toggling button features
 
@@ -78,11 +78,11 @@ To use a Boolean value to disable a button's features, bind the `disabled` DOM a
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-<docs-code path="property-binding/src/app/app.component.html" visibleRegion="disabled-button" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="disabled-button" header="src/app/app.component.html"/>
 
 Because the value of the property `isUnchanged` is `true` in the `AppComponent`, Angular disables the button.
 
-<docs-code path="property-binding/src/app/app.component.ts" visibleRegion="boolean" header="src/app/app.component.ts"/>
+<docs-code path="adev/src/content/examples/property-binding/src/app/app.component.ts" visibleRegion="boolean" header="src/app/app.component.ts"/>
 
 ## What's next
 
