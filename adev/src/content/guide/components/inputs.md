@@ -85,7 +85,7 @@ export class CustomSlider {
 }
 
 function appendPx(value: number) {
-  return `$(value)px`;
+  return `${value}px`;
 }
 </docs-code>
 
