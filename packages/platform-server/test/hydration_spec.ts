@@ -467,6 +467,65 @@ describe('platform-server hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
+        it('should hydrate root components with empty templates', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '',
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should hydrate child components with empty templates', async () => {
+          @Component({
+            standalone: true,
+            selector: 'child',
+            template: '',
+          })
+          class ChildComponent {
+          }
+
+          @Component({
+            standalone: true,
+            imports: [ChildComponent],
+            selector: 'app',
+            template: '<child />',
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent, ChildComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
         it('should support a single text interpolation', async () => {
           @Component({
             standalone: true,
@@ -6386,6 +6445,54 @@ describe('platform-server hydration integration', () => {
                [4, 5].map(id => compRef.location.nativeElement.querySelector(`[id=${id}]`));
            verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
          });
+
+      it('should handle a reconciliation with swaps', async () => {
+        @Component({
+          selector: 'app',
+          standalone: true,
+          template: `
+                @for(item of items; track item) {
+                  <div>{{ item }}</div>
+                }
+              `,
+        })
+        class SimpleComponent {
+          items = ['a', 'b', 'c'];
+
+          swap() {
+            // Reshuffling of the array will result in
+            // "swap" operations in repeater.
+            this.items = ['b', 'c', 'a'];
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        expect(ssrContents).toContain('a');
+        expect(ssrContents).toContain('b');
+        expect(ssrContents).toContain('c');
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const root: HTMLElement = compRef.location.nativeElement;
+        const divs = root.querySelectorAll('div');
+        expect(divs.length).toBe(3);
+
+        compRef.instance.swap();
+        compRef.changeDetectorRef.detectChanges();
+
+        const divsAfterSwap = root.querySelectorAll('div');
+        expect(divsAfterSwap.length).toBe(3);
+      });
     });
 
     describe('Router', () => {
