@@ -1,4 +1,4 @@
-<docs-decorative-header title="Rendering Dynamic Templates" imgSrc="assets/images/templates.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Rendering Dynamic Templates" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
 Use Angular's template syntax to create dynamic HTML.
 </docs-decorative-header>
 

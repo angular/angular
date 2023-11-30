@@ -1,4 +1,4 @@
-<docs-decorative-header title="Components" imgSrc="assets/images/components.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Components" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 The fundamental building block for creating applications in Angular.
 </docs-decorative-header>
 
@@ -6,7 +6,8 @@ Components provide structure for organizing your project into easy-to-understand
 
 Here is an example of how a Todo application could be broken down into a tree of components.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TD
     A[TodoApp]-->B
     A-->C
