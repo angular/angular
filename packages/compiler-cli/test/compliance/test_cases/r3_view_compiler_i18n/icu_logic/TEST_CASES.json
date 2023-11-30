@@ -146,8 +146,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "nested with interpolations in \"other\" blocks",
@@ -161,8 +160,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle icus in different contexts",
