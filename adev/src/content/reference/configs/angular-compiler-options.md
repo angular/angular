@@ -4,7 +4,7 @@ When you use [ahead-of-time compilation (AOT)](tools/cli/aot-compiler), you can 
 
 The Angular options object, `angularCompilerOptions`, is a sibling to the `compilerOptions` object that supplies standard options to the TypeScript compiler.
 
-<docs-code header="tsconfig.json" path="angular-compiler-options/tsconfig.json" visibleRegion="angular-compiler-options"/>
+<docs-code header="tsconfig.json" path="adev/src/content/examples/angular-compiler-options/tsconfig.json" visibleRegion="angular-compiler-options"/>
 
 ## Configuration inheritance with `extends`
 
@@ -16,7 +16,7 @@ The configuration options from the base file are loaded first, then overridden b
 
 For example:
 
-<docs-code header="tsconfig.app.json" path="angular-compiler-options/tsconfig.app.json" visibleRegion="angular-compiler-options-app"/>
+<docs-code header="tsconfig.app.json" path="adev/src/content/examples/angular-compiler-options/tsconfig.app.json" visibleRegion="angular-compiler-options-app"/>
 
 For more information, see the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
