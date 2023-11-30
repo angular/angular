@@ -1065,6 +1065,9 @@
     "name": "init_attrs_utils"
   },
   {
+    "name": "init_authoring"
+  },
+  {
     "name": "init_bindings"
   },
   {
@@ -1465,6 +1468,9 @@
   },
   {
     "name": "init_innerSubscribe"
+  },
+  {
+    "name": "init_input"
   },
   {
     "name": "init_input_transforms_feature"
