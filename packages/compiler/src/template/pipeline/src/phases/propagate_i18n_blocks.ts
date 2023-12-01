@@ -33,6 +33,10 @@ function propagateI18nBlocksToTemplates(
         i18nBlock = op;
         break;
       case ir.OpKind.I18nEnd:
+        // When we exit a root-level i18n block, reset the sub-template index counter.
+        if (i18nBlock!.subTemplateIndex === null) {
+          subTemplateIndex = 0;
+        }
         i18nBlock = null;
         break;
       case ir.OpKind.Template:
