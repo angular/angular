@@ -5352,6 +5352,79 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should allow the content projection diagnostic to be disabled individually', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            checks: {
+              controlFlowPreventingContentProjection: DiagnosticCategoryLabel.Suppress,
+            }
+          }
+        });
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should allow the content projection diagnostic to be disabled via `defaultCategory`',
+         () => {
+           env.tsconfig({
+             extendedDiagnostics: {
+               defaultCategory: DiagnosticCategoryLabel.Suppress,
+             }
+           });
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                selector: 'comp',
+                template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+                standalone: true,
+              })
+              class Comp {}
+
+              @Component({
+                standalone: true,
+                imports: [Comp],
+                template: \`
+                  <comp>
+                    @if (true) {
+                      <div foo></div>
+                      breaks projection
+                    }
+                  </comp>
+                \`,
+              })
+              class TestCmp {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
     });
   });
 });

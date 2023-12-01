@@ -220,6 +220,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   enableTemplateTypeChecker: false,
   useInlineTypeConstructors: true,
   suggestionsForSuboptimalTypeInference: false,
+  controlFlowPreventingContentProjection: 'warning',
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -323,6 +324,7 @@ export function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     alwaysCheckSchemaInTemplateBodies: true,
+    controlFlowPreventingContentProjection: 'warning',
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
     strictLiteralTypes: true,

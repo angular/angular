@@ -279,6 +279,11 @@ export interface TypeCheckingConfig {
   checkQueries: false;
 
   /**
+   * Whether to check if control flow syntax will prevent a node from being projected.
+   */
+  controlFlowPreventingContentProjection: 'error'|'warning'|'suppress';
+
+  /**
    * Whether to use any generic types of the context component.
    *
    * If this is `true`, then if the context component has generic types, those will be mirrored in

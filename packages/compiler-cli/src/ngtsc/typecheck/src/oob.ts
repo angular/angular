@@ -105,8 +105,9 @@ export interface OutOfBandDiagnosticRecorder {
    * Reports cases where control flow nodes prevent content projection.
    */
   controlFlowPreventingContentProjection(
-      templateId: TemplateId, projectionNode: TmplAstElement|TmplAstTemplate, componentName: string,
-      slotSelector: string, controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      templateId: TemplateId, category: ts.DiagnosticCategory,
+      projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
       preservesWhitespaces: boolean): void;
 }
 
@@ -350,8 +351,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   controlFlowPreventingContentProjection(
-      templateId: TemplateId, projectionNode: TmplAstElement|TmplAstTemplate, componentName: string,
-      slotSelector: string, controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      templateId: TemplateId, category: ts.DiagnosticCategory,
+      projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
       preservesWhitespaces: boolean): void {
     const blockName = controlFlowNode instanceof TmplAstIfBlockBranch ? '@if' : '@for';
     const lines = [
@@ -367,14 +369,19 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
     if (preservesWhitespaces) {
       lines.push(
-          `Note: the host component has \`preserveWhitespaces: true\` which may ` +
-          `cause whitespace to affect content projection.`);
+          'Note: the host component has `preserveWhitespaces: true` which may ' +
+          'cause whitespace to affect content projection.');
     }
+
+    lines.push(
+        '',
+        'This check can be disabled using the `extendedDiagnostics.checks.' +
+            'controlFlowPreventingContentProjection = "suppress" compiler option.`');
 
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, this.resolver.getSourceMapping(templateId), projectionNode.startSourceSpan,
-        ts.DiagnosticCategory.Warning,
-        ngErrorCode(ErrorCode.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION), lines.join('\n')));
+        category, ngErrorCode(ErrorCode.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION),
+        lines.join('\n')));
   }
 }
 

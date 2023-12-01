@@ -27,3 +27,9 @@ export const ALL_DIAGNOSTIC_FACTORIES:
       textAttributeNotBindingFactory, missingNgForOfLetFactory, suffixNotSupportedFactory,
       interpolatedSignalNotInvoked
     ];
+
+
+export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
+  ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
+  ...ALL_DIAGNOSTIC_FACTORIES.map(factory => factory.name)
+]);
