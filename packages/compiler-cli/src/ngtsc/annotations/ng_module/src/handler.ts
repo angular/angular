@@ -10,7 +10,7 @@ import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjecto
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
-import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
+import {assertSuccessfulReferenceEmit, ExtraImportsTracker, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol,} from '../../../incremental/semantic_graph';
 import {ExportedProviderStatusResolver, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {DynamicValue, PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
@@ -180,7 +180,8 @@ export class NgModuleDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       private includeClassMetadata: boolean, private includeSelectorScope: boolean,
       private readonly compilationMode: CompilationMode,
-      private readonly generateExtraImportsInLocalMode: boolean) {}
+      private readonly generateExtraImportsInLocalMode: boolean,
+      private readonly extraImportsTracker: ExtraImportsTracker) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'NgModuleDecoratorHandler';
@@ -273,10 +274,16 @@ export class NgModuleDecoratorHandler implements
     if ((this.compilationMode !== CompilationMode.LOCAL || this.generateExtraImportsInLocalMode) &&
         rawImports !== null) {
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
-      importRefs = this.resolveTypeList(
-                           rawImports, importsMeta, name, 'imports', 0,
-                           !!this.generateExtraImportsInLocalMode)
-                       .references;
+
+      const result = this.resolveTypeList(
+          rawImports, importsMeta, name, 'imports', 0, !!this.generateExtraImportsInLocalMode);
+
+      // console.warn(">>>> importsMeta", result.dynamicValues);
+      for (const d of result.dynamicValues) {
+        this.extraImportsTracker.addGlobalImportFromIdentifier(d.node);
+      }
+
+      importRefs = result.references;
     }
 
     // Resolving exports
@@ -853,10 +860,15 @@ export class NgModuleDecoratorHandler implements
    */
   private resolveTypeList(
       expr: ts.Node, resolvedList: ResolvedValue, className: string, arrayName: string,
-      absoluteIndex: number, allowUnresolvedReferences: boolean):
-      {references: Reference<ClassDeclaration>[], hasModuleWithProviders: boolean} {
+      absoluteIndex: number, allowUnresolvedReferences: boolean): {
+    references: Reference<ClassDeclaration>[],
+    hasModuleWithProviders: boolean,
+    dynamicValues: DynamicValue[]
+  } {
     let hasModuleWithProviders = false;
     const refList: Reference<ClassDeclaration>[] = [];
+    const dynamicValueSet = new Set<DynamicValue>();
+
     if (!Array.isArray(resolvedList)) {
       throw createValueHasWrongTypeError(
           expr, resolvedList,
@@ -880,6 +892,11 @@ export class NgModuleDecoratorHandler implements
         const recursiveResult = this.resolveTypeList(
             expr, entry, className, arrayName, absoluteIndex, allowUnresolvedReferences);
         refList.push(...recursiveResult.references);
+
+        for (const d of recursiveResult.dynamicValues) {
+          dynamicValueSet.add(d);
+        }
+
         absoluteIndex += recursiveResult.references.length;
         hasModuleWithProviders = hasModuleWithProviders || recursiveResult.hasModuleWithProviders;
       } else if (entry instanceof Reference) {
@@ -892,6 +909,7 @@ export class NgModuleDecoratorHandler implements
         refList.push(entry);
         absoluteIndex += 1;
       } else if (entry instanceof DynamicValue && allowUnresolvedReferences) {
+        dynamicValueSet.add(entry);
         continue;
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
@@ -905,6 +923,7 @@ export class NgModuleDecoratorHandler implements
     return {
       references: refList,
       hasModuleWithProviders,
+      dynamicValues: [...dynamicValueSet],
     };
   }
 }
