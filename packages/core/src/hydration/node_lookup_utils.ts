@@ -32,6 +32,18 @@ function getNoOffsetIndex(tNode: TNode): number {
 }
 
 /**
+ * Check whether a given node exists, but is disconnected from the DOM.
+ *
+ * Note: we leverage the fact that we have this information available in the DOM emulation
+ * layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
+ * only use internal data structures and state to compute this information.
+ */
+export function isDisconnectedNode(tNode: TNode, lView: LView) {
+  return !(tNode.type & TNodeType.Projection) && !!lView[tNode.index] &&
+      !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected;
+}
+
+/**
  * Locate a node in DOM tree that corresponds to a given TNode.
  *
  * @param hydrationInfo The hydration annotation data
@@ -236,10 +248,22 @@ export function calcPathBetween(from: Node, to: Node, fromNodeName: string): str
  * instructions needs to be generated for a TNode.
  */
 export function calcPathForNode(tNode: TNode, lView: LView): string {
-  const parentTNode = tNode.parent;
+  let parentTNode = tNode.parent;
   let parentIndex: number|string;
   let parentRNode: RNode;
   let referenceNodeName: string;
+
+  // Skip over all parent nodes that are disconnected from the DOM, such nodes
+  // can not be used as anchors.
+  //
+  // This might happen in certain content projection-based use-cases, where
+  // a content of an element is projected and used, when a parent element
+  // itself remains detached from DOM. In this scenario we try to find a parent
+  // element that is attached to DOM and can act as an anchor instead.
+  while (parentTNode !== null && isDisconnectedNode(parentTNode, lView)) {
+    parentTNode = parentTNode.parent;
+  }
+
   if (parentTNode === null || !(parentTNode.type & TNodeType.AnyRNode)) {
     // If there is no parent TNode or a parent TNode does not represent an RNode
     // (i.e. not a DOM node), use component host element as a reference node.
