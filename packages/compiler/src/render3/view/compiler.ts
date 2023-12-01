@@ -618,6 +618,10 @@ function createHostBindingsFunction(
 
     return emitHostBindingFunction(hostJob);
   }
+
+  let bindingId = 0;
+  const getNextBindingId = () => `${bindingId++}`;
+
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
 
@@ -681,7 +685,7 @@ function createHostBindingsFunction(
   for (const binding of allOtherBindings) {
     // resolve literal arrays and literal objects
     const value = binding.expression.visit(getValueConverter());
-    const bindingExpr = bindingFn(bindingContext, value);
+    const bindingExpr = bindingFn(bindingContext, value, getNextBindingId);
 
     const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
 
@@ -768,10 +772,13 @@ function createHostBindingsFunction(
         totalHostVarsCount +=
             Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
 
+        const {params, stmts} =
+            convertStylingCall(call, bindingContext, bindingFn, getNextBindingId);
+        updateVariables.push(...stmts);
         updateInstructions.push({
           reference: instruction.reference,
-          paramsOrFn: convertStylingCall(call, bindingContext, bindingFn),
-          span: null
+          paramsOrFn: params,
+          span: null,
         });
       }
     });
@@ -801,13 +808,22 @@ function createHostBindingsFunction(
   return null;
 }
 
-function bindingFn(implicit: any, value: AST) {
-  return convertPropertyBinding(null, implicit, value, 'b');
+function bindingFn(implicit: any, value: AST, getNextBindingIdFn: () => string) {
+  return convertPropertyBinding(null, implicit, value, getNextBindingIdFn());
 }
 
 function convertStylingCall(
-    call: StylingInstructionCall, bindingContext: any, bindingFn: Function) {
-  return call.params(value => bindingFn(bindingContext, value).currValExpr);
+    call: StylingInstructionCall, bindingContext: any, bindingFn: Function,
+    getNextBindingIdFn: () => string) {
+  const stmts: o.Statement[] = [];
+  const params = call.params(value => {
+    const result = bindingFn(bindingContext, value, getNextBindingIdFn);
+    if (Array.isArray(result.stmts) && result.stmts.length > 0) {
+      stmts.push(...result.stmts);
+    }
+    return result.currValExpr;
+  });
+  return {params, stmts};
 }
 
 function getBindingNameAndInstruction(binding: ParsedProperty):

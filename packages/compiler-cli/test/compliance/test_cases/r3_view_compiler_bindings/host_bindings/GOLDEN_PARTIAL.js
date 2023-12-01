@@ -83,6 +83,74 @@ export declare class MyModule {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: host_class_bindings_with_temporaries.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.value = null;
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "class.a": "value ?? \"class-a\"", "class.b": "value ?? \"class-b\"" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[class.a]': 'value ?? "class-a"',
+                        '[class.b]': 'value ?? "class-b"',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_class_bindings_with_temporaries.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    value: number | null;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_bindings_with_temporaries.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.value = null;
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "style.fontSize": "value ?? \"15px\"", "style.fontWeight": "value ?? \"bold\"" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[style.fontSize]': 'value ?? "15px"',
+                        '[style.fontWeight]': 'value ?? "bold"',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_bindings_with_temporaries.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    value: number | null;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: host_bindings_with_pure_functions.js
  ****************************************************************************************************/
 import { Component, NgModule } from '@angular/core';
