@@ -345,6 +345,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle self-closing structural directives",
+      "inputFiles": [
+        "self_closing_structural_directives.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
