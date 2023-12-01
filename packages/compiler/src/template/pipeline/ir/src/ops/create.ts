@@ -584,16 +584,20 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   selector: string;
 
+  i18nPlaceholder?: i18n.TagPlaceholder;
+
   sourceSpan: ParseSourceSpan;
 }
 
 export function createProjectionOp(
-    xref: XrefId, selector: string, sourceSpan: ParseSourceSpan): ProjectionOp {
+    xref: XrefId, selector: string, i18nPlaceholder: i18n.TagPlaceholder|undefined,
+    sourceSpan: ParseSourceSpan): ProjectionOp {
   return {
     kind: OpKind.Projection,
     xref,
     handle: new SlotHandle(),
     selector,
+    i18nPlaceholder,
     projectionSlotIndex: 0,
     attributes: [],
     localRefs: [],

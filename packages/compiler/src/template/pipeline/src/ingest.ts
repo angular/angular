@@ -232,7 +232,11 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
-  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector, content.sourceSpan);
+  if (content.i18n !== undefined && !(content.i18n instanceof i18n.TagPlaceholder)) {
+    throw Error(`Unhandled i18n metadata type for element: ${content.i18n.constructor.name}`);
+  }
+  const op = ir.createProjectionOp(
+      unit.job.allocateXrefId(), content.selector, content.i18n, content.sourceSpan);
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,

@@ -242,6 +242,20 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should handle ng-content in i18n block",
+      "inputFiles": [
+        "nested_ng-content.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }
