@@ -30,6 +30,34 @@
       ]
     },
     {
+      "description": "should support host class bindings with temporary expressions",
+      "inputFiles": [
+        "host_class_bindings_with_temporaries.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_class_bindings_with_temporaries.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support host style bindings with temporary expressions",
+      "inputFiles": [
+        "host_style_bindings_with_temporaries.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_style_bindings_with_temporaries.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should support host bindings with pure functions",
       "inputFiles": [
         "host_bindings_with_pure_functions.ts"
