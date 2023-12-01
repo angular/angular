@@ -372,6 +372,9 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         }
       }
     }
+
+    conditionallyAnnotateNodePath(ngh, tNode, lView);
+
     if (isLContainer(lView[i])) {
       // Serialize information about a template.
       const embeddedTView = tNode.tView;
@@ -402,10 +405,6 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
         annotateHostElementForHydration(targetNode as RElement, lView[i], context);
       }
-      // Include node path info to the annotation in case `tNode.next` (which hydration
-      // relies upon by default) is different from the `tNode.projectionNext`. This helps
-      // hydration runtime logic to find the right node.
-      annotateNextNodePath(ngh, tNode, lView);
     } else {
       // <ng-container> case
       if (tNode.type & TNodeType.ElementContainer) {
@@ -465,11 +464,6 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
             context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
           }
         }
-
-        // Include node path info to the annotation in case `tNode.next` (which hydration
-        // relies upon by default) is different from the `tNode.projectionNext`. This helps
-        // hydration runtime logic to find the right node.
-        annotateNextNodePath(ngh, tNode, lView);
       }
     }
   }
@@ -477,15 +471,31 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
 }
 
 /**
- * If `tNode.projectionNext` is different from `tNode.next` - it means that
- * the next `tNode` after projection is different from the one in the original
- * template. In this case we need to serialize a path to that next node, so that
- * it can be found at the right location at runtime.
+ * Serializes node location in cases when it's needed, specifically:
+ *
+ *  1. If `tNode.projectionNext` is different from `tNode.next` - it means that
+ *     the next `tNode` after projection is different from the one in the original
+ *     template. Since hydration relies on `tNode.next`, this serialized info
+ *     if required to help runtime code find the node at the correct location.
+ *  2. In certain content projection-based use-cases, it's possible that only
+ *     a content of a projected element is rendered. In this case, content nodes
+ *     require an extra annotation, since runtime logic can't rely on parent-child
+ *     connection to identify the location of a node.
  */
-function annotateNextNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
+function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
+  // Handle case #1 described above.
   if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
       !isInSkipHydrationBlock(tNode.projectionNext)) {
     appendSerializedNodePath(ngh, tNode.projectionNext, lView);
+  }
+
+  // Handle case #2 described above.
+  // Note: we only do that for the first node (i.e. when `tNode.prev === null`),
+  // the rest of the nodes would rely on the current node location, so no extra
+  // annotation is needed.
+  if (tNode.prev === null && tNode.parent !== null && isDisconnectedNode(tNode.parent, lView) &&
+      !isDisconnectedNode(tNode, lView)) {
+    appendSerializedNodePath(ngh, tNode, lView);
   }
 }
 
@@ -574,5 +584,5 @@ function isContentProjectedNode(tNode: TNode): boolean {
  */
 function isDisconnectedNode(tNode: TNode, lView: LView) {
   return !(tNode.type & TNodeType.Projection) && !!lView[tNode.index] &&
-      !(unwrapRNode(lView[tNode.index]) as Node).isConnected;
+      !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected;
 }
