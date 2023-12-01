@@ -55,6 +55,7 @@ interface LazyCompilationState {
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker|null;
+  extraImportsTracker: ExtraImportsTracker;
 }
 
 
@@ -621,7 +622,8 @@ export class NgCompiler {
     const before = [
       ivyTransformFactory(
           compilation.traitCompiler, compilation.reflector, importRewriter, defaultImportTracker,
-          this.delegatingPerfRecorder, compilation.isCore, this.closureCompilerEnabled),
+          compilation.extraImportsTracker, this.delegatingPerfRecorder, compilation.isCore,
+          this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
@@ -1178,7 +1180,8 @@ export class NgCompiler {
       refEmitter,
       templateTypeChecker,
       resourceRegistry,
-      extendedTemplateChecker
+      extendedTemplateChecker,
+      extraImportsTracker,
     };
   }
 }

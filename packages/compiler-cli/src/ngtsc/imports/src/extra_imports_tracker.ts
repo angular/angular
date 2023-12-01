@@ -24,4 +24,10 @@ export class ExtraImportsTracker {
 
     this.localImportsMap.get(sf.fileName)!.add(moduleName);
   }
+
+  getImportsForFile(sf: ts.SourceFile): string[] {
+    const localImports = this.localImportsMap.get(sf.fileName);
+
+    return localImports ? [...localImports] : [];
+  }
 }
