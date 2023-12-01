@@ -24,10 +24,6 @@ jasmine_node_test(
         "//packages/compiler-cli/test/compliance/test_cases",
     ],
     shard_count = 2,
-    tags = [
-        # TODO: renable this test after debugging the issues related to babel updates
-        "manual",
-    ],
     deps = [
         ":test_lib",
     ],
