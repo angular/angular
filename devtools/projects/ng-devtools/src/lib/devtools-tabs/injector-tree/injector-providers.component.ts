@@ -7,8 +7,10 @@
  */
 
 import {NgForOf, NgIf} from '@angular/common';
-import {Component, inject, Input} from '@angular/core';
+import {Component, computed, inject, Input, signal} from '@angular/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
@@ -20,7 +22,16 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
           Providers for {{ injector?.name  }}
         </h1>
         <div *ngIf="injector" class="injector-providers">
-            <table *ngIf="providers.length > 0" mat-table [dataSource]="providers" class="mat-elevation-z4">
+            <mat-form-field appearance="fill">
+              <mat-label>Search by token</mat-label>
+              <input matInput
+                placeholder="provider token"
+                (input)="searchPhrase.set($event.target.value)"
+                [value]="searchPhrase()"
+              />
+              <mat-icon matSuffix (click)="searchPhrase.set('')">close</mat-icon>
+            </mat-form-field>
+            <table *ngIf="visibleProviders().length > 0" mat-table [dataSource]="visibleProviders()" class="mat-elevation-z4">
               <ng-container matColumnDef="token">
                 <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Token</h3> </th>
                 <td mat-cell *matCellDef="let provider"> {{provider.token}} </td>
@@ -108,11 +119,23 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
         }
     `],
   standalone: true,
-  imports: [NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule],
+  imports: [
+    NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule, MatInputModule,
+    MatFormFieldModule
+  ],
 })
 export class InjectorProvidersComponent {
   @Input() injector: SerializedInjector;
   @Input() providers: SerializedProviderRecord[] = [];
+
+  searchPhrase = signal('');
+  visibleProviders = computed(() => {
+    const searchPhrase = this.searchPhrase().toLowerCase();
+    if (!searchPhrase) {
+      return this.providers;
+    }
+    return this.providers.filter((provider) => provider.token.toLowerCase().includes(searchPhrase));
+  });
 
   typeToLabel = {
     type: 'Type',
