@@ -1082,6 +1082,8 @@ export function transformExpressionsInExpression(
     for (let i = 0; i < expr.expressions.length; i++) {
       expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
     }
+  } else if (expr instanceof o.NotExpr) {
+    expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
