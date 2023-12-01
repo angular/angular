@@ -82,7 +82,10 @@ function collectMessage(
     job: ComponentCompilationJob, fileBasedI18nSuffix: string,
     messages: Map<ir.XrefId, ir.I18nMessageOp>,
     messageOp: ir.I18nMessageOp): {mainVar: o.ReadVarExpr, statements: o.Statement[]} {
-  // Recursively collect any sub-messages, and fill in their placeholders in this message.
+  // Recursively collect any sub-messages, record each sub-message's main variable under its
+  // placeholder so that we can add them to the params for the parent message. It is possible that
+  // multiple sub-messages will share the same placeholder, so we need to track an array of
+  // variables for each placeholder.
   const statements: o.Statement[] = [];
   const subMessagePlaceholders = new Map<string, o.Expression[]>();
   for (const subMessageId of messageOp.subMessages) {
@@ -132,6 +135,11 @@ function collectMessage(
 
 /**
  * Adds the given subMessage placeholders to the given message op.
+ *
+ * If a placeholder only corresponds to a single sub-message variable, we just set that variable as
+ * the param value. However, if the placeholder corresponds to multiple sub-message variables, we
+ * need to add a special placeholder value that is handled by the post-processing step. We then add
+ * the array of variables as a post-processing param.
  */
 function addSubMessageParams(
     messageOp: ir.I18nMessageOp, subMessagePlaceholders: Map<string, o.Expression[]>) {
