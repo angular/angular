@@ -4295,8 +4295,14 @@ describe('platform-server hydration integration', () => {
 
         const html = await ssr(App);
         const ssrContents = getAppContents(html);
-
         expect(ssrContents).toContain('<app ngh');
+
+        // Verify that elements projected without their parent nodes
+        // use an element within the same template (at position `0`
+        // in the test, i.e. `<mat-stepper>`) as an anchor.
+        const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+        expect(hydrationInfo)
+            .toContain('"n":{"2":"0f","4":"0fn2","7":"0fn5","9":"0fn9","11":"0fn12"}');
 
         resetTViewsFor(App, MatStepper, NestedCmp);
 
