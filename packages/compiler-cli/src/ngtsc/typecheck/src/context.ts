@@ -380,7 +380,8 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     // Write out the imports that need to be added to the beginning of the file.
     let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
+                      .filter(i => i.qualifier)
+                      .map(i => `import * as ${i.qualifier!.text} from '${i.specifier}';`)
                       .join('\n');
     code = imports + '\n' + code;
 
