@@ -40,7 +40,7 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
   const messages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nMessage) {
+      if (op instanceof ir.I18nMessageOp) {
         messages.set(op.xref, op);
         ir.OpList.remove<ir.CreateOp>(op);
       }
@@ -49,7 +49,7 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
   // Serialize the extracted messages for root i18n blocks into the const array.
   for (const op of messages.values()) {
-    if (op.kind === ir.OpKind.I18nMessage && op.messagePlaceholder === null) {
+    if (op instanceof ir.I18nMessageOp && op.messagePlaceholder === null) {
       const {mainVar, statements} = collectMessage(job, fileBasedI18nSuffix, messages, op);
       messageConstIndices.set(op.i18nBlock, job.addConst(mainVar, statements));
     }
@@ -58,7 +58,7 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
   // Assign const index to i18n ops that messages were extracted from.
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart) {
+      if (op instanceof ir.I18nStartOp) {
         op.messageIndex = messageConstIndices.get(op.root)!;
       }
     }

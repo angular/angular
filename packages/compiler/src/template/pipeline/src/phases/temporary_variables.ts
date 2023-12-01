@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {CompilationJob, CompilationUnit} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Find all assignments and usages of temporary variables, which are linked to each other with cross
@@ -26,8 +26,7 @@ export function generateTemporaryVariables(job: CompilationJob): void {
   }
 }
 
-function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
-    Array<ir.StatementOp<ir.CreateOp|ir.UpdateOp>> {
+function generateTemporaries(ops: ir.OpList<ir.Op>): Array<ir.StatementOp<ir.Op>> {
   let opCount = 0;
   let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
 
@@ -75,10 +74,10 @@ function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
     // Add declarations for the temp vars.
     generatedStatements.push(
         ...Array.from(new Set(defs.values()))
-            .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
+            .map(name => new ir.StatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
     opCount++;
 
-    if (op.kind === ir.OpKind.Listener) {
+    if (op instanceof ir.ListenerOp) {
       op.handlerOps.prepend(generateTemporaries(op.handlerOps) as ir.UpdateOp[]);
     }
   }

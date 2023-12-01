@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
+import {CompilationJob, CompilationUnit} from '../compilation';
 
 /**
  * Resolves `ir.ContextExpr` expressions (which represent embedded view or component contexts) to
@@ -22,7 +22,7 @@ export function resolveContexts(job: CompilationJob): void {
   }
 }
 
-function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
+function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.Op>): void {
   // Track the expressions used to access all available contexts within the current view, by the
   // view `ir.XrefId`.
   const scope = new Map<ir.XrefId, o.Expression>();
@@ -31,15 +31,15 @@ function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|i
   scope.set(view.xref, o.variable('ctx'));
 
   for (const op of ops) {
-    switch (op.kind) {
-      case ir.OpKind.Variable:
+    switch (true) {
+      case op instanceof ir.VariableOp:
         switch (op.variable.kind) {
           case ir.SemanticVariableKind.Context:
             scope.set(op.variable.view, new ir.ReadVariableExpr(op.xref));
             break;
         }
         break;
-      case ir.OpKind.Listener:
+      case op instanceof ir.ListenerOp:
         processLexicalScope(view, op.handlerOps);
         break;
     }

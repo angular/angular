@@ -10,9 +10,8 @@ import * as core from '../../../../core';
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {HostBindingCompilationJob, type CompilationJob, ComponentCompilationJob} from '../compilation';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob} from '../compilation';
 import {literalOrArrayLiteral} from '../conversion';
-import {element} from '../instruction';
 
 /**
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
@@ -23,7 +22,7 @@ export function collectElementConsts(job: CompilationJob): void {
   const allElementAttributes = new Map<ir.XrefId, ElementAttributes>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ExtractedAttribute) {
+      if (op instanceof ir.ExtractedAttributeOp) {
         const attributes = allElementAttributes.get(op.target) || new ElementAttributes();
         allElementAttributes.set(op.target, attributes);
         attributes.add(op.bindingKind, op.name, op.expression);
@@ -36,7 +35,7 @@ export function collectElementConsts(job: CompilationJob): void {
   if (job instanceof ComponentCompilationJob) {
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (ir.isElementOrContainerOp(op)) {
+        if (op instanceof ir.ElementOrContainerOp) {
           const attributes = allElementAttributes.get(op.xref);
           if (attributes !== undefined) {
             const attrArray = serializeAttributes(attributes);

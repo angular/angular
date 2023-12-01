@@ -9,21 +9,17 @@
 import {SecurityContext} from '../../../../../core';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
+import {BindingKind, I18nParamResolutionTime} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
-import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
-import type {HostPropertyOp} from './host';
-import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
-
+import {ConsumesVarsTrait, DependsOnSlotContextOpTrait} from '../traits';
+import type {SharedOp} from './shared';
 
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
-    ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|RepeaterOp|DeferWhenOp;
+export abstract class UpdateOp extends Op<UpdateOp|SharedOp> {}
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -32,8 +28,10 @@ export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|Attr
  * arrays. Thus, the interpolation `A{{b}}C{{d}}E` is stored as 3 static strings `['A', 'C', 'E']`
  * and 2 dynamic expressions `[b, d]`.
  */
-export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
-  kind: OpKind.InterpolateText;
+export class InterpolateTextOp extends UpdateOp implements ConsumesVarsTrait,
+                                                           DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the text node to which the interpolation is bound.
@@ -51,24 +49,16 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
   i18nPlaceholders: string[];
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create an `InterpolationTextOp`.
- */
-export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: string[],
-    sourceSpan: ParseSourceSpan): InterpolateTextOp {
-  return {
-    kind: OpKind.InterpolateText,
-    target: xref,
-    interpolation,
-    i18nPlaceholders,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(
+      target: XrefId, interpolation: Interpolation, i18nPlaceholders: string[],
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.interpolation = interpolation;
+    this.i18nPlaceholders = i18nPlaceholders;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 export class Interpolation {
@@ -79,9 +69,7 @@ export class Interpolation {
  * An intermediate binding op, that has not yet been processed into an individual property,
  * attribute, style, etc.
  */
-export interface BindingOp extends Op<UpdateOp> {
-  kind: OpKind.Binding;
-
+export class BindingOp extends UpdateOp {
   /**
    * Reference to the element on which the property is bound.
    */
@@ -125,35 +113,31 @@ export interface BindingOp extends Op<UpdateOp> {
   isTemplate: boolean;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create a `BindingOp`, not yet transformed into a particular type of binding.
- */
-export function createBindingOp(
-    target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
-    unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
-    isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
-  return {
-    kind: OpKind.Binding,
-    bindingKind: kind,
-    target,
-    name,
-    expression,
-    unit,
-    securityContext,
-    isTextAttribute,
-    isTemplate,
-    sourceSpan,
-    ...NEW_OP,
-  };
+
+  constructor(
+      target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
+      unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
+      isTemplate: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.bindingKind = kind;
+    this.name = name;
+    this.expression = expression;
+    this.unit = unit;
+    this.securityContext = securityContext;
+    this.isTextAttribute = isTextAttribute;
+    this.isTemplate = isTemplate;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing binding to a property in the update IR.
  */
-export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
-  kind: OpKind.Property;
+export class PropertyOp extends UpdateOp implements ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the element on which the property is bound.
@@ -191,37 +175,30 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   isTemplate: boolean;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create a `PropertyOp`.
- */
-export function createPropertyOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
-    isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
-
-    sourceSpan: ParseSourceSpan): PropertyOp {
-  return {
-    kind: OpKind.Property,
-    target,
-    name,
-    expression,
-    isAnimationTrigger,
-    securityContext,
-    sanitizer: null,
-    isTemplate,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(
+      target: XrefId, name: string, expression: o.Expression|Interpolation,
+      isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.name = name;
+    this.expression = expression;
+    this.isAnimationTrigger = isAnimationTrigger;
+    this.securityContext = securityContext;
+    this.sanitizer = null;
+    this.isTemplate = isTemplate;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing binding to a style property in the update IR.
  */
-export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
-  kind: OpKind.StyleProp;
+export class StylePropOp extends UpdateOp implements ConsumesVarsTrait,
+                                                     DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the element on which the property is bound.
@@ -244,30 +221,26 @@ export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
   unit: string|null;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/** Create a `StylePropOp`. */
-export function createStylePropOp(
-    xref: XrefId, name: string, expression: o.Expression|Interpolation, unit: string|null,
-    sourceSpan: ParseSourceSpan): StylePropOp {
-  return {
-    kind: OpKind.StyleProp,
-    target: xref,
-    name,
-    expression,
-    unit,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(
+      target: XrefId, name: string, expression: o.Expression|Interpolation, unit: string|null,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.name = name;
+    this.expression = expression;
+    this.unit = unit;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing binding to a class property in the update IR.
  */
-export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
-  kind: OpKind.ClassProp;
+export class ClassPropOp extends UpdateOp implements ConsumesVarsTrait,
+                                                     DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the element on which the property is bound.
@@ -285,31 +258,21 @@ export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
   expression: o.Expression;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create a `ClassPropOp`.
- */
-export function createClassPropOp(
-    xref: XrefId, name: string, expression: o.Expression,
-    sourceSpan: ParseSourceSpan): ClassPropOp {
-  return {
-    kind: OpKind.ClassProp,
-    target: xref,
-    name,
-    expression,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId, name: string, expression: o.Expression, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = xref, this.name = name;
+    this.expression = expression;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing binding to a style map in the update IR.
  */
-export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
-  kind: OpKind.StyleMap;
+export class StyleMapOp extends UpdateOp implements ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the element on which the property is bound.
@@ -322,27 +285,21 @@ export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   expression: o.Expression|Interpolation;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/** Create a `StyleMapOp`. */
-export function createStyleMapOp(
-    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): StyleMapOp {
-  return {
-    kind: OpKind.StyleMap,
-    target: xref,
-    expression,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(target: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.expression = expression;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing binding to a style map in the update IR.
  */
-export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
-  kind: OpKind.ClassMap;
+export class ClassMapOp extends UpdateOp implements ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * Reference to the element on which the property is bound.
@@ -355,29 +312,22 @@ export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   expression: o.Expression|Interpolation;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create a `ClassMapOp`.
- */
-export function createClassMapOp(
-    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): ClassMapOp {
-  return {
-    kind: OpKind.ClassMap,
-    target: xref,
-    expression,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(target: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.expression = expression;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * A logical operation representing setting an attribute on an element in the update IR.
  */
-export interface AttributeOp extends Op<UpdateOp> {
-  kind: OpKind.Attribute;
+export class AttributeOp extends UpdateOp implements DependsOnSlotContextOpTrait,
+                                                     ConsumesVarsTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * The `XrefId` of the template-like element the attribute will belong to.
@@ -417,64 +367,48 @@ export interface AttributeOp extends Op<UpdateOp> {
   isTemplate: boolean;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create an `AttributeOp`.
- */
-export function createAttributeOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext, isTextAttribute: boolean, isTemplate: boolean,
-    sourceSpan: ParseSourceSpan): AttributeOp {
-  return {
-    kind: OpKind.Attribute,
-    target,
-    name,
-    expression,
-    securityContext,
-    sanitizer: null,
-    isTextAttribute,
-    isTemplate,
-    sourceSpan,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-    ...NEW_OP,
-  };
+  constructor(
+      target: XrefId, name: string, expression: o.Expression|Interpolation,
+      securityContext: SecurityContext, isTextAttribute: boolean, isTemplate: boolean,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.name = name;
+    this.expression = expression;
+    this.securityContext = securityContext;
+    this.sanitizer = null;
+    this.isTextAttribute = isTextAttribute;
+    this.isTemplate = isTemplate;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation to advance the runtime's internal slot pointer in the update IR.
  */
-export interface AdvanceOp extends Op<UpdateOp> {
-  kind: OpKind.Advance;
-
+export class AdvanceOp extends UpdateOp {
   /**
    * Delta by which to advance the pointer.
    */
   delta: number;
 
-  // Source span of the binding that caused the advance
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create an `AdvanceOp`.
- */
-export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): AdvanceOp {
-  return {
-    kind: OpKind.Advance,
-    delta,
-    sourceSpan,
-    ...NEW_OP,
-  };
+  constructor(delta: number, sourceSpan: ParseSourceSpan) {
+    super();
+    this.delta = delta;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation representing a conditional expression in the update IR.
  */
-export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
-                                       ConsumesVarsTrait {
-  kind: OpKind.Conditional;
+export class ConditionalOp extends UpdateOp implements DependsOnSlotContextOpTrait,
+                                                       ConsumesVarsTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * The insertion point, which is the first template in the creation block belonging to this
@@ -505,37 +439,29 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   processed: o.Expression|null;
 
   /**
-   * Control flow conditionals can accept a context value (this is a result of specifying an alias).
-   * This expression will be passed to the conditional instruction's context parameter.
+   * Control flow conditionals can accept a context value (this is a result of specifying an
+   * alias). This expression will be passed to the conditional instruction's context parameter.
    */
   contextValue: o.Expression|null;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(
+      target: XrefId, targetSlot: SlotHandle, test: o.Expression|null,
+      conditions: Array<ConditionalCaseExpr>, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.targetSlot = targetSlot;
+    this.test = test;
+    this.conditions = conditions;
+    this.processed = null;
+    this.contextValue = null;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
-/**
- * Create a conditional op, which will display an embedded view according to a condtion.
- */
-export function createConditionalOp(
-    target: XrefId, targetSlot: SlotHandle, test: o.Expression|null,
-    conditions: Array<ConditionalCaseExpr>, sourceSpan: ParseSourceSpan): ConditionalOp {
-  return {
-    kind: OpKind.Conditional,
-    target,
-    targetSlot,
-    test,
-    conditions,
-    processed: null,
-    sourceSpan,
-    contextValue: null,
-    ...NEW_OP,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...TRAIT_CONSUMES_VARS,
-  };
-}
-
-export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
-  kind: OpKind.Repeater;
+export class RepeaterOp extends UpdateOp implements DependsOnSlotContextOpTrait {
+  dependsOnSlotContext: true = true;
 
   /**
    * The RepeaterCreate op associated with this repeater.
@@ -550,24 +476,20 @@ export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
   collection: o.Expression;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(
+      target: XrefId, targetSlot: SlotHandle, collection: o.Expression,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.targetSlot = targetSlot;
+    this.collection = collection;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
-export function createRepeaterOp(
-    repeaterCreate: XrefId, targetSlot: SlotHandle, collection: o.Expression,
-    sourceSpan: ParseSourceSpan): RepeaterOp {
-  return {
-    kind: OpKind.Repeater,
-    target: repeaterCreate,
-    targetSlot,
-    collection,
-    sourceSpan,
-    ...NEW_OP,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-  };
-}
-
-export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
-  kind: OpKind.DeferWhen;
+export class DeferWhenOp extends UpdateOp implements DependsOnSlotContextOpTrait {
+  dependsOnSlotContext: true = true;
 
   /**
    * The `defer` create op associated with this when condition.
@@ -585,28 +507,23 @@ export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
   prefetch: boolean;
 
   sourceSpan: ParseSourceSpan;
-}
 
-export function createDeferWhenOp(
-    target: XrefId, expr: o.Expression, prefetch: boolean,
-    sourceSpan: ParseSourceSpan): DeferWhenOp {
-  return {
-    kind: OpKind.DeferWhen,
-    target,
-    expr,
-    prefetch,
-    sourceSpan,
-    ...NEW_OP,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-  };
+  constructor(target: XrefId, expr: o.Expression, prefetch: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.expr = expr;
+    this.prefetch = prefetch;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * An op that represents an expression in an i18n message.
  */
-export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                          DependsOnSlotContextOpTrait {
-  kind: OpKind.I18nExpression;
+export class I18nExpressionOp extends UpdateOp implements ConsumesVarsTrait,
+                                                          DependsOnSlotContextOpTrait {
+  consumesVars: true = true;
+  dependsOnSlotContext: true = true;
 
   /**
    * The i18n context that this expression belongs to.
@@ -614,8 +531,8 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   context: XrefId;
 
   /**
-   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
-   * block. This is necessary so that we run all lifecycle hooks.
+   * The Xref of the op that we need to `advance` to. This should be the final op in the owning
+   * i18n block. This is necessary so that we run all lifecycle hooks.
    */
   target: XrefId;
 
@@ -640,39 +557,29 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   resolutionTime: I18nParamResolutionTime;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Create an i18n expression op.
- */
-export function createI18nExpressionOp(
-    context: XrefId, target: XrefId, handle: SlotHandle, expression: o.Expression,
-    i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
-    sourceSpan: ParseSourceSpan): I18nExpressionOp {
-  return {
-    kind: OpKind.I18nExpression,
-    context,
-    target,
-    handle,
-    expression,
-    i18nPlaceholder,
-    resolutionTime,
-    sourceSpan,
-    ...NEW_OP,
-    ...TRAIT_CONSUMES_VARS,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-  };
+  constructor(
+      context: XrefId, target: XrefId, handle: SlotHandle, expression: o.Expression,
+      i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.context = context;
+    this.target = target;
+    this.handle = handle;
+    this.expression = expression;
+    this.i18nPlaceholder = i18nPlaceholder;
+    this.resolutionTime = resolutionTime;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * An op that represents applying a set of i18n expressions.
  */
-export interface I18nApplyOp extends Op<UpdateOp> {
-  kind: OpKind.I18nApply;
-
+export class I18nApplyOp extends UpdateOp {
   /**
-   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
-   * block. This is necessary so that we run all lifecycle hooks.
+   * The Xref of the op that we need to `advance` to. This should be the final op in the owning
+   * i18n block. This is necessary so that we run all lifecycle hooks.
    */
   target: XrefId;
 
@@ -682,18 +589,32 @@ export interface I18nApplyOp extends Op<UpdateOp> {
   handle: SlotHandle;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(target: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.handle = handle;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
- *Creates an op to apply i18n expression ops
+ * Logical operation representing a host binding to a property.
  */
-export function createI18nApplyOp(
-    target: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
-  return {
-    kind: OpKind.I18nApply,
-    target,
-    handle,
-    sourceSpan,
-    ...NEW_OP,
-  };
+export class HostPropertyOp extends UpdateOp implements ConsumesVarsTrait {
+  consumesVars: true = true;
+  name: string;
+  expression: o.Expression|Interpolation;
+  isAnimationTrigger: boolean;
+  sourceSpan: ParseSourceSpan|null;
+
+  constructor(
+      name: string, expression: o.Expression|Interpolation, isAnimationTrigger: boolean,
+      sourceSpan: ParseSourceSpan|null) {
+    super();
+    this.name = name;
+    this.expression = expression;
+    this.isAnimationTrigger = isAnimationTrigger;
+    this.sourceSpan = sourceSpan;
+  }
 }

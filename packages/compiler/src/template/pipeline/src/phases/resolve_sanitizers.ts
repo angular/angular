@@ -29,9 +29,9 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
     const elements = createOpXrefMap(unit);
     let sanitizerFn: ir.SanitizerFn|null;
     for (const op of unit.update) {
-      switch (op.kind) {
-        case ir.OpKind.Property:
-        case ir.OpKind.Attribute:
+      switch (true) {
+        case op instanceof ir.PropertyOp:
+        case op instanceof ir.AttributeOp:
           sanitizerFn = sanitizers.get(op.securityContext) || null;
           op.sanitizer = sanitizerFn ? new ir.SanitizerExpr(sanitizerFn) : null;
           // If there was no sanitization function found based on the security context of an
@@ -40,7 +40,7 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
           // <iframe>).
           if (op.sanitizer === null) {
             const ownerOp = elements.get(op.target);
-            if (ownerOp === undefined || !ir.isElementOrContainerOp(ownerOp)) {
+            if (ownerOp === undefined || !(ownerOp instanceof ir.ElementOrContainerOp)) {
               throw Error('Property should have an element-like owner');
             }
             if (isIframeElement(ownerOp) && isIframeSecuritySensitiveAttr(op.name)) {
@@ -56,6 +56,6 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
 /**
  * Checks whether the given op represents an iframe element.
  */
-function isIframeElement(op: ir.ElementOrContainerOps): boolean {
-  return op.kind === ir.OpKind.ElementStart && op.tag?.toLowerCase() === 'iframe';
+function isIframeElement(op: ir.ElementOrContainerOp): boolean {
+  return op instanceof ir.ElementStartOp && op.tag?.toLowerCase() === 'iframe';
 }

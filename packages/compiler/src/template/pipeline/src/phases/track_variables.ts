@@ -19,7 +19,7 @@ import type {CompilationJob} from '../compilation';
 export function generateTrackVariables(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.RepeaterCreate) {
+      if (!(op instanceof ir.RepeaterCreateOp)) {
         continue;
       }
 

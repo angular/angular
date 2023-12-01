@@ -17,11 +17,11 @@ export function emitNamespaceChanges(job: CompilationJob): void {
     let activeNamespace = ir.Namespace.HTML;
 
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.ElementStart) {
+      if (!(op instanceof ir.ElementStartOp)) {
         continue;
       }
       if (op.namespace !== activeNamespace) {
-        ir.OpList.insertBefore<ir.CreateOp>(ir.createNamespaceOp(op.namespace), op);
+        ir.OpList.insertBefore<ir.CreateOp>(new ir.NamespaceOp(op.namespace), op);
         activeNamespace = op.namespace;
       }
     }

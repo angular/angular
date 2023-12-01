@@ -58,7 +58,7 @@ export function allocateSlots(job: ComponentCompilationJob): void {
   // propagate the number of slots used for each view into the operation which declares it.
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind === ir.OpKind.Template || op.kind === ir.OpKind.RepeaterCreate) {
+      if (op instanceof ir.TemplateOp || op instanceof ir.RepeaterCreateOp) {
         // Record the number of slots used by the view this `ir.TemplateOp` declares in the
         // operation itself, so it can be emitted later.
         const childView = job.views.get(op.xref)!;

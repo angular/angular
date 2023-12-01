@@ -18,10 +18,10 @@ export function removeContentSelectors(job: CompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
     for (const op of unit.update) {
-      switch (op.kind) {
-        case ir.OpKind.Binding:
+      switch (true) {
+        case op instanceof ir.BindingOp:
           const target = lookupInXrefMap(elements, op.target);
-          if (op.name.toLowerCase() === 'select' && target.kind === ir.OpKind.Projection) {
+          if (op.name.toLowerCase() === 'select' && target instanceof ir.ProjectionOp) {
             ir.OpList.remove<ir.UpdateOp>(op);
           }
           break;

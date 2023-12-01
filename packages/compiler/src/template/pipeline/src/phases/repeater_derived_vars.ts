@@ -21,7 +21,7 @@ export function generateRepeaterDerivedVars(job: CompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind === ir.OpKind.RepeaterCreate) {
+      if (op instanceof ir.RepeaterCreateOp) {
         repeaters.set(op.xref, op);
       }
     }

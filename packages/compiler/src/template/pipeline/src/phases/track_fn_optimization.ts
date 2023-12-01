@@ -21,7 +21,7 @@ import type {CompilationJob} from '../compilation';
 export function optimizeTrackFns(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.RepeaterCreate) {
+      if (!(op instanceof ir.RepeaterCreateOp)) {
         continue;
       }
       if (op.track instanceof o.ReadVarExpr && op.track.name === '$index') {

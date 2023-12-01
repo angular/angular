@@ -13,7 +13,7 @@ import type {CompilationJob} from '../compilation';
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+    elements: Map<ir.XrefId, ir.ElementOrContainerOp>, xref: ir.XrefId): ir.ElementOrContainerOp {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -27,10 +27,10 @@ function lookupElement(
  * instructions for every such container.
  */
 export function disableBindings(job: CompilationJob): void {
-  const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
+  const elements = new Map<ir.XrefId, ir.ElementOrContainerOp>();
   for (const view of job.units) {
     for (const op of view.create) {
-      if (!ir.isElementOrContainerOp(op)) {
+      if (!(op instanceof ir.ElementOrContainerOp)) {
         continue;
       }
       elements.set(op.xref, op);
@@ -39,13 +39,13 @@ export function disableBindings(job: CompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if ((op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.ContainerStart) &&
+      if ((op instanceof ir.ElementStartOp || op instanceof ir.ContainerStartOp) &&
           op.nonBindable) {
-        ir.OpList.insertAfter<ir.CreateOp>(ir.createDisableBindingsOp(op.xref), op);
+        ir.OpList.insertAfter<ir.CreateOp>(new ir.DisableBindingsOp(op.xref), op);
       }
-      if ((op.kind === ir.OpKind.ElementEnd || op.kind === ir.OpKind.ContainerEnd) &&
+      if ((op instanceof ir.ElementEndOp || op instanceof ir.ContainerEndOp) &&
           lookupElement(elements, op.xref).nonBindable) {
-        ir.OpList.insertBefore<ir.CreateOp>(ir.createEnableBindingsOp(op.xref), op);
+        ir.OpList.insertBefore<ir.CreateOp>(new ir.EnableBindingsOp(op.xref), op);
       }
     }
   }

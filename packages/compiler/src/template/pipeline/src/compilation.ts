@@ -175,10 +175,10 @@ export abstract class CompilationUnit {
    *
    * Some operations may have child operations, which this iterator will visit.
    */
-  * ops(): Generator<ir.CreateOp|ir.UpdateOp> {
+  * ops(): Generator<ir.Op> {
     for (const op of this.create) {
       yield op;
-      if (op.kind === ir.OpKind.Listener) {
+      if (op instanceof ir.ListenerOp) {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }

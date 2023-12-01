@@ -13,7 +13,7 @@ import {CompilationJob, CompilationJobKind} from '../compilation';
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+    elements: Map<ir.XrefId, ir.ElementOrContainerOp>, xref: ir.XrefId): ir.ElementOrContainerOp {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -22,10 +22,10 @@ function lookupElement(
 }
 
 export function specializeBindings(job: CompilationJob): void {
-  const elements = new Map<ir.XrefId, ir.ElementOrContainerOps>();
+  const elements = new Map<ir.XrefId, ir.ElementOrContainerOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (!ir.isElementOrContainerOp(op)) {
+      if (!(op instanceof ir.ElementOrContainerOp)) {
         continue;
       }
       elements.set(op.xref, op);
@@ -34,7 +34,7 @@ export function specializeBindings(job: CompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind !== ir.OpKind.Binding) {
+      if (!(op instanceof ir.BindingOp)) {
         continue;
       }
       switch (op.bindingKind) {
@@ -46,7 +46,7 @@ export function specializeBindings(job: CompilationJob): void {
           } else {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
-                ir.createAttributeOp(
+                new ir.AttributeOp(
                     op.target, op.name, op.expression, op.securityContext, op.isTextAttribute,
                     op.isTemplate, op.sourceSpan));
           }
@@ -56,13 +56,13 @@ export function specializeBindings(job: CompilationJob): void {
           if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
-                ir.createHostPropertyOp(
+                new ir.HostPropertyOp(
                     op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
                     op.sourceSpan));
           } else {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
-                ir.createPropertyOp(
+                new ir.PropertyOp(
                     op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
                     op.securityContext, op.isTemplate, op.sourceSpan));
           }

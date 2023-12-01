@@ -34,14 +34,14 @@ function addNamesToView(
   const varNames = new Map<ir.XrefId, string>();
 
   for (const op of unit.ops()) {
-    switch (op.kind) {
-      case ir.OpKind.Property:
-      case ir.OpKind.HostProperty:
+    switch (true) {
+      case op instanceof ir.PropertyOp:
+      case op instanceof ir.HostPropertyOp:
         if (op.isAnimationTrigger) {
           op.name = '@' + op.name;
         }
         break;
-      case ir.OpKind.Listener:
+      case op instanceof ir.ListenerOp:
         if (op.handlerFnName !== null) {
           break;
         }
@@ -61,10 +61,10 @@ function addNamesToView(
         }
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
-      case ir.OpKind.Variable:
+      case op instanceof ir.VariableOp:
         varNames.set(op.xref, getVariableName(op.variable, state));
         break;
-      case ir.OpKind.RepeaterCreate:
+      case op instanceof ir.RepeaterCreateOp:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }
@@ -83,7 +83,7 @@ function addNamesToView(
             unit.job.views.get(op.xref)!,
             `${baseName}_${op.functionNameSuffix}_${op.handle.slot + 1}`, state, compatibility);
         break;
-      case ir.OpKind.Template:
+      case op instanceof ir.TemplateOp:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }
@@ -94,13 +94,13 @@ function addNamesToView(
         const suffix = op.functionNameSuffix.length === 0 ? '' : `_${op.functionNameSuffix}`;
         addNamesToView(childView, `${baseName}${suffix}_${op.handle.slot}`, state, compatibility);
         break;
-      case ir.OpKind.StyleProp:
+      case op instanceof ir.StylePropOp:
         op.name = normalizeStylePropName(op.name);
         if (compatibility) {
           op.name = stripImportant(op.name);
         }
         break;
-      case ir.OpKind.ClassProp:
+      case op instanceof ir.ClassPropOp:
         if (compatibility) {
           op.name = stripImportant(op.name);
         }

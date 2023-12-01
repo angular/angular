@@ -88,7 +88,7 @@ export function ingestHostProperty(
   if (property.isAnimation) {
     bindingKind = ir.BindingKind.Animation;
   }
-  job.root.update.push(ir.createBindingOp(
+  job.root.update.push(new ir.BindingOp(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
@@ -97,18 +97,18 @@ export function ingestHostProperty(
 
 export function ingestHostAttribute(
     job: HostBindingCompilationJob, name: string, value: o.Expression): void {
-  const attrBinding = ir.createBindingOp(
+  const attrBinding = new ir.BindingOp(
       job.root.xref, ir.BindingKind.Attribute, name, value, null, SecurityContext.NONE, true, false,
       /* TODO: host attribute source spans */ null!);
   job.root.update.push(attrBinding);
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const eventBinding = ir.createListenerOp(
+  const eventBinding = new ir.ListenerOp(
       job.root.xref, new ir.SlotHandle(), event.name, null, event.targetOrPhase, true,
       event.sourceSpan);
   // TODO: Can this be a chain?
-  eventBinding.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(
+  eventBinding.handlerOps.push(new ir.StatementOp(new o.ReturnStatement(
       convertAst(event.handler.ast, job, event.sourceSpan), event.handlerSpan)));
   job.root.create.push(eventBinding);
 }
@@ -157,7 +157,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   const [namespaceKey, elementName] = splitNsName(element.name);
 
-  const startOp = ir.createElementStartOp(
+  const startOp = new ir.ElementStartOp(
       elementName, id, namespaceForKey(namespaceKey),
       element.i18n instanceof i18n.TagPlaceholder ? element.i18n : undefined,
       element.startSourceSpan);
@@ -172,14 +172,14 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   // instructions will be collapsed into one `element` instruction, negating the purpose of this
   // fallback, but in cases when it is not collapsed (such as an input with a binding), we still
   // want to map the end instruction to the main element.
-  const endOp = ir.createElementEndOp(id, element.endSourceSpan ?? element.startSourceSpan);
+  const endOp = new ir.ElementEndOp(id, element.endSourceSpan ?? element.startSourceSpan);
   unit.create.push(endOp);
 
   // If there is an i18n message associated with this element, insert i18n start and end ops.
   if (element.i18n instanceof i18n.Message) {
     const i18nBlockId = unit.job.allocateXrefId();
-    ir.OpList.insertAfter<ir.CreateOp>(ir.createI18nStartOp(i18nBlockId, element.i18n), startOp);
-    ir.OpList.insertBefore<ir.CreateOp>(ir.createI18nEndOp(i18nBlockId), endOp);
+    ir.OpList.insertAfter<ir.CreateOp>(new ir.I18nStartOp(i18nBlockId, element.i18n), startOp);
+    ir.OpList.insertBefore<ir.CreateOp>(new ir.I18nEndOp(i18nBlockId), endOp);
   }
 }
 
@@ -205,7 +205,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   const functionNameSuffix = tagNameWithoutNamespace === null ?
       '' :
       prefixWithNamespace(tagNameWithoutNamespace, namespace);
-  const tplOp = ir.createTemplateOp(
+  const tplOp = new ir.TemplateOp(
       childView.xref, tagNameWithoutNamespace, functionNameSuffix, namespace, i18nPlaceholder,
       tmpl.startSourceSpan);
   unit.create.push(tplOp);
@@ -223,8 +223,8 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   // element/template the directive is placed on.
   if (isPlainTemplate(tmpl) && tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
-    ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
-    ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
+    childView.create.prepend(new ir.I18nStartOp(id, tmpl.i18n));
+    childView.create.push(new ir.I18nEndOp(id));
   }
 }
 
@@ -232,7 +232,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
-  const op = ir.createProjectionOp(unit.job.allocateXrefId(), content.selector, content.sourceSpan);
+  const op = new ir.ProjectionOp(unit.job.allocateXrefId(), content.selector, content.sourceSpan);
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
@@ -245,7 +245,7 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
 function ingestText(unit: ViewCompilationUnit, text: t.Text): void {
-  unit.create.push(ir.createTextOp(unit.job.allocateXrefId(), text.value, text.sourceSpan));
+  unit.create.push(new ir.TextOp(unit.job.allocateXrefId(), text.value, text.sourceSpan));
 }
 
 /**
@@ -279,12 +279,12 @@ function ingestBoundText(
   }
 
   const textXref = unit.job.allocateXrefId();
-  unit.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
+  unit.create.push(new ir.TextOp(textXref, '', text.sourceSpan));
   // TemplateDefinitionBuilder does not generate source maps for sub-expressions inside an
   // interpolation. We copy that behavior in compatibility mode.
   // TODO: is it actually correct to generate these extra maps in modern mode?
   const baseSourceSpan = unit.job.compatibility ? null : text.sourceSpan;
-  unit.update.push(ir.createInterpolateTextOp(
+  unit.update.push(new ir.InterpolateTextOp(
       textXref,
       new ir.Interpolation(
           value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan))),
@@ -311,7 +311,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     if (ifCase.expressionAlias !== null) {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
-    const tmplOp = ir.createTemplateOp(
+    const tmplOp = new ir.TemplateOp(
         cView.xref, tagName, 'Conditional', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan);
     unit.create.push(tmplOp);
@@ -328,7 +328,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     ingestNodes(cView, ifCase.children);
   }
   const conditional =
-      ir.createConditionalOp(firstXref!, firstSlotHandle!, null, conditions, ifBlock.sourceSpan);
+      new ir.ConditionalOp(firstXref!, firstSlotHandle!, null, conditions, ifBlock.sourceSpan);
   unit.update.push(conditional);
 }
 
@@ -341,7 +341,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
-    const tmplOp = ir.createTemplateOp(
+    const tmplOp = new ir.TemplateOp(
         cView.xref, null, 'Case', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */,
         switchCase.sourceSpan);
@@ -357,7 +357,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
-  const conditional = ir.createConditionalOp(
+  const conditional = new ir.ConditionalOp(
       firstXref!, firstSlotHandle!, convertAst(switchBlock.expression, unit.job, null), conditions,
       switchBlock.sourceSpan);
   unit.update.push(conditional);
@@ -371,7 +371,7 @@ function ingestDeferView(
   }
   const secondaryView = unit.job.allocateView(unit.xref);
   ingestNodes(secondaryView, children);
-  const templateOp = ir.createTemplateOp(
+  const templateOp = new ir.TemplateOp(
       secondaryView.xref, null, `Defer${suffix}`, ir.Namespace.HTML, undefined, sourceSpan!);
   unit.create.push(templateOp);
   return templateOp;
@@ -395,7 +395,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
   const deferOp =
-      ir.createDeferOp(deferXref, main.xref, main.handle, blockMeta, deferBlock.sourceSpan);
+      new ir.DeferOp(deferXref, main.xref, main.handle, blockMeta, deferBlock.sourceSpan);
   deferOp.placeholderView = placeholder?.xref ?? null;
   deferOp.placeholderSlot = placeholder?.handle ?? null;
   deferOp.loadingSlot = loading?.handle ?? null;
@@ -413,24 +413,24 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   let deferWhenOps: ir.DeferWhenOp[] = [];
   for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
     if (triggers.idle !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {kind: ir.DeferTriggerKind.Idle}, prefetch, triggers.idle.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.immediate !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {kind: ir.DeferTriggerKind.Immediate}, prefetch,
           triggers.immediate.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.timer !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay}, prefetch,
           triggers.timer.sourceSpan);
       deferOnOps.push(deferOnOp);
     }
     if (triggers.hover !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {
             kind: ir.DeferTriggerKind.Hover,
             targetName: triggers.hover.reference,
@@ -443,7 +443,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       deferOnOps.push(deferOnOp);
     }
     if (triggers.interaction !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {
             kind: ir.DeferTriggerKind.Interaction,
             targetName: triggers.interaction.reference,
@@ -456,7 +456,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       deferOnOps.push(deferOnOp);
     }
     if (triggers.viewport !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+      const deferOnOp = new ir.DeferOnOp(
           deferXref, {
             kind: ir.DeferTriggerKind.Viewport,
             targetName: triggers.viewport.reference,
@@ -469,7 +469,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       deferOnOps.push(deferOnOp);
     }
     if (triggers.when !== undefined) {
-      const deferOnOp = ir.createDeferWhenOp(
+      const deferOnOp = new ir.DeferWhenOp(
           deferXref, convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan), prefetch,
           triggers.when.sourceSpan);
       deferWhenOps.push(deferOnOp);
@@ -477,8 +477,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
     // If no (non-prefetching) defer triggers were provided, default to `idle`.
     if (deferOnOps.length === 0 && deferWhenOps.length === 0) {
-      deferOnOps.push(
-          ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
+      deferOnOps.push(new ir.DeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!));
     }
     prefetch = true;
   }
@@ -491,7 +490,7 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
   if (icu.i18n instanceof i18n.Message && isSingleI18nIcu(icu.i18n)) {
     const xref = unit.job.allocateXrefId();
     const icuNode = icu.i18n.nodes[0];
-    unit.create.push(ir.createIcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
+    unit.create.push(new ir.IcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
     const expressionPlaceholder = icuNode.expressionPlaceholder?.trimEnd();
     if (expressionPlaceholder === undefined || icu.vars[expressionPlaceholder] === undefined) {
       throw Error('ICU should have a text binding');
@@ -504,7 +503,7 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
         ingestText(unit, text);
       }
     }
-    unit.create.push(ir.createIcuEndOp(xref));
+    unit.create.push(new ir.IcuEndOp(xref));
   } else {
     throw Error(`Unhandled i18n metadata type for ICU: ${icu.i18n?.constructor.name}`);
   }
@@ -558,14 +557,14 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   };
 
   const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, forBlock);
-  const repeaterCreate = ir.createRepeaterCreateOp(
+  const repeaterCreate = new ir.RepeaterCreateOp(
       repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(
       forBlock.expression, unit.job,
       convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan));
-  const repeater = ir.createRepeaterOp(
+  const repeater = new ir.RepeaterOp(
       repeaterCreate.xref, repeaterCreate.handle, expression, forBlock.sourceSpan);
   unit.update.push(repeater);
 }
@@ -754,11 +753,11 @@ function ingestBindings(
 
     if (element instanceof t.Template && !isPlainTemplate(element)) {
       unit.create.push(
-          ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
+          new ir.ExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
       continue;
     }
 
-    listenerOp = ir.createListenerOp(
+    listenerOp = new ir.ListenerOp(
         op.xref, op.handle, output.name, op.tag, output.phase, false, output.sourceSpan);
 
     // if output.handler is a chain, then push each statement from the chain separately, and
@@ -784,11 +783,11 @@ function ingestBindings(
 
     for (const expr of expressions) {
       const stmtOp =
-          ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(expr, expr.sourceSpan));
+          new ir.StatementOp<ir.UpdateOp>(new o.ExpressionStatement(expr, expr.sourceSpan));
       listenerOp.handlerOps.push(stmtOp);
     }
     listenerOp.handlerOps.push(
-        ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
+        new ir.StatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
     unit.create.push(listenerOp);
   }
 }
@@ -837,7 +836,7 @@ function ingestBinding(
       type === e.BindingType.Property) {
     // This binding only exists for later const extraction, and is not an actual binding to be
     // created.
-    view.create.push(ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null));
+    view.create.push(new ir.ExtractedAttributeOp(xref, ir.BindingKind.Property, name, null));
     return;
   }
 
@@ -854,7 +853,7 @@ function ingestBinding(
   }
 
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
-  view.update.push(ir.createBindingOp(
+  view.update.push(new ir.BindingOp(
       xref, kind, name, expression, unit, securityContext, !!(flags & BindingFlags.TextValue),
       !!(flags & BindingFlags.IsStructuralTemplateAttribute), sourceSpan));
 }

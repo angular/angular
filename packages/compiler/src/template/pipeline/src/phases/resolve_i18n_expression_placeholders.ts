@@ -18,11 +18,11 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
   const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
+      switch (true) {
+        case op instanceof ir.I18nStartOp:
           subTemplateIndicies.set(op.xref, op.subTemplateIndex);
           break;
-        case ir.OpKind.I18nContext:
+        case op instanceof ir.I18nContextOp:
           i18nContexts.set(op.xref, op);
           break;
       }
@@ -34,7 +34,7 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
 
   for (const unit of job.units) {
     for (const op of unit.update) {
-      if (op.kind === ir.OpKind.I18nExpression) {
+      if (op instanceof ir.I18nExpressionOp) {
         const i18nContext = i18nContexts.get(op.context)!;
         const index = expressionIndices.get(op.target) || 0;
         const subTemplateIndex = subTemplateIndicies.get(op.target)!;

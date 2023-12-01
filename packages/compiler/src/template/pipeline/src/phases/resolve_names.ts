@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ViewCompilationUnit} from '../compilation';
+import {CompilationJob, CompilationUnit} from '../compilation';
 
 /**
  * Resolves lexical references in views (`ir.LexicalReadExpr`) to either a target variable or to
@@ -38,8 +38,8 @@ function processLexicalScope(
   // 1) build up the `scope` mapping
   // 2) recurse into any listener functions
   for (const op of ops) {
-    switch (op.kind) {
-      case ir.OpKind.Variable:
+    switch (true) {
+      case op instanceof ir.VariableOp:
         switch (op.variable.kind) {
           case ir.SemanticVariableKind.Identifier:
           case ir.SemanticVariableKind.Alias:
@@ -59,7 +59,7 @@ function processLexicalScope(
             break;
         }
         break;
-      case ir.OpKind.Listener:
+      case op instanceof ir.ListenerOp:
         // Listener functions have separate variable declarations, so process them as a separate
         // lexical scope.
         processLexicalScope(unit, op.handlerOps, savedView);
@@ -71,7 +71,7 @@ function processLexicalScope(
   // scope. Also, look for `ir.RestoreViewExpr`s and match them with the snapshotted view context
   // variable.
   for (const op of ops) {
-    if (op.kind == ir.OpKind.Listener) {
+    if (op instanceof ir.ListenerOp) {
       // Listeners were already processed above with their own scopes.
       continue;
     }

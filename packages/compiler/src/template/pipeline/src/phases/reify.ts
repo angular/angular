@@ -42,55 +42,55 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
-    switch (op.kind) {
-      case ir.OpKind.Text:
+    switch (true) {
+      case op instanceof ir.TextOp:
         ir.OpList.replace(op, ng.text(op.handle.slot!, op.initialValue, op.sourceSpan));
         break;
-      case ir.OpKind.ElementStart:
+      case op instanceof ir.ElementStartOp:
         ir.OpList.replace(
             op,
             ng.elementStart(
                 op.handle.slot!, op.tag!, op.attributes as number | null,
                 op.localRefs as number | null, op.sourceSpan));
         break;
-      case ir.OpKind.Element:
+      case op instanceof ir.ElementOp:
         ir.OpList.replace(
             op,
             ng.element(
                 op.handle.slot!, op.tag!, op.attributes as number | null,
                 op.localRefs as number | null, op.sourceSpan));
         break;
-      case ir.OpKind.ElementEnd:
+      case op instanceof ir.ElementEndOp:
         ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
         break;
-      case ir.OpKind.ContainerStart:
+      case op instanceof ir.ContainerStartOp:
         ir.OpList.replace(
             op,
             ng.elementContainerStart(
                 op.handle.slot!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
-      case ir.OpKind.Container:
+      case op instanceof ir.ContainerOp:
         ir.OpList.replace(
             op,
             ng.elementContainer(
                 op.handle.slot!, op.attributes as number | null, op.localRefs as number | null,
                 op.sourceSpan));
         break;
-      case ir.OpKind.ContainerEnd:
+      case op instanceof ir.ContainerEndOp:
         ir.OpList.replace(op, ng.elementContainerEnd());
         break;
-      case ir.OpKind.I18nStart:
+      case op instanceof ir.I18nStartOp:
         ir.OpList.replace(
             op, ng.i18nStart(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
-      case ir.OpKind.I18nEnd:
+      case op instanceof ir.I18nEndOp:
         ir.OpList.replace(op, ng.i18nEnd());
         break;
-      case ir.OpKind.I18n:
+      case op instanceof ir.I18nOp:
         ir.OpList.replace(op, ng.i18n(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
-      case ir.OpKind.Template:
+      case op instanceof ir.TemplateOp:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }
@@ -106,16 +106,16 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.tag, op.attributes, op.localRefs, op.sourceSpan),
         );
         break;
-      case ir.OpKind.DisableBindings:
+      case op instanceof ir.DisableBindingsOp:
         ir.OpList.replace(op, ng.disableBindings());
         break;
-      case ir.OpKind.EnableBindings:
+      case op instanceof ir.EnableBindingsOp:
         ir.OpList.replace(op, ng.enableBindings());
         break;
-      case ir.OpKind.Pipe:
+      case op instanceof ir.PipeOp:
         ir.OpList.replace(op, ng.pipe(op.handle.slot!, op.name));
         break;
-      case ir.OpKind.Listener:
+      case op instanceof ir.ListenerOp:
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
         const reified = op.hostListener && op.isAnimationListener ?
@@ -123,29 +123,29 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             ng.listener(op.name, listenerFn, op.sourceSpan);
         ir.OpList.replace(op, reified);
         break;
-      case ir.OpKind.Variable:
+      case op instanceof ir.VariableOp:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
         }
         ir.OpList.replace<ir.CreateOp>(
             op,
-            ir.createStatementOp(new o.DeclareVarStmt(
+            new ir.StatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
-      case ir.OpKind.Namespace:
+      case op instanceof ir.NamespaceOp:
         switch (op.active) {
           case ir.Namespace.HTML:
-            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceHTML());
+            ir.OpList.replace(op, ng.namespaceHTML());
             break;
           case ir.Namespace.SVG:
-            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceSVG());
+            ir.OpList.replace(op, ng.namespaceSVG());
             break;
           case ir.Namespace.Math:
-            ir.OpList.replace<ir.CreateOp>(op, ng.namespaceMath());
+            ir.OpList.replace(op, ng.namespaceMath());
             break;
         }
         break;
-      case ir.OpKind.Defer:
+      case op instanceof ir.DeferOp:
         const timerScheduling =
             !!op.loadingMinimumTime || !!op.loadingAfterTime || !!op.placeholderMinimumTime;
         ir.OpList.replace(
@@ -155,7 +155,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.placeholderSlot?.slot! ?? null, op.errorSlot?.slot ?? null, op.loadingConfig,
                 op.placeholderConfig, timerScheduling, op.sourceSpan));
         break;
-      case ir.OpKind.DeferOn:
+      case op instanceof ir.DeferOnOp:
         let args: number[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Idle:
@@ -182,18 +182,18 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.prefetch, op.sourceSpan));
         break;
-      case ir.OpKind.ProjectionDef:
-        ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
+      case op instanceof ir.ProjectionDefOp:
+        ir.OpList.replace(op, ng.projectionDef(op.def));
         break;
-      case ir.OpKind.Projection:
+      case op instanceof ir.ProjectionOp:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for project instruction');
         }
-        ir.OpList.replace<ir.CreateOp>(
+        ir.OpList.replace(
             op,
             ng.projection(op.handle.slot!, op.projectionSlotIndex, op.attributes, op.sourceSpan));
         break;
-      case ir.OpKind.RepeaterCreate:
+      case op instanceof ir.RepeaterCreateOp:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for repeater instruction');
         }
@@ -230,12 +230,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.trackByFn!, op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars,
                 op.sourceSpan));
         break;
-      case ir.OpKind.Statement:
+      case op instanceof ir.StatementOp:
         // Pass statement operations directly through.
         break;
       default:
         throw new Error(
-            `AssertionError: Unsupported reification of create op ${ir.OpKind[op.kind]}`);
+            `AssertionError: Unsupported reification of create op ${op.constructor.name}`);
     }
   }
 }
@@ -244,11 +244,11 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
-    switch (op.kind) {
-      case ir.OpKind.Advance:
+    switch (true) {
+      case op instanceof ir.AdvanceOp:
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
-      case ir.OpKind.Property:
+      case op instanceof ir.PropertyOp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
               op,
@@ -259,7 +259,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         }
         break;
-      case ir.OpKind.StyleProp:
+      case op instanceof ir.StylePropOp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
               op,
@@ -270,10 +270,10 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         }
         break;
-      case ir.OpKind.ClassProp:
+      case op instanceof ir.ClassPropOp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
-      case ir.OpKind.StyleMap:
+      case op instanceof ir.StyleMapOp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
               op,
@@ -283,7 +283,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         }
         break;
-      case ir.OpKind.ClassMap:
+      case op instanceof ir.ClassMapOp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
               op,
@@ -293,19 +293,19 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         }
         break;
-      case ir.OpKind.I18nExpression:
+      case op instanceof ir.I18nExpressionOp:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
         break;
-      case ir.OpKind.I18nApply:
+      case op instanceof ir.I18nApplyOp:
         ir.OpList.replace(op, ng.i18nApply(op.handle.slot!, op.sourceSpan));
         break;
-      case ir.OpKind.InterpolateText:
+      case op instanceof ir.InterpolateTextOp:
         ir.OpList.replace(
             op,
             ng.textInterpolate(
                 op.interpolation.strings, op.interpolation.expressions, op.sourceSpan));
         break;
-      case ir.OpKind.Attribute:
+      case op instanceof ir.AttributeOp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
               op,
@@ -316,7 +316,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
         }
         break;
-      case ir.OpKind.HostProperty:
+      case op instanceof ir.HostPropertyOp:
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
@@ -327,16 +327,16 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           }
         }
         break;
-      case ir.OpKind.Variable:
+      case op instanceof ir.VariableOp:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
         }
         ir.OpList.replace<ir.UpdateOp>(
             op,
-            ir.createStatementOp(new o.DeclareVarStmt(
+            new ir.StatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
-      case ir.OpKind.Conditional:
+      case op instanceof ir.ConditionalOp:
         if (op.processed === null) {
           throw new Error(`Conditional test was not set.`);
         }
@@ -346,18 +346,18 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(
             op, ng.conditional(op.targetSlot.slot, op.processed, op.contextValue, op.sourceSpan));
         break;
-      case ir.OpKind.Repeater:
+      case op instanceof ir.RepeaterOp:
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
-      case ir.OpKind.DeferWhen:
+      case op instanceof ir.DeferWhenOp:
         ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
         break;
-      case ir.OpKind.Statement:
+      case op instanceof ir.StatementOp:
         // Pass statement operations directly through.
         break;
       default:
         throw new Error(
-            `AssertionError: Unsupported reification of update op ${ir.OpKind[op.kind]}`);
+            `AssertionError: Unsupported reification of update op ${op.constructor.name}`);
     }
   }
 }
@@ -433,9 +433,9 @@ function reifyListenerHandler(
   // point, all operations have been converted to statements.
   const handlerStmts: o.Statement[] = [];
   for (const op of handlerOps) {
-    if (op.kind !== ir.OpKind.Statement) {
+    if (!(op instanceof ir.StatementOp)) {
       throw new Error(
-          `AssertionError: expected reified statements, but found op ${ir.OpKind[op.kind]}`);
+          `AssertionError: expected reified statements, but found op ${op.constructor.name}`);
     }
     handlerStmts.push(op.statement);
   }

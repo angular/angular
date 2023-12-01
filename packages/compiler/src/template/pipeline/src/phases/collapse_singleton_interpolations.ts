@@ -22,7 +22,7 @@ import {CompilationJob} from '../compilation';
 export function collapseSingletonInterpolations(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      const eligibleOpKind = op.kind === ir.OpKind.Attribute;
+      const eligibleOpKind = op instanceof ir.AttributeOp;
       if (eligibleOpKind && op.expression instanceof ir.Interpolation &&
           op.expression.strings.length === 2 &&
           op.expression.strings.every((s: string) => s === '')) {

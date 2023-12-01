@@ -8,7 +8,7 @@
 
 
 import * as ir from '../../ir';
-import {type CompilationJob, type CompilationUnit, CompilationJobKind} from '../compilation';
+import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
 import {createOpXrefMap} from '../util/elements';
 
 /**
@@ -19,35 +19,35 @@ export function extractAttributes(job: CompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
     for (const op of unit.ops()) {
-      switch (op.kind) {
-        case ir.OpKind.Attribute:
+      switch (true) {
+        case op instanceof ir.AttributeOp:
           extractAttributeOp(unit, op, elements);
           break;
-        case ir.OpKind.Property:
+        case op instanceof ir.PropertyOp:
           if (!op.isAnimationTrigger) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
+                new ir.ExtractedAttributeOp(
                     op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property,
                     op.name, null),
                 lookupElement(elements, op.target));
           }
           break;
-        case ir.OpKind.StyleProp:
-        case ir.OpKind.ClassProp:
+        case op instanceof ir.StylePropOp:
+        case op instanceof ir.ClassPropOp:
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
           if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
+                new ir.ExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
                 lookupElement(elements, op.target));
           }
           break;
-        case ir.OpKind.Listener:
+        case op instanceof ir.ListenerOp:
           if (!op.isAnimationListener) {
             const extractedAttributeOp =
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
+                new ir.ExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
             if (job.kind === CompilationJobKind.Host) {
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
@@ -104,7 +104,7 @@ function extractAttributeOp(
   }
 
   if (extractable) {
-    const extractedAttributeOp = ir.createExtractedAttributeOp(
+    const extractedAttributeOp = new ir.ExtractedAttributeOp(
         op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
         op.expression);
     if (unit.job.kind === CompilationJobKind.Host) {

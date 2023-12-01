@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpKind} from './enums';
+import type {CreateOp} from './ops/create';
+import type {SharedOp} from './ops/shared';
+import type {UpdateOp} from './ops/update';
 
 /**
  * Branded type for a cross-reference ID. During ingest, `XrefId`s are generated to link together
@@ -20,31 +22,30 @@ export type XrefId = number&{__brand: 'XrefId'};
  * @param OpT a specific narrower type of `Op` (for example, creation operations) which this
  *     specific subtype of `Op` can be linked with in a linked list.
  */
-export interface Op<OpT extends Op<OpT>> {
-  /**
-   * All operations have a distinct kind.
-   */
-  kind: OpKind;
-
+export abstract class Op<OpT extends Op<OpT> = CreateOp | UpdateOp | SharedOp> {
   /**
    * The previous operation in the linked list, if any.
    *
    * This is `null` for operation nodes not currently in a list, or for the special head/tail nodes.
    */
-  prev: OpT|null;
+  prev: OpT|SharedOp|null = null;
 
   /**
    * The next operation in the linked list, if any.
    *
    * This is `null` for operation nodes not currently in a list, or for the special head/tail nodes.
    */
-  next: OpT|null;
+  next: OpT|SharedOp|null = null;
 
   /**
    * Debug id of the list to which this node currently belongs, or `null` if this node is not part
    * of a list.
    */
-  debugListId: number|null;
+  debugListId: number|null = null;
+}
+
+export function isListEnd<OpT extends Op<OpT>>(op: Op<OpT>): boolean {
+  return 'listEnd' in op;
 }
 
 /**
@@ -60,23 +61,22 @@ export class OpList<OpT extends Op<OpT>> {
    */
   readonly debugListId = OpList.nextListId++;
 
-  // OpList uses static head/tail nodes of a special `ListEnd` type.
+  // OpList uses static head/tail nodes with a special `listEnd` marker.
   // This avoids the need for special casing of the first and last list
   // elements in all list operations.
-  readonly head: OpT = {
-    kind: OpKind.ListEnd,
+  readonly head: Op<OpT> = {
     next: null,
     prev: null,
     debugListId: this.debugListId,
-  } as OpT;
+    listEnd: true,
+  } as Op<OpT>;
 
-  readonly tail = {
-    kind: OpKind.ListEnd,
+  readonly tail: Op<OpT> = {
     next: null,
     prev: null,
     debugListId: this.debugListId,
-  } as OpT;
-
+    listEnd: true,
+  } as Op<OpT>;
 
   constructor() {
     // Link `head` and `tail` together at the start (list is empty).
@@ -115,7 +115,11 @@ export class OpList<OpT extends Op<OpT>> {
   /**
    * Prepend one or more nodes to the start of the list.
    */
-  prepend(ops: OpT[]): void {
+  prepend(ops: OpT|Array<OpT>): void {
+    if (!Array.isArray(ops)) {
+      ops = [ops];
+    }
+
     if (ops.length === 0) {
       return;
     }
@@ -129,7 +133,7 @@ export class OpList<OpT extends Op<OpT>> {
 
     const first = this.head.next!;
 
-    let prev = this.head;
+    let prev: Op<OpT> = this.head;
     for (const op of ops) {
       prev.next = op;
       op.prev = prev;
@@ -148,7 +152,7 @@ export class OpList<OpT extends Op<OpT>> {
    * and including the last operation returned. Mutations beyond that point _may_ be safe, but may
    * also corrupt the iteration position and should be avoided.
    */
-  * [Symbol.iterator](): Generator<OpT> {
+  * [Symbol.iterator](): Generator<OpT|SharedOp> {
     let current = this.head.next!;
     while (current !== this.tail) {
       // Guards against corruption of the iterator state by mutations to the tail of the list during
@@ -161,7 +165,7 @@ export class OpList<OpT extends Op<OpT>> {
     }
   }
 
-  * reversed(): Generator<OpT> {
+  * reversed(): Generator<OpT|SharedOp> {
     let current = this.tail.prev!;
     while (current !== this.head) {
       OpList.assertIsOwned(current, this.debugListId);
@@ -225,7 +229,7 @@ export class OpList<OpT extends Op<OpT>> {
     oldOp.prev = null;
     oldOp.next = null;
 
-    let prev: OpT = oldPrev!;
+    let prev: OpT|SharedOp = oldPrev!;
     for (const newOp of newOps) {
       this.assertIsUnowned(newOp);
       newOp.debugListId = listId;
@@ -330,7 +334,7 @@ export class OpList<OpT extends Op<OpT>> {
    */
   static assertIsUnowned<OpT extends Op<OpT>>(op: OpT): void {
     if (op.debugListId !== null) {
-      throw new Error(`AssertionError: illegal operation on owned node: ${OpKind[op.kind]}`);
+      throw new Error(`AssertionError: illegal operation on owned node: ${op.constructor.name}`);
     }
   }
 
@@ -340,7 +344,7 @@ export class OpList<OpT extends Op<OpT>> {
    */
   static assertIsOwned<OpT extends Op<OpT>>(op: OpT, byList?: number): void {
     if (op.debugListId === null) {
-      throw new Error(`AssertionError: illegal operation on unowned node: ${OpKind[op.kind]}`);
+      throw new Error(`AssertionError: illegal operation on unowned node: ${op.constructor.name}`);
     } else if (byList !== undefined && op.debugListId !== byList) {
       throw new Error(`AssertionError: node belongs to the wrong list (expected ${byList}, actual ${
           op.debugListId})`);
@@ -351,7 +355,7 @@ export class OpList<OpT extends Op<OpT>> {
    * Asserts that `op` is not a special `ListEnd` node.
    */
   static assertIsNotEnd<OpT extends Op<OpT>>(op: OpT): void {
-    if (op.kind === OpKind.ListEnd) {
+    if ('listEnd' in op) {
       throw new Error(`AssertionError: illegal operation on list head or tail`);
     }
   }

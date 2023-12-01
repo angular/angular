@@ -7,52 +7,33 @@
  */
 
 import * as o from '../../../../../output/output_ast';
-import {OpKind, VariableFlags} from '../enums';
+import {VariableFlags} from '../enums';
 import {Op, XrefId} from '../operations';
 import {SemanticVariable} from '../variable';
 
-/**
- * A special `Op` which is used internally in the `OpList` linked list to represent the head and
- * tail nodes of the list.
- *
- * `ListEndOp` is created internally in the `OpList` and should not be instantiated directly.
- */
-export interface ListEndOp<OpT extends Op<OpT>> extends Op<OpT> {
-  kind: OpKind.ListEnd;
-}
-
+export abstract class SharedOp extends Op<SharedOp> {}
 /**
  * An `Op` which directly wraps an output `Statement`.
  *
  * Often `StatementOp`s are the final result of IR processing.
  */
-export interface StatementOp<OpT extends Op<OpT>> extends Op<OpT> {
-  kind: OpKind.Statement;
-
+export class StatementOp<OpT extends Op<OpT>> extends SharedOp {
   /**
    * The output statement.
    */
   statement: o.Statement;
-}
 
-/**
- * Create a `StatementOp`.
- */
-export function createStatementOp<OpT extends Op<OpT>>(statement: o.Statement): StatementOp<OpT> {
-  return {
-    kind: OpKind.Statement,
-    statement,
-    ...NEW_OP,
-  };
+  constructor(statement: o.Statement) {
+    super();
+    this.statement = statement;
+  }
 }
 
 /**
  * Operation which declares and initializes a `SemanticVariable`, that is valid either in create or
  * update IR.
  */
-export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
-  kind: OpKind.Variable;
-
+export class VariableOp<OpT extends Op<OpT>> extends SharedOp {
   /**
    * `XrefId` which identifies this specific variable, and is used to reference this variable from
    * other parts of the IR.
@@ -70,32 +51,13 @@ export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
   initializer: o.Expression;
 
   flags: VariableFlags;
-}
 
-/**
- * Create a `VariableOp`.
- */
-export function createVariableOp<OpT extends Op<OpT>>(
-    xref: XrefId, variable: SemanticVariable, initializer: o.Expression,
-    flags: VariableFlags): VariableOp<OpT> {
-  return {
-    kind: OpKind.Variable,
-    xref,
-    variable,
-    initializer,
-    flags,
-    ...NEW_OP,
-  };
+  constructor(
+      xref: XrefId, variable: SemanticVariable, initializer: o.Expression, flags: VariableFlags) {
+    super();
+    this.xref = xref;
+    this.variable = variable;
+    this.initializer = initializer;
+    this.flags = flags;
+  }
 }
-
-/**
- * Static structure shared by all operations.
- *
- * Used as a convenience via the spread operator (`...NEW_OP`) when creating new operations, and
- * ensures the fields are always in the same order.
- */
-export const NEW_OP: Pick<Op<any>, 'debugListId'|'prev'|'next'> = {
-  debugListId: null,
-  prev: null,
-  next: null,
-};

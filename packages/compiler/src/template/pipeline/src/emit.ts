@@ -195,17 +195,17 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
 
   const createStatements: o.Statement[] = [];
   for (const op of view.create) {
-    if (op.kind !== ir.OpKind.Statement) {
+    if (!(op instanceof ir.StatementOp)) {
       throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+          op.constructor.name}`);
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of view.update) {
-    if (op.kind !== ir.OpKind.Statement) {
+    if (!(op instanceof ir.StatementOp)) {
       throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+          op.constructor.name}`);
     }
     updateStatements.push(op.statement);
   }
@@ -243,17 +243,17 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
 
   const createStatements: o.Statement[] = [];
   for (const op of job.root.create) {
-    if (op.kind !== ir.OpKind.Statement) {
+    if (!(op instanceof ir.StatementOp)) {
       throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+          op.constructor.name}`);
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of job.root.update) {
-    if (op.kind !== ir.OpKind.Statement) {
+    if (!(op instanceof ir.StatementOp)) {
       throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+          op.constructor.name}`);
     }
     updateStatements.push(op.statement);
   }

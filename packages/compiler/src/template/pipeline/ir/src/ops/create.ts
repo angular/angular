@@ -10,44 +10,17 @@ import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {R3DeferBlockMetadata} from '../../../../../render3/view/api';
-import {BindingKind, DeferTriggerKind, I18nContextKind, I18nParamValueFlags, Namespace, OpKind} from '../enums';
+import {BindingKind, DeferTriggerKind, I18nContextKind, I18nParamValueFlags, Namespace} from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
-
-import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
-
+import {CollapsableEndTrait, CollapsableStartTrait, ConsumesSlotOpTrait} from '../traits';
+import type {SharedOp} from './shared';
 import type {UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
-    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
-    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|I18nContextOp;
-
-/**
- * An operation representing the creation of an element or container.
- */
-export type ElementOrContainerOps =
-    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp|RepeaterCreateOp;
-
-/**
- * The set of OpKinds that represent the creation of an element or container
- */
-const elementContainerOpKinds = new Set([
-  OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template,
-  OpKind.RepeaterCreate
-]);
-
-/**
- * Checks whether the given operation represents the creation of an element or container.
- */
-export function isElementOrContainerOp(op: CreateOp): op is ElementOrContainerOps {
-  return elementContainerOpKinds.has(op.kind);
-}
+export abstract class CreateOp extends Op<CreateOp|SharedOp> {}
 
 /**
  * Representation of a local reference on an element.
@@ -68,21 +41,26 @@ export interface LocalRef {
  * Base interface for `Element`, `ElementStart`, and `Template` operations, containing common fields
  * used to represent their element-like nature.
  */
-export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: ElementOrContainerOps['kind'];
+export abstract class ElementOrContainerOp extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
   /**
    * `XrefId` allocated for this element.
    *
    * This ID is used to reference this element from other IR structures.
    */
-  xref: XrefId;
+  abstract xref: XrefId;
+
+  /**
+   * The HTML tag name for this element.
+   */
+  tag: string|null = null;
 
   /**
    * Attributes of various kinds on this element. Represented as a `ConstIndex` pointer into the
    * shared `consts` array of the component compilation.
    */
-  attributes: ConstIndex|null;
+  attributes: ConstIndex|null = null;
 
   /**
    * Local references to this element.
@@ -92,94 +70,103 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    * After processing, it's a `ConstIndex` pointer into the shared `consts` array of the component
    * compilation.
    */
-  localRefs: LocalRef[]|ConstIndex|null;
+  localRefs: LocalRef[]|ConstIndex|null = [];
 
   /**
    * Whether this container is marked `ngNonBindable`, which disabled Angular binding for itself and
    * all descendants.
    */
-  nonBindable: boolean;
+  nonBindable: boolean = false;
 
-  sourceSpan: ParseSourceSpan;
+  sourceSpan: ParseSourceSpan = null!;
+
+  handle = new SlotHandle();
+
+  numSlotsUsed = 1;
 }
 
-export interface ElementOpBase extends ElementOrContainerOpBase {
-  kind: OpKind.Element|OpKind.ElementStart|OpKind.Template|OpKind.RepeaterCreate;
-
-  /**
-   * The HTML tag name for this element.
-   */
-  tag: string|null;
-
+export abstract class ElementOpBase extends ElementOrContainerOp {
   /**
    * The namespace of this element, which controls the preceding namespace instruction.
    */
-  namespace: Namespace;
+  namespace: Namespace = Namespace.HTML;
 }
 
 /**
  * Logical operation representing the start of an element in the creation IR.
  */
-export interface ElementStartOp extends ElementOpBase {
-  kind: OpKind.ElementStart;
+export class ElementStartOp extends ElementOpBase implements CollapsableStartTrait<CreateOp> {
+  collapsableStart: true = true;
+  override xref: XrefId;
 
   /**
    * The i18n placeholder data associated with this element.
    */
   i18nPlaceholder?: i18n.TagPlaceholder;
-}
 
-/**
- * Create an `ElementStartOp`.
- */
-export function createElementStartOp(
-    tag: string, xref: XrefId, namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|undefined,
-    sourceSpan: ParseSourceSpan): ElementStartOp {
-  return {
-    kind: OpKind.ElementStart,
-    xref,
-    tag,
-    handle: new SlotHandle(),
-    attributes: null,
-    localRefs: [],
-    nonBindable: false,
-    namespace,
-    i18nPlaceholder,
-    sourceSpan,
-    ...TRAIT_CONSUMES_SLOT,
-    ...NEW_OP,
-  };
+  constructor(
+      tag: string, xref: XrefId, namespace: Namespace,
+      i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan) {
+    super();
+    this.tag = tag;
+    this.xref = xref;
+    this.namespace = namespace;
+    this.i18nPlaceholder = i18nPlaceholder;
+    this.sourceSpan = sourceSpan;
+  }
+
+  collapse(): ElementOp {
+    let elem =
+        new ElementOp(this.tag!, this.xref, this.namespace, this.i18nPlaceholder, this.sourceSpan);
+    elem.attributes = this.attributes;
+    elem.localRefs = this.localRefs;
+    elem.nonBindable = this.nonBindable;
+    elem.handle = this.handle;
+    elem.numSlotsUsed = this.numSlotsUsed;
+    return elem;
+  }
 }
 
 /**
  * Logical operation representing an element with no children in the creation IR.
  */
-export interface ElementOp extends ElementOpBase {
-  kind: OpKind.Element;
+export class ElementOp extends ElementOpBase {
+  override xref: XrefId;
 
   /**
    * The i18n placeholder data associated with this element.
    */
   i18nPlaceholder?: i18n.TagPlaceholder;
+
+  constructor(
+      tag: string, xref: XrefId, namespace: Namespace,
+      i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan) {
+    super();
+    this.tag = tag;
+    this.xref = xref;
+    this.namespace = namespace;
+    this.i18nPlaceholder = i18nPlaceholder;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation representing an embedded view declaration in the creation IR.
  */
-export interface TemplateOp extends ElementOpBase {
-  kind: OpKind.Template;
+export class TemplateOp extends ElementOpBase {
+  override xref: XrefId;
 
   /**
    * The number of declaration slots used by this template, or `null` if slots have not yet been
    * assigned.
    */
-  decls: number|null;
+  decls: number|null = null;
 
   /**
    * The number of binding variable slots used by this template, or `null` if binding variables have
    * not yet been counted.
    */
-  vars: number|null;
+  vars: number|null = null;
 
   /**
    * Suffix to add to the name of the generated template function.
@@ -190,50 +177,37 @@ export interface TemplateOp extends ElementOpBase {
    * The i18n placeholder data associated with this template.
    */
   i18nPlaceholder?: i18n.TagPlaceholder;
-}
 
-/**
- * Create a `TemplateOp`.
- */
-export function createTemplateOp(
-    xref: XrefId, tag: string|null, functionNameSuffix: string, namespace: Namespace,
-    i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan): TemplateOp {
-  return {
-    kind: OpKind.Template,
-    xref,
-    attributes: null,
-    tag,
-    handle: new SlotHandle(),
-    functionNameSuffix,
-    decls: null,
-    vars: null,
-    localRefs: [],
-    nonBindable: false,
-    namespace,
-    i18nPlaceholder,
-    sourceSpan,
-    ...TRAIT_CONSUMES_SLOT,
-    ...NEW_OP,
-  };
+  constructor(
+      xref: XrefId, tag: string|null, functionNameSuffix: string, namespace: Namespace,
+      i18nPlaceholder: i18n.TagPlaceholder|undefined, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.tag = tag;
+    this.functionNameSuffix = functionNameSuffix;
+    this.namespace = namespace;
+    this.i18nPlaceholder = i18nPlaceholder;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * An op that creates a repeater (e.g. a for loop).
  */
-export interface RepeaterCreateOp extends ElementOpBase {
-  kind: OpKind.RepeaterCreate;
+export class RepeaterCreateOp extends ElementOpBase {
+  override xref: XrefId;
 
   /**
    * The number of declaration slots used by this repeater's template, or `null` if slots have not
    * yet been assigned.
    */
-  decls: number|null;
+  decls: number|null = null;
 
   /**
    * The number of binding variable slots used by this repeater's, or `null` if binding variables
    * have not yet been counted.
    */
-  vars: number|null;
+  vars: number|null = null;
 
   /**
    * The Xref of the empty view function. (For the primary view function, use the `xref` property).
@@ -249,7 +223,7 @@ export interface RepeaterCreateOp extends ElementOpBase {
    * `null` initially, then an `o.Expression`. Might be a track expression, or might be a reference
    * into the constant pool.
    */
-  trackByFn: o.Expression|null;
+  trackByFn: o.Expression|null = null;
 
   /**
    * Context variables avaialable in this block.
@@ -259,14 +233,24 @@ export interface RepeaterCreateOp extends ElementOpBase {
   /**
    * Whether the repeater track function relies on the component instance.
    */
-  usesComponentInstance: boolean;
+  usesComponentInstance: boolean = false;
 
   /**
    * Suffix to add to the name of the generated template function.
    */
-  functionNameSuffix: string;
+  functionNameSuffix: string = 'For';
 
-  sourceSpan: ParseSourceSpan;
+  constructor(
+      primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
+      varNames: RepeaterVarNames, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = primaryView;
+    this.emptyView = emptyView, this.track = track;
+    this.tag = tag;
+    this.varNames = varNames;
+    this.sourceSpan = sourceSpan;
+    this.numSlotsUsed = emptyView === null ? 2 : 3;
+  }
 }
 
 // TODO: add source spans?
@@ -280,40 +264,13 @@ export interface RepeaterVarNames {
   $implicit: string;
 }
 
-export function createRepeaterCreateOp(
-    primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
-    varNames: RepeaterVarNames, sourceSpan: ParseSourceSpan): RepeaterCreateOp {
-  return {
-    kind: OpKind.RepeaterCreate,
-    attributes: null,
-    xref: primaryView,
-    handle: new SlotHandle(),
-    emptyView,
-    track,
-    trackByFn: null,
-    tag,
-    functionNameSuffix: 'For',
-    namespace: Namespace.HTML,
-    nonBindable: false,
-    localRefs: [],
-    decls: null,
-    vars: null,
-    varNames,
-    usesComponentInstance: false,
-    sourceSpan,
-    ...TRAIT_CONSUMES_SLOT,
-    ...NEW_OP,
-    numSlotsUsed: emptyView === null ? 2 : 3,
-  };
-}
-
 /**
  * Logical operation representing the end of an element structure in the creation IR.
  *
  * Pairs with an `ElementStart` operation.
  */
-export interface ElementEndOp extends Op<CreateOp> {
-  kind: OpKind.ElementEnd;
+export class ElementEndOp extends CreateOp implements CollapsableEndTrait<CreateOp> {
+  collapsableEnd: true = true;
 
   /**
    * The `XrefId` of the element declared via `ElementStart`.
@@ -321,32 +278,61 @@ export interface ElementEndOp extends Op<CreateOp> {
   xref: XrefId;
 
   sourceSpan: ParseSourceSpan|null;
-}
 
-/**
- * Create an `ElementEndOp`.
- */
-export function createElementEndOp(xref: XrefId, sourceSpan: ParseSourceSpan|null): ElementEndOp {
-  return {
-    kind: OpKind.ElementEnd,
-    xref,
-    sourceSpan,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId, sourceSpan: ParseSourceSpan|null) {
+    super();
+    this.xref = xref;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation representing the start of a container in the creation IR.
  */
-export interface ContainerStartOp extends ElementOrContainerOpBase {
-  kind: OpKind.ContainerStart;
+export class ContainerStartOp extends ElementOrContainerOp implements
+    CollapsableStartTrait<CreateOp> {
+  collapsableStart: true = true;
+
+  override xref: XrefId;
+
+  constructor(
+      xref: XrefId, handle: SlotHandle, attributes: ConstIndex|null,
+      localRefs: LocalRef[]|ConstIndex|null, nonBindable: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.handle = handle;
+    this.attributes = attributes;
+    this.localRefs = localRefs;
+    this.sourceSpan = sourceSpan;
+    this.nonBindable = nonBindable;
+    this.numSlotsUsed = this.numSlotsUsed;
+  }
+
+  collapse(): ContainerOp {
+    let cont = new ContainerOp(
+        this.xref, this.handle, this.attributes, this.localRefs, this.nonBindable, this.sourceSpan);
+    return cont;
+  }
 }
 
 /**
  * Logical operation representing an empty container in the creation IR.
  */
-export interface ContainerOp extends ElementOrContainerOpBase {
-  kind: OpKind.Container;
+export class ContainerOp extends ElementOrContainerOp {
+  override xref: XrefId;
+
+  constructor(
+      xref: XrefId, handle: SlotHandle, attributes: ConstIndex|null,
+      localRefs: LocalRef[]|ConstIndex|null, nonBindable: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.handle = handle;
+    this.attributes = attributes;
+    this.localRefs = localRefs;
+    this.sourceSpan = sourceSpan;
+    this.nonBindable = nonBindable;
+    this.numSlotsUsed = this.numSlotsUsed;
+  }
 }
 
 /**
@@ -354,8 +340,8 @@ export interface ContainerOp extends ElementOrContainerOpBase {
  *
  * Pairs with an `ContainerStart` operation.
  */
-export interface ContainerEndOp extends Op<CreateOp> {
-  kind: OpKind.ContainerEnd;
+export class ContainerEndOp extends CreateOp implements CollapsableEndTrait<CreateOp> {
+  collapsableEnd: true = true;
 
   /**
    * The `XrefId` of the element declared via `ContainerStart`.
@@ -363,54 +349,50 @@ export interface ContainerEndOp extends Op<CreateOp> {
   xref: XrefId;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(xref: XrefId, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation causing binding to be disabled in descendents of a non-bindable container.
  */
-export interface DisableBindingsOp extends Op<CreateOp> {
-  kind: OpKind.DisableBindings;
-
+export class DisableBindingsOp extends CreateOp {
   /**
    * `XrefId` of the element that was marked non-bindable.
    */
   xref: XrefId;
-}
 
-export function createDisableBindingsOp(xref: XrefId): DisableBindingsOp {
-  return {
-    kind: OpKind.DisableBindings,
-    xref,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId) {
+    super();
+    this.xref = xref;
+  }
 }
 
 /**
  * Logical operation causing binding to be re-enabled after visiting descendants of a
  * non-bindable container.
  */
-export interface EnableBindingsOp extends Op<CreateOp> {
-  kind: OpKind.EnableBindings;
-
+export class EnableBindingsOp extends CreateOp {
   /**
    * `XrefId` of the element that was marked non-bindable.
    */
   xref: XrefId;
-}
 
-export function createEnableBindingsOp(xref: XrefId): EnableBindingsOp {
-  return {
-    kind: OpKind.EnableBindings,
-    xref,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId) {
+    super();
+    this.xref = xref;
+  }
 }
 
 /**
  * Logical operation representing a text node in the creation IR.
  */
-export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Text;
+export class TextOp extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
   /**
    * `XrefId` used to reference this text node in other IR structures.
@@ -422,32 +404,26 @@ export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   initialValue: string;
 
-  sourceSpan: ParseSourceSpan|null;
-}
+  handle: SlotHandle = new SlotHandle();
 
-/**
- * Create a `TextOp`.
- */
-export function createTextOp(
-    xref: XrefId, initialValue: string, sourceSpan: ParseSourceSpan|null): TextOp {
-  return {
-    kind: OpKind.Text,
-    xref,
-    handle: new SlotHandle(),
-    initialValue,
-    sourceSpan,
-    ...TRAIT_CONSUMES_SLOT,
-    ...NEW_OP,
-  };
+  numSlotsUsed: number = 1;
+
+  sourceSpan: ParseSourceSpan|null;
+
+  constructor(xref: XrefId, initialValue: string, sourceSpan: ParseSourceSpan|null) {
+    super();
+    this.xref = xref;
+    this.initialValue = initialValue;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * Logical operation representing an event listener on an element in the creation IR.
  */
-export interface ListenerOp extends Op<CreateOp> {
-  kind: OpKind.Listener;
-
+export class ListenerOp extends CreateOp {
   target: XrefId;
+
   targetSlot: SlotHandle;
 
   /**
@@ -469,17 +445,17 @@ export interface ListenerOp extends Op<CreateOp> {
   /**
    * A list of `UpdateOp`s representing the body of the event listener.
    */
-  handlerOps: OpList<UpdateOp>;
+  handlerOps: OpList<UpdateOp> = new OpList();
 
   /**
    * Name of the function
    */
-  handlerFnName: string|null;
+  handlerFnName: string|null = null;
 
   /**
    * Whether this listener is known to consume `$event` in its body.
    */
-  consumesDollarEvent: boolean;
+  consumesDollarEvent: boolean = false;
 
   /**
    * Whether the listener is listening for an animation event.
@@ -492,123 +468,101 @@ export interface ListenerOp extends Op<CreateOp> {
   animationPhase: string|null;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(
+      target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
+      animationPhase: string|null, hostListener: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.target = target;
+    this.targetSlot = targetSlot;
+    this.tag = tag;
+    this.hostListener = hostListener;
+    this.name = name;
+    this.animationPhase = animationPhase;
+    this.isAnimationListener = animationPhase !== null;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
-/**
- * Create a `ListenerOp`. Host bindings reuse all the listener logic.
- */
-export function createListenerOp(
-    target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
-    animationPhase: string|null, hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
-  return {
-    kind: OpKind.Listener,
-    target,
-    targetSlot,
-    tag,
-    hostListener,
-    name,
-    handlerOps: new OpList(),
-    handlerFnName: null,
-    consumesDollarEvent: false,
-    isAnimationListener: animationPhase !== null,
-    animationPhase: animationPhase,
-    sourceSpan,
-    ...NEW_OP,
-  };
-}
+export class PipeOp extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
-export interface PipeOp extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Pipe;
   xref: XrefId;
-  name: string;
-}
 
-export function createPipeOp(xref: XrefId, slot: SlotHandle, name: string): PipeOp {
-  return {
-    kind: OpKind.Pipe,
-    xref,
-    handle: slot,
-    name,
-    ...NEW_OP,
-    ...TRAIT_CONSUMES_SLOT,
-  };
+  name: string;
+
+  handle: SlotHandle;
+
+  numSlotsUsed: number = 1;
+
+  constructor(xref: XrefId, slot: SlotHandle, name: string) {
+    super();
+    this.xref = xref;
+    this.name = name;
+    this.handle = slot;
+  }
 }
 
 /**
  * An op corresponding to a namespace instruction, for switching between HTML, SVG, and MathML.
  */
-export interface NamespaceOp extends Op<CreateOp> {
-  kind: OpKind.Namespace;
+export class NamespaceOp extends CreateOp {
   active: Namespace;
-}
 
-export function createNamespaceOp(namespace: Namespace): NamespaceOp {
-  return {
-    kind: OpKind.Namespace,
-    active: namespace,
-    ...NEW_OP,
-  };
+  constructor(active: Namespace) {
+    super();
+    this.active = active;
+  }
 }
 
 /**
  * An op that creates a content projection slot.
  */
-export interface ProjectionDefOp extends Op<CreateOp> {
-  kind: OpKind.ProjectionDef;
-
+export class ProjectionDefOp extends CreateOp {
   // The parsed selector information for this projection def.
   def: o.Expression|null;
-}
 
-export function createProjectionDefOp(def: o.Expression|null): ProjectionDefOp {
-  return {
-    kind: OpKind.ProjectionDef,
-    def,
-    ...NEW_OP,
-  };
+  constructor(def: o.Expression|null) {
+    super();
+    this.def = def;
+  }
 }
 
 /**
  * An op that creates a content projection slot.
  */
-export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Projection;
+export class ProjectionOp extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
   xref: XrefId;
 
-  projectionSlotIndex: number;
+  projectionSlotIndex: number = 0;
 
-  attributes: string[];
+  attributes: string[] = [];
 
-  localRefs: string[];
+  localRefs: string[] = [];
 
   selector: string;
 
-  sourceSpan: ParseSourceSpan;
-}
+  handle: SlotHandle;
 
-export function createProjectionOp(
-    xref: XrefId, selector: string, sourceSpan: ParseSourceSpan): ProjectionOp {
-  return {
-    kind: OpKind.Projection,
-    xref,
-    handle: new SlotHandle(),
-    selector,
-    projectionSlotIndex: 0,
-    attributes: [],
-    localRefs: [],
-    sourceSpan,
-    ...NEW_OP,
-    ...TRAIT_CONSUMES_SLOT,
-  };
+  numSlotsUsed: number = 1;
+
+  sourceSpan: ParseSourceSpan;
+
+  constructor(xref: XrefId, selector: string, sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.selector = selector;
+    this.sourceSpan = sourceSpan;
+    this.handle = new SlotHandle();
+  }
 }
 
 /**
  * Represents an attribute that has been extracted for inclusion in the consts array.
  */
-export interface ExtractedAttributeOp extends Op<CreateOp> {
-  kind: OpKind.ExtractedAttribute;
-
+export class ExtractedAttributeOp extends CreateOp {
   /**
    * The `XrefId` of the template-like element the extracted attribute will belong to.
    */
@@ -628,26 +582,19 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
    * The value expression of the extracted attribute.
    */
   expression: o.Expression|null;
+
+  constructor(
+      target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null) {
+    super();
+    this.target = target;
+    this.bindingKind = bindingKind;
+    this.name = name;
+    this.expression = expression;
+  }
 }
 
-/**
- * Create an `ExtractedAttributeOp`.
- */
-export function createExtractedAttributeOp(
-    target: XrefId, bindingKind: BindingKind, name: string,
-    expression: o.Expression|null): ExtractedAttributeOp {
-  return {
-    kind: OpKind.ExtractedAttribute,
-    target,
-    bindingKind,
-    name,
-    expression,
-    ...NEW_OP,
-  };
-}
-
-export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Defer;
+export class DeferOp extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
   /**
    * The xref of this defer op.
@@ -664,30 +611,30 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   /**
    * Secondary loading block associated with this defer op.
    */
-  loadingView: XrefId|null;
+  loadingView: XrefId|null = null;
 
-  loadingSlot: SlotHandle|null;
+  loadingSlot: SlotHandle|null = null;
 
   /**
    * Secondary placeholder block associated with this defer op.
    */
-  placeholderView: XrefId|null;
+  placeholderView: XrefId|null = null;
 
-  placeholderSlot: SlotHandle|null;
+  placeholderSlot: SlotHandle|null = null;
 
   /**
    * Secondary error block associated with this defer op.
    */
-  errorView: XrefId|null;
+  errorView: XrefId|null = null;
 
-  errorSlot: SlotHandle|null;
+  errorSlot: SlotHandle|null = null;
 
-  placeholderMinimumTime: number|null;
-  loadingMinimumTime: number|null;
-  loadingAfterTime: number|null;
+  placeholderMinimumTime: number|null = null;
+  loadingMinimumTime: number|null = null;
+  loadingAfterTime: number|null = null;
 
-  placeholderConfig: o.Expression|null;
-  loadingConfig: o.Expression|null;
+  placeholderConfig: o.Expression|null = null;
+  loadingConfig: o.Expression|null = null;
 
   /**
    * Metadata about this defer block, provided by the parser.
@@ -698,39 +645,26 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    * After processing, the resolver function for the defer deps will be extracted to the constant
    * pool, and a reference to that function will be populated here.
    */
-  resolverFn: o.Expression|null;
+  resolverFn: o.Expression|null = null;
+
+  handle: SlotHandle = new SlotHandle();
+
+  numSlotsUsed: number = 2;
 
   sourceSpan: ParseSourceSpan;
+
+  constructor(
+      xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.mainView = main;
+    this.mainSlot = mainSlot;
+    this.metadata = metadata;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
-export function createDeferOp(
-    xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
-    sourceSpan: ParseSourceSpan): DeferOp {
-  return {
-    kind: OpKind.Defer,
-    xref,
-    handle: new SlotHandle(),
-    mainView: main,
-    mainSlot,
-    loadingView: null,
-    loadingSlot: null,
-    loadingConfig: null,
-    loadingMinimumTime: null,
-    loadingAfterTime: null,
-    placeholderView: null,
-    placeholderSlot: null,
-    placeholderConfig: null,
-    placeholderMinimumTime: null,
-    errorView: null,
-    errorSlot: null,
-    metadata,
-    resolverFn: null,
-    sourceSpan,
-    ...NEW_OP,
-    ...TRAIT_CONSUMES_SLOT,
-    numSlotsUsed: 2,
-  };
-}
 interface DeferTriggerBase {
   kind: DeferTriggerKind;
 }
@@ -789,9 +723,7 @@ interface DeferViewportTrigger extends DeferTriggerWithTargetBase {
 export type DeferTrigger = DeferIdleTrigger|DeferImmediateTrigger|DeferTimerTrigger|
     DeferHoverTrigger|DeferInteractionTrigger|DeferViewportTrigger;
 
-export interface DeferOnOp extends Op<CreateOp> {
-  kind: OpKind.DeferOn;
-
+export class DeferOnOp extends CreateOp {
   defer: XrefId;
 
   /**
@@ -805,19 +737,15 @@ export interface DeferOnOp extends Op<CreateOp> {
   prefetch: boolean;
 
   sourceSpan: ParseSourceSpan;
-}
 
-export function createDeferOnOp(
-    defer: XrefId, trigger: DeferTrigger, prefetch: boolean,
-    sourceSpan: ParseSourceSpan): DeferOnOp {
-  return {
-    kind: OpKind.DeferOn,
-    defer,
-    trigger,
-    prefetch,
-    sourceSpan,
-    ...NEW_OP,
-  };
+  constructor(
+      defer: XrefId, trigger: DeferTrigger, prefetch: boolean, sourceSpan: ParseSourceSpan) {
+    super();
+    this.defer = defer;
+    this.trigger = trigger;
+    this.prefetch = prefetch;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
@@ -844,9 +772,7 @@ export interface I18nParamValue {
 /**
  * Represents an i18n message that has been extracted for inclusion in the consts array.
  */
-export interface I18nMessageOp extends Op<CreateOp> {
-  kind: OpKind.I18nMessage;
-
+export class I18nMessageOp extends CreateOp {
   /**
    * An id used to reference this message.
    */
@@ -886,126 +812,135 @@ export interface I18nMessageOp extends Op<CreateOp> {
   /**
    * A list of sub-messages that are referenced by this message.
    */
-  subMessages: XrefId[];
+  subMessages: XrefId[] = [];
+
+  constructor(
+      xref: XrefId, i18nBlock: XrefId, message: i18n.Message, messagePlaceholder: string|null,
+      params: Map<string, o.Expression>, postprocessingParams: Map<string, o.Expression>,
+      needsPostprocessing: boolean) {
+    super();
+    this.xref = xref;
+    this.i18nBlock = i18nBlock;
+    this.message = message;
+    this.messagePlaceholder = messagePlaceholder;
+    this.params = params;
+    this.postprocessingParams = postprocessingParams;
+    this.needsPostprocessing = needsPostprocessing;
+  }
 }
 
-/**
- * Create an `ExtractedMessageOp`.
- */
-export function createI18nMessageOp(
-    xref: XrefId, i18nBlock: XrefId, message: i18n.Message, messagePlaceholder: string|null,
-    params: Map<string, o.Expression>, postprocessingParams: Map<string, o.Expression>,
-    needsPostprocessing: boolean): I18nMessageOp {
-  return {
-    kind: OpKind.I18nMessage,
-    xref,
-    i18nBlock,
-    message,
-    messagePlaceholder,
-    params,
-    postprocessingParams,
-    needsPostprocessing,
-    subMessages: [],
-    ...NEW_OP,
-  };
-}
-
-export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.I18nStart|OpKind.I18n;
+export abstract class I18nOpBase extends CreateOp implements ConsumesSlotOpTrait {
+  consumesSlot: true = true;
 
   /**
    * `XrefId` allocated for this i18n block.
    */
-  xref: XrefId;
+  abstract xref: XrefId;
 
   /**
    * A reference to the root i18n block that this one belongs to. For a root i18n block, this is
    * the same as xref.
    */
-  root: XrefId;
+  abstract root: XrefId;
 
   /**
    * The i18n metadata associated with this op.
    */
-  message: i18n.Message;
+  abstract message: i18n.Message;
 
   /**
    * The index in the consts array where the message i18n message is stored.
    */
-  messageIndex: ConstIndex|null;
+  messageIndex: ConstIndex|null = null;
 
   /**
    * The index of this sub-block in the i18n message. For a root i18n block, this is null.
    */
-  subTemplateIndex: number|null;
+  subTemplateIndex: number|null = null;
 
   /**
    * The i18n context generated from this block. Initially null, until the context is created.
    */
-  context: XrefId|null;
+  context: XrefId|null = null;
+
+  abstract handle: SlotHandle;
+
+  numSlotsUsed: number = 1;
 }
 
 /**
  * Represents an empty i18n block.
  */
-export interface I18nOp extends I18nOpBase {
-  kind: OpKind.I18n;
+export class I18nOp extends I18nOpBase {
+  override xref: XrefId;
+
+  override root: XrefId;
+
+  override message: i18n.Message;
+
+  override handle: SlotHandle;
+
+  constructor(xref: XrefId, handle: SlotHandle, message: i18n.Message, root?: XrefId) {
+    super();
+    this.xref = xref;
+    this.handle = handle;
+    this.root = root ?? xref;
+    this.message = message;
+  }
 }
 
 /**
  * Represents the start of an i18n block.
  */
-export interface I18nStartOp extends I18nOpBase {
-  kind: OpKind.I18nStart;
-}
+export class I18nStartOp extends I18nOpBase implements CollapsableStartTrait<CreateOp> {
+  collapsableStart: true = true;
 
-/**
- * Create an `I18nStartOp`.
- */
-export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: XrefId): I18nStartOp {
-  return {
-    kind: OpKind.I18nStart,
-    xref,
-    handle: new SlotHandle(),
-    root: root ?? xref,
-    message,
-    messageIndex: null,
-    subTemplateIndex: null,
-    context: null,
-    ...NEW_OP,
-    ...TRAIT_CONSUMES_SLOT,
-  };
+  override xref: XrefId;
+
+  override root: XrefId;
+
+  override message: i18n.Message;
+
+  override handle: SlotHandle = new SlotHandle();
+
+  constructor(xref: XrefId, message: i18n.Message, root?: XrefId) {
+    super();
+    this.xref = xref;
+    this.root = root ?? xref;
+    this.message = message;
+  }
+
+  collapse(): I18nOp {
+    let op = new I18nOp(this.xref, this.handle, this.message, this.root);
+    op.messageIndex = this.messageIndex;
+    op.subTemplateIndex = this.subTemplateIndex;
+    op.context = this.context;
+    op.numSlotsUsed = this.numSlotsUsed;
+    return op;
+  }
 }
 
 /**
  * Represents the end of an i18n block.
  */
-export interface I18nEndOp extends Op<CreateOp> {
-  kind: OpKind.I18nEnd;
+export class I18nEndOp extends CreateOp implements CollapsableEndTrait<CreateOp> {
+  collapsableEnd: true = true;
 
   /**
    * The `XrefId` of the `I18nStartOp` that created this block.
    */
   xref: XrefId;
-}
 
-/**
- * Create an `I18nEndOp`.
- */
-export function createI18nEndOp(xref: XrefId): I18nEndOp {
-  return {
-    kind: OpKind.I18nEnd,
-    xref,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId) {
+    super();
+    this.xref = xref;
+  }
 }
 
 /**
  * An op that represents the start of an ICU expression.
  */
-export interface IcuStartOp extends Op<CreateOp> {
-  kind: OpKind.IcuStart;
-
+export class IcuStartOp extends CreateOp {
   /**
    * The ID of the ICU.
    */
@@ -1024,49 +959,34 @@ export interface IcuStartOp extends Op<CreateOp> {
   /**
    * A reference to the i18n context for this op. Initially null, until the context is created.
    */
-  context: XrefId|null;
+  context: XrefId|null = null;
 
   sourceSpan: ParseSourceSpan;
-}
 
-/**
- * Creates an ICU start op.
- */
-export function createIcuStartOp(
-    xref: XrefId, message: i18n.Message, messagePlaceholder: string,
-    sourceSpan: ParseSourceSpan): IcuStartOp {
-  return {
-    kind: OpKind.IcuStart,
-    xref,
-    message,
-    messagePlaceholder,
-    context: null,
-    sourceSpan,
-    ...NEW_OP,
-  };
+  constructor(
+      xref: XrefId, message: i18n.Message, messagePlaceholder: string,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.xref = xref;
+    this.message = message;
+    this.messagePlaceholder = messagePlaceholder;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**
  * An op that represents the end of an ICU expression.
  */
-export interface IcuEndOp extends Op<CreateOp> {
-  kind: OpKind.IcuEnd;
-
+export class IcuEndOp extends CreateOp {
   /**
    * The ID of the corresponding IcuStartOp.
    */
   xref: XrefId;
-}
 
-/**
- * Creates an ICU end op.
- */
-export function createIcuEndOp(xref: XrefId): IcuEndOp {
-  return {
-    kind: OpKind.IcuEnd,
-    xref,
-    ...NEW_OP,
-  };
+  constructor(xref: XrefId) {
+    super();
+    this.xref = xref;
+  }
 }
 
 /**
@@ -1083,15 +1003,13 @@ export function createIcuEndOp(xref: XrefId): IcuEndOp {
  * generate a separate context. Instead their content is included in the translated message for
  * their root block.
  */
-export interface I18nContextOp extends Op<CreateOp> {
-  kind: OpKind.I18nContext;
-
-  contextKind: I18nContextKind;
-
+export class I18nContextOp extends CreateOp {
   /**
    *  The id of this context.
    */
   xref: XrefId;
+
+  contextKind: I18nContextKind;
 
   /**
    * A reference to the I18nStartOp or I18nOp this context belongs to.
@@ -1109,30 +1027,25 @@ export interface I18nContextOp extends Op<CreateOp> {
   /**
    * The param map for this context.
    */
-  params: Map<string, I18nParamValue[]>;
+  params: Map<string, I18nParamValue[]> = new Map();
 
   /**
    * The post-processing param map for this context.
    */
-  postprocessingParams: Map<string, I18nParamValue[]>;
+  postprocessingParams: Map<string, I18nParamValue[]> = new Map();
 
   sourceSpan: ParseSourceSpan;
-}
 
-export function createI18nContextOp(
-    contextKind: I18nContextKind, xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
-    sourceSpan: ParseSourceSpan): I18nContextOp {
-  return {
-    kind: OpKind.I18nContext,
-    contextKind,
-    xref,
-    i18nBlock,
-    message,
-    sourceSpan,
-    params: new Map(),
-    postprocessingParams: new Map(),
-    ...NEW_OP,
-  };
+  constructor(
+      contextKind: I18nContextKind, xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
+      sourceSpan: ParseSourceSpan) {
+    super();
+    this.contextKind = contextKind;
+    this.xref = xref;
+    this.i18nBlock = i18nBlock;
+    this.message = message;
+    this.sourceSpan = sourceSpan;
+  }
 }
 
 /**

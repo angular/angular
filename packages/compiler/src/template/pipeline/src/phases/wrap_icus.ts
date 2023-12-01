@@ -17,22 +17,22 @@ export function wrapI18nIcus(job: CompilationJob): void {
     let currentI18nOp: ir.I18nStartOp|null = null;
     let addedI18nId: ir.XrefId|null = null;
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
+      switch (true) {
+        case op instanceof ir.I18nStartOp:
           currentI18nOp = op;
           break;
-        case ir.OpKind.I18nEnd:
+        case op instanceof ir.I18nEndOp:
           currentI18nOp = null;
           break;
-        case ir.OpKind.IcuStart:
+        case op instanceof ir.IcuStartOp:
           if (currentI18nOp === null) {
             addedI18nId = job.allocateXrefId();
-            ir.OpList.insertBefore<ir.CreateOp>(ir.createI18nStartOp(addedI18nId, op.message), op);
+            ir.OpList.insertBefore<ir.CreateOp>(new ir.I18nStartOp(addedI18nId, op.message), op);
           }
           break;
-        case ir.OpKind.IcuEnd:
+        case op instanceof ir.IcuEndOp:
           if (addedI18nId !== null) {
-            ir.OpList.insertAfter<ir.CreateOp>(ir.createI18nEndOp(addedI18nId), op);
+            ir.OpList.insertAfter<ir.CreateOp>(new ir.I18nEndOp(addedI18nId), op);
             addedI18nId = null;
           }
           break;

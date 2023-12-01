@@ -24,7 +24,7 @@ export function resolveDollarEvent(job: CompilationJob): void {
 function transformDollarEvent(
     unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
-    if (op.kind === ir.OpKind.Listener) {
+    if (op instanceof ir.ListenerOp) {
       ir.transformExpressionsInOp(op, (expr) => {
         if (expr instanceof ir.LexicalReadExpr && expr.name === '$event') {
           op.consumesDollarEvent = true;

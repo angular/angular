@@ -18,13 +18,13 @@ import type {CompilationJob} from '../compilation';
 export function parseExtractedStyles(job: CompilationJob) {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.ExtractedAttribute && op.bindingKind === ir.BindingKind.Attribute &&
+      if (op instanceof ir.ExtractedAttributeOp && op.bindingKind === ir.BindingKind.Attribute &&
           ir.isStringLiteral(op.expression!)) {
         if (op.name === 'style') {
           const parsedStyles = parseStyle(op.expression.value);
           for (let i = 0; i < parsedStyles.length - 1; i += 2) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
+                new ir.ExtractedAttributeOp(
                     op.target, ir.BindingKind.StyleProperty, parsedStyles[i],
                     o.literal(parsedStyles[i + 1])),
                 op);
@@ -34,8 +34,7 @@ export function parseExtractedStyles(job: CompilationJob) {
           const parsedClasses = op.expression.value.trim().split(/\s+/g);
           for (const parsedClass of parsedClasses) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.ClassName, parsedClass, null),
+                new ir.ExtractedAttributeOp(op.target, ir.BindingKind.ClassName, parsedClass, null),
                 op);
           }
           ir.OpList.remove<ir.CreateOp>(op);

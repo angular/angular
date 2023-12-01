@@ -8,34 +8,14 @@
 
 import type {ParseSourceSpan} from '../../../../parse_util';
 import type {Expression} from './expression';
+import type {SlotHandle} from './handle';
 import type {Op, XrefId} from './operations';
-import {SlotHandle} from './handle';
-
-/**
- * Marker symbol for `ConsumesSlotOpTrait`.
- */
-export const ConsumesSlot = Symbol('ConsumesSlot');
-
-/**
- * Marker symbol for `DependsOnSlotContextOpTrait`.
- */
-export const DependsOnSlotContext = Symbol('DependsOnSlotContext');
-
-/**
- * Marker symbol for `ConsumesVars` trait.
- */
-export const ConsumesVarsTrait = Symbol('ConsumesVars');
-
-/**
- * Marker symbol for `UsesVarOffset` trait.
- */
-export const UsesVarOffset = Symbol('UsesVarOffset');
 
 /**
  * Marks an operation as requiring allocation of one or more data slots for storage.
  */
 export interface ConsumesSlotOpTrait {
-  readonly[ConsumesSlot]: true;
+  consumesSlot: true;
 
   /**
    * Assigned data slot (the starting index, if more than one slot is needed) for this operation, or
@@ -68,7 +48,7 @@ export interface ConsumesSlotOpTrait {
  * this implicit context to be `advance()`'d to point at a particular slot prior to execution.
  */
 export interface DependsOnSlotContextOpTrait {
-  readonly[DependsOnSlotContext]: true;
+  dependsOnSlotContext: true;
 
   /**
    * `XrefId` of the `ConsumesSlotOpTrait` which the implicit slot context must reference before
@@ -83,7 +63,7 @@ export interface DependsOnSlotContextOpTrait {
  * Marker trait indicating that an operation or expression consumes variable storage space.
  */
 export interface ConsumesVarsTrait {
-  [ConsumesVarsTrait]: true;
+  consumesVars: true;
 }
 
 /**
@@ -91,51 +71,40 @@ export interface ConsumesVarsTrait {
  * slots used prior to it.
  */
 export interface UsesVarOffsetTrait {
-  [UsesVarOffset]: true;
+  usesVarOffset: true;
 
   varOffset: number|null;
 }
 
 /**
- * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
- * implementors of the trait).
+ * An op that has a corresponding `end` op, and can be collapsed into a single op. For example,
+ * ElementStart and ElementEnd can be collapsed into Element.
  */
-export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'handle'> = {
-  [ConsumesSlot]: true,
-  numSlotsUsed: 1,
-} as const;
+export interface CollapsableStartTrait<OpT extends Op<OpT>> {
+  collapsableStart: true;
 
-/**
- * Default values for most `DependsOnSlotContextOpTrait` fields (used with the spread operator to
- * initialize implementors of the trait).
- */
-export const TRAIT_DEPENDS_ON_SLOT_CONTEXT:
-    Omit<DependsOnSlotContextOpTrait, 'target'|'sourceSpan'> = {
-      [DependsOnSlotContext]: true,
-    } as const;
+  /**
+   * The xref associated with this op.
+   */
+  xref: XrefId;
 
-/**
- * Default values for `UsesVars` fields (used with the spread operator to initialize
- * implementors of the trait).
- */
-export const TRAIT_CONSUMES_VARS: ConsumesVarsTrait = {
-  [ConsumesVarsTrait]: true,
-} as const;
+  collapse(): Op<OpT>;
+}
 
-/**
- * Default values for `UsesVarOffset` fields (used with the spread operator to initialize
- * implementors of this trait).
- */
-export const TRAIT_USES_VAR_OFFSET: UsesVarOffsetTrait = {
-  [UsesVarOffset]: true,
-  varOffset: null,
-} as const;
+export interface CollapsableEndTrait<OpT extends Op<OpT>> {
+  collapsableEnd: true;
+
+  /**
+   * The xref of the corresponding start op.
+   */
+  xref: XrefId;
+}
 
 /**
  * Test whether an operation implements `ConsumesSlotOpTrait`.
  */
 export function hasConsumesSlotTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesSlotOpTrait {
-  return (op as Partial<ConsumesSlotOpTrait>)[ConsumesSlot] === true;
+  return 'consumesSlot' in op;
 }
 
 /**
@@ -143,7 +112,7 @@ export function hasConsumesSlotTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&Co
  */
 export function hasDependsOnSlotContextTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&
     DependsOnSlotContextOpTrait {
-  return (op as Partial<DependsOnSlotContextOpTrait>)[DependsOnSlotContext] === true;
+  return 'dependsOnSlotContext' in op;
 }
 
 /**
@@ -153,7 +122,7 @@ export function hasConsumesVarsTrait<ExprT extends Expression>(expr: ExprT): exp
     ConsumesVarsTrait;
 export function hasConsumesVarsTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesVarsTrait;
 export function hasConsumesVarsTrait(value: any): boolean {
-  return (value as Partial<ConsumesVarsTrait>)[ConsumesVarsTrait] === true;
+  return 'consumesVars' in value;
 }
 
 /**
@@ -161,5 +130,21 @@ export function hasConsumesVarsTrait(value: any): boolean {
  */
 export function hasUsesVarOffsetTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
     UsesVarOffsetTrait {
-  return (expr as Partial<UsesVarOffsetTrait>)[UsesVarOffset] === true;
+  return 'usesVarOffset' in expr;
+}
+
+/**
+ * Test whether an expression implements `CollapsableStartTrait`.
+ */
+export function hasCollapsableStartTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&
+    CollapsableStartTrait<OpT> {
+  return 'collapsableStart' in op;
+}
+
+/**
+ * Test whether an expression implements `CollapsableEndTrait`.
+ */
+export function hasCollapsableEndTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&
+    CollapsableEndTrait<OpT> {
+  return 'collapsableEnd' in op;
 }

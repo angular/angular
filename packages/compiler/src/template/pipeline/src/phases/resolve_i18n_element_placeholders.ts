@@ -18,11 +18,11 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
   const elements = new Map<ir.XrefId, ir.ElementStartOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nContext:
+      switch (true) {
+        case op instanceof ir.I18nContextOp:
           i18nContexts.set(op.xref, op);
           break;
-        case ir.OpKind.ElementStart:
+        case op instanceof ir.ElementStartOp:
           elements.set(op.xref, op);
           break;
       }
@@ -39,17 +39,17 @@ function resolvePlaceholdersForView(
   // IR.
   let currentOps: {i18nBlock: ir.I18nStartOp, i18nContext: ir.I18nContextOp}|null = null;
   for (const op of unit.create) {
-    switch (op.kind) {
-      case ir.OpKind.I18nStart:
+    switch (true) {
+      case op instanceof ir.I18nStartOp:
         if (!op.context) {
           throw Error('Could not find i18n context for i18n op');
         }
         currentOps = {i18nBlock: op, i18nContext: i18nContexts.get(op.context)!};
         break;
-      case ir.OpKind.I18nEnd:
+      case op instanceof ir.I18nEndOp:
         currentOps = null;
         break;
-      case ir.OpKind.ElementStart:
+      case op instanceof ir.ElementStartOp:
         // For elements with i18n placeholders, record its slot value in the params map under the
         // corresponding tag start placeholder.
         if (op.i18nPlaceholder !== undefined) {
@@ -68,7 +68,7 @@ function resolvePlaceholdersForView(
               currentOps.i18nBlock.subTemplateIndex, flags);
         }
         break;
-      case ir.OpKind.ElementEnd:
+      case op instanceof ir.ElementEndOp:
         // For elements with i18n placeholders, record its slot value in the params map under the
         // corresponding tag close placeholder.
         const startOp = elements.get(op.xref);
@@ -86,7 +86,7 @@ function resolvePlaceholdersForView(
           }
         }
         break;
-      case ir.OpKind.Template:
+      case op instanceof ir.TemplateOp:
         // For templates with i18n placeholders, record its slot value in the params map under the
         // corresponding template start and close placeholders.
         if (op.i18nPlaceholder !== undefined) {
@@ -125,7 +125,7 @@ function resolvePlaceholdersForView(
 function getSubTemplateIndexForTemplateTag(
     job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, op: ir.TemplateOp): number|null {
   for (const childOp of job.views.get(op.xref)!.create) {
-    if (childOp.kind === ir.OpKind.I18nStart) {
+    if (childOp instanceof ir.I18nStartOp) {
       return childOp.subTemplateIndex;
     }
   }
