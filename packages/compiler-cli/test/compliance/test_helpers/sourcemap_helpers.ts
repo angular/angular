@@ -32,13 +32,18 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * @param expectedSource The content of the expected source file, containing mapping information.
  * @returns The content of the expected source file, stripped of the mapping information.
  */
-export function checkMappings(
+export function stripAndCheckMappings(
     fs: ReadonlyFileSystem, generated: string, generatedPath: AbsoluteFsPath,
-    expectedSource: string, expectedPath: AbsoluteFsPath): string {
+    expectedSource: string, expectedPath: AbsoluteFsPath, skipMappingCheck: boolean): string {
   // Generate the candidate source maps.
   const actualMappings = getMappedSegments(fs, generatedPath, generated);
 
   const {expected, mappings} = extractMappings(fs, expectedSource);
+
+  // TODO: Remove when https://github.com/angular/angular/issues/51647 is fixed.
+  if (skipMappingCheck) {
+    return expected;
+  }
 
   const failures: string[] = [];
   for (const expectedMapping of mappings) {
