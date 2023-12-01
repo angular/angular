@@ -670,6 +670,10 @@ function convertAst(
         ast.args.map(a => convertAst(a, job, baseSourceSpan)));
   } else if (ast instanceof e.EmptyExpr) {
     return new ir.EmptyExpr(convertSourceSpan(ast.span, baseSourceSpan));
+  } else if (ast instanceof e.PrefixNot) {
+    return o.not(
+        convertAst(ast.expression, job, baseSourceSpan),
+        convertSourceSpan(ast.span, baseSourceSpan));
   } else {
     throw new Error(`Unhandled expression type "${ast.constructor.name}" in file "${
         baseSourceSpan?.start.file.url}"`);
