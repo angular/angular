@@ -86,6 +86,24 @@ function resolvePlaceholdersForView(
           }
         }
         break;
+      case ir.OpKind.Projection:
+        debugger;
+        // For content projections with i18n placeholders, record its slot value in the params map
+        // under the corresponding tag start and close placeholders.
+        if (op.i18nPlaceholder !== undefined) {
+          if (currentOps === null) {
+            throw Error('i18n tag placeholder should only occur inside an i18n block');
+          }
+          const {startName, closeName} = op.i18nPlaceholder;
+          let flags = ir.I18nParamValueFlags.ElementTag;
+          addParam(
+              currentOps.i18nContext.params, startName, op.handle.slot!,
+              currentOps.i18nBlock.subTemplateIndex, flags | ir.I18nParamValueFlags.OpenTag);
+          addParam(
+              currentOps.i18nContext.params, closeName, op.handle.slot!,
+              currentOps.i18nBlock.subTemplateIndex, flags | ir.I18nParamValueFlags.CloseTag);
+        }
+        break;
       case ir.OpKind.Template:
         // For templates with i18n placeholders, record its slot value in the params map under the
         // corresponding template start and close placeholders.
