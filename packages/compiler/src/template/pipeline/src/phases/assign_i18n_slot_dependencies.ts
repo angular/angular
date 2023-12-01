@@ -38,6 +38,9 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
     // Assign i18n expressions to target the last slot in their owning block. Also move the ops
     // below any other ops that depend on that same slot context to mimic the behavior of
     // TemplateDefinitionBuilder.
+    // TODO(mmalerba): We may want to simplify the ordering logic once compatibility with
+    // TemplateDefinitionBuilder is no longer required. Though we likely still want *some* type of
+    // ordering to maximize opportunities for chaining.
     let moveToTarget: ir.XrefId|null = null;
     let opsToMove: ir.UpdateOp[] = [];
     let previousTarget: ir.XrefId|null = null;
