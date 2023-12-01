@@ -31,7 +31,7 @@ import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl, SUPPORTED_DIAGNOSTIC_NAMES} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
@@ -782,6 +782,8 @@ export class NgCompiler {
         // (providing the full TemplateTypeChecker API) and if strict mode is not enabled. In strict
         // mode, the user is in full control of type inference.
         suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
+        controlFlowPreventingContentProjection:
+            this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
       };
     } else {
       typeCheckingConfig = {
@@ -810,6 +812,8 @@ export class NgCompiler {
         // In "basic" template type-checking mode, no warnings are produced since most things are
         // not checked anyways.
         suggestionsForSuboptimalTypeInference: false,
+        controlFlowPreventingContentProjection:
+            this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
       };
     }
 
@@ -847,6 +851,11 @@ export class NgCompiler {
     }
     if (this.options.strictLiteralTypes !== undefined) {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
+    }
+    if (this.options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection !==
+        undefined) {
+      typeCheckingConfig.controlFlowPreventingContentProjection =
+          this.options.extendedDiagnostics.checks.controlFlowPreventingContentProjection;
     }
 
     return typeCheckingConfig;
@@ -1285,10 +1294,8 @@ ${allowedCategoryLabels.join('\n')}
     });
   }
 
-  const allExtendedDiagnosticNames =
-      ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name) as string[];
   for (const [checkName, category] of Object.entries(options.extendedDiagnostics?.checks ?? {})) {
-    if (!allExtendedDiagnosticNames.includes(checkName)) {
+    if (!SUPPORTED_DIAGNOSTIC_NAMES.has(checkName)) {
       yield makeConfigDiagnostic({
         category: ts.DiagnosticCategory.Error,
         code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
@@ -1296,7 +1303,7 @@ ${allowedCategoryLabels.join('\n')}
 Angular compiler option "extendedDiagnostics.checks" has an unknown check: "${checkName}".
 
 Allowed check names are:
-${allExtendedDiagnosticNames.join('\n')}
+${Array.from(SUPPORTED_DIAGNOSTIC_NAMES).join('\n')}
         `.trim(),
       });
     }

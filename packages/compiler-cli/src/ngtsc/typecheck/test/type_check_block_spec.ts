@@ -787,6 +787,7 @@ describe('type check blocks', () => {
       enableTemplateTypeChecker: false,
       useInlineTypeConstructors: true,
       suggestionsForSuboptimalTypeInference: false,
+      controlFlowPreventingContentProjection: 'warning',
     };
 
     describe('config.applyTemplateContextGuards', () => {
