@@ -918,10 +918,18 @@ class TcbDomSchemaCheckerOp extends TcbOp {
  * flow node didn't exist.
  */
 class TcbControlFlowContentProjectionOp extends TcbOp {
+  private readonly category: ts.DiagnosticCategory;
+
   constructor(
       private tcb: Context, private element: TmplAstElement, private ngContentSelectors: string[],
       private componentName: string) {
     super();
+
+    // We only need to account for `error` and `warning` since
+    // this check won't be enabled for `suppress`.
+    this.category = tcb.env.config.controlFlowPreventingContentProjection === 'error' ?
+        ts.DiagnosticCategory.Error :
+        ts.DiagnosticCategory.Warning;
   }
 
   override readonly optional = false;
@@ -944,7 +952,7 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
           if (child instanceof TmplAstElement || child instanceof TmplAstTemplate) {
             matcher.match(createCssSelectorFromNode(child), (_, originalSelector) => {
               this.tcb.oobRecorder.controlFlowPreventingContentProjection(
-                  this.tcb.id, child, this.componentName, originalSelector, root,
+                  this.tcb.id, this.category, child, this.componentName, originalSelector, root,
                   this.tcb.hostPreserveWhitespaces);
             });
           }
@@ -1940,7 +1948,9 @@ class Scope {
     if (node instanceof TmplAstElement) {
       const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
       this.elementOpMap.set(node, opIndex);
-      this.appendContentProjectionCheckOp(node);
+      if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
+        this.appendContentProjectionCheckOp(node);
+      }
       this.appendDirectivesAndInputsOfNode(node);
       this.appendOutputsOfNode(node);
       this.appendChildren(node);
