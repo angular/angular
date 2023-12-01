@@ -7,6 +7,8 @@
 // @public
 export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
+    CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = "controlFlowPreventingContentProjection",
+    // (undocumented)
     INTERPOLATED_SIGNAL_NOT_INVOKED = "interpolatedSignalNotInvoked",
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
