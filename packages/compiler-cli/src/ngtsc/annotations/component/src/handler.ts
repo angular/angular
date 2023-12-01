@@ -631,7 +631,7 @@ export class ComponentDecoratorHandler implements
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
     if (this.compilationMode === CompilationMode.LOCAL) {
-      console.warn('>>>>> Hey LCM resolve for component!', node.name.getText());
+      // console.warn('>>>>> Hey LCM resolve for component!', node.name.getText());
     }
 
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {

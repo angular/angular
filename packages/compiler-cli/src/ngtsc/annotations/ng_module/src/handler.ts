@@ -550,7 +550,7 @@ export class NgModuleDecoratorHandler implements
 
   register(node: ClassDeclaration, analysis: NgModuleAnalysis): void {
     if (this.compilationMode === CompilationMode.LOCAL) {
-      console.warn('>>>>> Hey register for ngModule!', node.name.getText());
+      // console.warn('>>>>> Hey register for ngModule!', node.name.getText());
     }
 
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
@@ -578,7 +578,7 @@ export class NgModuleDecoratorHandler implements
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
       ResolveResult<NgModuleResolution> {
     if (this.compilationMode === CompilationMode.LOCAL) {
-      console.warn('>>>>> Hey resolve for ngModule!', node.name.getText());
+      // console.warn('>>>>> Hey resolve for ngModule!', node.name.getText());
 
       return {};
     }

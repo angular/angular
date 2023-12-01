@@ -27,7 +27,7 @@ export class ExtraImportsTracker {
   }
 
   addGlobalImportFromIdentifier(node: ts.Node) {
-    console.warn('>>>> addGlobalImportFromIdentifier for', node.getText());
+    // console.warn('>>>> addGlobalImportFromIdentifier for', node.getText());
 
     let identifier: ts.Identifier|null = null;
     if (ts.isIdentifier(node)) {
@@ -40,11 +40,11 @@ export class ExtraImportsTracker {
 
     const sym = this.typeChecker.getSymbolAtLocation(identifier);
     if (sym === undefined) {
-      console.warn('>>>> no sym');
+      // console.warn('>>>> no sym');
       return;
     }
     if (sym.declarations === undefined || sym.declarations.length === 0) {
-      console.warn('>>>> no decls');
+      // console.warn('>>>> no decls');
       return;
     }
 
