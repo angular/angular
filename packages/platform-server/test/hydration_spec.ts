@@ -10,7 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {afterRender, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
+import {afterRender, ApplicationRef, Component, ComponentRef, ContentChildren, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
@@ -4167,6 +4167,89 @@ describe('platform-server hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
+
+      it('should allow re-projection of child content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'mat-step',
+          template: `<ng-template><ng-content /></ng-template>`,
+        })
+        class MatStep {
+          @ViewChild(TemplateRef, {static: true}) content!: TemplateRef<any>;
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'mat-stepper',
+          imports: [NgTemplateOutlet],
+          template: `
+            @for (step of steps; track step) {
+              <ng-container [ngTemplateOutlet]="step.content" />
+            }
+          `,
+        })
+        class MatStepper {
+          @ContentChildren(MatStep) steps!: QueryList<MatStep>;
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'nested-cmp',
+          template: 'Nested cmp content',
+        })
+        class NestedCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [MatStepper, MatStep, NgIf, NestedCmp],
+          selector: 'app',
+          template: `
+            <mat-stepper>
+              <mat-step>Text-only content</mat-step>
+
+              <mat-step>
+                <ng-container>Using ng-containers</ng-container>
+              </mat-step>
+
+              <mat-step>
+                <ng-container *ngIf="true">
+                  Using ng-containers with *ngIf
+                </ng-container>
+              </mat-step>
+
+              <mat-step>
+                @if (true) {
+                  Using built-in control flow (if)
+                }
+              </mat-step>
+
+              <mat-step>
+                <nested-cmp />
+              </mat-step>
+
+            </mat-stepper>
+          `,
+        })
+        class App {
+        }
+
+        const html = await ssr(App);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(App, MatStepper, NestedCmp);
+
+        const appRef = await hydrate(html, App);
+        const compRef = getComponentRef<App>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
 
       it('should project plain text and HTML elements', async () => {
         @Component({
