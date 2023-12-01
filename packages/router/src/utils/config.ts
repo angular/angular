@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, isStandalone, Type, ɵisNgModule as isNgModule, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, InjectionToken, isStandalone, Type, ɵisNgModule as isNgModule, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {RuntimeErrorCode} from '../errors';
@@ -190,15 +190,33 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
 }
 
 /**
- * Makes a copy of the config and adds any default required properties.
+ * The [DI token](guide/glossary/#di-token) for processing the routes when being standardized.
+ *
+ * `CUSTOM_ROUTE_PROCESSOR` is a low level API for processing routes everytime they change.
+ *
+ * @publicApi
  */
-export function standardizeConfig(r: Route): Route {
-  const children = r.children && r.children.map(standardizeConfig);
+export const CUSTOM_ROUTE_PROCESSOR = new InjectionToken<(r: Route) => Route>(
+    'CUSTOM_ROUTE_PROCESSOR',
+);
+
+
+/**
+ * Makes a copy of the config and adds any default required properties and apply the custom route
+ * processor.
+ */
+export function standardizeConfig(r: Route, customRouteProcessor?: (r: Route) => Route): Route {
+  const children = r.children && r.children.map(x => standardizeConfig(x, customRouteProcessor));
   const c = children ? {...r, children} : {...r};
   if ((!c.component && !c.loadComponent) && (children || c.loadChildren) &&
       (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
     c.component = EmptyOutletComponent;
   }
+
+  if (customRouteProcessor) {
+    return customRouteProcessor(c);
+  }
+
   return c;
 }
 

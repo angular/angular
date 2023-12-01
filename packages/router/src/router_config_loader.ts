@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, EnvironmentInjector, inject, Injectable, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
+import {Compiler, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {DefaultExport, LoadChildren, LoadChildrenCallback, LoadedRouterConfig, Route, Routes} from './models';
+import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoObservable} from './utils/collection';
-import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
-
-
+import {assertStandalone, CUSTOM_ROUTE_PROCESSOR, standardizeConfig, validateConfig} from './utils/config';
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
@@ -136,7 +134,9 @@ export function loadChildren(
               // for it's parent module instead.
               rawRoutes = injector.get(ROUTES, [], {optional: true, self: true}).flat();
             }
-            const routes = rawRoutes.map(standardizeConfig);
+            const customRouteProcessor =
+                injector?.get(CUSTOM_ROUTE_PROCESSOR, undefined, {optional: true}) ?? undefined;
+            const routes = rawRoutes.map(x => standardizeConfig(x, customRouteProcessor));
             (typeof ngDevMode === 'undefined' || ngDevMode) &&
                 validateConfig(routes, route.path, requireStandaloneComponents);
             return {routes, injector};

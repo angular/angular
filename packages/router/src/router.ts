@@ -23,7 +23,7 @@ import {Params} from './shared';
 import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {standardizeConfig, validateConfig} from './utils/config';
+import {CUSTOM_ROUTE_PROCESSOR, standardizeConfig, validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 
 
@@ -81,6 +81,7 @@ export class Router {
   private readonly console = inject(Console);
   private readonly stateManager = inject(StateManager);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
+  private customRouteProcessor = inject(CUSTOM_ROUTE_PROCESSOR, {optional: true}) ?? undefined;
   private readonly pendingTasks = inject(InitialRenderPendingTasks);
   private readonly urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
   private readonly navigationTransitions = inject(NavigationTransitions);
@@ -334,7 +335,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && validateConfig(config);
-    this.config = config.map(standardizeConfig);
+    this.config = config.map(x => standardizeConfig(x, this.customRouteProcessor));
     this.navigated = false;
   }
 
