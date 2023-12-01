@@ -11,6 +11,7 @@ import {Component, computed, inject, Input, signal} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
@@ -20,17 +21,31 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   template: `
         <h1>
           Providers for {{ injector?.name  }}
+          {{ searchToken() }} {{ searchType() }}
         </h1>
         <div *ngIf="injector" class="injector-providers">
             <mat-form-field appearance="fill">
               <mat-label>Search by token</mat-label>
-              <input matInput
-                placeholder="provider token"
-                (input)="searchPhrase.set($event.target.value)"
-                [value]="searchPhrase()"
+              <input type="text" matInput
+                placeholder="Provider token"
+                (input)="searchToken.set($event.target.value)"
+                [value]="searchToken()"
               />
-              <mat-icon matSuffix (click)="searchPhrase.set('')">close</mat-icon>
+              <mat-icon matSuffix (click)="searchToken.set('')">close</mat-icon>
             </mat-form-field>
+            <mat-form-field>
+              <mat-label>Search by type</mat-label>
+              <mat-select
+                [value]="searchType()"
+                (selectionChange)="searchType.set($event.value)"
+              >
+                <mat-option>None</mat-option>
+                @for (type of providerTypes; track type) {
+                  <mat-option [value]="type">{{providerTypeToLabel[type]}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
             <table *ngIf="visibleProviders().length > 0" mat-table [dataSource]="visibleProviders()" class="mat-elevation-z4">
               <ng-container matColumnDef="token">
                 <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Token</h3> </th>
@@ -43,7 +58,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
                   @if (provider.type === 'multi') {
                     multi (x{{ provider.index.length }})
                   } @else {
-                    {{typeToLabel[provider.type]}}
+                    {{providerTypeToLabel[provider.type]}}
                   }
                 </td>
               </ng-container>
@@ -120,7 +135,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
     `],
   standalone: true,
   imports: [
-    NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule, MatInputModule,
+    NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule, MatInputModule, MatSelectModule,
     MatFormFieldModule
   ],
 })
@@ -128,22 +143,30 @@ export class InjectorProvidersComponent {
   @Input() injector: SerializedInjector;
   @Input() providers: SerializedProviderRecord[] = [];
 
-  searchPhrase = signal('');
+  searchToken = signal('');
+  searchType = signal('');
   visibleProviders = computed(() => {
-    const searchPhrase = this.searchPhrase().toLowerCase();
-    if (!searchPhrase) {
-      return this.providers;
-    }
-    return this.providers.filter((provider) => provider.token.toLowerCase().includes(searchPhrase));
+    const searchToken = this.searchToken().toLowerCase();
+    const searchType = this.searchType();
+
+    const predicates: ((provider: SerializedProviderRecord) => boolean)[] = [];
+    searchToken &&
+        predicates.push((provider) => provider.token.toLowerCase().includes(searchToken));
+    searchType && predicates.push((provider) => provider.type === searchType);
+
+    return this.providers.filter(
+        (provider) => predicates.every((predicate) => predicate(provider)));
   });
 
-  typeToLabel = {
+  providerTypeToLabel = {
     type: 'Type',
     existing: 'useExisting',
     factory: 'useFactory',
     class: 'useClass',
     value: 'useValue',
   };
+
+  providerTypes = Object.keys(this.providerTypeToLabel);
 
   messageBus = inject(MessageBus<Events>);
 
