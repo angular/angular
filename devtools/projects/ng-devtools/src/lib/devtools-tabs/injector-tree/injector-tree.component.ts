@@ -146,10 +146,8 @@ export class InjectorTreeComponent {
       // Here for our 2 groups of resolution paths, we want to convert them into a tree structure.
       const elementInjectorTree = transformInjectorResolutionPathsIntoTree(elementPaths);
       const environmentInjectorTree = transformInjectorResolutionPathsIntoTree(environmentPaths);
-      console
-          .log({forestWithInjectorPaths, environmentPaths, environmentInjectorTree})
 
-              this.elementInjectorTreeGraph.render(elementInjectorTree);
+      this.elementInjectorTreeGraph.render(elementInjectorTree);
       this.elementInjectorTreeGraph.onNodeClick((_, node) => {
         this.selectInjectorByNode(node);
       });
