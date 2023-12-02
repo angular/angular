@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOf, NgIf} from '@angular/common';
 import {Component, computed, inject, Input, signal} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -21,10 +20,10 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   template: `
         <h1>
           Providers for {{ injector?.name  }}
-          {{ searchToken() }} {{ searchType() }}
         </h1>
-        <div *ngIf="injector" class="injector-providers">
-            <mat-form-field appearance="fill">
+        @if (injector){
+          <div class="injector-providers">
+            <mat-form-field appearance="fill" class="form-field-spacer">
               <mat-label>Search by token</mat-label>
               <input type="text" matInput
                 placeholder="Provider token"
@@ -33,7 +32,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
               />
               <mat-icon matSuffix (click)="searchToken.set('')">close</mat-icon>
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field class="form-field-spacer">
               <mat-label>Search by type</mat-label>
               <mat-select
                 [value]="searchType()"
@@ -46,7 +45,8 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
               </mat-select>
             </mat-form-field>
 
-            <table *ngIf="visibleProviders().length > 0" mat-table [dataSource]="visibleProviders()" class="mat-elevation-z4">
+          @if(visibleProviders().length > 0){
+            <table mat-table [dataSource]="visibleProviders()" class="mat-elevation-z4">
               <ng-container matColumnDef="token">
                 <th mat-header-cell *matHeaderCellDef> <h3 class="column-title">Token</h3> </th>
                 <td mat-cell *matCellDef="let provider"> {{provider.token}} </td>
@@ -76,7 +76,10 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+          }
+
         </div>
+      }
     `,
   styles: [`
         .select {
@@ -86,6 +89,10 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
         :host {
           display: block;
           padding: 16px;
+        }
+
+        .form-field-spacer {
+          margin: 0 4px 0 4px;
         }
 
         table {
@@ -135,7 +142,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
     `],
   standalone: true,
   imports: [
-    NgIf, NgForOf, MatTableModule, MatIconModule, MatTooltipModule, MatInputModule, MatSelectModule,
+    MatTableModule, MatIconModule, MatTooltipModule, MatInputModule, MatSelectModule,
     MatFormFieldModule
   ],
 })
