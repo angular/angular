@@ -1444,8 +1444,13 @@ class TcbForOfOp extends TcbOp {
 
   override execute(): null {
     const loopScope = Scope.forNodes(this.tcb, this.scope, this.block, this.block.children, null);
+    const initializerId = loopScope.resolve(this.block.item);
+    if (!ts.isIdentifier(initializerId)) {
+      throw new Error(
+          `Could not resolve for loop variable ${this.block.item.name} to an identifier`);
+    }
     const initializer = ts.factory.createVariableDeclarationList(
-        [ts.factory.createVariableDeclaration(this.block.item.name)], ts.NodeFlags.Const);
+        [ts.factory.createVariableDeclaration(initializerId)], ts.NodeFlags.Const);
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
@@ -1561,9 +1566,10 @@ class Scope {
 
   /**
    * Map of variables declared on the template that created this `Scope` (represented by
-   * `TmplAstVariable` nodes) to the index of their `TcbVariableOp`s in the `opQueue`.
+   * `TmplAstVariable` nodes) to the index of their `TcbVariableOp`s in the `opQueue`, or to
+   * pre-resolved variable identifiers.
    */
-  private varMap = new Map<TmplAstVariable, number>();
+  private varMap = new Map<TmplAstVariable, number|ts.Identifier>();
 
   /**
    * Statements for this template.
@@ -1635,10 +1641,11 @@ class Scope {
                 tcb, scope, tcbExpression(expression, tcb, scope), expressionAlias));
       }
     } else if (scopedNode instanceof TmplAstForLoopBlock) {
-      this.registerVariable(
-          scope, scopedNode.item,
-          new TcbBlockVariableOp(
-              tcb, scope, ts.factory.createIdentifier(scopedNode.item.name), scopedNode.item));
+      // Register the variable for the loop so it can be resolved by
+      // children. It'll be declared once the loop is created.
+      const loopInitializer = tcb.allocateId();
+      addParseSpanInfo(loopInitializer, scopedNode.item.sourceSpan);
+      scope.varMap.set(scopedNode.item, loopInitializer);
 
       for (const [name, variable] of Object.entries(scopedNode.contextVariables)) {
         if (!this.forLoopContextVariableTypes.has(name)) {
@@ -1770,7 +1777,8 @@ class Scope {
     } else if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
-      return this.resolveOp(this.varMap.get(ref)!);
+      const opIndexOrNode = this.varMap.get(ref)!;
+      return typeof opIndexOrNode === 'number' ? this.resolveOp(opIndexOrNode) : opIndexOrNode;
     } else if (
         ref instanceof TmplAstTemplate && directive === undefined &&
         this.templateCtxOpMap.has(ref)) {
