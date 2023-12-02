@@ -796,23 +796,35 @@ export class NgModuleDecoratorHandler implements
           assertSuccessfulReferenceEmit(type, node, 'pipe');
           return type.expression;
         });
-        const directiveArray = new LiteralArrayExpr(directives);
-        const pipesArray = new LiteralArrayExpr(pipes);
 
-        const directiveExpr = remoteScopesMayRequireCycleProtection && directives.length > 0 ?
-            new FunctionExpr([], [new ReturnStatement(directiveArray)]) :
-            directiveArray;
-        const pipesExpr = remoteScopesMayRequireCycleProtection && pipes.length > 0 ?
-            new FunctionExpr([], [new ReturnStatement(pipesArray)]) :
-            pipesArray;
-        const componentType = this.refEmitter.emit(decl, context);
-        assertSuccessfulReferenceEmit(componentType, node, 'component');
-        const declExpr = componentType.expression;
-        const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
-        const callExpr =
-            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveExpr, pipesExpr]);
+        if (this.compilationMode === CompilationMode.LOCAL &&
+            this.generateExtraImportsInLocalMode) {
+          // In local mode we just want to generate the import statements, no need to generate the
+          // actual remote scoping runtime as it LCm already has its own runtime for scoping.
+          for (const exp of [...directives, ...pipes]) {
+            if (exp instanceof ExternalExpr && exp.value.moduleName) {
+              this.extraImportsTracker.addImportForSourceFile(context, exp.value.moduleName);
+            }
+          }
+        } else if (this.compilationMode !== CompilationMode.LOCAL) {
+          const directiveArray = new LiteralArrayExpr(directives);
+          const pipesArray = new LiteralArrayExpr(pipes);
 
-        ngModuleStatements.push(callExpr.toStmt());
+          const directiveExpr = remoteScopesMayRequireCycleProtection && directives.length > 0 ?
+              new FunctionExpr([], [new ReturnStatement(directiveArray)]) :
+              directiveArray;
+          const pipesExpr = remoteScopesMayRequireCycleProtection && pipes.length > 0 ?
+              new FunctionExpr([], [new ReturnStatement(pipesArray)]) :
+              pipesArray;
+          const componentType = this.refEmitter.emit(decl, context);
+          assertSuccessfulReferenceEmit(componentType, node, 'component');
+          const declExpr = componentType.expression;
+          const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
+          const callExpr =
+              new InvokeFunctionExpr(setComponentScope, [declExpr, directiveExpr, pipesExpr]);
+
+          ngModuleStatements.push(callExpr.toStmt());
+        }
       }
     }
   }
