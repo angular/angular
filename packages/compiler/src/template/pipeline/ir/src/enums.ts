@@ -561,3 +561,9 @@ export enum I18nContextKind {
   RootI18n,
   Icu
 }
+
+export enum TemplateKind {
+  NgTemplate,
+  Structural,
+  Block
+}
