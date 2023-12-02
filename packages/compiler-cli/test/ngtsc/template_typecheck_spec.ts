@@ -5019,6 +5019,40 @@ suppress
           `Type 'number' must have a '[Symbol.iterator]()' method that returns an iterator.`
         ]);
       });
+
+      it('should check for loop variables with the same name as built-in globals', () => {
+        // strictTemplates are necessary so the event listener is checked.
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+            selector: '[dir]'
+          })
+          export class Dir {
+            @Input('dir') value!: string;
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`
+              @for (document of documents; track document) {
+                <button [dir]="document" (click)="$event.stopPropagation()"></button>
+              }
+            \`,
+          })
+          export class Main {
+            documents = [1, 2, 3];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Type 'number' is not assignable to type 'string'.`,
+        ]);
+      });
     });
 
     describe('control flow content projection diagnostics', () => {
