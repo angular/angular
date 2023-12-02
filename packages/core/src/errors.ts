@@ -158,7 +158,7 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
 
   let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 
-  if (ngDevMode && code < 0) {
+  if (code < 0) {
     const addPeriodSeparator = !errorMessage.match(/[.,;!?\n]$/);
     const separator = addPeriodSeparator ? '.' : '';
     errorMessage =

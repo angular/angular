@@ -162,6 +162,9 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
+    "name": "ERROR_DETAILS_PAGE_BASE_URL"
+  },
+  {
     "name": "ERROR_ORIGINAL_ERROR"
   },
   {
