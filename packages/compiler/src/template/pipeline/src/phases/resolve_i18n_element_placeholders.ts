@@ -32,12 +32,17 @@ export function resolveI18nElementPlaceholders(job: ComponentCompilationJob) {
   resolvePlaceholdersForView(job, job.root, i18nContexts, elements);
 }
 
+/**
+ * Recursively resolves element and template tag placeholders in the given view.
+ */
 function resolvePlaceholdersForView(
     job: ComponentCompilationJob, unit: ViewCompilationUnit,
-    i18nContexts: Map<ir.XrefId, ir.I18nContextOp>, elements: Map<ir.XrefId, ir.ElementStartOp>) {
+    i18nContexts: Map<ir.XrefId, ir.I18nContextOp>, elements: Map<ir.XrefId, ir.ElementStartOp>,
+    pendingStructuralDirective?: ir.TemplateOp) {
   // Track the current i18n op and corresponding i18n context op as we step through the creation
   // IR.
   let currentOps: {i18nBlock: ir.I18nStartOp, i18nContext: ir.I18nContextOp}|null = null;
+  let pendingStructuralDirectiveCloses = new Map<ir.XrefId, ir.TemplateOp>();
   for (const op of unit.create) {
     switch (op.kind) {
       case ir.OpKind.I18nStart:
@@ -56,16 +61,15 @@ function resolvePlaceholdersForView(
           if (currentOps === null) {
             throw Error('i18n tag placeholder should only occur inside an i18n block');
           }
-          const {startName, closeName} = op.i18nPlaceholder;
-          let flags = ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.OpenTag;
-          // For self-closing tags, there is no close tag placeholder. Instead, the start tag
-          // placeholder accounts for the start and close of the element.
-          if (closeName === '') {
-            flags |= ir.I18nParamValueFlags.CloseTag;
+          recordElementStart(
+              op, currentOps.i18nContext, currentOps.i18nBlock, pendingStructuralDirective);
+          // If there is a separate close tag placeholder for this element, save the pending
+          // structural directive so we can pass it to the closing tag as well.
+          if (pendingStructuralDirective && op.i18nPlaceholder.closeName) {
+            pendingStructuralDirectiveCloses.set(op.xref, pendingStructuralDirective);
           }
-          addParam(
-              currentOps.i18nContext.params, startName, op.handle.slot!,
-              currentOps.i18nBlock.subTemplateIndex, flags);
+          // Clear out the pending structural directive now that its been accounted for.
+          pendingStructuralDirective = undefined;
         }
         break;
       case ir.OpKind.ElementEnd:
@@ -74,64 +78,157 @@ function resolvePlaceholdersForView(
         const startOp = elements.get(op.xref);
         if (startOp && startOp.i18nPlaceholder !== undefined) {
           if (currentOps === null) {
-            throw Error('i18n tag placeholder should only occur inside an i18n block');
+            throw Error(
+                'AssertionError: i18n tag placeholder should only occur inside an i18n block');
           }
-          const {closeName} = startOp.i18nPlaceholder;
-          // Self-closing tags don't have a closing tag placeholder.
-          if (closeName !== '') {
-            addParam(
-                currentOps.i18nContext.params, closeName, startOp.handle.slot!,
-                currentOps.i18nBlock.subTemplateIndex,
-                ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.CloseTag);
-          }
+          recordElementClose(
+              startOp, currentOps.i18nContext, currentOps.i18nBlock,
+              pendingStructuralDirectiveCloses.get(op.xref));
+          // Clear out the pending structural directive close that was accounted for.
+          pendingStructuralDirectiveCloses.delete(op.xref);
         }
         break;
       case ir.OpKind.Projection:
-        debugger;
         // For content projections with i18n placeholders, record its slot value in the params map
         // under the corresponding tag start and close placeholders.
         if (op.i18nPlaceholder !== undefined) {
           if (currentOps === null) {
             throw Error('i18n tag placeholder should only occur inside an i18n block');
           }
-          const {startName, closeName} = op.i18nPlaceholder;
-          let flags = ir.I18nParamValueFlags.ElementTag;
-          addParam(
-              currentOps.i18nContext.params, startName, op.handle.slot!,
-              currentOps.i18nBlock.subTemplateIndex, flags | ir.I18nParamValueFlags.OpenTag);
-          addParam(
-              currentOps.i18nContext.params, closeName, op.handle.slot!,
-              currentOps.i18nBlock.subTemplateIndex, flags | ir.I18nParamValueFlags.CloseTag);
+          recordElementStart(
+              op, currentOps.i18nContext, currentOps.i18nBlock, pendingStructuralDirective);
+          recordElementClose(
+              op, currentOps.i18nContext, currentOps.i18nBlock, pendingStructuralDirective);
+          // Clear out the pending structural directive now that its been accounted for.
+          pendingStructuralDirective = undefined;
         }
         break;
       case ir.OpKind.Template:
-        // For templates with i18n placeholders, record its slot value in the params map under the
-        // corresponding template start and close placeholders.
-        if (op.i18nPlaceholder !== undefined) {
+        if (op.i18nPlaceholder === undefined) {
+          // If there is no i18n placeholder, just recurse into the view in case it contains i18n
+          // blocks.
+          resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
+        } else {
           if (currentOps === null) {
             throw Error('i18n tag placeholder should only occur inside an i18n block');
           }
-          let startFlags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.OpenTag;
-          const subTemplateIndex = getSubTemplateIndexForTemplateTag(job, currentOps.i18nBlock, op);
-          const {startName, closeName} = op.i18nPlaceholder;
-          const isSelfClosing = closeName === '';
-          if (isSelfClosing) {
-            startFlags |= ir.I18nParamValueFlags.CloseTag;
+          if (op.templateKind === ir.TemplateKind.Structural) {
+            // If this is a structural directive template, don't record anything yet. Instead pass
+            // the current template as a pending structural directive to be recorded when we find
+            // the element, content, or template it belongs to. This allows us to create combined
+            // values that represent, e.g. the start of a template and element at the same time.
+            resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements, op);
+          } else {
+            // If this is some other kind of template, we can record its start, recurse into its
+            // view, and then record its end.
+            recordTemplateStart(
+                job, op, currentOps.i18nContext, currentOps.i18nBlock, pendingStructuralDirective);
+            resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
+            recordTemplateClose(
+                job, op, currentOps!.i18nContext, currentOps!.i18nBlock,
+                pendingStructuralDirective);
+            pendingStructuralDirective = undefined;
           }
-
-          addParam(
-              currentOps.i18nContext.params, startName, op.handle.slot!, subTemplateIndex,
-              startFlags);
-          resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
-          if (!isSelfClosing) {
-            addParam(
-                currentOps.i18nContext.params, closeName, op.handle.slot!, subTemplateIndex,
-                ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag);
-          }
-        } else {
-          resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
         }
         break;
+    }
+  }
+}
+
+/**
+ * Records an i18n param value for the start of an element.
+ */
+function recordElementStart(
+    op: ir.ElementStartOp|ir.ProjectionOp, i18nContext: ir.I18nContextOp, i18nBlock: ir.I18nStartOp,
+    structuralDirective?: ir.TemplateOp) {
+  const {startName, closeName} = op.i18nPlaceholder!;
+  let flags = ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.OpenTag;
+  let value: ir.I18nParamValue['value'] = op.handle.slot!;
+  // If the element is associated with a structural directive, start it as well.
+  if (structuralDirective !== undefined) {
+    flags |= ir.I18nParamValueFlags.TemplateTag;
+    value = {element: value, template: structuralDirective.handle.slot!};
+  }
+  // For self-closing tags, there is no close tag placeholder. Instead, the start tag
+  // placeholder accounts for the start and close of the element.
+  if (!closeName) {
+    flags |= ir.I18nParamValueFlags.CloseTag;
+  }
+  addParam(i18nContext.params, startName, value, i18nBlock.subTemplateIndex, flags);
+}
+
+/**
+ * Records an i18n param value for the closing of an element.
+ */
+function recordElementClose(
+    op: ir.ElementStartOp|ir.ProjectionOp, i18nContext: ir.I18nContextOp, i18nBlock: ir.I18nStartOp,
+    structuralDirective?: ir.TemplateOp) {
+  const {closeName} = op.i18nPlaceholder!;
+  // Self-closing tags don't have a closing tag placeholder, instead the element closing is
+  // recorded via an additional flag on the element start value.
+  if (closeName) {
+    let flags = ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.CloseTag;
+    let value: ir.I18nParamValue['value'] = op.handle.slot!;
+    // If the element is associated with a structural directive, close it as well.
+    if (structuralDirective !== undefined) {
+      flags |= ir.I18nParamValueFlags.TemplateTag;
+      value = {element: value, template: structuralDirective.handle.slot!};
+    }
+    addParam(i18nContext.params, closeName, value, i18nBlock.subTemplateIndex, flags);
+  }
+}
+
+/**
+ * Records an i18n param value for the start of a template.
+ */
+function recordTemplateStart(
+    job: ComponentCompilationJob, op: ir.TemplateOp, i18nContext: ir.I18nContextOp,
+    i18nBlock: ir.I18nStartOp, structuralDirective?: ir.TemplateOp) {
+  let {startName, closeName} = op.i18nPlaceholder!;
+  let flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.OpenTag;
+  // For self-closing tags, there is no close tag placeholder. Instead, the start tag
+  // placeholder accounts for the start and close of the element.
+  if (!closeName) {
+    flags |= ir.I18nParamValueFlags.CloseTag;
+  }
+  // If the template is associated with a structural directive, record the structural directive's
+  // start first. Since this template must be in the structural directive's view, we can just
+  // directly use the current i18n block's sub-template index.
+  if (structuralDirective !== undefined) {
+    addParam(
+        i18nContext.params, startName, structuralDirective.handle.slot!, i18nBlock.subTemplateIndex,
+        flags);
+  }
+  // Record the start of the template. For the sub-template index, pass the index for the template's
+  // view, rather than the current i18n block's index.
+  addParam(
+      i18nContext.params, startName, op.handle.slot!,
+      getSubTemplateIndexForTemplateTag(job, i18nBlock, op), flags);
+}
+
+/**
+ * Records an i18n param value for the closing of a template.
+ */
+function recordTemplateClose(
+    job: ComponentCompilationJob, op: ir.TemplateOp, i18nContext: ir.I18nContextOp,
+    i18nBlock: ir.I18nStartOp, structuralDirective?: ir.TemplateOp) {
+  const {startName, closeName} = op.i18nPlaceholder!;
+  const flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag;
+  // Self-closing tags don't have a closing tag placeholder, instead the template's closing is
+  // recorded via an additional flag on the template start value.
+  if (closeName) {
+    // Record the closing of the template. For the sub-template index, pass the index for the
+    // template's view, rather than the current i18n block's index.
+    addParam(
+        i18nContext.params, closeName, op.handle.slot!,
+        getSubTemplateIndexForTemplateTag(job, i18nBlock, op), flags);
+    // If the template is associated with a structural directive, record the structural directive's
+    // closing after. Since this template must be in the structural directive's view, we can just
+    // directly use the current i18n block's sub-template index.
+    if (structuralDirective !== undefined) {
+      addParam(
+          i18nContext.params, closeName, structuralDirective.handle.slot!,
+          i18nBlock.subTemplateIndex, flags);
     }
   }
 }
@@ -150,10 +247,13 @@ function getSubTemplateIndexForTemplateTag(
   return i18nOp.subTemplateIndex;
 }
 
-/** Add a param value to the given params map. */
+/**
+ * Add a param value to the given params map.
+ */
 function addParam(
-    params: Map<string, ir.I18nParamValue[]>, placeholder: string, value: string|number,
-    subTemplateIndex: number|null, flags: ir.I18nParamValueFlags) {
+    params: Map<string, ir.I18nParamValue[]>, placeholder: string,
+    value: string|number|{element: number, template: number}, subTemplateIndex: number|null,
+    flags: ir.I18nParamValueFlags) {
   const values = params.get(placeholder) ?? [];
   values.push({value, subTemplateIndex, flags});
   params.set(placeholder, values);

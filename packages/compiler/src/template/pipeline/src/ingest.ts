@@ -205,9 +205,11 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   const functionNameSuffix = tagNameWithoutNamespace === null ?
       '' :
       prefixWithNamespace(tagNameWithoutNamespace, namespace);
+  const templateKind =
+      isPlainTemplate(tmpl) ? ir.TemplateKind.NgTemplate : ir.TemplateKind.Structural;
   const tplOp = ir.createTemplateOp(
-      childView.xref, tagNameWithoutNamespace, functionNameSuffix, namespace, i18nPlaceholder,
-      tmpl.startSourceSpan);
+      childView.xref, templateKind, tagNameWithoutNamespace, functionNameSuffix, namespace,
+      i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(tplOp);
 
   ingestBindings(unit, tplOp, tmpl);
@@ -221,7 +223,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   // If this is a plain template and there is an i18n message associated with it, insert i18n start
   // and end ops. For structural directive templates, the i18n ops will be added when ingesting the
   // element/template the directive is placed on.
-  if (isPlainTemplate(tmpl) && tmpl.i18n instanceof i18n.Message) {
+  if (templateKind === ir.TemplateKind.NgTemplate && tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
     ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
@@ -317,7 +319,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
     const tmplOp = ir.createTemplateOp(
-        cView.xref, tagName, 'Conditional', ir.Namespace.HTML,
+        cView.xref, ir.TemplateKind.Block, tagName, 'Conditional', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan);
     unit.create.push(tmplOp);
 
@@ -347,7 +349,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
     const tmplOp = ir.createTemplateOp(
-        cView.xref, null, 'Case', ir.Namespace.HTML,
+        cView.xref, ir.TemplateKind.Block, null, 'Case', ir.Namespace.HTML,
         undefined /* TODO: figure out how i18n works with new control flow */,
         switchCase.sourceSpan);
     unit.create.push(tmplOp);
@@ -377,7 +379,8 @@ function ingestDeferView(
   const secondaryView = unit.job.allocateView(unit.xref);
   ingestNodes(secondaryView, children);
   const templateOp = ir.createTemplateOp(
-      secondaryView.xref, null, `Defer${suffix}`, ir.Namespace.HTML, undefined, sourceSpan!);
+      secondaryView.xref, ir.TemplateKind.Block, null, `Defer${suffix}`, ir.Namespace.HTML,
+      undefined, sourceSpan!);
   unit.create.push(templateOp);
   return templateOp;
 }
