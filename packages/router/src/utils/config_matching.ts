@@ -15,7 +15,6 @@ import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {last} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -53,10 +52,6 @@ export function matchWithChecks(
 
 export function match(
     segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {
-  if (route.path === '**') {
-    return createWildcardMatchResult(segments);
-  }
-
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       return {...noMatch};
@@ -90,16 +85,6 @@ export function match(
     // TODO(atscott): investigate combining parameters and positionalParamSegments
     parameters,
     positionalParamSegments: res.posParams ?? {}
-  };
-}
-
-function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
-  return {
-    matched: true,
-    parameters: segments.length > 0 ? last(segments)!.parameters : {},
-    consumedSegments: segments,
-    remainingSegments: [],
-    positionalParamSegments: {},
   };
 }
 
@@ -197,6 +182,9 @@ export function isImmediateMatch(
   if (getOutlet(route) !== outlet &&
       (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))) {
     return false;
+  }
+  if (route.path === '**') {
+    return true;
   }
   return match(rawSegment, route, segments).matched;
 }
