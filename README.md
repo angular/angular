@@ -33,11 +33,17 @@
   <a href="https://discord.gg/angular">
     <img src="https://img.shields.io/discord/463752820026376202.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8" alt="Discord conversation" />
   </a>
-</p>
+</p>1
 
 <p align="center">
   <a href="https://app.circleci.com/insights/github/angular/angular/workflows/default_workflow?branch=main">
     <img src="https://dl.circleci.com/insights-snapshot/gh/angular/angular/main/default_workflow/badge.svg" alt="InsightsSnapshot" />
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/emancol">
+    <img src="https://avatars.githubusercontent.com/u/53411058?v=4" alt="Emanuele Coluccini" /><br />
+    <sub><b>Emanuele Coluccini</b></sub>
   </a>
 </p>
 
