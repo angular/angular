@@ -178,9 +178,9 @@ function formatValue(value: ir.I18nParamValue): string {
       value: value.value.template,
       flags: value.flags & ~ir.I18nParamValueFlags.ElementTag
     });
-    // TODO(mmalerba): This is likely a bug in TemplateDefinitionBuilder, we should need to record
-    // the template value twice. For now I'm re-implementing the behavior here to keep the output
-    // consistent with TemplateDefinitionBuilder.
+    // TODO(mmalerba): This is likely a bug in TemplateDefinitionBuilder, we should not need to
+    // record the template value twice. For now I'm re-implementing the behavior here to keep the
+    // output consistent with TemplateDefinitionBuilder.
     if ((value.flags & ir.I18nParamValueFlags.OpenTag) &&
         (value.flags & ir.I18nParamValueFlags.CloseTag)) {
       return `${templateValue}${elementValue}${templateValue}`;
