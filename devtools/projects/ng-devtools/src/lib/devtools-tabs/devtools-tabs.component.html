@@ -1,45 +1,44 @@
-<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'">
-
+<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'" [tabPanel]="tabPanel">
   <div id="nav-buttons">
     <button (click)="toggleInspector()" matTooltip="Inspect element">
       <mat-icon [class.inspector-active]="inspectorRunning"> pin_end </mat-icon>
     </button>
-
     <button [matMenuTriggerFor]="menu" matTooltip="Open settings">
       <mat-icon> settings </mat-icon>
     </button>
-
     <button [matMenuTriggerFor]="info" matTooltip="Info">
       <mat-icon> info </mat-icon>
     </button>
   </div>
-
-  <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">
-    {{ tab }}
-  </a>
-
-  <section *ngIf="angularVersion" id="app-angular-version">
-    Angular version:
-    <span id="version-number">
-      {{ angularVersion }}
-    </span>
-    <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
-  </section>
-
+  @for (tab of tabs; track $index) {
+    <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab === tab">
+      {{ tab }}
+    </a>
+  }
+  @if (angularVersion) {
+    <section id="app-angular-version">
+      Angular version:
+      <span id="version-number">
+        {{ angularVersion }}
+      </span>
+      @if (latestSHA) {
+        | DevTools SHA: {{ latestSHA }}
+      }
+    </section>
+  }
 </nav>
-
+<mat-tab-nav-panel #tabPanel>
 <div class="tab-content">
   <ng-directive-explorer
     [showCommentNodes]="showCommentNodes"
     [class.hidden]="activeTab !== 'Components'"
     (toggleInspector)="toggleInspector()"
-  ></ng-directive-explorer>
-  <ng-profiler [class.hidden]="activeTab !== 'Profiler'"></ng-profiler>
-  <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"></ng-router-tree>
-
-  <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"></ng-injector-tree>
+  />
+  <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
+  <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
+  <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
 </div>
-
+</mat-tab-nav-panel>
 <mat-menu #menu="matMenu">
   <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
     <mat-slide-toggle [checked]="timingAPIEnabled">
@@ -57,7 +56,6 @@
     </mat-slide-toggle>
   </div>
 </mat-menu>
-
 <mat-menu #info="matMenu">
   <a mat-menu-item href="https://angular.io/devtools" target="_blank">
     <mat-icon>library_books</mat-icon>

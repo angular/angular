@@ -19,10 +19,8 @@ import {DialogComponent} from './dialog.component';
 @Component({
   selector: 'app-todo-demo',
   standalone: true,
-  imports: [
-    RouterLink, RouterOutlet, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule,
-    CommonModule
-  ],
+  imports:
+      [RouterLink, RouterOutlet, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule],
   styles: [`
       nav {
         padding-top: 20px;
