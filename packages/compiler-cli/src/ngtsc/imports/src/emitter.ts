@@ -236,11 +236,16 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
 
     // If the reference is to an ambient type, it can be referenced directly.
     if (ref.isAmbient && importFlags & ImportFlags.AllowAmbientReferences) {
-      return {
-        kind: ReferenceEmitKind.Success,
-        expression: new WrappedNodeExpr(identifierOfNode(ref.node)),
-        importedFile: null,
-      };
+      const identifier = identifierOfNode(ref.node);
+      if (identifier !== null) {
+        return {
+          kind: ReferenceEmitKind.Success,
+          expression: new WrappedNodeExpr(identifier),
+          importedFile: null,
+        };
+      } else {
+        return null;
+      }
     }
 
     // A Reference can have multiple identities in different files, so it may already have an
