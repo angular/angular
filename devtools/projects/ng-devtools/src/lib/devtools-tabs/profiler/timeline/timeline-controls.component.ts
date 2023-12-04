@@ -18,10 +18,10 @@ import {VisualizationMode} from './visualization-mode';
 })
 export class TimelineControlsComponent {
   @Input() record: ProfilerFrame|undefined;
-  @Input() estimatedFrameRate: number;
-  @Input() visualizationMode: VisualizationMode;
-  @Input() empty: boolean;
-  @Input() changeDetection: boolean;
+  @Input({required: true}) estimatedFrameRate!: number;
+  @Input({required: true}) visualizationMode!: VisualizationMode;
+  @Input({required: true}) empty!: boolean;
+  @Input({required: true}) changeDetection!: boolean;
   @Output() changeVisualizationMode = new EventEmitter<VisualizationMode>();
   @Output() exportProfile = new EventEmitter<void>();
   @Output() toggleChangeDetection = new EventEmitter<boolean>();

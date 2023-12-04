@@ -26,8 +26,8 @@ import {ZippyComponent} from './zippy.component';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DemoAppComponent {
-  @ViewChild(ZippyComponent) zippy: ZippyComponent;
-  @ViewChild('elementReference') elementRef: ElementRef;
+  @ViewChild(ZippyComponent) zippy!: ZippyComponent;
+  @ViewChild('elementReference') elementRef!: ElementRef;
 
   @Input('input_one') inputOne = 'input one';
   @Input() inputTwo = 'input two';

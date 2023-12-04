@@ -52,8 +52,8 @@ import {DialogComponent} from './dialog.component';
   `
 })
 export class TodoAppComponent {
-  name: string;
-  animal: string;
+  name!: string;
+  animal!: string;
 
   constructor(public dialog: MatDialog) {}
 

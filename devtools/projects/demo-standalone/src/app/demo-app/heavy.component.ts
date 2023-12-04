@@ -8,7 +8,7 @@
 
 import {Component, Input} from '@angular/core';
 
-const fib = (n: number) => {
+const fib = (n: number): number => {
   if (n === 1 || n === 2) {
     return 1;
   }

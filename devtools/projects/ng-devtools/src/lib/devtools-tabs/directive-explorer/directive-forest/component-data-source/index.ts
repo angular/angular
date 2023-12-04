@@ -94,8 +94,10 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         this._nodeToFlat.set(node, flatNode);
         return flatNode;
       },
-      (node) => (node ? node.level : -1), (node) => (node ? node.expandable : false),
-      (node) => (node ? node.children : []));
+      (node) => (node ? node.level : -1),
+      (node) => (node ? node.expandable : false),
+      (node) => (node ? node.children : []),
+  );
 
   constructor(private _treeControl: FlatTreeControl<FlatNode>) {
     super();
@@ -113,8 +115,10 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._nodeToFlat.get(indexedNode);
   }
 
-  update(forest: DevToolsNode[], showCommentNodes: boolean):
-      {newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[]} {
+  update(
+      forest: DevToolsNode[],
+      showCommentNodes: boolean,
+      ): {newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[]} {
     if (!forest) {
       return {newItems: [], movedItems: [], removedItems: []};
     }
@@ -141,13 +145,16 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
     this.data.forEach((i) => (i.newItem = false));
 
-    const expandedNodes = {};
+    const expandedNodes: Record<string, boolean> = {};
     this.data.forEach((item) => {
       expandedNodes[item.id] = this._treeControl.isExpanded(item);
     });
 
-    const {newItems, movedItems, removedItems} =
-        diff<FlatNode>(this._differ, this.data, flattenedCollection);
+    const {newItems, movedItems, removedItems} = diff<FlatNode>(
+        this._differ,
+        this.data,
+        flattenedCollection,
+    );
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
@@ -165,13 +172,22 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
   override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
     const changes = [
-      collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData
+      collectionViewer.viewChange,
+      this._treeControl.expansionModel.changed,
+      this._flattenedData,
     ];
-    return merge(...changes).pipe(map(() => {
-      this._expandedData.next(
-          this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl) as FlatNode[]);
-      return this._expandedData.value;
-    }));
+    return merge(...changes)
+        .pipe(
+            map(() => {
+              this._expandedData.next(
+                  this._treeFlattener.expandFlattenedNodes(
+                      this.data,
+                      this._treeControl as FlatTreeControl<FlatNode|undefined>,
+                      ) as FlatNode[],
+              );
+              return this._expandedData.value;
+            }),
+        );
   }
 
   override disconnect(): void {}

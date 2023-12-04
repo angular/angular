@@ -49,10 +49,10 @@ export class BarChartComponent {
       });
     }
   }
-  @Input() color: string;
+  @Input({required: true}) color!: string;
   @Output() barClick = new EventEmitter<BargraphNode>();
 
-  originalData: BargraphNode[];
+  originalData!: BargraphNode[];
   internalData: BarData[] = [];
 }
 

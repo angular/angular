@@ -9,8 +9,8 @@
 import {arrayEquals} from 'shared-utils';
 
 describe('arrayEquals', () => {
-  let a;
-  let b;
+  let a: any;
+  let b: any;
 
   describe('true cases', () => {
     afterEach(() => {

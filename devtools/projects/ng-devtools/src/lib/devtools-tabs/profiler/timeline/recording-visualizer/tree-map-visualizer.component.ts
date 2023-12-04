@@ -34,13 +34,13 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   constructor(private _ngZone: NgZone) {}
 
   private resize$ = new Subject<void>();
-  private _throttledResizeSubscription: Subscription;
+  private _throttledResizeSubscription!: Subscription;
 
   private _resizeObserver: ResizeObserver =
       new ResizeObserver(() => this._ngZone.run(() => this.resize$.next()));
-  treeMapRecords: TreeMapNode;
+  private treeMapRecords!: TreeMapNode;
 
-  @ViewChild('webTree', {static: true}) tree: ElementRef;
+  @ViewChild('webTree', {static: true}) tree!: ElementRef<HTMLElement>;
 
   ngOnInit(): void {
     this._throttledResizeSubscription =
@@ -59,7 +59,7 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   }
 
   private _removeTree(): void {
-    Array.from(this.tree.nativeElement.children).forEach((child: HTMLElement) => child.remove());
+    Array.from(this.tree.nativeElement.children).forEach((child) => child.remove());
   }
 
   private _createTree(): void {

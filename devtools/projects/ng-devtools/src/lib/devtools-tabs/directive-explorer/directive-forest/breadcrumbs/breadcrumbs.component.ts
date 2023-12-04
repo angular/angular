@@ -18,12 +18,12 @@ import {FlatNode} from '../component-data-source';
   styleUrls: ['./breadcrumbs.component.scss'],
 })
 export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
-  @Input() parents: FlatNode[];
+  @Input({required: true}) parents!: FlatNode[];
   @Output() handleSelect = new EventEmitter();
   @Output() mouseOverNode = new EventEmitter();
   @Output() mouseLeaveNode = new EventEmitter();
 
-  @ViewChild('breadcrumbs') breadcrumbsScrollContent: ElementRef;
+  @ViewChild('breadcrumbs') breadcrumbsScrollContent!: ElementRef;
 
   showScrollLeftButton = false;
   showScrollRightButton = false;
