@@ -19,7 +19,7 @@ import {ElementPropertyResolver} from '../property-resolver/element-property-res
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {
-  @Input() currentSelectedComponent: ComponentType;
+  @Input({required: true}) currentSelectedComponent!: ComponentType;
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 

@@ -128,7 +128,7 @@ export class PatchingProfiler extends Profiler {
             // These two abstractions don't have `__ngContext__`, and
             // currently we won't be able to extract the required
             // metadata by the UI.
-            if (!this[METADATA_PROPERTY_NAME]) {
+            if (!(this as any)[METADATA_PROPERTY_NAME]) {
               return;
             }
             const id = self._tracker.getDirectiveId(this);

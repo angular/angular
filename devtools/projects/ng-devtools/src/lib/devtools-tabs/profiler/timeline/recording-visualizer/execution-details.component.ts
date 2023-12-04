@@ -16,5 +16,5 @@ import {SelectedDirective} from './timeline-visualizer.component';
   styleUrls: ['./execution-details.component.scss'],
 })
 export class ExecutionDetailsComponent {
-  @Input() data: SelectedDirective[];
+  @Input({required: true}) data!: SelectedDirective[];
 }

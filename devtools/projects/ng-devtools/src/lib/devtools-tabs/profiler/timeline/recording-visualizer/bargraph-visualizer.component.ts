@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ProfilerFrame} from 'protocol';
-import {Subscription} from 'rxjs';
 
 import {Theme, ThemeService} from '../../../../theme-service';
 import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index';
@@ -21,32 +21,23 @@ import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component'
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
 })
-export class BargraphVisualizerComponent implements OnInit, OnDestroy {
-  barColor: string;
-  profileRecords: BargraphNode[];
+export class BargraphVisualizerComponent {
+  barColor!: string;
+  profileRecords!: BargraphNode[];
 
   @Output() nodeSelect = new EventEmitter<SelectedEntry>();
 
   private _formatter = new BarGraphFormatter();
-  private _currentThemeSubscription: Subscription;
-  currentTheme: Theme;
 
   @Input()
   set frame(data: ProfilerFrame) {
     this.profileRecords = this._formatter.formatFrame(data);
   }
 
-  constructor(public themeService: ThemeService) {}
-
-  ngOnInit(): void {
-    this._currentThemeSubscription = this.themeService.currentTheme.subscribe((theme) => {
-      this.currentTheme = theme;
+  constructor(public themeService: ThemeService) {
+    this.themeService.currentTheme.pipe(takeUntilDestroyed()).subscribe((theme) => {
       this.barColor = theme === 'dark-theme' ? '#073d69' : '#cfe8fc';
     });
-  }
-
-  ngOnDestroy(): void {
-    this._currentThemeSubscription.unsubscribe();
   }
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {

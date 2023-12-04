@@ -9,8 +9,8 @@
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
-import {Subscription} from 'rxjs';
 
 import {TabUpdate} from '../../tab-update/index';
 
@@ -24,7 +24,7 @@ import {IndexedNode} from './index-forest';
   styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DirectiveForestComponent implements OnInit, OnDestroy {
+export class DirectiveForestComponent {
   @Input()
   set forest(forest: DevToolsNode[]) {
     this._latestForest = forest;
@@ -35,7 +35,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
       this._reselectNodeOnUpdate();
     }
   }
-  @Input() currentSelectedElement: IndexedNode;
+  @Input({required: true}) currentSelectedElement!: IndexedNode;
   @Input()
   set showCommentNodes(show: boolean) {
     this._showCommentNodes = show;
@@ -49,18 +49,17 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   @Output() removeComponentHighlight = new EventEmitter<void>();
   @Output() toggleInspector = new EventEmitter<void>();
 
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
 
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
 
   selectedNode: FlatNode|null = null;
-  parents: FlatNode[];
+  parents!: FlatNode[];
 
   private _highlightIDinTreeFromElement: number|null = null;
-  private _tabUpdateSubscription: Subscription;
   private _showCommentNodes = false;
-  private _latestForest: DevToolsNode[];
+  private _latestForest!: DevToolsNode[];
 
   set highlightIDinTreeFromElement(id: number|null) {
     this._highlightIDinTreeFromElement = id;
@@ -68,7 +67,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   readonly treeControl =
-      new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
+      new FlatTreeControl<FlatNode>((node) => node!.level, (node) => node.expandable);
   readonly dataSource = new ComponentDataSource(this.treeControl);
   readonly itemHeight = 18;
 
@@ -76,11 +75,9 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
 
   constructor(
       private _tabUpdate: TabUpdate, private _messageBus: MessageBus<Events>,
-      private _cdr: ChangeDetectorRef) {}
-
-  ngOnInit(): void {
+      private _cdr: ChangeDetectorRef) {
     this.subscribeToInspectorEvents();
-    this._tabUpdateSubscription = this._tabUpdate.tabUpdate$.subscribe(() => {
+    this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
       if (this.viewport) {
         setTimeout(() => {
           this.viewport.scrollToIndex(0);
@@ -88,12 +85,6 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    if (this._tabUpdateSubscription) {
-      this._tabUpdateSubscription.unsubscribe();
-    }
   }
 
   subscribeToInspectorEvents(): void {
@@ -189,7 +180,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  populateParents(position: ElementPosition): void {
+  private populateParents(position: ElementPosition): void {
     this.parents = [];
     for (let i = 1; i <= position.length; i++) {
       const current = position.slice(0, i);

@@ -213,7 +213,7 @@ export const createNestedSerializedDescriptor =
     (instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
      nodes: NestedProp[],
      nestedSerializer: (
-         instance: any, propName: string, nodes: NestedProp[], currentLevel: number,
+         instance: any, propName: string|number, nodes: NestedProp[], currentLevel: number,
          level?: number) => void): Descriptor => {
       const {type, prop} = propData;
 
@@ -227,7 +227,7 @@ export const createNestedSerializedDescriptor =
         preview: getPreview(propData, getterOrSetter),
       };
 
-      if (nodes && nodes.length) {
+      if (nodes?.length) {
         const value = getNestedDescriptorValue(propData, levelOptions, nodes, nestedSerializer);
         if (value !== undefined) {
           nestedSerializedDescriptor.value = value;
@@ -236,50 +236,48 @@ export const createNestedSerializedDescriptor =
       return nestedSerializedDescriptor;
     };
 
-const getNestedDescriptorValue =
-    (propData: CompositeType, levelOptions: LevelOptions, nodes: NestedProp[],
-     nestedSerializer: (
-         instance: any, propName: string|number, nodes: NestedProp[], currentLevel: number,
-         level?: number) => void) => {
-      const {type, prop} = propData;
-      const {currentLevel} = levelOptions;
+function getNestedDescriptorValue(
+    propData: CompositeType, levelOptions: LevelOptions, nodes: NestedProp[],
+    nestedSerializer: (
+        instance: any, propName: string|number, nodes: NestedProp[], currentLevel: number,
+        level?: number) => void) {
+  const {type, prop} = propData;
+  const {currentLevel} = levelOptions;
 
-      switch (type) {
-        case PropType.Array:
-          return nodes.map(
-              (nestedProp) =>
-                  nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1));
-        case PropType.Object:
-          return nodes.reduce((accumulator, nestedProp) => {
-            if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
-              accumulator[nestedProp.name] =
-                  nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1);
-            }
-            return accumulator;
-          }, {});
-      }
-    };
+  switch (type) {
+    case PropType.Array:
+      return nodes.map(
+          (nestedProp) =>
+              nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1));
+    case PropType.Object:
+      return nodes.reduce((accumulator, nestedProp) => {
+        if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
+          accumulator[nestedProp.name] =
+              nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1);
+        }
+        return accumulator;
+      }, {} as Record<string, void>);
+  }
+}
 
-const getLevelDescriptorValue =
-    (propData: CompositeType, levelOptions: LevelOptions,
-     continuation: (instance: any, propName: string|number, level?: number, max?: number) =>
-         void) => {
-      const {type, prop} = propData;
-      const {currentLevel, level} = levelOptions;
+function getLevelDescriptorValue(
+    propData: CompositeType, levelOptions: LevelOptions,
+    continuation: (instance: any, propName: string|number, level?: number, max?: number) => void) {
+  const {type, prop} = propData;
+  const {currentLevel, level} = levelOptions;
 
-      switch (type) {
-        case PropType.Array:
-          return prop.map(
-              (_: any, idx: number) => continuation(prop, idx, currentLevel + 1, level));
-        case PropType.Object:
-          return getKeys(prop).reduce((accumulator, propName) => {
-            if (!ignoreList.has(propName)) {
-              accumulator[propName] = continuation(prop, propName, currentLevel + 1, level);
-            }
-            return accumulator;
-          }, {});
-      }
-    };
+  switch (type) {
+    case PropType.Array:
+      return prop.map((_: any, idx: number) => continuation(prop, idx, currentLevel + 1, level));
+    case PropType.Object:
+      return getKeys(prop).reduce((accumulator, propName) => {
+        if (!ignoreList.has(propName)) {
+          accumulator[propName] = continuation(prop, propName, currentLevel + 1, level);
+        }
+        return accumulator;
+      }, {} as Record<string, void>);
+  }
+}
 
 const truncate = (str: string, max = 20): string => {
   if (str.length > max) {

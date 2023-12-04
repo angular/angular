@@ -62,4 +62,4 @@ export const main = () => {
 };
 
 // expose to use as callback for chrome.tabs.executeScript in background.ts
-globalThis.main = main;
+(globalThis as any).main = main;

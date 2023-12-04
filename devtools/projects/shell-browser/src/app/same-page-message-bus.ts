@@ -32,13 +32,13 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+  override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (e: MessageEvent): void => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as any).apply(null, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -49,20 +49,20 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
+  override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (e: MessageEvent): void => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as any).apply(null, e.data.args);
       }
       window.removeEventListener('message', listener);
     };
     window.addEventListener('message', listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     window.postMessage(
         {
           source: this._source,
@@ -74,7 +74,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
     return true;
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }
