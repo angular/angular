@@ -76,7 +76,7 @@ export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compile
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
 export {ForwardRefHandling, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, createMayBeForwardRefExpression, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
-export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
+export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings, encapsulateStyle} from './render3/view/compiler';
 export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
 export {compileDeclareComponentFromMetadata, DeclareComponentTemplateInfo} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
