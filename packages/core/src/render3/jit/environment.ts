@@ -10,6 +10,7 @@ import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
+import {InputFlags} from '../../render3/interfaces/definition';
 import * as iframe_attrs_validation from '../../sanitization/iframe_attrs_validation';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
@@ -20,7 +21,7 @@ import * as r3 from '../index';
  *
  * This should be kept up to date with the public exports of @angular/core.
  */
-export const angularCoreEnv: {[name: string]: Function} =
+export const angularCoreEnv: {[name: string]: unknown} =
     (() => ({
        'ɵɵattribute': r3.ɵɵattribute,
        'ɵɵattributeInterpolate1': r3.ɵɵattributeInterpolate1,
@@ -199,4 +200,6 @@ export const angularCoreEnv: {[name: string]: Function} =
 
        'forwardRef': forwardRef,
        'resolveForwardRef': resolveForwardRef,
+
+       'ɵɵInputFlags': InputFlags,
      }))();
