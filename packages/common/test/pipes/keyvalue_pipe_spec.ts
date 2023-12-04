@@ -116,6 +116,15 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1}, {key: 'b', value: 1}
       ]);
     });
+    it('should not order', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input =
+          [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]] as Array<[number | string, number]>;
+      expect(pipe.transform(new Map(input), undefined, false)).toEqual([
+        {key: 2, value: 1}, {key: 1, value: 1}, {key: 'b', value: 1}, {key: 0, value: 1},
+        {key: 3, value: 1}, {key: 'a', value: 1}
+      ]);
+    });
     it('should order by complex types with compareFn', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = new Map([[{id: 1}, 1], [{id: 0}, 1]]);
