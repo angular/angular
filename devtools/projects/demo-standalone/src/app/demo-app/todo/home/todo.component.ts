@@ -21,7 +21,7 @@ export interface Todo {
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, TooltipDirective],
+  imports: [TooltipDirective],
   styles: [`
       .destroy {
         cursor: pointer;

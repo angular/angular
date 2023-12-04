@@ -1,5 +1,6 @@
-<ng-container [ngSwitch]="data.status">
-  <ng-container *ngSwitchCase="'ERROR'">
+
+@switch (data.status) {
+  @case ('ERROR') {
     <h1 mat-dialog-title>Error</h1>
     <div mat-dialog-content>
       <p>Could not process uploaded file.</p>
@@ -10,8 +11,8 @@
     <div mat-dialog-actions>
       <button mat-flat-button [mat-dialog-close]="false">Close</button>
     </div>
-  </ng-container>
-  <ng-container *ngSwitchCase="'INVALID_VERSION'">
+  }
+  @case ('INVALID_VERSION') {
     <h1 mat-dialog-title>Warning</h1>
     <div mat-dialog-content>
       <p>
@@ -21,7 +22,6 @@
       <p>
         Current format version: <span class="version profiler-version">{{ data.profilerVersion }}</span>
       </p>
-
       <p>
         Format version of uploaded file: <span class="version imported-version">{{ data.importedVersion }}</span>
       </p>
@@ -31,5 +31,5 @@
       <button mat-flat-button [mat-dialog-close]="false">No Thanks</button>
       <button mat-flat-button [mat-dialog-close]="true">Yes</button>
     </div>
-  </ng-container>
-</ng-container>
+  }
+}
