@@ -17,7 +17,7 @@ import {SampleService} from './sample.service';
   styles: [''],
 })
 export class SamplePropertiesComponent {
-  @ViewChild('elementReference') elementRef: ElementRef;
+  @ViewChild('elementReference') elementRef!: ElementRef;
 
   exampleService = inject(SampleService);
 

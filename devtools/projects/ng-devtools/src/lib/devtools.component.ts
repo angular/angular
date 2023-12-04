@@ -32,7 +32,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean|null = null;
   angularVersion: string|boolean|undefined = undefined;
   angularIsInDevMode = true;
-  ivy: boolean;
+  ivy!: boolean;
 
   private readonly _firefoxStyleName = 'firefox_styles.css';
   private readonly _chromeStyleName = 'chrome_styles.css';

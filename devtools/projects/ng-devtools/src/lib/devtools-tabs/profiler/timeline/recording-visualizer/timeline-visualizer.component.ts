@@ -38,8 +38,8 @@ export class TimelineVisualizerComponent {
     this.selectedDirectives = [];
     this.parentHierarchy = [];
   }
-  @Input() frame: ProfilerFrame;
-  @Input() changeDetection: boolean;
+  @Input({required: true}) frame!: ProfilerFrame;
+  @Input({required: true}) changeDetection!: boolean;
 
   cmpVisualizationModes = VisualizationMode;
 
@@ -48,7 +48,7 @@ export class TimelineVisualizerComponent {
   parentHierarchy: {name: string}[] = [];
 
   /** @internal */
-  _visualizationMode: VisualizationMode;
+  _visualizationMode!: VisualizationMode;
 
   handleNodeSelect({entry, parentHierarchy, selectedDirectives}: SelectedEntry): void {
     this.selectedEntry = entry;

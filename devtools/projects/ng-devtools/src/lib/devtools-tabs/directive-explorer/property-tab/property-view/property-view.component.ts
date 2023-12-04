@@ -18,7 +18,7 @@ import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element
   styleUrls: ['./property-view.component.scss'],
 })
 export class PropertyViewComponent {
-  @Input() directive: string;
+  @Input({required: true}) directive!: string;
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
   @Output() viewSource = new EventEmitter<void>();
 

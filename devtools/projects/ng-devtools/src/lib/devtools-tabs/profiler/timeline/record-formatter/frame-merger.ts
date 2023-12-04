@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveProfile, ElementProfile, ProfilerFrame} from 'protocol';
+import {DirectiveProfile, ElementProfile, LifecycleProfile, ProfilerFrame} from 'protocol';
 
 const mergeProperty = (mergeInProp: number|undefined, value: number|undefined) => {
   if (mergeInProp === undefined) {
@@ -20,7 +20,8 @@ const mergeProperty = (mergeInProp: number|undefined, value: number|undefined) =
 
 const mergeDirective = (mergeIn: DirectiveProfile, second: DirectiveProfile) => {
   mergeIn.changeDetection = mergeProperty(mergeIn.changeDetection, second.changeDetection);
-  Object.keys(mergeIn.lifecycle).forEach((hook) => {
+  Object.keys(mergeIn.lifecycle).forEach((key) => {
+    const hook = key as keyof LifecycleProfile;
     mergeIn.lifecycle[hook] = mergeProperty(mergeIn.lifecycle[hook], second.lifecycle[hook]);
   });
 };

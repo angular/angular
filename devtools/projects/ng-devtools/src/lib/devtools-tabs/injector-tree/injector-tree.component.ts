@@ -36,11 +36,11 @@ import {filterOutAngularInjectors, filterOutInjectorsWithNoProviders, generateEd
   styleUrls: ['./injector-tree.component.scss']
 })
 export class InjectorTreeComponent {
-  @ViewChild('svgContainer', {static: false}) private svgContainer: ElementRef;
-  @ViewChild('mainGroup', {static: false}) private g: ElementRef;
+  @ViewChild('svgContainer', {static: false}) private svgContainer!: ElementRef;
+  @ViewChild('mainGroup', {static: false}) private g!: ElementRef;
 
-  @ViewChild('elementSvgContainer', {static: false}) private elementSvgContainer: ElementRef;
-  @ViewChild('elementMainGroup', {static: false}) private elementG: ElementRef;
+  @ViewChild('elementSvgContainer', {static: false}) private elementSvgContainer!: ElementRef;
+  @ViewChild('elementMainGroup', {static: false}) private elementG!: ElementRef;
 
   private _messageBus = inject(MessageBus) as MessageBus<Events>;
   zone = inject(NgZone);
@@ -48,8 +48,8 @@ export class InjectorTreeComponent {
   firstRender = true;
   selectedNode: InjectorTreeD3Node|null = null;
   rawDirectiveForest: DevToolsNode[] = [];
-  injectorTreeGraph: InjectorTreeVisualizer;
-  elementInjectorTreeGraph: InjectorTreeVisualizer;
+  injectorTreeGraph!: InjectorTreeVisualizer;
+  elementInjectorTreeGraph!: InjectorTreeVisualizer;
   diDebugAPIsAvailable = false;
   providers: SerializedProviderRecord[] = [];
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();

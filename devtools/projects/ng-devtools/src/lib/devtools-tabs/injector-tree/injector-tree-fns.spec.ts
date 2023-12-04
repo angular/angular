@@ -23,6 +23,7 @@ describe('getInjectorIdsToRootFromNode', () => {
     };
 
     const child = {
+      parent: root,
       data: {
         injector: {
           id: '2',
@@ -33,6 +34,7 @@ describe('getInjectorIdsToRootFromNode', () => {
     };
 
     const grandChild = {
+      parent: child,
       data: {
         injector: {
           id: '3',
@@ -41,9 +43,6 @@ describe('getInjectorIdsToRootFromNode', () => {
         },
       },
     };
-
-    grandChild['parent'] = child;
-    child['parent'] = root;
 
     expect(getInjectorIdsToRootFromNode(root as InjectorTreeD3Node)).toEqual(['1']);
     expect(getInjectorIdsToRootFromNode(child as InjectorTreeD3Node)).toEqual(['2', '1']);

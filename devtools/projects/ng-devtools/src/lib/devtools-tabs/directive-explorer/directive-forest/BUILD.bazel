@@ -29,6 +29,7 @@ ng_module(
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
+        "//packages/core/rxjs-interop",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
         "@npm//@types",

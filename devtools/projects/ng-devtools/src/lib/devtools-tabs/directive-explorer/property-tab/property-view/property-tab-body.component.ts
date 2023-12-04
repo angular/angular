@@ -18,7 +18,7 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   styleUrls: ['./property-tab-body.component.scss'],
 })
 export class PropertyTabBodyComponent {
-  @Input() currentSelectedElement: IndexedNode|null;
+  @Input({required: true}) currentSelectedElement!: IndexedNode|null;
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
   @Output() viewSource = new EventEmitter<string>();
 

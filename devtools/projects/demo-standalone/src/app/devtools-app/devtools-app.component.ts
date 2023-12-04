@@ -47,5 +47,5 @@ import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
 })
 export class DevToolsComponent {
   messageBus: IFrameMessageBus|null = null;
-  @ViewChild('ref') iframe: ElementRef;
+  @ViewChild('ref') iframe!: ElementRef;
 }

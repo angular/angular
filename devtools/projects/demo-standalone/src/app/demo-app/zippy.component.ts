@@ -42,6 +42,6 @@ import {Component, Input} from '@angular/core';
   `
 })
 export class ZippyComponent {
-  @Input() title: string;
+  @Input() title!: string;
   visible = false;
 }

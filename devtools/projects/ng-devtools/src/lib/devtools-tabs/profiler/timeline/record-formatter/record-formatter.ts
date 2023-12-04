@@ -51,8 +51,8 @@ export abstract class RecordFormatter<T> {
       current = 0;
     }
     result += current;
-    Object.keys(directive.lifecycle).forEach((key) => {
-      const value = parseFloat(directive.lifecycle[key]);
+    Object.values(directive.lifecycle).forEach((lifecycleProfile) => {
+      const value = parseFloat(lifecycleProfile);
       if (!isNaN(value)) {
         result += value;
       }

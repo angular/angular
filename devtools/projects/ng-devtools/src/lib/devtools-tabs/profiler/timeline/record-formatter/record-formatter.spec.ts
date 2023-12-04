@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementProfile, ProfilerFrame} from 'protocol';
+import {DirectiveProfile, ElementProfile, ProfilerFrame} from 'protocol';
 
 import {RecordFormatter} from './record-formatter';
 
@@ -185,7 +185,7 @@ describe('getLabel cases', () => {
 });
 
 describe('getDirectiveValue cases', () => {
-  let directive;
+  let directive!: DirectiveProfile;
 
   it('calculates value with  no lifecycle hooks', () => {
     directive = {
@@ -193,7 +193,8 @@ describe('getDirectiveValue cases', () => {
       isElement: false,
       isComponent: true,
       lifecycle: {},
-      name: 'AppComponent'
+      name: 'AppComponent',
+      outputs: {},
     };
     expect(formatter.getDirectiveValue(directive)).toBe(10);
   });
@@ -205,6 +206,7 @@ describe('getDirectiveValue cases', () => {
       name: 'NgForOf',
       lifecycle: {ngDoCheck: 5},
       changeDetection: 0,
+      outputs: {},
     };
     expect(formatter.getDirectiveValue(directive)).toBe(5);
   });
@@ -216,6 +218,7 @@ describe('getDirectiveValue cases', () => {
       name: 'NgForOf',
       lifecycle: {ngDoCheck: 5},
       changeDetection: 10,
+      outputs: {},
     };
     expect(formatter.getDirectiveValue(directive)).toBe(15);
   });
@@ -227,6 +230,7 @@ describe('getDirectiveValue cases', () => {
       name: 'NgForOf',
       lifecycle: {ngDoCheck: 5, ngAfterViewInit: 100},
       changeDetection: 10,
+      outputs: {},
     };
     expect(formatter.getDirectiveValue(directive)).toBe(115);
   });
