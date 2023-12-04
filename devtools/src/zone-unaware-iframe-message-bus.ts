@@ -37,7 +37,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     return result;
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]): any {
+  override on<E extends keyof Events>(topic: E, cb: Events[E]): any {
     let result: any;
     runOutsideAngular(() => {
       result = this._delegate.on(topic, cb);
@@ -45,7 +45,7 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
     return result;
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]): any {
+  override once<E extends keyof Events>(topic: E, cb: Events[E]): any {
     let result: any;
     runOutsideAngular(() => {
       result = this._delegate.once(topic, cb);
@@ -55,11 +55,11 @@ export class ZoneUnawareIFrameMessageBus extends MessageBus<Events> {
 
   // Need to be run in the zone because otherwise it won't be caught by the
   // listener in the extension.
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     return this._delegate.emit(topic, args);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._delegate.destroy();
   }
 }

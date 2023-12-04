@@ -24,18 +24,54 @@ const PROFILER_VERSION = 1;
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
 })
-export class ProfilerComponent implements OnInit, OnDestroy {
+export class ProfilerComponent implements OnInit {
   state: State = 'idle';
   stream = new Subject<ProfilerFrame[]>();
-
-  private _fileUploadSubscription: Subscription;
 
   // We collect this buffer so we can have it available for export.
   private _buffer: ProfilerFrame[] = [];
 
   constructor(
-      private _fileApiService: FileApiService, private _messageBus: MessageBus<Events>,
-      public dialog: MatDialog) {}
+      private _fileApiService: FileApiService,
+      private _messageBus: MessageBus<Events>,
+      public dialog: MatDialog,
+  ) {
+    this._fileApiService.uploadedData.subscribe((importedFile) => {
+      if (importedFile.error) {
+        console.error('Could not process uploaded file');
+        console.error(importedFile.error);
+        this.dialog.open(ProfilerImportDialogComponent, {
+          width: '600px',
+          data: {status: 'ERROR', errorMessage: importedFile.error},
+        });
+
+        return;
+      }
+
+      if (!SUPPORTED_VERSIONS.includes(importedFile.version)) {
+        const processDataDialog = this.dialog.open(ProfilerImportDialogComponent, {
+          width: '600px',
+          data: {
+            importedVersion: importedFile.version,
+            profilerVersion: PROFILER_VERSION,
+            status: 'INVALID_VERSION',
+          },
+        });
+
+        processDataDialog.afterClosed().subscribe((result) => {
+          if (result) {
+            this.state = 'visualizing';
+            this._buffer = importedFile.buffer;
+            setTimeout(() => this.stream.next(importedFile.buffer));
+          }
+        });
+      } else {
+        this.state = 'visualizing';
+        this._buffer = importedFile.buffer;
+        setTimeout(() => this.stream.next(importedFile.buffer));
+      }
+    });
+  }
 
   startRecording(): void {
     this.state = 'recording';
@@ -60,46 +96,6 @@ export class ProfilerComponent implements OnInit, OnDestroy {
       this.stream.next([chunkOfRecords]);
       this._buffer.push(chunkOfRecords);
     });
-
-    this._fileUploadSubscription = this._fileApiService.uploadedData.subscribe((importedFile) => {
-      if (importedFile.error) {
-        console.error('Could not process uploaded file');
-        console.error(importedFile.error);
-        this.dialog.open(ProfilerImportDialogComponent, {
-          width: '600px',
-          data: {status: 'ERROR', errorMessage: importedFile.error},
-        });
-
-        return;
-      }
-
-      if (!SUPPORTED_VERSIONS.includes(importedFile.version)) {
-        const processDataDialog = this.dialog.open(ProfilerImportDialogComponent, {
-          width: '600px',
-          data: {
-            importedVersion: importedFile.version,
-            profilerVersion: PROFILER_VERSION,
-            status: 'INVALID_VERSION'
-          },
-        });
-
-        processDataDialog.afterClosed().subscribe((result) => {
-          if (result) {
-            this.state = 'visualizing';
-            this._buffer = importedFile.buffer;
-            setTimeout(() => this.stream.next(importedFile.buffer));
-          }
-        });
-      } else {
-        this.state = 'visualizing';
-        this._buffer = importedFile.buffer;
-        setTimeout(() => this.stream.next(importedFile.buffer));
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this._fileUploadSubscription.unsubscribe();
   }
 
   exportProfilerResults(): void {

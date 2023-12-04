@@ -12,7 +12,7 @@
 //
 // We'd have to go through a serialization and deserialization logic
 // which will add unnecessary complexity.
-export const getKeys = (obj: {}): string[] => {
+export function getKeys(obj: {}): string[] {
   if (!obj) {
     return [];
   }
@@ -31,7 +31,7 @@ export const getKeys = (obj: {}): string[] => {
   });
 
   return properties.concat(gettersAndSetters);
-};
+}
 
 /**
  * This helper function covers the common scenario as well as the getters and setters

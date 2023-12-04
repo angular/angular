@@ -18,8 +18,8 @@ import {PropertyDataSource} from '../../property-resolver/property-data-source';
   styleUrls: ['./property-view-tree.component.scss'],
 })
 export class PropertyViewTreeComponent {
-  @Input() dataSource: PropertyDataSource;
-  @Input() treeControl: FlatTreeControl<FlatNode>;
+  @Input({required: true}) dataSource!: PropertyDataSource;
+  @Input({required: true}) treeControl!: FlatTreeControl<FlatNode>;
   @Output() updateValue = new EventEmitter<any>();
   @Output() inspect = new EventEmitter<any>();
 

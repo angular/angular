@@ -38,7 +38,7 @@ export class TodosFilter implements PipeTransform {
   }
 }
 
-const fib = (n: number) => {
+const fib = (n: number): number => {
   if (n === 1 || n === 2) {
     return 1;
   }
@@ -101,7 +101,7 @@ export class TodosComponent implements OnInit, OnDestroy {
   @Output() delete = new EventEmitter();
   @Output() add = new EventEmitter();
 
-  private hashListener: EventListenerOrEventListenerObject;
+  private hashListener!: EventListenerOrEventListenerObject;
 
   constructor(private cdRef: ChangeDetectorRef) {}
 

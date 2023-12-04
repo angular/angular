@@ -23,22 +23,14 @@ export interface InjectorTreeNode {
   children: InjectorTreeNode[];
 }
 
-export interface InjectorTreeD3Node {
-  children: InjectorTreeD3Node[];
-  data: InjectorTreeNode;
-  depth: number;
-  height: number;
-  parent?: InjectorTreeD3Node;
-  x: number;
-  y: number;
-}
+export type InjectorTreeD3Node = d3.HierarchyPointNode<InjectorTreeNode>;
 
 export abstract class GraphRenderer<T, U> {
   abstract render(graph: T): void;
   abstract getNodeById(id: string): U|null;
   abstract snapToNode(node: U): void;
   abstract snapToRoot(): void;
-  abstract zoomScale(scale: number);
+  abstract zoomScale(scale: number): void;
   abstract root: U|null;
   abstract get graphElement(): HTMLElement;
 
@@ -99,11 +91,12 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
   private d3 = d3;
 
   override root: InjectorTreeD3Node|null = null;
-  zoomController: d3.ZoomBehavior<Element, unknown>|null = null;
+  zoomController: d3.ZoomBehavior<HTMLElement, unknown>|null = null;
 
   override zoomScale(scale: number) {
     if (this.zoomController) {
-      this.zoomController.scaleTo(this.d3.select(this._containerElement), scale);
+      this.zoomController.scaleTo(
+          this.d3.select<HTMLElement, unknown>(this._containerElement), scale);
     }
   }
 
@@ -118,7 +111,7 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
     const halfWidth = (this._containerElement.clientWidth / 2);
     const halfHeight = (this._containerElement.clientHeight / 2);
     const t = d3.zoomIdentity.translate(halfWidth - node.y, halfHeight - node.x).scale(scale);
-    svg.transition().duration(500).call(this.zoomController.transform, t);
+    svg.transition().duration(500).call(this.zoomController!.transform, t);
   }
 
   override get graphElement(): HTMLElement {
@@ -126,7 +119,8 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
   }
 
   override getNodeById(id: string): InjectorTreeD3Node|null {
-    const selection = this.d3.select(this._containerElement).select(`.node[data-id="${id}"]`);
+    const selection = this.d3.select<HTMLElement, InjectorTreeD3Node>(this._containerElement)
+                          .select(`.node[data-id="${id}"]`);
     if (selection.empty()) {
       return null;
     }
@@ -142,12 +136,12 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
     // cleanup old graph
     this.cleanup();
 
-    const data = this.d3.hierarchy(injectorGraph, (node: InjectorTreeD3Node) => node.children);
-    const tree = this.d3.tree();
+    const data = this.d3.hierarchy(injectorGraph, (node: InjectorTreeNode) => node.children);
+    const tree = this.d3.tree<InjectorTreeNode>();
     const svg = this.d3.select(this._containerElement);
-    const g = this.d3.select(this._graphElement);
+    const g = this.d3.select<HTMLElement, InjectorTreeD3Node>(this._graphElement);
 
-    this.zoomController = this.d3.zoom().scaleExtent([0.1, 2]);
+    this.zoomController = this.d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);
     this.zoomController.on('start zoom end', (e: {transform: number}) => {
       g.attr('transform', e.transform);
     });
@@ -253,15 +247,15 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
                   return node.data.injector.id;
                 })
             .on('click',
-                (pointerEvent, node: InjectorTreeD3Node) => {
+                (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => {
                   this.nodeClickListeners.forEach(listener => listener(pointerEvent, node));
                 })
             .on('mouseover',
-                (pointerEvent, node: InjectorTreeD3Node) => {
+                (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => {
                   this.nodeMouseoverListeners.forEach(listener => listener(pointerEvent, node));
                 })
             .on('mouseout',
-                (pointerEvent, node: InjectorTreeD3Node) => {
+                (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => {
                   this.nodeMouseoutListeners.forEach(listener => listener(pointerEvent, node));
                 })
 

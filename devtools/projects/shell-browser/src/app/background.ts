@@ -46,7 +46,7 @@ const ports: {
 
 chrome.runtime.onConnect.addListener((port) => {
   let tab: string|null = null;
-  let name: string|null = null;
+  let name: 'devtools'|'content-script'|null = null;
   // tslint:disable-next-line:no-console
   console.log('Connection event in the background script');
 
@@ -110,7 +110,7 @@ const installContentScript = (tabId: number) => {
   if (isManifestV3) {
     chrome.scripting.executeScript(
         {files: ['app/content_script_bundle.js'], target: {tabId}}, () => {
-          chrome.scripting.executeScript({func: () => globalThis.main(), target: {tabId}});
+          chrome.scripting.executeScript({func: () => (globalThis as any).main(), target: {tabId}});
         });
 
     return;
