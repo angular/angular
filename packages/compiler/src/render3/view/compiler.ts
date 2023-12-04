@@ -981,6 +981,19 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
   });
 }
 
+/**
+ * Encapsulates a CSS stylesheet with emulated view encapsulation.
+ * This allows a stylesheet to be used with an Angular component that
+ * is using the `ViewEncapsulation.Emulated` mode.
+ *
+ * @param style The content of a CSS stylesheet.
+ * @returns The encapsulated content for the style.
+ */
+export function encapsulateStyle(style: string): string {
+  const shadowCss = new ShadowCss();
+  return shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR);
+}
+
 function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {
   if (!meta.hostDirectives?.length) {
     return o.NONE_TYPE;
