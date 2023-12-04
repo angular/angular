@@ -1,34 +1,35 @@
 <div class="profiler-wrapper">
   <mat-card>
-    <button
-      mat-icon-button
-      color="primary"
-      *ngIf="state === 'idle'"
-      (click)="startRecording()"
-      class="profiler-control start-recording-button"
-      matTooltip="Start recording"
-    >
-      <mat-icon> circle </mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      *ngIf="state === 'recording'"
-      (click)="stopRecording()"
-      class="profiler-control recording-button"
-      matTooltip="Stop recording"
-    >
-      <mat-icon> circle </mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      color="primary"
-      *ngIf="state === 'visualizing'"
-      (click)="discardRecording()"
-      class="profiler-control discard-button"
-      matTooltip="Clear recording"
-    >
-      <mat-icon> not_interested </mat-icon>
-    </button>
+    @if (state === 'idle') {
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="startRecording()"
+        class="profiler-control start-recording-button"
+        matTooltip="Start recording"
+        >
+        <mat-icon> circle </mat-icon>
+      </button>
+    } @else if (state === 'recording') {
+      <button
+        mat-icon-button
+        (click)="stopRecording()"
+        class="profiler-control recording-button"
+        matTooltip="Stop recording"
+        >
+        <mat-icon> circle </mat-icon>
+      </button>
+    } @else if (state === 'visualizing') {
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="discardRecording()"
+        class="profiler-control discard-button"
+        matTooltip="Clear recording"
+        >
+        <mat-icon> not_interested </mat-icon>
+      </button>
+    }
     <p class="instructions" [class.hidden]="state !== 'idle'">
       <span> Click the record button to start a new recording, or upload a json file containing profiler data. </span>
       <br />
@@ -44,8 +45,10 @@
     </p>
   </mat-card>
   <div id="profiler-content-wrapper">
-    <div class="visualization" *ngIf="state !== 'idle'">
-      <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
-    </div>
+    @if (state !== 'idle') {
+      <div class="visualization">
+        <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"/>
+      </div>
+    }
   </div>
 </div>
