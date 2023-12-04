@@ -1,8 +1,8 @@
 MyDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   …
   inputs: {
-    functionDeclarationInput: [2, "functionDeclarationInput", "functionDeclarationInput", toNumber],
-    inlineFunctionInput: [2, "inlineFunctionInput", "inlineFunctionInput", (value, _) => value ? 1 : 0]
+    functionDeclarationInput: [$r3$.ɵɵInputFlags.HasTransform, "functionDeclarationInput", "functionDeclarationInput", toNumber],
+    inlineFunctionInput: [$r3$.ɵɵInputFlags.HasTransform, "inlineFunctionInput", "inlineFunctionInput", (value, _) => value ? 1 : 0]
   },
   features: [$r3$.ɵɵInputTransformsFeature]…
 });
