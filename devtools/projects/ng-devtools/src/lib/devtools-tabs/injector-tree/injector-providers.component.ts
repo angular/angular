@@ -40,7 +40,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
               >
                 <mat-option>None</mat-option>
                 @for (type of providerTypes; track type) {
-                  <mat-option [value]="type">{{providerTypeToLabel[type]}}</mat-option>
+                  <mat-option [value]="type">{{$any(providerTypeToLabel)[type]}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -58,7 +58,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
                   @if (provider.type === 'multi') {
                     multi (x{{ provider.index.length }})
                   } @else {
-                    {{providerTypeToLabel[provider.type]}}
+                    {{$any(providerTypeToLabel)[provider.type]}}
                   }
                 </td>
               </ng-container>
@@ -147,7 +147,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   ],
 })
 export class InjectorProvidersComponent {
-  @Input() injector: SerializedInjector;
+  @Input({required: true}) injector!: SerializedInjector;
   @Input() providers: SerializedProviderRecord[] = [];
 
   searchToken = signal('');

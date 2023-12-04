@@ -11,7 +11,7 @@ import {PropType} from 'protocol';
 import {getDescriptor, getKeys} from './object-utils';
 import {deeplySerializeSelectedProperties} from './state-serializer';
 
-const QUERY_1_1 = [];
+const QUERY_1_1: any[] = [];
 
 const QUERY_1_2 = [
   {

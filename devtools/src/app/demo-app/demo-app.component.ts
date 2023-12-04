@@ -17,8 +17,8 @@ import {ZippyComponent} from './zippy.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class DemoAppComponent {
-  @ViewChild(ZippyComponent) zippy: ZippyComponent;
-  @ViewChild('elementReference') elementRef: ElementRef;
+  @ViewChild(ZippyComponent) zippy!: ZippyComponent;
+  @ViewChild('elementReference') elementRef!: ElementRef;
 
   @Input('input_one') inputOne = 'input one';
   @Input() inputTwo = 'input two';

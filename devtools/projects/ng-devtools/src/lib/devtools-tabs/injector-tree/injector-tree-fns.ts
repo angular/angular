@@ -87,7 +87,7 @@ export function grabInjectorPathsFromDirectiveForest(directiveForest: DevToolsNo
     InjectorPath[] {
   const injectorPaths: InjectorPath[] = [];
 
-  const grabInjectorPaths = (node) => {
+  const grabInjectorPaths = (node: DevToolsNode) => {
     if (node.resolutionPath) {
       injectorPaths.push({node, path: node.resolutionPath.slice().reverse()});
     }

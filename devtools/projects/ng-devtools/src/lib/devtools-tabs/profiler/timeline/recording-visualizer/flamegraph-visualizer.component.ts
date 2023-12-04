@@ -25,13 +25,13 @@ import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component'
 export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   profilerBars: FlamegraphNode[] = [];
   view: [number, number] = [235, 200];
-  colors: Color;
+  colors!: Color;
 
   private _formatter = new FlamegraphFormatter();
   private _showChangeDetection = false;
-  private _frame: ProfilerFrame;
-  private _currentThemeSubscription: Subscription;
-  currentTheme: Theme;
+  private _frame!: ProfilerFrame;
+  private _currentThemeSubscription!: Subscription;
+  currentTheme!: Theme;
 
   @Output() nodeSelect = new EventEmitter<SelectedEntry>();
 

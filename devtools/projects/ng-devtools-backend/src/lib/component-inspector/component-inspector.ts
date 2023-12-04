@@ -23,7 +23,7 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent: {component: Type<unknown>; host: HTMLElement | null};
+  private _selectedComponent!: {component: Type<unknown>; host: HTMLElement | null};
   private readonly _onComponentEnter;
   private readonly _onComponentSelect;
   private readonly _onComponentLeave;
@@ -57,7 +57,7 @@ export class ComponentInspector {
 
     if (this._selectedComponent.component && this._selectedComponent.host) {
       this._onComponentSelect(
-          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
+          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!);
     }
   }
 
@@ -73,7 +73,7 @@ export class ComponentInspector {
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
       this._onComponentEnter(
-          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
+          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!);
     }
   }
 

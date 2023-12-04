@@ -37,18 +37,18 @@ export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
         value: parseFloat(changeDetection.toFixed(2)),
       });
     }
-    Object.keys(node.lifecycle).forEach((key) => {
+    Object.entries(node.lifecycle).forEach(([key, lifeCycleProfile]) => {
       graphData.push({
         directive: node.name,
         method: key,
-        value: +node.lifecycle[key].toFixed(2),
+        value: +lifeCycleProfile.toFixed(2),
       });
     });
-    Object.keys(node.outputs).forEach((key) => {
+    Object.entries(node.outputs).forEach(([key, outputProfile]) => {
       graphData.push({
         directive: node.name,
         method: formatOutput(key),
-        value: +node.outputs[key].toFixed(2),
+        value: +outputProfile.toFixed(2),
       });
     });
   });

@@ -42,7 +42,7 @@ const nestedSerializer =
     };
 
 const nestedSerializerContinuation = (nodes: NestedProp[], level: number) =>
-    (instance: any, propName: string, nestedLevel: number) => {
+    (instance: any, propName: string|number, nestedLevel?: number, _?: number) => {
       const idx = nodes.findIndex((v) => v.name === propName);
       if (idx < 0) {
         // The property is not specified in the query.
@@ -51,38 +51,38 @@ const nestedSerializerContinuation = (nodes: NestedProp[], level: number) =>
       return nestedSerializer(instance, propName, nodes[idx].children, nestedLevel, level);
     };
 
-const levelSerializer =
-    (instance: any, propName: string|number, currentLevel = 0, level = MAX_LEVEL,
-     continuation = levelSerializer): Descriptor => {
-      const serializableInstance = instance[propName];
-      const propData:
-          PropertyData = {prop: serializableInstance, type: getPropType(serializableInstance)};
+function levelSerializer(
+    instance: any, propName: string|number, currentLevel = 0, level = MAX_LEVEL,
+    continuation = levelSerializer): Descriptor {
+  const serializableInstance = instance[propName];
+  const propData:
+      PropertyData = {prop: serializableInstance, type: getPropType(serializableInstance)};
 
-      switch (propData.type) {
-        case PropType.Array:
-        case PropType.Object:
-          return createLevelSerializedDescriptor(
-              instance, propName, propData, {level, currentLevel}, continuation);
-        default:
-          return createShallowSerializedDescriptor(instance, propName, propData);
-      }
-    };
+  switch (propData.type) {
+    case PropType.Array:
+    case PropType.Object:
+      return createLevelSerializedDescriptor(
+          instance, propName, propData, {level, currentLevel}, continuation);
+    default:
+      return createShallowSerializedDescriptor(instance, propName, propData);
+  }
+}
 
-export const serializeDirectiveState =
-    (instance: object, levels = MAX_LEVEL): {[key: string]: Descriptor} => {
-      const result = {};
-      getKeys(instance).forEach((prop) => {
-        if (typeof prop === 'string' && ignoreList.has(prop)) {
-          return;
-        }
-        result[prop] = levelSerializer(instance, prop, null, 0, levels);
-      });
-      return result;
-    };
+export function serializeDirectiveState(
+    instance: object, levels = MAX_LEVEL): {[key: string]: Descriptor} {
+  const result: Record<string, Descriptor> = {};
+  getKeys(instance).forEach((prop) => {
+    if (typeof prop === 'string' && ignoreList.has(prop)) {
+      return;
+    }
+    result[prop] = levelSerializer(instance, prop, 0, 0);
+  });
+  return result;
+}
 
 export const deeplySerializeSelectedProperties =
     (instance: any, props: NestedProp[]): {[name: string]: Descriptor} => {
-      const result = {};
+      const result: Record<string, Descriptor> = {};
       getKeys(instance).forEach((prop) => {
         if (ignoreList.has(prop)) {
           return;

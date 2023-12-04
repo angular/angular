@@ -50,14 +50,14 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   @Input() showCommentNodes = false;
   @Output() toggleInspector = new EventEmitter<void>();
 
-  @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
-  @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
-  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef: ElementRef;
+  @ViewChild(DirectiveForestComponent) directiveForest!: DirectiveForestComponent;
+  @ViewChild(BreadcrumbsComponent) breadcrumbs!: BreadcrumbsComponent;
+  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef!: ElementRef;
   @ViewChild('directiveForestSplitArea', {static: true, read: ElementRef})
-  directiveForestSplitArea: ElementRef;
+  directiveForestSplitArea!: ElementRef;
 
   currentSelectedElement: IndexedNode|null = null;
-  forest: DevToolsNode[];
+  forest!: DevToolsNode[];
   splitDirection: 'horizontal'|'vertical' = 'horizontal';
   parents: FlatNode[]|null = null;
 

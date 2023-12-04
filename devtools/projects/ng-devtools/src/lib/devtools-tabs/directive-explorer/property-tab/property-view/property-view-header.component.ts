@@ -14,7 +14,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
   styleUrls: ['./property-view-header.component.scss'],
 })
 export class PropertyViewHeaderComponent {
-  @Input() directive: string;
+  @Input({required: true}) directive!: string;
   @Output() viewSource = new EventEmitter<void>();
 
   // output that emits directive

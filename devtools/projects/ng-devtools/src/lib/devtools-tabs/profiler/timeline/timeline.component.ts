@@ -48,7 +48,7 @@ export class TimelineComponent implements OnDestroy {
 
   private _filter: Filter = noopFilter;
   private _maxDuration = -Infinity;
-  private _subscription: Subscription;
+  private _subscription!: Subscription;
   private _allRecords: ProfilerFrame[] = [];
   private _filtered: GraphNode[] = [];
   private _graphDataSubject = new BehaviorSubject<GraphNode[]>([]);

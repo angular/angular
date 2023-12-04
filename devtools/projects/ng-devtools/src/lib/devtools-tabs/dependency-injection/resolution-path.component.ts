@@ -24,13 +24,13 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
   standalone: true
 })
 export class ResolutionPathComponent implements OnDestroy, AfterViewInit {
-  @ViewChild('svgContainer', {static: true}) private svgContainer: ElementRef;
-  @ViewChild('mainGroup', {static: true}) private g: ElementRef;
+  @ViewChild('svgContainer', {static: true}) private svgContainer!: ElementRef;
+  @ViewChild('mainGroup', {static: true}) private g!: ElementRef;
 
   @Input() orientation: 'horizontal'|'vertical' = 'horizontal';
 
-  private injectorTree: InjectorTreeVisualizer;
-  private pathNode: InjectorTreeNode;
+  private injectorTree!: InjectorTreeVisualizer;
+  private pathNode!: InjectorTreeNode;
 
   @Input()
   set path(path: SerializedInjector[]) {
