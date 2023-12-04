@@ -9,6 +9,7 @@
 import {NgFor, NgIf} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('CheckAlways components', () => {
@@ -753,10 +754,10 @@ describe('OnPush components with signals', () => {
         changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [NgIf],
         template: `
-          <div *ngIf="true"> 
-            <div *ngIf="true"> 
-              <div *ngIf="true"> 
-                {{value()}} 
+          <div *ngIf="true">
+            <div *ngIf="true">
+              <div *ngIf="true">
+                {{value()}}
               </div>
             </div>
           </div>
@@ -909,6 +910,53 @@ describe('OnPush components with signals', () => {
 
     const fixture = TestBed.createComponent(TestCmp);
     expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
+  });
+
+  it('destroys all signal consumers when destroying the view tree', () => {
+    const val = signal(1);
+    const double = computed(() => val() * 2);
+
+    @Component({
+      template: '{{double()}}',
+      selector: 'child',
+      standalone: true,
+    })
+    class Child {
+      double = double;
+    }
+
+    @Component({
+      template: '|{{double()}}|<child />|',
+      imports: [Child],
+      standalone: true,
+    })
+    class SignalComponent {
+      double = double;
+    }
+
+    const fixture = TestBed.createComponent(SignalComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('|2|2|');
+
+    const node = double[SIGNAL] as ReactiveNode;
+    expect(node.dirty).toBe(false);
+
+    // Change the signal to verify that the computed is dirtied while being read from the template.
+    val.set(2);
+    expect(node.dirty).toBe(true);
+    fixture.detectChanges();
+    expect(node.dirty).toBe(false);
+    expect(fixture.nativeElement.innerText).toEqual('|4|4|');
+
+    // Destroy the view tree to verify that the computed is unconnected from the graph for all
+    // views.
+    fixture.destroy();
+    expect(node.dirty).toBe(false);
+
+    // Writing further updates to the signal should not cause the computed to become dirty, since it
+    // is no longer being observed.
+    val.set(3);
+    expect(node.dirty).toBe(false);
   });
 });
 
