@@ -8,7 +8,7 @@
 
 import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
-import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
+import {catchError, concatMap, defaultIfEmpty, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
 import {AbsoluteRedirect, ApplyRedirects, canLoadFails, noMatch, NoMatch} from './apply_redirects';
 import {createUrlTreeFromSnapshot} from './create_url_tree';
@@ -19,9 +19,8 @@ import {RouterConfigLoader} from './router_config_loader';
 import {ActivatedRouteSnapshot, getInherited, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {last} from './utils/collection';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, MatchResult, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
+import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 import {TreeNode} from './utils/tree';
 import {isEmptyError} from './utils/type_guards';
 
@@ -162,7 +161,7 @@ export class Recognizer {
               return children;
             }),
             defaultIfEmpty(null as TreeNode<ActivatedRouteSnapshot>[] | null),
-            rxjsLast(),
+            last(),
             mergeMap(children => {
               if (children === null) return noMatch(segmentGroup);
               // Because we may have matched two outlets to the same empty path segment, we can have
@@ -235,8 +234,7 @@ export class Recognizer {
       consumedSegments,
       positionalParamSegments,
       remainingSegments,
-    } = route.path === '**' ? createWildcardMatchResult(segments) :
-                              match(segmentGroup, route, segments);
+    } = match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
     // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
@@ -268,17 +266,13 @@ export class Recognizer {
   matchSegmentAgainstRoute(
       injector: EnvironmentInjector, rawSegment: UrlSegmentGroup, route: Route,
       segments: UrlSegment[], outlet: string): Observable<TreeNode<ActivatedRouteSnapshot>> {
-    let matchResult: Observable<MatchResult>;
-
+    const matchResult = matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer);
     if (route.path === '**') {
-      matchResult = of(createWildcardMatchResult(segments));
       // Prior versions of the route matching algorithm would stop matching at the wildcard route.
       // We should investigate a better strategy for any existing children. Otherwise, these
       // child segments are silently dropped from the navigation.
       // https://github.com/angular/angular/issues/40089
       rawSegment.children = {};
-    } else {
-      matchResult = matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer);
     }
 
     return matchResult.pipe(switchMap((result) => {
@@ -436,14 +430,4 @@ function getData(route: Route): Data {
 
 function getResolve(route: Route): ResolveData {
   return route.resolve || {};
-}
-
-function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
-  return {
-    matched: true,
-    parameters: segments.length > 0 ? last(segments)!.parameters : {},
-    consumedSegments: segments,
-    remainingSegments: [],
-    positionalParamSegments: {},
-  };
 }
