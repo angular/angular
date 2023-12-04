@@ -19,10 +19,10 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   styleUrls: ['./property-view-body.component.scss'],
 })
 export class PropertyViewBodyComponent {
-  @Input() controller: DirectivePropertyResolver;
-  @Input() directiveInputControls: DirectiveTreeData;
-  @Input() directiveOutputControls: DirectiveTreeData;
-  @Input() directiveStateControls: DirectiveTreeData;
+  @Input({required: true}) controller!: DirectivePropertyResolver;
+  @Input({required: true}) directiveInputControls!: DirectiveTreeData;
+  @Input({required: true}) directiveOutputControls!: DirectiveTreeData;
+  @Input({required: true}) directiveStateControls!: DirectiveTreeData;
 
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
 
@@ -134,7 +134,7 @@ export class PropertyViewBodyComponent {
     `]
 })
 export class DependencyViewerComponent {
-  @Input() dependency: SerializedInjectedService;
+  @Input({required: true}) dependency!: SerializedInjectedService;
 }
 
 @Component({
@@ -150,13 +150,14 @@ export class DependencyViewerComponent {
     `]
 })
 export class InjectedServicesComponent {
-  @Input() controller: DirectivePropertyResolver;
+  @Input({required: true}) controller!: DirectivePropertyResolver;
 
   get dependencies(): SerializedInjectedService[] {
     return this.controller.directiveMetadata?.dependencies ?? [];
   }
 
-  dependencyPosition(_index, dependency: SerializedInjectedService) {
+  // TODO: remove when migrating to @for block
+  dependencyPosition(_index: any, dependency: SerializedInjectedService) {
     return dependency.position[0];
   }
 }

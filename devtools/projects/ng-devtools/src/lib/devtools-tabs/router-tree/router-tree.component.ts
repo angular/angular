@@ -16,8 +16,8 @@ import {Events, MessageBus, Route} from 'protocol';
   styleUrls: ['./router-tree.component.scss'],
 })
 export class RouterTreeComponent implements AfterViewInit {
-  @ViewChild('svgContainer', {static: true}) private svgContainer: ElementRef;
-  @ViewChild('mainGroup', {static: true}) private g: ElementRef;
+  @ViewChild('svgContainer', {static: true}) private svgContainer!: ElementRef;
+  @ViewChild('mainGroup', {static: true}) private g!: ElementRef;
 
   @Input()
   set routes(routes: Route[]) {
@@ -26,7 +26,7 @@ export class RouterTreeComponent implements AfterViewInit {
   }
 
   private _routes: Route[] = [];
-  private tree: d3.TreeLayout<{}>;
+  private tree!: d3.TreeLayout<{}>;
   private tooltip: any;
 
   constructor(private _messageBus: MessageBus<Events>) {}

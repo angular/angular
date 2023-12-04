@@ -22,8 +22,8 @@ export class MyServiceA {
   viewProviders: [MyServiceA]
 })
 export class AppTodoComponent {
-  name: string;
-  animal: string;
+  name!: string;
+  animal!: string;
 
   constructor(public dialog: MatDialog) {}
 

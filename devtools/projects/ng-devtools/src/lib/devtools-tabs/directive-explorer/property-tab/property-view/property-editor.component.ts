@@ -30,14 +30,14 @@ const parseValue = (value: EditorResult): EditorResult => {
   styleUrls: ['./property-editor.component.scss'],
 })
 export class PropertyEditorComponent implements AfterViewChecked, OnInit {
-  @Input() key: string;
-  @Input() initialValue: EditorResult;
+  @Input({required: true}) key!: string;
+  @Input({required: true}) initialValue!: EditorResult;
   @Output() updateValue = new EventEmitter<EditorResult>();
 
   readState = PropertyEditorState.Read;
   writeState = PropertyEditorState.Write;
 
-  valueToSubmit: EditorResult;
+  valueToSubmit!: EditorResult;
   currentPropertyState = this.readState;
 
   constructor(private _cd: ChangeDetectorRef, private _elementRef: ElementRef) {}

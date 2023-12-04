@@ -17,7 +17,7 @@ import {FlatNode} from '../property-resolver/element-property-resolver';
   selector: 'ng-property-tab',
 })
 export class PropertyTabComponent {
-  @Input() currentSelectedElement: IndexedNode;
+  @Input({required: true}) currentSelectedElement!: IndexedNode;
   @Output() viewSource = new EventEmitter<string>();
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

@@ -52,7 +52,11 @@ export class DirectivePropertyResolver {
   constructor(
       private _messageBus: MessageBus<Events>, private _props: Properties,
       private _directivePosition: DirectivePosition) {
-    this._initDataSources();
+    const {inputProps, outputProps, stateProps} = this._classifyProperties();
+
+    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
+    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
+    this._stateDataSource = this._createDataSourceFromProps(stateProps);
   }
 
   get directiveInputControls(): DirectiveTreeData {
@@ -109,14 +113,6 @@ export class DirectivePropertyResolver {
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
     node.prop.descriptor.value = newValue;
-  }
-
-  private _initDataSources(): void {
-    const {inputProps, outputProps, stateProps} = this._classifyProperties();
-
-    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
-    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
-    this._stateDataSource = this._createDataSourceFromProps(stateProps);
   }
 
   private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {

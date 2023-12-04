@@ -34,8 +34,8 @@ export const getPropType = (prop: unknown): PropType => {
     return PropType.HTMLNode;
   }
   const type = typeof prop;
-  if (commonTypes[type] !== undefined) {
-    return commonTypes[type];
+  if (type in commonTypes) {
+    return commonTypes[type as keyof typeof commonTypes];
   }
   if (type === 'object') {
     if (Array.isArray(prop)) {

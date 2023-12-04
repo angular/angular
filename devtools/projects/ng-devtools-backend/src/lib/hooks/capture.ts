@@ -196,11 +196,11 @@ const insertOrMerge = (lastFrame: ElementProfile, profile: DirectiveProfile) => 
         current = 0;
       }
       d.changeDetection = current + (profile.changeDetection ?? 0);
-      for (const key of Object.keys(profile.lifecycle)) {
+      for (const key of Object.keys(profile.lifecycle) as (keyof LifecycleProfile)[]) {
         if (!d.lifecycle[key]) {
           d.lifecycle[key] = 0;
         }
-        d.lifecycle[key] += profile.lifecycle[key];
+        d.lifecycle[key]! += profile.lifecycle[key]!;
       }
       for (const key of Object.keys(profile.outputs)) {
         if (!d.outputs[key]) {

@@ -17,7 +17,7 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   styleUrls: ['./property-preview.component.scss'],
 })
 export class PropertyPreviewComponent {
-  @Input() node: FlatNode;
+  @Input({required: true}) node!: FlatNode;
   @Output() inspect = new EventEmitter<void>();
 
   get isClickableProp(): boolean {
