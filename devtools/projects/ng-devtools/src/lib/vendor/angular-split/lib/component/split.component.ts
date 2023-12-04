@@ -47,21 +47,22 @@ import {getAreaMaxSize, getAreaMinSize, getElementPixelSize, getGutterSideAbsorp
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
   template: ` <ng-content></ng-content>
-    <ng-template ngFor [ngForOf]="displayedAreas" let-index="index" let-last="last">
-      <div
-        *ngIf="last === false"
-        #gutterEls
-        class="as-split-gutter"
-        [style.flex-basis.px]="gutterSize"
-        [style.order]="index * 2 + 1"
-        (mousedown)="startDragging($event, index * 2 + 1, index + 1)"
-        (touchstart)="startDragging($event, index * 2 + 1, index + 1)"
-        (mouseup)="clickGutter($event, index + 1)"
-        (touchend)="clickGutter($event, index + 1)"
-      >
-        <div class="as-split-gutter-icon"></div>
-      </div>
-    </ng-template>`,
+    @for (_ of displayedAreas; track $index) {
+      @if ($last === false) {
+        <div
+          #gutterEls
+          class="as-split-gutter"
+          [style.flex-basis.px]="gutterSize"
+          [style.order]="$index * 2 + 1"
+          (mousedown)="startDragging($event, $index * 2 + 1, $index + 1)"
+          (touchstart)="startDragging($event, $index * 2 + 1, $index + 1)"
+          (mouseup)="clickGutter($event, $index + 1)"
+          (touchend)="clickGutter($event, $index + 1)"
+          >
+          <div class="as-split-gutter-icon"></div>
+        </div>
+      }
+    }`,
 })
 export class SplitComponent implements AfterViewInit, OnDestroy {
   private _direction: 'horizontal'|'vertical' = 'horizontal';

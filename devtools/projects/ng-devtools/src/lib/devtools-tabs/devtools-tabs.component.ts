@@ -17,6 +17,8 @@ import {Theme, ThemeService} from '../theme-service';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {TabUpdate} from './tab-update/index';
 
+type Tabs = 'Components'|'Profiler'|'Router Tree'|'Injector Tree';
+
 @Component({
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
@@ -27,7 +29,7 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
-  activeTab: 'Components'|'Profiler'|'Router Tree'|'Injector Tree' = 'Components';
+  activeTab: Tabs = 'Components';
 
   inspectorRunning = false;
   routerTreeEnabled = false;
@@ -56,8 +58,8 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     this.navbar.stretchTabs = false;
   }
 
-  get tabs(): string[] {
-    const alwaysShown = ['Components', 'Profiler', 'Injector Tree'];
+  get tabs(): Tabs[] {
+    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
     return this.routes.length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
   }
 
@@ -69,7 +71,7 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     return this._applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
-  changeTab(tab: 'Profiler'|'Components'|'Router Tree'): void {
+  changeTab(tab: Tabs): void {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
