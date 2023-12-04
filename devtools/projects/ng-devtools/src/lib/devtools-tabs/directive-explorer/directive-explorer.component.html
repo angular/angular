@@ -12,17 +12,17 @@
           [forest]="forest"
           [currentSelectedElement]="currentSelectedElement"
           [showCommentNodes]="showCommentNodes"
-        ></ng-directive-forest>
+        />
       </as-split-area>
       <as-split-area size="22">
-        <ng-breadcrumbs
-          (mouseLeaveNode)="unhighlight()"
-          (mouseOverNode)="highlight($event)"
-          *ngIf="parents"
-          (handleSelect)="handleSelect($event)"
-          [parents]="parents"
-        >
-        </ng-breadcrumbs>
+        @if (parents) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents"
+            />
+        }
       </as-split-area>
     </as-split>
   </as-split-area>
@@ -32,7 +32,7 @@
         [currentSelectedElement]="currentSelectedElement"
         (inspect)="inspect($event)"
         (viewSource)="viewSource($event)"
-      ></ng-property-tab>
+      />
     </div>
   </as-split-area>
 </as-split>

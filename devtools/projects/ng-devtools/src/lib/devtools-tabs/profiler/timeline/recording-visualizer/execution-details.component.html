@@ -5,14 +5,16 @@
     <th class="value">Time</th>
   </thead>
   <tbody>
-    <tr *ngFor="let entry of data">
-      <td class="name">
-        {{ entry.directive }}
-      </td>
-      <td class="method">
-        {{ entry.method }}
-      </td>
-      <td class="value">{{ entry.value }} ms</td>
-    </tr>
+    @for (entry of data; track $index) {
+      <tr>
+        <td class="name">
+          {{ entry.directive }}
+        </td>
+        <td class="method">
+          {{ entry.method }}
+        </td>
+        <td class="value">{{ entry.value }} ms</td>
+      </tr>
+    }
   </tbody>
 </table>

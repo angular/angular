@@ -1,5 +1,5 @@
-<ng-container *ngIf="currentSelectedElement; else emptyState">
-  <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
+@if (currentSelectedElement) {
+  @if (currentSelectedElement.component) {
     <mat-accordion class="property-tab-header">
       <div>
         <mat-expansion-panel [hideToggle]="true">
@@ -14,16 +14,13 @@
         </mat-expansion-panel>
       </div>
     </mat-accordion>
-  </ng-container>
-  <ng-template #currentElementIsDOMElement>
+  } @else {
     <div class="element-header">
       <div class="element-name">{{ currentSelectedElement.element }}</div>
     </div>
-  </ng-template>
-</ng-container>
-
-<ng-template #emptyState>
+  }
+} @else {
   <div class="element-header">
     <div class="element-name">No selected Element</div>
   </div>
-</ng-template>
+}
