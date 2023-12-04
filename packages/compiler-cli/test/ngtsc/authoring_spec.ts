@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
       `);
       env.driveMain();
       const js = env.getContents('test.js');
-      expect(js).toContain('inputs: { data: [1, "data"] }');
+      expect(js).toContain('inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }');
     });
 
     it('should handle an alias configured, primitive valued input', () => {
@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
       `);
       env.driveMain();
       const js = env.getContents('test.js');
-      expect(js).toContain('inputs: { data: [1, "publicName", "data"] }');
+      expect(js).toContain('inputs: { data: [i0.ɵɵInputFlags.SignalBased, "publicName", "data"] }');
     });
 
     it('should error if a required input declares an initial value', () => {
@@ -82,7 +82,8 @@ runInEachFileSystem(() => {
         }
       `);
       env.driveMain();
-      expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
+      expect(env.getContents('test.js'))
+          .toContain(`inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }`);
       expect(env.getContents('test.d.ts')).toContain('"required": true; "isSignal": true;');
       expect(env.getContents('test.d.ts'))
           .withContext(
@@ -101,7 +102,8 @@ runInEachFileSystem(() => {
         }
       `);
       env.driveMain();
-      expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
+      expect(env.getContents('test.js'))
+          .toContain(`inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }`);
     });
 
     describe('type checking', () => {

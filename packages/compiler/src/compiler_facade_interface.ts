@@ -68,7 +68,7 @@ export interface CompilerFacade {
 }
 
 export interface CoreEnvironment {
-  [name: string]: Function;
+  [name: string]: unknown;
 }
 
 export type ResourceLoader = {
