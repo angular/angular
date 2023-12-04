@@ -28,9 +28,8 @@ import {filterOutAngularInjectors, filterOutInjectorsWithNoProviders, generateEd
   standalone: true,
   selector: 'ng-injector-tree',
   imports: [
-    CommonModule, MatButtonModule, AngularSplitModule, ResolutionPathComponent, MatTabsModule,
-    MatExpansionModule, InjectorProvidersComponent, MatIconModule, MatTooltipModule,
-    MatCheckboxModule
+    MatButtonModule, AngularSplitModule, ResolutionPathComponent, MatTabsModule, MatExpansionModule,
+    InjectorProvidersComponent, MatIconModule, MatTooltipModule, MatCheckboxModule
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss']
