@@ -78,13 +78,7 @@ function updateImportClause(clause: ts.ImportClause, removeCommonModule: boolean
 
 function updateClassImports(
     propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string|null {
-  // removeComments is set to true to prevent duplication of comments
-  // when the import declaration is at the top of the file, but right after a comment
-  // without this, the comment gets duplicated when the declaration is updated.
-  // the typescript AST includes that preceding comment as part of the import declaration full text.
-  const printer = ts.createPrinter({
-    removeComments: true,
-  });
+  const printer = ts.createPrinter();
   const importList = propAssignment.initializer as ts.ArrayLiteralExpression;
   const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
   const elements = importList.elements.filter(el => !removals.includes(el.getText()));
