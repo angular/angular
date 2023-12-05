@@ -20,7 +20,6 @@ import {SampleService} from './sample.service';
   {{ exampleString }}
   {{ exampleSymbol }}
   {{ exampleNumber }}
-  {{ exampleBigint }}
   {{ exampleUndefined }}
   {{ exampleNull }}
   {{ exampleObject }}
@@ -46,7 +45,6 @@ export class SamplePropertiesComponent {
   exampleString = 'John';
   exampleSymbol = Symbol.iterator;
   exampleNumber = 40;
-  exampleBigint = 40n;
   exampleUndefined = undefined;
   exampleNull = null;
 

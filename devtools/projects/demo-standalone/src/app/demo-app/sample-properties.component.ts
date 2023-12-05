@@ -15,10 +15,11 @@ import {SampleService} from './sample.service';
   selector: 'app-sample-properties',
   providers: [SampleService],
   template: '',
+  standalone: true,
   styles: [''],
 })
 export class SamplePropertiesComponent {
-  @ViewChild('elementReference') elementRef: ElementRef;
+  @ViewChild('elementReference') elementRef!: ElementRef;
 
   exampleService = inject(SampleService);
 
@@ -26,7 +27,6 @@ export class SamplePropertiesComponent {
   exampleString = 'John';
   exampleSymbol = Symbol.iterator;
   exampleNumber = 40;
-  exampleBigint = 40n;
   exampleUndefined = undefined;
   exampleNull = null;
 

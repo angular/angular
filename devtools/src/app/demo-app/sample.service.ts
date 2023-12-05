@@ -14,7 +14,6 @@ export class SampleService {
   exampleString = 'John';
   exampleSymbol = Symbol.iterator;
   exampleNumber = 40;
-  exampleBigint = 40n;
   exampleUndefined = undefined;
   exampleNull = null;
 
