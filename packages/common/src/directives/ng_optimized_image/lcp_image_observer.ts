@@ -18,8 +18,8 @@ import {getUrl} from './url';
 interface ObservedImageState {
   priority: boolean;
   modified: boolean;
-  alreadyWarnedPriority: boolean;
-  alreadyWarnedModified: boolean;
+  disablePriorityError: boolean;
+  disableModifiedWarning: boolean;
 }
 
 /**
@@ -72,12 +72,12 @@ export class LCPImageObserver implements OnDestroy {
 
       const img = this.images.get(imgSrc);
       if (!img) return;
-      if (!img.priority && !img.alreadyWarnedPriority) {
-        img.alreadyWarnedPriority = true;
+      if (!img.priority && !img.disablePriorityError) {
+        img.disablePriorityError = true;
         logMissingPriorityError(imgSrc);
       }
-      if (img.modified && !img.alreadyWarnedModified) {
-        img.alreadyWarnedModified = true;
+      if (img.modified && !img.disableModifiedWarning) {
+        img.disableModifiedWarning = true;
         logModifiedWarning(imgSrc);
       }
     });
@@ -90,10 +90,22 @@ export class LCPImageObserver implements OnDestroy {
     const newObservedImageState: ObservedImageState = {
       priority: isPriority,
       modified: false,
-      alreadyWarnedModified: false,
-      alreadyWarnedPriority: false
+      disableModifiedWarning: false,
+      disablePriorityError: false
     };
-    this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
+    const priorEntryForSrc = this.images.get(getUrl(rewrittenSrc, this.window!).href);
+    if (priorEntryForSrc) {
+      // If we already have an entry for this URL, and either one is priority, disable warning
+      // to prevent false positives
+      if (isPriority) {
+        priorEntryForSrc.disablePriorityError = true;
+      }
+      // Modified warning must always be disabled, since we won't know which of the duplicate src
+      // images was the one modified
+      priorEntryForSrc.disableModifiedWarning = true;
+    } else {
+      this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
+    }
   }
 
   unregisterImage(rewrittenSrc: string) {
