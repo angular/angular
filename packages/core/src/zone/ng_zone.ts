@@ -604,3 +604,23 @@ function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
   // Prevent triggering change detection when the __ignore_ng_zone__ flag is detected.
   return applyArgs[0].data?.['__ignore_ng_zone__'] === true;
 }
+
+
+// Set of options recognized by the NgZone.
+export interface InternalNgZoneOptions {
+  enableLongStackTrace: boolean;
+  shouldCoalesceEventChangeDetection: boolean;
+  shouldCoalesceRunChangeDetection: boolean;
+}
+
+
+export function getNgZone(
+    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: InternalNgZoneOptions): NgZone {
+  if (ngZoneToUse === 'noop') {
+    return new NoopNgZone();
+  }
+  if (ngZoneToUse === 'zone.js') {
+    return new NgZone(options);
+  }
+  return ngZoneToUse;
+}
