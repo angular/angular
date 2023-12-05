@@ -81,7 +81,13 @@ export function toR3DirectiveMeta<TExpression>(
  * Decodes the AST value for a single input to its representation as used in the metadata.
  */
 function toInputMapping<TExpression>(
-    value: AstValue<string|[string, string], TExpression>, key: string): R3InputMetadata {
+    value: AstValue<NonNullable<R3DeclareDirectiveMetadata['inputs']>[string], TExpression>,
+    key: string): R3InputMetadata {
+  if (value.isObject()) {
+    // TODO: Implement in a follow-up.
+    throw new Error('Parsing for new partial output emit is not supported yet.');
+  }
+
   if (value.isString()) {
     return {
       bindingPropertyName: value.getString(),
