@@ -5,15 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {types as t} from '@babel/core';
-import parser from '@babel/parser';
-import _template from '@babel/template';
+import {parse, template, types as t} from '@babel/core';
 
 import {BabelAstHost} from '../../src/ast/babel_ast_host';
-
-// Babel is a CJS package and misuses the `default` named binding:
-// https://github.com/babel/babel/issues/15269.
-const template = (_template as any)['default'] as typeof _template;
 
 describe('BabelAstHost', () => {
   let host: BabelAstHost;
@@ -331,8 +325,8 @@ describe('BabelAstHost', () => {
 
   describe('getRange()', () => {
     it('should extract the range from the expression', () => {
-      const file = parser.parse('// preamble\nx = \'moo\';');
-      const stmt = file.program.body[0] as t.Statement;
+      const file = parse('// preamble\nx = \'moo\';');
+      const stmt = file!.program.body[0] as t.Statement;
       assertExpressionStatement(stmt);
       assertAssignmentExpression(stmt.expression);
       expect(host.getRange(stmt.expression.right))

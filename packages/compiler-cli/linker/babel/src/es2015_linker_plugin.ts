@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BabelFile, PluginObj, types as t} from '@babel/core';
-import {NodePath} from '@babel/traverse';
+import {BabelFile, NodePath, PluginObj, types as t} from '@babel/core';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
@@ -33,11 +32,11 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
         /**
          * Create a new `FileLinker` as we enter each file (`t.Program` in Babel).
          */
-        enter(path: NodePath<t.Program>): void {
+        enter(_, state): void {
           assertNull(fileLinker);
           // Babel can be configured with a `filename` or `relativeFilename` (or both, or neither) -
           // possibly relative to the optional `cwd` path.
-          const file = path.hub.file;
+          const file = state.file;
           const filename = file.opts.filename ?? file.opts.filenameRelative;
           if (!filename) {
             throw new Error(
@@ -67,7 +66,7 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
        * Test each call expression to see if it is a partial declaration; it if is then replace it
        * with the results of linking the declaration.
        */
-      CallExpression(call: NodePath<t.CallExpression>): void {
+      CallExpression(call: NodePath<t.CallExpression>, state): void {
         if (fileLinker === null) {
           // Any statements that are inserted upon program exit will be visited outside of an active
           // linker context. These call expressions are known not to contain partial declarations,
@@ -91,7 +90,7 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
           call.replaceWith(replacement);
         } catch (e) {
           const node = isFatalLinkerError(e) ? e.node as t.Node : call.node;
-          throw buildCodeFrameError(call.hub.file, (e as Error).message, node);
+          throw buildCodeFrameError(state.file, (e as Error).message, node);
         }
       }
     }
@@ -176,6 +175,6 @@ function assertNotNull<T>(obj: T|null): asserts obj is T {
  */
 function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): string {
   const filename = file.opts.filename || '(unknown file)';
-  const error = file.buildCodeFrameError(node, message);
+  const error = file.hub.buildError(node, message);
   return `${filename}: ${error.message}`;
 }
