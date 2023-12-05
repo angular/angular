@@ -40,12 +40,6 @@ import {
   filterOutInjectorsWithoutCertainToken,
 } from './injector-tree-fns';
 
-const ngDebug = () => (window as any).ng;
-export function ngDebugApiIsSupported(api: string): boolean {
-  const ng = ngDebug();
-  return typeof ng[api] === 'function';
-}
-
 @Component({
   standalone: true,
   selector: 'ng-injector-tree',
