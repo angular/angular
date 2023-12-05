@@ -44,6 +44,7 @@ export interface DataGroup {
         maxSize: number;
         maxAge: Duration;
         timeout?: Duration;
+        refreshAhead?: Duration;
         strategy?: 'freshness' | 'performance';
         cacheOpaqueResponses?: boolean;
     };
