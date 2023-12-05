@@ -3970,6 +3970,48 @@ describe('control flow migration', () => {
         `}`,
       ].join('\n'));
     });
+
+    it('should migrate nested template usage correctly', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container *ngIf="!(condition$ | async); else template">`,
+        `  Hello!`,
+        `</ng-container>`,
+        `<ng-template #bar>Bar</ng-template>`,
+        `<ng-template #foo>Foo</ng-template>`,
+        `<ng-template #template>`,
+        `  <ng-container`,
+        `    *ngIf="(foo$ | async) === true; then foo; else bar"`,
+        `  ></ng-container>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (!(condition$ | async)) {`,
+        `  Hello!`,
+        `} @else {`,
+        `  @if ((foo$ | async) === true) {`,
+        `    Foo`,
+        `  } @else {`,
+        `    Bar`,
+        `  }`,
+        `}\n`,
+      ].join('\n'));
+    });
   });
 
   describe('formatting', () => {
