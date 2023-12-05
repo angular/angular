@@ -16,6 +16,5 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/translator",
         "@npm//@babel/core",
         "@npm//@types/babel__core",
-        "@npm//@types/babel__traverse",
     ],
 )
