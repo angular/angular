@@ -75,7 +75,7 @@ export function ingestHostProperty(
   const ast = property.expression.ast;
   if (ast instanceof e.Interpolation) {
     expression = new ir.Interpolation(
-        ast.strings, ast.expressions.map(expr => convertAst(expr, job, property.sourceSpan)));
+        ast.strings, ast.expressions.map(expr => convertAst(expr, job, property.sourceSpan)), []);
   } else {
     expression = convertAst(ast, job, property.sourceSpan);
   }
@@ -92,13 +92,15 @@ export function ingestHostProperty(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
-      isTextAttribute, false, property.sourceSpan));
+      isTextAttribute, false, /* TODO: How do Host bindings handle i18n attrs? */ null,
+      property.sourceSpan));
 }
 
 export function ingestHostAttribute(
     job: HostBindingCompilationJob, name: string, value: o.Expression): void {
   const attrBinding = ir.createBindingOp(
       job.root.xref, ir.BindingKind.Attribute, name, value, null, SecurityContext.NONE, true, false,
+      /* TODO */ null,
       /* TODO: host attribute source spans */ null!);
   job.root.update.push(attrBinding);
 }
@@ -243,7 +245,7 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue);
+        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, attr.i18n);
   }
   unit.create.push(op);
 }
@@ -274,6 +276,7 @@ function ingestBoundText(
   }
 
   if (i18nPlaceholders === undefined) {
+    // TODO: We probably can just use the placeholders field, instead of walking the AST.
     i18nPlaceholders = text.i18n instanceof i18n.Container ?
         text.i18n.children
             .filter((node): node is i18n.Placeholder => node instanceof i18n.Placeholder)
@@ -294,8 +297,9 @@ function ingestBoundText(
   unit.update.push(ir.createInterpolateTextOp(
       textXref,
       new ir.Interpolation(
-          value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan))),
-      i18nPlaceholders, text.sourceSpan));
+          value.strings, value.expressions.map(expr => convertAst(expr, unit.job, baseSourceSpan)),
+          i18nPlaceholders),
+      text.sourceSpan));
 }
 
 /**
@@ -615,6 +619,8 @@ function convertAst(
     }
   } else if (ast instanceof e.LiteralPrimitive) {
     return o.literal(ast.value, undefined, convertSourceSpan(ast.span, baseSourceSpan));
+  } else if (ast instanceof e.Unary) {
+    throw new Error('TODO: Support unary operations, which extend binary ops');
   } else if (ast instanceof e.Binary) {
     const operator = BINARY_OPERATORS.get(ast.operation);
     if (operator === undefined) {
@@ -716,6 +722,8 @@ function isPlainTemplate(tmpl: t.Template) {
 function ingestBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   let flags: BindingFlags = BindingFlags.None;
+  let hasI18nAttributes = false;
+
   if (element instanceof t.Template) {
     flags |= BindingFlags.OnNgTemplateElement;
     if (element instanceof t.Template && isPlainTemplate(element)) {
@@ -728,11 +736,14 @@ function ingestBindings(
       if (attr instanceof t.TextAttribute) {
         ingestBinding(
             unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-            SecurityContext.NONE, attr.sourceSpan, templateAttrFlags | BindingFlags.TextValue);
+            SecurityContext.NONE, attr.sourceSpan, templateAttrFlags | BindingFlags.TextValue,
+            attr.i18n);
+        hasI18nAttributes ||= attr.i18n !== undefined;
       } else {
         ingestBinding(
             unit, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.securityContext,
-            attr.sourceSpan, templateAttrFlags);
+            attr.sourceSpan, templateAttrFlags, attr.i18n);
+        hasI18nAttributes ||= attr.i18n !== undefined;
       }
     }
   }
@@ -743,12 +754,14 @@ function ingestBindings(
     // `BindingType.Attribute`.
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue);
+        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue, attr.i18n);
+    hasI18nAttributes ||= attr.i18n !== undefined;
   }
   for (const input of element.inputs) {
     ingestBinding(
         unit, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
-        input.sourceSpan, flags);
+        input.sourceSpan, flags, input.i18n);
+    hasI18nAttributes ||= input.i18n !== undefined;
   }
 
   for (const output of element.outputs) {
@@ -761,7 +774,7 @@ function ingestBindings(
 
     if (element instanceof t.Template && !isPlainTemplate(element)) {
       unit.create.push(
-          ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null));
+          ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null, null));
       continue;
     }
 
@@ -797,6 +810,12 @@ function ingestBindings(
     listenerOp.handlerOps.push(
         ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
     unit.create.push(listenerOp);
+  }
+
+  // TODO: Perhaps we could do this in a phase? (It likely wouldn't change the slot indices.)
+  if (hasI18nAttributes) {
+    unit.create.push(
+        ir.createI18nAttributesOp(unit.job.allocateXrefId(), new ir.SlotHandle(), op.xref));
   }
 }
 
@@ -835,16 +854,27 @@ enum BindingFlags {
 function ingestBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, flags: BindingFlags): void {
+    sourceSpan: ParseSourceSpan, flags: BindingFlags, i18nMeta: i18n.I18nMeta|undefined): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
+  }
+
+  let i18nContext: ir.XrefId|null = null;
+  if (i18nMeta !== undefined) {
+    if (!(i18nMeta instanceof i18n.Message)) {
+      throw Error(`Unhandled i18n metadata type for binding: ${i18nMeta.constructor.name}`);
+    }
+    i18nContext = view.job.allocateXrefId();
+    view.create.push(
+        ir.createI18nContextOp(ir.I18nContextKind.Attr, i18nContext, null, i18nMeta, null!));
   }
 
   if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
       type === e.BindingType.Property) {
     // This binding only exists for later const extraction, and is not an actual binding to be
     // created.
-    view.create.push(ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null));
+    view.create.push(
+        ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null, i18nContext));
     return;
   }
 
@@ -852,8 +882,13 @@ function ingestBinding(
   // TODO: We could easily generate source maps for subexpressions in these cases, but
   // TemplateDefinitionBuilder does not. Should we do so?
   if (value instanceof e.Interpolation) {
+    let i18nPlaceholders: string[] = [];
+    if (i18nMeta !== undefined) {
+      i18nPlaceholders = Object.keys(i18nMeta.placeholders);
+    }
     expression = new ir.Interpolation(
-        value.strings, value.expressions.map(expr => convertAst(expr, view.job, null)));
+        value.strings, value.expressions.map(expr => convertAst(expr, view.job, null)),
+        i18nPlaceholders);
   } else if (value instanceof e.AST) {
     expression = convertAst(value, view.job, null);
   } else {
@@ -863,7 +898,7 @@ function ingestBinding(
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
   view.update.push(ir.createBindingOp(
       xref, kind, name, expression, unit, securityContext, !!(flags & BindingFlags.TextValue),
-      !!(flags & BindingFlags.IsStructuralTemplateAttribute), sourceSpan));
+      !!(flags & BindingFlags.IsStructuralTemplateAttribute), i18nContext, sourceSpan));
 }
 
 /**
@@ -963,7 +998,7 @@ function ingestControlFlowInsertionPoint(
     for (const attr of root.attributes) {
       ingestBinding(
           unit, xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue);
+          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, attr.i18n);
     }
 
     const tagName = root instanceof t.Element ? root.name : root.tagName;

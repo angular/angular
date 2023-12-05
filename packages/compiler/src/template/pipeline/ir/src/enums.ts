@@ -234,6 +234,11 @@ export enum OpKind {
    * An i18n context containing information needed to generate an i18n message.
    */
   I18nContext,
+
+  /**
+   * A creation op that corresponds to i18n attributes on an element.
+   */
+  I18nAttributes,
 }
 
 /**
@@ -491,6 +496,21 @@ export enum I18nParamResolutionTime {
 }
 
 /**
+ * The contexts in which an i18n expression can be used.
+ */
+export enum I18nExpressionContext {
+  /**
+   * This expression is used as a value (i.e. inside an i18n block).
+   */
+  Normal,
+
+  /**
+   * This expression is used in a binding.
+   */
+  Binding,
+}
+
+/**
  * Flags that describe what an i18n param value. These determine how the value is serialized into
  * the final map.
  */
@@ -559,7 +579,8 @@ export enum DerivedRepeaterVarIdentity {
  */
 export enum I18nContextKind {
   RootI18n,
-  Icu
+  Icu,
+  Attr
 }
 
 export enum TemplateKind {

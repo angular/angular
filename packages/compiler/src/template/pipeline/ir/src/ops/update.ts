@@ -9,7 +9,7 @@
 import {SecurityContext} from '../../../../../core';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, I18nParamResolutionTime, OpKind} from '../enums';
+import {BindingKind, I18nExpressionContext, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
@@ -45,11 +45,6 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
    */
   interpolation: Interpolation;
 
-  /**
-   * The i18n placeholders associated with this interpolation.
-   */
-  i18nPlaceholders: string[];
-
   sourceSpan: ParseSourceSpan;
 }
 
@@ -57,13 +52,11 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, i18nPlaceholders: string[],
-    sourceSpan: ParseSourceSpan): InterpolateTextOp {
+    xref: XrefId, interpolation: Interpolation, sourceSpan: ParseSourceSpan): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
     interpolation,
-    i18nPlaceholders,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -72,7 +65,15 @@ export function createInterpolateTextOp(
 }
 
 export class Interpolation {
-  constructor(readonly strings: string[], readonly expressions: o.Expression[]) {}
+  constructor(
+      readonly strings: string[], readonly expressions: o.Expression[],
+      readonly i18nPlaceholders: string[]) {
+    if (i18nPlaceholders.length !== 0 && i18nPlaceholders.length !== expressions.length) {
+      throw new Error(`Expected ${
+          expressions.length} placeholders to match interpolation expression count, but got ${
+          i18nPlaceholders.length}`);
+    }
+  }
 }
 
 /**
@@ -120,9 +121,11 @@ export interface BindingOp extends Op<UpdateOp> {
   isTextAttribute: boolean;
 
   /**
-   * Whether this binding is on a template.
+   * Whether this binding is on a structural template.
    */
-  isTemplate: boolean;
+  isStructuralTemplate: boolean;
+
+  i18nContext: XrefId|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -133,7 +136,8 @@ export interface BindingOp extends Op<UpdateOp> {
 export function createBindingOp(
     target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
     unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
-    isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
+    isStructuralTemplate: boolean, i18nContext: XrefId|null,
+    sourceSpan: ParseSourceSpan): BindingOp {
   return {
     kind: OpKind.Binding,
     bindingKind: kind,
@@ -143,7 +147,8 @@ export function createBindingOp(
     unit,
     securityContext,
     isTextAttribute,
-    isTemplate,
+    isStructuralTemplate: isStructuralTemplate,
+    i18nContext,
     sourceSpan,
     ...NEW_OP,
   };
@@ -186,9 +191,11 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   sanitizer: o.Expression|null;
 
   /**
-   * Whether this binding is on a template.
+   * Whether this binding is on a structural template.
    */
-  isTemplate: boolean;
+  isStructuralTemplate: boolean;
+
+  i18nContext: XrefId|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -198,9 +205,8 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  */
 export function createPropertyOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
-
-    sourceSpan: ParseSourceSpan): PropertyOp {
+    isAnimationTrigger: boolean, securityContext: SecurityContext, isStructuralTemplate: boolean,
+    i18nContext: XrefId|null, sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
     target,
@@ -209,7 +215,8 @@ export function createPropertyOp(
     isAnimationTrigger,
     securityContext,
     sanitizer: null,
-    isTemplate,
+    isStructuralTemplate,
+    i18nContext,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -412,9 +419,14 @@ export interface AttributeOp extends Op<UpdateOp> {
   isTextAttribute: boolean;
 
   /**
-   * Whether this binding is on a template.
+   * Whether this binding is on a structural template.
    */
-  isTemplate: boolean;
+  isStructuralTemplate: boolean;
+
+  /**
+   * The i18n context, if this is an i18n attribute.
+   */
+  i18nContext: XrefId|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -424,8 +436,8 @@ export interface AttributeOp extends Op<UpdateOp> {
  */
 export function createAttributeOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext, isTextAttribute: boolean, isTemplate: boolean,
-    sourceSpan: ParseSourceSpan): AttributeOp {
+    securityContext: SecurityContext, isTextAttribute: boolean, isStructuralTemplate: boolean,
+    i18nContext: XrefId|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
@@ -434,7 +446,8 @@ export function createAttributeOp(
     securityContext,
     sanitizer: null,
     isTextAttribute,
-    isTemplate,
+    isStructuralTemplate,
+    i18nContext,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -603,6 +616,9 @@ export function createDeferWhenOp(
 
 /**
  * An op that represents an expression in an i18n message.
+ *
+ * TODO: This can represent expressions used in both i18n attributes and normal i18n content. We may
+ * want to split these into two different op types, deriving from the same base class.
  */
 export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
                                           DependsOnSlotContextOpTrait {
@@ -614,13 +630,20 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   context: XrefId;
 
   /**
-   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
-   * block. This is necessary so that we run all lifecycle hooks.
+   * The Xref of the op that we need to `advance` to.
+   *
+   * In an i18n block, this should be the final op in the owning i18n block. This is necessary so
+   * that we run all lifecycle hooks.
+   *
+   * In an i18n attribute, this should be the Xref of the element to which the attribute expressions
+   * apply.
    */
   target: XrefId;
 
   /**
-   * A handle for the slot of the i18n block this expression belongs to.
+   * A handle for the slot that this expression modifies.
+   * - In an i18n block, this is the handle of the block.
+   * - In an i18n attribute, this is the handle of the corresponding i18nAttributes instruction.
    */
   handle: SlotHandle;
 
@@ -639,6 +662,17 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   resolutionTime: I18nParamResolutionTime;
 
+  /**
+   * Whether this i18n expression applies to a template or to a binding.
+   */
+  usage: I18nExpressionContext;
+
+  /**
+   * If this is an I18nExpressionContext.Binding, this expression is associated with a named
+   * attribute. That name is stored here.
+   */
+  name: string;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -647,8 +681,8 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  */
 export function createI18nExpressionOp(
     context: XrefId, target: XrefId, handle: SlotHandle, expression: o.Expression,
-    i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
-    sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime, usage: I18nExpressionContext,
+    name: string, sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     context,
@@ -657,6 +691,8 @@ export function createI18nExpressionOp(
     expression,
     i18nPlaceholder,
     resolutionTime,
+    usage,
+    name,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,
@@ -671,13 +707,21 @@ export interface I18nApplyOp extends Op<UpdateOp> {
   kind: OpKind.I18nApply;
 
   /**
-   * The Xref of the op that we need to `advance` to. This should be the final op in the owning i18n
-   * block. This is necessary so that we run all lifecycle hooks.
+   * The Xref of the op that we need to `advance` to. This is necessary so that we run all lifecycle
+   * hooks.
+   *
+   * If this apply instruction is for an i18n block, then this should be the final op in the owning
+   * i18n block.
+   *
+   * if this apply instruction is for an i18n attribute, this should be the element to which the
+   * attributes apply.
    */
   target: XrefId;
 
   /**
-   * A handle for the slot of the i18n block this expression belongs to.
+   * A handle for the slot that i18n apply instruction should apply to. In an i18n block, this is
+   * the slot of the i18n block this expression belongs to. In an i18n attribute, this is the slot
+   * of the corresponding i18nAttributes instruction.
    */
   handle: SlotHandle;
 
@@ -685,7 +729,7 @@ export interface I18nApplyOp extends Op<UpdateOp> {
 }
 
 /**
- *Creates an op to apply i18n expression ops
+ * Creates an op to apply i18n expression ops.
  */
 export function createI18nApplyOp(
     target: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {

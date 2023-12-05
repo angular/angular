@@ -9,7 +9,7 @@
 import * as o from '../../../../../../src/output/output_ast';
 import {ParseSourceSpan} from '../../../../../../src/parse_util';
 import {OpKind} from '../enums';
-import {Op} from '../operations';
+import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
 
 import {NEW_OP} from './shared';
@@ -26,17 +26,21 @@ export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   expression: o.Expression|Interpolation;
   isAnimationTrigger: boolean;
 
+  i18nContext: XrefId|null;
+
+
   sourceSpan: ParseSourceSpan|null;
 }
 
 export function createHostPropertyOp(
     name: string, expression: o.Expression|Interpolation, isAnimationTrigger: boolean,
-    sourceSpan: ParseSourceSpan|null): HostPropertyOp {
+    i18nContext: XrefId|null, sourceSpan: ParseSourceSpan|null): HostPropertyOp {
   return {
     kind: OpKind.HostProperty,
     name,
     expression,
     isAnimationTrigger,
+    i18nContext,
     sourceSpan,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,

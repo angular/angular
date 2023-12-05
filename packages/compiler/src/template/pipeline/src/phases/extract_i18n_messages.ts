@@ -71,6 +71,20 @@ export function extractI18nMessages(job: CompilationJob): void {
     }
   }
 
+  // TODO: Miles and I think that contexts have a 1-to-1 correspondence with extracted messages, so
+  // this phase can probably be simplified.
+
+  // Extract messages from contexts of i18n attributes.
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      if (op.kind !== ir.OpKind.I18nContext || op.contextKind !== ir.I18nContextKind.Attr) {
+        continue;
+      }
+      const i18nMessageOp = createI18nMessage(job, op);
+      unit.create.push(i18nMessageOp);
+    }
+  }
+
   // Extract messages from root i18n blocks.
   const i18nBlockMessages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
@@ -96,6 +110,9 @@ export function extractI18nMessages(job: CompilationJob): void {
           }
           const i18nContext = i18nContexts.get(op.context)!;
           if (i18nContext.contextKind === ir.I18nContextKind.Icu) {
+            if (i18nContext.i18nBlock === null) {
+              throw Error('ICU context should have its i18n block set.');
+            }
             const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
             unit.create.push(subMessage);
             const rootI18nId = i18nBlocks.get(i18nContext.i18nBlock)!.root;
@@ -126,8 +143,9 @@ function createI18nMessage(
     }
   }
   return ir.createI18nMessageOp(
-      job.allocateXrefId(), context.i18nBlock, context.message, messagePlaceholder ?? null,
-      formattedParams, formattedPostprocessingParams, needsPostprocessing);
+      job.allocateXrefId(), context.xref, context.i18nBlock, context.message,
+      messagePlaceholder ?? null, formattedParams, formattedPostprocessingParams,
+      needsPostprocessing);
 }
 
 /**

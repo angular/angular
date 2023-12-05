@@ -90,6 +90,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.I18n:
         ir.OpList.replace(op, ng.i18n(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!));
         break;
+      case ir.OpKind.I18nAttributes:
+        if (op.i18nAttributesConfig === null) {
+          throw new Error(`AssertionError: i18nAttributesConfig was not set`);
+        }
+        ir.OpList.replace(op, ng.i18nAttributes(op.handle.slot!, op.i18nAttributesConfig));
+        break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
