@@ -1022,6 +1022,7 @@ export function transformExpressionsInOp(
     case OpKind.ProjectionDef:
     case OpKind.Template:
     case OpKind.Text:
+    case OpKind.I18nAttributes:
       // These operations contain no expressions.
       break;
     default:

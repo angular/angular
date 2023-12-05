@@ -28,8 +28,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> with structural directives",
@@ -102,8 +101,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should translate static attributes",
@@ -117,8 +115,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should translate static attributes when used on an element with structural directive",
@@ -145,10 +142,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "interpolation_basic_template.js",
+              "templatePipelineExpected": "interpolation_basic_template.pipeline.js",
+              "generated": "interpolation_basic.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support interpolation with custom interpolation config",
@@ -160,10 +163,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "interpolation_custom_config_template.js",
+              "templatePipelineExpected": "interpolation_custom_config_template.pipeline.js",
+              "generated": "interpolation_custom_config.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should correctly bind to context in nested template",
@@ -175,10 +184,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "interpolation_nested_context_template.js",
+              "templatePipelineExpected": "interpolation_nested_context_template.pipeline.js",
+              "generated": "interpolation_nested_context.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support complex expressions in interpolation",
@@ -190,25 +205,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "interpolation_complex_expressions_template.js",
+              "templatePipelineExpected": "interpolation_complex_expressions_template.pipeline.js",
+              "generated": "interpolation_complex_expressions.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
-    },
-    {
-      "description": "should support complex expressions in interpolation",
-      "inputFiles": [
-        "interpolation_complex_expressions.ts"
-      ],
-      "expectations": [
-        {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
-        }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should work correctly when placed on i18n root node",
@@ -220,10 +226,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "i18n_root_node_template.js",
+              "templatePipelineExpected": "i18n_root_node_template.pipeline.js",
+              "generated": "i18n_root_node.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should sanitize ids and generate proper variable names",
@@ -240,8 +252,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

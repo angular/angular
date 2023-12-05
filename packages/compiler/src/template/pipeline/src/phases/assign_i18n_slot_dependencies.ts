@@ -29,7 +29,11 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
           currentI18nOp = op;
           break;
         case ir.OpKind.I18nEnd:
-          i18nLastSlotConsumers.set(currentI18nOp!.xref, lastSlotConsumer!);
+          if (currentI18nOp === null) {
+            throw new Error(
+                'AssertionError: Expected an active I18n block while calculating last slot consumers');
+          }
+          i18nLastSlotConsumers.set(currentI18nOp.xref, lastSlotConsumer!);
           currentI18nOp = null;
           break;
       }
@@ -50,7 +54,14 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
 
       // Re-target i18n expression ops.
       if (op.kind === ir.OpKind.I18nExpression) {
-        op.target = i18nLastSlotConsumers.get(op.target)!;
+        // TODO: Is this handling of i18n bindings correct?
+        op.target = op.usage === ir.I18nExpressionContext.Normal ?
+            i18nLastSlotConsumers.get(op.target)! :
+            op.target;
+        if (op.target === undefined) {
+          throw new Error(
+              'AssertionError: Expected every I18nExpressionOp to have a valid reordering target');
+        }
         moveToTarget = op.target;
       }
 
@@ -73,7 +84,7 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
       previousTarget = currentTarget;
     }
 
-    // If there are any mvoed ops that haven't been put back yet, put them back at the end.
+    // If there are any moved ops that haven't been put back yet, put them back at the end.
     if (opsToMove) {
       unit.update.push(opsToMove);
     }

@@ -624,8 +624,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map ng-template [ngFor] scenario (partial compile)",
@@ -693,8 +692,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create simple i18n message source-mapping (partial compile)",
@@ -728,8 +726,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create placeholder i18n message source-mappings (partial compile)",
@@ -763,8 +760,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should handle encoded entities in i18n message source-mappings (partial compile)",
@@ -868,8 +864,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create tag (container) placeholder i18n message source-mappings (partial compile)",
