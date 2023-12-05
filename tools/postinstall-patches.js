@@ -45,22 +45,6 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
-// Workaround https://github.com/bazelbuild/rules_nodejs/issues/1033
-// TypeScript doesn't understand typings without "declare module" unless
-// they are actually resolved by the @types default mechanism
-log('\n# patch: @types/babel__* adding declare module wrappers');
-ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
-  const modName = '@' + pkg.replace('__', '/');
-  const typingsFile = `node_modules/@types/${pkg}/index.d.ts`;
-  // Only add the patch if it is not already there.
-  if (readFileSync(typingsFile, 'utf8').indexOf('/*added by tools/postinstall_patches.js*/') ===
-      -1) {
-    const insertPrefix = `/*added by tools/postinstall_patches.js*/ declare module "${modName}" { `;
-    sed('-i', `(// Type definitions for ${modName})`, insertPrefix + '$1', typingsFile);
-    echo('}').toEnd(typingsFile);
-  }
-});
-
 log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [
