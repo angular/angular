@@ -284,7 +284,7 @@ export function getTemplates(template: string): Map<string, Template> {
     // count usages of each ng-template
     for (let [key, tmpl] of visitor.templates) {
       const escapeKey = escapeRegExp(key.slice(1));
-      const regex = new RegExp(`[^a-zA-Z0-9-<\']${escapeKey}\\W`, 'gm');
+      const regex = new RegExp(`[^a-zA-Z0-9-<(\']${escapeKey}\\W`, 'gm');
       const matches = template.match(regex);
       tmpl.count = matches?.length ?? 0;
       tmpl.generateContents(template);
@@ -293,6 +293,15 @@ export function getTemplates(template: string): Map<string, Template> {
     return visitor.templates;
   }
   return new Map<string, Template>();
+}
+
+export function updateTemplates(
+    template: string, templates: Map<string, Template>): Map<string, Template> {
+  const updatedTemplates = getTemplates(template);
+  for (let [key, tmpl] of updatedTemplates) {
+    templates.set(key, tmpl);
+  }
+  return templates;
 }
 
 function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
@@ -341,6 +350,9 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
         if (t.count === matches.length + 1 && safeToRemove) {
           template = template.replace(t.contents, '');
         }
+        // templates may have changed structure from nested replaced templates
+        // so we need to reprocess them before the next loop.
+        updateTemplates(template, templates);
       }
     }
     return {migrated: template, err: undefined};
