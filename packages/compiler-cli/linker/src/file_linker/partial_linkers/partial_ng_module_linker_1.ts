@@ -65,44 +65,44 @@ export function toR3NgModuleMeta<TExpression>(
   // we must update the `containsForwardDecls` property if a function wrapper was found.
 
   if (metaObj.has('bootstrap')) {
-    const bootstrap: AstValue<unknown, TExpression> = metaObj.getValue('bootstrap');
+    const bootstrap = metaObj.getValue('bootstrap');
     if (bootstrap.isFunction()) {
       meta.containsForwardDecls = true;
       meta.bootstrap = wrapReferences(unwrapForwardRefs(bootstrap));
     } else
-      meta.bootstrap = wrapReferences(bootstrap);
+      meta.bootstrap = wrapReferences(bootstrap as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('declarations')) {
-    const declarations: AstValue<unknown, TExpression> = metaObj.getValue('declarations');
+    const declarations = metaObj.getValue('declarations');
     if (declarations.isFunction()) {
       meta.containsForwardDecls = true;
       meta.declarations = wrapReferences(unwrapForwardRefs(declarations));
     } else
-      meta.declarations = wrapReferences(declarations);
+      meta.declarations = wrapReferences(declarations as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('imports')) {
-    const imports: AstValue<unknown, TExpression> = metaObj.getValue('imports');
+    const imports = metaObj.getValue('imports');
     if (imports.isFunction()) {
       meta.containsForwardDecls = true;
       meta.imports = wrapReferences(unwrapForwardRefs(imports));
     } else
-      meta.imports = wrapReferences(imports);
+      meta.imports = wrapReferences(imports as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('exports')) {
-    const exports: AstValue<unknown, TExpression> = metaObj.getValue('exports');
+    const exports = metaObj.getValue('exports');
     if (exports.isFunction()) {
       meta.containsForwardDecls = true;
       meta.exports = wrapReferences(unwrapForwardRefs(exports));
     } else
-      meta.exports = wrapReferences(exports);
+      meta.exports = wrapReferences(exports as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('schemas')) {
-    const schemas: AstValue<unknown, TExpression> = metaObj.getValue('schemas');
-    meta.schemas = wrapReferences(schemas);
+    const schemas = metaObj.getValue('schemas');
+    meta.schemas = wrapReferences(schemas as AstValue<TExpression[], TExpression>);
   }
 
   return meta;
