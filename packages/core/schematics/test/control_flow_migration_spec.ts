@@ -4012,6 +4012,40 @@ describe('control flow migration', () => {
         `}\n`,
       ].join('\n'));
     });
+
+    it('should add an ngTemplateOutlet when the template placeholder does not match a template',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+         writeFile('/comp.html', [
+           `<button *ngIf="active; else defaultTemplate">`,
+           `  Hello!`,
+           `</button>`,
+         ].join('\n'));
+
+         await runMigration();
+         const content = tree.readContent('/comp.html');
+
+         expect(content).toBe([
+           `@if (active) {`,
+           `  <button>`,
+           `    Hello!`,
+           `  </button>`,
+           `} @else {`,
+           `  <ng-template [ngTemplateOutlet]="defaultTemplate"></ng-template>`,
+           `}`,
+         ].join('\n'));
+       });
   });
 
   describe('formatting', () => {
