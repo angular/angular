@@ -10,9 +10,8 @@ import * as core from '../../../../core';
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {HostBindingCompilationJob, type CompilationJob, ComponentCompilationJob} from '../compilation';
+import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob} from '../compilation';
 import {literalOrArrayLiteral} from '../conversion';
-import {element} from '../instruction';
 
 /**
  * Converts the semantic attributes of element-like operations (elements, templates) into constant
@@ -121,7 +120,7 @@ class ElementAttributes {
     array.push(...getAttributeNameLiterals(name));
     if (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.StyleProperty) {
       if (value === null) {
-        throw Error('Attribute & style element attributes must have a value');
+        throw Error('Attribute, i18n attribute, & style element attributes must have a value');
       }
       array.push(value);
     }

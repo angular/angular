@@ -41,10 +41,34 @@ function needsApplication(i18nContexts: Map<ir.XrefId, ir.I18nContextOp>, op: ir
   if (op.next?.kind !== ir.OpKind.I18nExpression) {
     return true;
   }
-  // If the next op is an expression targeting a different i18n block, we need to apply.
-  const context = i18nContexts.get(op.context)!;
-  const nextContext = i18nContexts.get(op.next.context)!;
-  if (context.i18nBlock !== nextContext.i18nBlock) {
+
+  const context = i18nContexts.get(op.context);
+  const nextContext = i18nContexts.get(op.next.context);
+
+  if (context === undefined) {
+    throw new Error(
+        'AssertionError: expected an I18nContextOp to exist for the I18nExpressionOp\'s context');
+  }
+
+  if (nextContext === undefined) {
+    throw new Error(
+        'AssertionError: expected an I18nContextOp to exist for the next I18nExpressionOp\'s context');
+  }
+
+  // If the next op is an expression targeting a different i18n block (or different element, in the
+  // case of i18n attributes), we need to apply.
+
+  // First, handle the case of i18n blocks.
+  if (context.i18nBlock !== null) {
+    // This is a block context. Compare the blocks.
+    if (context.i18nBlock !== nextContext.i18nBlock) {
+      return true;
+    }
+    return false;
+  }
+
+  // Second, handle the case of i18n attributes.
+  if (op.target !== op.next.target) {
     return true;
   }
   return false;
