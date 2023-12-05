@@ -24,7 +24,7 @@ export function makeEs2015TranslatePlugin(
     fs: PathManipulation = getFileSystem()): PluginObj {
   return {
     visitor: {
-      TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
+      TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>, state) {
         try {
           const tag = path.get('tag');
           if (isLocalize(tag, localizeName)) {
@@ -40,7 +40,7 @@ export function makeEs2015TranslatePlugin(
             // If we get a BabelParseError here then something went wrong with Babel itself
             // since there must be something wrong with the structure of the AST generated
             // by Babel parsing a TaggedTemplateExpression.
-            throw buildCodeFrameError(fs, path, e);
+            throw buildCodeFrameError(fs, path, state.file, e);
           } else {
             throw e;
           }
