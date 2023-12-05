@@ -14,16 +14,17 @@ import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
+import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE, provideZoneChangeDetection} from './change_detection/scheduling';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
-import {ENVIRONMENT_INITIALIZER, inject, makeEnvironmentProviders} from './di';
+import {inject} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
 import {EnvironmentProviders, Provider, StaticProvider} from './di/interface/provider';
 import {EnvironmentInjector} from './di/r3_injector';
 import {INJECTOR_SCOPE} from './di/scope';
-import {ErrorHandler} from './error_handler';
+import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
@@ -48,7 +49,7 @@ import {ViewRef as InternalViewRef} from './render3/view_ref';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
-import {isStableFactory, NgZone, NoopNgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
+import {getNgZone, NgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
 
 let _platformInjector: Injector|null = null;
 
@@ -392,58 +393,6 @@ export function getPlatform(): PlatformRef|null {
 }
 
 /**
- * Used to configure event and run coalescing with `provideZoneChangeDetection`.
- *
- * @publicApi
- *
- * @see {@link provideZoneChangeDetection}
- */
-export interface NgZoneOptions {
-  /**
-   * Optionally specify coalescing event change detections or not.
-   * Consider the following case.
-   *
-   * ```
-   * <div (click)="doSomething()">
-   *   <button (click)="doSomethingElse()"></button>
-   * </div>
-   * ```
-   *
-   * When button is clicked, because of the event bubbling, both
-   * event handlers will be called and 2 change detections will be
-   * triggered. We can coalesce such kind of events to only trigger
-   * change detection only once.
-   *
-   * By default, this option will be false. So the events will not be
-   * coalesced and the change detection will be triggered multiple times.
-   * And if this option be set to true, the change detection will be
-   * triggered async by scheduling a animation frame. So in the case above,
-   * the change detection will only be triggered once.
-   */
-  eventCoalescing?: boolean;
-
-  /**
-   * Optionally specify if `NgZone#run()` method invocations should be coalesced
-   * into a single change detection.
-   *
-   * Consider the following case.
-   * ```
-   * for (let i = 0; i < 10; i ++) {
-   *   ngZone.run(() => {
-   *     // do something
-   *   });
-   * }
-   * ```
-   *
-   * This case triggers the change detection multiple times.
-   * With ngZoneRunCoalescing options, all change detections in an event loop trigger only once.
-   * In addition, the change detection executes in requestAnimation.
-   *
-   */
-  runCoalescing?: boolean;
-}
-
-/**
  * Provides additional options to the bootstrapping process.
  *
  * @publicApi
@@ -668,35 +617,6 @@ export class PlatformRef {
   get destroyed() {
     return this._destroyed;
   }
-}
-
-// Set of options recognized by the NgZone.
-interface InternalNgZoneOptions {
-  enableLongStackTrace: boolean;
-  shouldCoalesceEventChangeDetection: boolean;
-  shouldCoalesceRunChangeDetection: boolean;
-}
-
-// Transforms a set of `BootstrapOptions` (supported by the NgModule-based bootstrap APIs) ->
-// `NgZoneOptions` that are recognized by the NgZone constructor. Passing no options will result in
-// a set of default options returned.
-function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions {
-  return {
-    enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
-    shouldCoalesceEventChangeDetection: options?.eventCoalescing ?? false,
-    shouldCoalesceRunChangeDetection: options?.runCoalescing ?? false,
-  };
-}
-
-function getNgZone(
-    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: InternalNgZoneOptions): NgZone {
-  if (ngZoneToUse === 'noop') {
-    return new NoopNgZone();
-  }
-  if (ngZoneToUse === 'zone.js') {
-    return new NgZone(options);
-  }
-  return ngZoneToUse;
 }
 
 function _callAndReportToErrorHandler(
@@ -1201,113 +1121,6 @@ function _lastDefined<T>(args: T[]): T|undefined {
   return undefined;
 }
 
-/**
- * `InjectionToken` used to configure how to call the `ErrorHandler`.
- *
- * `NgZone` is provided by default today so the default (and only) implementation for this
- * is calling `ErrorHandler.handleError` outside of the Angular zone.
- */
-const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'internal error handler' : '', {
-      providedIn: 'root',
-      factory: () => {
-        const userErrorHandler = inject(ErrorHandler);
-        return userErrorHandler.handleError.bind(this);
-      }
-    });
-
-function ngZoneApplicationErrorHandlerFactory() {
-  const zone = inject(NgZone);
-  const userErrorHandler = inject(ErrorHandler);
-  return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
-}
-
-@Injectable({providedIn: 'root'})
-export class NgZoneChangeDetectionScheduler {
-  private readonly zone = inject(NgZone);
-  private readonly applicationRef = inject(ApplicationRef);
-
-  private _onMicrotaskEmptySubscription?: Subscription;
-
-  initialize(): void {
-    if (this._onMicrotaskEmptySubscription) {
-      return;
-    }
-
-    this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
-      next: () => {
-        this.zone.run(() => {
-          this.applicationRef.tick();
-        });
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this._onMicrotaskEmptySubscription?.unsubscribe();
-  }
-}
-
-/**
- * Internal token used to verify that `provideZoneChangeDetection` is not used
- * with the bootstrapModule API.
- */
-const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'provideZoneChangeDetection token' : '');
-
-export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
-  return [
-    {provide: NgZone, useFactory: ngZoneFactory},
-    {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const ngZoneChangeDetectionScheduler =
-            inject(NgZoneChangeDetectionScheduler, {optional: true});
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-            ngZoneChangeDetectionScheduler === null) {
-          throw new RuntimeError(
-              RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-              `A required Injectable was not found in the dependency injection tree. ` +
-                  'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.');
-        }
-        return () => ngZoneChangeDetectionScheduler!.initialize();
-      },
-    },
-    {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
-    {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
-  ];
-}
-
-/**
- * Provides `NgZone`-based change detection for the application bootstrapped using
- * `bootstrapApplication`.
- *
- * `NgZone` is already provided in applications by default. This provider allows you to configure
- * options like `eventCoalescing` in the `NgZone`.
- * This provider is not available for `platformBrowser().bootstrapModule`, which uses
- * `BootstrapOptions` instead.
- *
- * @usageNotes
- * ```typescript
- * bootstrapApplication(MyApp, {providers: [
- *   provideZoneChangeDetection({eventCoalescing: true}),
- * ]});
- * ```
- *
- * @publicApi
- * @see {@link bootstrapApplication}
- * @see {@link NgZoneOptions}
- */
-export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const zoneProviders =
-      internalProvideZoneChangeDetection(() => new NgZone(getNgZoneOptions(options)));
-  return makeEnvironmentProviders([
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
-                                                      [],
-    zoneProviders,
-  ]);
-}
 
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
 /**
