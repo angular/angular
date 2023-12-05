@@ -19,9 +19,7 @@ ts_library(
         "//packages/localize/tools",
         "//packages/localize/tools/test/helpers",
         "@npm//@babel/generator",
-        "@npm//@babel/template",
         "@npm//@types/babel__generator",
-        "@npm//@types/babel__template",
         "@npm//fast-glob",
     ],
 )

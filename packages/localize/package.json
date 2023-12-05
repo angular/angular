@@ -36,7 +36,6 @@
   "dependencies": {
     "@babel/core": "7.23.2",
     "@types/babel__core": "7.20.2",
-    "@types/babel__traverse": "7.20.2",
     "fast-glob": "3.3.1",
     "yargs": "^17.2.1"
   },
