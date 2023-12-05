@@ -7,14 +7,12 @@
  */
 import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵmakeTemplateObject} from '@angular/localize';
-import babel, {NodePath, TransformOptions, types as t} from '@babel/core';
+import babel, {NodePath, TransformOptions, template, types as t} from '@babel/core';
 import _generate from '@babel/generator';
-import _template from '@babel/template';
 
 // Babel is a CJS package and misuses the `default` named binding:
 // https://github.com/babel/babel/issues/15269.
 const generate = (_generate as any)['default'] as typeof _generate;
-const template = (_template as any)['default'] as typeof _template;
 
 import {buildLocalizeReplacement, getLocation, isArrayOfExpressions, isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, unwrapMessagePartsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, unwrapStringLiteralArray, unwrapSubstitutionsFromLocalizeCall, wrapInParensIfNecessary} from '../src/source_file_utils';
 
