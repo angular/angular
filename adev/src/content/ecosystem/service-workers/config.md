@@ -197,6 +197,7 @@ export interface DataGroup {
     maxSize: number;
     maxAge: string;
     timeout?: string;
+    refreshAhead?: string;
     strategy?: 'freshness' | 'performance';
   };
   cacheQueryOptions?: {
@@ -269,6 +270,22 @@ The network timeout is how long the Angular service worker waits for the network
 | `u`      | Milliseconds |
 
 For example, the string `5s30u` translates to five seconds and 30 milliseconds of network timeout.
+
+
+##### `refreshAhead`
+
+This duration string specifies the time ahead of the expiration of a cached resource when the Angular service worker should proactively attempt to refresh the resource from the network.
+The `refreshAhead` duration is an optional configuration that determines how much time before the expiration of a cached response the service worker should initiate a request to refresh the resource from the network.
+
+| Suffixes | Details |
+|:---      |:---     |
+| `d`      | Days         |
+| `h`      | Hours        |
+| `m`      | Minutes      |
+| `s`      | Seconds      |
+| `u`      | Milliseconds |
+
+For example, the string `1h30m` translates to one hour and 30 minutes ahead of the expiration time.
 
 ##### `strategy`
 
