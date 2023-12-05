@@ -311,14 +311,13 @@ export abstract class ComponentFactoryResolver {
 }
 
 // @public
-export interface ComponentMirror<C> {
+export interface ComponentMirror<C> extends Omit<DirectiveMirror<C>, 'selector'> {
     get inputs(): ReadonlyArray<{
         readonly propName: string;
         readonly templateName: string;
         readonly transform?: (value: any) => any;
         readonly isSignal: boolean;
     }>;
-    get isStandalone(): boolean;
     get ngContentSelectors(): ReadonlyArray<string>;
     get outputs(): ReadonlyArray<{
         readonly propName: string;
@@ -631,6 +630,22 @@ export const Directive: DirectiveDecorator;
 export interface DirectiveDecorator {
     (obj?: Directive): TypeDecorator;
     new (obj?: Directive): Directive;
+}
+
+// @public
+export interface DirectiveMirror<C> {
+    get inputs(): ReadonlyArray<{
+        readonly propName: string;
+        readonly templateName: string;
+        readonly transform?: (value: any) => any;
+    }>;
+    get isStandalone(): boolean;
+    get outputs(): ReadonlyArray<{
+        readonly propName: unknown;
+        readonly templateName: string;
+    }>;
+    get selector(): CssSelector[] | string;
+    get type(): Type<C>;
 }
 
 // @public
@@ -1544,6 +1559,9 @@ export class QueryList<T> implements Iterable<T> {
 
 // @public
 export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null;
+
+// @public
+export function reflectDirectiveType<C>(directive: Type<C>): DirectiveMirror<C> | null;
 
 // @public
 export abstract class Renderer2 {

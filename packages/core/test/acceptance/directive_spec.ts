@@ -12,10 +12,12 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
+  Injectable,
   Input,
   NgModule,
   OnChanges,
   Output,
+  reflectDirectiveType,
   SimpleChange,
   SimpleChanges,
   TemplateRef,
@@ -1449,6 +1451,82 @@ describe('directives', () => {
         'DirectiveA.ngOnInit',
         'DirectiveB.ngOnInit',
       ]);
+    });
+  });
+
+  describe('reflectDirectiveType', () => {
+    it('should create an DirectiveMirror for a standalone directive', () => {
+      function transformFn() {}
+
+      @Directive({
+        selector: 'standalone-directive',
+        inputs: ['input-a', 'input-b:input-alias-b'],
+        outputs: ['output-a', 'output-b:output-alias-b'],
+      })
+      class StandaloneDirective {
+        @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
+      }
+
+      const mirror = reflectDirectiveType(StandaloneDirective)!;
+
+      expect(mirror.selector).toEqual([['standalone-directive']]);
+      expect(mirror.type).toBe(StandaloneDirective);
+      expect(mirror.isStandalone).toEqual(true);
+
+      expect(mirror.inputs).toEqual([
+        {propName: 'input-a', templateName: 'input-a'},
+        {propName: 'input-b', templateName: 'input-alias-b'},
+        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+      ]);
+      expect(mirror.outputs).toEqual([
+        {propName: 'output-a', templateName: 'output-a'},
+        {propName: 'output-b', templateName: 'output-alias-b'},
+      ]);
+    });
+
+    it('should create an DirectiveMirror for a non-standalone directive', () => {
+      function transformFn() {}
+
+      @Directive({
+        selector: 'non-standalone-directive',
+        inputs: ['input-a', 'input-b:input-alias-b'],
+        outputs: ['output-a', 'output-b:output-alias-b'],
+        standalone: false,
+      })
+      class NonStandaloneDirective {
+        @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
+      }
+
+      const mirror = reflectDirectiveType(NonStandaloneDirective)!;
+
+      expect(mirror.selector).toEqual([['non-standalone-directive']]);
+      expect(mirror.type).toBe(NonStandaloneDirective);
+      expect(mirror.isStandalone).toEqual(false);
+      expect(mirror.inputs).toEqual([
+        {propName: 'input-a', templateName: 'input-a'},
+        {propName: 'input-b', templateName: 'input-alias-b'},
+        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+      ]);
+      expect(mirror.outputs).toEqual([
+        {propName: 'output-a', templateName: 'output-a'},
+        {propName: 'output-b', templateName: 'output-alias-b'},
+      ]);
+    });
+
+    describe('error checking', () => {
+      it('should throw when provided class is not a component', () => {
+        class NotAnnotated {}
+
+        @Component({template: ``})
+        class AComponent {}
+
+        @Injectable()
+        class AnInjectiable {}
+
+        expect(reflectDirectiveType(NotAnnotated)).toBe(null);
+        expect(reflectDirectiveType(AComponent)).not.toBe(null);
+        expect(reflectDirectiveType(AnInjectiable)).toBe(null);
+      });
     });
   });
 });

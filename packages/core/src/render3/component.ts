@@ -14,6 +14,8 @@ import {ComponentRef} from '../linker/component_factory';
 import {ComponentFactory} from './component_ref';
 import {getComponentDef} from './def_getters';
 import {Binding, DirectiveWithBindings} from './dynamic_bindings';
+import {DirectiveMirror, extractReflectionMeta} from './directive';
+
 import {assertComponentDef} from './errors';
 
 /**
@@ -111,7 +113,7 @@ export function createComponent<C>(
  *
  * @publicApi
  */
-export interface ComponentMirror<C> {
+export interface ComponentMirror<C> extends Omit<DirectiveMirror<C>, 'selector'> {
   /**
    * The component's HTML selector.
    */
@@ -137,16 +139,6 @@ export interface ComponentMirror<C> {
    * Selector for all <ng-content> elements in the component.
    */
   get ngContentSelectors(): ReadonlyArray<string>;
-  /**
-   * Whether this component is marked as standalone.
-   * Note: an extra flag, not present in `ComponentFactory`.
-   */
-  get isStandalone(): boolean;
-  /**
-   * // TODO(signals): Remove internal and add public documentation
-   * @internal
-   */
-  get isSignal(): boolean;
 }
 
 /**
@@ -189,11 +181,13 @@ export interface ComponentMirror<C> {
  * @publicApi
  */
 export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null {
-  const componentDef = getComponentDef(component);
+  const componentDef = getComponentDef<C>(component);
   if (!componentDef) return null;
 
   const factory = new ComponentFactory<C>(componentDef);
+  const directiveMirror = extractReflectionMeta<C>(componentDef);
   return {
+    ...directiveMirror,
     get selector(): string {
       return factory.selector;
     },
@@ -213,12 +207,6 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> 
     },
     get ngContentSelectors(): ReadonlyArray<string> {
       return factory.ngContentSelectors;
-    },
-    get isStandalone(): boolean {
-      return componentDef.standalone;
-    },
-    get isSignal(): boolean {
-      return componentDef.signals;
     },
   };
 }
