@@ -15,7 +15,6 @@ ts_library(
         "//packages/localize",
         "@npm//@babel/core",
         "@npm//@types/babel__core",
-        "@npm//@types/babel__traverse",
         "@npm//@types/node",
         "@npm//@types/yargs",
         "@npm//fast-glob",
