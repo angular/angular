@@ -353,7 +353,7 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
     return null;
   }
 
-  const providers = getInjectorProviders(injector)
+  const providers = getInjectorProviders(injector);
   const providersCount = providers.length;
   const providersNames =
       providers.map(p => (p.token as Function).name ) // both Type<unknown> | InjectionToken<unknown> are functions (with `name` property)
