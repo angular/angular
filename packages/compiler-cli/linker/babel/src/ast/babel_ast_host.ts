@@ -52,6 +52,10 @@ export class BabelAstHost implements AstHost<t.Expression> {
     }
   }
 
+  isNull(node: t.Expression): boolean {
+    return t.isNullLiteral(node);
+  }
+
   isArrayLiteral = t.isArrayExpression;
 
   parseArrayLiteral(array: t.Expression): t.Expression[] {

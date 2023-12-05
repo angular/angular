@@ -275,6 +275,11 @@ export class AstValue<T, TExpression> {
     return this.host.isArrayLiteral(this.expression);
   }
 
+  /** Whether the value is explicitly set to `null`. */
+  isNull(): boolean {
+    return this.host.isNull(this.expression);
+  }
+
   /**
    * Parse this value into an array of `AstValue` objects, or error if it is not an array literal.
    */

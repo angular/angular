@@ -40,6 +40,10 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     return str.text;
   }
 
+  isNull(node: ts.Expression): boolean {
+    return node.kind === ts.SyntaxKind.NullKeyword;
+  }
+
   isNumericLiteral = ts.isNumericLiteral;
 
   parseNumericLiteral(num: ts.Expression): number {
