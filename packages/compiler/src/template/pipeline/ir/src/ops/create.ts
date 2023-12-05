@@ -26,7 +26,7 @@ export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|Eleme
     ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
     DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
     ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
-    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|I18nContextOp;
+    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|I18nContextOp|I18nAttributesOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -636,20 +636,27 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
    * The value expression of the extracted attribute.
    */
   expression: o.Expression|null;
+
+  /**
+   * If this attribute has a corresponding i18n attribute (e.g. `i18n-foo="m:d"`), then this is the
+   * i18n context for it.
+   */
+  i18nContext: XrefId|null;
 }
 
 /**
  * Create an `ExtractedAttributeOp`.
  */
 export function createExtractedAttributeOp(
-    target: XrefId, bindingKind: BindingKind, name: string,
-    expression: o.Expression|null): ExtractedAttributeOp {
+    target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
+    i18nContext: XrefId|null): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
     bindingKind,
     name,
     expression,
+    i18nContext,
     ...NEW_OP,
   };
 }
@@ -862,9 +869,18 @@ export interface I18nMessageOp extends Op<CreateOp> {
   xref: XrefId;
 
   /**
-   * A reference to the i18n op this message was extracted from.
+   * The context from which this message was extracted
+   * TODO: remove this, and add another property here instead to match ExtractedAttributes
    */
-  i18nBlock: XrefId;
+  i18nContext: XrefId;
+
+  /**
+   * A reference to the i18n op this message was extracted from.
+   *
+   * This might be null, which means this message is not associated with a block. This probably
+   * means it is an i18n attribute's message.
+   */
+  i18nBlock: XrefId|null;
 
   /**
    * The i18n message represented by this op.
@@ -902,12 +918,13 @@ export interface I18nMessageOp extends Op<CreateOp> {
  * Create an `ExtractedMessageOp`.
  */
 export function createI18nMessageOp(
-    xref: XrefId, i18nBlock: XrefId, message: i18n.Message, messagePlaceholder: string|null,
-    params: Map<string, o.Expression>, postprocessingParams: Map<string, o.Expression>,
-    needsPostprocessing: boolean): I18nMessageOp {
+    xref: XrefId, i18nContext: XrefId, i18nBlock: XrefId|null, message: i18n.Message,
+    messagePlaceholder: string|null, params: Map<string, o.Expression>,
+    postprocessingParams: Map<string, o.Expression>, needsPostprocessing: boolean): I18nMessageOp {
   return {
     kind: OpKind.I18nMessage,
     xref,
+    i18nContext,
     i18nBlock,
     message,
     messagePlaceholder,
@@ -1080,13 +1097,14 @@ export function createIcuEndOp(xref: XrefId): IcuEndOp {
 
 /**
  * An i18n context that is used to generate a translated i18n message. A separate context is created
- * for two different scenarios:
+ * for three different scenarios:
  *
  * 1. For each top-level i18n block.
  * 2. For each ICU referenced as a sub-message. ICUs that are referenced as a sub-message will be
  *    used to generate a separate i18n message, but will not be extracted directly into the consts
  *    array. Instead they will be pulled in as part of the initialization statements for the message
  *    that references them.
+ * 3. For each i18n attribute.
  *
  * Child i18n blocks, resulting from the use of an ng-template inside of a parent i18n block, do not
  * generate a separate context. Instead their content is included in the translated message for
@@ -1098,7 +1116,7 @@ export interface I18nContextOp extends Op<CreateOp> {
   contextKind: I18nContextKind;
 
   /**
-   *  The id of this context.
+   * The id of this context.
    */
   xref: XrefId;
 
@@ -1107,8 +1125,11 @@ export interface I18nContextOp extends Op<CreateOp> {
    *
    * It is possible for multiple contexts to belong to the same block, since both the block and any
    * ICUs inside the block will each get their own context.
+   *
+   * This might be `null`, in which case the context is not associated with an i18n block. This
+   * probably means that it belongs to an i18n attribute.
    */
-  i18nBlock: XrefId;
+  i18nBlock: XrefId|null;
 
   /**
    * The i18n message associated with this context.
@@ -1129,8 +1150,12 @@ export interface I18nContextOp extends Op<CreateOp> {
 }
 
 export function createI18nContextOp(
-    contextKind: I18nContextKind, xref: XrefId, i18nBlock: XrefId, message: i18n.Message,
+    contextKind: I18nContextKind, xref: XrefId, i18nBlock: XrefId|null, message: i18n.Message,
     sourceSpan: ParseSourceSpan): I18nContextOp {
+  if (i18nBlock === null && contextKind !== I18nContextKind.Attr) {
+    throw new Error('AssertionError: i18nBlock must be provided for non-attribute contexts.');
+  }
+
   return {
     kind: OpKind.I18nContext,
     contextKind,
@@ -1141,6 +1166,33 @@ export function createI18nContextOp(
     params: new Map(),
     postprocessingParams: new Map(),
     ...NEW_OP,
+  };
+}
+
+export interface I18nAttributesOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.I18nAttributes;
+
+  /**
+   * The element targeted by these attributes.
+   */
+  target: XrefId;
+
+  /**
+   * I18nAttributes instructions correspond to a const array with configuration information.
+   */
+  i18nAttributesConfig: ConstIndex|null;
+}
+
+export function createI18nAttributesOp(
+    xref: XrefId, handle: SlotHandle, target: XrefId): I18nAttributesOp {
+  return {
+    kind: OpKind.I18nAttributes,
+    xref,
+    handle,
+    target,
+    i18nAttributesConfig: null,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
   };
 }
 

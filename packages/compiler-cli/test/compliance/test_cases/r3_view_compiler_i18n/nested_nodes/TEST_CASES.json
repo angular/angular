@@ -255,6 +255,28 @@
           ]
         }
       ]
+    },
+    {
+      "description": "when the last element inside an i18n block has i18n attributes",
+      "inputFiles": [
+        "last_elem_inside_i18n_block.ts"
+      ],
+      "skipForTemplatePipeline": true,
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "last_elem_inside_i18n_block_template.js",
+              "templatePipelineExpected": "last_elem_inside_i18n_block_template.pipeline.js",
+              "generated": "last_elem_inside_i18n_block.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
