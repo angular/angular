@@ -14,31 +14,11 @@ import {SampleService} from './sample.service';
 @Component({
   selector: 'app-sample-properties',
   providers: [SampleService],
-  template: `
-  Sample Properties:
-  {{ exampleBoolean }}
-  {{ exampleString }}
-  {{ exampleSymbol }}
-  {{ exampleNumber }}
-  {{ exampleBigint }}
-  {{ exampleUndefined }}
-  {{ exampleNull }}
-  {{ exampleObject }}
-  {{ exampleArray }}
-  {{ exampleSet }}
-  {{ exampleMap }}
-  {{ exampleDate }}
-  {{ exampleFunction }}
-  {{ signalPrimitive }}
-  {{ computedPrimitive }}
-  {{ signalObject }}
-  {{ computedObject }}
-  {{ signalSymbol }}
-  `,
+  template: '',
   styles: [''],
 })
 export class SamplePropertiesComponent {
-  @ViewChild('elementReference') elementRef!: ElementRef;
+  @ViewChild('elementReference') elementRef: ElementRef;
 
   exampleService = inject(SampleService);
 
@@ -53,11 +33,7 @@ export class SamplePropertiesComponent {
   exampleObject = {name: 'John', age: 40};
   exampleArray = [1, 2, [3, 4], {name: 'John', age: 40, skills: ['JavaScript']}];
   exampleSet = new Set([1, 2, 3, 4, 5]);
-  exampleMap = new Map<unknown, unknown>([
-    ['name', 'John'],
-    ['age', 40],
-    [{id: 123}, undefined],
-  ]);
+  exampleMap = new Map<unknown, unknown>([['name', 'John'], ['age', 40], [{id: 123}, undefined]]);
   exampleDate = new Date();
   exampleFunction = () => 'John';
 

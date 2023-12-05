@@ -28,6 +28,7 @@ import {initializeMessageBus} from 'ng-devtools-backend';
 import {ZoneUnawareIFrameMessageBus} from '../../../../../src/zone-unaware-iframe-message-bus';
 
 import {HeavyComponent} from './heavy.component';
+import {SamplePropertiesComponent} from './sample-properties.component';
 import {ZippyComponent} from './zippy.component';
 
 @Component({
@@ -36,8 +37,8 @@ import {ZippyComponent} from './zippy.component';
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
-  imports: [HeavyComponent, RouterOutlet, JsonPipe],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [HeavyComponent, RouterOutlet, JsonPipe, SamplePropertiesComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy!: ZippyComponent;

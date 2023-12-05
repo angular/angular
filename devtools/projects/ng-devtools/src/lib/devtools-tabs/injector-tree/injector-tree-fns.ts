@@ -214,7 +214,6 @@ export function filterOutInjectorsWithNoProviders(injectorPaths: InjectorPath[])
       ({providers}) => providers === undefined || providers > 0,
     );
   }
-
   return injectorPaths;
 }
 
@@ -222,4 +221,21 @@ export function filterOutAngularInjectors(injectorPaths: InjectorPath[]): Inject
   return injectorPaths.map(({node, path}) => {
     return {node, path: path.filter((injector) => !ignoredAngularInjectors.has(injector.name))};
   });
+}
+
+export function filterOutInjectorsWithoutCertainToken(
+    injectorPaths: InjectorPath[], token: string): InjectorPath[] {
+  if (token.length > 0) {
+    const nameFilter = token.toLocaleLowerCase()
+    for (const injectorPath of injectorPaths) {
+      injectorPath.path = injectorPath.path.filter((injector) => {
+        if (injector.type === 'null') {
+          return false;
+        }
+        return injector.providersNames?.some(
+            providerName => {return providerName.toLowerCase().includes(nameFilter)});
+      });
+    }
+  }
+  return injectorPaths;
 }

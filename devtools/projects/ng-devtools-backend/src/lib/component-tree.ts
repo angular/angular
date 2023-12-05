@@ -353,31 +353,40 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
     return null;
   }
 
-  const providers = getInjectorProviders(injector).length;
+  const providers = getInjectorProviders(injector)
+  const providersCount = providers.length;
+  const providersNames =
+      providers.map(p => (p.token as Function).name ) // both Type<unknown> | InjectionToken<unknown> are functions (with `name` property)
+          .filter(name =>  name);  // filtering out undefined ones (InjectionTokens)
 
   if (metadata.type === 'null') {
-    return {type: 'null', name: 'Null Injector', providers: 0};
+    return {type: 'null', name: 'Null Injector', providers: 0, providersNames};
   }
 
   if (metadata.type === 'element') {
     const source = metadata.source as HTMLElement;
     const name = stripUnderscore(elementToDirectiveNames(source)[0]);
 
-    return {type: 'element', name, providers};
+    return {type: 'element', name, providers: providersCount, providersNames};
   }
 
   if (metadata.type === 'environment') {
     if ((injector as any).scopes instanceof Set) {
       if ((injector as any).scopes.has('platform')) {
-        return {type: 'environment', name: 'Platform', providers};
+        return {type: 'environment', name: 'Platform', providers: providersCount, providersNames};
       }
 
       if ((injector as any).scopes.has('root')) {
-        return {type: 'environment', name: 'Root', providers};
+        return {type: 'environment', name: 'Root', providers: providersCount, providersNames};
       }
     }
 
-    return {type: 'environment', name: stripUnderscore(metadata.source ?? ''), providers};
+    return {
+      type: 'environment',
+      name: stripUnderscore(metadata.source ?? ''),
+      providers: providersCount,
+      providersNames
+    };
   }
 
   console.error('Angular DevTools: Could not serialize injector.', injector);

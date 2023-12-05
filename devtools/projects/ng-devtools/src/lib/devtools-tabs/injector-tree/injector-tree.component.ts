@@ -12,14 +12,14 @@ import {MatCheckbox} from '@angular/material/checkbox';
 import {MatExpansionPanel} from '@angular/material/expansion';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {
-  ComponentExplorerView,
-  DevToolsNode,
-  Events,
-  MessageBus,
-  SerializedInjector,
-  SerializedProviderRecord,
-} from 'protocol';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ComponentExplorerView, DevToolsNode, Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
@@ -37,7 +37,14 @@ import {
   grabInjectorPathsFromDirectiveForest,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
+  filterOutInjectorsWithoutCertainToken,
 } from './injector-tree-fns';
+
+const ngDebug = () => (window as any).ng;
+export function ngDebugApiIsSupported(api: string): boolean {
+  const ng = ngDebug();
+  return typeof ng[api] === 'function';
+}
 
 @Component({
   standalone: true,
@@ -52,6 +59,9 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
+    ResolutionPathComponent, MatTabsModule,
+    MatExpansionModule, InjectorProvidersComponent, MatIconModule, MatTooltipModule,
+    MatCheckboxModule, MatFormFieldModule, MatInputModule
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
@@ -75,8 +85,10 @@ export class InjectorTreeComponent {
   providers: SerializedProviderRecord[] = [];
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
+  // filters
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
+  tokenFilter = '';
 
   ngAfterViewInit() {
     this.setUpEnvironmentInjectorVisualizer();
@@ -121,6 +133,11 @@ export class InjectorTreeComponent {
     this.refreshVisualizer();
   }
 
+  updateTokenFilter(newToken: string): void {
+    this.tokenFilter = newToken;
+    this.refreshVisualizer();
+  }
+
   private refreshVisualizer(): void {
     this.updateInjectorTreeVisualization(this.rawDirectiveForest);
 
@@ -156,6 +173,10 @@ export class InjectorTreeComponent {
 
       if (this.hideInjectorsWithNoProviders) {
         injectorPaths = filterOutInjectorsWithNoProviders(injectorPaths);
+      }
+
+      if (this.tokenFilter.length > 0) {
+        injectorPaths = filterOutInjectorsWithoutCertainToken(injectorPaths, this.tokenFilter);
       }
 
       // In Angular we have two types of injectors, element injectors and environment injectors.
@@ -233,9 +254,7 @@ export class InjectorTreeComponent {
       }
     }
 
-    this.selectedNode = null;
-    this.snapToRoot(this.injectorTreeGraph);
-    this.snapToRoot(this.elementInjectorTreeGraph);
+    this.clearSelectedNode();
   }
 
   getNodeByComponentId(graph: InjectorTreeVisualizer, id: number): InjectorTreeD3Node | null {
@@ -278,12 +297,26 @@ export class InjectorTreeComponent {
     );
   }
 
-  highlightPathFromSelectedInjector(): void {
+  clearSelectedInjector() {
+    this.unhighlightBothGraphs();
+    this.clearSelectedNode();
+  }
+
+  private clearSelectedNode() {
+    this.selectedNode = null;
+    this.snapToRoot(this.injectorTreeGraph);
+    this.snapToRoot(this.elementInjectorTreeGraph);
+  }
+
+  private unhighlightBothGraphs(): void {
     this.unhighlightAllEdges(this.elementG);
     this.unhighlightAllNodes(this.elementG);
     this.unhighlightAllEdges(this.g);
     this.unhighlightAllNodes(this.g);
+  }
 
+  highlightPathFromSelectedInjector(): void {
+    this.unhighlightBothGraphs();
     this.checkIfSelectedNodeStillExists();
 
     if (this.selectedNode === null) {

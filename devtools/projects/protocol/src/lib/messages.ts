@@ -34,6 +34,7 @@ export interface SerializedInjector {
   type: string;
   node?: DevToolsNode;
   providers?: number;
+  providersNames?: string[];
 }
 
 export interface SerializedProviderRecord {
