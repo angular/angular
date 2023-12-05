@@ -7,6 +7,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
