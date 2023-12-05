@@ -39,36 +39,139 @@ const ESCAPE = '\uFFFD';
 /**
  * Lifts i18n properties into the consts array.
  * TODO: Can we use `ConstCollectedExpr`?
+ * TODO: The way the various attributes are linked together is very complex. Perhaps we could
+ * simplify the process, maybe by combining the context and message ops?
  */
 export function collectI18nConsts(job: ComponentCompilationJob): void {
   const fileBasedI18nSuffix =
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
+  // Step One: Build up various lookup maps we need to collect all the consts.
+
+  // Context Xref -> Extracted Attribute Op
+  const extractedAttributesByI18nContext = new Map<ir.XrefId, ir.ExtractedAttributeOp>();
+  // Target Xref (element for i18n attributes, last item in i18n block for i18n values) -> I18n
+  // Attributes config op
+  const i18nAttributesByTarget = new Map<ir.XrefId, ir.I18nAttributesOp>();
+  // Target Element Xref -> All I18n Expression ops for that target
+  const i18nExpressionsByTarget = new Map<ir.XrefId, ir.I18nExpressionOp[]>();
+  // I18n Message Xref -> I18n Message Op (TODO: use a central op map)
+  const messages = new Map<ir.XrefId, ir.I18nMessageOp>();
+
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
+      if (op.kind === ir.OpKind.ExtractedAttribute && op.i18nContext !== null) {
+        extractedAttributesByI18nContext.set(op.i18nContext, op);
+      } else if (op.kind === ir.OpKind.I18nAttributes) {
+        i18nAttributesByTarget.set(op.target, op);
+      } else if (op.kind === ir.OpKind.I18nExpression) {
+        const expressions = i18nExpressionsByTarget.get(op.target) ?? [];
+        expressions.push(op);
+        i18nExpressionsByTarget.set(op.target, expressions);
+      } else if (op.kind === ir.OpKind.I18nMessage) {
+        messages.set(op.xref, op);
+      }
+    }
+  }
+
+  // Step Two: Serialize the extracted i18n messages for root i18n blocks and i18n attributes into
+  // the const array.
+  //
+  // Also, each i18n message will have a variable expression that can refer to its
+  // value. Store these expressions in the appropriate place:
+  // 1. For normal i18n content, it also goes in the const array. We save the const index to use
+  // later.
+  // 2. For extracted attributes, it becomes the value of the extracted attribute instruction.
+  // 3. For i18n bindings, it will go in a separate const array instruction below; for now, we just
+  // save it.
+
+  const i18nValuesByContext = new Map<ir.XrefId, o.Expression>();
   const messageConstIndices = new Map<ir.XrefId, ir.ConstIndex>();
 
-  // Remove all of the i18n message ops into a map.
-  const messages = new Map<ir.XrefId, ir.I18nMessageOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nMessage) {
-        messages.set(op.xref, op);
+        if (op.messagePlaceholder === null) {
+          const {mainVar, statements} = collectMessage(job, fileBasedI18nSuffix, messages, op);
+          if (op.i18nBlock !== null) {
+            // This is a regular i18n message with a corresponding i18n block. Collect it into the
+            // const array.
+            const i18nConst = job.addConst(mainVar, statements);
+            messageConstIndices.set(op.i18nBlock, i18nConst);
+          } else {
+            // This is an i18n attribute. Extract the initializers into the const pool.
+            job.constsInitializers.push(...statements);
+
+            // Save the i18n variable value for later.
+            i18nValuesByContext.set(op.i18nContext, mainVar);
+
+            // This i18n message may correspond to an individual extracted attribute. If so, The
+            // value of that attribute is updated to read the extracted i18n variable.
+            const attributeForMessage = extractedAttributesByI18nContext.get(op.i18nContext);
+            if (attributeForMessage !== undefined) {
+              attributeForMessage.expression = mainVar;
+            }
+          }
+        }
         ir.OpList.remove<ir.CreateOp>(op);
       }
     }
   }
 
-  // Serialize the extracted messages for root i18n blocks into the const array.
-  for (const op of messages.values()) {
-    if (op.kind === ir.OpKind.I18nMessage && op.messagePlaceholder === null) {
-      const {mainVar, statements} = collectMessage(job, fileBasedI18nSuffix, messages, op);
-      messageConstIndices.set(op.i18nBlock, job.addConst(mainVar, statements));
+  // Step Three: Serialize I18nAttributes configurations into the const array. Each I18nAttributes
+  // instruction has a config array, which contains k-v pairs describing each binding name, and the
+  // i18n variable that provides the value.
+
+  for (const unit of job.units) {
+    for (const elem of unit.create) {
+      if (ir.isElementOrContainerOp(elem)) {
+        const i18nAttributes = i18nAttributesByTarget.get(elem.xref);
+        if (i18nAttributes === undefined) {
+          // This element is not associated with an i18n attributes configuration instruction.
+          continue;
+        }
+
+        let i18nExpressions = i18nExpressionsByTarget.get(elem.xref);
+        if (i18nExpressions === undefined) {
+          // Unused i18nAttributes should have already been removed.
+          // TODO: Should the removal of those dead instructions be merged with this phase?
+          throw new Error(
+              'AssertionError: Could not find any i18n expressions associated with an I18nAttributes instruction');
+        }
+
+        // Find expressions for all the unique property names, removing duplicates.
+        const seenPropertyNames = new Set<string>();
+        i18nExpressions = i18nExpressions.filter(i18nExpr => {
+          const seen = (seenPropertyNames.has(i18nExpr.name));
+          seenPropertyNames.add(i18nExpr.name);
+          return !seen;
+        });
+
+        const i18nAttributeConfig = i18nExpressions.flatMap(i18nExpr => {
+          const i18nExprValue = i18nValuesByContext.get(i18nExpr.context);
+          if (i18nExprValue === undefined) {
+            throw new Error('AssertionError: Could not find i18n expression\'s value');
+          }
+          return [o.literal(i18nExpr.name), i18nExprValue];
+        });
+
+
+        i18nAttributes.i18nAttributesConfig =
+            job.addConst(new o.LiteralArrayExpr(i18nAttributeConfig));
+      }
     }
   }
 
-  // Assign const index to i18n ops that messages were extracted from.
+  // Step Four: Propagate the extracted const index into i18n ops that messages were extracted from.
+
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart) {
-        op.messageIndex = messageConstIndices.get(op.root)!;
+        const msgIndex = messageConstIndices.get(op.root);
+        if (msgIndex === undefined) {
+          throw new Error(
+              'AssertionError: Could not find corresponding i18n block index for an i18n message op; was an i18n message incorrectly assumed to correspond to an attribute?');
+        }
+        op.messageIndex = msgIndex;
       }
     }
   }
@@ -83,8 +186,8 @@ function collectMessage(
     messages: Map<ir.XrefId, ir.I18nMessageOp>,
     messageOp: ir.I18nMessageOp): {mainVar: o.ReadVarExpr, statements: o.Statement[]} {
   // Recursively collect any sub-messages, record each sub-message's main variable under its
-  // placeholder so that we can add them to the params for the parent message. It is possible that
-  // multiple sub-messages will share the same placeholder, so we need to track an array of
+  // placeholder so that we can add them to the params for the parent message. It is possible
+  // that multiple sub-messages will share the same placeholder, so we need to track an array of
   // variables for each placeholder.
   const statements: o.Statement[] = [];
   const subMessagePlaceholders = new Map<string, o.Expression[]>();
@@ -136,10 +239,10 @@ function collectMessage(
 /**
  * Adds the given subMessage placeholders to the given message op.
  *
- * If a placeholder only corresponds to a single sub-message variable, we just set that variable as
- * the param value. However, if the placeholder corresponds to multiple sub-message variables, we
- * need to add a special placeholder value that is handled by the post-processing step. We then add
- * the array of variables as a post-processing param.
+ * If a placeholder only corresponds to a single sub-message variable, we just set that variable
+ * as the param value. However, if the placeholder corresponds to multiple sub-message
+ * variables, we need to add a special placeholder value that is handled by the post-processing
+ * step. We then add the array of variables as a post-processing param.
  */
 function addSubMessageParams(
     messageOp: ir.I18nMessageOp, subMessagePlaceholders: Map<string, o.Expression[]>) {
@@ -177,7 +280,8 @@ function addSubMessageParams(
  * @param closureVar The variable for Closure `goog.getMsg` calls, e.g. `MSG_EXTERNAL_XXX`.
  * @param params Object mapping placeholder names to their values (e.g.
  * `{ "interpolation": "\uFFFD0\uFFFD" }`).
- * @param transformFn Optional transformation function that will be applied to the translation (e.g.
+ * @param transformFn Optional transformation function that will be applied to the translation
+ *     (e.g.
  * post-processing).
  * @returns An array of statements that defined a given translation.
  */

@@ -314,6 +314,11 @@ export function i18nEnd(): ir.CreateOp {
   return call(Identifiers.i18nEnd, [], null);
 }
 
+export function i18nAttributes(slot: number, i18nAttributesConfig: number): ir.CreateOp {
+  const args = [o.literal(slot), o.literal(i18nAttributesConfig)];
+  return call(Identifiers.i18nAttributes, args, null);
+}
+
 export function property(
     name: string, expression: o.Expression, sanitizer: o.Expression|null,
     sourceSpan: ParseSourceSpan): ir.UpdateOp {

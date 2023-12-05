@@ -11,8 +11,10 @@ import {CompilationJob} from '../compilation';
 
 /**
  * Removes text nodes within i18n blocks since they are already hardcoded into the i18n message.
+ * Also, replaces interpolations on these text nodes with i18n expressions of the non-text portions,
+ * which will be applied later.
  */
-export function extractI18nText(job: CompilationJob): void {
+export function convertI18nText(job: CompilationJob): void {
   for (const unit of job.units) {
     // Remove all text nodes within i18n blocks, their content is already captured in the i18n
     // message.
@@ -70,8 +72,9 @@ export function extractI18nText(job: CompilationJob): void {
             // For now, this i18nExpression depends on the slot context of the enclosing i18n block.
             // Later, we will modify this, and advance to a different point.
             ops.push(ir.createI18nExpressionOp(
-                contextId!, i18nOp.xref, i18nOp.handle, expr, op.i18nPlaceholders[i],
-                resolutionTime, expr.sourceSpan ?? op.sourceSpan));
+                contextId!, i18nOp.xref, i18nOp.handle, expr, op.interpolation.i18nPlaceholders[i],
+                resolutionTime, ir.I18nExpressionContext.Normal, '',
+                expr.sourceSpan ?? op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;

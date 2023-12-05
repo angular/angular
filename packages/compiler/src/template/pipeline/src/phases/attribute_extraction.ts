@@ -8,7 +8,7 @@
 
 
 import * as ir from '../../ir';
-import {type CompilationJob, type CompilationUnit, CompilationJobKind} from '../compilation';
+import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
 import {createOpXrefMap} from '../util/elements';
 
 /**
@@ -25,29 +25,42 @@ export function extractAttributes(job: CompilationJob): void {
           break;
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
+            let bindingKind: ir.BindingKind;
+            if (op.i18nContext !== null) {
+              // If the binding has an i18n context, it is an i18n attribute, and should have that
+              // kind in the consts array.
+              bindingKind = ir.BindingKind.I18n;
+            } else if (op.isStructuralTemplate) {
+              // TODO: How do i18n attributes on templates work?!
+              bindingKind = ir.BindingKind.Template;
+            } else {
+              bindingKind = ir.BindingKind.Property;
+            }
+
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
-                    op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property,
-                    op.name, null),
+                ir.createExtractedAttributeOp(op.target, bindingKind, op.name, null, null),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
+          // TODO: Can style or class bindings be i18n attributes?
+
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
           if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
+                ir.createExtractedAttributeOp(
+                    op.target, ir.BindingKind.Property, op.name, null, null),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
-            const extractedAttributeOp =
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+                op.target, ir.BindingKind.Property, op.name, null, null);
             if (job.kind === CompilationJobKind.Host) {
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
@@ -105,8 +118,8 @@ function extractAttributeOp(
 
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
-        op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
-        op.expression);
+        op.target, op.isStructuralTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute,
+        op.name, op.expression, op.i18nContext);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.
