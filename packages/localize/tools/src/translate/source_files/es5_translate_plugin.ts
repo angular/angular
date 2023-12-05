@@ -24,7 +24,7 @@ export function makeEs5TranslatePlugin(
     fs: PathManipulation = getFileSystem()): PluginObj {
   return {
     visitor: {
-      CallExpression(callPath: NodePath<t.CallExpression>) {
+      CallExpression(callPath: NodePath<t.CallExpression>, state) {
         try {
           const calleePath = callPath.get('callee');
           if (isLocalize(calleePath, localizeName)) {
@@ -36,7 +36,7 @@ export function makeEs5TranslatePlugin(
           }
         } catch (e) {
           if (isBabelParseError(e)) {
-            diagnostics.error(buildCodeFrameError(fs, callPath, e));
+            diagnostics.error(buildCodeFrameError(fs, callPath, state.file, e));
           } else {
             throw e;
           }
