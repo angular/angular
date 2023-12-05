@@ -355,10 +355,28 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
         updateTemplates(template, templates);
       }
     }
+    // template placeholders may still exist if the ng-template name is not
+    // present in the component. This could be because it's passed in from
+    // another component. In that case, we need to replace any remaining
+    // template placeholders with template outlets.
+    template = replaceRemainingPlaceholders(template);
     return {migrated: template, err: undefined};
   } catch (err) {
     return {migrated: template, err: err as Error};
   }
+}
+
+function replaceRemainingPlaceholders(template: string): string {
+  const replaceRegex = new RegExp(`#\\w*\\|`, 'g');
+  const placeholders = [...template.matchAll(replaceRegex)];
+  let migrated = template;
+  for (let ph of placeholders) {
+    const placeholder = ph[0];
+    const name = placeholder.slice(1, placeholder.length - 1);
+    migrated =
+        template.replace(placeholder, `<ng-template [ngTemplateOutlet]="${name}"></ng-template>`);
+  }
+  return migrated;
 }
 
 /**
