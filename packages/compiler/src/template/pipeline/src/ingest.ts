@@ -209,13 +209,13 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
       prefixWithNamespace(tagNameWithoutNamespace, namespace);
   const templateKind =
       isPlainTemplate(tmpl) ? ir.TemplateKind.NgTemplate : ir.TemplateKind.Structural;
-  const tplOp = ir.createTemplateOp(
+  const templateOp = ir.createTemplateOp(
       childView.xref, templateKind, tagNameWithoutNamespace, functionNameSuffix, namespace,
       i18nPlaceholder, tmpl.startSourceSpan);
-  unit.create.push(tplOp);
+  unit.create.push(templateOp);
 
-  ingestBindings(unit, tplOp, tmpl);
-  ingestReferences(tplOp, tmpl);
+  ingestBindings(unit, templateOp, tmpl);
+  ingestReferences(templateOp, tmpl);
   ingestNodes(childView, tmpl.children);
 
   for (const {name, value} of tmpl.variables) {
@@ -322,19 +322,28 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     if (ifCase.expressionAlias !== null) {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
-    const tmplOp = ir.createTemplateOp(
+
+    let ifCaseI18nMeta = undefined;
+    if (ifCase.i18n !== undefined) {
+      if (!(ifCase.i18n instanceof i18n.BlockPlaceholder)) {
+        throw Error(`Unhandled i18n metadata type for if block: ${ifCase.i18n?.constructor.name}`);
+      }
+      ifCaseI18nMeta = ifCase.i18n;
+    }
+
+    const templateOp = ir.createTemplateOp(
         cView.xref, ir.TemplateKind.Block, tagName, 'Conditional', ir.Namespace.HTML,
-        undefined /* TODO: figure out how i18n works with new control flow */, ifCase.sourceSpan);
-    unit.create.push(tmplOp);
+        ifCaseI18nMeta, ifCase.sourceSpan);
+    unit.create.push(templateOp);
 
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = tmplOp.handle;
+      firstSlotHandle = templateOp.handle;
     }
 
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
-    const conditionalCaseExpr =
-        new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.handle, ifCase.expressionAlias);
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(
+        caseExpr, templateOp.xref, templateOp.handle, ifCase.expressionAlias);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
@@ -352,19 +361,27 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
-    const tmplOp = ir.createTemplateOp(
-        cView.xref, ir.TemplateKind.Block, null, 'Case', ir.Namespace.HTML,
-        undefined /* TODO: figure out how i18n works with new control flow */,
+    let switchCaseI18nMeta = undefined;
+    if (switchCase.i18n !== undefined) {
+      if (!(switchCase.i18n instanceof i18n.BlockPlaceholder)) {
+        throw Error(
+            `Unhandled i18n metadata type for switch block: ${switchCase.i18n?.constructor.name}`);
+      }
+      switchCaseI18nMeta = switchCase.i18n;
+    }
+    const templateOp = ir.createTemplateOp(
+        cView.xref, ir.TemplateKind.Block, null, 'Case', ir.Namespace.HTML, switchCaseI18nMeta,
         switchCase.sourceSpan);
-    unit.create.push(tmplOp);
+    unit.create.push(templateOp);
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = tmplOp.handle;
+      firstSlotHandle = templateOp.handle;
     }
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
         null;
-    const conditionalCaseExpr = new ir.ConditionalCaseExpr(caseExpr, tmplOp.xref, tmplOp.handle);
+    const conditionalCaseExpr =
+        new ir.ConditionalCaseExpr(caseExpr, templateOp.xref, templateOp.handle);
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
