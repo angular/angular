@@ -8,13 +8,13 @@
 
 import {Subscription} from 'rxjs';
 
-import {ApplicationRef} from '../application/application_ref';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../di';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {PendingTasks} from '../pending_tasks';
-import {NgZone} from '../zone';
-import {InternalNgZoneOptions} from '../zone/ng_zone';
+import {ApplicationRef} from '../../application/application_ref';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../../di';
+import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {PendingTasks} from '../../pending_tasks';
+import {NgZone} from '../../zone';
+import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {

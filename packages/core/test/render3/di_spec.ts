@@ -147,6 +147,7 @@ describe('di', () => {
             sanitizer: null,
             inlineEffectRunner: null,
             afterRenderEventManager: null,
+            changeDetectionScheduler: null,
           },
           {} as any, null, null, null);
       enterView(contentView);
