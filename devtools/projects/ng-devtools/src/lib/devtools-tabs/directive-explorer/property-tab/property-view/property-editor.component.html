@@ -3,9 +3,14 @@
     @switch (currentPropertyState) {
       @case (readState) {
         <span>
-          <span class="editable">
-            {{ valueToSubmit }}
-          </span>
+            @switch(containerType) {
+              @case('WritableSignal') { 
+                <span class="editable">Signal({{valueToSubmit}})</span> 
+              }
+              @default { 
+                <span class="editable">{{ valueToSubmit }}</span> 
+              }
+            }
         </span>
       }
       @case (writeState) {

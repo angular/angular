@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Descriptor, NestedProp, PropType} from 'protocol';
+import {ContainerType, Descriptor, NestedProp, PropType} from 'protocol';
+
+import {isSignal, unwrapSignal} from '../utils';
 
 import {getDescriptor, getKeys} from './object-utils';
 
@@ -18,11 +20,13 @@ type NestedType = PropType.Array|PropType.Object;
 export interface CompositeType {
   type: Extract<PropType, NestedType>;
   prop: any;
+  containerType: ContainerType;
 }
 
 export interface TerminalType {
   type: Exclude<PropType, NestedType>;
   prop: any;
+  containerType: ContainerType;
 }
 
 export type PropertyData = TerminalType|CompositeType;
@@ -36,23 +40,15 @@ interface LevelOptions {
   level?: number;
 }
 
-const serializable: {[key in PropType]: boolean} = {
-  [PropType.Boolean]: true,
-  [PropType.String]: true,
-  [PropType.Null]: true,
-  [PropType.Number]: true,
-  [PropType.Object]: true,
-  [PropType.Undefined]: true,
-  [PropType.Unknown]: true,
-  [PropType.Array]: false,
-  [PropType.Set]: false,
-  [PropType.Map]: false,
-  [PropType.BigInt]: false,
-  [PropType.Function]: false,
-  [PropType.HTMLNode]: false,
-  [PropType.Symbol]: false,
-  [PropType.Date]: false,
-};
+const serializable: Set<PropType> = new Set([
+  PropType.Boolean,
+  PropType.String,
+  PropType.Null,
+  PropType.Number,
+  PropType.Object,
+  PropType.Undefined,
+  PropType.Unknown,
+]);
 
 const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Array]: (prop: Array<unknown>) => `Array(${prop.length})`,
@@ -78,6 +74,10 @@ const typeToDescriptorPreview: Formatter<string> = {
 };
 
 type Key = string|number;
+type NestedSerializerFn =
+    (instance: any, propName: string|number, nodes: NestedProp[], isReadonly: boolean,
+     currentLevel: number, level?: number) => Descriptor;
+
 const ignoreList: Set<Key> = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
 const shallowPropTypeToTreeMetaData:
@@ -137,8 +137,12 @@ const shallowPropTypeToTreeMetaData:
     };
 
 const isEditable =
-    (descriptor: any, propName: string|number, propData: TerminalType,
+    (descriptor: PropertyDescriptor|undefined, propName: string|number, propData: TerminalType,
      isGetterOrSetter: boolean) => {
+      if (propData.containerType === 'ReadonlySignal') {
+        return false;
+      }
+
       if (typeof propName === 'symbol') {
         return false;
       }
@@ -158,130 +162,138 @@ const isGetterOrSetter = (descriptor: any): boolean =>
     (descriptor?.set || descriptor?.get) && !('value' in descriptor);
 
 const getPreview = (propData: TerminalType|CompositeType, isGetterOrSetter: boolean) => {
+  if (propData.containerType === 'ReadonlySignal') {
+    return `Readonly Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
+  } else if (propData.containerType === 'WritableSignal') {
+    return `Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
+  }
   return !isGetterOrSetter ? typeToDescriptorPreview[propData.type](propData.prop) :
                              typeToDescriptorPreview[PropType.Function]({name: ''});
 };
 
-export const createShallowSerializedDescriptor =
-    (instance: any, propName: string|number, propData: TerminalType): Descriptor => {
-      const {type} = propData;
+export function createShallowSerializedDescriptor(
+    instance: any, propName: string|number, propData: TerminalType,
+    isReadonly: boolean): Descriptor {
+  const {type, containerType} = propData;
 
-      const descriptor = getDescriptor(instance, propName as string);
-      const getterOrSetter: boolean = isGetterOrSetter(descriptor);
+  const descriptor = getDescriptor(instance, propName as string);
+  const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
-      const shallowSerializedDescriptor: Descriptor = {
-        type,
-        expandable: shallowPropTypeToTreeMetaData[type].expandable,
-        editable: isEditable(descriptor, propName, propData, getterOrSetter),
-        preview: getPreview(propData, getterOrSetter),
-      };
+  const shallowSerializedDescriptor: Descriptor = {
+    type,
+    expandable: shallowPropTypeToTreeMetaData[type].expandable,
+    editable: isEditable(descriptor, propName, propData, getterOrSetter) && !isReadonly,
+    preview: getPreview(propData, getterOrSetter),
+    containerType,
+  };
 
-      if (propData.prop !== undefined && serializable[type]) {
-        shallowSerializedDescriptor.value = propData.prop;
-      }
+  if (propData.prop !== undefined && serializable.has(type)) {
+    shallowSerializedDescriptor.value = unwrapSignal(propData.prop);
+  }
 
-      return shallowSerializedDescriptor;
-    };
+  return shallowSerializedDescriptor;
+}
 
-export const createLevelSerializedDescriptor =
-    (instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
-     continuation: (instance: any, propName: string|number, level?: number, max?: number) => void):
-        Descriptor => {
-          const {type, prop} = propData;
+export function createLevelSerializedDescriptor(
+    instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
+    continuation: (
+        instance: any, propName: string|number, isReadonly: boolean, level?: number,
+        max?: number) => Descriptor): Descriptor {
+  const {type, prop, containerType} = propData;
 
-          const descriptor = getDescriptor(instance, propName as string);
-          const getterOrSetter: boolean = isGetterOrSetter(descriptor);
+  const descriptor = getDescriptor(instance, propName as string);
+  const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
-          const levelSerializedDescriptor: Descriptor = {
-            type,
-            editable: false,
-            expandable: !getterOrSetter && getKeys(prop).length > 0,
-            preview: getPreview(propData, getterOrSetter),
-          };
+  const levelSerializedDescriptor: Descriptor = {
+    type,
+    editable: false,
+    expandable: !getterOrSetter && getKeys(prop).length > 0,
+    preview: getPreview(propData, getterOrSetter),
+    containerType,
+  };
 
-          if (levelOptions.level !== undefined && levelOptions.currentLevel < levelOptions.level) {
-            const value = getLevelDescriptorValue(propData, levelOptions, continuation);
-            if (value !== undefined) {
-              levelSerializedDescriptor.value = value;
-            }
-          }
+  if (levelOptions.level !== undefined && levelOptions.currentLevel < levelOptions.level) {
+    const value = getLevelDescriptorValue(propData, levelOptions, continuation);
+    if (value !== undefined) {
+      levelSerializedDescriptor.value = value;
+    }
+  }
 
-          return levelSerializedDescriptor;
-        };
+  return levelSerializedDescriptor;
+}
 
-export const createNestedSerializedDescriptor =
-    (instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
-     nodes: NestedProp[],
-     nestedSerializer: (
-         instance: any, propName: string|number, nodes: NestedProp[], currentLevel: number,
-         level?: number) => void): Descriptor => {
-      const {type, prop} = propData;
+export function createNestedSerializedDescriptor(
+    instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
+    nodes: NestedProp[], nestedSerializer: NestedSerializerFn): Descriptor {
+  const {type, prop, containerType} = propData;
 
-      const descriptor = getDescriptor(instance, propName as string);
-      const getterOrSetter: boolean = isGetterOrSetter(descriptor);
+  const descriptor = getDescriptor(instance, propName as string);
+  const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
-      const nestedSerializedDescriptor: Descriptor = {
-        type,
-        editable: false,
-        expandable: !getterOrSetter && getKeys(prop).length > 0,
-        preview: getPreview(propData, getterOrSetter),
-      };
+  const nestedSerializedDescriptor: Descriptor = {
+    type,
+    editable: false,
+    expandable: !getterOrSetter && getKeys(prop).length > 0,
+    preview: getPreview(propData, getterOrSetter),
+    containerType,
+  };
 
-      if (nodes?.length) {
-        const value = getNestedDescriptorValue(propData, levelOptions, nodes, nestedSerializer);
-        if (value !== undefined) {
-          nestedSerializedDescriptor.value = value;
-        }
-      }
-      return nestedSerializedDescriptor;
-    };
+  if (nodes?.length) {
+    const value = getNestedDescriptorValue(propData, levelOptions, nodes, nestedSerializer);
+    if (value !== undefined) {
+      nestedSerializedDescriptor.value = value;
+    }
+  }
+  return nestedSerializedDescriptor;
+}
 
 function getNestedDescriptorValue(
     propData: CompositeType, levelOptions: LevelOptions, nodes: NestedProp[],
-    nestedSerializer: (
-        instance: any, propName: string|number, nodes: NestedProp[], currentLevel: number,
-        level?: number) => void) {
+    nestedSerializer: NestedSerializerFn) {
   const {type, prop} = propData;
   const {currentLevel} = levelOptions;
+  const value = unwrapSignal(prop);
 
   switch (type) {
     case PropType.Array:
       return nodes.map(
-          (nestedProp) =>
-              nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1));
+          (nestedProp) => nestedSerializer(
+              value, nestedProp.name, nestedProp.children, false, currentLevel + 1));
     case PropType.Object:
       return nodes.reduce((accumulator, nestedProp) => {
         if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
-          accumulator[nestedProp.name] =
-              nestedSerializer(prop, nestedProp.name, nestedProp.children, currentLevel + 1);
+          accumulator[nestedProp.name] = nestedSerializer(
+              value, nestedProp.name, nestedProp.children, false, currentLevel + 1);
         }
         return accumulator;
-      }, {} as Record<string, void>);
+      }, {} as Record<string, Descriptor>);
   }
 }
 
 function getLevelDescriptorValue(
     propData: CompositeType, levelOptions: LevelOptions,
-    continuation: (instance: any, propName: string|number, level?: number, max?: number) => void) {
+    continuation: (
+        instance: any, propName: string|number, isReadonly: boolean, level?: number,
+        max?: number) => Descriptor) {
   const {type, prop} = propData;
   const {currentLevel, level} = levelOptions;
-
+  const value = unwrapSignal(prop);
+  const isReadonly = isSignal(prop);
   switch (type) {
     case PropType.Array:
-      return prop.map((_: any, idx: number) => continuation(prop, idx, currentLevel + 1, level));
+      return prop.map(
+          (_: any, idx: number) => continuation(value, idx, isReadonly, currentLevel + 1, level));
     case PropType.Object:
       return getKeys(prop).reduce((accumulator, propName) => {
         if (!ignoreList.has(propName)) {
-          accumulator[propName] = continuation(prop, propName, currentLevel + 1, level);
+          accumulator[propName] =
+              continuation(value, propName, isReadonly, currentLevel + 1, level);
         }
         return accumulator;
-      }, {} as Record<string, void>);
+      }, {} as Record<string, Descriptor>);
   }
 }
 
-const truncate = (str: string, max = 20): string => {
-  if (str.length > max) {
-    return str.substring(0, max) + '...';
-  }
-  return str;
-};
+function truncate(str: string, max = 20): string {
+  return str.length > max ? str.substring(0, max) + '...' : str;
+}
