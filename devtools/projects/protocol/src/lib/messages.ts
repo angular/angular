@@ -55,6 +55,8 @@ export interface InjectedService {
   providedIn: Injector;
 }
 
+export type ContainerType = 'WritableSignal'|'ReadonlySignal'|null;
+
 export enum PropType {
   Number,
   String,
@@ -79,6 +81,7 @@ export interface Descriptor {
   editable: boolean;
   type: PropType;
   preview: string;
+  containerType: ContainerType;
 }
 
 export interface DirectivesProperties {

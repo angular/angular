@@ -9,6 +9,7 @@ import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setupFrameworkInjectorProfiler} from '../debug/framework_injector_profiler';
 import {setProfiler} from '../profiler';
+import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
@@ -55,6 +56,7 @@ const globalUtilsFunctions = {
   'getRootComponents': getRootComponents,
   'getDirectives': getDirectives,
   'applyChanges': applyChanges,
+  'isSignal': isSignal,
 };
 type GlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
 

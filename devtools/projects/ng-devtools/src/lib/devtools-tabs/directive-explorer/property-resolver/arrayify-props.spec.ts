@@ -18,12 +18,14 @@ describe('arrayify', () => {
         expandable: true,
         preview: '',
         type: PropType.Array,
+        containerType: null,
       },
       bar: {
         editable: true,
         expandable: true,
         preview: '',
         type: PropType.Array,
+        containerType: null,
       },
     });
     expect(arr).toEqual([
@@ -34,6 +36,7 @@ describe('arrayify', () => {
           expandable: true,
           preview: '',
           type: PropType.Array,
+          containerType: null,
         },
         parent: null,
       },
@@ -44,6 +47,7 @@ describe('arrayify', () => {
           expandable: true,
           preview: '',
           type: PropType.Array,
+          containerType: null,
         },
         parent: null,
       },
@@ -56,12 +60,14 @@ describe('arrayify', () => {
         expandable: true,
         preview: '',
         type: PropType.Array,
+        containerType: null,
       },
       2: {
         editable: true,
         expandable: true,
         preview: '',
         type: PropType.Array,
+        containerType: null,
       },
     });
     expect(arr).toEqual([
@@ -72,6 +78,7 @@ describe('arrayify', () => {
           expandable: true,
           preview: '',
           type: PropType.Array,
+          containerType: null,
         },
         parent: null,
       },
@@ -82,6 +89,7 @@ describe('arrayify', () => {
           expandable: true,
           preview: '',
           type: PropType.Array,
+          containerType: null,
         },
         parent: null,
       },

@@ -7,6 +7,7 @@
  */
 
 import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {ContainerType} from 'protocol';
 
 type EditorType = string|number|boolean;
 type EditorResult = EditorType|Array<EditorType>;
@@ -32,6 +33,8 @@ const parseValue = (value: EditorResult): EditorResult => {
 export class PropertyEditorComponent implements AfterViewChecked, OnInit {
   @Input({required: true}) key!: string;
   @Input({required: true}) initialValue!: EditorResult;
+  @Input() containerType: ContainerType = null;
+
   @Output() updateValue = new EventEmitter<EditorResult>();
 
   readState = PropertyEditorState.Read;
