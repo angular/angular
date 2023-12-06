@@ -193,7 +193,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude("packages/core/schematics/*"), [
+        contains_any_globs(files.exclude("packages/core/schematics/*").exclude('packages/core/primitives/*'), [
           'packages/core/**/{*,.*}',
           'packages/examples/core/**/{*,.*}',
           'packages/platform-browser/**/{*,.*}',
@@ -1320,6 +1320,81 @@ groups:
         - ~jelbourn
         - jessicajaniuk
         - josephperrott
+
+  # =========================================================
+  #  Primitives
+  # =========================================================
+
+  # Angular team required reviews
+  primitives:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/primitives/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - pkozlowski-opensource # Pawel Kozlowski
+        - alxhub # Alex Rickabaugh
+        - jessicajaniuk # Jessica Janiuk
+        - dylhunn # Dylan Hunn
+        - AndrewKushnir # Andrew Kushnir
+        - atscott # Andrew Scott
+    reviews:
+      required: 1
+      reviewed_for: required
+    labels:
+      pending: 'requires: TGP'
+      approved: 'requires: TGP'
+      rejected: 'requires: TGP'
+
+  # External team required reviews
+  primitives-shared:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/primitives/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - csmick # Cameron Smick
+        - lannka # Hongfei Ding
+        - eduhmc # Eduardo Huerta-Mercado
+        - ehlemur # Edward Lesmes
+        - ellenyuan # Ellen Yuan
+        - jatraman # Jatin Ramanathan
+        - jesse-good # Jesse Costello-Good
+        - mturco # Matt Turco
+        - neonstalwart # Ben Hockey
+        - nicholasyu-google # Nicholas Yu
+        - rahatarmanahmed # Rahat Ahmed
+        - emspishak # Eric Spishak-Thomas
+    reviews:
+      required: 1
+      reviewed_for: required
+    labels:
+      pending: 'requires: TGP'
+      approved: 'requires: TGP'
+      rejected: 'requires: TGP'
+
+  # External team required reviews
+  primitives-jsaction:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/primitives/jsaction/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - iteriani # Thomas Nguyen
+        - tbondwilkinson # Tom Wilkinson
+        - rahatarmanahmed # Rahat Ahmed
+    reviews:
+      required: 1
+      reviewed_for: required
 
   ####################################################################################
   # Override managed result groups
