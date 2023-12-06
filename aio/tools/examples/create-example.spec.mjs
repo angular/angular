@@ -1,6 +1,6 @@
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import glob from 'glob';
+import glob from 'fast-glob';
 
 import {EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} from './constants.mjs';
 

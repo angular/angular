@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-const glob = require('glob');
+const glob = require('fast-glob');
 const path = require('canonical-path');
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
@@ -17,7 +17,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
   .config(function(readFilesProcessor, collectExamples) {
-    const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', mark: true })
+    const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', markDirectories: true })
                             .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
     const resolvedExamplePaths = [];
 

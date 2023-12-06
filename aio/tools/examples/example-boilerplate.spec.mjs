@@ -1,6 +1,6 @@
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import glob from 'glob';
+import glob from 'fast-glob';
 import shelljs from 'shelljs';
 
 import {RUNFILES_ROOT, getExamplesBasePath, getSharedPath} from './constants.mjs';

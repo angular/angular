@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import glob from 'glob';
+import glob from 'fast-glob';
 import ignore from 'ignore';
 import path from 'canonical-path';
 import shelljs from 'shelljs';
@@ -133,7 +133,7 @@ export function copyExampleFiles(sourcePath, examplePath, exampleName) {
       cwd: sourcePath,
       dot: true,
       ignore: ['**/node_modules/**', '.git/**', '.gitignore'],
-      mark: true,
+      markDirectories: true,
     })
     // Filter out the directories, leaving only files
     .filter((filePath) => !/\/$/.test(filePath))
