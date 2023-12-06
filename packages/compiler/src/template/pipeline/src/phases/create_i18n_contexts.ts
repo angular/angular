@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../../i18n/i18n_ast';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
@@ -23,6 +24,11 @@ export function createI18nContexts(job: CompilationJob) {
   const rootContexts = new Map<ir.XrefId, ir.XrefId>();
   let currentI18nOp: ir.I18nStartOp|null = null;
   let xref: ir.XrefId;
+
+
+  // We use the message instead of the message ID, because placeholder values might differ even
+  // when IDs are the same.
+  const messageToContext = new Map<i18n.Message, ir.XrefId>();
 
   for (const unit of job.units) {
     for (const op of unit.create) {
@@ -59,6 +65,28 @@ export function createI18nContexts(job: CompilationJob) {
             // the only localizable content inside of it.
             op.context = currentI18nOp.context;
           }
+          break;
+      }
+    }
+
+    for (const op of unit.ops()) {
+      switch (op.kind) {
+        case ir.OpKind.Binding:
+        case ir.OpKind.Property:
+        case ir.OpKind.Attribute:
+        case ir.OpKind.ExtractedAttribute:
+          if (!op.i18nMessage) {
+            continue;
+          }
+          if (!messageToContext.has(op.i18nMessage)) {
+            // create the context
+            const i18nContext = job.allocateXrefId();
+            unit.create.push(ir.createI18nContextOp(
+                ir.I18nContextKind.Attr, i18nContext, null, op.i18nMessage, null!));
+            messageToContext.set(op.i18nMessage, i18nContext);
+          }
+
+          op.i18nContext = messageToContext.get(op.i18nMessage)!;
           break;
       }
     }
