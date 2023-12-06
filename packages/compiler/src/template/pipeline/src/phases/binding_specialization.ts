@@ -48,7 +48,7 @@ export function specializeBindings(job: CompilationJob): void {
                 op,
                 ir.createAttributeOp(
                     op.target, op.name, op.expression, op.securityContext, op.isTextAttribute,
-                    op.isStructuralTemplate, op.i18nContext, op.sourceSpan));
+                    op.isStructuralTemplate, op.i18nMessage, op.sourceSpan));
           }
           break;
         case ir.BindingKind.Property:
@@ -64,7 +64,8 @@ export function specializeBindings(job: CompilationJob): void {
                 op,
                 ir.createPropertyOp(
                     op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.securityContext, op.isStructuralTemplate, op.i18nContext, op.sourceSpan));
+                    op.securityContext, op.isStructuralTemplate, op.i18nContext, op.i18nMessage,
+                    op.sourceSpan));
           }
 
           break;
