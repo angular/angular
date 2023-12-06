@@ -148,13 +148,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "nested_elements_with_i18n_attributes.js",
+              "expected": "nested_elements_with_i18n_attributes_template.js",
+              "templatePipelineExpected": "nested_elements_with_i18n_attributes_template.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle i18n attributes in nested templates",
