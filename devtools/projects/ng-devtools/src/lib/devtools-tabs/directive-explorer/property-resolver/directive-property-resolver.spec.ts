@@ -33,6 +33,7 @@ const properties: Properties = {
           value: {},
         },
       },
+      containerType: null,
     },
     i: {
       editable: false,
@@ -55,6 +56,7 @@ const properties: Properties = {
           value: {},
         },
       },
+      containerType: null,
     },
     p: {
       editable: false,
@@ -77,6 +79,7 @@ const properties: Properties = {
           value: {},
         },
       },
+      containerType: null,
     },
     i_1: {
       editable: true,
@@ -84,12 +87,14 @@ const properties: Properties = {
       preview: 'input i1',
       type: PropType.String,
       value: 'input i1',
+      containerType: null,
     },
     o_1: {
       editable: false,
       expandable: true,
       preview: '',
       type: PropType.Object,
+      containerType: null,
     },
   },
   metadata: {

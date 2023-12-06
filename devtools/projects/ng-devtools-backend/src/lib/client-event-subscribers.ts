@@ -19,7 +19,7 @@ import {ComponentTreeNode} from './interfaces';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
-import {runOutsideAngular} from './utils';
+import {hasDiDebugAPIs, runOutsideAngular} from './utils';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
