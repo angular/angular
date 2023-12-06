@@ -37,14 +37,14 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
   // because child i18n blocks in templates don't get their own context, since they're rolled into
   // the translated message of the parent, but they may target a different slot.
   const referenceIndex = (op: ir.I18nExpressionOp): ir.XrefId =>
-      op.usage === ir.I18nExpressionContext.Normal ? op.target : op.context;
+      op.usage === ir.I18nExpressionFor.I18nText ? op.i18nOwner : op.context;
 
   for (const unit of job.units) {
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
         const i18nContext = i18nContexts.get(op.context)!;
         const index = expressionIndices.get(referenceIndex(op)) || 0;
-        const subTemplateIndex = subTemplateIndicies.get(op.target) ?? null;
+        const subTemplateIndex = subTemplateIndicies.get(op.i18nOwner) ?? null;
         // Add the expression index in the appropriate params map.
         const params = op.resolutionTime === ir.I18nParamResolutionTime.Creation ?
             i18nContext.params :

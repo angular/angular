@@ -72,9 +72,9 @@ export function convertI18nText(job: CompilationJob): void {
             // For now, this i18nExpression depends on the slot context of the enclosing i18n block.
             // Later, we will modify this, and advance to a different point.
             ops.push(ir.createI18nExpressionOp(
-                contextId!, i18nOp.xref, i18nOp.handle, expr, op.interpolation.i18nPlaceholders[i],
-                resolutionTime, ir.I18nExpressionContext.Normal, '',
-                expr.sourceSpan ?? op.sourceSpan));
+                contextId!, i18nOp.xref, i18nOp.xref, i18nOp.handle, expr,
+                op.interpolation.i18nPlaceholders[i], resolutionTime, ir.I18nExpressionFor.I18nText,
+                '', expr.sourceSpan ?? op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
