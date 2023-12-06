@@ -325,8 +325,8 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
 
     // swap placeholders and remove
     for (const [name, t] of templates) {
-      const replaceRegex = new RegExp(`${name}\\|`, 'g');
-      const forRegex = new RegExp(`${name}\\#`, 'g');
+      const replaceRegex = new RegExp(`θ${name.slice(1)}\\δ`, 'g');
+      const forRegex = new RegExp(`θ${name.slice(1)}\\φ`, 'g');
       const forMatches = [...template.matchAll(forRegex)];
       const matches = [...forMatches, ...template.matchAll(replaceRegex)];
       let safeToRemove = true;
@@ -367,7 +367,7 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
 }
 
 function replaceRemainingPlaceholders(template: string): string {
-  const replaceRegex = new RegExp(`#\\w*\\|`, 'g');
+  const replaceRegex = new RegExp(`θ.*δ`, 'g');
   const placeholders = [...template.matchAll(replaceRegex)];
   let migrated = template;
   for (let ph of placeholders) {
