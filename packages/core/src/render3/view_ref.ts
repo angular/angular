@@ -284,6 +284,12 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
+    // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
+    // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
+    // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
+    // until the end of the refresh. Using `RefreshView` prevents creating a potential difference
+    // in the state of the LViewFlags during template execution.
+    this._lView[FLAGS] |= LViewFlags.RefreshView;
     detectChangesInternal(this._lView, this.notifyErrorHandler);
   }
 

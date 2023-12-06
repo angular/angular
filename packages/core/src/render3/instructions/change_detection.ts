@@ -43,9 +43,6 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
   }
 
   try {
-    const tView = lView[TVIEW];
-    const context = lView[CONTEXT];
-    refreshView(tView, lView, tView.template, context);
     detectChangesInViewWhileDirty(lView);
   } catch (error) {
     if (notifyErrorHandler) {
@@ -67,6 +64,8 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
 }
 
 function detectChangesInViewWhileDirty(lView: LView) {
+  detectChangesInView(lView, ChangeDetectionMode.Global);
+
   let retries = 0;
   // If after running change detection, this view still needs to be refreshed or there are
   // descendants views that need to be refreshed due to re-dirtying during the change detection
