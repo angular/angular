@@ -26,7 +26,7 @@ export function parseExtractedStyles(job: CompilationJob) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
                     op.target, ir.BindingKind.StyleProperty, parsedStyles[i],
-                    o.literal(parsedStyles[i + 1]), null),
+                    o.literal(parsedStyles[i + 1]), null, null),
                 op);
           }
           ir.OpList.remove<ir.CreateOp>(op);
@@ -35,7 +35,7 @@ export function parseExtractedStyles(job: CompilationJob) {
           for (const parsedClass of parsedClasses) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.ClassName, parsedClass, null, null),
+                    op.target, ir.BindingKind.ClassName, parsedClass, null, null, null),
                 op);
           }
           ir.OpList.remove<ir.CreateOp>(op);
