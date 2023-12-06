@@ -93,6 +93,7 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: true,
         preview: '1',
         value: 1,
+        containerType: null
       },
       nested: {
         type: PropType.Object,
@@ -105,8 +106,10 @@ describe('deeplySerializeSelectedProperties', () => {
             expandable: true,
             editable: false,
             preview: 'Array(4)',
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -120,6 +123,7 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: true,
         preview: '1',
         value: 1,
+        containerType: null
       },
       nested: {
         type: PropType.Object,
@@ -151,21 +155,26 @@ describe('deeplySerializeSelectedProperties', () => {
                         editable: true,
                         preview: '1',
                         value: 1,
+                        containerType: null
                       },
                     },
+                    containerType: null
                   },
                 ],
+                containerType: null
               },
               {
                 type: PropType.Set,
                 editable: false,
                 expandable: false,
                 preview: 'Set(2)',
-
+                containerType: null
               },
             ],
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -193,8 +202,10 @@ describe('deeplySerializeSelectedProperties', () => {
             editable: false,
             expandable: true,
             preview: 'Array(3)',
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -233,8 +244,10 @@ describe('deeplySerializeSelectedProperties', () => {
             editable: false,
             expandable: true,
             preview: '{...}',
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -265,8 +278,10 @@ describe('deeplySerializeSelectedProperties', () => {
             editable: false,
             expandable: true,
             preview: '{...}',
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -292,6 +307,7 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: false,
         preview: '(...)',
         value: 42,
+        containerType: null
       },
       bar: {
         type: PropType.Number,
@@ -299,6 +315,7 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: false,
         preview: '(...)',
         value: 42,
+        containerType: null
       },
     });
   });
@@ -375,6 +392,7 @@ describe('deeplySerializeSelectedProperties', () => {
                     editable: true,
                     preview: '1',
                     value: 1,
+                    containerType: null
                   },
                   bar: {
                     type: PropType.Number,
@@ -382,8 +400,10 @@ describe('deeplySerializeSelectedProperties', () => {
                     editable: true,
                     preview: '2',
                     value: 2,
+                    containerType: null
                   },
                 },
+                containerType: null
               },
               foo: {
                 type: PropType.Number,
@@ -391,10 +411,13 @@ describe('deeplySerializeSelectedProperties', () => {
                 editable: false,
                 preview: '(...)',
                 value: 42,
+                containerType: null
               },
             },
+            containerType: null
           },
         },
+        containerType: null
       },
     });
   });
@@ -414,12 +437,14 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: false,
         expandable: false,
         preview: '(...)',
+        containerType: null
       },
       bar: {
         type: PropType.Object,
         editable: false,
         expandable: false,
         preview: '(...)',
+        containerType: null,
         value: {
           foo: {
             type: PropType.Number,
@@ -427,6 +452,7 @@ describe('deeplySerializeSelectedProperties', () => {
             editable: true,
             preview: '1',
             value: 1,
+            containerType: null
           },
         },
       },
@@ -441,6 +467,7 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: true,
         expandable: false,
         preview: 'undefined',
+        containerType: null
       }
     });
   });
