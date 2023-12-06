@@ -54,6 +54,7 @@ const fooNestedProperties: Properties = {
           value: {},
         },
       },
+      containerType: null,
     },
   },
 };
@@ -66,6 +67,7 @@ const barNestedProps: Properties = {
       preview: 'undefined',
       type: PropType.Undefined,
       value: undefined,
+      containerType: null,
     },
   },
 };
