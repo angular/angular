@@ -11,10 +11,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "meaning_description_template.js",
+              "templatePipelineExpected": "meaning_description_template.pipeline.js",
+              "generated": "meaning_description.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> elements",
