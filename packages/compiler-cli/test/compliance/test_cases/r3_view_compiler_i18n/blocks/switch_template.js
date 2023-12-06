@@ -32,7 +32,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       /**
        * @suppress {msgDescriptions}
        */
-      const MSG_EXTERNAL_532730339085995504$$SWITCH_TS__1 = goog.getMsg(" Content: {$startBlockCase}before{$startTagSpan}zero{$closeTagSpan}after{$closeBlockCase}{$startBlockCase_1}before{$startTagDiv}one{$closeTagDiv}after{$closeBlockCase}{$startBlockDefault}before{$startTagButton}otherwise{$closeTagButton}after{$closeBlockDefault}", {
+      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" Content: {$startBlockCase}before{$startTagSpan}zero{$closeTagSpan}after{$closeBlockCase}{$startBlockCase_1}before{$startTagDiv}one{$closeTagDiv}after{$closeBlockCase}{$startBlockDefault}before{$startTagButton}otherwise{$closeTagButton}after{$closeBlockDefault}", {
         "closeBlockCase": "[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]",
         "closeBlockDefault": "\uFFFD/*4:3\uFFFD",
         "closeTagButton": "\uFFFD/#1:3\uFFFD",
@@ -59,7 +59,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           "startTagSpan": "<span>"
         }
       });
-      i18n_0 = MSG_EXTERNAL_532730339085995504$$SWITCH_TS__1;
+      i18n_0 = $MSG_ID_WITH_SUFFIX$;
     } else {
       i18n_0 = $localize` Content: ${"\uFFFD*2:1\uFFFD"}:START_BLOCK_CASE:before${"\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:zero${"\uFFFD/#1:1\uFFFD"}:CLOSE_TAG_SPAN:after${"[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]"}:CLOSE_BLOCK_CASE:${"\uFFFD*3:2\uFFFD"}:START_BLOCK_CASE_1:before${"\uFFFD#1:2\uFFFD"}:START_TAG_DIV:one${"\uFFFD/#1:2\uFFFD"}:CLOSE_TAG_DIV:after${"[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]"}:CLOSE_BLOCK_CASE:${"\uFFFD*4:3\uFFFD"}:START_BLOCK_DEFAULT:before${"\uFFFD#1:3\uFFFD"}:START_TAG_BUTTON:otherwise${"\uFFFD/#1:3\uFFFD"}:CLOSE_TAG_BUTTON:after${"\uFFFD/*4:3\uFFFD"}:CLOSE_BLOCK_DEFAULT:`;
     }
@@ -75,9 +75,9 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementEnd();
     }
     if (rf & 2) {
-      let MyApp_contFlowTmp;
+      let $MyApp_contFlowTmp$;
       $r3$.ɵɵadvance(2);
-      $r3$.ɵɵconditional(2, (MyApp_contFlowTmp = ctx.count) === 0 ? 2 : MyApp_contFlowTmp === 1 ? 3 : 4);
+      $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.count) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : 4);
     }
   },
   …
