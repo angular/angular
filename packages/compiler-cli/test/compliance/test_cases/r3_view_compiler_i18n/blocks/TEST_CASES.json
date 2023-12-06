@@ -3,7 +3,6 @@
   "cases": [
     {
       "description": "should support @if blocks",
-      "skipForTemplatePipeline": true,
       "inputFiles": [
         "conditional.ts"
       ],
@@ -24,7 +23,6 @@
     },
     {
       "description": "should support @switch blocks",
-      "skipForTemplatePipeline": true,
       "inputFiles": [
         "switch.ts"
       ],

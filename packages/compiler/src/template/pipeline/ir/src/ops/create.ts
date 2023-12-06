@@ -191,7 +191,7 @@ export interface TemplateOp extends ElementOpBase {
   /**
    * The i18n placeholder data associated with this template.
    */
-  i18nPlaceholder?: i18n.TagPlaceholder;
+  i18nPlaceholder?: i18n.TagPlaceholder|i18n.BlockPlaceholder;
 }
 
 /**
@@ -199,7 +199,7 @@ export interface TemplateOp extends ElementOpBase {
  */
 export function createTemplateOp(
     xref: XrefId, templateKind: TemplateKind, tag: string|null, functionNameSuffix: string,
-    namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|undefined,
+    namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder|undefined,
     sourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
