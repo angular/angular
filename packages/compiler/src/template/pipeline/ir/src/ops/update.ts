@@ -7,6 +7,7 @@
  */
 
 import {SecurityContext} from '../../../../../core';
+import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, I18nExpressionFor, I18nParamResolutionTime, OpKind} from '../enums';
@@ -126,6 +127,7 @@ export interface BindingOp extends Op<UpdateOp> {
   isStructuralTemplate: boolean;
 
   i18nContext: XrefId|null;
+  i18nMessage: i18n.Message|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -136,7 +138,7 @@ export interface BindingOp extends Op<UpdateOp> {
 export function createBindingOp(
     target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
     unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
-    isStructuralTemplate: boolean, i18nContext: XrefId|null,
+    isStructuralTemplate: boolean, i18nMessage: i18n.Message|null,
     sourceSpan: ParseSourceSpan): BindingOp {
   return {
     kind: OpKind.Binding,
@@ -148,7 +150,8 @@ export function createBindingOp(
     securityContext,
     isTextAttribute,
     isStructuralTemplate: isStructuralTemplate,
-    i18nContext,
+    i18nContext: null,
+    i18nMessage,
     sourceSpan,
     ...NEW_OP,
   };
@@ -196,6 +199,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   isStructuralTemplate: boolean;
 
   i18nContext: XrefId|null;
+  i18nMessage: i18n.Message|null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -206,7 +210,8 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
 export function createPropertyOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
     isAnimationTrigger: boolean, securityContext: SecurityContext, isStructuralTemplate: boolean,
-    i18nContext: XrefId|null, sourceSpan: ParseSourceSpan): PropertyOp {
+    i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
+    sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
     target,
@@ -217,6 +222,7 @@ export function createPropertyOp(
     sanitizer: null,
     isStructuralTemplate,
     i18nContext,
+    i18nMessage,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -428,6 +434,8 @@ export interface AttributeOp extends Op<UpdateOp> {
    */
   i18nContext: XrefId|null;
 
+  i18nMessage: i18n.Message|null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -437,7 +445,7 @@ export interface AttributeOp extends Op<UpdateOp> {
 export function createAttributeOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
     securityContext: SecurityContext, isTextAttribute: boolean, isStructuralTemplate: boolean,
-    i18nContext: XrefId|null, sourceSpan: ParseSourceSpan): AttributeOp {
+    i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
@@ -447,7 +455,8 @@ export function createAttributeOp(
     sanitizer: null,
     isTextAttribute,
     isStructuralTemplate,
-    i18nContext,
+    i18nContext: null,
+    i18nMessage,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
