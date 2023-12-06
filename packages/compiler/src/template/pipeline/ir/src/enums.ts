@@ -498,16 +498,16 @@ export enum I18nParamResolutionTime {
 /**
  * The contexts in which an i18n expression can be used.
  */
-export enum I18nExpressionContext {
+export enum I18nExpressionFor {
   /**
    * This expression is used as a value (i.e. inside an i18n block).
    */
-  Normal,
+  I18nText,
 
   /**
    * This expression is used in a binding.
    */
-  Binding,
+  I18nAttribute,
 }
 
 /**

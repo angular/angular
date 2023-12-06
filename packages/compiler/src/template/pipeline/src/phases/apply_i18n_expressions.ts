@@ -27,7 +27,8 @@ export function applyI18nExpressions(job: CompilationJob): void {
       // Only add apply after expressions that are not followed by more expressions.
       if (op.kind === ir.OpKind.I18nExpression && needsApplication(i18nContexts, op)) {
         // TODO: what should be the source span for the apply op?
-        ir.OpList.insertAfter<ir.UpdateOp>(ir.createI18nApplyOp(op.target, op.handle, null!), op);
+        ir.OpList.insertAfter<ir.UpdateOp>(
+            ir.createI18nApplyOp(op.i18nOwner, op.handle, null!), op);
       }
     }
   }
@@ -68,7 +69,7 @@ function needsApplication(i18nContexts: Map<ir.XrefId, ir.I18nContextOp>, op: ir
   }
 
   // Second, handle the case of i18n attributes.
-  if (op.target !== op.next.target) {
+  if (op.i18nOwner !== op.next.i18nOwner) {
     return true;
   }
   return false;

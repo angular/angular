@@ -49,11 +49,10 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
   // Context Xref -> Extracted Attribute Op
   const extractedAttributesByI18nContext = new Map<ir.XrefId, ir.ExtractedAttributeOp>();
-  // Target Xref (element for i18n attributes, last item in i18n block for i18n values) -> I18n
-  // Attributes config op
-  const i18nAttributesByTarget = new Map<ir.XrefId, ir.I18nAttributesOp>();
-  // Target Element Xref -> All I18n Expression ops for that target
-  const i18nExpressionsByTarget = new Map<ir.XrefId, ir.I18nExpressionOp[]>();
+  // Element/ElementStart Xref -> I18n Attributes config op
+  const i18nAttributesByElement = new Map<ir.XrefId, ir.I18nAttributesOp>();
+  // Element/ElementStart Xref -> All I18n Expression ops for attrs on that target
+  const i18nExpressionsByElement = new Map<ir.XrefId, ir.I18nExpressionOp[]>();
   // I18n Message Xref -> I18n Message Op (TODO: use a central op map)
   const messages = new Map<ir.XrefId, ir.I18nMessageOp>();
 
@@ -62,11 +61,12 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
       if (op.kind === ir.OpKind.ExtractedAttribute && op.i18nContext !== null) {
         extractedAttributesByI18nContext.set(op.i18nContext, op);
       } else if (op.kind === ir.OpKind.I18nAttributes) {
-        i18nAttributesByTarget.set(op.target, op);
-      } else if (op.kind === ir.OpKind.I18nExpression) {
-        const expressions = i18nExpressionsByTarget.get(op.target) ?? [];
+        i18nAttributesByElement.set(op.target, op);
+      } else if (
+          op.kind === ir.OpKind.I18nExpression && op.usage === ir.I18nExpressionFor.I18nAttribute) {
+        const expressions = i18nExpressionsByElement.get(op.target) ?? [];
         expressions.push(op);
-        i18nExpressionsByTarget.set(op.target, expressions);
+        i18nExpressionsByElement.set(op.target, expressions);
       } else if (op.kind === ir.OpKind.I18nMessage) {
         messages.set(op.xref, op);
       }
@@ -124,13 +124,13 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const elem of unit.create) {
       if (ir.isElementOrContainerOp(elem)) {
-        const i18nAttributes = i18nAttributesByTarget.get(elem.xref);
+        const i18nAttributes = i18nAttributesByElement.get(elem.xref);
         if (i18nAttributes === undefined) {
           // This element is not associated with an i18n attributes configuration instruction.
           continue;
         }
 
-        let i18nExpressions = i18nExpressionsByTarget.get(elem.xref);
+        let i18nExpressions = i18nExpressionsByElement.get(elem.xref);
         if (i18nExpressions === undefined) {
           // Unused i18nAttributes should have already been removed.
           // TODO: Should the removal of those dead instructions be merged with this phase?
