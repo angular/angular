@@ -10,7 +10,7 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, I18nExpressionFor, I18nParamResolutionTime, OpKind} from '../enums';
+import {BindingKind, I18nExpressionFor, I18nParamResolutionTime, OpKind, TemplateKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
@@ -121,10 +121,12 @@ export interface BindingOp extends Op<UpdateOp> {
    */
   isTextAttribute: boolean;
 
+  isStructuralTemplateAttribute: boolean;
+
   /**
    * Whether this binding is on a structural template.
    */
-  isStructuralTemplate: boolean;
+  templateKind: TemplateKind|null;
 
   i18nContext: XrefId|null;
   i18nMessage: i18n.Message|null;
@@ -138,8 +140,8 @@ export interface BindingOp extends Op<UpdateOp> {
 export function createBindingOp(
     target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
     unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
-    isStructuralTemplate: boolean, i18nMessage: i18n.Message|null,
-    sourceSpan: ParseSourceSpan): BindingOp {
+    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
+    i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): BindingOp {
   return {
     kind: OpKind.Binding,
     bindingKind: kind,
@@ -149,7 +151,8 @@ export function createBindingOp(
     unit,
     securityContext,
     isTextAttribute,
-    isStructuralTemplate: isStructuralTemplate,
+    isStructuralTemplateAttribute,
+    templateKind,
     i18nContext: null,
     i18nMessage,
     sourceSpan,
@@ -193,10 +196,13 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
    */
   sanitizer: o.Expression|null;
 
+  isStructuralTemplateAttribute: boolean;
+
   /**
-   * Whether this binding is on a structural template.
+   * The kind of template targeted by the binding, or null if this binding does not target a
+   * template.
    */
-  isStructuralTemplate: boolean;
+  templateKind: TemplateKind|null;
 
   i18nContext: XrefId|null;
   i18nMessage: i18n.Message|null;
@@ -209,7 +215,8 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  */
 export function createPropertyOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    isAnimationTrigger: boolean, securityContext: SecurityContext, isStructuralTemplate: boolean,
+    isAnimationTrigger: boolean, securityContext: SecurityContext,
+    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
     sourceSpan: ParseSourceSpan): PropertyOp {
   return {
@@ -220,7 +227,8 @@ export function createPropertyOp(
     isAnimationTrigger,
     securityContext,
     sanitizer: null,
-    isStructuralTemplate,
+    isStructuralTemplateAttribute,
+    templateKind,
     i18nContext,
     i18nMessage,
     sourceSpan,
@@ -424,10 +432,13 @@ export interface AttributeOp extends Op<UpdateOp> {
    */
   isTextAttribute: boolean;
 
+  isStructuralTemplateAttribute: boolean;
+
   /**
-   * Whether this binding is on a structural template.
+   * The kind of template targeted by the binding, or null if this binding does not target a
+   * template.
    */
-  isStructuralTemplate: boolean;
+  templateKind: TemplateKind|null;
 
   /**
    * The i18n context, if this is an i18n attribute.
@@ -444,7 +455,8 @@ export interface AttributeOp extends Op<UpdateOp> {
  */
 export function createAttributeOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext, isTextAttribute: boolean, isStructuralTemplate: boolean,
+    securityContext: SecurityContext, isTextAttribute: boolean,
+    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
@@ -454,7 +466,8 @@ export function createAttributeOp(
     securityContext,
     sanitizer: null,
     isTextAttribute,
-    isStructuralTemplate,
+    isStructuralTemplateAttribute,
+    templateKind,
     i18nContext: null,
     i18nMessage,
     sourceSpan,
@@ -510,7 +523,8 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   targetSlot: SlotHandle;
 
   /**
-   * The main test expression (for a switch), or `null` (for an if, which has no test expression).
+   * The main test expression (for a switch), or `null` (for an if, which has no test
+   * expression).
    */
   test: o.Expression|null;
 
@@ -527,8 +541,8 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   processed: o.Expression|null;
 
   /**
-   * Control flow conditionals can accept a context value (this is a result of specifying an alias).
-   * This expression will be passed to the conditional instruction's context parameter.
+   * Control flow conditionals can accept a context value (this is a result of specifying an
+   * alias). This expression will be passed to the conditional instruction's context parameter.
    */
   contextValue: o.Expression|null;
 
@@ -626,8 +640,8 @@ export function createDeferWhenOp(
 /**
  * An op that represents an expression in an i18n message.
  *
- * TODO: This can represent expressions used in both i18n attributes and normal i18n content. We may
- * want to split these into two different op types, deriving from the same base class.
+ * TODO: This can represent expressions used in both i18n attributes and normal i18n content. We
+ * may want to split these into two different op types, deriving from the same base class.
  */
 export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
                                           DependsOnSlotContextOpTrait {
@@ -641,11 +655,11 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The Xref of the op that we need to `advance` to.
    *
-   * In an i18n block, this is initially the i18n start op, but will eventually correspond to the
-   * final slot consumer in the owning i18n block.
-   * TODO: We should make text i18nExpressions target the i18nEnd instruction, instead the last slot
-   * consumer in the i18n block. This makes them resilient to that last consumer being deleted. (Or
-   * new slot consumers being added!)
+   * In an i18n block, this is initially the i18n start op, but will eventually correspond to
+   * the final slot consumer in the owning i18n block.
+   * TODO: We should make text i18nExpressions target the i18nEnd instruction, instead the last
+   * slot consumer in the i18n block. This makes them resilient to that last consumer being
+   * deleted. (Or new slot consumers being added!)
    *
    * In an i18n attribute, this is the xref of the corresponding elementStart/element.
    */
@@ -733,9 +747,9 @@ export interface I18nApplyOp extends Op<UpdateOp> {
   owner: XrefId;
 
   /**
-   * A handle for the slot that i18n apply instruction should apply to. In an i18n block, this is
-   * the slot of the i18n block this expression belongs to. In an i18n attribute, this is the slot
-   * of the corresponding i18nAttributes instruction.
+   * A handle for the slot that i18n apply instruction should apply to. In an i18n block, this
+   * is the slot of the i18n block this expression belongs to. In an i18n attribute, this is the
+   * slot of the corresponding i18nAttributes instruction.
    */
   handle: SlotHandle;
 
