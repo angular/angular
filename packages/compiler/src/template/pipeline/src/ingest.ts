@@ -760,7 +760,7 @@ function ingestBindings(
 
   if (element instanceof t.Template) {
     flags |= BindingFlags.OnNgTemplateElement;
-    if (element instanceof t.Template && isPlainTemplate(element)) {
+    if (isPlainTemplate(element)) {
       flags |= BindingFlags.BindingTargetsTemplate;
     }
 
@@ -807,8 +807,8 @@ function ingestBindings(
     }
 
     if (element instanceof t.Template && !isPlainTemplate(element)) {
-      unit.create.push(
-          ir.createExtractedAttributeOp(op.xref, ir.BindingKind.Property, output.name, null, null));
+      unit.create.push(ir.createExtractedAttributeOp(
+          op.xref, ir.BindingKind.Property, output.name, null, null, null));
       continue;
     }
 
@@ -893,24 +893,17 @@ function ingestBinding(
     value = value.ast;
   }
 
+  if (i18nMeta !== undefined && !(i18nMeta instanceof i18n.Message)) {
+    throw Error(`Unhandled i18n metadata type for binding: ${i18nMeta.constructor.name}`);
+  }
 
   if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
       type === e.BindingType.Property) {
     // This binding only exists for later const extraction, and is not an actual binding to be
     // created.
-    view.create.push(
-        ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null, null));
+    view.create.push(ir.createExtractedAttributeOp(
+        xref, ir.BindingKind.Property, name, null, null, i18nMeta ?? null));
     return;
-  }
-
-  let i18nContext: ir.XrefId|null = null;
-  if (i18nMeta !== undefined) {
-    if (!(i18nMeta instanceof i18n.Message)) {
-      throw Error(`Unhandled i18n metadata type for binding: ${i18nMeta.constructor.name}`);
-    }
-    i18nContext = view.job.allocateXrefId();
-    view.create.push(
-        ir.createI18nContextOp(ir.I18nContextKind.Attr, i18nContext, null, i18nMeta, null!));
   }
 
   let expression: o.Expression|ir.Interpolation;
@@ -933,7 +926,7 @@ function ingestBinding(
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
   view.update.push(ir.createBindingOp(
       xref, kind, name, expression, unit, securityContext, !!(flags & BindingFlags.TextValue),
-      !!(flags & BindingFlags.IsStructuralTemplateAttribute), i18nContext, sourceSpan));
+      !!(flags & BindingFlags.IsStructuralTemplateAttribute), i18nMeta ?? null, sourceSpan));
 }
 
 /**

@@ -26,7 +26,7 @@ export function extractAttributes(job: CompilationJob): void {
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
             let bindingKind: ir.BindingKind;
-            if (op.i18nContext !== null) {
+            if (op.i18nMessage !== null) {
               // If the binding has an i18n context, it is an i18n attribute, and should have that
               // kind in the consts array.
               bindingKind = ir.BindingKind.I18n;
@@ -38,7 +38,8 @@ export function extractAttributes(job: CompilationJob): void {
             }
 
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, bindingKind, op.name, null, null),
+                // Deliberaly null i18nMessage value
+                ir.createExtractedAttributeOp(op.target, bindingKind, op.name, null, null, null),
                 lookupElement(elements, op.target));
           }
           break;
@@ -53,14 +54,14 @@ export function extractAttributes(job: CompilationJob): void {
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.Property, op.name, null, null),
+                    op.target, ir.BindingKind.Property, op.name, null, null, null),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
             const extractedAttributeOp = ir.createExtractedAttributeOp(
-                op.target, ir.BindingKind.Property, op.name, null, null);
+                op.target, ir.BindingKind.Property, op.name, null, null, null);
             if (job.kind === CompilationJobKind.Host) {
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
@@ -119,7 +120,7 @@ function extractAttributeOp(
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
         op.target, op.isStructuralTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute,
-        op.name, op.expression, op.i18nContext);
+        op.name, op.expression, op.i18nContext, op.i18nMessage);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.
