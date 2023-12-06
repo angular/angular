@@ -133,7 +133,7 @@ function buildStandardIfElseBlock(
                         .replace(' as ', '; as ')
                         // replace 'let' with 'as' whatever spaces are between ; and 'let'
                         .replace(/;\s*let/g, '; as');
-  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
+  const elsePlaceholder = `θ${etm.getTemplateName(elseString)}δ`;
   return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
 }
 
@@ -153,9 +153,9 @@ function buildBoundIfElseBlock(etm: ElementToMigrate, tmpl: string, offset: numb
   } else if (aliases.length === 1) {
     condition += `; as ${aliases[0]}`;
   }
-  const elsePlaceholder = `#${etm.elseAttr!.value}|`;
+  const elsePlaceholder = `θ${etm.elseAttr!.value}δ`;
   if (etm.thenAttr !== undefined) {
-    const thenPlaceholder = `#${etm.thenAttr!.value}|`;
+    const thenPlaceholder = `θ${etm.thenAttr!.value}δ`;
     return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
   }
   return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
@@ -194,8 +194,8 @@ function buildStandardIfThenElseBlock(
                         .replace(' as ', '; as ')
                         // replace 'let' with 'as' whatever spaces are between ; and 'let'
                         .replace(/;\s*let/g, '; as');
-  const thenPlaceholder = `#${etm.getTemplateName(thenString, elseString)}|`;
-  const elsePlaceholder = `#${etm.getTemplateName(elseString)}|`;
+  const thenPlaceholder = `θ${etm.getTemplateName(thenString, elseString)}δ`;
+  const elsePlaceholder = `θ${etm.getTemplateName(elseString)}δ`;
   return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
 }
 
@@ -206,7 +206,7 @@ function buildStandardIfThenBlock(
                         .replace(' as ', '; as ')
                         // replace 'let' with 'as' whatever spaces are between ; and 'let'
                         .replace(/;\s*let/g, '; as');
-  const thenPlaceholder = `#${etm.getTemplateName(thenString)}|`;
+  const thenPlaceholder = `θ${etm.getTemplateName(thenString)}δ`;
   return buildIfThenBlock(etm, tmpl, condition, thenPlaceholder, offset);
 }
 
