@@ -10,7 +10,7 @@ import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {detectChangesInternal} from '../instructions/change_detection';
 import {markViewDirty} from '../instructions/mark_view_dirty';
-import {TVIEW} from '../interfaces/view';
+import {FLAGS, LViewFlags} from '../interfaces/view';
 
 import {getRootComponents} from './discovery_utils';
 
@@ -38,5 +38,6 @@ export function applyChanges(component: {}): void {
  */
 function detectChanges(component: {}): void {
   const view = getComponentViewByInstance(component);
+  view[FLAGS] |= LViewFlags.RefreshView;
   detectChangesInternal(view);
 }
