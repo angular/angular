@@ -53,9 +53,9 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
-    ResolutionPathComponent, MatTabsModule,
-    MatExpansionModule, InjectorProvidersComponent, MatIconModule, MatTooltipModule,
-    MatCheckboxModule, MatFormFieldModule, MatInputModule
+    ResolutionPathComponent,
+    InjectorProvidersComponent,
+    MatInputModule
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
