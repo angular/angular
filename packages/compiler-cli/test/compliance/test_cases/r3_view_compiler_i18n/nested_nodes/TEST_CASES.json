@@ -240,13 +240,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "event_listeners.js",
+              "expected": "event_listeners_template.js",
+              "templatePipelineExpected": "event_listeners_template.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle ng-content in i18n block",
