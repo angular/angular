@@ -57,9 +57,10 @@ export function convertI18nBindings(job: CompilationJob): void {
             }
 
             ops.push(ir.createI18nExpressionOp(
-                op.i18nContext, i18nAttributesForElem.target, i18nAttributesForElem.handle, expr,
-                op.expression.i18nPlaceholders[i], ir.I18nParamResolutionTime.Creation,
-                ir.I18nExpressionContext.Binding, op.name, op.sourceSpan));
+                op.i18nContext, i18nAttributesForElem.target, i18nAttributesForElem.xref,
+                i18nAttributesForElem.handle, expr, op.expression.i18nPlaceholders[i],
+                ir.I18nParamResolutionTime.Creation, ir.I18nExpressionFor.I18nAttribute, op.name,
+                op.sourceSpan));
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;
