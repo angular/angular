@@ -28,6 +28,13 @@ export interface SignalNode<T> extends ReactiveNode {
   readonly[SIGNAL]: SignalNode<T>;
 }
 
+export interface UselessInterface<T> extends ReactiveNode {
+  value: T;
+  equal: ValueEqualityFn<T>;
+  readonly[SIGNAL]: SignalNode<T>;
+  ignoreme: T;
+}
+
 export type SignalBaseGetter<T> = (() => T)&{readonly[SIGNAL]: unknown};
 
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
