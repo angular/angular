@@ -141,11 +141,12 @@ export class ElementToMigrate {
   getTemplateName(targetStr: string, secondStr?: string): string {
     const targetLocation = this.attr.value.indexOf(targetStr);
     const secondTargetLocation = secondStr ? this.attr.value.indexOf(secondStr) : undefined;
-    return this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation)
-        .replace(':', '')
-        .trim()
-        .split(';')[0]
-        .trim();
+    let templateName =
+        this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation);
+    if (templateName.startsWith(':')) {
+      templateName = templateName.slice(1).trim();
+    }
+    return templateName.split(';')[0].trim();
   }
 
   getValueEnd(offset: number): number {
