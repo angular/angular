@@ -369,14 +369,13 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
 function replaceRemainingPlaceholders(template: string): string {
   const replaceRegex = new RegExp(`θ.*δ`, 'g');
   const placeholders = [...template.matchAll(replaceRegex)];
-  let migrated = template;
   for (let ph of placeholders) {
     const placeholder = ph[0];
     const name = placeholder.slice(1, placeholder.length - 1);
-    migrated =
+    template =
         template.replace(placeholder, `<ng-template [ngTemplateOutlet]="${name}"></ng-template>`);
   }
-  return migrated;
+  return template;
 }
 
 /**

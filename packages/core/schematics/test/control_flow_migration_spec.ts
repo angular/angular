@@ -4149,6 +4149,58 @@ describe('control flow migration', () => {
         `<ng-template #empty>Empty</ng-template>`,
       ].join('\n'));
     });
+
+    it('should replace all instances of template placeholders', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="condition; else otherTemplate">`,
+        `  <ng-container *ngIf="!defaultTemplate; else defaultTemplate">`,
+        `    Hello!`,
+        `  </ng-container>`,
+        `</div>`,
+        `<ng-template #otherTemplate>`,
+        `  <div>`,
+        `    <ng-container *ngIf="!defaultTemplate; else defaultTemplate">`,
+        `      Hello again!`,
+        `    </ng-container>`,
+        `  </div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (condition) {`,
+        `  <div>`,
+        `    @if (!defaultTemplate) {`,
+        `      Hello!`,
+        `    } @else {`,
+        `      <ng-template [ngTemplateOutlet]="defaultTemplate"></ng-template>`,
+        `    }`,
+        `  </div>`,
+        `} @else {`,
+        `  <div>`,
+        `    @if (!defaultTemplate) {`,
+        `      Hello again!`,
+        `    } @else {`,
+        `      <ng-template [ngTemplateOutlet]="defaultTemplate"></ng-template>`,
+        `    }`,
+        `  </div>`,
+        `}\n`,
+      ].join('\n'));
+    });
   });
 
   describe('formatting', () => {
