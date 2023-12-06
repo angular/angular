@@ -26,7 +26,7 @@ describe('MultiMap', () => {
     expect(map.has('k')).toBeFalse();
   });
 
-  it('should  set, get and remove items without duplicated keys', () => {
+  it('should set, get and remove items without duplicated keys', () => {
     const map = new UniqueValueMultiKeyMap();
 
     map.set('k', 'v1');

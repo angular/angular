@@ -289,16 +289,16 @@ function initLiveItemsInTheFuture<T>(
  * The implementation aims at having the minimal overhead for cases where keys are _not_ duplicated
  * (the most common case in the list reconciliation algorithm). To achieve this, the first value for
  * a given key is stored in a regular map. Then, when more values are set for a given key, we
- * maintain a kind of linked list in a separate map. To maintain this linked list we assume that all
+ * maintain a form of linked list in a separate map. To maintain this linked list we assume that all
  * values (in the entire collection) are unique.
  */
 export class UniqueValueMultiKeyMap<K, V> {
+  // A map from a key to the first value corresponding to this key.
   private kvMap = new Map<K, V>();
+  // A map that acts as a linked list of values - each value maps to the next value in this "linked
+  // list" (this only works if values are unique). Allocated lazily to avoid memory consumption when
+  // there are no duplicated values.
   private _vMap: Map<V, V>|undefined = undefined;
-
-  private get vMap() {
-    return this._vMap ??= new Map<V, V>();
-  }
 
   has(key: K): boolean {
     return this.kvMap.has(key);
@@ -308,9 +308,9 @@ export class UniqueValueMultiKeyMap<K, V> {
     if (!this.has(key)) return false;
 
     const value = this.kvMap.get(key)!;
-    if (this.vMap.has(value)) {
-      this.kvMap.set(key, this.vMap.get(value)!);
-      this.vMap.delete(value);
+    if (this._vMap !== undefined && this._vMap.has(value)) {
+      this.kvMap.set(key, this._vMap.get(value)!);
+      this._vMap.delete(value);
     } else {
       this.kvMap.delete(key);
     }
@@ -328,10 +328,16 @@ export class UniqueValueMultiKeyMap<K, V> {
       ngDevMode &&
           assertNotSame(
               prevValue, value, `Detected a duplicated value ${value} for the key ${key}`);
-      while (this.vMap.has(prevValue)) {
-        prevValue = this.vMap.get(prevValue)!;
+
+      if (this._vMap === undefined) {
+        this._vMap = new Map();
       }
-      this.vMap.set(prevValue, value);
+
+      const vMap = this._vMap;
+      while (vMap.has(prevValue)) {
+        prevValue = vMap.get(prevValue)!;
+      }
+      vMap.set(prevValue, value);
     } else {
       this.kvMap.set(key, value);
     }
@@ -341,8 +347,9 @@ export class UniqueValueMultiKeyMap<K, V> {
     for (let [key, value] of this.kvMap) {
       cb(value, key);
       if (this._vMap !== undefined) {
-        while (this.vMap.has(value)) {
-          value = this.vMap.get(value)!;
+        const vMap = this._vMap;
+        while (vMap.has(value)) {
+          value = vMap.get(value)!;
           cb(value, key);
         }
       }
