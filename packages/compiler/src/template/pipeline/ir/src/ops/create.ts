@@ -642,6 +642,8 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
    * i18n context for it.
    */
   i18nContext: XrefId|null;
+
+  i18nMessage: i18n.Message|null;
 }
 
 /**
@@ -649,7 +651,7 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
  */
 export function createExtractedAttributeOp(
     target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
-    i18nContext: XrefId|null): ExtractedAttributeOp {
+    i18nContext: XrefId|null, i18nMessage: i18n.Message|null): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
@@ -657,6 +659,7 @@ export function createExtractedAttributeOp(
     name,
     expression,
     i18nContext,
+    i18nMessage,
     ...NEW_OP,
   };
 }

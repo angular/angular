@@ -47,8 +47,8 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
       job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   // Step One: Build up various lookup maps we need to collect all the consts.
 
-  // Context Xref -> Extracted Attribute Op
-  const extractedAttributesByI18nContext = new Map<ir.XrefId, ir.ExtractedAttributeOp>();
+  // Context Xref -> Extracted Attribute Ops
+  const extractedAttributesByI18nContext = new Map<ir.XrefId, ir.ExtractedAttributeOp[]>();
   // Element/ElementStart Xref -> I18n Attributes config op
   const i18nAttributesByElement = new Map<ir.XrefId, ir.I18nAttributesOp>();
   // Element/ElementStart Xref -> All I18n Expression ops for attrs on that target
@@ -59,7 +59,9 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       if (op.kind === ir.OpKind.ExtractedAttribute && op.i18nContext !== null) {
-        extractedAttributesByI18nContext.set(op.i18nContext, op);
+        const attributes = extractedAttributesByI18nContext.get(op.i18nContext) ?? [];
+        attributes.push(op);
+        extractedAttributesByI18nContext.set(op.i18nContext, attributes);
       } else if (op.kind === ir.OpKind.I18nAttributes) {
         i18nAttributesByElement.set(op.target, op);
       } else if (
@@ -106,9 +108,11 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
             // This i18n message may correspond to an individual extracted attribute. If so, The
             // value of that attribute is updated to read the extracted i18n variable.
-            const attributeForMessage = extractedAttributesByI18nContext.get(op.i18nContext);
-            if (attributeForMessage !== undefined) {
-              attributeForMessage.expression = mainVar;
+            const attributesForMessage = extractedAttributesByI18nContext.get(op.i18nContext);
+            if (attributesForMessage !== undefined) {
+              for (const attr of attributesForMessage) {
+                attr.expression = mainVar.clone();
+              }
             }
           }
         }
