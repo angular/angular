@@ -76,6 +76,7 @@ export class ViewFixture {
           sanitizer: sanitizer || null,
           afterRenderEventManager: new AfterRenderEventManager(),
           inlineEffectRunner: null,
+          changeDetectionScheduler: null,
         },
         hostRenderer, null, null, null);
 

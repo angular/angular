@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {provideZoneChangeDetection} from '../change_detection/scheduling';
+import {provideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler} from '../error_handler';

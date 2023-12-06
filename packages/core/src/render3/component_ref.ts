@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injector} from '../di/injector';
 import {convertToBitFlags} from '../di/injector_compatibility';
 import {InjectFlags, InjectOptions} from '../di/interface/injector';
@@ -201,6 +202,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
+    const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
 
     const environment: LViewEnvironment = {
       rendererFactory,
@@ -208,6 +210,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       // We don't use inline effects (yet).
       inlineEffectRunner: null,
       afterRenderEventManager,
+      changeDetectionScheduler,
     };
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);

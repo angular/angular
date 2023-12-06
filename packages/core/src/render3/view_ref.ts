@@ -17,9 +17,9 @@ import {checkNoChangesInternal, detectChangesInternal} from './instructions/chan
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
+import {CONTEXT, ENVIRONMENT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
-import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
+import {markAncestorsForTraversal, storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -326,5 +326,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
           ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
+    updateAncestorTraversalFlagsOnAttach(this._lView);
   }
 }
