@@ -190,13 +190,19 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "self_closing.js",
+              "expected": "self_closing_template.js",
+              "templatePipelineExpected": "self_closing_template.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle i18n context in nested templates",
