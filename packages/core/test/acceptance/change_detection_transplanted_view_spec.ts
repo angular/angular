@@ -734,8 +734,7 @@ describe('change detection for transplanted views', () => {
       // Detach view, manually call `detectChanges`, and verify the template was refreshed
       component.rootViewContainerRef.detach();
       viewRef.detectChanges();
-      // This view is a backwards reference so it's refreshed twice
-      expect(component.checks).toEqual(2);
+      expect(component.checks).toEqual(1);
     });
 
     it('should work when change detecting detached transplanted view already marked for refresh',
@@ -751,8 +750,7 @@ describe('change detection for transplanted views', () => {
            // should not affect parent counters.
            viewRef.detectChanges();
          }).not.toThrow();
-         // This view is a backwards reference so it's refreshed twice
-         expect(component.checks).toEqual(2);
+         expect(component.checks).toEqual(1);
        });
 
     it('should work when re-inserting a previously detached transplanted view marked for refresh',
