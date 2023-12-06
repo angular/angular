@@ -893,6 +893,16 @@ function ingestBinding(
     value = value.ast;
   }
 
+
+  if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
+      type === e.BindingType.Property) {
+    // This binding only exists for later const extraction, and is not an actual binding to be
+    // created.
+    view.create.push(
+        ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null, null));
+    return;
+  }
+
   let i18nContext: ir.XrefId|null = null;
   if (i18nMeta !== undefined) {
     if (!(i18nMeta instanceof i18n.Message)) {
@@ -901,15 +911,6 @@ function ingestBinding(
     i18nContext = view.job.allocateXrefId();
     view.create.push(
         ir.createI18nContextOp(ir.I18nContextKind.Attr, i18nContext, null, i18nMeta, null!));
-  }
-
-  if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
-      type === e.BindingType.Property) {
-    // This binding only exists for later const extraction, and is not an actual binding to be
-    // created.
-    view.create.push(
-        ir.createExtractedAttributeOp(xref, ir.BindingKind.Property, name, null, i18nContext));
-    return;
   }
 
   let expression: o.Expression|ir.Interpolation;
