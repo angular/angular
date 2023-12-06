@@ -26,6 +26,7 @@ describe('PropertyDataSource', () => {
             preview: '42',
             type: PropType.Number,
             value: 42,
+            containerType: null,
           },
         },
         getTreeFlattener(), flatTreeControl, {element: [1, 2, 3]}, null as any);
@@ -37,6 +38,7 @@ describe('PropertyDataSource', () => {
         preview: '43',
         type: PropType.Number,
         value: 43,
+        containerType: null,
       },
     });
 
@@ -51,6 +53,7 @@ describe('PropertyDataSource', () => {
             preview: '43',
             type: PropType.Number,
             value: 43,
+            containerType: null,
           },
           name: 'foo',
           parent: null,
