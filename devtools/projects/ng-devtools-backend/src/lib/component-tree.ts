@@ -23,6 +23,7 @@ enum ChangeDetectionStrategy {
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
 
 import type {ClassProvider, ExistingProvider, FactoryProvider, InjectOptions, InjectionToken, Injector, Type, ValueProvider, ɵComponentDebugMetadata as ComponentDebugMetadata, ɵProviderRecord as ProviderRecord} from '@angular/core';
+import {isSignal} from './utils';
 
 export const injectorToId = new WeakMap<Injector|HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -537,10 +538,19 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
     parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
   });
 
+  if (isSignal(parentObjectOfValueToUpdate)) {
+    // we don't support updating nested objects in signals yet
+    return;
+  }
+
   // When we try to set a property which only has a getter
   // the line below could throw an error.
   try {
-    parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
+    if (isSignal(parentObjectOfValueToUpdate[valueKey])) {
+      parentObjectOfValueToUpdate[valueKey].set(updatedStateData.newValue);
+    } else {
+      parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
+    }
   } catch {
   }
 };

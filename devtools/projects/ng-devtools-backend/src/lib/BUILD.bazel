@@ -124,6 +124,7 @@ ts_library(
     srcs = ["component-tree.ts"],
     deps = [
         ":interfaces",
+        ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
