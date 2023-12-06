@@ -41,7 +41,7 @@ export function generateAdvance(job: CompilationJob): void {
       } else if (!slotMap.has(op.target)) {
         // We expect ops that _do_ depend on the slot counter to point at declarations that exist in
         // the `slotMap`.
-        throw new Error(`AssertionError: reference to unknown slot for var ${op.target}`);
+        throw new Error(`AssertionError: reference to unknown slot for target ${op.target}`);
       }
 
       const slot = slotMap.get(op.target)!;

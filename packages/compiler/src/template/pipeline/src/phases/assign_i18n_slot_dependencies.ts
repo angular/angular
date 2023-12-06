@@ -10,7 +10,8 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 /**
- * Updates i18n expression ops to depend on the last slot in their owning i18n block.
+ * Updates i18n expression ops to target the last slot in their owning i18n block, and moves them
+ * after the last update instruction that depends on that slot.
  */
 export function assignI18nSlotDependencies(job: CompilationJob) {
   const i18nLastSlotConsumers = new Map<ir.XrefId, ir.XrefId>();
@@ -33,59 +34,54 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
             throw new Error(
                 'AssertionError: Expected an active I18n block while calculating last slot consumers');
           }
-          i18nLastSlotConsumers.set(currentI18nOp.xref, lastSlotConsumer!);
+          if (lastSlotConsumer === null) {
+            throw new Error(
+                'AssertionError: Expected a last slot consumer while calculating last slot consumers');
+          }
+          i18nLastSlotConsumers.set(currentI18nOp.xref, lastSlotConsumer);
           currentI18nOp = null;
           break;
       }
     }
 
-    // Assign i18n expressions to target the last slot in their owning block. Also move the ops
-    // below any other ops that depend on that same slot context to mimic the behavior of
-    // TemplateDefinitionBuilder.
-    // TODO(mmalerba): We may want to simplify the ordering logic once compatibility with
-    // TemplateDefinitionBuilder is no longer required. Though we likely still want *some* type of
-    // ordering to maximize opportunities for chaining.
-    let moveToTarget: ir.XrefId|null = null;
-    let opsToMove: ir.UpdateOp[] = [];
+    // Expresions that are currently being moved.
+    let opsToMove: ir.I18nExpressionOp[] = [];
+    // Previously we found the last slot-consuming create mode op in the i18n block. That op will be
+    // the new target for any moved i18n expresion inside the i18n block, and that op's slot is
+    // stored here.
+    let moveAfterTarget: ir.XrefId|null = null;
+    // This is the last target in the create IR that we saw during iteration. Eventally, it will be
+    // equal to moveAfterTarget. But wait! We need to find the *last* such op whose target is equal
+    // to `moveAfterTarget`.
     let previousTarget: ir.XrefId|null = null;
-    let currentTarget: ir.XrefId|null = null;
     for (const op of unit.update) {
-      currentTarget = ir.hasDependsOnSlotContextTrait(op) ? op.target : null;
-
-      // Re-target i18n expression ops.
-      if (op.kind === ir.OpKind.I18nExpression) {
-        // TODO: Is this handling of i18n bindings correct?
-        op.target = op.usage === ir.I18nExpressionContext.Normal ?
-            i18nLastSlotConsumers.get(op.target)! :
-            op.target;
-        if (op.target === undefined) {
-          throw new Error(
-              'AssertionError: Expected every I18nExpressionOp to have a valid reordering target');
+      if (ir.hasDependsOnSlotContextTrait(op)) {
+        // We've found an op that depends on another slot other than the one that we want to move
+        // the expressions to, after previously having seen the one we want to move to.
+        if (moveAfterTarget !== null && previousTarget === moveAfterTarget &&
+            op.target !== previousTarget) {
+          ir.OpList.insertBefore<ir.UpdateOp>(opsToMove, op);
+          moveAfterTarget = null;
+          opsToMove = [];
         }
-        moveToTarget = op.target;
+        previousTarget = op.target;
       }
 
-      // Pull out i18n expression and apply ops to be moved.
-      if (op.kind === ir.OpKind.I18nExpression || op.kind === ir.OpKind.I18nApply) {
-        opsToMove.push(op);
+      if (op.kind === ir.OpKind.I18nExpression && op.usage === ir.I18nExpressionFor.I18nText) {
+        // This is an I18nExpressionOps that is used for text (not attributes).
         ir.OpList.remove<ir.UpdateOp>(op);
-        currentTarget = moveToTarget;
+        opsToMove.push(op);
+        const target = i18nLastSlotConsumers.get(op.i18nOwner);
+        if (target === undefined) {
+          throw new Error(
+              'AssertionError: Expected to find a last slot consumer for an I18nExpressionOp');
+        }
+        op.target = target;
+        moveAfterTarget = op.target;
       }
-
-      // Add back any ops that were previously pulled once we pass the point where they should be
-      // inserted.
-      if (moveToTarget !== null && previousTarget === moveToTarget &&
-          currentTarget !== previousTarget) {
-        ir.OpList.insertBefore(opsToMove, op);
-        opsToMove = [];
-      }
-
-      // Update the previous target for the next pass through
-      previousTarget = currentTarget;
     }
 
-    // If there are any moved ops that haven't been put back yet, put them back at the end.
-    if (opsToMove) {
+    if (moveAfterTarget !== null) {
       unit.update.push(opsToMove);
     }
   }

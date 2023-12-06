@@ -1,6 +1,6 @@
 consts: () => {
-	__i18nMsg__('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ baz }}'}}, {})
-	__i18nMsg__('{$interpolation}{$startHeadingLevel1}{$closeHeadingLevel1}', [['closeHeadingLevel1', String.raw`\uFFFD/#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['startHeadingLevel1', String.raw`\uFFFD#2\uFFFD`]], {original_code: { 'closeHeadingLevel1': '</h1>', 'interpolation': '{{ bar }}', 'startHeadingLevel1': '<h1 i18n-title title=\"{{ baz }}\">' }}, {})
+	__i18nMsg__('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ attr }}'}}, {})
+	__i18nMsg__('{$interpolation}{$startHeadingLevel1}{$closeHeadingLevel1}', [['closeHeadingLevel1', String.raw`\uFFFD/#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['startHeadingLevel1', String.raw`\uFFFD#2\uFFFD`]], {original_code: { 'closeHeadingLevel1': '</h1>', 'interpolation': '{{ text }}', 'startHeadingLevel1': '<h1 i18n-title title=\"{{ attr }}\">' }}, {})
 	return [
 	  $i18n_0$,
 	  [__AttributeMarker.I18n__, "title"],
@@ -19,10 +19,10 @@ consts: () => {
 	  }
 	if (rf & 2) {
 		i0.ɵɵadvance(2);
-		i0.ɵɵi18nExp(ctx.baz);
+		i0.ɵɵi18nExp(ctx.attr);
 		i0.ɵɵi18nApply(3);
 		i0.ɵɵadvance(1);
-		i0.ɵɵi18nExp(ctx.bar);
+		i0.ɵɵi18nExp(ctx.text);
 		i0.ɵɵi18nApply(1);
 	}
   }

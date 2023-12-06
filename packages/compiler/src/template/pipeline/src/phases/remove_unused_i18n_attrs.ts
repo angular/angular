@@ -15,19 +15,19 @@ import {CompilationJob} from '../compilation';
  */
 export function removeUnusedI18nAttributesOps(job: CompilationJob) {
   for (const unit of job.units) {
-    const targetsWithI18nApply = new Set<ir.XrefId>();
+    const ownersWithI18nExpressions = new Set<ir.XrefId>();
 
     for (const op of unit.update) {
       switch (op.kind) {
-        case ir.OpKind.I18nApply:
-          targetsWithI18nApply.add(op.target);
+        case ir.OpKind.I18nExpression:
+          ownersWithI18nExpressions.add(op.i18nOwner);
       }
     }
 
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nAttributes:
-          if (targetsWithI18nApply.has(op.target)) {
+          if (ownersWithI18nExpressions.has(op.xref)) {
             continue;
           }
           ir.OpList.remove<ir.CreateOp>(op);
