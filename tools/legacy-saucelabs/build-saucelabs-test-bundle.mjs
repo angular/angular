@@ -11,7 +11,7 @@
 import multimatch from 'multimatch';
 import esbuild from 'esbuild';
 import fs from 'fs';
-import glob from 'glob';
+import glob from 'fast-glob';
 import {dirname, join, isAbsolute, relative} from 'path';
 import url from 'url';
 import ts from 'typescript';

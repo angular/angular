@@ -9,7 +9,7 @@
 import {runfiles} from '@bazel/runfiles';
 import cldrjs, {type CldrStatic} from 'cldrjs';
 import fs from 'fs';
-import glob from 'glob';
+import glob from 'fast-glob';
 
 /**
  * Globs that match CLDR JSON data files that should be fetched. We limit these intentionally
