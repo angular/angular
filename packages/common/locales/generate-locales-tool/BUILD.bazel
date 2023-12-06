@@ -8,10 +8,9 @@ ts_library(
     deps = [
         "@npm//@bazel/runfiles",
         "@npm//@types/cldrjs",
-        "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//cldr",
         "@npm//cldrjs",
-        "@npm//glob",
+        "@npm//fast-glob",
     ],
 )
