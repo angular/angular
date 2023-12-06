@@ -26,11 +26,11 @@ export function extractAttributes(job: CompilationJob): void {
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
             let bindingKind: ir.BindingKind;
-            if (op.i18nMessage !== null) {
+            if (op.i18nMessage !== null && op.templateKind === null) {
               // If the binding has an i18n context, it is an i18n attribute, and should have that
               // kind in the consts array.
               bindingKind = ir.BindingKind.I18n;
-            } else if (op.isStructuralTemplate) {
+            } else if (op.isStructuralTemplateAttribute) {
               // TODO: How do i18n attributes on templates work?!
               bindingKind = ir.BindingKind.Template;
             } else {
@@ -119,7 +119,8 @@ function extractAttributeOp(
 
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
-        op.target, op.isStructuralTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute,
+        op.target,
+        op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
         op.name, op.expression, op.i18nContext, op.i18nMessage);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't

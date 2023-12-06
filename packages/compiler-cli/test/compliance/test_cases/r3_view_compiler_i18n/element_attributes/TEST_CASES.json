@@ -54,10 +54,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "ng-template_interpolation_template.js",
+              "templatePipelineExpected": "ng-template_interpolation_template.pipeline.js",
+              "generated": "ng-template_interpolation.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives",
@@ -69,10 +75,16 @@
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
+          ],
+          "files": [
+            {
+              "expected": "ng-template_interpolation_structural_template.js",
+              "templatePipelineExpected": "ng-template_interpolation_structural_template.pipeline.js",
+              "generated": "ng-template_interpolation_structural.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not create translations for empty attributes",

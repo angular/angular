@@ -92,7 +92,7 @@ export function ingestHostProperty(
       job.root.xref, bindingKind, property.name, expression, null,
       SecurityContext
           .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
-      isTextAttribute, false, /* TODO: How do Host bindings handle i18n attrs? */ null,
+      isTextAttribute, false, null, /* TODO: How do Host bindings handle i18n attrs? */ null,
       property.sourceSpan));
 }
 
@@ -100,6 +100,7 @@ export function ingestHostAttribute(
     job: HostBindingCompilationJob, name: string, value: o.Expression): void {
   const attrBinding = ir.createBindingOp(
       job.root.xref, ir.BindingKind.Attribute, name, value, null, SecurityContext.NONE, true, false,
+      null,
       /* TODO */ null,
       /* TODO: host attribute source spans */ null!);
   job.root.update.push(attrBinding);
@@ -165,7 +166,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
       element.startSourceSpan);
   unit.create.push(startOp);
 
-  ingestBindings(unit, startOp, element);
+  ingestBindings(unit, startOp, element, null);
   ingestReferences(startOp, element);
 
   // Start i18n, if needed, goes after the element create and bindings, but before the nodes
@@ -220,7 +221,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
       i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(templateOp);
 
-  ingestBindings(unit, templateOp, tmpl);
+  ingestBindings(unit, templateOp, tmpl, templateKind);
   ingestReferences(templateOp, tmpl);
   ingestNodes(childView, tmpl.children);
 
@@ -251,7 +252,7 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   for (const attr of content.attributes) {
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, attr.i18n);
+        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, null, attr.i18n);
   }
   unit.create.push(op);
 }
@@ -754,7 +755,8 @@ function isPlainTemplate(tmpl: t.Template) {
  * to their IR representation.
  */
 function ingestBindings(
-    unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template): void {
+    unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template,
+    templateKind: ir.TemplateKind|null): void {
   let flags: BindingFlags = BindingFlags.None;
   let hasI18nAttributes = false;
 
@@ -771,12 +773,12 @@ function ingestBindings(
         ingestBinding(
             unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
             SecurityContext.NONE, attr.sourceSpan, templateAttrFlags | BindingFlags.TextValue,
-            attr.i18n);
+            templateKind, attr.i18n);
         hasI18nAttributes ||= attr.i18n !== undefined;
       } else {
         ingestBinding(
             unit, op.xref, attr.name, attr.value, attr.type, attr.unit, attr.securityContext,
-            attr.sourceSpan, templateAttrFlags, attr.i18n);
+            attr.sourceSpan, templateAttrFlags, templateKind, attr.i18n);
         hasI18nAttributes ||= attr.i18n !== undefined;
       }
     }
@@ -788,13 +790,14 @@ function ingestBindings(
     // `BindingType.Attribute`.
     ingestBinding(
         unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue, attr.i18n);
+        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue, templateKind,
+        attr.i18n);
     hasI18nAttributes ||= attr.i18n !== undefined;
   }
   for (const input of element.inputs) {
     ingestBinding(
         unit, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
-        input.sourceSpan, flags, input.i18n);
+        input.sourceSpan, flags, templateKind, input.i18n);
     hasI18nAttributes ||= input.i18n !== undefined;
   }
 
@@ -888,7 +891,8 @@ enum BindingFlags {
 function ingestBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, flags: BindingFlags, i18nMeta: i18n.I18nMeta|undefined): void {
+    sourceSpan: ParseSourceSpan, flags: BindingFlags, templateKind: ir.TemplateKind|null,
+    i18nMeta: i18n.I18nMeta|undefined): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
@@ -926,7 +930,8 @@ function ingestBinding(
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
   view.update.push(ir.createBindingOp(
       xref, kind, name, expression, unit, securityContext, !!(flags & BindingFlags.TextValue),
-      !!(flags & BindingFlags.IsStructuralTemplateAttribute), i18nMeta ?? null, sourceSpan));
+      !!(flags & BindingFlags.IsStructuralTemplateAttribute), templateKind, i18nMeta ?? null,
+      sourceSpan));
 }
 
 /**
@@ -1026,7 +1031,8 @@ function ingestControlFlowInsertionPoint(
     for (const attr of root.attributes) {
       ingestBinding(
           unit, xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, attr.i18n);
+          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, ir.TemplateKind.Block,
+          attr.i18n);
     }
 
     const tagName = root instanceof t.Element ? root.name : root.tagName;
