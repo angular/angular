@@ -11,7 +11,7 @@
 import childProcess from 'child_process';
 import url from 'url';
 import path from 'path';
-import glob from 'glob';
+import glob from 'fast-glob';
 import fs from 'fs';
 
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
