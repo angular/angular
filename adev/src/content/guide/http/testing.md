@@ -50,7 +50,7 @@ const configPromise = firstValueFrom(config$);
 const req = httpTesting.expectOne('/api/config', 'Request to load the configuration');
 
 // We can assert various properties of the request if desired.
-expect(req.method).toBe('GET');
+expect(req.request.method).toBe('GET');
 
 // Flushing the request causes it to complete, delivering the result.
 req.flush(DEFAULT_CONFIG);
