@@ -167,6 +167,14 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   ingestBindings(unit, startOp, element);
   ingestReferences(startOp, element);
+
+  // Start i18n, if needed, goes after the element create and bindings, but before the nodes
+  let i18nBlockId: ir.XrefId|null = null;
+  if (element.i18n instanceof i18n.Message) {
+    i18nBlockId = unit.job.allocateXrefId();
+    unit.create.push(ir.createI18nStartOp(i18nBlockId, element.i18n));
+  }
+
   ingestNodes(unit, element.children);
 
   // The source span for the end op is typically the element closing tag. However, if no closing tag
@@ -178,9 +186,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   unit.create.push(endOp);
 
   // If there is an i18n message associated with this element, insert i18n start and end ops.
-  if (element.i18n instanceof i18n.Message) {
-    const i18nBlockId = unit.job.allocateXrefId();
-    ir.OpList.insertAfter<ir.CreateOp>(ir.createI18nStartOp(i18nBlockId, element.i18n), startOp);
+  if (i18nBlockId !== null) {
     ir.OpList.insertBefore<ir.CreateOp>(ir.createI18nEndOp(i18nBlockId), endOp);
   }
 }
