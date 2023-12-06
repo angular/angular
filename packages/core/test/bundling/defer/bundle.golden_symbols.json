@@ -72,6 +72,9 @@
     "name": "ChainedInjector"
   },
   {
+    "name": "ChangeDetectionScheduler"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -1569,6 +1572,9 @@
     "name": "init_ng_zone"
   },
   {
+    "name": "init_ng_zone_scheduling"
+  },
+  {
     "name": "init_node"
   },
   {
@@ -1702,9 +1708,6 @@
   },
   {
     "name": "init_sanitizer"
-  },
-  {
-    "name": "init_scheduling"
   },
   {
     "name": "init_schema"
@@ -1882,6 +1885,9 @@
   },
   {
     "name": "init_zone"
+  },
+  {
+    "name": "init_zoneless_scheduling"
   },
   {
     "name": "initializeDirectives"
