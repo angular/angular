@@ -96,6 +96,9 @@
     "name": "ChainedInjector"
   },
   {
+    "name": "ChangeDetectionScheduler"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {

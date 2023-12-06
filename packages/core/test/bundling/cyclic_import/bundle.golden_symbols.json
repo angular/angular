@@ -69,6 +69,9 @@
     "name": "ChainedInjector"
   },
   {
+    "name": "ChangeDetectionScheduler"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -1138,6 +1141,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "updateAncestorTraversalFlagsOnAttach"
   },
   {
     "name": "updateMicroTaskStatus"
