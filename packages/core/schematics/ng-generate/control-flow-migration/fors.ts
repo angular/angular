@@ -113,8 +113,8 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
     // template
     if (part.startsWith('template:')) {
       // this generates a special template placeholder just for this use case
-      // which has a # at the end instead of the standard | in other placeholders
-      tmplPlaceholder = `#${part.split(':')[1].trim()}#`;
+      // which has a φ at the end instead of the standard δ in other placeholders
+      tmplPlaceholder = `θ${part.split(':')[1].trim()}φ`;
     }
     // aliases
     // declared with `let myIndex = index`

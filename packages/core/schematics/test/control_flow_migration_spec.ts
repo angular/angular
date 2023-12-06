@@ -4046,6 +4046,109 @@ describe('control flow migration', () => {
            `}`,
          ].join('\n'));
        });
+
+    it('should handle OR logic in ngIf else case', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="condition; else titleTemplate || defaultTemplate">Hello!</div>`,
+        `<ng-template #defaultTemplate> Default </ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (condition) {`,
+        `  <div>Hello!</div>`,
+        `} @else {`,
+        `  <ng-template [ngTemplateOutlet]="titleTemplate || defaultTemplate"></ng-template>`,
+        `}`,
+        `<ng-template #defaultTemplate> Default </ng-template>`,
+      ].join('\n'));
+    });
+
+    it('should handle ternaries in ngIfElse', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template`,
+        `  [ngIf]="customClearTemplate"`,
+        `  [ngIfElse]="isSidebarV3 || variant === 'v3' ? clearTemplateV3 : clearTemplate"`,
+        `  [ngTemplateOutlet]="customClearTemplate"`,
+        `></ng-template>`,
+        `<ng-template #clearTemplateV3>v3</ng-template>`,
+        `<ng-template #clearTemplate>clear</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (customClearTemplate) {`,
+        `  <ng-template`,
+        `    [ngTemplateOutlet]="customClearTemplate"`,
+        `  ></ng-template>`,
+        `} @else {`,
+        `  <ng-template [ngTemplateOutlet]="isSidebarV3 || variant === 'v3' ? clearTemplateV3 : clearTemplate"></ng-template>`,
+        `}`,
+        `<ng-template #clearTemplateV3>v3</ng-template>`,
+        `<ng-template #clearTemplate>clear</ng-template>`,
+      ].join('\n'));
+    });
+
+    it('should handle ternaries in ngIf', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="!vm.isEmpty; else vm.loading ? loader : empty"></div>`,
+        `<ng-template #loader>Loading</ng-template>`,
+        `<ng-template #empty>Empty</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (!vm.isEmpty) {`,
+        `  <div></div>`,
+        `} @else {`,
+        `  <ng-template [ngTemplateOutlet]="vm.loading ? loader : empty"></ng-template>`,
+        `}`,
+        `<ng-template #loader>Loading</ng-template>`,
+        `<ng-template #empty>Empty</ng-template>`,
+      ].join('\n'));
+    });
   });
 
   describe('formatting', () => {
