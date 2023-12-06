@@ -629,16 +629,14 @@ export class TestBedImpl implements TestBed {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
     }
 
-    const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
-    const autoDetect: boolean = this.inject(ComponentFixtureAutoDetect, false);
-    const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =
           componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
-      return new ComponentFixture<any>(
-          componentRef, ngZone, this.inject(ZoneAwareQueueingScheduler, null), autoDetect);
+      return this.runInInjectionContext(() => new ComponentFixture<any>(componentRef));
     };
+    const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
+    const ngZone = noNgZone ? null : this.inject(NgZone, null);
     const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
     this._activeFixtures.push(fixture);
     return fixture;

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵFlushableEffectRunner as FlushableEffectRunner, ɵgetDeferBlocks as getDeferBlocks, ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 
 
 /**
@@ -52,19 +53,21 @@ export class ComponentFixture<T> {
   private _onStableSubscription: Subscription|null = null;
   private _onMicrotaskEmptySubscription: Subscription|null = null;
   private _onErrorSubscription: Subscription|null = null;
+  public ngZone =
+      inject(ComponentFixtureNoNgZone, {optional: true}) ? null : inject(NgZone, {optional: true});
+  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
+  private effectRunner = inject(ZoneAwareQueueingScheduler, {optional: true});
 
   /** @nodoc */
-  constructor(
-      public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
-      private effectRunner: FlushableEffectRunner|null, private _autoDetect: boolean) {
+  constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
-    this.ngZone = ngZone;
 
+    const ngZone = this.ngZone;
     if (ngZone) {
       // Create subscriptions outside the NgZone so that the callbacks run oustide
       // of NgZone.
