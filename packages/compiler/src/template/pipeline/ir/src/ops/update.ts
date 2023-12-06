@@ -9,7 +9,7 @@
 import {SecurityContext} from '../../../../../core';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, I18nExpressionContext, I18nParamResolutionTime, OpKind} from '../enums';
+import {BindingKind, I18nExpressionFor, I18nParamResolutionTime, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
@@ -632,13 +632,22 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The Xref of the op that we need to `advance` to.
    *
-   * In an i18n block, this should be the final op in the owning i18n block. This is necessary so
-   * that we run all lifecycle hooks.
+   * In an i18n block, this is initially the i18n start op, but will eventually correspond to the
+   * final slot consumer in the owning i18n block.
+   * TODO: We should make text i18nExpressions target the i18nEnd instruction, instead the last slot
+   * consumer in the i18n block. This makes them resilient to that last consumer being deleted. (Or
+   * new slot consumers being added!)
    *
-   * In an i18n attribute, this should be the Xref of the element to which the attribute expressions
-   * apply.
+   * In an i18n attribute, this is the xref of the corresponding elementStart/element.
    */
   target: XrefId;
+
+  /**
+   * In an i18n block, this should be the i18n start op.
+   *
+   * In an i18n attribute, this will be the xref of the attribute configuration instruction.
+   */
+  i18nOwner: XrefId;
 
   /**
    * A handle for the slot that this expression modifies.
@@ -665,7 +674,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * Whether this i18n expression applies to a template or to a binding.
    */
-  usage: I18nExpressionContext;
+  usage: I18nExpressionFor;
 
   /**
    * If this is an I18nExpressionContext.Binding, this expression is associated with a named
@@ -680,13 +689,14 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    context: XrefId, target: XrefId, handle: SlotHandle, expression: o.Expression,
-    i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime, usage: I18nExpressionContext,
-    name: string, sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    context: XrefId, target: XrefId, i18nOwner: XrefId, handle: SlotHandle,
+    expression: o.Expression, i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
+    usage: I18nExpressionFor, name: string, sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     context,
     target,
+    i18nOwner,
     handle,
     expression,
     i18nPlaceholder,
@@ -707,16 +717,11 @@ export interface I18nApplyOp extends Op<UpdateOp> {
   kind: OpKind.I18nApply;
 
   /**
-   * The Xref of the op that we need to `advance` to. This is necessary so that we run all lifecycle
-   * hooks.
+   * In an i18n block, this should be the i18n start op.
    *
-   * If this apply instruction is for an i18n block, then this should be the final op in the owning
-   * i18n block.
-   *
-   * if this apply instruction is for an i18n attribute, this should be the element to which the
-   * attributes apply.
+   * In an i18n attribute, this will be the xref of the attribute configuration instruction.
    */
-  target: XrefId;
+  owner: XrefId;
 
   /**
    * A handle for the slot that i18n apply instruction should apply to. In an i18n block, this is
@@ -732,10 +737,10 @@ export interface I18nApplyOp extends Op<UpdateOp> {
  * Creates an op to apply i18n expression ops.
  */
 export function createI18nApplyOp(
-    target: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
+    owner: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
-    target,
+    owner,
     handle,
     sourceSpan,
     ...NEW_OP,
