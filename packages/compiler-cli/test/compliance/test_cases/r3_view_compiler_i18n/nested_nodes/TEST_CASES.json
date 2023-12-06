@@ -261,7 +261,6 @@
       "inputFiles": [
         "last_elem_inside_i18n_block.ts"
       ],
-      "skipForTemplatePipeline": true,
       "expectations": [
         {
           "extraChecks": [
