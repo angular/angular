@@ -105,6 +105,7 @@ class ElementAttributes {
       return;
     }
     this.known.add(name);
+    // TODO: Can this be its own phase
     if (name === 'ngProjectAs') {
       if (value === null || !(value instanceof o.LiteralExpr) || (value.value == null) ||
           (typeof value.value?.toString() !== 'string')) {
