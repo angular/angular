@@ -14,7 +14,7 @@ import {LContainer, LContainerFlags, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
+import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
 
 
 
@@ -207,17 +207,19 @@ export function requiresRefreshOrTraversal(lView: LView) {
  * parents above.
  */
 export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
-  // When we attach a view that's marked `Dirty`, we should ensure that it is reached during the
-  // next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
-  if (lView[FLAGS] & LViewFlags.Dirty && getEnsureDirtyViewsAreAlwaysReachable()) {
-    lView[FLAGS] |= LViewFlags.RefreshView;
+  // TODO(atscott): Simplify if...else cases once getEnsureDirtyViewsAreAlwaysReachable is always
+  // `true`. When we attach a view that's marked `Dirty`, we should ensure that it is reached during
+  // the next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
+  if (requiresRefreshOrTraversal(lView)) {
+    markAncestorsForTraversal(lView);
+  } else if (lView[FLAGS] & LViewFlags.Dirty) {
+    if (getEnsureDirtyViewsAreAlwaysReachable()) {
+      lView[FLAGS] |= LViewFlags.RefreshView;
+      markAncestorsForTraversal(lView);
+    } else {
+      lView[ENVIRONMENT].changeDetectionScheduler?.notify();
+    }
   }
-
-  if (!requiresRefreshOrTraversal(lView)) {
-    return;
-  }
-
-  markAncestorsForTraversal(lView);
 }
 
 /**
@@ -228,6 +230,7 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  * flag is already `true` or the `lView` is detached.
  */
 export function markAncestorsForTraversal(lView: LView) {
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   let parent = lView[PARENT];
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
