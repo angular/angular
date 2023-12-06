@@ -1043,6 +1043,8 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.BinaryOperatorExpr) {
     expr.lhs = transformExpressionsInExpression(expr.lhs, transform, flags);
     expr.rhs = transformExpressionsInExpression(expr.rhs, transform, flags);
+  } else if (expr instanceof o.UnaryOperatorExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.ReadPropExpr) {
     expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
   } else if (expr instanceof o.ReadKeyExpr) {

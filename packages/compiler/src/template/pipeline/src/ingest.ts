@@ -637,7 +637,18 @@ function convertAst(
   } else if (ast instanceof e.LiteralPrimitive) {
     return o.literal(ast.value, undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.Unary) {
-    throw new Error('TODO: Support unary operations, which extend binary ops');
+    switch (ast.operator) {
+      case '+':
+        return new o.UnaryOperatorExpr(
+            o.UnaryOperator.Plus, convertAst(ast.expr, job, baseSourceSpan), undefined,
+            convertSourceSpan(ast.span, baseSourceSpan));
+      case '-':
+        return new o.UnaryOperatorExpr(
+            o.UnaryOperator.Minus, convertAst(ast.expr, job, baseSourceSpan), undefined,
+            convertSourceSpan(ast.span, baseSourceSpan));
+      default:
+        throw new Error(`AssertionError: unknown unary operator ${ast.operator}`);
+    }
   } else if (ast instanceof e.Binary) {
     const operator = BINARY_OPERATORS.get(ast.operation);
     if (operator === undefined) {
