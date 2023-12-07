@@ -981,6 +981,45 @@ export declare class MyComponent {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: i18n_after_binding.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-cmp", ngImport: i0, template: `
+		<span i18n>
+  			<input [disabled]="someBoolean">
+			{{ someField }}
+		</span>
+	`, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-cmp',
+                    standalone: true,
+                    template: `
+		<span i18n>
+  			<input [disabled]="someBoolean">
+			{{ someField }}
+		</span>
+	`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_after_binding.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    someBoolean: boolean;
+    someField: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: last_elem_inside_i18n_block.js
  ****************************************************************************************************/
 import { Component, NgModule } from '@angular/core';
