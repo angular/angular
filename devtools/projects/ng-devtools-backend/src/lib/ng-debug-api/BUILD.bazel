@@ -1,0 +1,15 @@
+# load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "ng-debug-api",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//packages/core",
+    ],
+)

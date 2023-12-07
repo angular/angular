@@ -7,10 +7,12 @@
  */
 
 import {ComponentTreeNode} from '../interfaces';
+import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
 import {isCustomElement} from '../utils';
 
 const extractViewTree =
-    (domNode: Node|Element, result: ComponentTreeNode[], getComponent: (element: Element) => {},
+    (domNode: Node|Element, result: ComponentTreeNode[],
+     getComponent: (element: Element) => {} | null,
      getDirectives: (node: Node) => {}[]): ComponentTreeNode[] => {
       const directives = getDirectives(domNode);
       if (!directives.length && !(domNode instanceof Element)) {
@@ -56,8 +58,8 @@ const extractViewTree =
 
 export class RTreeStrategy {
   supports(_: any): boolean {
-    return ['getDirectiveMetadata', 'getComponent', 'getDirectives'].every(
-        (method) => typeof (window as any).ng[method] === 'function');
+    return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const)
+        .every((method) => typeof ngDebugClient()[method] === 'function');
   }
 
   build(element: Element): ComponentTreeNode[] {
@@ -66,8 +68,8 @@ export class RTreeStrategy {
     while (element.parentElement) {
       element = element.parentElement;
     }
-    const getComponent = (window as any).ng.getComponent as (element: Element) => {};
-    const getDirectives = (window as any).ng.getDirectives as (node: Node) => {}[];
+    const getComponent = ngDebugClient().getComponent;
+    const getDirectives = ngDebugClient().getDirectives;
     return extractViewTree(element, [], getComponent, getDirectives);
   }
 }
