@@ -478,8 +478,8 @@ export function getInjectorProviders(injector: Injector): ProviderRecord[] {
  * @returns an object containing the type and source of the given injector. If the injector metadata
  *     cannot be determined, returns null.
  */
-export function getInjectorMetadata(injector: Injector):
-    {type: string; source: RElement | string | null}|null {
+export function getInjectorMetadata(injector: Injector): {type: 'element', source: RElement}|
+    {type: 'environment', source: string | null}|{type: 'null', source: null}|null {
   if (injector instanceof NodeInjector) {
     const lView = getNodeInjectorLView(injector);
     const tNode = getNodeInjectorTNode(injector)!;
