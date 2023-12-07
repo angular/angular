@@ -147,7 +147,7 @@ export class CustomMenu {
     <custom-menu>
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
-    </custom-expando>
+    </custom-menu>
   `
 })
 </docs-code>
