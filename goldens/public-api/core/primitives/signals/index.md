@@ -107,8 +107,6 @@ export function signalMutateFn<T>(node: SignalNode<T>, mutator: (value: T) => vo
 // @public (undocumented)
 export interface SignalNode<T> extends ReactiveNode {
     // (undocumented)
-    readonly [SIGNAL]: SignalNode<T>;
-    // (undocumented)
     equal: ValueEqualityFn<T>;
     // (undocumented)
     value: T;
