@@ -115,10 +115,10 @@ export interface SignalNode<T> extends ReactiveNode {
 }
 
 // @public (undocumented)
-export function signalSetFn<T>(node: SignalNode<T>, newValue: T): void;
+export function signalSetFn<T>(node: SignalNode<T>, newValue: T, forceUpdate?: boolean): void;
 
 // @public (undocumented)
-export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void;
+export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T, forceUpdate: () => void) => T): void;
 
 // @public
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;

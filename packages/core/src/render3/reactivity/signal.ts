@@ -22,8 +22,12 @@ export interface WritableSignal<T> extends Signal<T> {
   /**
    * Update the value of the signal based on its current value, and
    * notify any dependents.
+   *
+   * @param updateFn A function to compute next value from previous one.
+   * It accepts a second function, which you can call to force change
+   * propagation: it helps with mutable state.
    */
-  update(updateFn: (value: T) => T): void;
+  update(updateFn: (value: T, forceUpdate: () => void) => T): void;
 
   /**
    * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
@@ -54,7 +58,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   }
 
   signalFn.set = (newValue: T) => signalSetFn(node, newValue);
-  signalFn.update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
+  signalFn.update = (updateFn: (value: T, forceUpdate: () => void) => T) => signalUpdateFn(node, updateFn);
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
 
   return signalFn as WritableSignal<T>;

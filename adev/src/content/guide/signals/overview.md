@@ -36,6 +36,16 @@ or use the `.update()` operation to compute a new value from the previous one:
 count.update(value => value + 1);
 ```
 
+> **NOTE:** Signal do not rely on the Zone API. So, tracking update on mutable reference (object's nested field) requires a richer API for signal `update`:
+> ```ts
+> const counter = signal({ value: 0 });
+> counter.update((ref, forceUpdate) => {
+>   forceUpdate(); // NOTE: Will propagate update although the reference is the same.
+>                  //       `ref.value` does not even have to change value.
+>   ref.value++;
+> });
+> ```
+
 Writable signals have the type `WritableSignal`.
 
 ### Computed signals

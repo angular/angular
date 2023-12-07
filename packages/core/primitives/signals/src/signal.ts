@@ -8,7 +8,15 @@
 
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {throwInvalidWriteToSignalError} from './errors';
-import {producerAccessed, producerIncrementEpoch, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
+import {
+  producerAccessed,
+  producerIncrementEpoch,
+  producerNotifyConsumers,
+  producerUpdatesAllowed,
+  REACTIVE_NODE,
+  ReactiveNode,
+  SIGNAL
+} from './graph';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
@@ -61,30 +69,35 @@ export function signalGetFn<T>(this: SignalNode<T>): T {
   return this.value;
 }
 
-export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
+export function signalSetFn<T>(node: SignalNode<T>, newValue: T, forceUpdate = false) {
   if (!producerUpdatesAllowed()) {
     throwInvalidWriteToSignalError();
   }
 
   const value = node.value;
-  if (Object.is(value, newValue)) {
-    if (typeof ngDevMode !== 'undefined' && ngDevMode && !node.equal(value, newValue)) {
+  const SAME_OBJECT = Object.is(value, newValue);
+  const IDENTITY_VALUE = node.equal(value, newValue);
+  switch (true) {
+    case forceUpdate:
+    case !SAME_OBJECT && !IDENTITY_VALUE:
+      node.value = newValue;
+      signalValueChanged(node);
+      break;
+    case SAME_OBJECT && (typeof ngDevMode !== 'undefined' && ngDevMode && !IDENTITY_VALUE):
       console.warn(
-          'Signal value equality implementations should always return `true` for' +
-          ' values that are the same according to `Object.is` but returned `false` instead.');
-    }
-  } else if (!node.equal(value, newValue)) {
-    node.value = newValue;
-    signalValueChanged(node);
+        'Signal value equality implementations should always return `true` for' +
+        ' values that are the same according to `Object.is` but returned `false` instead.');
   }
 }
 
-export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void {
+export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T, forceUpdate: () => void) => T): void {
   if (!producerUpdatesAllowed()) {
     throwInvalidWriteToSignalError();
   }
 
-  signalSetFn(node, updater(node.value));
+  let forceUpdate = false;
+  const newValue = updater(node.value, () => forceUpdate = true);
+  signalSetFn(node, newValue, forceUpdate);
 }
 
 export function signalMutateFn<T>(node: SignalNode<T>, mutator: (value: T) => void): void {

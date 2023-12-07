@@ -1633,7 +1633,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
 export interface WritableSignal<T> extends Signal<T> {
     asReadonly(): Signal<T>;
     set(value: T): void;
-    update(updateFn: (value: T) => T): void;
+    update(updateFn: (value: T, forceUpdate: () => void) => T): void;
 }
 
 // @public

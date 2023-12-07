@@ -43,6 +43,22 @@ describe('signals', () => {
     expect(state()).toEqual('d');
   });
 
+  it('should propagate signal change even when forceUpdate is called', () => {
+    const state = signal({value: 0});
+    const target = computed(() => `[${state().value}]`);
+
+    expect(target()).toEqual('[0]');
+    expect(state().value).toEqual(0);
+
+    state.update((ref, forceUpdate) => {
+      forceUpdate();
+      ref.value = 1;
+      return ref;
+    });
+    expect(target()).toEqual('[1]');
+    expect(state().value).toEqual(1);
+  });
+
   it('should not propagate change when the new signal value is equal to the previous one', () => {
     const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     const upper = computed(() => state().toUpperCase());
