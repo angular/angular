@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createPlatformFactory, PlatformRef} from './application_ref';
-import {StaticProvider} from './di';
+import {StaticProvider} from '../di';
+
+import {createPlatformFactory} from './platform';
+import {PlatformRef} from './platform_ref';
 
 /**
  * This platform has to be included in any other platform

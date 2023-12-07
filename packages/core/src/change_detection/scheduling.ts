@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {ApplicationRef} from '../application_ref';
+import {ApplicationRef} from '../application/application_ref';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../di';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -18,9 +18,6 @@ import {InternalNgZoneOptions, isStableFactory, ZONE_IS_STABLE_OBSERVABLE} from 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  // TODO(atscott): Remove dependency on ApplicationRef to remove circular dep
-  // Instead, create an injection token like CHANGE_DETECTION_ROOT that has a `tick` function and
-  // provide ApplicationRef as default
   private readonly applicationRef = inject(ApplicationRef);
 
   private _onMicrotaskEmptySubscription?: Subscription;
