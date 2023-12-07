@@ -4201,6 +4201,39 @@ describe('control flow migration', () => {
         `}\n`,
       ].join('\n'));
     });
+
+    it('should trim newlines in ngIf conditions', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-template`,
+        `  [ngIf]="customClearTemplate"`,
+        `  [ngIfElse]="`,
+        `    isSidebarV3 || variant === 'v3' ? clearTemplateV3 : clearTemplate`,
+        `  "`,
+        `></ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([
+        `@if (customClearTemplate) {`,
+        `} @else {`,
+        `  <ng-template [ngTemplateOutlet]="isSidebarV3 || variant === 'v3' ? clearTemplateV3 : clearTemplate"></ng-template>`,
+        `}`,
+      ].join('\n'));
+    });
   });
 
   describe('formatting', () => {
