@@ -7,7 +7,6 @@
  */
 
 import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
-import {SingleProvider} from '@angular/core/src/di/provider_collection';
 
 export interface DirectiveType {
   name: string;
@@ -35,17 +34,6 @@ export interface SerializedInjector {
   type: string;
   node?: DevToolsNode;
   providers?: number;
-}
-
-/**
- * Duplicate of the ProviderRecord interface from Angular framework to prevent
- * needing to publically expose the interface from the framework.
- */
-export interface ProviderRecord {
-  token: Type<unknown>;
-  isViewProvider: boolean;
-  provider: SingleProvider;
-  importPath?: (Injector|Type<unknown>)[];
 }
 
 export interface SerializedProviderRecord {
