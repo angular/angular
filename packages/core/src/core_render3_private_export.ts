@@ -48,6 +48,7 @@ export {
 export {
   AttributeMarker as ɵAttributeMarker,
   ComponentDef as ɵComponentDef,
+  ComponentDebugMetadata as ɵComponentDebugMetadata,
   ComponentFactory as ɵRender3ComponentFactory,
   ComponentRef as ɵRender3ComponentRef,
   ComponentType as ɵComponentType,
@@ -284,10 +285,7 @@ export {
   isNgModule as ɵisNgModule
 } from './render3/jit/util';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
-export {
-  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
-,
-  publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
+export { GlobalDevModeUtils as ɵGlobalDevModeUtils } from './render3/util/global_utils';
 export {ViewRef as ɵViewRef} from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,

@@ -11,11 +11,12 @@ import {debounceTime} from 'rxjs/operators';
 import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from 'shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
-import {getElementInjectorElement, getInjectorFromElementNode, getInjectorProviders, getInjectorResolutionPath, getLatestComponentState, hasDiDebugAPIs, idToInjector, injectorsSeen, isElementInjector, nodeInjectorToResolutionPath, queryDirectiveForest, serializeProviderRecord, serializeResolutionPath, updateState} from './component-tree';
+import {getElementInjectorElement, getInjectorFromElementNode, getInjectorProviders, getInjectorResolutionPath, getLatestComponentState, idToInjector, injectorsSeen, isElementInjector, nodeInjectorToResolutionPath, queryDirectiveForest, serializeProviderRecord, serializeResolutionPath, updateState} from './component-tree';
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
+import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular} from './utils';
@@ -75,7 +76,8 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
       initializeOrGetDirectiveForestHooks().indexForest();
 
       const forest = prepareForestForSerialization(
-          initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(), hasDiDebugAPIs());
+          initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+          ngDebugDependencyInjectionApiIsSupported());
 
       // cleanup injector id mappings
       for (const injectorId of idToInjector.keys()) {
@@ -219,21 +221,21 @@ const prepareForestForSerialization = (roots: ComponentTreeNode[], includeResolu
     SerializableComponentTreeNode[] => {
       const serializedNodes: SerializableComponentTreeNode[] = [];
       for (const node of roots) {
-        const serializedNode = {
+        const serializedNode: SerializableComponentTreeNode = {
           element: node.element,
           component: node.component ? {
             name: node.component.name,
             isElement: node.component.isElement,
-            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance),
+            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance)!,
           } :
                                       null,
           directives: node.directives.map(
               (d) => ({
                 name: d.name,
-                id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance),
+                id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
               })),
           children: prepareForestForSerialization(node.children, includeResolutionPath),
-        } as SerializableComponentTreeNode;
+        };
         serializedNodes.push(serializedNode);
 
         if (includeResolutionPath) {
@@ -286,6 +288,7 @@ const getInjectorProvidersCallback = (messageBus: MessageBus<Events>) =>
       for (const [index, providerRecord] of providerRecords.entries()) {
         const record =
             serializeProviderRecord(providerRecord, index, injector.type === 'environment');
+
         allProviderRecords.push(record);
 
         const records = tokenToRecords.get(providerRecord.token) ?? [];
@@ -348,9 +351,8 @@ const logProvider =
             console.log('provider: ', provider);
             // tslint:disable-next-line:no-console
             console.log(`value: `, injector.get(provider.token, null, {optional: true}));
-          } else {
-            const providers =
-                (serializedProvider.index as number[]).map(index => providerRecords[index]);
+          } else if (Array.isArray(serializedProvider.index)) {
+            const providers = serializedProvider.index.map(index => providerRecords[index]);
 
             // tslint:disable-next-line:no-console
             console.log('providers: ', providers);
