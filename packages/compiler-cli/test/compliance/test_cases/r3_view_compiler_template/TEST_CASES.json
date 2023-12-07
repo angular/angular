@@ -356,6 +356,30 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle ngFor context variables when used in bindings",
+      "inputFiles": [
+        "ng_for_context_in_attr_binding.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should handle attribute bindings inside an ng-template",
+      "inputFiles": [
+        "attr_binding_on_structural_inside_ng_template.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
