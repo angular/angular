@@ -153,9 +153,9 @@ function buildBoundIfElseBlock(etm: ElementToMigrate, tmpl: string, offset: numb
   } else if (aliases.length === 1) {
     condition += `; as ${aliases[0]}`;
   }
-  const elsePlaceholder = `θ${etm.elseAttr!.value}δ`;
+  const elsePlaceholder = `θ${etm.elseAttr!.value.trim()}δ`;
   if (etm.thenAttr !== undefined) {
-    const thenPlaceholder = `θ${etm.thenAttr!.value}δ`;
+    const thenPlaceholder = `θ${etm.thenAttr!.value.trim()}δ`;
     return buildIfThenElseBlock(etm, tmpl, condition, thenPlaceholder, elsePlaceholder, offset);
   }
   return buildIfElseBlock(etm, tmpl, condition, elsePlaceholder, offset);
