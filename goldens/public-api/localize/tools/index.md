@@ -5,6 +5,7 @@
 ```ts
 
 /// <reference types="@angular/compiler-cli/private/babel" />
+/// <reference types="@types/babel__core" />
 
 import { AbsoluteFsPath } from '@angular/compiler-cli/private/localize';
 import { Element as Element_2 } from '@angular/compiler';
