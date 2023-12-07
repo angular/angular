@@ -13,7 +13,7 @@ import {OnDestroy, Pipe, PipeTransform} from '@angular/core';
   pure: false,
 })
 export class SamplePipe implements PipeTransform, OnDestroy {
-  transform(val: any): void {
+  transform(val: unknown) {
     return val;
   }
 

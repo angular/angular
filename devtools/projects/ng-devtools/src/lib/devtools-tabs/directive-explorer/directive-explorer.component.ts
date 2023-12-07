@@ -76,7 +76,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }));
 
   private _clickedElement: IndexedNode|null = null;
-  private _refreshRetryTimeout: any = null;
+  private _refreshRetryTimeout: null|ReturnType<typeof setTimeout> = null;
 
   constructor(
       private _appOperations: ApplicationOperations, private _messageBus: MessageBus<Events>,
@@ -129,7 +129,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
         this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
     // If the event was not throttled, we no longer need to retry.
     if (success) {
-      clearTimeout(this._refreshRetryTimeout);
+      this._refreshRetryTimeout && clearTimeout(this._refreshRetryTimeout);
       this._refreshRetryTimeout = null;
       return;
     }
