@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
-import {WINDOW} from '../../../../../../shared/src/lib/providers';
+import {WINDOW} from '@angular/docs';
 import {AnalyticsService} from './analytics.service';
 
 describe('AnalyticsService', () => {
