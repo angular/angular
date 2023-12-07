@@ -588,9 +588,20 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     $implicit: forBlock.item.name,
   };
 
+  if (forBlock.i18n !== undefined && !(forBlock.i18n instanceof i18n.BlockPlaceholder)) {
+    throw Error('AssertionError: Unhandled i18n metadata type or @for');
+  }
+  if (forBlock.empty?.i18n !== undefined &&
+      !(forBlock.empty.i18n instanceof i18n.BlockPlaceholder)) {
+    throw Error('AssertionError: Unhandled i18n metadata type or @empty');
+  }
+  const i18nPlaceholder = forBlock.i18n;
+  const emptyI18nPlaceholder = forBlock.empty?.i18n;
+
   const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, forBlock);
   const repeaterCreate = ir.createRepeaterCreateOp(
-      repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, forBlock.sourceSpan);
+      repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, i18nPlaceholder,
+      emptyI18nPlaceholder, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(

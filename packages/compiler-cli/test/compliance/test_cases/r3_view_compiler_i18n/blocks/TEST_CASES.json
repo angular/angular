@@ -43,7 +43,6 @@
     },
     {
       "description": "should support @for blocks",
-      "skipForTemplatePipeline": true,
       "inputFiles": [
         "for.ts"
       ],
