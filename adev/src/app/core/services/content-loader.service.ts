@@ -10,7 +10,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {DocContent, DocsContentLoader} from '@angular/docs';
 import {Router} from '@angular/router';
-import {firstValueFrom, map} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class ContentLoader implements DocsContentLoader {
@@ -27,14 +27,13 @@ export class ContentLoader implements DocsContentLoader {
       try {
         this.cache.set(
           path,
-          firstValueFrom(
-            this.httpClient
+          this.httpClient
               .get(`assets/content/${path}`, {
                 responseType: 'text',
               })
-              .pipe(map((contents) => ({contents, id: path}))),
-          ),
-        );
+              .pipe(map((contents) => ({contents, id: path})))
+              .toPromise()
+          );
       } catch {
         this.router.navigateByUrl('/404');
       }
