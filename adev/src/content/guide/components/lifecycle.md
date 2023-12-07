@@ -226,7 +226,7 @@ invoked after Angular has finished rendering _all components_ on the page into t
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
-callbacks is not tied to any specific component instance, but instead an application-wide hook.
+callbacks are not tied to any specific component instance, but instead an application-wide hook.
 
 `afterRender` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
