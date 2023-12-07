@@ -1,4 +1,4 @@
-import { element, by } from 'protractor';
+import { element, by, ExpectedConditions, browser } from 'protractor';
 import { AppPage } from './app.po';
 
 
@@ -22,6 +22,7 @@ describe('providers App', () => {
 
     it('should show customers when the button is clicked', async () => {
       const customersMessage = element(by.css('app-customers > p'));
+      await browser.wait(ExpectedConditions.visibilityOf(customersMessage));
       expect(await customersMessage.getText()).toBe('customers works!');
     });
 
@@ -32,6 +33,7 @@ describe('providers App', () => {
 
     it('should show orders when the button is clicked', async () => {
       const ordersMessage = element(by.css('app-orders > p'));
+      await browser.wait(ExpectedConditions.visibilityOf(ordersMessage));
       expect(await ordersMessage.getText()).toBe('orders works!');
     });
 
