@@ -292,6 +292,9 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     }
 
     static resolve<R>(value: R): Promise<R> {
+      if (value instanceof ZoneAwarePromise) {
+        return value;
+      }
       return resolvePromise(<ZoneAwarePromise<R>>new this(null as any), RESOLVED, value);
     }
 
