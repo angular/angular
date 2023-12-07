@@ -415,9 +415,9 @@
     parse5 "^7.1.2"
 
 "@angular/cdk@^17.0.2":
-  version "17.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-17.0.3.tgz#aea1420b7938711f9534ad85c4b460de0ae15abb"
-  integrity sha512-Qd5uvC09B3+uk2uX1JxmiWrD7wueMHSxNBoCbDEmnrsdDVUta0wN/jj/CtATljxUM8ZqvEvkqgxJCig1od9oyQ==
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-17.0.2.tgz#84f4f52824ad5a2bed8e696983420deb916be0be"
+  integrity sha512-5d2LmlpvsrfLubfzWxzWa+pLW93m/GXVuFITETozPbwEeqOTDNZPbS4v89VF1SWUCxefb1tx5m4zaGpsTep7gQ==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:

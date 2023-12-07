@@ -28,7 +28,7 @@ import {
   IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
-import {filter, map, startWith} from 'rxjs';
+import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
 import {GITHUB, MEDIUM, X, YOUTUBE} from '../../constants/links';
 import {PagePrefix} from '../../enums/pages';

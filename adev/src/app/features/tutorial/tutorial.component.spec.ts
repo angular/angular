@@ -17,14 +17,13 @@ import {of} from 'rxjs';
 import {
   EMBEDDED_EDITOR_SELECTOR,
   EmbeddedEditor,
-} from '../../embedded-editor/embedded-editor.component';
-import {EmbeddedTutorialManager} from '../../embedded-editor/embedded-tutorial-manager.service';
-import {NodeRuntimeSandbox} from '../../embedded-editor/node-runtime-sandbox.service';
+  EmbeddedTutorialManager,
+  NodeRuntimeSandbox
+} from '@angular/docs';
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import Tutorial from './tutorial.component';
-import {TutorialConfig} from '../../../../../../scripts/tutorials/tutorials-types';
-import {TutorialType} from '../../../../../../scripts/tutorials/utils/web-constants';
+import {TutorialConfig, TutorialType} from '@angular/docs'
 
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,
