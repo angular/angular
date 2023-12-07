@@ -7,6 +7,7 @@
  */
 
 
+import * as i18n from '../../../../i18n/i18n_ast';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
@@ -40,23 +41,45 @@ function propagateI18nBlocksToTemplates(
         i18nBlock = null;
         break;
       case ir.OpKind.Template:
-        const templateView = unit.job.views.get(op.xref)!;
-
-        // We found an <ng-template> inside an i18n block; increment the sub-template counter and
-        // wrap the template's view in a child i18n block.
-        if (op.i18nPlaceholder !== undefined) {
-          if (i18nBlock === null) {
-            throw Error('Expected template with i18n placeholder to be in an i18n block.');
-          }
-          subTemplateIndex++;
-          wrapTemplateWithI18n(templateView, i18nBlock);
+        subTemplateIndex = propagateI18nBlocksForView(
+            unit.job.views.get(op.xref)!, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
+        break;
+      case ir.OpKind.RepeaterCreate:
+        // Propagate i18n blocks to the @for template.
+        const forView = unit.job.views.get(op.xref)!;
+        subTemplateIndex = propagateI18nBlocksForView(
+            unit.job.views.get(op.xref)!, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
+        // Then if there's an @empty template, propagate the i18n blocks for it as well.
+        if (op.emptyView !== null) {
+          subTemplateIndex = propagateI18nBlocksForView(
+              unit.job.views.get(op.emptyView)!, i18nBlock, op.emptyI18nPlaceholder,
+              subTemplateIndex);
         }
-
-        // Continue traversing inside the template's view.
-        subTemplateIndex = propagateI18nBlocksToTemplates(templateView, subTemplateIndex);
+        break;
     }
   }
   return subTemplateIndex;
+}
+
+/**
+ * Propagate i18n blocks for a view.
+ */
+function propagateI18nBlocksForView(
+    view: ViewCompilationUnit, i18nBlock: ir.I18nStartOp|null,
+    i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder|undefined,
+    subTemplateIndex: number) {
+  // We found an <ng-template> inside an i18n block; increment the sub-template counter and
+  // wrap the template's view in a child i18n block.
+  if (i18nPlaceholder !== undefined) {
+    if (i18nBlock === null) {
+      throw Error('Expected template with i18n placeholder to be in an i18n block.');
+    }
+    subTemplateIndex++;
+    wrapTemplateWithI18n(view, i18nBlock);
+  }
+
+  // Continue traversing inside the template's view.
+  return propagateI18nBlocksToTemplates(view, subTemplateIndex);
 }
 
 /**
