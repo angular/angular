@@ -794,6 +794,7 @@ function ingestBindings(
         attr.i18n);
     hasI18nAttributes ||= attr.i18n !== undefined;
   }
+
   for (const input of element.inputs) {
     ingestBinding(
         unit, op.xref, input.name, input.value, input.type, input.unit, input.securityContext,
@@ -925,6 +926,12 @@ function ingestBinding(
     expression = convertAst(value, view.job, null);
   } else {
     expression = value;
+  }
+
+  if (type === e.BindingType.Attribute && !(flags & BindingFlags.TextValue) &&
+      templateKind === ir.TemplateKind.Structural) {
+    // TODO: big comment about why this is stupid.
+    return;
   }
 
   const kind: ir.BindingKind = BINDING_KINDS.get(type)!;
