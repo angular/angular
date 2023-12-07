@@ -25,7 +25,6 @@ let postSignalSetFn: (() => void)|null = null;
 export interface SignalNode<T> extends ReactiveNode {
   value: T;
   equal: ValueEqualityFn<T>;
-  readonly[SIGNAL]: SignalNode<T>;
 }
 
 export type SignalBaseGetter<T> = (() => T)&{readonly[SIGNAL]: unknown};
