@@ -20,9 +20,5 @@
 // that is not governed by Bazel, and therefore not expected by the `strict_deps` rule.
 // Declaring the modules here allows `strict_deps` to always find a declaration of the modules
 // in an input file to the compilation, therefore accepting the module import.
-declare module '@babel/core' {
-  export * from '@types/babel__core';
-}
-declare module '@babel/generator' {
-  export { default } from '@types/babel__generator';
-}
+declare module '@babel/core' {}
+declare module '@babel/generator' {}
