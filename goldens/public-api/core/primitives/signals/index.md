@@ -96,6 +96,9 @@ export function setThrowInvalidWriteToSignalError(fn: () => never): void;
 export const SIGNAL: unique symbol;
 
 // @public (undocumented)
+export const SIGNAL_NODE: SignalNode<unknown>;
+
+// @public (undocumented)
 export interface SignalGetter<T> extends SignalBaseGetter<T> {
     // (undocumented)
     readonly [SIGNAL]: SignalNode<T>;
