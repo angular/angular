@@ -18,7 +18,7 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DocContent, DocViewer} from '@angular/docs';
 import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME} from '../constants/api-reference-prerender.constants';
 
@@ -59,7 +59,7 @@ export default class CliReferenceDetailsPage implements OnInit {
   private setPageContent(): void {
     this.activatedRoute.data
       .pipe(
-        map((data) => data['docContent']),
+        map(data => data['docContent']),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((doc: DocContent | undefined) => {

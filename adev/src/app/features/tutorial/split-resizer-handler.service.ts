@@ -10,7 +10,8 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {DOCUMENT} from '@angular/common';
 import {DestroyRef, ElementRef, Injectable, NgZone, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {fromEvent, map, filter, combineLatest} from 'rxjs';
+import {fromEvent, combineLatest} from 'rxjs';
+import {map, filter} from 'rxjs/operators';
 
 interface ResizingData {
   isProgress: boolean;

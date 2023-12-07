@@ -34,7 +34,7 @@ import {
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
-import {environment} from '../environments/environment';
+import environment from './environment';
 import {PREVIEWS_COMPONENTS_MAP} from './../assets/previews/previews';
 import {ADevTitleStrategy} from './core/services/a-dev-title-strategy';
 import {AnalyticsService} from './core/services/analytics/analytics.service';
