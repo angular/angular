@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PLATFORM_ID} from '../../application_tokens';
+import {PLATFORM_ID} from '../../application/application_tokens';
 import {Injector} from '../../di';
 import {inject} from '../../di/injector_compatibility';
 import {RElement} from '../interfaces/renderer_dom';

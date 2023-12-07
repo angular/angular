@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_CONFIG, ImageConfig} from './application_tokens';
+import {IMAGE_CONFIG, ImageConfig} from './application/application_tokens';
 import {Injectable} from './di';
 import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';

@@ -14,7 +14,7 @@
 export {
   compileNgModuleFactory as ɵcompileNgModuleFactory,
   isBoundToModule as ɵisBoundToModule
-} from './application_ref';
+} from './application/application_ref';
 export {
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
 } from './change_detection/change_detector_ref';

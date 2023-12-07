@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '../application_ref';
+import {ApplicationRef} from '../application/application_ref';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';

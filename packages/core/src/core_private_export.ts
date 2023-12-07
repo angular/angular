@@ -7,8 +7,9 @@
  */
 
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
-export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS, internalCreateApplication as ɵinternalCreateApplication, whenStable as ɵwhenStable} from './application_ref';
-export {IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application_tokens';
+export {whenStable as ɵwhenStable} from './application/application_ref';
+export {IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application/application_tokens';
+export {internalCreateApplication as ɵinternalCreateApplication} from './application/create_application';
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {Console as ɵConsole} from './console';
 export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks} from './defer/discovery';
@@ -30,6 +31,7 @@ export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initia
 export {Writable as ɵWritable} from './interface/type';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
+export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './platform/platform';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {AnimationRendererType as ɵAnimationRendererType} from './render/api';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';

@@ -1191,6 +1191,9 @@
     "name": "init_core_render3_private_export"
   },
   {
+    "name": "init_create_application"
+  },
+  {
     "name": "init_create_injector"
   },
   {
@@ -1683,7 +1686,13 @@
     "name": "init_pipe3"
   },
   {
+    "name": "init_platform"
+  },
+  {
     "name": "init_platform_core_providers"
+  },
+  {
+    "name": "init_platform_ref"
   },
   {
     "name": "init_profiler"
@@ -1777,6 +1786,9 @@
   },
   {
     "name": "init_scheduled"
+  },
+  {
+    "name": "init_scheduling"
   },
   {
     "name": "init_schema"
