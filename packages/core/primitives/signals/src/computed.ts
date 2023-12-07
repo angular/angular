@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../../src/errors';
+
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
-
 
 /**
  * A computation, which derives a value from a declarative reactive expression.
@@ -104,7 +105,9 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
     producerRecomputeValue(node: ComputedNode<unknown>): void {
       if (node.value === COMPUTING) {
         // Our computation somehow led to a cyclic read of itself.
-        throw new Error('Detected cycle in computations.');
+        throw new RuntimeError(
+            RuntimeErrorCode.CYCLIC_SIGNAL_DEPENDENCY,
+            ngDevMode && 'Detected cycle in computations.');
       }
 
       const oldValue = node.value;
