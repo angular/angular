@@ -6,14 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodePath, parse, traverse, types as t} from '@babel/core';
+import {types as t} from '@babel/core';
+import parser from '@babel/parser';
+import _traverse, {NodePath} from '@babel/traverse';
 
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
+
+// Babel is a CJS package and misuses the `default` named binding:
+// https://github.com/babel/babel/issues/15269.
+const traverse = (_traverse as any)['default'] as typeof _traverse;
 
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {
     it('should return a path to the ES module where the expression was imported', () => {
-      const ast = parse(
+      const ast = parser.parse(
                       [
                         'import * as core from \'@angular/core\';',
                         'function foo() {',
@@ -29,7 +35,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return a path to the ES Module where the expression is declared', () => {
-      const ast = parse(
+      const ast = parser.parse(
                       [
                         'var core;',
                         'export function foo() {',
@@ -45,7 +51,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return null if the file is not an ES module', () => {
-      const ast = parse(
+      const ast = parser.parse(
                       [
                         'var core;',
                         'function foo() {',
@@ -60,7 +66,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return the IIFE factory function where the expression is a parameter', () => {
-      const ast = parse(
+      const ast = parser.parse(
                       [
                         'var core;',
                         '(function(core) {',
