@@ -49,14 +49,11 @@ export class ComponentFixture<T> {
   private _isDestroyed: boolean = false;
   private _resolve: ((result: boolean) => void)|null = null;
   private _promise: Promise<boolean>|null = null;
-  private _onUnstableSubscription: Subscription|null = null;
-  private _onStableSubscription: Subscription|null = null;
-  private _onMicrotaskEmptySubscription: Subscription|null = null;
-  private _onErrorSubscription: Subscription|null = null;
   public ngZone =
       inject(ComponentFixtureNoNgZone, {optional: true}) ? null : inject(NgZone, {optional: true});
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
   private effectRunner = inject(ZoneAwareQueueingScheduler, {optional: true});
+  private _subscriptions = new Subscription();
 
   /** @nodoc */
   constructor(public componentRef: ComponentRef<T>) {
@@ -72,12 +69,12 @@ export class ComponentFixture<T> {
       // Create subscriptions outside the NgZone so that the callbacks run oustide
       // of NgZone.
       ngZone.runOutsideAngular(() => {
-        this._onUnstableSubscription = ngZone.onUnstable.subscribe({
+        this._subscriptions.add(ngZone.onUnstable.subscribe({
           next: () => {
             this._isStable = false;
           }
-        });
-        this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
+        }));
+        this._subscriptions.add(ngZone.onMicrotaskEmpty.subscribe({
           next: () => {
             if (this._autoDetect) {
               // Do a change detection run with checkNoChanges set to true to check
@@ -85,8 +82,8 @@ export class ComponentFixture<T> {
               this.detectChanges(true);
             }
           }
-        });
-        this._onStableSubscription = ngZone.onStable.subscribe({
+        }));
+        this._subscriptions.add(ngZone.onStable.subscribe({
           next: () => {
             this._isStable = true;
             // Check whether there is a pending whenStable() completer to resolve.
@@ -105,13 +102,13 @@ export class ComponentFixture<T> {
               });
             }
           }
-        });
+        }));
 
-        this._onErrorSubscription = ngZone.onError.subscribe({
+        this._subscriptions.add(ngZone.onError.subscribe({
           next: (error: any) => {
             throw error;
           }
-        });
+        }));
       });
     }
   }
@@ -168,7 +165,7 @@ export class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
-    return this._isStable && !this.ngZone!.hasPendingMacrotasks;
+    return this._isStable && !this.ngZone?.hasPendingMacrotasks;
   }
 
   /**
@@ -233,22 +230,7 @@ export class ComponentFixture<T> {
   destroy(): void {
     if (!this._isDestroyed) {
       this.componentRef.destroy();
-      if (this._onUnstableSubscription != null) {
-        this._onUnstableSubscription.unsubscribe();
-        this._onUnstableSubscription = null;
-      }
-      if (this._onStableSubscription != null) {
-        this._onStableSubscription.unsubscribe();
-        this._onStableSubscription = null;
-      }
-      if (this._onMicrotaskEmptySubscription != null) {
-        this._onMicrotaskEmptySubscription.unsubscribe();
-        this._onMicrotaskEmptySubscription = null;
-      }
-      if (this._onErrorSubscription != null) {
-        this._onErrorSubscription.unsubscribe();
-        this._onErrorSubscription = null;
-      }
+      this._subscriptions.unsubscribe();
       this._isDestroyed = true;
     }
   }
