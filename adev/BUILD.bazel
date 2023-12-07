@@ -1,0 +1,79 @@
+load("@npm//@angular-devkit/architect-cli:index.bzl", "architect")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+# All source and configuration files required to build the docs app
+APPLICATION_FILES = [
+    "//:angular.json",
+    "adev/tsconfig.app.json",
+    "adev/tsconfig.json",
+    "adev/tsconfig.worker.json",
+] + glob(
+    ["adev/src/**/*"],
+    exclude = [
+        "adev/src/**/*.spec.ts",
+        # Temporarily exclude generated sources produced by the non-bazel
+        # build until the whole project is built by bazel and this directory
+        # isn't needed.
+        "adev/src/generated/**/*",
+    ],
+)
+
+APPLICATION_DEPS = [
+    "@npm//@angular-devkit/build-angular",
+    "@npm//@angular/animations",
+    "@npm//@angular/cdk",
+    "@npm//@angular/common",
+    "@npm//@angular/compiler",
+    "@npm//@angular/compiler-cli",
+    "@npm//@angular/core",
+    "@npm//@angular/docs",
+    "@npm//@angular/forms",
+    "@npm//@angular/material",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/platform-server",
+    "@npm//@angular/router",
+    "@npm//gsap",
+    "@npm//marked",
+    "@npm//ngx-progressbar",
+    "@npm//ogl",
+    "@npm//rxjs",
+    "@npm//typescript",
+]
+
+copy_to_bin(
+    name = "application_files_bin",
+    srcs = APPLICATION_FILES,
+)
+
+architect(
+    name = "build",
+    args = [
+        "angular-dev:build",
+        "--output-path=build-app",
+    ],
+    chdir = "$(RULEDIR)",
+    data = APPLICATION_DEPS + [
+        ":application_files_bin",
+    ],
+    output_dir = True,
+    # When building with local packages (--config=aio_local_deps), RBE complains about
+    # the input tree being too large (> 70,000 files).
+    tags = ["no-remote-exec"],
+)
+
+architect(
+    name = "serve",
+    args = [
+        "angular-dev:serve",
+        "--poll=1000",
+        "--live-reload",
+        "--watch",
+    ],
+    chdir = package_name(),
+    data = APPLICATION_DEPS + [
+        ":application_files_bin",
+    ],
+    # When building with local packages (--config=aio_local_deps), RBE complains about
+    # the input tree being too large (> 70,000 files).
+    tags = ["no-remote-exec"],
+)

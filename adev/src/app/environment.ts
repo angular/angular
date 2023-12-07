@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export const environment = {
+export default {
   production: true,
   // Those values are publicly visible in the search request headers, and presents search-only keys.
   // https://www.algolia.com/doc/guides/security/api-keys/#search-only-api-key

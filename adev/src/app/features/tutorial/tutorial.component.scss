@@ -1,4 +1,4 @@
-@use '../../../../../shared/src/lib/styles/media-queries' as mq;
+@use '@angular/docs/styles/media-queries' as mq;
 
 $resizer-width: 0.0625rem;
 $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));

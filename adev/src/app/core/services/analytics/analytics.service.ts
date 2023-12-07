@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 
-import {WINDOW} from '../../../../../../shared/src/lib/providers';
-import {environment} from '../../../../environments/environment';
+import {WINDOW, ENVIRONMENT} from '@angular/docs';
 
 import {formatErrorEventForAnalytics} from './analytics-format-error';
 
@@ -27,7 +26,10 @@ interface WindowWithAnalytics extends Window {
  *   - Data is uploaded to our main Google Analytics 4+ property.
  */
 export class AnalyticsService {
-  constructor(@Inject(WINDOW) private window: WindowWithAnalytics) {
+  private environment = inject(ENVIRONMENT);
+  private window: WindowWithAnalytics = inject(WINDOW);
+
+  constructor() {
     this._installGlobalSiteTag();
     this._installWindowErrorHandler();
   }
@@ -52,7 +54,7 @@ export class AnalyticsService {
 
   private _installGlobalSiteTag() {
     const window = this.window;
-    const url = `https://www.googletagmanager.com/gtag/js?id=${environment.googleAnalyticsId}`;
+    const url = `https://www.googletagmanager.com/gtag/js?id=${this.environment.googleAnalyticsId}`;
 
     // Note: This cannot be an arrow function as `gtag.js` expects an actual `Arguments`
     // instance with e.g. `callee` to be set. Do not attempt to change this and keep this
@@ -66,7 +68,7 @@ export class AnalyticsService {
 
     // Configure properties before loading the script. This is necessary to avoid
     // loading multiple instances of the gtag JS scripts.
-    window.gtag('config', environment.googleAnalyticsId);
+    window.gtag('config', this.environment.googleAnalyticsId);
 
     // Only add the element if `gtag` is not loaded yet. It might already
     // be inlined into the `index.html` via SSR.
