@@ -62,7 +62,7 @@ export class PropertyViewBodyComponent {
         !!this.directiveInputControls;
   }
 
-  updateValue({node, newValue}: {node: FlatNode; newValue: any}): void {
+  updateValue({node, newValue}: {node: FlatNode; newValue: unknown}): void {
     this.controller.updateValue(node, newValue);
   }
 
