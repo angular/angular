@@ -10,15 +10,17 @@ import {Events, MessageBus, Parameters} from 'protocol';
 
 type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
 
+type ListenerFn = (e: MessageEvent) => void;
+
 export class SamePageMessageBus extends MessageBus<Events> {
-  private _listeners: any[] = [];
+  private _listeners: ListenerFn[] = [];
 
   constructor(private _source: string, private _destination: string) {
     super();
   }
 
   onAny(cb: AnyEventCallback<Events>): () => void {
-    const listener = (e: MessageEvent): void => {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || !e.data.topic || e.data.source !== this._destination) {
         return;
       }
@@ -33,7 +35,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
   }
 
   override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
-    const listener = (e: MessageEvent): void => {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
@@ -50,7 +52,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
   }
 
   override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    const listener = (e: MessageEvent): void => {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
