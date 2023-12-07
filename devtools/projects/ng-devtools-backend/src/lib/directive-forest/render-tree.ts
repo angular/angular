@@ -57,7 +57,7 @@ const extractViewTree =
     };
 
 export class RTreeStrategy {
-  supports(_: any): boolean {
+  supports(): boolean {
     return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const)
         .every((method) => typeof ngDebugClient()[method] === 'function');
   }
