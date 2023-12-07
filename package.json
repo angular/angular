@@ -56,8 +56,6 @@
     "@babel/cli": "7.23.0",
     "@babel/core": "7.23.2",
     "@babel/generator": "7.23.0",
-    "@babel/helper-replace-supers": "7.22.20",
-    "@babel/preset-env": "7.23.2",
     "@bazel/concatjs": "5.8.1",
     "@bazel/esbuild": "5.8.1",
     "@bazel/jasmine": "5.8.1",
