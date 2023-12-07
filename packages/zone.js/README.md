@@ -134,8 +134,5 @@ import 'zone.js/plugins/zone-patch-canvas';
 |`zone-patch-user-media.js`|patch for `UserMedia API`|
 |`zone-patch-message-port.js`|patch for `MessagePort API`|
 
-## Promise A+ test passed
-[![Promises/A+ 1.1 compliant](https://promisesaplus.com/assets/logo-small.png)](https://promisesaplus.com/)
-
 ## License
 MIT

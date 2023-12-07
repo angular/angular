@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isNode, zoneSymbol} from '../../lib/common/utils';
+import {isNode} from '../../lib/common/utils';
 import {ifEnvSupports} from '../test-util';
 
 declare const global: any;
@@ -76,6 +76,12 @@ describe(
         expect(new Promise(() => null) instanceof Promise).toBe(true);
       });
 
+      it('Promise.resolve(subPromise) should equal to subPromise', () => {
+        const p1 = Promise.resolve(1);
+        const p2 = Promise.resolve(p1);
+        expect(p1).toBe(p2);
+      });
+
       xit('should ensure that Promise this is instanceof Promise', () => {
         expect(() => {
           Promise.call({} as any, () => null);
@@ -128,6 +134,23 @@ describe(
           }
         }
         expect(new MyPromise(() => {}).then(() => null) instanceof MyPromise).toBe(true);
+      });
+
+      it('should allow subclassing with own then', (done: DoneFn) => {
+        class MyPromise extends Promise<any> {
+          constructor(private sub: Promise<any>) {
+            super((resolve) => {resolve(null)});
+          }
+
+          override then(onFulfilled: any, onRejected: any) {
+            return this.sub.then(onFulfilled, onRejected);
+          }
+        }
+        const p = Promise.resolve(1);
+        new MyPromise(p).then((v: any) => {
+          expect(v).toBe(1);
+          done();
+        }, () => done());
       });
 
       it('Symbol.species should return ZoneAwarePromise', () => {
