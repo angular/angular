@@ -54,16 +54,18 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
             break;
           }
 
-          if (ir.hasDependsOnSlotContextTrait(updateOp) && updateOp.target !== createOp.xref) {
-            break;
-          }
-
           if (state !== null && updateOp.kind === ir.OpKind.I18nExpression &&
-              updateOp.usage === ir.I18nExpressionFor.I18nText) {
+              updateOp.usage === ir.I18nExpressionFor.I18nText &&
+              updateOp.i18nOwner === state.blockXref) {
             const opToRemove = updateOp;
-            updateOp = updateOp.prev!;
+            updateOp = updateOp.next!;
             ir.OpList.remove<ir.UpdateOp>(opToRemove);
             i18nExpressionsInProgress.push(opToRemove);
+            continue;
+          }
+
+          if (ir.hasDependsOnSlotContextTrait(updateOp) && updateOp.target !== createOp.xref) {
+            break;
           }
 
           updateOp = updateOp.next!;

@@ -286,8 +286,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "when the last element inside an i18n block has i18n attributes",
