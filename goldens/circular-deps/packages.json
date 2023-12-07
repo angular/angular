@@ -17,10 +17,6 @@
     "packages/compiler/src/render3/view/template.ts"
   ],
   [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/change_detection/scheduling.ts"
-  ],
-  [
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
