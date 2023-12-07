@@ -31,20 +31,16 @@ import {
   NavigationList,
 } from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
-import {filter} from 'rxjs';
-
-import {
-  TutorialNavigationData,
-  TutorialNavigationItem,
-} from '../../../../../../scripts/tutorials/tutorials-types';
-import {TutorialType} from '../../../../../../scripts/tutorials/utils/web-constants';
+import {filter} from 'rxjs/operators';
 import {PagePrefix} from '../../core/enums/pages';
 import {injectAsync} from '../../core/services/inject-async';
-import {EmbeddedTutorialManager} from '../../embedded-editor/embedded-tutorial-manager.service';
-import {LoadingStep} from '../../embedded-editor/enums/loading-steps';
-import {NodeRuntimeState} from './../../embedded-editor/node-runtime-state.service';
-import {EmbeddedEditor} from './../../embedded-editor/embedded-editor.component';
+import {EmbeddedTutorialManager} from '@angular/docs';
+import {LoadingStep} from '@angular/docs';
+import {NodeRuntimeState} from '@angular/docs';
+import {EmbeddedEditor} from '@angular/docs';
 import {SplitResizerHandler} from './split-resizer-handler.service';
+import { TutorialType } from '@angular/docs';
+import { TutorialNavigationData, TutorialNavigationItem, } from '@angular/docs'
 
 const INTRODUCTION_LABEL = 'Introduction';
 
@@ -140,7 +136,7 @@ export default class Tutorial implements AfterViewInit {
     this.embeddedTutorialManager.revealAnswer();
 
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./../../embedded-editor/node-runtime-sandbox.service').then(
+      import('@angular/docs').then(
         (s) => s.NodeRuntimeSandbox,
       ),
     );
@@ -160,9 +156,7 @@ export default class Tutorial implements AfterViewInit {
     this.embeddedTutorialManager.resetRevealAnswer();
 
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./../../embedded-editor/node-runtime-sandbox.service').then(
-        (s) => s.NodeRuntimeSandbox,
-      ),
+      import('@angular/docs').then((s) => s.NodeRuntimeSandbox),
     );
 
     await Promise.all(
@@ -257,9 +251,7 @@ export default class Tutorial implements AfterViewInit {
 
   private async loadEmbeddedEditor() {
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./../../embedded-editor/node-runtime-sandbox.service').then(
-        (s) => s.NodeRuntimeSandbox,
-      ),
+      import('@angular/docs').then((s) => s.NodeRuntimeSandbox),
     );
 
     this.canRevealAnswer = computed(() => this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT);
@@ -268,8 +260,6 @@ export default class Tutorial implements AfterViewInit {
   }
 
   private async loadEmbeddedEditorComponent(): Promise<typeof EmbeddedEditor> {
-    return await import('./../../embedded-editor/embedded-editor.component').then(
-      (c) => c.EmbeddedEditor,
-    );
+    return await import('@angular/docs').then((c) => c.EmbeddedEditor);
   }
 }

@@ -27,9 +27,10 @@ import {injectAsync} from '../../core/services/inject-async';
 
 import {CodeEditorComponent} from './components/home-editor.component';
 
-import {TUTORIALS_HOMEPAGE_DIRECTORY} from '../../../../../../scripts/tutorials/utils/web-constants';
 import {HEADER_CLASS_NAME} from './home-animation-constants';
 import type {HomeAnimation} from './services/home-animation.service';
+
+export const TUTORIALS_HOMEPAGE_DIRECTORY = 'homepage';
 
 @Component({
   standalone: true,
@@ -67,7 +68,7 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       // Always scroll to top on home page (even for navigating back)
-      this.window.scrollTo({top: 0, left: 0, behavior: 'instant' as any});
+      this.window.scrollTo({top: 0, left: 0, behavior: 'instant'});
 
       // Create a single intersection observer used for disabling the animation
       // at the end of the page, and to load the embedded editor.

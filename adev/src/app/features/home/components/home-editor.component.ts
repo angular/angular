@@ -16,8 +16,8 @@ import {
 } from '@angular/core';
 
 import {injectAsync} from '../../../core/services/inject-async';
-import {EmbeddedEditor} from '../../../embedded-editor/embedded-editor.component';
-import {EmbeddedTutorialManager} from '../../../embedded-editor/embedded-tutorial-manager.service';
+import {EmbeddedEditor} from '@angular/docs';
+import {EmbeddedTutorialManager} from '@angular/docs';
 
 @Component({
   selector: 'adev-code-editor',
@@ -40,7 +40,7 @@ export class CodeEditorComponent implements OnInit {
 
   private async loadEmbeddedEditor() {
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../../embedded-editor/node-runtime-sandbox.service').then(
+      import('@angular/docs').then(
         (c) => c.NodeRuntimeSandbox,
       ),
     );
