@@ -40,7 +40,7 @@ directive's capabilities.
 
 A **view container** is a node in Angular's component tree that can contain content. Any component
 or directive can inject `ViewContainerRef` to get a reference to a view container corresponding to
-that component or directive's location in the DOM..
+that component or directive's location in the DOM.
 
 You can use the `createComponent`method on `ViewContainerRef` to dynamically create and render a
 component. When you create a new component with a `ViewContainerRef`, Angular appends it into the
