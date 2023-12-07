@@ -18,7 +18,7 @@ import {createTemplate, dispatchEvent, getContent} from '@angular/platform-brows
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import type {ServerModule} from '@angular/platform-server';
 
-import {ApplicationRef} from '../src/application_ref';
+import {ApplicationRef} from '../src/application/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
 
