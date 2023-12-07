@@ -24,7 +24,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       /**
        * @suppress {msgDescriptions}
        */
-      const MSG_EXTERNAL_7811380212725452224$$FOR_TS__1 = goog.getMsg(" Content: {$startBlockFor} before{$startTagSpan}middle{$closeTagSpan}after {$closeBlockFor}{$startBlockEmpty} before{$startTagDiv}empty{$closeTagDiv}after {$closeBlockEmpty}! ", {
+      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" Content: {$startBlockFor} before{$startTagSpan}middle{$closeTagSpan}after {$closeBlockFor}{$startBlockEmpty} before{$startTagDiv}empty{$closeTagDiv}after {$closeBlockEmpty}! ", {
         "closeBlockEmpty": "\uFFFD/*4:2\uFFFD",
         "closeBlockFor": "\uFFFD/*3:1\uFFFD",
         "closeTagDiv": "\uFFFD/#1:2\uFFFD",
@@ -45,7 +45,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           "startTagSpan": "<span>"
         }
       });
-      i18n_0 = MSG_EXTERNAL_7811380212725452224$$FOR_TS__1;
+      i18n_0 = $MSG_ID_WITH_SUFFIX$;
     } else {
       i18n_0 = $localize` Content: ${"\uFFFD*3:1\uFFFD"}:START_BLOCK_FOR: before${"\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:middle${"\uFFFD/#1:1\uFFFD"}:CLOSE_TAG_SPAN:after ${"\uFFFD/*3:1\uFFFD"}:CLOSE_BLOCK_FOR:${"\uFFFD*4:2\uFFFD"}:START_BLOCK_EMPTY: before${"\uFFFD#1:2\uFFFD"}:START_TAG_DIV:empty${"\uFFFD/#1:2\uFFFD"}:CLOSE_TAG_DIV:after ${"\uFFFD/*4:2\uFFFD"}:CLOSE_BLOCK_EMPTY:! `;
     }
