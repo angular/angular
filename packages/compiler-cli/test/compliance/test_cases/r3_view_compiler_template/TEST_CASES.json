@@ -366,8 +366,7 @@
         {
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle attribute bindings inside an ng-template",
@@ -378,8 +377,7 @@
         {
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
