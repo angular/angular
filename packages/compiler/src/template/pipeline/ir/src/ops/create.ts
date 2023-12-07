@@ -270,6 +270,16 @@ export interface RepeaterCreateOp extends ElementOpBase {
    */
   functionNameSuffix: string;
 
+  /**
+   * The i18n placeholder for the repeated item template.
+   */
+  i18nPlaceholder: i18n.BlockPlaceholder|undefined;
+
+  /**
+   * The i18n placeholder for the empty template.
+   */
+  emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -286,7 +296,9 @@ export interface RepeaterVarNames {
 
 export function createRepeaterCreateOp(
     primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
-    varNames: RepeaterVarNames, sourceSpan: ParseSourceSpan): RepeaterCreateOp {
+    varNames: RepeaterVarNames, i18nPlaceholder: i18n.BlockPlaceholder|undefined,
+    emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined,
+    sourceSpan: ParseSourceSpan): RepeaterCreateOp {
   return {
     kind: OpKind.RepeaterCreate,
     attributes: null,
@@ -304,6 +316,8 @@ export function createRepeaterCreateOp(
     vars: null,
     varNames,
     usesComponentInstance: false,
+    i18nPlaceholder,
+    emptyI18nPlaceholder,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,

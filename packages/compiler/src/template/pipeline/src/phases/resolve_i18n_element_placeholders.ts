@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../../i18n/i18n_ast';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
@@ -104,10 +105,11 @@ function resolvePlaceholdersForView(
         }
         break;
       case ir.OpKind.Template:
+        const view = job.views.get(op.xref)!;
         if (op.i18nPlaceholder === undefined) {
           // If there is no i18n placeholder, just recurse into the view in case it contains i18n
           // blocks.
-          resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
+          resolvePlaceholdersForView(job, view, i18nContexts, elements);
         } else {
           if (currentOps === null) {
             throw Error('i18n tag placeholder should only occur inside an i18n block');
@@ -117,16 +119,68 @@ function resolvePlaceholdersForView(
             // the current template as a pending structural directive to be recorded when we find
             // the element, content, or template it belongs to. This allows us to create combined
             // values that represent, e.g. the start of a template and element at the same time.
-            resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements, op);
+            resolvePlaceholdersForView(job, view, i18nContexts, elements, op);
           } else {
             // If this is some other kind of template, we can record its start, recurse into its
             // view, and then record its end.
             recordTemplateStart(
-                job, op, currentOps.i18nContext, currentOps.i18nBlock, pendingStructuralDirective);
-            resolvePlaceholdersForView(job, job.views.get(op.xref)!, i18nContexts, elements);
+                job, view, op.handle.slot!, op.i18nPlaceholder, currentOps.i18nContext,
+                currentOps.i18nBlock, pendingStructuralDirective);
+            resolvePlaceholdersForView(job, view, i18nContexts, elements);
             recordTemplateClose(
-                job, op, currentOps!.i18nContext, currentOps!.i18nBlock,
-                pendingStructuralDirective);
+                job, view, op.handle.slot!, op.i18nPlaceholder, currentOps!.i18nContext,
+                currentOps!.i18nBlock, pendingStructuralDirective);
+            pendingStructuralDirective = undefined;
+          }
+        }
+        break;
+      case ir.OpKind.RepeaterCreate:
+        if (pendingStructuralDirective !== undefined) {
+          throw Error('AssertionError: Unexpected structural directive associated with @for block');
+        }
+        // RepeaterCreate has 3 slots: the first is for the op itself, the second is for the @for
+        // template and the (optional) third is for the @empty template.
+        const forSlot = op.handle.slot! + 1;
+        const forView = job.views.get(op.xref)!;
+        // First record all of the placeholders for the @for template.
+        if (op.i18nPlaceholder === undefined) {
+          // If there is no i18n placeholder, just recurse into the view in case it contains i18n
+          // blocks.
+          resolvePlaceholdersForView(job, forView, i18nContexts, elements);
+        } else {
+          if (currentOps === null) {
+            throw Error('i18n tag placeholder should only occur inside an i18n block');
+          }
+          recordTemplateStart(
+              job, forView, forSlot, op.i18nPlaceholder, currentOps.i18nContext,
+              currentOps.i18nBlock, pendingStructuralDirective);
+          resolvePlaceholdersForView(job, forView, i18nContexts, elements);
+          recordTemplateClose(
+              job, forView, forSlot, op.i18nPlaceholder, currentOps!.i18nContext,
+              currentOps!.i18nBlock, pendingStructuralDirective);
+          pendingStructuralDirective = undefined;
+        }
+        // Then if there's an @empty template, add its placeholders as well.
+        if (op.emptyView !== null) {
+          // RepeaterCreate has 3 slots: the first is for the op itself, the second is for the @for
+          // template and the (optional) third is for the @empty template.
+          const emptySlot = op.handle.slot! + 2;
+          const emptyView = job.views.get(op.emptyView!)!;
+          if (op.emptyI18nPlaceholder === undefined) {
+            // If there is no i18n placeholder, just recurse into the view in case it contains i18n
+            // blocks.
+            resolvePlaceholdersForView(job, emptyView, i18nContexts, elements);
+          } else {
+            if (currentOps === null) {
+              throw Error('i18n tag placeholder should only occur inside an i18n block');
+            }
+            recordTemplateStart(
+                job, emptyView, emptySlot, op.emptyI18nPlaceholder, currentOps.i18nContext,
+                currentOps.i18nBlock, pendingStructuralDirective);
+            resolvePlaceholdersForView(job, emptyView, i18nContexts, elements);
+            recordTemplateClose(
+                job, emptyView, emptySlot, op.emptyI18nPlaceholder, currentOps!.i18nContext,
+                currentOps!.i18nBlock, pendingStructuralDirective);
             pendingStructuralDirective = undefined;
           }
         }
@@ -182,9 +236,10 @@ function recordElementClose(
  * Records an i18n param value for the start of a template.
  */
 function recordTemplateStart(
-    job: ComponentCompilationJob, op: ir.TemplateOp, i18nContext: ir.I18nContextOp,
+    job: ComponentCompilationJob, view: ViewCompilationUnit, slot: number,
+    i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder, i18nContext: ir.I18nContextOp,
     i18nBlock: ir.I18nStartOp, structuralDirective?: ir.TemplateOp) {
-  let {startName, closeName} = op.i18nPlaceholder!;
+  let {startName, closeName} = i18nPlaceholder;
   let flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.OpenTag;
   // For self-closing tags, there is no close tag placeholder. Instead, the start tag
   // placeholder accounts for the start and close of the element.
@@ -202,17 +257,18 @@ function recordTemplateStart(
   // Record the start of the template. For the sub-template index, pass the index for the template's
   // view, rather than the current i18n block's index.
   addParam(
-      i18nContext.params, startName, op.handle.slot!,
-      getSubTemplateIndexForTemplateTag(job, i18nBlock, op), flags);
+      i18nContext.params, startName, slot, getSubTemplateIndexForTemplateTag(job, i18nBlock, view),
+      flags);
 }
 
 /**
  * Records an i18n param value for the closing of a template.
  */
 function recordTemplateClose(
-    job: ComponentCompilationJob, op: ir.TemplateOp, i18nContext: ir.I18nContextOp,
+    job: ComponentCompilationJob, view: ViewCompilationUnit, slot: number,
+    i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder, i18nContext: ir.I18nContextOp,
     i18nBlock: ir.I18nStartOp, structuralDirective?: ir.TemplateOp) {
-  const {startName, closeName} = op.i18nPlaceholder!;
+  const {startName, closeName} = i18nPlaceholder;
   const flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag;
   // Self-closing tags don't have a closing tag placeholder, instead the template's closing is
   // recorded via an additional flag on the template start value.
@@ -220,8 +276,8 @@ function recordTemplateClose(
     // Record the closing of the template. For the sub-template index, pass the index for the
     // template's view, rather than the current i18n block's index.
     addParam(
-        i18nContext.params, closeName, op.handle.slot!,
-        getSubTemplateIndexForTemplateTag(job, i18nBlock, op), flags);
+        i18nContext.params, closeName, slot,
+        getSubTemplateIndexForTemplateTag(job, i18nBlock, view), flags);
     // If the template is associated with a structural directive, record the structural directive's
     // closing after. Since this template must be in the structural directive's view, we can just
     // directly use the current i18n block's sub-template index.
@@ -238,8 +294,8 @@ function recordTemplateClose(
  * the child i18n block inside the template.
  */
 function getSubTemplateIndexForTemplateTag(
-    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, op: ir.TemplateOp): number|null {
-  for (const childOp of job.views.get(op.xref)!.create) {
+    job: ComponentCompilationJob, i18nOp: ir.I18nStartOp, view: ViewCompilationUnit): number|null {
+  for (const childOp of view.create) {
     if (childOp.kind === ir.OpKind.I18nStart) {
       return childOp.subTemplateIndex;
     }
