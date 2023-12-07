@@ -10,6 +10,6 @@ export {createComputed} from './src/computed';
 export {defaultEquals, ValueEqualityFn} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, consumerPollProducersForChange, getActiveConsumer, isInNotificationPhase, isReactive, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, Reactive, REACTIVE_NODE, ReactiveNode, setActiveConsumer, SIGNAL} from './src/graph';
-export {createSignal, setPostSignalSetFn, SignalGetter, signalMutateFn, SignalNode, signalSetFn, signalUpdateFn} from './src/signal';
+export {createSignal, setPostSignalSetFn, SIGNAL_NODE, SignalGetter, signalMutateFn, SignalNode, signalSetFn, signalUpdateFn} from './src/signal';
 export {createWatch, Watch, WatchCleanupFn, WatchCleanupRegisterFn} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
