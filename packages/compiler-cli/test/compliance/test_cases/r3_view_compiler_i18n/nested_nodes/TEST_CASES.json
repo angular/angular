@@ -275,6 +275,21 @@
       ]
     },
     {
+      "description": "should handle ng-content in i18n block",
+      "inputFiles": [
+        "i18n_after_binding.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ],
+      "skipForTemplatePipeline": true
+    },
+    {
       "description": "when the last element inside an i18n block has i18n attributes",
       "inputFiles": [
         "last_elem_inside_i18n_block.ts"
