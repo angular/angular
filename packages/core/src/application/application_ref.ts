@@ -6,67 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './util/ng_jit_mode';
+import '../util/ng_jit_mode';
 
 import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {Observable, of, Subscription} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
 
+import {getCompilerFacade, JitCompilerUsage} from '../compiler/compiler_facade';
+import {Console} from '../console';
+import {inject} from '../di';
+import {Injectable} from '../di/injectable';
+import {InjectionToken} from '../di/injection_token';
+import {Injector} from '../di/injector';
+import {EnvironmentInjector} from '../di/r3_injector';
+import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
+import {Type} from '../interface/type';
+import {COMPILER_OPTIONS, CompilerOptions} from '../linker/compiler';
+import {ComponentFactory, ComponentRef} from '../linker/component_factory';
+import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
+import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
+import {ViewRef} from '../linker/view_ref';
+import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../metadata/resource_loading';
+import {assertNgModuleType} from '../render3/assert';
+import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
+import {isStandalone} from '../render3/definition';
+import {setJitOptions} from '../render3/jit/jit_options';
+import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
+import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
+import {ViewRef as InternalViewRef} from '../render3/view_ref';
+import {TESTABILITY} from '../testability/testability';
+import {isPromise} from '../util/lang';
+import {NgZone, ZONE_IS_STABLE_OBSERVABLE} from '../zone/ng_zone';
+
 import {ApplicationInitStatus} from './application_init';
-import {PLATFORM_INITIALIZER} from './application_tokens';
-import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE, provideZoneChangeDetection} from './change_detection/scheduling';
-import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
-import {Console} from './console';
-import {inject} from './di';
-import {Injectable} from './di/injectable';
-import {InjectionToken} from './di/injection_token';
-import {Injector} from './di/injector';
-import {EnvironmentProviders, Provider, StaticProvider} from './di/interface/provider';
-import {EnvironmentInjector} from './di/r3_injector';
-import {INJECTOR_SCOPE} from './di/scope';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
-import {DEFAULT_LOCALE_ID} from './i18n/localization';
-import {LOCALE_ID} from './i18n/tokens';
-import {ImagePerformanceWarning} from './image_performance_warning';
-import {InitialRenderPendingTasks} from './initial_render_pending_tasks';
-import {Type} from './interface/type';
-import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
-import {ComponentFactory, ComponentRef} from './linker/component_factory';
-import {ComponentFactoryResolver} from './linker/component_factory_resolver';
-import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
-import {ViewRef} from './linker/view_ref';
-import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
-import {assertNgModuleType} from './render3/assert';
-import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {isStandalone} from './render3/definition';
-import {assertStandaloneComponentType} from './render3/errors';
-import {setLocaleId} from './render3/i18n/i18n_locale_id';
-import {setJitOptions} from './render3/jit/jit_options';
-import {createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
-import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
-import {ViewRef as InternalViewRef} from './render3/view_ref';
-import {TESTABILITY} from './testability/testability';
-import {isPromise} from './util/lang';
-import {stringify} from './util/stringify';
-import {getNgZone, NgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
-
-let _platformInjector: Injector|null = null;
-
-/**
- * Internal token to indicate whether having multiple bootstrapped platform should be allowed (only
- * one bootstrapped platform is allowed by default). This token helps to support SSR scenarios.
- */
-export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
-
-/**
- * Internal token that allows to register extra callbacks that should be invoked during the
- * `PlatformRef.destroy` operation. This token is needed to avoid a direct reference to the
- * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
- * entire class tree-shakeable.
- */
-const PLATFORM_DESTROY_LISTENERS =
-    new InjectionToken<Set<VoidFunction>>('PlatformDestroyListeners');
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that provides a set of callbacks to
@@ -162,237 +136,6 @@ export class NgProbeToken {
 }
 
 /**
- * Creates a platform.
- * Platforms must be created on launch using this function.
- *
- * @publicApi
- */
-export function createPlatform(injector: Injector): PlatformRef {
-  if (_platformInjector && !_platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
-    throw new RuntimeError(
-        RuntimeErrorCode.MULTIPLE_PLATFORMS,
-        ngDevMode &&
-            'There can be only one platform. Destroy the previous one to create a new one.');
-  }
-  publishDefaultGlobalUtils();
-  publishSignalConfiguration();
-  _platformInjector = injector;
-  const platform = injector.get(PlatformRef);
-  runPlatformInitializers(injector);
-  return platform;
-}
-
-/**
- * The goal of this function is to bootstrap a platform injector,
- * but avoid referencing `PlatformRef` class.
- * This function is needed for bootstrapping a Standalone Component.
- */
-function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
-  // If a platform injector already exists, it means that the platform
-  // is already bootstrapped and no additional actions are required.
-  if (_platformInjector) return _platformInjector;
-
-  publishDefaultGlobalUtils();
-  // Otherwise, setup a new platform injector and run platform initializers.
-  const injector = createPlatformInjector(providers);
-  _platformInjector = injector;
-  publishSignalConfiguration();
-  runPlatformInitializers(injector);
-  return injector;
-}
-
-function runPlatformInitializers(injector: Injector): void {
-  const inits = injector.get(PLATFORM_INITIALIZER, null);
-  inits?.forEach((init) => init());
-}
-
-/**
- * Internal create application API that implements the core application creation logic and optional
- * bootstrap logic.
- *
- * Platforms (such as `platform-browser`) may require different set of application and platform
- * providers for an application to function correctly. As a result, platforms may use this function
- * internally and supply the necessary providers during the bootstrap, while exposing
- * platform-specific APIs as a part of their public API.
- *
- * @returns A promise that returns an `ApplicationRef` instance once resolved.
- */
-export function internalCreateApplication(config: {
-  rootComponent?: Type<unknown>,
-  appProviders?: Array<Provider|EnvironmentProviders>,
-  platformProviders?: Provider[],
-}): Promise<ApplicationRef> {
-  try {
-    const {rootComponent, appProviders, platformProviders} = config;
-
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
-      assertStandaloneComponentType(rootComponent);
-    }
-
-    const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
-
-    // Create root application injector based on a set of providers configured at the platform
-    // bootstrap level as well as providers passed to the bootstrap call by a user.
-    const allAppProviders = [
-      provideZoneChangeDetection(),
-      ...(appProviders || []),
-    ];
-    const adapter = new EnvironmentNgModuleRefAdapter({
-      providers: allAppProviders,
-      parent: platformInjector as EnvironmentInjector,
-      debugName: (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Environment Injector' : '',
-      // We skip environment initializers because we need to run them inside the NgZone, which
-      // happens after we get the NgZone instance from the Injector.
-      runEnvironmentInitializers: false,
-    });
-    const envInjector = adapter.injector;
-    const ngZone = envInjector.get(NgZone);
-
-    return ngZone.run(() => {
-      envInjector.resolveInjectorInitializers();
-      const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && !exceptionHandler) {
-        throw new RuntimeError(
-            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-            'No `ErrorHandler` found in the Dependency Injection tree.');
-      }
-
-      let onErrorSubscription: Subscription;
-      ngZone.runOutsideAngular(() => {
-        onErrorSubscription = ngZone.onError.subscribe({
-          next: (error: any) => {
-            exceptionHandler!.handleError(error);
-          }
-        });
-      });
-
-      // If the whole platform is destroyed, invoke the `destroy` method
-      // for all bootstrapped applications as well.
-      const destroyListener = () => envInjector.destroy();
-      const onPlatformDestroyListeners = platformInjector.get(PLATFORM_DESTROY_LISTENERS);
-      onPlatformDestroyListeners.add(destroyListener);
-
-      envInjector.onDestroy(() => {
-        onErrorSubscription.unsubscribe();
-        onPlatformDestroyListeners.delete(destroyListener);
-      });
-
-      return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
-        const initStatus = envInjector.get(ApplicationInitStatus);
-        initStatus.runInitializers();
-
-        return initStatus.donePromise.then(() => {
-          const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-          setLocaleId(localeId || DEFAULT_LOCALE_ID);
-
-          const appRef = envInjector.get(ApplicationRef);
-          if (rootComponent !== undefined) {
-            appRef.bootstrap(rootComponent);
-          }
-          if (typeof ngDevMode === 'undefined' || ngDevMode) {
-            const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
-            imagePerformanceService.start();
-          }
-          return appRef;
-        });
-      });
-    });
-  } catch (e) {
-    return Promise.reject(e);
-  }
-}
-
-/**
- * Creates a factory for a platform. Can be used to provide or override `Providers` specific to
- * your application's runtime needs, such as `PLATFORM_INITIALIZER` and `PLATFORM_ID`.
- * @param parentPlatformFactory Another platform factory to modify. Allows you to compose factories
- * to build up configurations that might be required by different libraries or parts of the
- * application.
- * @param name Identifies the new platform factory.
- * @param providers A set of dependency providers for platforms created with the new factory.
- *
- * @publicApi
- */
-export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef)|null, name: string,
-    providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) => PlatformRef {
-  const desc = `Platform: ${name}`;
-  const marker = new InjectionToken(desc);
-  return (extraProviders: StaticProvider[] = []) => {
-    let platform = getPlatform();
-    if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
-      const platformProviders: StaticProvider[] = [
-        ...providers,       //
-        ...extraProviders,  //
-        {provide: marker, useValue: true}
-      ];
-      if (parentPlatformFactory) {
-        parentPlatformFactory(platformProviders);
-      } else {
-        createPlatform(createPlatformInjector(platformProviders, desc));
-      }
-    }
-    return assertPlatform(marker);
-  };
-}
-
-/**
- * Checks that there is currently a platform that contains the given token as a provider.
- *
- * @publicApi
- */
-export function assertPlatform(requiredToken: any): PlatformRef {
-  const platform = getPlatform();
-
-  if (!platform) {
-    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, ngDevMode && 'No platform exists!');
-  }
-
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-      !platform.injector.get(requiredToken, null)) {
-    throw new RuntimeError(
-        RuntimeErrorCode.MULTIPLE_PLATFORMS,
-        'A platform with a different configuration has been created. Please destroy it first.');
-  }
-
-  return platform;
-}
-
-/**
- * Helper function to create an instance of a platform injector (that maintains the 'platform'
- * scope).
- */
-export function createPlatformInjector(providers: StaticProvider[] = [], name?: string): Injector {
-  return Injector.create({
-    name,
-    providers: [
-      {provide: INJECTOR_SCOPE, useValue: 'platform'},
-      {provide: PLATFORM_DESTROY_LISTENERS, useValue: new Set([() => _platformInjector = null])},
-      ...providers
-    ],
-  });
-}
-
-/**
- * Destroys the current Angular platform and all Angular applications on the page.
- * Destroys all modules and listeners registered with the platform.
- *
- * @publicApi
- */
-export function destroyPlatform(): void {
-  getPlatform()?.destroy();
-}
-
-/**
- * Returns the current platform.
- *
- * @publicApi
- */
-export function getPlatform(): PlatformRef|null {
-  return _platformInjector?.get(PlatformRef) ?? null;
-}
-
-/**
  * Provides additional options to the bootstrapping process.
  *
  * @publicApi
@@ -451,175 +194,7 @@ export interface BootstrapOptions {
   ngZoneRunCoalescing?: boolean;
 }
 
-/**
- * The Angular platform is the entry point for Angular on a web page.
- * Each page has exactly one platform. Services (such as reflection) which are common
- * to every Angular application running on the page are bound in its scope.
- * A page's platform is initialized implicitly when a platform is created using a platform
- * factory such as `PlatformBrowser`, or explicitly by calling the `createPlatform()` function.
- *
- * @publicApi
- */
-@Injectable({providedIn: 'platform'})
-export class PlatformRef {
-  private _modules: NgModuleRef<any>[] = [];
-  private _destroyListeners: Array<() => void> = [];
-  private _destroyed: boolean = false;
-
-  /** @internal */
-  constructor(private _injector: Injector) {}
-
-  /**
-   * Creates an instance of an `@NgModule` for the given platform.
-   *
-   * @deprecated Passing NgModule factories as the `PlatformRef.bootstrapModuleFactory` function
-   *     argument is deprecated. Use the `PlatformRef.bootstrapModule` API instead.
-   */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
-      Promise<NgModuleRef<M>> {
-    // Note: We need to create the NgZone _before_ we instantiate the module,
-    // as instantiating the module creates some providers eagerly.
-    // So we create a mini parent injector that just contains the new NgZone and
-    // pass that as parent to the NgModuleFactory.
-    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions({
-                               eventCoalescing: options?.ngZoneEventCoalescing,
-                               runCoalescing: options?.ngZoneRunCoalescing
-                             }));
-    // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
-    // created within the Angular zone
-    // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
-    // created outside of the Angular zone.
-    return ngZone.run(() => {
-      const moduleRef = createNgModuleRefWithProviders(
-          moduleFactory.moduleType, this.injector,
-          internalProvideZoneChangeDetection(() => ngZone));
-
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-          moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null) {
-        throw new RuntimeError(
-            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.');
-      }
-
-      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
-        throw new RuntimeError(
-            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-            'No ErrorHandler. Is platform module (BrowserModule) included?');
-      }
-      ngZone.runOutsideAngular(() => {
-        const subscription = ngZone.onError.subscribe({
-          next: (error: any) => {
-            exceptionHandler!.handleError(error);
-          }
-        });
-        moduleRef.onDestroy(() => {
-          remove(this._modules, moduleRef);
-          subscription.unsubscribe();
-        });
-      });
-      return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
-        const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
-        initStatus.runInitializers();
-        return initStatus.donePromise.then(() => {
-          // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-          const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-          setLocaleId(localeId || DEFAULT_LOCALE_ID);
-          this._moduleDoBootstrap(moduleRef);
-          return moduleRef;
-        });
-      });
-    });
-  }
-
-  /**
-   * Creates an instance of an `@NgModule` for a given platform.
-   *
-   * @usageNotes
-   * ### Simple Example
-   *
-   * ```typescript
-   * @NgModule({
-   *   imports: [BrowserModule]
-   * })
-   * class MyModule {}
-   *
-   * let moduleRef = platformBrowser().bootstrapModule(MyModule);
-   * ```
-   *
-   */
-  bootstrapModule<M>(
-      moduleType: Type<M>,
-      compilerOptions: (CompilerOptions&BootstrapOptions)|
-      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
-    const options = optionsReducer({}, compilerOptions);
-    return compileNgModuleFactory(this.injector, options, moduleType)
-        .then(moduleFactory => this.bootstrapModuleFactory(moduleFactory, options));
-  }
-
-  private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
-    const appRef = moduleRef.injector.get(ApplicationRef);
-    if (moduleRef._bootstrapComponents.length > 0) {
-      moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
-    } else if (moduleRef.instance.ngDoBootstrap) {
-      moduleRef.instance.ngDoBootstrap(appRef);
-    } else {
-      throw new RuntimeError(
-          RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
-          ngDevMode &&
-              `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
-                  `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-                  `Please define one of these.`);
-    }
-    this._modules.push(moduleRef);
-  }
-
-  /**
-   * Registers a listener to be called when the platform is destroyed.
-   */
-  onDestroy(callback: () => void): void {
-    this._destroyListeners.push(callback);
-  }
-
-  /**
-   * Retrieves the platform {@link Injector}, which is the parent injector for
-   * every Angular application on the page and provides singleton providers.
-   */
-  get injector(): Injector {
-    return this._injector;
-  }
-
-  /**
-   * Destroys the current Angular platform and all Angular applications on the page.
-   * Destroys all modules and listeners registered with the platform.
-   */
-  destroy() {
-    if (this._destroyed) {
-      throw new RuntimeError(
-          RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
-          ngDevMode && 'The platform has already been destroyed!');
-    }
-    this._modules.slice().forEach(module => module.destroy());
-    this._destroyListeners.forEach(listener => listener());
-
-    const destroyListeners = this._injector.get(PLATFORM_DESTROY_LISTENERS, null);
-    if (destroyListeners) {
-      destroyListeners.forEach(listener => listener());
-      destroyListeners.clear();
-    }
-
-    this._destroyed = true;
-  }
-
-  /**
-   * Indicates whether this instance was destroyed.
-   */
-  get destroyed() {
-    return this._destroyed;
-  }
-}
-
-function _callAndReportToErrorHandler(
+export function _callAndReportToErrorHandler(
     errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
   try {
     const result = callback();
@@ -639,7 +214,7 @@ function _callAndReportToErrorHandler(
   }
 }
 
-function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
+export function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
   if (Array.isArray(objs)) {
     return objs.reduce(optionsReducer, dst);
   }
@@ -1105,7 +680,7 @@ export class ApplicationRef {
   }
 }
 
-function remove<T>(list: T[], el: T): void {
+export function remove<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) {
     list.splice(index, 1);
