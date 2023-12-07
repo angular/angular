@@ -7,7 +7,8 @@
  */
 import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
-import {BabelFile, NodePath, types as t} from '@babel/core';
+import {types as t} from '@babel/core';
+import {NodePath} from '@babel/traverse';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics';
 
@@ -403,11 +404,11 @@ export function isBabelParseError(e: any): e is BabelParseError {
 }
 
 export function buildCodeFrameError(
-    fs: PathManipulation, path: NodePath, file: BabelFile, e: BabelParseError): string {
-  let filename = file.opts.filename;
+    fs: PathManipulation, path: NodePath, e: BabelParseError): string {
+  let filename = path.hub.file.opts.filename;
   if (filename) {
     filename = fs.resolve(filename);
-    let cwd = file.opts.cwd;
+    let cwd = path.hub.file.opts.cwd;
     if (cwd) {
       cwd = fs.resolve(cwd);
       filename = fs.relative(cwd, filename);
@@ -415,7 +416,7 @@ export function buildCodeFrameError(
   } else {
     filename = '(unknown file)';
   }
-  const {message} = file.hub.buildError(e.node, e.message);
+  const message = path.hub.file.buildCodeFrameError(e.node, e.message).message;
   return `${filename}: ${message}`;
 }
 
@@ -434,7 +435,7 @@ export function getLocation(
     start: getLineAndColumn(startLocation.start),
     end: getLineAndColumn(endLocation.end),
     file,
-    text: startPath.getSource() || undefined,
+    text: getText(startPath),
   };
 }
 
@@ -446,8 +447,7 @@ export function serializeLocationPosition(location: ɵSourceLocation): string {
 }
 
 function getFileFromPath(fs: PathManipulation, path: NodePath|undefined): AbsoluteFsPath|null {
-  // The file field is not guaranteed to be present for all node paths
-  const opts = (path?.hub as {file?: BabelFile}).file?.opts;
+  const opts = path?.hub.file.opts;
   const filename = opts?.filename;
   if (!filename || !opts.cwd) {
     return null;
@@ -461,4 +461,11 @@ function getFileFromPath(fs: PathManipulation, path: NodePath|undefined): Absolu
 function getLineAndColumn(loc: {line: number, column: number}): {line: number, column: number} {
   // Note we want 0-based line numbers but Babel returns 1-based.
   return {line: loc.line - 1, column: loc.column};
+}
+
+function getText(path: NodePath): string|undefined {
+  if (path.node.start == null || path.node.end == null) {
+    return undefined;
+  }
+  return path.hub.file.code.substring(path.node.start, path.node.end);
 }
