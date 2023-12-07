@@ -32,11 +32,11 @@ const LVIEW_TVIEW = 1;
 // Big oversimplification of the LView structure.
 type LView = Array<any>;
 
-export const isLContainer = (value: any): boolean => {
+export const isLContainer = (value: unknown): boolean => {
   return Array.isArray(value) && value[TYPE] === true;
 };
 
-const isLView = (value: any): boolean => {
+const isLView = (value: unknown): value is LView => {
   return Array.isArray(value) && typeof value[TYPE] === 'object';
 };
 
@@ -78,7 +78,7 @@ export class LTreeStrategy {
     return typeof (element as any).__ngContext__ !== 'undefined';
   }
 
-  private _getNode(lView: any, data: any, idx: number): ComponentTreeNode {
+  private _getNode(lView: LView, data: any, idx: number): ComponentTreeNode {
     const directives: DirectiveInstanceType[] = [];
     let component: ComponentInstanceType|null = null;
     const tNode = data[idx];

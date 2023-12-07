@@ -108,7 +108,7 @@ export class DirectivePropertyResolver {
     this._stateDataSource.update(stateProps);
   }
 
-  updateValue(node: FlatNode, newValue: any): void {
+  updateValue(node: FlatNode, newValue: unknown): void {
     const directiveId = this._directivePosition;
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
