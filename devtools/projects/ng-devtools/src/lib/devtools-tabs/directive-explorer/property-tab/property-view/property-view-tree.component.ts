@@ -41,7 +41,7 @@ export class PropertyViewTreeComponent {
     this.treeControl.expand(node);
   }
 
-  handleUpdate(node: FlatNode, newValue: any): void {
+  handleUpdate(node: FlatNode, newValue: unknown): void {
     this.updateValue.emit({
       node,
       newValue,

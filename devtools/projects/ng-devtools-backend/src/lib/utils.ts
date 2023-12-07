@@ -8,7 +8,7 @@
 
 export const ngDebug = () => (window as any).ng;
 
-export const runOutsideAngular = (f: () => any): void => {
+export const runOutsideAngular = (f: () => void): void => {
   const w = window as any;
   if (!w.Zone || !w.Zone.current) {
     f();
