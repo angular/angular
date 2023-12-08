@@ -66,14 +66,7 @@ export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
     throwInvalidWriteToSignalError();
   }
 
-  const value = node.value;
-  if (Object.is(value, newValue)) {
-    if (typeof ngDevMode !== 'undefined' && ngDevMode && !node.equal(value, newValue)) {
-      console.warn(
-          'Signal value equality implementations should always return `true` for' +
-          ' values that are the same according to `Object.is` but returned `false` instead.');
-    }
-  } else if (!node.equal(value, newValue)) {
+  if (!node.equal(node.value, newValue)) {
     node.value = newValue;
     signalValueChanged(node);
   }
