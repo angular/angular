@@ -1,6 +1,6 @@
-load("@npm//@angular/build-tooling/bazel/markdown_to_html:markdown_to_html.bzl", "markdown_to_html")
+load("@npm//@angular/docs:index.bzl", "generate_guides")
 
-markdown_to_html(
+generate_guides(
     name = "configs",
     srcs = glob([
         "*.md",

@@ -18,6 +18,110 @@
     tunnel "^0.0.6"
     undici "^5.25.4"
 
+"@algolia/cache-browser-local-storage@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/cache-browser-local-storage/-/cache-browser-local-storage-4.20.0.tgz#357318242fc542ffce41d6eb5b4a9b402921b0bb"
+  integrity sha512-uujahcBt4DxduBTvYdwO3sBfHuJvJokiC3BP1+O70fglmE1ShkH8lpXqZBac1rrU3FnNYSUs4pL9lBdTKeRPOQ==
+  dependencies:
+    "@algolia/cache-common" "4.20.0"
+
+"@algolia/cache-common@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/cache-common/-/cache-common-4.20.0.tgz#ec52230509fce891091ffd0d890618bcdc2fa20d"
+  integrity sha512-vCfxauaZutL3NImzB2G9LjLt36vKAckc6DhMp05An14kVo8F1Yofb6SIl6U3SaEz8pG2QOB9ptwM5c+zGevwIQ==
+
+"@algolia/cache-in-memory@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/cache-in-memory/-/cache-in-memory-4.20.0.tgz#5f18d057bd6b3b075022df085c4f83bcca4e3e67"
+  integrity sha512-Wm9ak/IaacAZXS4mB3+qF/KCoVSBV6aLgIGFEtQtJwjv64g4ePMapORGmCyulCFwfePaRAtcaTbMcJF+voc/bg==
+  dependencies:
+    "@algolia/cache-common" "4.20.0"
+
+"@algolia/client-account@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-account/-/client-account-4.20.0.tgz#23ce0b4cffd63100fb7c1aa1c67a4494de5bd645"
+  integrity sha512-GGToLQvrwo7am4zVkZTnKa72pheQeez/16sURDWm7Seyz+HUxKi3BM6fthVVPUEBhtJ0reyVtuK9ArmnaKl10Q==
+  dependencies:
+    "@algolia/client-common" "4.20.0"
+    "@algolia/client-search" "4.20.0"
+    "@algolia/transporter" "4.20.0"
+
+"@algolia/client-analytics@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-analytics/-/client-analytics-4.20.0.tgz#0aa6bef35d3a41ac3991b3f46fcd0bf00d276fa9"
+  integrity sha512-EIr+PdFMOallRdBTHHdKI3CstslgLORQG7844Mq84ib5oVFRVASuuPmG4bXBgiDbcsMLUeOC6zRVJhv1KWI0ug==
+  dependencies:
+    "@algolia/client-common" "4.20.0"
+    "@algolia/client-search" "4.20.0"
+    "@algolia/requester-common" "4.20.0"
+    "@algolia/transporter" "4.20.0"
+
+"@algolia/client-common@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-common/-/client-common-4.20.0.tgz#ca60f04466515548651c4371a742fbb8971790ef"
+  integrity sha512-P3WgMdEss915p+knMMSd/fwiHRHKvDu4DYRrCRaBrsfFw7EQHon+EbRSm4QisS9NYdxbS04kcvNoavVGthyfqQ==
+  dependencies:
+    "@algolia/requester-common" "4.20.0"
+    "@algolia/transporter" "4.20.0"
+
+"@algolia/client-personalization@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-personalization/-/client-personalization-4.20.0.tgz#ca81308e8ad0db3b27458b78355f124f29657181"
+  integrity sha512-N9+zx0tWOQsLc3K4PVRDV8GUeOLAY0i445En79Pr3zWB+m67V+n/8w4Kw1C5LlbHDDJcyhMMIlqezh6BEk7xAQ==
+  dependencies:
+    "@algolia/client-common" "4.20.0"
+    "@algolia/requester-common" "4.20.0"
+    "@algolia/transporter" "4.20.0"
+
+"@algolia/client-search@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-search/-/client-search-4.20.0.tgz#3bcce817ca6caedc835e0eaf6f580e02ee7c3e15"
+  integrity sha512-zgwqnMvhWLdpzKTpd3sGmMlr4c+iS7eyyLGiaO51zDZWGMkpgoNVmltkzdBwxOVXz0RsFMznIxB9zuarUv4TZg==
+  dependencies:
+    "@algolia/client-common" "4.20.0"
+    "@algolia/requester-common" "4.20.0"
+    "@algolia/transporter" "4.20.0"
+
+"@algolia/logger-common@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/logger-common/-/logger-common-4.20.0.tgz#f148ddf67e5d733a06213bebf7117cb8a651ab36"
+  integrity sha512-xouigCMB5WJYEwvoWW5XDv7Z9f0A8VoXJc3VKwlHJw/je+3p2RcDXfksLI4G4lIVncFUYMZx30tP/rsdlvvzHQ==
+
+"@algolia/logger-console@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/logger-console/-/logger-console-4.20.0.tgz#ac443d27c4e94357f3063e675039cef0aa2de0a7"
+  integrity sha512-THlIGG1g/FS63z0StQqDhT6bprUczBI8wnLT3JWvfAQDZX5P6fCg7dG+pIrUBpDIHGszgkqYEqECaKKsdNKOUA==
+  dependencies:
+    "@algolia/logger-common" "4.20.0"
+
+"@algolia/requester-browser-xhr@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-browser-xhr/-/requester-browser-xhr-4.20.0.tgz#db16d0bdef018b93b51681d3f1e134aca4f64814"
+  integrity sha512-HbzoSjcjuUmYOkcHECkVTwAelmvTlgs48N6Owt4FnTOQdwn0b8pdht9eMgishvk8+F8bal354nhx/xOoTfwiAw==
+  dependencies:
+    "@algolia/requester-common" "4.20.0"
+
+"@algolia/requester-common@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-common/-/requester-common-4.20.0.tgz#65694b2263a8712b4360fef18680528ffd435b5c"
+  integrity sha512-9h6ye6RY/BkfmeJp7Z8gyyeMrmmWsMOCRBXQDs4mZKKsyVlfIVICpcSibbeYcuUdurLhIlrOUkH3rQEgZzonng==
+
+"@algolia/requester-node-http@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-node-http/-/requester-node-http-4.20.0.tgz#b52b182b52b0b16dec4070832267d484a6b1d5bb"
+  integrity sha512-ocJ66L60ABSSTRFnCHIEZpNHv6qTxsBwJEPfYaSBsLQodm0F9ptvalFkHMpvj5DfE22oZrcrLbOYM2bdPJRHng==
+  dependencies:
+    "@algolia/requester-common" "4.20.0"
+
+"@algolia/transporter@4.20.0":
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/@algolia/transporter/-/transporter-4.20.0.tgz#7e5b24333d7cc9a926b2f6a249f87c2889b944a9"
+  integrity sha512-Lsii1pGWOAISbzeyuf+r/GPhvHMPHSPrTDWNcIzOE1SG1inlJHICaVe2ikuoRjcpgxZNU54Jl+if15SUCsaTUg==
+  dependencies:
+    "@algolia/cache-common" "4.20.0"
+    "@algolia/logger-common" "4.20.0"
+    "@algolia/requester-common" "4.20.0"
+
 "@ampproject/remapping@2.2.1", "@ampproject/remapping@^2.2.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.1.tgz#99e8e11851128b8702cd57c33684f1d0f260b630"
@@ -310,6 +414,15 @@
   optionalDependencies:
     parse5 "^7.1.2"
 
+"@angular/cdk@^17.0.2":
+  version "17.0.3"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-17.0.3.tgz#aea1420b7938711f9534ad85c4b460de0ae15abb"
+  integrity sha512-Qd5uvC09B3+uk2uX1JxmiWrD7wueMHSxNBoCbDEmnrsdDVUta0wN/jj/CtATljxUM8ZqvEvkqgxJCig1od9oyQ==
+  dependencies:
+    tslib "^2.3.0"
+  optionalDependencies:
+    parse5 "^7.1.2"
+
 "@angular/cli@17.0.0-rc.2":
   version "17.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-17.0.0-rc.2.tgz#9205d3435528cdbf6beadd345109ba1dc7ee7039"
@@ -334,6 +447,13 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
+"@angular/common@^17.0.6":
+  version "17.0.6"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-17.0.6.tgz#9247f65032008fbce34203f953c35bbc9a00aac8"
+  integrity sha512-FZtf8ol8W2V21ZDgFtcxmJ6JJKUO97QZ+wr/bosyYEryWMmn6VGrbOARhfW7BlrEgn14NdFkLb72KKtqoqRjrg==
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/core@^13.0.0 || ^14.0.0-0":
   version "14.3.0"
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-14.3.0.tgz#7f44c59b6e866fa4cee7221495040c1ead433895"
@@ -341,10 +461,88 @@
   dependencies:
     tslib "^2.3.0"
 
+"@angular/core@^17.0.6":
+  version "17.0.6"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-17.0.6.tgz#59e5ad9a4000bc76475ad303197a72bff572f802"
+  integrity sha512-QzfKRTDNgGOY9D5VxenUUz20cvPVC+uVw9xiqkDuHgGfLYVFlCAK9ymFYkdUCLTcVzJPxckP+spMpPX8nc4Aqw==
+  dependencies:
+    tslib "^2.3.0"
+
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#61d9432e9353da0b766324a237d36ffb767b59e7":
+  version "0.0.0-98c6cb206c3cfca7a4281953e64a7d0232b29473"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#61d9432e9353da0b766324a237d36ffb767b59e7"
+  dependencies:
+    "@angular/cdk" "^17.0.2"
+    "@angular/common" "^17.0.6"
+    "@angular/core" "^17.0.6"
+    "@angular/material" "^17.0.2"
+    "@angular/router" "^17.0.6"
+    "@webcontainer/api" "^1.1.8"
+    algoliasearch "^4.20.0"
+    jszip "^3.10.1"
+    rxjs "^7.8.1"
+    xterm "^5.3.0"
+    xterm-addon-fit "^0.8.0"
+    zone.js "^0.14.2"
+
 "@angular/material@17.0.0-rc.1":
   version "17.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@angular/material/-/material-17.0.0-rc.1.tgz#8c9ab70e7a3ee122ba6e2c5903b4a2de3a730992"
   integrity sha512-MEZdfo8i6bnNWPwMn5iyWMDo7KatDJngHDPZfpMVOvPWa4HWRNhupvQLd00vKsMRRBheJfuFrlDhqhPQDwswtg==
+  dependencies:
+    "@material/animation" "15.0.0-canary.a246a4439.0"
+    "@material/auto-init" "15.0.0-canary.a246a4439.0"
+    "@material/banner" "15.0.0-canary.a246a4439.0"
+    "@material/base" "15.0.0-canary.a246a4439.0"
+    "@material/button" "15.0.0-canary.a246a4439.0"
+    "@material/card" "15.0.0-canary.a246a4439.0"
+    "@material/checkbox" "15.0.0-canary.a246a4439.0"
+    "@material/chips" "15.0.0-canary.a246a4439.0"
+    "@material/circular-progress" "15.0.0-canary.a246a4439.0"
+    "@material/data-table" "15.0.0-canary.a246a4439.0"
+    "@material/density" "15.0.0-canary.a246a4439.0"
+    "@material/dialog" "15.0.0-canary.a246a4439.0"
+    "@material/dom" "15.0.0-canary.a246a4439.0"
+    "@material/drawer" "15.0.0-canary.a246a4439.0"
+    "@material/elevation" "15.0.0-canary.a246a4439.0"
+    "@material/fab" "15.0.0-canary.a246a4439.0"
+    "@material/feature-targeting" "15.0.0-canary.a246a4439.0"
+    "@material/floating-label" "15.0.0-canary.a246a4439.0"
+    "@material/form-field" "15.0.0-canary.a246a4439.0"
+    "@material/icon-button" "15.0.0-canary.a246a4439.0"
+    "@material/image-list" "15.0.0-canary.a246a4439.0"
+    "@material/layout-grid" "15.0.0-canary.a246a4439.0"
+    "@material/line-ripple" "15.0.0-canary.a246a4439.0"
+    "@material/linear-progress" "15.0.0-canary.a246a4439.0"
+    "@material/list" "15.0.0-canary.a246a4439.0"
+    "@material/menu" "15.0.0-canary.a246a4439.0"
+    "@material/menu-surface" "15.0.0-canary.a246a4439.0"
+    "@material/notched-outline" "15.0.0-canary.a246a4439.0"
+    "@material/radio" "15.0.0-canary.a246a4439.0"
+    "@material/ripple" "15.0.0-canary.a246a4439.0"
+    "@material/rtl" "15.0.0-canary.a246a4439.0"
+    "@material/segmented-button" "15.0.0-canary.a246a4439.0"
+    "@material/select" "15.0.0-canary.a246a4439.0"
+    "@material/shape" "15.0.0-canary.a246a4439.0"
+    "@material/slider" "15.0.0-canary.a246a4439.0"
+    "@material/snackbar" "15.0.0-canary.a246a4439.0"
+    "@material/switch" "15.0.0-canary.a246a4439.0"
+    "@material/tab" "15.0.0-canary.a246a4439.0"
+    "@material/tab-bar" "15.0.0-canary.a246a4439.0"
+    "@material/tab-indicator" "15.0.0-canary.a246a4439.0"
+    "@material/tab-scroller" "15.0.0-canary.a246a4439.0"
+    "@material/textfield" "15.0.0-canary.a246a4439.0"
+    "@material/theme" "15.0.0-canary.a246a4439.0"
+    "@material/tooltip" "15.0.0-canary.a246a4439.0"
+    "@material/top-app-bar" "15.0.0-canary.a246a4439.0"
+    "@material/touch-target" "15.0.0-canary.a246a4439.0"
+    "@material/typography" "15.0.0-canary.a246a4439.0"
+    tslib "^2.3.0"
+
+"@angular/material@^17.0.2":
+  version "17.0.3"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-17.0.3.tgz#0c500761be3c047767cdc7fa4c85a26f81eca777"
+  integrity sha512-a7l5hMMCMobULAjwPK8HVQmOsbd3pOwju1QdBVhec0XwNGj2pK4ooKWdUmQcwsUA9DaZaOwAgEISHEADXJfKpQ==
   dependencies:
     "@material/animation" "15.0.0-canary.a246a4439.0"
     "@material/auto-init" "15.0.0-canary.a246a4439.0"
@@ -401,6 +599,13 @@
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
+
+"@angular/router@^17.0.6":
+  version "17.0.6"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-17.0.6.tgz#16f610d124991f468dbff3016e724b769aa24742"
+  integrity sha512-xW6yDxREpBOB9MoODSfIw5HwkwLK+OgK34Q6sGYs0ft9UryMoFwft+pHGAaDz2nzhA72n+Ht9B2eai78UE9jGQ==
+  dependencies:
+    tslib "^2.3.0"
 
 "@apidevtools/json-schema-ref-parser@^9.0.3":
   version "9.1.2"
@@ -4166,6 +4371,11 @@
     "@webassemblyjs/ast" "1.11.6"
     "@xtuc/long" "4.2.2"
 
+"@webcontainer/api@^1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@webcontainer/api/-/api-1.1.8.tgz#78e78a882237af3ca9c97cb6d0a356b043ad0836"
+  integrity sha512-m9WRj38oCoFPrqZOTeJcncPjnZ00FZUMq9YHEXxdhAoYhhQ69Rz4qK5p444cIPaMy2j8H7HcNLcAIwMGWnpMpw==
+
 "@xmldom/xmldom@^0.8.0", "@xmldom/xmldom@^0.8.5":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.10.tgz#a1337ca426aa61cef9fe15b5b28e340a72f6fa99"
@@ -4329,6 +4539,26 @@ ajv@^6.12.3, ajv@^6.12.5, ajv@^6.12.6, ajv@~6.12.6:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
+
+algoliasearch@^4.20.0:
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/algoliasearch/-/algoliasearch-4.20.0.tgz#700c2cb66e14f8a288460036c7b2a554d0d93cf4"
+  integrity sha512-y+UHEjnOItoNy0bYO+WWmLWBlPwDjKHW6mNHrPi0NkuhpQOOEbrkwQH/wgKFDLh7qlKjzoKeiRtlpewDPDG23g==
+  dependencies:
+    "@algolia/cache-browser-local-storage" "4.20.0"
+    "@algolia/cache-common" "4.20.0"
+    "@algolia/cache-in-memory" "4.20.0"
+    "@algolia/client-account" "4.20.0"
+    "@algolia/client-analytics" "4.20.0"
+    "@algolia/client-common" "4.20.0"
+    "@algolia/client-personalization" "4.20.0"
+    "@algolia/client-search" "4.20.0"
+    "@algolia/logger-common" "4.20.0"
+    "@algolia/logger-console" "4.20.0"
+    "@algolia/requester-browser-xhr" "4.20.0"
+    "@algolia/requester-common" "4.20.0"
+    "@algolia/requester-node-http" "4.20.0"
+    "@algolia/transporter" "4.20.0"
 
 "angular-1.5@npm:angular@1.5":
   version "1.5.11"
@@ -16256,6 +16486,16 @@ xtend@^4.0.0, xtend@~4.0.0, xtend@~4.0.1:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
+xterm-addon-fit@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/xterm-addon-fit/-/xterm-addon-fit-0.8.0.tgz#48ca99015385141918f955ca7819e85f3691d35f"
+  integrity sha512-yj3Np7XlvxxhYF/EJ7p3KHaMt6OdwQ+HDu573Vx1lRXsVxOcnVJs51RgjZOouIZOczTsskaS+CpXspK81/DLqw==
+
+xterm@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-5.3.0.tgz#867daf9cc826f3d45b5377320aabd996cb0fce46"
+  integrity sha512-8QqjlekLUFTrU6x7xck1MsPzPA571K5zNqWm0M0oroYEWVOptZ0+ubQSkQ3uxIEhcIHRujJy6emDWX4A7qyFzg==
+
 y18n@^3.2.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-3.2.2.tgz#85c901bd6470ce71fc4bb723ad209b70f7f28696"
@@ -16449,3 +16689,10 @@ zip-stream@^4.1.0:
     archiver-utils "^3.0.4"
     compress-commons "^4.1.2"
     readable-stream "^3.6.0"
+
+zone.js@^0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.14.2.tgz#91b20b24e8ab9a5a74f319ed5a3000f234ffa3b6"
+  integrity sha512-X4U7J1isDhoOmHmFWiLhloWc2lzMkdnumtfQ1LXzf/IOZp5NQYuMUTaviVzG/q1ugMBIXzin2AqeVJUoSEkNyQ==
+  dependencies:
+    tslib "^2.3.0"
