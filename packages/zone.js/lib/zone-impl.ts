@@ -675,7 +675,8 @@ export interface EventTask extends Task {
 export type AmbientZone = Zone;
 
 // Initialize global `Zone` constant.
-(function(global: any) {
+const global = globalThis as any;
+(function() {
 const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
     global['performance'];
 function mark(name: string) {
@@ -1445,6 +1446,6 @@ function noop() {}
 
 performanceMeasure('Zone', 'Zone');
 return global['Zone'] = Zone;
-})(globalThis);
+})();
 
 export {};
