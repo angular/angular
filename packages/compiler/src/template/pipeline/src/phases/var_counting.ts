@@ -87,6 +87,9 @@ export function countVariables(job: CompilationJob): void {
 
         const childView = job.views.get(op.xref)!;
         op.vars = childView.vars;
+
+        // TODO: currently we handle the vars for the RepeaterCreate empty template in the reify
+        // phase. We should handle that here instead.
       }
     }
   }
