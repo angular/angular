@@ -8,6 +8,7 @@
 
 import {producerAccessed, SIGNAL} from '@angular/core/primitives/signals';
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Signal} from '../render3/reactivity/api';
 
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_signal_node';
@@ -77,8 +78,9 @@ export function createInputSignal<ReadT, WriteT>(
     producerAccessed(node);
 
     if (node.value === REQUIRED_UNSET_VALUE) {
-      // TODO: Use a runtime error w/ error guide.
-      throw new Error('Input is required, but no value set yet.');
+      throw new RuntimeError(
+          RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
+          ngDevMode && 'Input is required but no value is available yet.');
     }
 
     return node.value;

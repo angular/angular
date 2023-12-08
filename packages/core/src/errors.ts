@@ -116,6 +116,9 @@ export const enum RuntimeErrorCode {
   COMPONENT_ID_COLLISION = -912,
   IMAGE_PERFORMANCE_WARNING = -913,
 
+  // Signal inputs
+  REQUIRED_INPUT_NO_VALUE = -950,
+
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
   RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
