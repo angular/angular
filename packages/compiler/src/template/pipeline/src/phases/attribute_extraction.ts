@@ -31,7 +31,6 @@ export function extractAttributes(job: CompilationJob): void {
               // kind in the consts array.
               bindingKind = ir.BindingKind.I18n;
             } else if (op.isStructuralTemplateAttribute) {
-              // TODO: How do i18n attributes on templates work?!
               bindingKind = ir.BindingKind.Template;
             } else {
               bindingKind = ir.BindingKind.Property;
