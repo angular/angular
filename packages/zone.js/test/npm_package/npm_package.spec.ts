@@ -50,7 +50,8 @@ describe('Zone.js npm_package', () => {
   describe('check npm_package root folder', () => {
     describe('typescript support', () => {
       it('should have an zone.d.ts file', () => {
-        expect(shx.cat('zone.d.ts')).toContain('declare const');
+        expect(shx.cat('zone.d.ts')).toContain('declare global {');
+        expect(shx.cat('zone.d.ts')).toContain('const Zone');
         expect(shx.cat('zone.d.ts')).toContain('interface EventTarget');
         expect(shx.cat('zone.d.ts')).toContain('ZoneGlobalConfigurations');
       });
