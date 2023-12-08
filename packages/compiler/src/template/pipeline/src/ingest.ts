@@ -921,7 +921,8 @@ function ingestBinding(
   }
 
   if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
-      type === e.BindingType.Property) {
+      (type === e.BindingType.Property || type === e.BindingType.Class ||
+       type === e.BindingType.Style)) {
     // This binding only exists for later const extraction, and is not an actual binding to be
     // created.
     view.create.push(ir.createExtractedAttributeOp(
