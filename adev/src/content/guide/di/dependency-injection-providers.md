@@ -14,8 +14,7 @@ In the following example, the app component provides a `Logger` instance.
 providers: [Logger],
 </docs-code>
 
-You can, however, configure DI to use a different class or any other different value to associate with the `Logger` class.
-Note that `Logger` becomes is only used as "token" for the dependency then.
+You can, however, configure DI to associate the `Logger` provider token with a different class or any other value.
 So when the `Logger` is injected, the configured value is used instead.
 
 In fact, the class provider syntax is a shorthand expression that expands into a provider configuration, defined by the `Provider` interface.
