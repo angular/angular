@@ -36,6 +36,12 @@ export interface Input {
   transform?: (value: any) => any;
 }
 
+/** Flags describing an input for a directive. */
+export enum InputFlags {
+  None = 0,
+  SignalBased = 1 << 0,
+}
+
 export interface Output {
   alias?: string;
 }

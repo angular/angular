@@ -35,10 +35,15 @@ export function generateGoldenPartial(absTestConfigPath: AbsoluteFsPath): void {
  */
 function* compilePartials(fs: FileSystem, test: ComplianceTest): Generator<PartiallyCompiledFile> {
   const builtDirectory = getBuildOutputDirectory(fs);
-  for (const generatedPath of compileTest(fs, test.inputFiles, test.compilerOptions, {
-         compilationMode: 'partial',
-         ...test.angularCompilerOptions
-       }).emittedFiles) {
+  const result = compileTest(
+      fs, test.inputFiles, test.compilerOptions,
+      {compilationMode: 'partial', ...test.angularCompilerOptions});
+
+  if (result.errors.length > 0) {
+    throw new Error(`Unexpected compilation errors: ${result.errors.join('\n- ')}`);
+  }
+
+  for (const generatedPath of result.emittedFiles) {
     yield {
       path: fs.relative(builtDirectory, generatedPath),
       content: fs.readFile(generatedPath),

@@ -10,7 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {convertFromMaybeForwardRefExpression, generateForwardRef, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType, createHostDirectivesMappingArray} from '../view/compiler';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from '../view/util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap, UNSAFE_OBJECT_KEY_NAME_REGEXP} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
 import {toOptionalLiteralMap} from './util';
@@ -22,7 +22,7 @@ import {toOptionalLiteralMap} from './util';
  *
  * Do not include any prerelease in these versions as they are ignored.
  */
-const MINIMUM_PARTIAL_LINKER_VERSION = '16.1.0';
+const MINIMUM_PARTIAL_LINKER_VERSION = '17.1.0';
 
 /**
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
@@ -47,10 +47,21 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
 
   const hasTransformFunctions =
       Object.values(meta.inputs).some(input => input.transformFunction !== null);
+  const hasInputFlagsAndNeedsNewEmit = Object.values(meta.inputs).some(input => input.isSignal);
+
+  let minVersion = '14.0.0';
   // Note: in order to allow consuming Angular libraries that have been compiled with 16.1+ in
   // Angular 16.0, we only force a minimum version of 16.1 if input transform feature as introduced
   // in 16.1 is actually used.
-  const minVersion = hasTransformFunctions ? MINIMUM_PARTIAL_LINKER_VERSION : '14.0.0';
+  if (hasTransformFunctions) {
+    minVersion = '16.1.0';
+  }
+  // If there are input flags and we need the new emit, use the actual minimum version,
+  // where this was introduced. i.e. in 17.1.0
+  // TODO(legacy-partial-output-inputs): Remove in v18.
+  if (hasInputFlagsAndNeedsNewEmit) {
+    minVersion = MINIMUM_PARTIAL_LINKER_VERSION;
+  }
 
   definitionMap.set('minVersion', o.literal(minVersion));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
@@ -70,7 +81,10 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
     definitionMap.set('selector', o.literal(meta.selector));
   }
 
-  definitionMap.set('inputs', conditionallyCreateDirectiveBindingLiteral(meta.inputs, true));
+  definitionMap.set(
+      'inputs',
+      hasInputFlagsAndNeedsNewEmit ? createInputsPartialMetadata(meta.inputs) :
+                                     legacyInputsPartialMetadata(meta.inputs));
   definitionMap.set('outputs', conditionallyCreateDirectiveBindingLiteral(meta.outputs));
 
   definitionMap.set('host', compileHostMetadata(meta.host));
@@ -188,4 +202,79 @@ function createHostDirectives(hostDirectives: NonNullable<R3DirectiveMetadata['h
   // If there's a forward reference, we generate a `function() { return [{directive: HostDir}] }`,
   // otherwise we can save some bytes by using a plain array, e.g. `[{directive: HostDir}]`.
   return o.literalArr(expressions);
+}
+
+/**
+ * Generates partial output metadata for inputs of a directive.
+ *
+ * The generated structure is expected to match `R3DeclareDirectiveFacade['inputs']`.
+ */
+function createInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression|null {
+  const keys = Object.getOwnPropertyNames(inputs);
+  if (keys.length === 0) {
+    return null;
+  }
+
+  return o.literalMap(keys.map(declaredName => {
+    const value = inputs[declaredName];
+
+    return {
+      key: declaredName,
+      // put quotes around keys that contain potentially unsafe characters
+      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
+      value: o.literalMap([
+        {key: 'classPropertyName', quoted: false, value: asLiteral(value.classPropertyName)},
+        {key: 'publicName', quoted: false, value: asLiteral(value.bindingPropertyName)},
+        {key: 'isSignal', quoted: false, value: asLiteral(value.isSignal)},
+        {key: 'isRequired', quoted: false, value: asLiteral(value.required)},
+        {key: 'transformFunction', quoted: false, value: value.transformFunction ?? o.NULL_EXPR},
+      ])
+    };
+  }));
+}
+
+/**
+ * Pre v18 legacy partial output for inputs.
+ *
+ * Previously, inputs did not capture metadata like `isSignal` in the partial compilation output.
+ * To enable capturing such metadata, we restructured how input metadata is communicated in the
+ * partial output. This would make libraries incompatible with older Angular FW versions where the
+ * linker would not know how to handle this new "format". For this reason, if we know this metadata
+ * does not need to be captured- we fall back to the old format. This is what this function
+ * generates.
+ *
+ * See:
+ * https://github.com/angular/angular/blob/d4b423690210872b5c32a322a6090beda30b05a3/packages/core/src/compiler/compiler_facade_interface.ts#L197-L199
+ */
+function legacyInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression|null {
+  // TODO(legacy-partial-output-inputs): Remove function in v18.
+
+  const keys = Object.getOwnPropertyNames(inputs);
+  if (keys.length === 0) {
+    return null;
+  }
+
+  return o.literalMap(keys.map(declaredName => {
+    const value = inputs[declaredName];
+    const publicName = value.bindingPropertyName;
+    const differentDeclaringName = publicName !== declaredName;
+    let result: o.Expression;
+
+    if (differentDeclaringName || value.transformFunction !== null) {
+      const values = [asLiteral(publicName), asLiteral(declaredName)];
+      if (value.transformFunction !== null) {
+        values.push(value.transformFunction);
+      }
+      result = o.literalArr(values);
+    } else {
+      result = asLiteral(publicName);
+    }
+
+    return {
+      key: declaredName,
+      // put quotes around keys that contain potentially unsafe characters
+      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
+      value: result,
+    };
+  }));
 }

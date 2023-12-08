@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerAfterComputation, consumerBeforeComputation, setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
@@ -24,21 +24,22 @@ import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual,
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
+import {applyValueToInputField} from '../apply_value_input_field';
 import {assertFirstCreatePass, assertFirstUpdatePass, assertLView, assertNoDuplicateDirectives, assertTNodeForLView, assertTNodeForTView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, HostDirectiveBindingMap, HostDirectiveDefs, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, HostDirectiveBindingMap, HostDirectiveDefs, InputFlags, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, NodeInputBindings, NodeOutputBindings, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -617,47 +618,103 @@ export function createTNode(
 }
 
 /**
- * Generates the `PropertyAliases` data structure from the provided input/output mapping.
- * @param aliasMap Input/output mapping from the directive definition.
- * @param directiveIndex Index of the directive.
- * @param propertyAliases Object in which to store the results.
- * @param hostDirectiveAliasMap Object used to alias or filter out properties for host directives.
+ * Captures node input bindings for the given directive based on the inputs metadata.
+ * This will be called multiple times to combine inputs from various directives on a node.
+ *
+ * The host binding alias map is used to alias and filter out properties for host directives.
  * If the mapping is provided, it'll act as an allowlist, as well as a mapping of what public
  * name inputs/outputs should be exposed under.
  */
-function generatePropertyAliases(
-    aliasMap: {[publicName: string]: string}, directiveIndex: number,
-    propertyAliases: PropertyAliases|null,
-    hostDirectiveAliasMap: HostDirectiveBindingMap|null): PropertyAliases|null {
-  for (let publicName in aliasMap) {
-    if (aliasMap.hasOwnProperty(publicName)) {
-      propertyAliases = propertyAliases === null ? {} : propertyAliases;
-      const internalName = aliasMap[publicName];
+function captureNodeBindings<T>(
+    type: 'inputs', inputs: DirectiveDef<T>['inputs'], directiveIndex: number,
+    bindingsResult: NodeInputBindings|null,
+    hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeInputBindings|null;
+/**
+ * Captures node output bindings for the given directive based on the output metadata.
+ * This will be called multiple times to combine inputs from various directives on a node.
+ *
+ * The host binding alias map is used to alias and filter out properties for host directives.
+ * If the mapping is provided, it'll act as an allowlist, as well as a mapping of what public
+ * name inputs/outputs should be exposed under.
+ */
+function captureNodeBindings<T>(
+    type: 'outputs', outputs: DirectiveDef<T>['outputs'], directiveIndex: number,
+    bindingsResult: NodeOutputBindings|null,
+    hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeOutputBindings|null;
 
-      // If there are no host directive mappings, we want to remap using the alias map from the
-      // definition itself. If there is an alias map, it has two functions:
-      // 1. It serves as an allowlist of bindings that are exposed by the host directives. Only the
-      // ones inside the host directive map will be exposed on the host.
-      // 2. The public name of the property is aliased using the host directive alias map, rather
-      // than the alias map from the definition.
-      if (hostDirectiveAliasMap === null) {
-        addPropertyAlias(propertyAliases, directiveIndex, publicName, internalName);
-      } else if (hostDirectiveAliasMap.hasOwnProperty(publicName)) {
-        addPropertyAlias(
-            propertyAliases, directiveIndex, hostDirectiveAliasMap[publicName], internalName);
+function captureNodeBindings<T>(
+    type: 'inputs'|'outputs', aliasMap: DirectiveDef<T>['inputs']|DirectiveDef<T>['outputs'],
+    directiveIndex: number, bindingsResult: NodeInputBindings|NodeOutputBindings|null,
+    hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeInputBindings|NodeOutputBindings|
+    null {
+  for (let publicName in aliasMap) {
+    const value = aliasMap[publicName];
+    if (value === undefined) {
+      continue;
+    }
+
+    bindingsResult = bindingsResult === null ? {} : bindingsResult;
+
+    let internalName: string;
+    let inputFlags: InputFlags = 0;
+
+    // For inputs, the value might be an array capturing additional
+    // input flags.
+    if (Array.isArray(value)) {
+      internalName = value[0];
+      inputFlags = value[1];
+    } else {
+      internalName = value;
+    }
+
+    // If there are no host directive mappings, we want to remap using the alias map from the
+    // definition itself. If there is an alias map, it has two functions:
+    // 1. It serves as an allowlist of bindings that are exposed by the host directives. Only the
+    // ones inside the host directive map will be exposed on the host.
+    // 2. The public name of the property is aliased using the host directive alias map, rather
+    // than the alias map from the definition.
+    let finalPublicName: string = publicName;
+    if (hostDirectiveAliasMap !== null) {
+      // If there is no mapping, it's not part of the allowlist and this input/output
+      // is not captured and should be ignored.
+      if (!hostDirectiveAliasMap.hasOwnProperty(publicName)) {
+        continue;
       }
+      finalPublicName = hostDirectiveAliasMap[publicName];
+    }
+
+    if (type === 'inputs') {
+      addPropertyBinding(
+          bindingsResult as NodeInputBindings, directiveIndex, finalPublicName, internalName,
+          inputFlags);
+    } else {
+      addPropertyBinding(
+          bindingsResult as NodeOutputBindings, directiveIndex, finalPublicName, internalName);
     }
   }
-  return propertyAliases;
+  return bindingsResult;
 }
 
-function addPropertyAlias(
-    propertyAliases: PropertyAliases, directiveIndex: number, publicName: string,
-    internalName: string) {
-  if (propertyAliases.hasOwnProperty(publicName)) {
-    propertyAliases[publicName].push(directiveIndex, internalName);
+function addPropertyBinding(
+    bindings: NodeInputBindings, directiveIndex: number, publicName: string, internalName: string,
+    inputFlags: InputFlags): void;
+function addPropertyBinding(
+    bindings: NodeOutputBindings, directiveIndex: number, publicName: string,
+    internalName: string): void;
+
+function addPropertyBinding(
+    bindings: NodeInputBindings|NodeOutputBindings, directiveIndex: number, publicName: string,
+    internalName: string, inputFlags?: InputFlags) {
+  let values: (typeof bindings[typeof publicName]);
+
+  if (bindings.hasOwnProperty(publicName)) {
+    (values = bindings[publicName]).push(directiveIndex, internalName);
   } else {
-    propertyAliases[publicName] = [directiveIndex, internalName];
+    values = bindings[publicName] = [directiveIndex, internalName];
+  }
+
+  if (inputFlags !== undefined) {
+    (values as NodeInputBindings[typeof publicName]).push(inputFlags);
   }
 }
 
@@ -675,8 +732,8 @@ function initializeInputAndOutputAliases(
 
   const tNodeAttrs = tNode.attrs;
   const inputsFromAttrs: InitialInputData = [];
-  let inputsStore: PropertyAliases|null = null;
-  let outputsStore: PropertyAliases|null = null;
+  let inputsStore: NodeInputBindings|null = null;
+  let outputsStore: NodeOutputBindings|null = null;
 
   for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
     const directiveDef = tViewData[directiveIndex] as DirectiveDef<any>;
@@ -685,10 +742,10 @@ function initializeInputAndOutputAliases(
     const aliasedInputs = aliasData ? aliasData.inputs : null;
     const aliasedOutputs = aliasData ? aliasData.outputs : null;
 
-    inputsStore =
-        generatePropertyAliases(directiveDef.inputs, directiveIndex, inputsStore, aliasedInputs);
-    outputsStore =
-        generatePropertyAliases(directiveDef.outputs, directiveIndex, outputsStore, aliasedOutputs);
+    inputsStore = captureNodeBindings(
+        'inputs', directiveDef.inputs, directiveIndex, inputsStore, aliasedInputs);
+    outputsStore = captureNodeBindings(
+        'outputs', directiveDef.outputs, directiveIndex, outputsStore, aliasedOutputs);
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
     // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
@@ -740,7 +797,7 @@ export function elementPropertyInternal<T>(
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
-  let dataValue: PropertyAliasValue|undefined;
+  let dataValue: NodeInputBindings[typeof propName]|undefined;
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
     setInputsForProperty(tView, lView, dataValue, propName, value);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
@@ -799,7 +856,7 @@ function setNgReflectProperty(
 }
 
 export function setNgReflectProperties(
-    lView: LView, element: RElement|RComment, type: TNodeType, dataValue: PropertyAliasValue,
+    lView: LView, element: RElement|RComment, type: TNodeType, dataValue: NodeInputBindings[string],
     value: any) {
   if (type & (TNodeType.AnyRNode | TNodeType.Container)) {
     /**
@@ -810,7 +867,7 @@ export function setNgReflectProperties(
      * e.g. [0, 'change', 'change-minified']
      * we want to set the reflected property with the privateName: dataValue[i+1]
      */
-    for (let i = 0; i < dataValue.length; i += 2) {
+    for (let i = 0; i < dataValue.length; i += 3) {
       setNgReflectProperty(lView, element, type, dataValue[i + 1] as string, value);
     }
   }
@@ -1278,11 +1335,12 @@ function setInputsFromAttrs<T>(
   const initialInputs: InitialInputs|null = initialInputData![directiveIndex];
   if (initialInputs !== null) {
     for (let i = 0; i < initialInputs.length;) {
-      const publicName = initialInputs[i++];
-      const privateName = initialInputs[i++];
-      const value = initialInputs[i++];
+      const publicName = initialInputs[i++] as string;
+      const privateName = initialInputs[i++] as string;
+      const flags = initialInputs[i++] as InputFlags;
+      const value = initialInputs[i++] as string;
 
-      writeToDirectiveInput<T>(def, instance, publicName, privateName, value);
+      writeToDirectiveInput<T>(def, instance, publicName, privateName, flags, value);
 
       if (ngDevMode) {
         const nativeElement = getNativeByTNode(tNode, lView) as RElement;
@@ -1293,7 +1351,8 @@ function setInputsFromAttrs<T>(
 }
 
 function writeToDirectiveInput<T>(
-    def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, value: string) {
+    def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, flags: InputFlags,
+    value: unknown) {
   const prevConsumer = setActiveConsumer(null);
   try {
     const inputTransforms = def.inputTransforms;
@@ -1301,9 +1360,9 @@ function writeToDirectiveInput<T>(
       value = inputTransforms[privateName].call(instance, value);
     }
     if (def.setInput !== null) {
-      def.setInput(instance, value, publicName, privateName);
+      def.setInput(instance, value, publicName, privateName, flags);
     } else {
-      (instance as any)[privateName] = value;
+      applyValueToInputField(instance, privateName, flags, value);
     }
   } finally {
     setActiveConsumer(prevConsumer);
@@ -1326,7 +1385,7 @@ function writeToDirectiveInput<T>(
  * @param attrs Static attrs on this node.
  */
 function generateInitialInputs(
-    inputs: PropertyAliases, directiveIndex: number, attrs: TAttributes): InitialInputs|null {
+    inputs: NodeInputBindings, directiveIndex: number, attrs: TAttributes): InitialInputs|null {
   let inputsToStore: InitialInputs|null = null;
   let i = 0;
   while (i < attrs.length) {
@@ -1351,10 +1410,11 @@ function generateInitialInputs(
       // through the directive def, but we want to do it using the inputs store so that it can
       // account for host directive aliases.
       const inputConfig = inputs[attrName as string];
-      for (let j = 0; j < inputConfig.length; j += 2) {
+      for (let j = 0; j < inputConfig.length; j += 3) {
         if (inputConfig[j] === directiveIndex) {
           inputsToStore.push(
-              attrName as string, inputConfig[j + 1] as string, attrs[i + 1] as string);
+              attrName as string, inputConfig[j + 1] as string, inputConfig[j + 2] as InputFlags,
+              attrs[i + 1] as string);
           // A directive can't have multiple inputs with the same name so we can break here.
           break;
         }
@@ -1558,15 +1618,17 @@ export function handleError(lView: LView, error: any): void {
  * @param value Value to set.
  */
 export function setInputsForProperty(
-    tView: TView, lView: LView, inputs: PropertyAliasValue, publicName: string, value: any): void {
+    tView: TView, lView: LView, inputs: NodeInputBindings[typeof publicName], publicName: string,
+    value: unknown): void {
   for (let i = 0; i < inputs.length;) {
     const index = inputs[i++] as number;
     const privateName = inputs[i++] as string;
+    const flags = inputs[i++] as InputFlags;
     const instance = lView[index];
     ngDevMode && assertIndexInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
 
-    writeToDirectiveInput(def, instance, publicName, privateName, value);
+    writeToDirectiveInput(def, instance, publicName, privateName, flags, value);
   }
 }
 

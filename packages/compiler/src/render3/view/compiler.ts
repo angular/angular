@@ -509,14 +509,18 @@ function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
 function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
   return o.literalMap(Object.keys(meta.inputs).map(key => {
     const value = meta.inputs[key];
-    return {
-      key,
-      value: o.literalMap([
-        {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
-        {key: 'required', value: o.literal(value.required), quoted: true}
-      ]),
-      quoted: true
-    };
+    const values = [
+      {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
+      {key: 'required', value: o.literal(value.required), quoted: true},
+    ];
+
+    // TODO(legacy-partial-output-inputs): Consider always emitting this information,
+    // or leaving it as is.
+    if (value.isSignal) {
+      values.push({key: 'isSignal', value: o.literal(value.isSignal), quoted: true});
+    }
+
+    return {key, value: o.literalMap(values), quoted: true};
   }));
 }
 

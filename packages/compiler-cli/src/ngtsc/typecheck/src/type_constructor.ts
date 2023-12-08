@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ExpressionType, R3Identifiers, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
 
-import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
+import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
 import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
+    env: ReferenceEmitEnvironment, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
     typeParams: ts.TypeParameterDeclaration[]|undefined): ts.Statement {
   const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
   const rawType = ts.factory.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType);
+  const initParam = constructTypeCtorParameter(env, meta, rawType);
 
   const typeParameters = typeParametersWithDefaultTypes(typeParams);
 
@@ -88,7 +90,8 @@ export function generateTypeCtorDeclarationFn(
  * @returns a `ts.MethodDeclaration` for the type constructor.
  */
 export function generateInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata): ts.MethodDeclaration {
+    env: ReferenceEmitEnvironment, node: ClassDeclaration<ts.ClassDeclaration>,
+    meta: TypeCtorMetadata): ts.MethodDeclaration {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
@@ -96,7 +99,7 @@ export function generateInlineTypeCtor(
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
   const rawType = ts.factory.createTypeReferenceNode(node.name, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType);
+  const initParam = constructTypeCtorParameter(env, meta, rawType);
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
@@ -122,7 +125,7 @@ export function generateInlineTypeCtor(
 }
 
 function constructTypeCtorParameter(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
+    env: ReferenceEmitEnvironment, meta: TypeCtorMetadata,
     rawType: ts.TypeReferenceNode): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
@@ -137,20 +140,25 @@ function constructTypeCtorParameter(
 
   const plainKeys: ts.LiteralTypeNode[] = [];
   const coercedKeys: ts.PropertySignature[] = [];
+  const signalInputKeys: ts.LiteralTypeNode[] = [];
 
-  for (const {classPropertyName, transform} of meta.fields.inputs) {
-    if (!meta.coercedInputFields.has(classPropertyName)) {
+  for (const {classPropertyName, transform, isSignal} of meta.fields.inputs) {
+    if (isSignal) {
+      signalInputKeys.push(
+          ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)));
+    } else if (!meta.coercedInputFields.has(classPropertyName)) {
       plainKeys.push(
           ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)));
     } else {
+      const coercionType = transform != null ?
+          transform.type.node :
+          tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName);
+
       coercedKeys.push(ts.factory.createPropertySignature(
           /* modifiers */ undefined,
           /* name */ classPropertyName,
           /* questionToken */ undefined,
-          /* type */
-          transform == null ?
-              tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName) :
-              transform.type.node));
+          /* type */ coercionType));
     }
   }
   if (plainKeys.length > 0) {
@@ -166,6 +174,23 @@ function constructTypeCtorParameter(
     initType = initType !== null ?
         ts.factory.createIntersectionTypeNode([initType, coercedLiteral]) :
         coercedLiteral;
+  }
+  if (signalInputKeys.length > 0) {
+    const keyTypeUnion = ts.factory.createUnionTypeNode(signalInputKeys);
+
+    // Construct the UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>.
+    const unwrapDirectiveSignalInputsExpr = env.referenceExternalType(
+        R3Identifiers.UnwrapDirectiveSignalInputs.moduleName,
+        R3Identifiers.UnwrapDirectiveSignalInputs.name, [
+          // TODO:
+          new ExpressionType(new WrappedNodeExpr(rawType)),
+          new ExpressionType(new WrappedNodeExpr(keyTypeUnion))
+        ]);
+
+
+    initType = initType !== null ?
+        ts.factory.createIntersectionTypeNode([initType, unwrapDirectiveSignalInputsExpr]) :
+        unwrapDirectiveSignalInputsExpr;
   }
 
   if (initType === null) {
@@ -198,16 +223,17 @@ export function requiresInlineTypeCtor(
 /**
  * Add a default `= any` to type parameters that don't have a default value already.
  *
- * TypeScript uses the default type of a type parameter whenever inference of that parameter fails.
- * This can happen when inferring a complex type from 'any'. For example, if `NgFor`'s inference is
- * done with the TCB code:
+ * TypeScript uses the default type of a type parameter whenever inference of that parameter
+ * fails. This can happen when inferring a complex type from 'any'. For example, if `NgFor`'s
+ * inference is done with the TCB code:
  *
  * ```
  * class NgFor<T> {
  *   ngForOf: T[];
  * }
  *
- * declare function ctor<T>(o: Pick<NgFor<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>): NgFor<T>;
+ * declare function ctor<T>(o: Pick<NgFor<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
+ * NgFor<T>;
  * ```
  *
  * An invocation looks like:
@@ -220,14 +246,15 @@ export function requiresInlineTypeCtor(
  * assignment of type `number[]` to `ngForOf`'s type `T[]`. However, if `any` is passed instead:
  *
  * ```
- * var _t2 = ctor({ngForOf: [1, 2] as any, ngForTrackBy: null as any, ngForTemplate: null as any});
+ * var _t2 = ctor({ngForOf: [1, 2] as any, ngForTrackBy: null as any, ngForTemplate: null as
+ * any});
  * ```
  *
- * then inference for `T` fails (it cannot be inferred from `T[] = any`). In this case, `T` takes
- * the type `{}`, and so `_t2` is inferred as `NgFor<{}>`. This is obviously wrong.
+ * then inference for `T` fails (it cannot be inferred from `T[] = any`). In this case, `T`
+ * takes the type `{}`, and so `_t2` is inferred as `NgFor<{}>`. This is obviously wrong.
  *
- * Adding a default type to the generic declaration in the constructor solves this problem, as the
- * default type will be used in the event that inference fails.
+ * Adding a default type to the generic declaration in the constructor solves this problem, as
+ * the default type will be used in the event that inference fails.
  *
  * ```
  * declare function ctor<T = any>(o: Pick<NgFor<T>, 'ngForOf'>): NgFor<T>;

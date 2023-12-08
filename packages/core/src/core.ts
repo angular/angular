@@ -11,6 +11,7 @@
  * @description
  * Entry point from which you should import all public core APIs.
  */
+export * from './authoring';
 export * from './metadata';
 export * from './version';
 export {TypeDecorator} from './util/decorators';

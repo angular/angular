@@ -37,6 +37,9 @@ export interface InputOrOutput {
    * The property name used to bind this input or output in an Angular template.
    */
   readonly bindingPropertyName: BindingPropertyName;
+
+  /** Whether the input or output is signal based. */
+  readonly isSignal: boolean;
 }
 
 /**
@@ -86,17 +89,29 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
 
     for (const classPropertyName of Object.keys(obj)) {
       const value = obj[classPropertyName];
-      let inputOrOutput: T;
+      let inputOrOutput: InputOrOutput;
 
       if (typeof value === 'string') {
-        inputOrOutput = {classPropertyName, bindingPropertyName: value} as T;
+        inputOrOutput = {
+          classPropertyName,
+          bindingPropertyName: value,
+          // for now, if there is no explicit `InputOrOutput` with signal information,
+          // we always treat such as non-signal input/outputs.
+          isSignal: false,
+        };
       } else if (Array.isArray(value)) {
-        inputOrOutput = {classPropertyName, bindingPropertyName: value[0]} as T;
+        inputOrOutput = {
+          classPropertyName,
+          bindingPropertyName: value[0],
+          // for now, if there is no explicit `InputOrOutput` with signal information,
+          // we always treat such as non-signal input/outputs.
+          isSignal: false,
+        };
       } else {
         inputOrOutput = value;
       }
 
-      forwardMap.set(classPropertyName, inputOrOutput);
+      forwardMap.set(classPropertyName, inputOrOutput as T);
     }
 
     return new ClassPropertyMapping(forwardMap);

@@ -101,6 +101,7 @@ function resolveInput(bindingName: string, binding: InputMapping): InputMapping 
     classPropertyName: binding.classPropertyName,
     required: binding.required,
     transform: binding.transform,
+    isSignal: binding.isSignal,
   };
 }
 

@@ -319,8 +319,8 @@ function parseInterpolationConfig<TExpression>(
 /**
  * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
  */
-function parseEncapsulation<TExpression>(encapsulation: AstValue<ViewEncapsulation, TExpression>):
-    ViewEncapsulation {
+function parseEncapsulation<TExpression>(
+    encapsulation: AstValue<ViewEncapsulation|undefined, TExpression>): ViewEncapsulation {
   const symbolName = encapsulation.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(
@@ -337,7 +337,7 @@ function parseEncapsulation<TExpression>(encapsulation: AstValue<ViewEncapsulati
  * Determines the `ChangeDetectionStrategy` from the AST value's symbol name.
  */
 function parseChangeDetectionStrategy<TExpression>(
-    changeDetectionStrategy: AstValue<ChangeDetectionStrategy, TExpression>):
+    changeDetectionStrategy: AstValue<ChangeDetectionStrategy|undefined, TExpression>):
     ChangeDetectionStrategy {
   const symbolName = changeDetectionStrategy.getSymbolName();
   if (symbolName === null) {

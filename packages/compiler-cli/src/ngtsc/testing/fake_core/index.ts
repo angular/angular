@@ -119,3 +119,55 @@ export interface OnDestroy {
 export interface TrackByFunction<T> {
   <U extends T>(index: number, item: T&U): any;
 }
+
+/**
+ * -------
+ * Signal inputs
+ * ------
+ */
+
+export type InputOptions<ReadT, WriteT> = {
+  alias?: string;
+  transform?: (v: WriteT) => ReadT;
+};
+
+export type InputOptionsWithoutTransform<ReadT> =
+    InputOptions<ReadT, ReadT>&{transform?: undefined};
+export type InputOptionsWithTransform<ReadT, WriteT> =
+    Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+
+const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
+export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
+
+export type InputSignal<ReadT, WriteT = ReadT> = (() => ReadT)&{
+  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+};
+
+function inputFn<ReadT>(): InputSignal<ReadT|undefined>;
+function inputFn<ReadT>(
+    initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+function inputFn<ReadT, WriteT>(
+    initialValue: ReadT,
+    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+function inputFn<ReadT, WriteT>(_initialValue?: ReadT, _opts?: InputOptions<ReadT, WriteT>):
+    InputSignal<ReadT|undefined, WriteT> {
+  return null!;
+}
+
+function inputRequired<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+function inputRequired<ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>):
+    InputSignal<ReadT, WriteT>;
+function inputRequired<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
+    InputSignal<ReadT, WriteT> {
+  return null!;
+}
+
+inputFn.required = inputRequired;
+export const input: typeof inputFn&{required: typeof inputRequired} = inputFn;
+
+export type ɵUnwrapInputSignalWriteType<Field> =
+    Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
+  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+};

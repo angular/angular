@@ -120,9 +120,15 @@ export function extractDirectiveTypeCheckMeta(
   const hasNgTemplateContextGuard = staticMembers.some(
       member => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard');
 
-  const coercedInputFields =
-      new Set(staticMembers.map(extractCoercedInput)
-                  .filter((inputName): inputName is ClassPropertyName => inputName !== null));
+  const coercedInputFields = new Set<ClassPropertyName>(
+      staticMembers.map(extractCoercedInput).filter((inputName): inputName is ClassPropertyName => {
+        // If the input refers to a signal input, we will not respect coercion members.
+        // A transform function should be used instead.
+        if (inputName === null || inputs.getByClassPropertyName(inputName)?.isSignal) {
+          return false;
+        }
+        return true;
+      }));
 
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();

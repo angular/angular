@@ -19,7 +19,7 @@ export type ɵɵDirectiveDeclaration<
   Selector extends string,
   ExportAs extends string[],
   // `string` keys are for backwards compatibility with pre-16 versions.
-  InputMap extends {[key: string]: string|{alias: string|null, required: boolean}},
+  InputMap extends {[key: string]: string|{alias: string|null, required: boolean, isSignal?: boolean}},
   OutputMap extends {[key: string]: string},
   QueryFields extends string[],
   // Optional as this was added to align the `IsStandalone` parameters

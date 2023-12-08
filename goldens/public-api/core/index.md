@@ -6,6 +6,7 @@
 
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
+import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -867,11 +868,38 @@ export interface Input {
 export const Input: InputDecorator;
 
 // @public (undocumented)
+export const input: InputFn;
+
+// @public (undocumented)
 export interface InputDecorator {
     (arg?: string | Input): any;
     // (undocumented)
     new (arg?: string | Input): any;
 }
+
+// @public (undocumented)
+export type InputFn = typeof ɵinput & {
+    required: typeof ɵinputRequired;
+};
+
+// @public (undocumented)
+export type InputOptions<ReadT, WriteT> = {
+    alias?: string;
+    transform?: (v: WriteT) => ReadT;
+};
+
+// @public (undocumented)
+export type InputOptionsWithoutTransform<ReadT> = Omit<InputOptions<ReadT, ReadT>, 'transform'>;
+
+// @public (undocumented)
+export type InputOptionsWithTransform<ReadT, WriteT> = Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>> & InputOptions<ReadT, WriteT>;
+
+// @public
+export type InputSignal<ReadT, WriteT = ReadT> = Signal<ReadT> & {
+    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+    [SIGNAL]: InputSignalNode<ReadT, WriteT>;
+};
 
 // @public
 export function isDevMode(): boolean;
@@ -1636,21 +1664,20 @@ export interface WritableSignal<T> extends Signal<T> {
     update(updateFn: (value: T) => T): void;
 }
 
-// @public
-export function ɵɵdefineInjectable<T>(opts: {
-    token: unknown;
-    providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
-    factory: () => T;
-}): unknown;
-
-// @public
-export function ɵɵinject<T>(token: ProviderToken<T>): T;
+// @public (undocumented)
+export function ɵinput<ReadT>(): InputSignal<ReadT | undefined>;
 
 // @public (undocumented)
-export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
+export function ɵinput<ReadT>(ɵinput: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
 
-// @public
-export function ɵɵinjectAttribute(attrNameToInject: string): string | null;
+// @public (undocumented)
+export function ɵinput<ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+
+// @public (undocumented)
+export function ɵinputRequired<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+
+// @public (undocumented)
+export function ɵinputRequired<ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
 
 // (No @packageDocumentation comment for this package)
 

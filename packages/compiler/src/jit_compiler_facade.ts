@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, InputTransformFunction, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, LegacyInputPartialMapping, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import type {BoundTarget} from './render3/view/t2_api';
 import {R3TargetBinder} from './render3/view/t2_binder';
@@ -325,7 +325,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
   const inputsFromMetadata = parseInputsArray(facade.inputs || []);
   const outputsFromMetadata = parseMappingStringArray(facade.outputs || []);
   const propMetadata = facade.propMetadata;
-  const inputsFromType: InputMap = {};
+  const inputsFromType: Record<string, R3InputMetadata> = {};
   const outputsFromType: Record<string, string> = {};
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
@@ -335,6 +335,9 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
             required: ann.required || false,
+            // not supported in JIT
+            // isSignal is only checked at build time for diagnostics.
+            isSignal: false,
             transformFunction: ann.transform != null ? new WrappedNodeExpr(ann.transform) : null,
           };
         } else if (isOutput(ann)) {
@@ -368,7 +371,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     type: wrapReference(declaration.type),
     typeSourceSpan,
     selector: declaration.selector ?? null,
-    inputs: declaration.inputs ? inputsMappingToInputMetadata(declaration.inputs) : {},
+    inputs: declaration.inputs ? inputsPartialMetadataToInputMetadata(declaration.inputs) : {},
     outputs: declaration.outputs ?? {},
     host: convertHostDeclarationToMetadata(declaration.host),
     queries: (declaration.queries ?? []).map(convertQueryDeclarationToMetadata),
@@ -697,39 +700,69 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function inputsMappingToInputMetadata(inputs: Record<string, string|[string, string, InputTransformFunction?]>) {
-  return Object.keys(inputs).reduce<InputMap>((result, key) => {
-    const value = inputs[key];
+function inputsPartialMetadataToInputMetadata(
+    inputs: NonNullable<R3DeclareDirectiveFacade['inputs']>) {
+  return Object.keys(inputs).reduce<Record<string, R3InputMetadata>>(
+      (result, minifiedClassName) => {
+        const value = inputs[minifiedClassName];
 
-    if (typeof value === 'string') {
-      result[key] = {
-        bindingPropertyName: value,
-        classPropertyName: value,
-        transformFunction: null,
-        required: false,
-      };
-    } else {
-      result[key] = {
-        bindingPropertyName: value[0],
-        classPropertyName: value[1],
-        transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
-        required: false,
-      };
-    }
+        // Handle legacy partial input output.
+        if (typeof value === 'string' || Array.isArray(value)) {
+          result[minifiedClassName] = parseLegacyInputPartialOutput(value);
+        } else {
+          result[minifiedClassName] = {
+            bindingPropertyName: value.publicName,
+            classPropertyName: minifiedClassName,
+            transformFunction: value.transformFunction !== null ?
+                new WrappedNodeExpr(value.transformFunction) :
+                null,
+            required: value.isRequired,
+            isSignal: value.isSignal,
+          };
+        }
 
-    return result;
-  }, {});
+        return result;
+      },
+      {});
+}
+
+/**
+ * Parses the legacy input partial output. For more details see `partial/directive.ts`.
+ * TODO(legacy-partial-output-inputs): Remove in v18.
+ */
+function parseLegacyInputPartialOutput(value: LegacyInputPartialMapping): R3InputMetadata {
+  if (typeof value === 'string') {
+    return {
+      bindingPropertyName: value,
+      classPropertyName: value,
+      transformFunction: null,
+      required: false,
+      // legacy partial output does not capture signal inputs.
+      isSignal: false,
+    };
+  }
+
+  return {
+    bindingPropertyName: value[0],
+    classPropertyName: value[1],
+    transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
+    required: false,
+    // legacy partial output does not capture signal inputs.
+    isSignal: false,
+  };
 }
 
 function parseInputsArray(
     values: (string|{name: string, alias?: string, required?: boolean, transform?: Function})[]) {
-  return values.reduce<InputMap>((results, value) => {
+  return values.reduce<Record<string, R3InputMetadata>>((results, value) => {
     if (typeof value === 'string') {
       const [bindingPropertyName, classPropertyName] = parseMappingString(value);
       results[classPropertyName] = {
         bindingPropertyName,
         classPropertyName,
         required: false,
+        // Signal inputs not supported for the inputs array.
+        isSignal: false,
         transformFunction: null,
       };
     } else {
@@ -737,6 +770,8 @@ function parseInputsArray(
         bindingPropertyName: value.alias || value.name,
         classPropertyName: value.name,
         required: value.required || false,
+        // Signal inputs not supported for the inputs array.
+        isSignal: false,
         transformFunction: value.transform != null ? new WrappedNodeExpr(value.transform) : null,
       };
     }

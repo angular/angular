@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, InputMapping, InputTransform, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DecoratorInputTransform, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -104,6 +104,17 @@ export function angularCoreDts(): TestFile {
     }
 
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+    export declare const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
+    export declare const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
+
+    export declare type InputSignal<ReadT, WriteT = ReadT> = (() => ReadT)&{
+      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+    };
+
+    export type ɵUnwrapInputSignalWriteType<Field> = Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {[P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>};
    `
   };
 }
@@ -240,7 +251,8 @@ export interface TestDirective extends Partial<Pick<
           classPropertyName: string;
           bindingPropertyName: string;
           required: boolean;
-          transform: InputTransform|null;
+          isSignal: boolean;
+          transform: DecoratorInputTransform|null;
         }
   };
   outputs?: {[fieldName: string]: string};

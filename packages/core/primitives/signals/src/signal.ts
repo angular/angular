@@ -25,7 +25,6 @@ let postSignalSetFn: (() => void)|null = null;
 export interface SignalNode<T> extends ReactiveNode {
   value: T;
   equal: ValueEqualityFn<T>;
-  readonly[SIGNAL]: SignalNode<T>;
 }
 
 export type SignalBaseGetter<T> = (() => T)&{readonly[SIGNAL]: unknown};
@@ -99,7 +98,7 @@ export function signalMutateFn<T>(node: SignalNode<T>, mutator: (value: T) => vo
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
 // TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
-const SIGNAL_NODE: object = /* @__PURE__ */ (() => {
+export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
     equal: defaultEquals,

@@ -319,6 +319,13 @@ export interface R3InputMetadata {
   classPropertyName: string;
   bindingPropertyName: string;
   required: boolean;
+  isSignal: boolean;
+  /**
+   * Transform function for the input.
+   *
+   * Null if there is no transform, or if this is a signal input.
+   * Signal inputs capture their transform as part of the `InputSignal`.
+   */
   transformFunction: o.Expression|null;
 }
 

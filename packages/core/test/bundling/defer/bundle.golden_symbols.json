@@ -222,6 +222,9 @@
     "name": "Injector"
   },
   {
+    "name": "InputFlags"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -417,6 +420,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -588,7 +594,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToViewTree"
@@ -618,6 +624,9 @@
     "name": "applyToElementOrContainer"
   },
   {
+    "name": "applyValueToInputField"
+  },
+  {
     "name": "applyView"
   },
   {
@@ -640,6 +649,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -799,9 +811,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1041,6 +1050,9 @@
     "name": "init_application_tokens"
   },
   {
+    "name": "init_apply_value_input_field"
+  },
+  {
     "name": "init_array_utils"
   },
   {
@@ -1063,6 +1075,9 @@
   },
   {
     "name": "init_attrs_utils"
+  },
+  {
+    "name": "init_authoring"
   },
   {
     "name": "init_bindings"
@@ -1210,6 +1225,9 @@
   },
   {
     "name": "init_definition"
+  },
+  {
+    "name": "init_definition2"
   },
   {
     "name": "init_definition_factory"
@@ -1462,6 +1480,15 @@
   },
   {
     "name": "init_innerSubscribe"
+  },
+  {
+    "name": "init_input"
+  },
+  {
+    "name": "init_input_signal"
+  },
+  {
+    "name": "init_input_signal_node"
   },
   {
     "name": "init_input_transforms_feature"
