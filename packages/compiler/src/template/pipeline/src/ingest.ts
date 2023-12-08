@@ -399,8 +399,11 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
 }
 
 function ingestDeferView(
-    unit: ViewCompilationUnit, suffix: string, children?: t.Node[],
-    sourceSpan?: ParseSourceSpan): ir.TemplateOp|null {
+    unit: ViewCompilationUnit, suffix: string, i18nMeta: i18n.I18nMeta|undefined,
+    children?: t.Node[], sourceSpan?: ParseSourceSpan): ir.TemplateOp|null {
+  if (i18nMeta !== undefined && !(i18nMeta instanceof i18n.BlockPlaceholder)) {
+    throw Error('Unhandled i18n metadata type for defer block');
+  }
   if (children === undefined) {
     return null;
   }
@@ -408,7 +411,7 @@ function ingestDeferView(
   ingestNodes(secondaryView, children);
   const templateOp = ir.createTemplateOp(
       secondaryView.xref, ir.TemplateKind.Block, null, `Defer${suffix}`, ir.Namespace.HTML,
-      undefined, sourceSpan!);
+      i18nMeta, sourceSpan!);
   unit.create.push(templateOp);
   return templateOp;
 }
@@ -420,13 +423,17 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   }
 
   // Generate the defer main view and all secondary views.
-  const main = ingestDeferView(unit, '', deferBlock.children, deferBlock.sourceSpan)!;
+  const main =
+      ingestDeferView(unit, '', deferBlock.i18n, deferBlock.children, deferBlock.sourceSpan)!;
   const loading = ingestDeferView(
-      unit, 'Loading', deferBlock.loading?.children, deferBlock.loading?.sourceSpan);
+      unit, 'Loading', deferBlock.loading?.i18n, deferBlock.loading?.children,
+      deferBlock.loading?.sourceSpan);
   const placeholder = ingestDeferView(
-      unit, 'Placeholder', deferBlock.placeholder?.children, deferBlock.placeholder?.sourceSpan);
-  const error =
-      ingestDeferView(unit, 'Error', deferBlock.error?.children, deferBlock.error?.sourceSpan);
+      unit, 'Placeholder', deferBlock.placeholder?.i18n, deferBlock.placeholder?.children,
+      deferBlock.placeholder?.sourceSpan);
+  const error = ingestDeferView(
+      unit, 'Error', deferBlock.error?.i18n, deferBlock.error?.children,
+      deferBlock.error?.sourceSpan);
 
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
