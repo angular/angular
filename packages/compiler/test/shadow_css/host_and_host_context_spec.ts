@@ -199,6 +199,7 @@ describe('ShadowCss, :host and :host-context', () => {
 
   it('should pseudo class function with multiple arguments', () => {
     expect(shim('host:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('host[contenta]:is(.foo) {}');
+    expect(shim(':is(.dark :host) {}', 'contenta', 'a-host')).toEqualCss(':is(.dark [a-host]) {}');
 
     // We noticed some unexpected behaviors that were happening either on dev or on prod builds.
     // It's important to test with and without is a space before child combinator as the optimizer

@@ -878,7 +878,7 @@ const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
 const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
-const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
+const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s\)]*)/;
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
   /::content/g,
