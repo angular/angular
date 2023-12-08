@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {patchFakeAsyncTest} from '../zone-spec/fake-async-test';
 
-patchFakeAsyncTest(Zone);
+import {patchBrowserLegacy} from './browser-legacy';
+
+patchBrowserLegacy();

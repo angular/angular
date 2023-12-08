@@ -6,6 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './rollup-common';
-import './browser-legacy';
-import './browser';
+import {loadZone} from '../zone';
+
+import {patchBrowser} from './browser';
+import {patchBrowserLegacy} from './browser-legacy';
+import {patchCommon} from './rollup-common';
+
+const Zone = loadZone();
+patchCommon(Zone);
+patchBrowserLegacy();
+patchBrowser(Zone);
