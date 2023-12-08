@@ -10,23 +10,6 @@
  * @suppress {globalThis,undefinedVars}
  */
 
-declare global {
-  /**
-   * Extend the Error with additional fields for rewritten stack frames
-   */
-  interface Error {
-    /**
-     * Stack trace where extra frames have been removed and zone names added.
-     */
-    zoneAwareStack?: string;
-
-    /**
-     * Original stack trace with no modifications
-     */
-    originalStack?: string;
-  }
-}
-
 Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   /*
    * This code patches Error so that:
