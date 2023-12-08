@@ -517,7 +517,10 @@ export interface ListenerOp extends Op<CreateOp> {
  */
 export function createListenerOp(
     target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
-    animationPhase: string|null, hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
+    handlerOps: Array<UpdateOp>, animationPhase: string|null, hostListener: boolean,
+    sourceSpan: ParseSourceSpan): ListenerOp {
+  const handlerList = new OpList<UpdateOp>();
+  handlerList.push(handlerOps);
   return {
     kind: OpKind.Listener,
     target,
@@ -525,7 +528,7 @@ export function createListenerOp(
     tag,
     hostListener,
     name,
-    handlerOps: new OpList(),
+    handlerOps: handlerList,
     handlerFnName: null,
     consumesDollarEvent: false,
     isAnimationListener: animationPhase !== null,
