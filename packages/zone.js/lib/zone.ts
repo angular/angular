@@ -26,6 +26,21 @@ declare global {
   type MicroTask = _MicroTask;
   type MacroTask = _MacroTask;
   type EventTask = _EventTask;
+
+  /**
+   * Extend the Error with additional fields for rewritten stack frames
+   */
+  interface Error {
+    /**
+     * Stack trace where extra frames have been removed and zone names added.
+     */
+    zoneAwareStack?: string;
+
+    /**
+     * Original stack trace with no modifications
+     */
+    originalStack?: string;
+  }
 }
 
 // if global['Zone'] already exists (maybe zone.js was already loaded or
