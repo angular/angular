@@ -166,7 +166,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
       element.startSourceSpan);
   unit.create.push(startOp);
 
-  ingestBindings(unit, startOp, element, null);
+  ingestElementBindings(unit, startOp, element);
   ingestReferences(startOp, element);
 
   // Start i18n, if needed, goes after the element create and bindings, but before the nodes
@@ -221,7 +221,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
       i18nPlaceholder, tmpl.startSourceSpan);
   unit.create.push(templateOp);
 
-  ingestBindings(unit, templateOp, tmpl, templateKind);
+  ingestTemplateBindings(unit, templateOp, tmpl, templateKind);
   ingestReferences(templateOp, tmpl);
   ingestNodes(childView, tmpl.children);
 
@@ -250,14 +250,9 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   const op = ir.createProjectionOp(
       unit.job.allocateXrefId(), content.selector, content.i18n, attrs, content.sourceSpan);
   for (const attr of content.attributes) {
-    let b = createBinding(
-        unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, null, asMessage(attr.i18n));
-    if (b?.kind === ir.OpKind.Binding) {
-      unit.update.push(b);
-    } else if (b?.kind === ir.OpKind.ExtractedAttribute) {
-      unit.create.push(b);
-    }
+    unit.update.push(ir.createBindingOp(
+        op.xref, ir.BindingKind.Attribute, attr.name, o.literal(attr.value), null,
+        SecurityContext.NONE, true, false, null, asMessage(attr.i18n), attr.sourceSpan));
   }
   unit.create.push(op);
 }
@@ -753,13 +748,13 @@ function convertAst(
 }
 
 function convertAstWithInterpolation(
-    job: CompilationJob, value: e.AST|o.Expression, i18nMeta?: i18n.Message): o.Expression|
-    ir.Interpolation {
+    job: CompilationJob, value: e.AST|o.Expression,
+    i18nMeta: i18n.I18nMeta|null|undefined): o.Expression|ir.Interpolation {
   let expression: o.Expression|ir.Interpolation;
   if (value instanceof e.Interpolation) {
     expression = new ir.Interpolation(
         value.strings, value.expressions.map(e => convertAst(e, job, null)),
-        Object.keys(i18nMeta?.placeholders ?? {}));
+        Object.keys(asMessage(i18nMeta)?.placeholders ?? {}));
   } else if (value instanceof e.AST) {
     expression = convertAst(value, job, null);
   } else {
@@ -777,28 +772,18 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Animation, ir.BindingKind.Animation],
 ]);
 
-enum BindingFlags {
+enum TemplateBindingFlags {
   None = 0b000,
-
-  /**
-   * The binding is to a static text literal and not to an expression.
-   */
-  TextValue = 0b0001,
 
   /**
    * The binding belongs to the `<ng-template>` side of a `t.Template`.
    */
-  BindingTargetsTemplate = 0b0010,
+  BindingTargetsTemplate = 0b01,
 
   /**
    * The binding is on a structural directive.
    */
-  IsStructuralTemplateAttribute = 0b0100,
-
-  /**
-   * The binding is on a `t.Template`.
-   */
-  OnNgTemplateElement = 0b1000,
+  IsStructuralTemplateAttribute = 0b10,
 }
 
 /**
@@ -825,9 +810,9 @@ function isPlainTemplate(tmpl: t.Template) {
 /**
  * Ensures that the i18nMeta, if provided, is an i18n.Message.
  */
-function asMessage(i18nMeta?: i18n.I18nMeta): i18n.Message|undefined {
-  if (i18nMeta === undefined) {
-    return undefined;
+function asMessage(i18nMeta: i18n.I18nMeta|null|undefined): i18n.Message|null {
+  if (i18nMeta == null) {
+    return null;
   }
   if (!(i18nMeta instanceof i18n.Message)) {
     throw Error(`Unhandled i18n metadata type for binding: ${i18nMeta.constructor.name}`);
@@ -836,52 +821,28 @@ function asMessage(i18nMeta?: i18n.I18nMeta): i18n.Message|undefined {
 }
 
 /**
- * Process all of the bindings on an element-like structure in the template AST and convert them
- * to their IR representation.
+ * Process all of the bindings on an element in the template AST and convert them to their IR
+ * representation.
  */
-function ingestBindings(
-    unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element|t.Template,
-    templateKind: ir.TemplateKind|null): void {
-  let flags: BindingFlags = BindingFlags.None;
+function ingestElementBindings(
+    unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element): void {
   let bindings = new Array<ir.BindingOp|ir.ExtractedAttributeOp|null>();
 
-
-  if (element instanceof t.Template) {
-    flags |= BindingFlags.OnNgTemplateElement;
-    if (isPlainTemplate(element)) {
-      flags |= BindingFlags.BindingTargetsTemplate;
-    }
-
-    const templateAttrFlags =
-        flags | BindingFlags.BindingTargetsTemplate | BindingFlags.IsStructuralTemplateAttribute;
-    for (const attr of element.templateAttrs) {
-      if (attr instanceof t.TextAttribute) {
-        bindings.push(createBinding(
-            unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-            SecurityContext.NONE, attr.sourceSpan, templateAttrFlags | BindingFlags.TextValue,
-            templateKind, asMessage(attr.i18n)));
-      } else {
-        bindings.push(createBinding(
-            unit, op.xref, attr.name, astOf(attr.value), attr.type, attr.unit, attr.securityContext,
-            attr.sourceSpan, templateAttrFlags, templateKind, asMessage(attr.i18n)));
-      }
-    }
-  }
-
   for (const attr of element.attributes) {
-    // This is only attribute TextLiteral bindings, such as `attr.foo="bar"`. This can never be
-    // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
-    // `BindingType.Attribute`.
-    bindings.push(createBinding(
-        unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, flags | BindingFlags.TextValue, templateKind,
-        asMessage(attr.i18n)));
+    // Attribute literal bindings, such as `attr.foo="bar"`.
+    bindings.push(ir.createBindingOp(
+        op.xref, ir.BindingKind.Attribute, attr.name,
+        convertAstWithInterpolation(unit.job, o.literal(attr.value), attr.i18n), null,
+        SecurityContext.NONE, true, false, null, asMessage(attr.i18n), attr.sourceSpan));
   }
 
   for (const input of element.inputs) {
-    bindings.push(createBinding(
-        unit, op.xref, input.name, astOf(input.value), input.type, input.unit,
-        input.securityContext, input.sourceSpan, flags, templateKind, asMessage(input.i18n)));
+    // All dynamic bindings (both attribute and property bindings).
+    bindings.push(ir.createBindingOp(
+        op.xref, BINDING_KINDS.get(input.type)!, input.name,
+        convertAstWithInterpolation(unit.job, astOf(input.value), input.i18n), input.unit,
+        input.securityContext, false, false, null, asMessage(input.i18n) ?? null,
+        input.sourceSpan));
   }
 
   unit.create.push(bindings.filter(
@@ -893,18 +854,84 @@ function ingestBindings(
       throw Error('Animation listener should have a phase');
     }
 
-    if (element instanceof t.Template && !isPlainTemplate(element)) {
-      unit.create.push(ir.createExtractedAttributeOp(
-          op.xref, ir.BindingKind.Property, output.name, null, null, null));
-      continue;
-    }
-
     unit.create.push(ir.createListenerOp(
         op.xref, op.handle, output.name, op.tag,
         makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
         output.sourceSpan));
   }
 
+  // If any of the bindings on this element have an i18n message, then an i18n attrs configuration
+  // op is also required.
+  if (bindings.some(b => b?.i18nMessage) !== null) {
+    unit.create.push(
+        ir.createI18nAttributesOp(unit.job.allocateXrefId(), new ir.SlotHandle(), op.xref));
+  }
+}
+
+/**
+ * Process all of the bindings on a template in the template AST and convert them to their IR
+ * representation.
+ */
+function ingestTemplateBindings(
+    unit: ViewCompilationUnit, op: ir.ElementOpBase, template: t.Template,
+    templateKind: ir.TemplateKind|null): void {
+  let flags: TemplateBindingFlags = TemplateBindingFlags.None;
+  let bindings = new Array<ir.BindingOp|ir.ExtractedAttributeOp|null>();
+
+  if (isPlainTemplate(template)) {
+    flags |= TemplateBindingFlags.BindingTargetsTemplate;
+  }
+
+  const templateAttrFlags = flags | TemplateBindingFlags.BindingTargetsTemplate |
+      TemplateBindingFlags.IsStructuralTemplateAttribute;
+  for (const attr of template.templateAttrs) {
+    if (attr instanceof t.TextAttribute) {
+      bindings.push(createTemplateBinding(
+          unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+          SecurityContext.NONE, attr.sourceSpan, templateAttrFlags, true, templateKind,
+          asMessage(attr.i18n)));
+    } else {
+      bindings.push(createTemplateBinding(
+          unit, op.xref, attr.name, astOf(attr.value), attr.type, attr.unit, attr.securityContext,
+          attr.sourceSpan, templateAttrFlags, false, templateKind, asMessage(attr.i18n)));
+    }
+  }
+
+  for (const attr of template.attributes) {
+    // This is only attribute TextLiteral bindings, such as `attr.foo="bar"`. This can never be
+    // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
+    // `BindingType.Attribute`.
+    bindings.push(createTemplateBinding(
+        unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
+        SecurityContext.NONE, attr.sourceSpan, flags, true, templateKind, asMessage(attr.i18n)));
+  }
+
+  for (const input of template.inputs) {
+    bindings.push(createTemplateBinding(
+        unit, op.xref, input.name, astOf(input.value), input.type, input.unit,
+        input.securityContext, input.sourceSpan, flags, false, templateKind,
+        asMessage(input.i18n)));
+  }
+
+  unit.create.push(bindings.filter(
+      (b): b is ir.ExtractedAttributeOp => b?.kind === ir.OpKind.ExtractedAttribute));
+  unit.update.push(bindings.filter((b): b is ir.BindingOp => b?.kind === ir.OpKind.Binding));
+
+  for (const output of template.outputs) {
+    if (output.type === e.ParsedEventType.Animation && output.phase === null) {
+      throw Error('Animation listener should have a phase');
+    }
+
+    if (templateKind === ir.TemplateKind.Structural) {
+      unit.create.push(ir.createExtractedAttributeOp(
+          op.xref, ir.BindingKind.Property, output.name, null, null, null));
+    } else {
+      unit.create.push(ir.createListenerOp(
+          op.xref, op.handle, output.name, op.tag,
+          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
+          output.sourceSpan));
+    }
+  }
 
   // TODO: Perhaps we could do this in a phase? (It likely wouldn't change the slot indices.)
   if (bindings.some(b => b?.i18nMessage) !== null) {
@@ -913,21 +940,24 @@ function ingestBindings(
   }
 }
 
-function createBinding(
+function createTemplateBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
     type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, flags: BindingFlags, templateKind: ir.TemplateKind|null,
-    i18nMessage: i18n.Message|undefined): ir.BindingOp|ir.ExtractedAttributeOp|null {
-  if (flags & BindingFlags.OnNgTemplateElement && !(flags & BindingFlags.BindingTargetsTemplate) &&
+    sourceSpan: ParseSourceSpan, flags: TemplateBindingFlags, isTextBinding: boolean,
+    templateKind: ir.TemplateKind|null, i18nMessage: i18n.Message|null): ir.BindingOp|
+    ir.ExtractedAttributeOp|null {
+  if (!(flags & TemplateBindingFlags.BindingTargetsTemplate) &&
       (type === e.BindingType.Property || type === e.BindingType.Class ||
        type === e.BindingType.Style)) {
-    // This binding only exists for later const extraction, and is not an actual binding to be
-    // created.
+    // Because this binding doesn't really target the ng-template, it must be a binding on an inner
+    // node of a structural template. We can't skip it entirely, because we still need it on the
+    // ng-template's consts (e.g. for the purposes of directive matching). However, we should not
+    // generate an update instruction for it.
     return ir.createExtractedAttributeOp(
         xref, ir.BindingKind.Property, name, null, null, i18nMessage ?? null);
   }
 
-  if (type === e.BindingType.Attribute && !(flags & BindingFlags.TextValue) &&
+  if (type === e.BindingType.Attribute && !isTextBinding &&
       templateKind === ir.TemplateKind.Structural) {
     // TODO: big comment about why this is stupid.
     return null;
@@ -936,8 +966,8 @@ function createBinding(
   return ir.createBindingOp(
       xref, BINDING_KINDS.get(type)!, name,
       convertAstWithInterpolation(view.job, value, i18nMessage), unit, securityContext,
-      !!(flags & BindingFlags.TextValue), !!(flags & BindingFlags.IsStructuralTemplateAttribute),
-      templateKind, i18nMessage ?? null, sourceSpan);
+      isTextBinding, !!(flags & TemplateBindingFlags.IsStructuralTemplateAttribute), templateKind,
+      i18nMessage ?? null, sourceSpan);
 }
 
 function makeListenerHandlerOps(
@@ -1055,15 +1085,9 @@ function ingestControlFlowInsertionPoint(
   // and they can be used in directive matching (in the case of `Template.templateAttrs`).
   if (root !== null) {
     for (const attr of root.attributes) {
-      let b = createBinding(
-          unit, xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-          SecurityContext.NONE, attr.sourceSpan, BindingFlags.TextValue, ir.TemplateKind.Block,
-          asMessage(attr.i18n));
-      if (b?.kind === ir.OpKind.Binding) {
-        unit.update.push(b);
-      } else if (b?.kind === ir.OpKind.ExtractedAttribute) {
-        unit.create.push(b);
-      }
+      unit.update.push(ir.createBindingOp(
+          xref, ir.BindingKind.Attribute, attr.name, o.literal(attr.value), null,
+          SecurityContext.NONE, true, false, null, asMessage(attr.i18n), attr.sourceSpan));
     }
 
     const tagName = root instanceof t.Element ? root.name : root.tagName;
