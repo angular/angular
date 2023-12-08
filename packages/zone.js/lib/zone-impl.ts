@@ -714,7 +714,7 @@ if (global['Zone']) {
   }
 }
 
-class Zone implements AmbientZone {
+class ZoneImpl implements AmbientZone {
   // tslint:disable-next-line:require-internal-with-underscore
   static __symbol__: (name: string) => string = __symbol__;
 
@@ -730,7 +730,7 @@ class Zone implements AmbientZone {
   }
 
   static get root(): AmbientZone {
-    let zone = Zone.current;
+    let zone = ZoneImpl.current;
     while (zone.parent) {
       zone = zone.parent;
     }
@@ -757,7 +757,7 @@ class Zone implements AmbientZone {
     } else if (!global['__Zone_disable_' + name]) {
       const perfName = 'Zone:' + name;
       mark(perfName);
-      patches[name] = fn(global, Zone, _api);
+      patches[name] = fn(global, ZoneImpl, _api);
       performanceMeasure(perfName, perfName);
     }
   }
@@ -771,13 +771,13 @@ class Zone implements AmbientZone {
   }
 
 
-  private _parent: Zone|null;
+  private _parent: ZoneImpl|null;
   private _name: string;
   private _properties: {[key: string]: any};
   private _zoneDelegate: _ZoneDelegate;
 
-  constructor(parent: Zone|null, zoneSpec: ZoneSpec|null) {
-    this._parent = parent;
+  constructor(parent: ZoneImpl|null, zoneSpec: ZoneSpec|null) {
+    this._parent = parent as ZoneImpl;
     this._name = zoneSpec ? zoneSpec.name || 'unnamed' : '<root>';
     this._properties = zoneSpec && zoneSpec.properties || {};
     this._zoneDelegate =
@@ -785,12 +785,12 @@ class Zone implements AmbientZone {
   }
 
   public get(key: string): any {
-    const zone: Zone = this.getZoneWith(key) as Zone;
+    const zone: ZoneImpl = this.getZoneWith(key) as ZoneImpl;
     if (zone) return zone._properties[key];
   }
 
   public getZoneWith(key: string): AmbientZone|null {
-    let current: Zone|null = this;
+    let current: ZoneImpl|null = this;
     while (current) {
       if (current._properties.hasOwnProperty(key)) {
         return current;
@@ -810,7 +810,7 @@ class Zone implements AmbientZone {
       throw new Error('Expecting function got: ' + callback);
     }
     const _callback = this._zoneDelegate.intercept(this, callback, source);
-    const zone: Zone = this;
+    const zone: ZoneImpl = this;
     return function(this: unknown) {
       return zone.runGuarded(_callback, this, <any>arguments, source);
     } as any as T;
@@ -1003,7 +1003,10 @@ const DELEGATE_ZS: ZoneSpec = {
 };
 
 class _ZoneDelegate implements ZoneDelegate {
-  public zone: Zone;
+  public get zone(): Zone {
+    return this._zone;
+  }
+  private _zone: ZoneImpl;
 
   private _taskCounts:
       {microTask: number,
@@ -1022,77 +1025,77 @@ class _ZoneDelegate implements ZoneDelegate {
 
   private _invokeDlgt: _ZoneDelegate|null;
   private _invokeZS: ZoneSpec|null;
-  private _invokeCurrZone: Zone|null;
+  private _invokeCurrZone: ZoneImpl|null;
 
   private _handleErrorDlgt: _ZoneDelegate|null;
   private _handleErrorZS: ZoneSpec|null;
-  private _handleErrorCurrZone: Zone|null;
+  private _handleErrorCurrZone: ZoneImpl|null;
 
   private _scheduleTaskDlgt: _ZoneDelegate|null;
   private _scheduleTaskZS: ZoneSpec|null;
-  private _scheduleTaskCurrZone: Zone|null;
+  private _scheduleTaskCurrZone: ZoneImpl|null;
 
   private _invokeTaskDlgt: _ZoneDelegate|null;
   private _invokeTaskZS: ZoneSpec|null;
-  private _invokeTaskCurrZone: Zone|null;
+  private _invokeTaskCurrZone: ZoneImpl|null;
 
   private _cancelTaskDlgt: _ZoneDelegate|null;
   private _cancelTaskZS: ZoneSpec|null;
-  private _cancelTaskCurrZone: Zone|null;
+  private _cancelTaskCurrZone: ZoneImpl|null;
 
   private _hasTaskDlgt: _ZoneDelegate|null;
   private _hasTaskDlgtOwner: _ZoneDelegate|null;
   private _hasTaskZS: ZoneSpec|null;
-  private _hasTaskCurrZone: Zone|null;
+  private _hasTaskCurrZone: ZoneImpl|null;
 
   constructor(zone: Zone, parentDelegate: _ZoneDelegate|null, zoneSpec: ZoneSpec|null) {
-    this.zone = zone;
+    this._zone = zone as ZoneImpl;
     this._parentDelegate = parentDelegate;
 
     this._forkZS = zoneSpec && (zoneSpec && zoneSpec.onFork ? zoneSpec : parentDelegate!._forkZS);
     this._forkDlgt = zoneSpec && (zoneSpec.onFork ? parentDelegate : parentDelegate!._forkDlgt);
-    this._forkCurrZone = zoneSpec && (zoneSpec.onFork ? this.zone : parentDelegate!._forkCurrZone);
+    this._forkCurrZone = zoneSpec && (zoneSpec.onFork ? this._zone : parentDelegate!._forkCurrZone);
 
     this._interceptZS =
         zoneSpec && (zoneSpec.onIntercept ? zoneSpec : parentDelegate!._interceptZS);
     this._interceptDlgt =
         zoneSpec && (zoneSpec.onIntercept ? parentDelegate : parentDelegate!._interceptDlgt);
     this._interceptCurrZone =
-        zoneSpec && (zoneSpec.onIntercept ? this.zone : parentDelegate!._interceptCurrZone);
+        zoneSpec && (zoneSpec.onIntercept ? this._zone : parentDelegate!._interceptCurrZone);
 
     this._invokeZS = zoneSpec && (zoneSpec.onInvoke ? zoneSpec : parentDelegate!._invokeZS);
     this._invokeDlgt =
         zoneSpec && (zoneSpec.onInvoke ? parentDelegate! : parentDelegate!._invokeDlgt);
     this._invokeCurrZone =
-        zoneSpec && (zoneSpec.onInvoke ? this.zone : parentDelegate!._invokeCurrZone);
+        zoneSpec && (zoneSpec.onInvoke ? this._zone : parentDelegate!._invokeCurrZone);
 
     this._handleErrorZS =
         zoneSpec && (zoneSpec.onHandleError ? zoneSpec : parentDelegate!._handleErrorZS);
     this._handleErrorDlgt =
         zoneSpec && (zoneSpec.onHandleError ? parentDelegate! : parentDelegate!._handleErrorDlgt);
     this._handleErrorCurrZone =
-        zoneSpec && (zoneSpec.onHandleError ? this.zone : parentDelegate!._handleErrorCurrZone);
+        zoneSpec && (zoneSpec.onHandleError ? this._zone : parentDelegate!._handleErrorCurrZone);
 
     this._scheduleTaskZS =
         zoneSpec && (zoneSpec.onScheduleTask ? zoneSpec : parentDelegate!._scheduleTaskZS);
     this._scheduleTaskDlgt =
         zoneSpec && (zoneSpec.onScheduleTask ? parentDelegate! : parentDelegate!._scheduleTaskDlgt);
     this._scheduleTaskCurrZone =
-        zoneSpec && (zoneSpec.onScheduleTask ? this.zone : parentDelegate!._scheduleTaskCurrZone);
+        zoneSpec && (zoneSpec.onScheduleTask ? this._zone : parentDelegate!._scheduleTaskCurrZone);
 
     this._invokeTaskZS =
         zoneSpec && (zoneSpec.onInvokeTask ? zoneSpec : parentDelegate!._invokeTaskZS);
     this._invokeTaskDlgt =
         zoneSpec && (zoneSpec.onInvokeTask ? parentDelegate! : parentDelegate!._invokeTaskDlgt);
     this._invokeTaskCurrZone =
-        zoneSpec && (zoneSpec.onInvokeTask ? this.zone : parentDelegate!._invokeTaskCurrZone);
+        zoneSpec && (zoneSpec.onInvokeTask ? this._zone : parentDelegate!._invokeTaskCurrZone);
 
     this._cancelTaskZS =
         zoneSpec && (zoneSpec.onCancelTask ? zoneSpec : parentDelegate!._cancelTaskZS);
     this._cancelTaskDlgt =
         zoneSpec && (zoneSpec.onCancelTask ? parentDelegate! : parentDelegate!._cancelTaskDlgt);
     this._cancelTaskCurrZone =
-        zoneSpec && (zoneSpec.onCancelTask ? this.zone : parentDelegate!._cancelTaskCurrZone);
+        zoneSpec && (zoneSpec.onCancelTask ? this._zone : parentDelegate!._cancelTaskCurrZone);
 
     this._hasTaskZS = null;
     this._hasTaskDlgt = null;
@@ -1107,38 +1110,38 @@ class _ZoneDelegate implements ZoneDelegate {
       this._hasTaskZS = zoneSpecHasTask ? zoneSpec : DELEGATE_ZS;
       this._hasTaskDlgt = parentDelegate;
       this._hasTaskDlgtOwner = this;
-      this._hasTaskCurrZone = zone;
+      this._hasTaskCurrZone = this._zone;
       if (!zoneSpec!.onScheduleTask) {
         this._scheduleTaskZS = DELEGATE_ZS;
         this._scheduleTaskDlgt = parentDelegate!;
-        this._scheduleTaskCurrZone = this.zone;
+        this._scheduleTaskCurrZone = this._zone;
       }
       if (!zoneSpec!.onInvokeTask) {
         this._invokeTaskZS = DELEGATE_ZS;
         this._invokeTaskDlgt = parentDelegate!;
-        this._invokeTaskCurrZone = this.zone;
+        this._invokeTaskCurrZone = this._zone;
       }
       if (!zoneSpec!.onCancelTask) {
         this._cancelTaskZS = DELEGATE_ZS;
         this._cancelTaskDlgt = parentDelegate!;
-        this._cancelTaskCurrZone = this.zone;
+        this._cancelTaskCurrZone = this._zone;
       }
     }
   }
 
-  fork(targetZone: Zone, zoneSpec: ZoneSpec): AmbientZone {
+  fork(targetZone: ZoneImpl, zoneSpec: ZoneSpec): AmbientZone {
     return this._forkZS ? this._forkZS.onFork!(this._forkDlgt!, this.zone, targetZone, zoneSpec) :
-                          new Zone(targetZone, zoneSpec);
+                          new ZoneImpl(targetZone, zoneSpec);
   }
 
-  intercept(targetZone: Zone, callback: Function, source: string): Function {
+  intercept(targetZone: ZoneImpl, callback: Function, source: string): Function {
     return this._interceptZS ?
         this._interceptZS.onIntercept!
         (this._interceptDlgt!, this._interceptCurrZone!, targetZone, callback, source) :
         callback;
   }
 
-  invoke(targetZone: Zone, callback: Function, applyThis: any, applyArgs?: any[], source?: string):
+  invoke(targetZone: ZoneImpl, callback: Function, applyThis: any, applyArgs?: any[], source?: string):
       any {
     return this._invokeZS ? this._invokeZS.onInvoke!
                             (this._invokeDlgt!, this._invokeCurrZone!, targetZone, callback,
@@ -1146,22 +1149,22 @@ class _ZoneDelegate implements ZoneDelegate {
                             callback.apply(applyThis, applyArgs);
   }
 
-  handleError(targetZone: Zone, error: any): boolean {
+  handleError(targetZone: ZoneImpl, error: any): boolean {
     return this._handleErrorZS ?
         this._handleErrorZS.onHandleError!
         (this._handleErrorDlgt!, this._handleErrorCurrZone!, targetZone, error) :
         true;
   }
 
-  scheduleTask(targetZone: Zone, task: Task): Task {
+  scheduleTask(targetZone: ZoneImpl, task: Task): Task {
     let returnTask: ZoneTask<any> = task as ZoneTask<any>;
     if (this._scheduleTaskZS) {
       if (this._hasTaskZS) {
         returnTask._zoneDelegates!.push(this._hasTaskDlgtOwner!);
       }
       // clang-format off
-        returnTask = this._scheduleTaskZS.onScheduleTask !(
-            this._scheduleTaskDlgt !, this._scheduleTaskCurrZone !, targetZone, task) as ZoneTask<any>;
+      returnTask = this._scheduleTaskZS.onScheduleTask !(
+          this._scheduleTaskDlgt !, this._scheduleTaskCurrZone !, targetZone, task) as ZoneTask<any>;
       // clang-format on
       if (!returnTask) returnTask = task as ZoneTask<any>;
     } else {
@@ -1176,14 +1179,14 @@ class _ZoneDelegate implements ZoneDelegate {
     return returnTask;
   }
 
-  invokeTask(targetZone: Zone, task: Task, applyThis: any, applyArgs?: any[]): any {
+  invokeTask(targetZone: ZoneImpl, task: Task, applyThis: any, applyArgs?: any[]): any {
     return this._invokeTaskZS ?
         this._invokeTaskZS.onInvokeTask!
         (this._invokeTaskDlgt!, this._invokeTaskCurrZone!, targetZone, task, applyThis, applyArgs) :
         task.callback.apply(applyThis, applyArgs);
   }
 
-  cancelTask(targetZone: Zone, task: Task): any {
+  cancelTask(targetZone: ZoneImpl, task: Task): any {
     let value: any;
     if (this._cancelTaskZS) {
       value = this._cancelTaskZS.onCancelTask!
@@ -1197,7 +1200,7 @@ class _ZoneDelegate implements ZoneDelegate {
     return value;
   }
 
-  hasTask(targetZone: Zone, isEmpty: HasTaskState) {
+  hasTask(targetZone: ZoneImpl, isEmpty: HasTaskState) {
     // hasTask should not throw error so other ZoneDelegate
     // can still trigger hasTask callback
     try {
@@ -1224,7 +1227,7 @@ class _ZoneDelegate implements ZoneDelegate {
         eventTask: counts['eventTask'] > 0,
         change: type
       };
-      this.hasTask(this.zone, isEmpty);
+      this.hasTask(this._zone, isEmpty);
     }
   }
 }
@@ -1238,7 +1241,7 @@ class ZoneTask<T extends TaskType> implements Task {
   public scheduleFn: ((task: Task) => void)|undefined;
   public cancelFn: ((task: Task) => void)|undefined;
   // tslint:disable-next-line:require-internal-with-underscore
-  _zone: Zone|null = null;
+  _zone: ZoneImpl|null = null;
   public runCount: number = 0;
   // tslint:disable-next-line:require-internal-with-underscore
   _zoneDelegates: _ZoneDelegate[]|null = null;
@@ -1284,7 +1287,7 @@ class ZoneTask<T extends TaskType> implements Task {
     }
   }
 
-  get zone(): Zone {
+  get zone(): ZoneImpl {
     return this._zone!;
   }
 
@@ -1416,7 +1419,7 @@ const _api: _ZonePrivate = {
   onUnhandledError: noop,
   microtaskDrainDone: noop,
   scheduleMicroTask: scheduleMicroTask,
-  showUncaughtError: () => !(Zone as any)[__symbol__('ignoreConsoleErrorUncaughtError')],
+  showUncaughtError: () => !(ZoneImpl as any)[__symbol__('ignoreConsoleErrorUncaughtError')],
   patchEventTarget: () => [],
   patchOnProperties: noop,
   patchMethod: () => noop,
@@ -1438,14 +1441,14 @@ const _api: _ZonePrivate = {
   patchCallbacks: () => noop,
   nativeScheduleMicroTask: nativeScheduleMicroTask
 };
-let _currentZoneFrame: _ZoneFrame = {parent: null, zone: new Zone(null, null)};
+let _currentZoneFrame: _ZoneFrame = {parent: null, zone: new ZoneImpl(null, null)};
 let _currentTask: Task|null = null;
 let _numberOfNestedTaskFrames = 0;
 
 function noop() {}
 
 performanceMeasure('Zone', 'Zone');
-return global['Zone'] = Zone;
+return global['Zone'] = ZoneImpl;
 })();
 
 export {};
