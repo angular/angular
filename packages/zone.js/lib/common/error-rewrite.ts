@@ -10,19 +10,21 @@
  * @suppress {globalThis,undefinedVars}
  */
 
-/**
- * Extend the Error with additional fields for rewritten stack frames
- */
-interface Error {
+declare global {
   /**
-   * Stack trace where extra frames have been removed and zone names added.
+   * Extend the Error with additional fields for rewritten stack frames
    */
-  zoneAwareStack?: string;
+  interface Error {
+    /**
+     * Stack trace where extra frames have been removed and zone names added.
+     */
+    zoneAwareStack?: string;
 
-  /**
-   * Original stack trace with no modifications
-   */
-  originalStack?: string;
+    /**
+     * Original stack trace with no modifications
+     */
+    originalStack?: string;
+  }
 }
 
 Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
@@ -394,3 +396,5 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   (Error as any).stackTraceLimit = originalStackTraceLimit;
 });
+
+export {};
