@@ -23,84 +23,84 @@ BUNDLES_ENTRY_POINTS = {
         "entrypoint": _DIR + "testing/fake-async",
     },
     "long-stack-trace-zone": {
-        "entrypoint": _DIR + "zone-spec/long-stack-trace",
+        "entrypoint": _DIR + "zone-spec/rollup-long-stack-trace",
     },
     "proxy": {
-        "entrypoint": _DIR + "zone-spec/proxy",
+        "entrypoint": _DIR + "zone-spec/rollup-proxy",
     },
     "zone-patch-rxjs-fake-async": {
-        "entrypoint": _DIR + "zone-spec/proxy",
+        "entrypoint": _DIR + "zone-spec/rollup-proxy",
     },
     "sync-test": {
-        "entrypoint": _DIR + "zone-spec/sync-test",
+        "entrypoint": _DIR + "zone-spec/rollup-sync-test",
     },
     "task-tracking": {
-        "entrypoint": _DIR + "zone-spec/task-tracking",
+        "entrypoint": _DIR + "zone-spec/rollup-task-tracking",
     },
     "wtf": {
-        "entrypoint": _DIR + "zone-spec/wtf",
+        "entrypoint": _DIR + "zone-spec/rollup-wtf",
     },
     "zone-error": {
-        "entrypoint": _DIR + "common/error-rewrite",
+        "entrypoint": _DIR + "common/rollup-error-rewrite",
     },
     "zone-legacy": {
-        "entrypoint": _DIR + "browser/browser-legacy",
+        "entrypoint": _DIR + "browser/rollup-browser-legacy",
     },
     "zone-bluebird": {
-        "entrypoint": _DIR + "extra/bluebird",
+        "entrypoint": _DIR + "extra/rollup-bluebird",
     },
     "zone-patch-canvas": {
-        "entrypoint": _DIR + "browser/canvas",
+        "entrypoint": _DIR + "browser/rollup-canvas",
     },
     "zone-patch-cordova": {
-        "entrypoint": _DIR + "extra/cordova",
+        "entrypoint": _DIR + "extra/rollup-cordova",
     },
     "zone-patch-electron": {
-        "entrypoint": _DIR + "extra/electron",
+        "entrypoint": _DIR + "extra/rollup-electron",
     },
     "zone-patch-fetch": {
-        "entrypoint": _DIR + "common/fetch",
+        "entrypoint": _DIR + "common/rollup-fetch",
     },
     "jasmine-patch": {
-        "entrypoint": _DIR + "jasmine/jasmine",
+        "entrypoint": _DIR + "jasmine/rollup-jasmine",
     },
     "zone-patch-jsonp": {
-        "entrypoint": _DIR + "extra/jsonp",
+        "entrypoint": _DIR + "extra/rollup-jsonp",
     },
     "webapis-media-query": {
-        "entrypoint": _DIR + "browser/webapis-media-query",
+        "entrypoint": _DIR + "browser/rollup-webapis-media-query",
     },
     "mocha-patch": {
-        "entrypoint": _DIR + "mocha/mocha",
+        "entrypoint": _DIR + "mocha/rollup-mocha",
     },
     "webapis-notification": {
-        "entrypoint": _DIR + "browser/webapis-notification",
+        "entrypoint": _DIR + "browser/rollup-webapis-notification",
     },
     "zone-patch-promise-test": {
-        "entrypoint": _DIR + "testing/promise-testing",
+        "entrypoint": _DIR + "testing/rollup-promise-testing",
     },
     "zone-patch-resize-observer": {
-        "entrypoint": _DIR + "browser/webapis-resize-observer",
+        "entrypoint": _DIR + "browser/rollup-webapis-resize-observer",
     },
     "webapis-rtc-peer-connection": {
-        "entrypoint": _DIR + "browser/webapis-rtc-peer-connection",
+        "entrypoint": _DIR + "browser/rollup-webapis-rtc-peer-connection",
     },
     "zone-patch-rxjs": {
-        "entrypoint": _DIR + "rxjs/rxjs",
+        "entrypoint": _DIR + "rxjs/rollup-rxjs",
     },
     "webapis-shadydom": {
-        "entrypoint": _DIR + "browser/shadydom",
+        "entrypoint": _DIR + "browser/rollup-shadydom",
     },
     "zone-patch-socket-io": {
-        "entrypoint": _DIR + "extra/socket-io",
+        "entrypoint": _DIR + "extra/rollup-socket-io",
     },
     "zone-patch-message-port": {
-        "entrypoint": _DIR + "browser/message-port",
+        "entrypoint": _DIR + "browser/rollup-message-port",
     },
     "zone-patch-user-media": {
-        "entrypoint": _DIR + "browser/webapis-user-media",
+        "entrypoint": _DIR + "browser/rollup-webapis-user-media",
     },
     "zone-testing": {
-        "entrypoint": _DIR + "testing/zone-testing",
+        "entrypoint": _DIR + "testing/rollup-zone-testing",
     },
 }

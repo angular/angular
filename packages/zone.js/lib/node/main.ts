@@ -8,12 +8,17 @@
 
 import {patchPromise} from '../common/promise';
 import {patchToString} from '../common/to-string';
+import {loadZone} from '../zone';
 import {ZoneType} from '../zone-impl';
 
-import {patchUtil} from './api-util';
+import {patchNode} from './node';
 
-export function patchCommon(Zone: ZoneType): void {
+export function rollupMain(): ZoneType {
+  const Zone = loadZone();
+
+  patchNode(Zone); // Node needs to come first.
   patchPromise(Zone);
   patchToString(Zone);
-  patchUtil(Zone);
+
+  return Zone;
 }

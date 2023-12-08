@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../lib/common/error-rewrite';
+import '../lib/common/rollup-error-rewrite';
 // import 'core-js/features/set';
 // import 'core-js/features/map';
 // List all tests here:
