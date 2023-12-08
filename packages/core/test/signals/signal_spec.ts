@@ -88,7 +88,7 @@ describe('signals', () => {
        expect(derived()).toEqual('object:3');
      });
 
-  it('should consider referentially equal values as always equal', () => {
+  it('should invoke custom equality function even if old / new references are the same', () => {
     const state = {value: 0};
     const stateSignal = signal(state, {equal: (a, b) => false});
 
@@ -98,13 +98,13 @@ describe('signals', () => {
     // derived is re-computed initially
     expect(derived()).toBe('0:1');
 
-    // setting signal with the same reference should not propagate change
+    // setting signal with the same reference should propagate change due to the custom equality
     stateSignal.set(state);
-    expect(derived()).toBe('0:1');
+    expect(derived()).toBe('0:2');
 
-    // updating signal with the same reference should not propagate change
+    // updating signal with the same reference should propagate change as well
     stateSignal.update(state => state);
-    expect(derived()).toBe('0:1');
+    expect(derived()).toBe('0:3');
   });
 
   it('should allow converting writable signals to their readonly counterpart', () => {
