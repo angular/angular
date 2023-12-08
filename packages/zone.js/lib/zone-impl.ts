@@ -676,7 +676,7 @@ export type AmbientZone = Zone;
 
 // Initialize global `Zone` constant.
 const global = globalThis as any;
-(function() {
+export function initZone(): ZoneType {
 const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
     global['performance'];
 function mark(name: string) {
@@ -1448,7 +1448,5 @@ let _numberOfNestedTaskFrames = 0;
 function noop() {}
 
 performanceMeasure('Zone', 'Zone');
-return global['Zone'] = ZoneImpl;
-})();
-
-export {};
+return ZoneImpl;
+}
