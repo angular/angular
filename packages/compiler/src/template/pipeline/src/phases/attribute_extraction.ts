@@ -7,6 +7,7 @@
  */
 
 
+import {SecurityContext} from '../../../../core';
 import * as ir from '../../ir';
 import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
 import {createOpXrefMap} from '../util/elements';
@@ -38,7 +39,9 @@ export function extractAttributes(job: CompilationJob): void {
 
             ir.OpList.insertBefore<ir.CreateOp>(
                 // Deliberaly null i18nMessage value
-                ir.createExtractedAttributeOp(op.target, bindingKind, op.name, null, null, null),
+                ir.createExtractedAttributeOp(
+                    op.target, bindingKind, op.name, /* expression */ null, /* i18nContext */ null,
+                    /* i18nMessage */ null, op.securityContext),
                 lookupElement(elements, op.target));
           }
           break;
@@ -53,14 +56,18 @@ export function extractAttributes(job: CompilationJob): void {
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.Property, op.name, null, null, null),
+                    op.target, ir.BindingKind.Property, op.name, /* expression */ null,
+                    /* i18nContext */ null,
+                    /* i18nMessage */ null, SecurityContext.STYLE),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
             const extractedAttributeOp = ir.createExtractedAttributeOp(
-                op.target, ir.BindingKind.Property, op.name, null, null, null);
+                op.target, ir.BindingKind.Property, op.name, /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null, SecurityContext.NONE);
             if (job.kind === CompilationJobKind.Host) {
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
@@ -120,7 +127,7 @@ function extractAttributeOp(
     const extractedAttributeOp = ir.createExtractedAttributeOp(
         op.target,
         op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
-        op.name, op.expression, op.i18nContext, op.i18nMessage);
+        op.name, op.expression, op.i18nContext, op.i18nMessage, op.securityContext);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.
