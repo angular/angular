@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {ComponentCompilationJob, ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
 import * as ng from '../instruction';
 
 /**
@@ -33,6 +33,11 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
   ['body', Identifiers.resolveBody],
 ]);
 
+const trustedValueFnIdentifierMap = new Map<ir.TrustedValueFn, o.ExternalReference>([
+  [ir.TrustedValueFn.Html, Identifiers.trustConstantHtml],
+  [ir.TrustedValueFn.ResourceUrl, Identifiers.trustConstantResourceUrl],
+]);
+
 /**
  * Compiles semantic operations across all views and generates output `o.Statement`s with actual
  * runtime calls in their place.
@@ -45,6 +50,16 @@ export function reify(job: CompilationJob): void {
   for (const unit of job.units) {
     reifyCreateOperations(unit, unit.create);
     reifyUpdateOperations(unit, unit.update);
+  }
+  if (job instanceof ComponentCompilationJob) {
+    reifyConsts(job);
+  }
+}
+
+function reifyConsts(job: ComponentCompilationJob) {
+  for (let i = 0; i < job.consts.length; i++) {
+    job.consts[i] = ir.transformExpressionsInExpression(
+        job.consts[i], reifyIrExpression, ir.VisitorContextFlag.None);
   }
 }
 
@@ -433,6 +448,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pipeBindV(expr.targetSlot.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.SanitizerExpr:
       return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
+    case ir.ExpressionKind.TrustedValueFnExpr:
+      return o.importExpr(trustedValueFnIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
       return o.literal(expr.slot.slot!);
     default:

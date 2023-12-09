@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
@@ -666,6 +667,16 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
    */
   i18nContext: XrefId|null;
 
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext;
+
+  /**
+   * The trusted value function for this property.
+   */
+  trustedValueFn: o.Expression|null;
+
   i18nMessage: i18n.Message|null;
 }
 
@@ -674,7 +685,8 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
  */
 export function createExtractedAttributeOp(
     target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
-    i18nContext: XrefId|null, i18nMessage: i18n.Message|null): ExtractedAttributeOp {
+    i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
+    securityContext: SecurityContext): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
@@ -683,6 +695,8 @@ export function createExtractedAttributeOp(
     expression,
     i18nContext,
     i18nMessage,
+    securityContext,
+    trustedValueFn: null,
     ...NEW_OP,
   };
 }
