@@ -99,7 +99,6 @@
     "angular-mocks-1.6": "npm:angular-mocks@1.6",
     "angular-mocks-1.7": "npm:angular-mocks@1.7",
     "angular-mocks-1.8": "npm:angular-mocks@1.8",
-    "base64-js": "1.5.1",
     "bluebird": "^3.7.2",
     "canonical-path": "1.0.0",
     "chalk": "^4.1.0",
