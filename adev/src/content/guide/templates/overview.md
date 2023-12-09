@@ -18,7 +18,7 @@ The template syntax guides show you how to control the UX/UI by coordinating dat
 
 ## Empower your HTML
 
-Extend the HTML vocabulary of your applications With special Angular syntax in your templates.
+Extend the HTML vocabulary of your applications with special Angular syntax in your templates.
 For example, Angular helps you get and set DOM \(Document Object Model\) values dynamically with features such as built-in template functions, variables, event listening, and data binding.
 
 Almost all HTML syntax is valid template syntax.
