@@ -3426,13 +3426,6 @@
   resolved "https://registry.yarnpkg.com/@types/cldrjs/-/cldrjs-0.4.27.tgz#063ecbfcb7570137f5d2a655744022e98756a629"
   integrity sha512-/XOfJ9IeXgBuNzord4X3e/f1SdZhxxfVFN3JpHTmFKuTXDoi2wWkkWQsCs3bqpTenI4xElUGsgBkzu2EII/U1A==
 
-"@types/cli-progress@^3.4.2":
-  version "3.11.4"
-  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.11.4.tgz#58d9e60bd5fd85a57984890ef9c9d831a0dda896"
-  integrity sha512-yufTxeeNCZuEIxx2uebK8lpSAsJM4lvzakm/VxzYhDtqhXCzwH9jpn7nPCxzrROuEbLATqhFq4MIPoG0tlrsvw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/connect-history-api-fallback@^1.3.5":
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@types/connect-history-api-fallback/-/connect-history-api-fallback-1.5.2.tgz#acf51e088b3bb6507f7b093bd2b0de20940179cc"
