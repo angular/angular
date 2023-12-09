@@ -351,6 +351,11 @@ export enum ExpressionKind {
   SanitizerExpr,
 
   /**
+   * An expression representing a function to create trusted values.
+   */
+  TrustedValueFnExpr,
+
+  /**
    * An expression that will cause a literal slot index to be emitted.
    */
   SlotLiteralExpr,
@@ -415,18 +420,6 @@ export enum SemanticVariableKind {
 export enum CompatibilityMode {
   Normal,
   TemplateDefinitionBuilder,
-}
-
-/**
- * Represents functions used to sanitize different pieces of a template.
- */
-export enum SanitizerFn {
-  Html,
-  Script,
-  Style,
-  Url,
-  ResourceUrl,
-  IframeAttribute,
 }
 
 /**

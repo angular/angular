@@ -13,18 +13,6 @@ import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '..
 import * as ng from '../instruction';
 
 /**
- * Map of sanitizers to their identifier.
- */
-const sanitizerIdentifierMap = new Map<ir.SanitizerFn, o.ExternalReference>([
-  [ir.SanitizerFn.Html, Identifiers.sanitizeHtml],
-  [ir.SanitizerFn.IframeAttribute, Identifiers.validateIframeAttribute],
-  [ir.SanitizerFn.ResourceUrl, Identifiers.sanitizeResourceUrl],
-  [ir.SanitizerFn.Script, Identifiers.sanitizeScript],
-  [ir.SanitizerFn.Style, Identifiers.sanitizeStyle],
-  [ir.SanitizerFn.Url, Identifiers.sanitizeUrl],
-]);
-
-/**
  * Map of target resolvers for event listeners.
  */
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
@@ -431,8 +419,6 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pipeBind(expr.targetSlot.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.PipeBindingVariadic:
       return ng.pipeBindV(expr.targetSlot.slot!, expr.varOffset!, expr.args);
-    case ir.ExpressionKind.SanitizerExpr:
-      return o.importExpr(sanitizerIdentifierMap.get(expr.fn)!);
     case ir.ExpressionKind.SlotLiteralExpr:
       return o.literal(expr.slot.slot!);
     default:
