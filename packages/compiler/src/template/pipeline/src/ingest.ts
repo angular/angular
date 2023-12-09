@@ -976,10 +976,35 @@ function createTemplateBinding(
     }
   }
 
+  let bindingType = BINDING_KINDS.get(type)!;
+
+  if (templateKind === ir.TemplateKind.NgTemplate) {
+    // We know we are dealing with bindings directly on an explicit ng-template.
+    // Static attribute bindings should be collected into the const array as k/v pairs. Property
+    // bindings should result in a `property` instruction, and `AttributeMarker.Bindings` const
+    // entries.
+    //
+    // The difficulty is with dynamic attribute, style, and class bindings. These don't really make
+    // sense on an `ng-template` and should probably be parser errors. However,
+    // TemplateDefinitionBuilder generates `property` instructions for them, and so we do that as
+    // well.
+    //
+    // Note that we do have a slight behavior difference with TemplateDefinitionBuilder: although
+    // TDB emits `property` instructions for dynamic attributes, styles, and classes, only styles
+    // and classes also get const collected into the `AttributeMarker.Bindings` field. Dynamic
+    // attribute bindings are missing from the consts entirely. We choose to emit them into the
+    // consts field anyway, to avoid creating special cases for something so arcane and nonsensical.
+    if (type === e.BindingType.Class || type === e.BindingType.Style ||
+        (type === e.BindingType.Attribute && !isTextBinding)) {
+      // TODO: These cases should be parse errors.
+      bindingType = ir.BindingKind.Property;
+    }
+  }
+
   return ir.createBindingOp(
-      xref, BINDING_KINDS.get(type)!, name,
-      convertAstWithInterpolation(view.job, value, i18nMessage), unit, securityContext,
-      isTextBinding, isStructuralTemplateAttribute, templateKind, i18nMessage, sourceSpan);
+      xref, bindingType, name, convertAstWithInterpolation(view.job, value, i18nMessage), unit,
+      securityContext, isTextBinding, isStructuralTemplateAttribute, templateKind, i18nMessage,
+      sourceSpan);
 }
 
 function makeListenerHandlerOps(
