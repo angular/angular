@@ -15,10 +15,18 @@ import {createOpXrefMap} from '../util/elements';
 /**
  * Mapping of security contexts to sanitizer function for that context.
  */
-const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
+const sanitizers = new Map<SecurityContext, ir.SanitizerFn>([
   [SecurityContext.HTML, ir.SanitizerFn.Html], [SecurityContext.SCRIPT, ir.SanitizerFn.Script],
   [SecurityContext.STYLE, ir.SanitizerFn.Style], [SecurityContext.URL, ir.SanitizerFn.Url],
   [SecurityContext.RESOURCE_URL, ir.SanitizerFn.ResourceUrl]
+]);
+
+/**
+ * Mapping of security contexts to trusted value function for that context.
+ */
+const trustedValueFns = new Map<SecurityContext, ir.TrustedValueFn>([
+  [SecurityContext.HTML, ir.TrustedValueFn.Html],
+  [SecurityContext.RESOURCE_URL, ir.TrustedValueFn.ResourceUrl]
 ]);
 
 /**
@@ -27,13 +35,21 @@ const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
 export function resolveSanitizers(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
-    let sanitizerFn: ir.SanitizerFn|null;
+
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.ExtractedAttribute) {
+        const trustedValueFn = trustedValueFns.get(op.securityContext) ?? null;
+        op.trustedValueFn =
+            trustedValueFn !== null ? new ir.TrustedValueFnExpr(trustedValueFn) : null;
+      }
+    }
+
     for (const op of unit.update) {
       switch (op.kind) {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
-          sanitizerFn = sanitizers.get(op.securityContext) || null;
-          op.sanitizer = sanitizerFn ? new ir.SanitizerExpr(sanitizerFn) : null;
+          const sanitizerFn = sanitizers.get(op.securityContext) ?? null;
+          op.sanitizer = sanitizerFn !== null ? new ir.SanitizerExpr(sanitizerFn) : null;
           // If there was no sanitization function found based on the security context of an
           // attribute/property, check whether this attribute/property is one of the
           // security-sensitive <iframe> attributes (and that the current element is actually an

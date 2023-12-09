@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn} from './enums';
+import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn, TrustedValueFn} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -20,11 +20,12 @@ import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
+    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|TrustedValueFnExpr|SlotLiteralExpr|
+    ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -756,6 +757,30 @@ export class SanitizerExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
+export class TrustedValueFnExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.TrustedValueFnExpr;
+
+  constructor(public fn: TrustedValueFn) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof TrustedValueFnExpr && e.fn === this.fn;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): TrustedValueFnExpr {
+    return new TrustedValueFnExpr(this.fn);
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
 export class SlotLiteralExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SlotLiteralExpr;
 
@@ -968,6 +993,8 @@ export function transformExpressionsInOp(
     case OpKind.ExtractedAttribute:
       op.expression =
           op.expression && transformExpressionsInExpression(op.expression, transform, flags);
+      op.trustedValueFn = op.trustedValueFn &&
+          transformExpressionsInExpression(op.trustedValueFn, transform, flags);
       break;
     case OpKind.RepeaterCreate:
       op.track = transformExpressionsInExpression(op.track, transform, flags);
@@ -1087,6 +1114,10 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.NotExpr) {
     expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
+  } else if (expr instanceof o.TaggedTemplateExpr) {
+    expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
+    expr.template.expressions =
+        expr.template.expressions.map(e => transformExpressionsInExpression(e, transform, flags));
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
