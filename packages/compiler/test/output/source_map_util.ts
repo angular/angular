@@ -7,7 +7,6 @@
  */
 
 import {SourceMap} from '@angular/compiler';
-import b64 from 'base64-js';
 import {SourceMapConsumer} from 'source-map';
 
 export interface SourceLocation {
@@ -32,9 +31,5 @@ export function extractSourceMap(source: string): SourceMap|null {
   if (idx == -1) return null;
   const smComment = source.slice(idx).split('\n', 2)[1].trim();
   const smB64 = smComment.split('sourceMappingURL=data:application/json;base64,')[1];
-  return smB64 ? JSON.parse(decodeB64String(smB64)) as SourceMap : null;
-}
-
-function decodeB64String(s: string): string {
-  return b64.toByteArray(s).reduce((s: string, c: number) => s + String.fromCharCode(c), '');
+  return smB64 ? JSON.parse(Buffer.from(smB64, 'base64').toString()) as SourceMap : null;
 }
