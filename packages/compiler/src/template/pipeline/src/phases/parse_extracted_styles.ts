@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '../../../../core';
 import * as o from '../../../../output/output_ast';
 import {parse as parseStyle} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
+
 import type {CompilationJob} from '../compilation';
 
 /**
@@ -26,7 +28,7 @@ export function parseExtractedStyles(job: CompilationJob) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
                     op.target, ir.BindingKind.StyleProperty, parsedStyles[i],
-                    o.literal(parsedStyles[i + 1]), null, null),
+                    o.literal(parsedStyles[i + 1]), null, null, SecurityContext.STYLE),
                 op);
           }
           ir.OpList.remove<ir.CreateOp>(op);
@@ -35,7 +37,8 @@ export function parseExtractedStyles(job: CompilationJob) {
           for (const parsedClass of parsedClasses) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.ClassName, parsedClass, null, null, null),
+                    op.target, ir.BindingKind.ClassName, parsedClass, null, null, null,
+                    SecurityContext.NONE),
                 op);
           }
           ir.OpList.remove<ir.CreateOp>(op);

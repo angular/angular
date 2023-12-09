@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import * as core from '../../../../core';
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
+
 import {ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob} from '../compilation';
 import {literalOrArrayLiteral} from '../conversion';
 
@@ -25,7 +27,7 @@ export function collectElementConsts(job: CompilationJob): void {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
         const attributes = allElementAttributes.get(op.target) || new ElementAttributes();
         allElementAttributes.set(op.target, attributes);
-        attributes.add(op.bindingKind, op.name, op.expression);
+        attributes.add(op.bindingKind, op.name, op.expression, op.trustedValueFn);
         ir.OpList.remove<ir.CreateOp>(op);
       }
     }
@@ -100,7 +102,8 @@ class ElementAttributes {
     return this.byKind.get(ir.BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
   }
 
-  add(kind: ir.BindingKind, name: string, value: o.Expression|null): void {
+  add(kind: ir.BindingKind, name: string, value: o.Expression|null,
+      trustedValueFn: o.Expression|null): void {
     if (this.known.has(name)) {
       return;
     }
@@ -123,7 +126,16 @@ class ElementAttributes {
       if (value === null) {
         throw Error('Attribute, i18n attribute, & style element attributes must have a value');
       }
-      array.push(value);
+      if (trustedValueFn !== null) {
+        if (!ir.isStringLiteral(value)) {
+          throw Error('AssertionError: extracted attribute value should be string literal');
+        }
+        array.push(o.taggedTemplate(
+            trustedValueFn, new o.TemplateLiteral([new o.TemplateLiteralElement(value.value)], []),
+            undefined, value.sourceSpan));
+      } else {
+        array.push(value);
+      }
     }
   }
 
