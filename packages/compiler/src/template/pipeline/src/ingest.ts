@@ -748,7 +748,7 @@ function convertAst(
 }
 
 function convertAstWithInterpolation(
-    job: CompilationJob, value: e.AST|o.Expression,
+    job: CompilationJob, value: e.AST|string,
     i18nMeta: i18n.I18nMeta|null|undefined): o.Expression|ir.Interpolation {
   let expression: o.Expression|ir.Interpolation;
   if (value instanceof e.Interpolation) {
@@ -758,7 +758,7 @@ function convertAstWithInterpolation(
   } else if (value instanceof e.AST) {
     expression = convertAst(value, job, null);
   } else {
-    expression = value;
+    expression = o.literal(value);
   }
   return expression;
 }
@@ -771,20 +771,6 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Style, ir.BindingKind.StyleProperty],
   [e.BindingType.Animation, ir.BindingKind.Animation],
 ]);
-
-enum TemplateBindingFlags {
-  None = 0b000,
-
-  /**
-   * The binding belongs to the `<ng-template>` side of a `t.Template`.
-   */
-  BindingTargetsTemplate = 0b01,
-
-  /**
-   * The binding is on a structural directive.
-   */
-  IsStructuralTemplateAttribute = 0b10,
-}
 
 /**
  * Checks whether the given template is a plain ng-template (as opposed to another kind of template
@@ -832,8 +818,8 @@ function ingestElementBindings(
     // Attribute literal bindings, such as `attr.foo="bar"`.
     bindings.push(ir.createBindingOp(
         op.xref, ir.BindingKind.Attribute, attr.name,
-        convertAstWithInterpolation(unit.job, o.literal(attr.value), attr.i18n), null,
-        SecurityContext.NONE, true, false, null, asMessage(attr.i18n), attr.sourceSpan));
+        convertAstWithInterpolation(unit.job, attr.value, attr.i18n), null, SecurityContext.NONE,
+        true, false, null, asMessage(attr.i18n), attr.sourceSpan));
   }
 
   for (const input of element.inputs) {
@@ -875,42 +861,33 @@ function ingestElementBindings(
 function ingestTemplateBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, template: t.Template,
     templateKind: ir.TemplateKind|null): void {
-  let flags: TemplateBindingFlags = TemplateBindingFlags.None;
   let bindings = new Array<ir.BindingOp|ir.ExtractedAttributeOp|null>();
 
-  if (isPlainTemplate(template)) {
-    flags |= TemplateBindingFlags.BindingTargetsTemplate;
-  }
-
-  const templateAttrFlags = flags | TemplateBindingFlags.BindingTargetsTemplate |
-      TemplateBindingFlags.IsStructuralTemplateAttribute;
   for (const attr of template.templateAttrs) {
     if (attr instanceof t.TextAttribute) {
       bindings.push(createTemplateBinding(
-          unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-          SecurityContext.NONE, attr.sourceSpan, templateAttrFlags, true, templateKind,
-          asMessage(attr.i18n)));
+          unit, op.xref, e.BindingType.Attribute, attr.name, attr.value, null, SecurityContext.NONE,
+          true, true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
     } else {
       bindings.push(createTemplateBinding(
-          unit, op.xref, attr.name, astOf(attr.value), attr.type, attr.unit, attr.securityContext,
-          attr.sourceSpan, templateAttrFlags, false, templateKind, asMessage(attr.i18n)));
+          unit, op.xref, attr.type, attr.name, astOf(attr.value), attr.unit, attr.securityContext,
+          false, true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
     }
   }
 
   for (const attr of template.attributes) {
-    // This is only attribute TextLiteral bindings, such as `attr.foo="bar"`. This can never be
-    // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
-    // `BindingType.Attribute`.
+    // Attribute literal bindings, such as `attr.foo="bar"`.
     bindings.push(createTemplateBinding(
-        unit, op.xref, attr.name, o.literal(attr.value), e.BindingType.Attribute, null,
-        SecurityContext.NONE, attr.sourceSpan, flags, true, templateKind, asMessage(attr.i18n)));
+        unit, op.xref, e.BindingType.Attribute, attr.name, attr.value, null, SecurityContext.NONE,
+        true, false, templateKind, asMessage(attr.i18n), attr.sourceSpan));
   }
 
   for (const input of template.inputs) {
+    // Dynamic bindings (both attribute and property bindings).
     bindings.push(createTemplateBinding(
-        unit, op.xref, input.name, astOf(input.value), input.type, input.unit,
-        input.securityContext, input.sourceSpan, flags, false, templateKind,
-        asMessage(input.i18n)));
+        unit, op.xref, input.type, input.name, astOf(input.value), input.unit,
+        input.securityContext, false, false, templateKind, asMessage(input.i18n),
+        input.sourceSpan));
   }
 
   unit.create.push(bindings.filter(
@@ -940,34 +917,69 @@ function ingestTemplateBindings(
   }
 }
 
+/**
+ * Helper to ingest an individual binding on a template, either an explicit `ng-template`, or an
+ * implicit template created via structural directive.
+ *
+ * Bindings on templates are *extremely* tricky. I have tried to isolate all of the confusing edge
+ * cases into this function, and to comment it well to document the behavior.
+ *
+ * Some of this behavior is intuitively incorrect, and we should consider changing it in the future.
+ *
+ * @param view The compilation unit for the view containing the template.
+ * @param xref The xref of the template op.
+ * @param type The binding type, according to the parser. This is fairly reasonable, e.g. both
+ *     dynamic and static attributes have e.BindingType.Attribute.
+ * @param name The binding's name.
+ * @param value The bindings's value, which will either be an input AST expression, or a string
+ *     literal. Note that the input AST expression may or may not be const -- it will only be a
+ *     string literal if the parser considered it a text binding.
+ * @param unit If the binding has a unit (e.g. `px` for style bindings), then this is the unit.
+ * @param securityContext The security context of the binding.
+ * @param isTextBinding Whether the binding is a text binding according to the parser (e.g. `<div
+ *     literal="foo">`). Even if this is false, the binding still might be an extractable constant
+ *     expression (see the later attribute extraction phase).
+ * @param isStructuralTemplateAttribute Whether this binding actually applies to the structural
+ *     ng-template. For example, an `ngFor` would actually apply to the structural template. (Most
+ *     bindings on structural elements target the inner element, not the template.)
+ * @param templateKind Whether this is an explicit `ng-template` or an implicit template created by
+ *     a structural directive.
+ * @param i18nMessage The i18n metadata for the binding, if any.
+ * @param sourceSpan The source span of the binding.
+ * @returns An IR binding op, or null if the binding should be skipped.
+ */
 function createTemplateBinding(
-    view: ViewCompilationUnit, xref: ir.XrefId, name: string, value: e.AST|o.Expression,
-    type: e.BindingType, unit: string|null, securityContext: SecurityContext,
-    sourceSpan: ParseSourceSpan, flags: TemplateBindingFlags, isTextBinding: boolean,
-    templateKind: ir.TemplateKind|null, i18nMessage: i18n.Message|null): ir.BindingOp|
-    ir.ExtractedAttributeOp|null {
-  if (!(flags & TemplateBindingFlags.BindingTargetsTemplate) &&
-      (type === e.BindingType.Property || type === e.BindingType.Class ||
-       type === e.BindingType.Style)) {
-    // Because this binding doesn't really target the ng-template, it must be a binding on an inner
-    // node of a structural template. We can't skip it entirely, because we still need it on the
-    // ng-template's consts (e.g. for the purposes of directive matching). However, we should not
-    // generate an update instruction for it.
-    return ir.createExtractedAttributeOp(
-        xref, ir.BindingKind.Property, name, null, null, i18nMessage ?? null);
-  }
+    view: ViewCompilationUnit, xref: ir.XrefId, type: e.BindingType, name: string,
+    value: e.AST|string, unit: string|null, securityContext: SecurityContext,
+    isTextBinding: boolean, isStructuralTemplateAttribute: boolean,
+    templateKind: ir.TemplateKind|null, i18nMessage: i18n.Message|null,
+    sourceSpan: ParseSourceSpan): ir.BindingOp|ir.ExtractedAttributeOp|null {
+  // If this is a structural template, then several kinds of bindings should not result in an
+  // update instruction.
+  if (templateKind === ir.TemplateKind.Structural) {
+    if (!isStructuralTemplateAttribute &&
+        (type === e.BindingType.Property || type === e.BindingType.Class ||
+         type === e.BindingType.Style)) {
+      // Because this binding doesn't really target the ng-template, it must be a binding on an
+      // inner node of a structural template. We can't skip it entirely, because we still need it on
+      // the ng-template's consts (e.g. for the purposes of directive matching). However, we should
+      // not generate an update instruction for it.
+      return ir.createExtractedAttributeOp(
+          xref, ir.BindingKind.Property, name, null, null, i18nMessage);
+    }
 
-  if (type === e.BindingType.Attribute && !isTextBinding &&
-      templateKind === ir.TemplateKind.Structural) {
-    // TODO: big comment about why this is stupid.
-    return null;
+    if (type === e.BindingType.Attribute && !isTextBinding) {
+      // Again, this binding doesn't really target the ng-template; it actually targets the element
+      // inside the structural template. In the case of non-text attribute bindings, they don't even
+      // show up on the ng-template const array, so we just skip it entirely.
+      return null;
+    }
   }
 
   return ir.createBindingOp(
       xref, BINDING_KINDS.get(type)!, name,
       convertAstWithInterpolation(view.job, value, i18nMessage), unit, securityContext,
-      isTextBinding, !!(flags & TemplateBindingFlags.IsStructuralTemplateAttribute), templateKind,
-      i18nMessage ?? null, sourceSpan);
+      isTextBinding, isStructuralTemplateAttribute, templateKind, i18nMessage, sourceSpan);
 }
 
 function makeListenerHandlerOps(
