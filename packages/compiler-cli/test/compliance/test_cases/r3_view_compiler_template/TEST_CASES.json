@@ -302,6 +302,17 @@
       ]
     },
     {
+      "description": "should handle a bindings on plain ng-template elements",
+      "inputFiles": [
+        "ng_template_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should allow self-closing custom elements in templates",
       "inputFiles": [
         "self_closing_tags.ts"
