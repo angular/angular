@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const ws = require('nodejs-websocket');
+const {WebSocketServer} = require('ws');
 
 // simple echo server
-const server = ws.createServer(function(conn) {
-                   conn.on('text', function(str) {
-                     if (str === 'close') {
-                       server.close();
-                       return;
-                     }
-                     conn.sendText(str.toString());
-                   });
-                 }).listen(8001);
+const wss = new WebSocketServer({port: 8001});
+wss.on('connection', (ws) => {ws.on('message', (data) => {
+                       if (data.toString() === 'close') {
+                         wss.close();
+                         return;
+                       }
+                       ws.send(data);
+                     })});
