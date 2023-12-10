@@ -254,6 +254,20 @@
       ]
     },
     {
+      "description": "should allow $any in host binding expressions",
+      "inputFiles": [
+        "host_dollar_any.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_dollar_any.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should handle host bindings with the same name as a primitive value",
       "inputFiles": [
         "host_bindings_primitive_names.ts"
