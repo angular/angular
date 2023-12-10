@@ -9,7 +9,7 @@ License: MIT
 
 # Why?
 
-There are so-called "micro benchmarks" that essentially use a stop watch in the browser to measure time
+There are so-called "micro benchmarks" that essentially use a stopwatch in the browser to measure time
 (e.g. via `performance.now()`). This approach is limited to time, and in some cases memory
 (Chrome with special flags), as metric. It does not allow to measure:
 
@@ -301,5 +301,3 @@ Components:
   - implements additional methods that are standardized in the webdriver protocol using the WebDriverAdapter
   - provides functionality like force gc, read out performance logs in a normalized format
   - one implementation per browser, e.g. one for Chrome, one for mobile Safari, one for Firefox
-
-
