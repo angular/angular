@@ -168,6 +168,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should generate synthetic bindings and listeners on structural directives",
+      "inputFiles": [
+        "synthetic_bindings_and_listeners_on_structural.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "synthetic_bindings_and_listeners_on_structural.js"
+          ]
+        }
+      ]
     }
   ]
 }
