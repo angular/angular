@@ -11885,11 +11885,6 @@ node-source-walk@^5.0.0, node-source-walk@^5.0.1:
   dependencies:
     "@babel/parser" "^7.21.4"
 
-nodejs-websocket@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/nodejs-websocket/-/nodejs-websocket-1.7.2.tgz#94abd1e248f57d4d1c663dec3831015c6dad98a6"
-  integrity sha512-PFX6ypJcCNDs7obRellR0DGTebfUhw1SXGKe2zpB+Ng1DQJhdzbzx1ob+AvJCLzy2TJF4r8cCDqMQqei1CZdPQ==
-
 nopt@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-6.0.0.tgz#245801d8ebf409c6df22ab9d95b65e1309cdb16d"
@@ -16379,6 +16374,11 @@ ws@^7.2.3:
   version "7.5.9"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+
+ws@^8.15.0:
+  version "8.15.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.15.0.tgz#db080a279260c5f532fc668d461b8346efdfcf86"
+  integrity sha512-H/Z3H55mrcrgjFwI+5jKavgXvwQLtfPCUEp6pi35VhoB0pfcHnSoyuTzkBEZpzq49g1193CUEwIvmsjcotenYw==
 
 ws@~8.11.0:
   version "8.11.0"
