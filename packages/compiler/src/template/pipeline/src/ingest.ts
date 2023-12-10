@@ -899,14 +899,16 @@ function ingestTemplateBindings(
       throw Error('Animation listener should have a phase');
     }
 
-    if (templateKind === ir.TemplateKind.Structural) {
-      unit.create.push(ir.createExtractedAttributeOp(
-          op.xref, ir.BindingKind.Property, output.name, null, null, null));
-    } else {
+    if (templateKind === ir.TemplateKind.NgTemplate) {
       unit.create.push(ir.createListenerOp(
           op.xref, op.handle, output.name, op.tag,
           makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
           output.sourceSpan));
+    }
+    if (templateKind === ir.TemplateKind.Structural && output.type === e.ParsedEventType.Regular) {
+      // Animation bindings are excluded from the structural template's const array.
+      unit.create.push(ir.createExtractedAttributeOp(
+          op.xref, ir.BindingKind.Property, output.name, null, null, null));
     }
   }
 
@@ -968,10 +970,11 @@ function createTemplateBinding(
           xref, ir.BindingKind.Property, name, null, null, i18nMessage);
     }
 
-    if (type === e.BindingType.Attribute && !isTextBinding) {
+    if (!isTextBinding && (type === e.BindingType.Attribute || type === e.BindingType.Animation)) {
       // Again, this binding doesn't really target the ng-template; it actually targets the element
-      // inside the structural template. In the case of non-text attribute bindings, they don't even
-      // show up on the ng-template const array, so we just skip it entirely.
+      // inside the structural template. In the case of non-text attribute or animation bindings,
+      // the binding doesn't even show up on the ng-template const array, so we just skip it
+      // entirely.
       return null;
     }
   }
