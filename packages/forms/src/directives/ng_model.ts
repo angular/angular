@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges} from '@angular/core';
+import {booleanAttribute, ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, ɵWritable as Writable} from '@angular/core';
 
-import {FormHooks} from '../model/abstract_model';
+import {AbstractControlSignals, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
@@ -194,7 +194,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks};
+  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks, signals?: Partial<AbstractControlSignals<any>>};
 
   /**
    * @description
@@ -281,6 +281,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl(): void {
     this._setUpdateStrategy();
+    this._setUpSignals();
     this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
     this._registered = true;
   }
@@ -288,6 +289,16 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   private _setUpdateStrategy(): void {
     if (this.options && this.options.updateOn != null) {
       this.control._updateOn = this.options.updateOn;
+    }
+  }
+
+  private _setUpSignals(): void {
+    if (this.options && this.options.signals) {
+      (this.control.signals as Writable<AbstractControlSignals>) = {
+        ...this.control.signals,
+        ...this.options.signals,
+      };
+      this.control._updateAllSignals();
     }
   }
 

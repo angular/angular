@@ -121,6 +121,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this.controls = controls;
     this._initObservables();
+    this._initSignals();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({
@@ -481,6 +482,11 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     (this as Writable<this>).value =
         this.controls.filter((control) => control.enabled || this.disabled)
             .map((control) => control.value);
+
+    this._updateSignals({
+      value: this.value,
+      rawValue: this.getRawValue(),
+    });
   }
 
   /** @internal */
