@@ -664,6 +664,35 @@ export declare class MyComponent {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: host_dollar_any.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Component });
+HostBindingDir.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "style.color": "$any(\"red\")" } }, ngImport: i0, template: ``, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Component,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[style.color]': '$any("red")',
+                    },
+                    template: ``
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_dollar_any.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: host_bindings_primitive_names.js
  ****************************************************************************************************/
 import { Directive, HostBinding, NgModule } from '@angular/core';
