@@ -829,3 +829,40 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: host_with_ts_expression_node.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export function getBar() {
+    console.log('This function cannot be extracted.');
+    return `${Math.random()}`;
+}
+export const BAR_CONST = getBar();
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-cmp", host: { attributes: { "foo": BAR_CONST } }, ngImport: i0, template: ``, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-cmp',
+                    standalone: true,
+                    host: {
+                        'foo': BAR_CONST,
+                    },
+                    template: ``
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_with_ts_expression_node.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare function getBar(): string;
+export declare const BAR_CONST: string;
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
+}
+
