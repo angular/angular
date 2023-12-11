@@ -11,4 +11,5 @@ generate_guides(
         "//adev/src/content/examples/service-worker-getting-started:src/app/log-update.service.ts",
         "//adev/src/content/examples/service-worker-getting-started:src/app/prompt-update.service.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

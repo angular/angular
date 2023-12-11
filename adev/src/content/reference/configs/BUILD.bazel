@@ -9,4 +9,5 @@ generate_guides(
         "//adev/src/content/examples/angular-compiler-options:tsconfig.app.json",
         "//adev/src/content/examples/angular-compiler-options:tsconfig.json",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

@@ -14,4 +14,5 @@ generate_guides(
         "//adev/src/content/examples/pipes:src/app/hero-async-message.component.ts",
         "//adev/src/content/examples/pipes:src/app/power-booster.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

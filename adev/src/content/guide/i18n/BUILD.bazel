@@ -19,4 +19,5 @@ generate_guides(
         "//adev/src/content/examples/i18n:src/app/app.component.ts",
         "//adev/src/content/examples/i18n:src/main.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

@@ -9,4 +9,5 @@ generate_guides(
         "//adev/src/content/examples/errors:cyclic-imports/child.component.ts",
         "//adev/src/content/examples/errors:cyclic-imports/parent.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

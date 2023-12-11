@@ -5,4 +5,5 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
+    visibility = ["//adev:__subpackages__"],
 )

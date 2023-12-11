@@ -7,4 +7,5 @@ generate_guides(
     ]),
     data = [
     ],
+    visibility = ["//adev:__subpackages__"],
 )

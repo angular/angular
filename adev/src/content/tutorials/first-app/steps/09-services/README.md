@@ -57,13 +57,13 @@ In the **Edit** pane of your IDE:
     1. Inside the `HousingService` class, paste these functions after the data you just copied.
         These functions allow dependencies to access the service's data.
 
-        <docs-code header="Service functions in src/app/housing.service.ts" path="first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[112,118]"/>
+        <docs-code header="Service functions in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[112,118]"/>
 
         You will need these functions in a future lesson. For now, it is enough to understand that these functions return either a specific `HousingLocation` by id or the entire list.
 
     1. Add a file level import for the `HousingLocation`.
 
-        <docs-code header="Import HousingLocation type in  src/app/housing.service.ts" path="first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
+        <docs-code header="Import HousingLocation type in  src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
 
 1. Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
@@ -77,17 +77,17 @@ In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
 1. At the top of `src/app/home/home.component.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `HomeComponent` class.
 
-    <docs-code header="Update to src/app/home/home.component.ts" path="first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[1]"/>
+    <docs-code header="Update to src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[1]"/>
 
 1. Add a new file level import for the `HousingService`:
 
-    <docs-code header="Add import to src/app/home/home.component.ts" path="first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[5]"/>
+    <docs-code header="Add import to src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[5]"/>
 
 1. From `HomeComponent`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
 1. In `HomeComponent`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-    <docs-code header="Initialize data from service in src/app/home/home.component.ts" path="first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[31,36]"/>
+    <docs-code header="Initialize data from service in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[31,36]"/>
 
 1. Save the changes to `src/app/home/home.component.ts` and confirm your app builds without error.
     Correct any errors before you continue to the next step.
