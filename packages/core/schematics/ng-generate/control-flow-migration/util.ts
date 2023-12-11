@@ -10,13 +10,16 @@ import {Attribute, HtmlParser, ParseTreeResult, visitAll} from '@angular/compile
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, startMarker, Template, TemplateCollector} from './types';
 
 const importRemovals = [
   'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
   'NgSwitchCase', 'NgSwitchDefault'
 ];
 const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
+const startMarkerRegex = new RegExp(startMarker, 'gm');
+const endMarkerRegex = new RegExp(endMarker, 'gm');
+const replaceMarkerRegex = new RegExp(`${startMarker}|${endMarker}`, 'gm');
 
 /**
  * Analyzes a source file to find file that need to be migrated and the text ranges within them.
@@ -348,7 +351,7 @@ export function processNgTemplates(template: string): {migrated: string, err: Er
         }
         // the +1 accounts for the t.count's counting of the original template
         if (t.count === matches.length + 1 && safeToRemove) {
-          template = template.replace(t.contents, '');
+          template = template.replace(t.contents, `${startMarker}${endMarker}`);
         }
         // templates may have changed structure from nested replaced templates
         // so we need to reprocess them before the next loop.
@@ -474,6 +477,8 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
     if (etm.hasChildren()) {
       const {childStart, childEnd} = etm.getChildSpan(offset);
       middle = tmpl.slice(childStart, childEnd);
+    } else {
+      middle = startMarker + endMarker;
     }
     return {start: '', middle, end: ''};
   } else if (isI18nTemplate(etm, i18nAttr)) {
@@ -511,6 +516,13 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
 }
 
 const selfClosingList = 'input|br|img|base|wbr|area|col|embed|hr|link|meta|param|source|track';
+
+function isInMigratedBlock(line: string, isCurrentlyInMigratedBlock: boolean) {
+  return line.match(startMarkerRegex) &&
+      (!line.match(endMarkerRegex) ||
+       line.lastIndexOf(startMarker) > line.lastIndexOf(endMarker)) ||
+      (isCurrentlyInMigratedBlock && !line.match(endMarkerRegex));
+}
 
 /**
  * re-indents all the lines in the template properly post migration
@@ -561,8 +573,19 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     let indent = '';
     // the pre-existing indent in an inline template that we'd like to preserve
     let mindent = '';
+    let depth = 0;
+    let inMigratedBlock = false;
     for (let [index, line] of lines.entries()) {
-      if (line.trim() === '' && index !== 0 && index !== lines.length - 1) {
+      depth +=
+          [...line.matchAll(startMarkerRegex)].length - [...line.matchAll(endMarkerRegex)].length;
+      inMigratedBlock = depth > 0;
+      let lineWasMigrated = false;
+      if (line.match(replaceMarkerRegex)) {
+        line = line.replace(replaceMarkerRegex, '');
+        lineWasMigrated = true;
+      }
+      if ((line.trim() === '' && index !== 0 && index !== lines.length - 1) &&
+          (inMigratedBlock || lineWasMigrated)) {
         // skip blank lines except if it's the first line or last line
         // this preserves leading and trailing spaces if they are already present
         continue;
@@ -584,7 +607,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         indent = indent.slice(2);
       }
 
-      formatted.push(mindent + indent + line.trim());
+      formatted.push(mindent + (line.trim() !== '' ? indent : '') + line.trim());
 
       // this matches any self closing element that actually has a />
       if (closeMultiLineElRegex.test(line)) {
