@@ -29,7 +29,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
 1. In `src/app/housing-location/housing-location.component.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
 
-    <docs-code header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app/steps/12-forms/src/app/housing-location/housing-location.component.ts" visibleLines="[13,20]"/>
+    <docs-code header="Add anchor with a routerLink directive to housing-location.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.component.ts" visibleLines="[13,20]"/>
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
@@ -45,7 +45,7 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
 
 1. In `src/app/details/details.component.ts` update the template to import the functions, classes and services that you'll need to use in the `DetailsComponent`:
 
-    <docs-code header="Update file level imports" path="first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[1,5]"/>
+    <docs-code header="Update file level imports" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[1,5]"/>
 
 1. Update the `template` property of the `@Component` decorator to display the value `housingLocationId`:
 
@@ -79,19 +79,19 @@ To access the data you will add a call to the `HousingService`.
 
 1. Update the template code to match the following code:
 
-    <docs-code header="Update the DetailsComponent template in src/app/details/details.component.ts" path="first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[11,28]"/>
+    <docs-code header="Update the DetailsComponent template in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[11,28]"/>
 
     Notice that the `housingLocation` properties are being accessed with the optional chaining operator `?`. This ensures that if the `housingLocation` value is null or undefined the application doesn't crash.
 
 1. Update the body of the `DetailsComponent` class to match the following code:
 
-    <docs-code header="Update the DetailsComponent class in src/app/details/details.component.ts" path="first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[31,42]"/>
+    <docs-code header="Update the DetailsComponent class in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[31,42]"/>
 
     Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
 
 1. Copy the following styles into the `src/app/details/details.component.css` file:
 
-    <docs-code header="Add styles for the DetailsComponent" path="first-app/steps/12-forms/src/app/details/details.component.css" visibleLines="[1,71]"/>
+    <docs-code header="Add styles for the DetailsComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.css" visibleLines="[1,71]"/>
 
 1. Save your changes.
 
@@ -106,7 +106,7 @@ In a previous lesson you updated the `AppComponent` template to include a `route
 
 1. Confirm that your code matches the following:
 
-    <docs-code header="Add routerLink to AppComponent" path="first-app/steps/12-forms/src/app/app.component.ts" visibleLines="[13,24]"/>
+    <docs-code header="Add routerLink to AppComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.component.ts" visibleLines="[13,24]"/>
 
     Your code may already be up-to-date but confirm to be sure.
 </docs-step>

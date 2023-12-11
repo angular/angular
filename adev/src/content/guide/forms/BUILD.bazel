@@ -49,4 +49,5 @@ generate_guides(
         "//adev/src/content/examples/reactive-forms:src/app/profile-editor/profile-editor.component.html",
         "//adev/src/content/examples/reactive-forms:src/app/profile-editor/profile-editor.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )
