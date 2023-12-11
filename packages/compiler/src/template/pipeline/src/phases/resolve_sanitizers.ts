@@ -7,26 +7,29 @@
  */
 
 import {SecurityContext} from '../../../../core';
+import * as o from '../../../../output/output_ast';
+import {Identifiers} from '../../../../render3/r3_identifiers';
 import {isIframeSecuritySensitiveAttr} from '../../../../schema/dom_security_schema';
 import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 import {createOpXrefMap} from '../util/elements';
 
 /**
- * Mapping of security contexts to sanitizer function for that context.
+ * Map of security contexts to their sanitizer function.
  */
-const sanitizers = new Map<SecurityContext, ir.SanitizerFn>([
-  [SecurityContext.HTML, ir.SanitizerFn.Html], [SecurityContext.SCRIPT, ir.SanitizerFn.Script],
-  [SecurityContext.STYLE, ir.SanitizerFn.Style], [SecurityContext.URL, ir.SanitizerFn.Url],
-  [SecurityContext.RESOURCE_URL, ir.SanitizerFn.ResourceUrl]
+const sanitizerFns = new Map<SecurityContext, o.ExternalReference>([
+  [SecurityContext.HTML, Identifiers.sanitizeHtml],
+  [SecurityContext.RESOURCE_URL, Identifiers.sanitizeResourceUrl],
+  [SecurityContext.SCRIPT, Identifiers.sanitizeScript],
+  [SecurityContext.STYLE, Identifiers.sanitizeStyle], [SecurityContext.URL, Identifiers.sanitizeUrl]
 ]);
 
 /**
- * Mapping of security contexts to trusted value function for that context.
+ * Map of security contexts to their trusted value function.
  */
-const trustedValueFns = new Map<SecurityContext, ir.TrustedValueFn>([
-  [SecurityContext.HTML, ir.TrustedValueFn.Html],
-  [SecurityContext.RESOURCE_URL, ir.TrustedValueFn.ResourceUrl]
+const trustedValueFns = new Map<SecurityContext, o.ExternalReference>([
+  [SecurityContext.HTML, Identifiers.trustConstantHtml],
+  [SecurityContext.RESOURCE_URL, Identifiers.trustConstantResourceUrl],
 ]);
 
 /**
@@ -39,8 +42,7 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
         const trustedValueFn = trustedValueFns.get(op.securityContext) ?? null;
-        op.trustedValueFn =
-            trustedValueFn !== null ? new ir.TrustedValueFnExpr(trustedValueFn) : null;
+        op.trustedValueFn = trustedValueFn !== null ? o.importExpr(trustedValueFn) : null;
       }
     }
 
@@ -48,8 +50,8 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
       switch (op.kind) {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
-          const sanitizerFn = sanitizers.get(op.securityContext) ?? null;
-          op.sanitizer = sanitizerFn !== null ? new ir.SanitizerExpr(sanitizerFn) : null;
+          const sanitizerFn = sanitizerFns.get(op.securityContext) ?? null;
+          op.sanitizer = sanitizerFn !== null ? o.importExpr(sanitizerFn) : null;
           // If there was no sanitization function found based on the security context of an
           // attribute/property, check whether this attribute/property is one of the
           // security-sensitive <iframe> attributes (and that the current element is actually an
@@ -60,7 +62,7 @@ export function resolveSanitizers(job: ComponentCompilationJob): void {
               throw Error('Property should have an element-like owner');
             }
             if (isIframeElement(ownerOp) && isIframeSecuritySensitiveAttr(op.name)) {
-              op.sanitizer = new ir.SanitizerExpr(ir.SanitizerFn.IframeAttribute);
+              op.sanitizer = o.importExpr(Identifiers.validateIframeAttribute);
             }
           }
           break;
