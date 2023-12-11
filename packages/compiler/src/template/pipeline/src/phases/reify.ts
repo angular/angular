@@ -7,9 +7,19 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
 import * as ng from '../instruction';
+
+/**
+ * Map of target resolvers for event listeners.
+ */
+const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
+  ['window', Identifiers.resolveWindow],
+  ['document', Identifiers.resolveDocument],
+  ['body', Identifiers.resolveBody],
+]);
 
 /**
  * Compiles semantic operations across all views and generates output `o.Statement`s with actual
@@ -112,10 +122,16 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.Listener:
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
-        const reified = op.hostListener && op.isAnimationListener ?
-            ng.syntheticHostListener(op.name, listenerFn, op.sourceSpan) :
-            ng.listener(op.name, listenerFn, op.sourceSpan);
-        ir.OpList.replace(op, reified);
+        const eventTargetResolver =
+            op.eventTarget ? GLOBAL_TARGET_RESOLVERS.get(op.eventTarget) : null;
+        if (eventTargetResolver === undefined) {
+          throw new Error(`AssertionError: unknown event target ${op.eventTarget}`);
+        }
+        ir.OpList.replace(
+            op,
+            ng.listener(
+                op.name, listenerFn, eventTargetResolver, op.hostListener && op.isAnimationListener,
+                op.sourceSpan));
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
