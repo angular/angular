@@ -20,7 +20,17 @@ const sanitizerIdentifierMap = new Map<ir.SanitizerFn, o.ExternalReference>([
   [ir.SanitizerFn.IframeAttribute, Identifiers.validateIframeAttribute],
   [ir.SanitizerFn.ResourceUrl, Identifiers.sanitizeResourceUrl],
   [ir.SanitizerFn.Script, Identifiers.sanitizeScript],
-  [ir.SanitizerFn.Style, Identifiers.sanitizeStyle], [ir.SanitizerFn.Url, Identifiers.sanitizeUrl]
+  [ir.SanitizerFn.Style, Identifiers.sanitizeStyle],
+  [ir.SanitizerFn.Url, Identifiers.sanitizeUrl],
+]);
+
+/**
+ * Map of target resolvers for event listeners.
+ */
+const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
+  ['window', Identifiers.resolveWindow],
+  ['document', Identifiers.resolveDocument],
+  ['body', Identifiers.resolveBody],
 ]);
 
 /**
@@ -124,10 +134,16 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.Listener:
         const listenerFn =
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, op.consumesDollarEvent);
-        const reified = op.hostListener && op.isAnimationListener ?
-            ng.syntheticHostListener(op.name, listenerFn, op.sourceSpan) :
-            ng.listener(op.name, listenerFn, op.sourceSpan);
-        ir.OpList.replace(op, reified);
+        const eventTargetResolver =
+            op.eventTarget ? GLOBAL_TARGET_RESOLVERS.get(op.eventTarget) : null;
+        if (eventTargetResolver === undefined) {
+          throw new Error(`AssertionError: unknown event target ${op.eventTarget}`);
+        }
+        ir.OpList.replace(
+            op,
+            ng.listener(
+                op.name, listenerFn, eventTargetResolver, op.hostListener && op.isAnimationListener,
+                op.sourceSpan));
         break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
