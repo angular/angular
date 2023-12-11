@@ -123,8 +123,10 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
+  const [phase, target] = event.type === e.ParsedEventType.Regular ? [null, event.targetOrPhase] :
+                                                                     [event.targetOrPhase, null];
   const eventBinding = ir.createListenerOp(
-      job.root.xref, new ir.SlotHandle(), event.name, null, [], event.targetOrPhase, true,
+      job.root.xref, new ir.SlotHandle(), event.name, null, [], phase, target, true,
       event.sourceSpan);
   // TODO: Can this be a chain?
   eventBinding.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(
@@ -860,8 +862,8 @@ function ingestElementBindings(
 
     unit.create.push(ir.createListenerOp(
         op.xref, op.handle, output.name, op.tag,
-        makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
-        output.sourceSpan));
+        makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+        output.target, false, output.sourceSpan));
   }
 
   // If any of the bindings on this element have an i18n message, then an i18n attrs configuration
@@ -921,8 +923,8 @@ function ingestTemplateBindings(
     if (templateKind === ir.TemplateKind.NgTemplate) {
       unit.create.push(ir.createListenerOp(
           op.xref, op.handle, output.name, op.tag,
-          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
-          output.sourceSpan));
+          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+          output.target, false, output.sourceSpan));
     }
     if (templateKind === ir.TemplateKind.Structural &&
         output.type !== e.ParsedEventType.Animation) {
