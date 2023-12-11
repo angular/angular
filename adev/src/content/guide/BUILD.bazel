@@ -15,4 +15,5 @@ generate_guides(
         "//adev/src/content/examples/security:src/app/inner-html-binding.component.ts",
         "//adev/src/content/examples/ssr:server.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

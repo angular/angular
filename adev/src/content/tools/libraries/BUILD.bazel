@@ -8,4 +8,5 @@ generate_guides(
     data = [
         "//adev/src/content/examples/angular-linker-plugin:webpack.config.mjs",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

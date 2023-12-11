@@ -72,4 +72,5 @@ generate_guides(
         "//adev/src/content/examples/styleguide:src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts",
         "//adev/src/content/examples/styleguide:src/09-01/app/heroes/shared/hero-button/hero-button.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )
