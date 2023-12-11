@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="rxjs" />
-
 import {PartialObserver, Subject, Subscription} from 'rxjs';
 
 /**

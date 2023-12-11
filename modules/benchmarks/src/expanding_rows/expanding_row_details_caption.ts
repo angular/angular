@@ -35,7 +35,7 @@ export class ExpandingRowDetailsCaption implements OnDestroy {
   @Input() color: string = 'blue';
 
   /** This is triggered when this component is destroyed. */
-  private readonly onDestroy = new Subject();
+  private readonly onDestroy = new Subject<void>();
 
   /**
    * We need a reference to parent cfc-expanding-row component here to hide
