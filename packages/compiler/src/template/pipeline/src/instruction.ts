@@ -101,25 +101,15 @@ export function enableBindings(): ir.CreateOp {
 }
 
 export function listener(
-    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
+    name: string, handlerFn: o.Expression, eventTargetResolver: o.ExternalReference|null,
+    syntheticHost: boolean, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  const args = [o.literal(name), handlerFn];
+  if (eventTargetResolver !== null) {
+    args.push(o.literal(false));  // `useCapture` flag, defaults to `false`
+    args.push(o.importExpr(eventTargetResolver));
+  }
   return call(
-      Identifiers.listener,
-      [
-        o.literal(name),
-        handlerFn,
-      ],
-      sourceSpan);
-}
-
-export function syntheticHostListener(
-    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
-  return call(
-      Identifiers.syntheticHostListener,
-      [
-        o.literal(name),
-        handlerFn,
-      ],
-      sourceSpan);
+      syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener, args, sourceSpan);
 }
 
 export function pipe(slot: number, name: string): ir.CreateOp {
