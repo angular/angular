@@ -121,7 +121,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
   {kind: Kind.Tmpl, fn: optimizeTrackFns},
   {kind: Kind.Both, fn: resolveContexts},
-  {kind: Kind.Tmpl, fn: resolveSanitizers},  // TODO: run in both
+  {kind: Kind.Both, fn: resolveSanitizers},
   {kind: Kind.Tmpl, fn: liftLocalRefs},
   {kind: Kind.Both, fn: generateNullishCoalesceExpressions},
   {kind: Kind.Both, fn: expandSafeReads},

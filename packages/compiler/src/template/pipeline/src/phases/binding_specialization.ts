@@ -59,7 +59,7 @@ export function specializeBindings(job: CompilationJob): void {
                 op,
                 ir.createHostPropertyOp(
                     op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.i18nContext, op.sourceSpan));
+                    op.i18nContext, op.securityContext, op.sourceSpan));
           } else {
             ir.OpList.replace<ir.UpdateOp>(
                 op,

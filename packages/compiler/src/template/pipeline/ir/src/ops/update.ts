@@ -112,7 +112,7 @@ export interface BindingOp extends Op<UpdateOp> {
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext;
+  securityContext: SecurityContext|SecurityContext[];
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
@@ -140,7 +140,7 @@ export interface BindingOp extends Op<UpdateOp> {
  */
 export function createBindingOp(
     target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
-    unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
+    unit: string|null, securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
     isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): BindingOp {
   return {
@@ -190,7 +190,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext;
+  securityContext: SecurityContext|SecurityContext[];
 
   /**
    * The sanitizer for this property.
@@ -216,7 +216,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  */
 export function createPropertyOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    isAnimationTrigger: boolean, securityContext: SecurityContext,
+    isAnimationTrigger: boolean, securityContext: SecurityContext|SecurityContext[],
     isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
     sourceSpan: ParseSourceSpan): PropertyOp {
@@ -419,7 +419,7 @@ export interface AttributeOp extends Op<UpdateOp> {
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext;
+  securityContext: SecurityContext|SecurityContext[];
 
   /**
    * The sanitizer for this attribute.
@@ -457,7 +457,7 @@ export interface AttributeOp extends Op<UpdateOp> {
  */
 export function createAttributeOp(
     target: XrefId, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext, isTextAttribute: boolean,
+    securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
     isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
