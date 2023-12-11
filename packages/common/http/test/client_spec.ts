@@ -106,11 +106,11 @@ describe('HttpClient', () => {
     });
     it('that returns a stream of events', done => {
       client.get('/test', {observe: 'events'}).pipe(toArray()).toPromise().then(events => {
-        expect(events.length).toBe(2);
+        expect(events!.length).toBe(2);
         let x = HttpResponse;
-        expect(events[0].type).toBe(HttpEventType.Sent);
-        expect(events[1].type).toBe(HttpEventType.Response);
-        expect(events[1] instanceof HttpResponse).toBeTruthy();
+        expect(events![0].type).toBe(HttpEventType.Sent);
+        expect(events![1].type).toBe(HttpEventType.Response);
+        expect(events![1] instanceof HttpResponse).toBeTruthy();
         done();
       });
       backend.expectOne('/test').flush({'data': 'hello world'});

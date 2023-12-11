@@ -13,14 +13,14 @@ import {TestBed} from '@angular/core/testing';
 describe('outputs', () => {
   @Component({selector: 'button-toggle', template: ''})
   class ButtonToggle {
-    @Output('change') change = new EventEmitter();
+    @Output('change') change = new EventEmitter<void>();
 
-    @Output('reset') resetStream = new EventEmitter();
+    @Output('reset') resetStream = new EventEmitter<void>();
   }
 
   @Directive({selector: '[otherDir]'})
   class OtherDir {
-    @Output('change') changeStream = new EventEmitter();
+    @Output('change') changeStream = new EventEmitter<void>();
   }
 
   @Component({selector: 'destroy-comp', template: ''})
@@ -33,7 +33,7 @@ describe('outputs', () => {
 
   @Directive({selector: '[myButton]'})
   class MyButton {
-    @Output() click = new EventEmitter();
+    @Output() click = new EventEmitter<void>();
   }
 
   it('should call component output function when event is emitted', () => {
