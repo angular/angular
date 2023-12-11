@@ -27,4 +27,5 @@ generate_guides(
         "//adev/src/content/examples/two-way-binding:src/app/sizer/sizer.component.html",
         "//adev/src/content/examples/two-way-binding:src/app/sizer/sizer.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

@@ -8,7 +8,8 @@
 
 import {NavigationItem} from '@angular/docs';
 
-import TUTORIALS_SUB_NAVIGATION_DATA_JSON from '../../src/assets/tutorials/routes/tutorials.json';
+import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
+import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
 
 import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
@@ -937,7 +938,8 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
 ];
 
 export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
-  ...TUTORIALS_SUB_NAVIGATION_DATA_JSON,
+  FIRST_APP_TUTORIAL_NAV_DATA,
+  LEARN_ANGULAR_TUTORIAL_NAV_DATA,
   {
     path: DefaultPage.TUTORIALS,
     contentPath: 'tutorials/home',
