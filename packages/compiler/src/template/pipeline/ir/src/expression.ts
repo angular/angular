@@ -1069,6 +1069,8 @@ export function transformExpressionsInExpression(
     expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
     expr.template.expressions =
         expr.template.expressions.map(e => transformExpressionsInExpression(e, transform, flags));
+  } else if (expr instanceof o.WrappedNodeExpr) {
+    // TODO: Do we need to transform any TS nodes nested inside of this expression?
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
