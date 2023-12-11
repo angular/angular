@@ -27,7 +27,7 @@ import {
 import {filter, map, switchMap, take} from 'rxjs/operators';
 
 /** Time to wait after navigation starts before showing the progress bar. This delay allows a small amount of time to skip showing the progress bar when a navigation is effectively immediate. 30ms is approximately the amount of time we can wait before a delay is perceptible.*/
-const PROGRESS_BAR_DELAY = 30;
+export const PROGRESS_BAR_DELAY = 30;
 
 @Component({
   selector: 'adev-progress-bar',
