@@ -744,6 +744,15 @@
     "name": "getTNodeFromLView"
   },
   {
+    "name": "GRAPH_EDGE_INDEX_OF_THIS"
+  },
+  {
+    "name": "GRAPH_EDGE_NODE"
+  },
+  {
+    "name": "GRAPH_EDGE_VERSION"
+  },
+  {
     "name": "hostReportError"
   },
   {
@@ -942,7 +951,7 @@
     "name": "processInjectorTypesWithProviders"
   },
   {
-    "name": "producerRemoveLiveConsumerAtIndex"
+    "name": "producerRemoveLiveConsumer"
   },
   {
     "name": "producerUpdateValueVersion"

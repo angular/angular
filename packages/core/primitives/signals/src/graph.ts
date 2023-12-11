@@ -60,18 +60,45 @@ export const REACTIVE_NODE: ReactiveNode = {
   lastCleanEpoch: 0 as Version,
   dirty: false,
   producerNode: undefined,
-  producerLastReadVersion: undefined,
-  producerIndexOfThis: undefined,
   nextProducerIndex: 0,
   liveConsumerNode: undefined,
-  liveConsumerIndexOfThis: undefined,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
   producerMustRecompute: () => false,
   producerRecomputeValue: () => {},
   consumerMarkedDirty: () => {},
-  consumerOnSignalRead: () => {},
+  consumerOnSignalRead: () => {}
 };
+
+export const GRAPH_EDGE_NODE = 0;
+export const GRAPH_EDGE_VERSION = 1;
+export const GRAPH_EDGE_INDEX_OF_THIS = 2;
+
+/**
+ * Represents an edge of the graph.
+ */
+export interface GraphEdge extends Array<any> {
+  /**
+   * The node related to.
+   */
+  [GRAPH_EDGE_NODE]: ReactiveNode;
+
+  /**
+   * The version of the edge.
+   */
+  [GRAPH_EDGE_VERSION]: Version|undefined;
+
+  /**
+   * index of the owner of this array in the relation target node.
+   */
+  [GRAPH_EDGE_INDEX_OF_THIS]: number;
+}
+
+function createGraphEdge(
+    node: ReactiveNode, version: Version|undefined, indexOfThis: number): GraphEdge {
+  return [node, version, indexOfThis];
+}
+
 
 /**
  * A producer and/or consumer which participates in the reactive graph.
@@ -115,24 +142,7 @@ export interface ReactiveNode {
    *
    * Uses the same indices as the `producerLastReadVersion` and `producerIndexOfThis` arrays.
    */
-  producerNode: ReactiveNode[]|undefined;
-
-  /**
-   * `Version` of the value last read by a given producer.
-   *
-   * Uses the same indices as the `producerNode` and `producerIndexOfThis` arrays.
-   */
-  producerLastReadVersion: Version[]|undefined;
-
-  /**
-   * Index of `this` (consumer) in each producer's `liveConsumers` array.
-   *
-   * This value is only meaningful if this node is live (`liveConsumers.length > 0`). Otherwise
-   * these indices are stale.
-   *
-   * Uses the same indices as the `producerNode` and `producerLastReadVersion` arrays.
-   */
-  producerIndexOfThis: number[]|undefined;
+  producerNode: GraphEdge[]|undefined;
 
   /**
    * Index into the producer arrays that the next dependency of this node as a consumer will use.
@@ -149,14 +159,7 @@ export interface ReactiveNode {
    *
    * `liveConsumerNode.length` is effectively our reference count for this node.
    */
-  liveConsumerNode: ReactiveNode[]|undefined;
-
-  /**
-   * Index of `this` (producer) in each consumer's `producerNode` array.
-   *
-   * Uses the same indices as the `liveConsumerNode` array.
-   */
-  liveConsumerIndexOfThis: number[]|undefined;
+  liveConsumerNode: GraphEdge[]|undefined;
 
   /**
    * Whether writes to signals are allowed when this consumer is the `activeConsumer`.
@@ -173,7 +176,9 @@ export interface ReactiveNode {
    * example, if no initial value has been computed).
    */
   producerMustRecompute(node: unknown): boolean;
+
   producerRecomputeValue(node: unknown): void;
+
   consumerMarkedDirty(node: unknown): void;
 
   /**
@@ -184,13 +189,10 @@ export interface ReactiveNode {
 
 interface ConsumerNode extends ReactiveNode {
   producerNode: NonNullable<ReactiveNode['producerNode']>;
-  producerIndexOfThis: NonNullable<ReactiveNode['producerIndexOfThis']>;
-  producerLastReadVersion: NonNullable<ReactiveNode['producerLastReadVersion']>;
 }
 
 interface ProducerNode extends ReactiveNode {
   liveConsumerNode: NonNullable<ReactiveNode['liveConsumerNode']>;
-  liveConsumerIndexOfThis: NonNullable<ReactiveNode['liveConsumerIndexOfThis']>;
 }
 
 /**
@@ -216,33 +218,30 @@ export function producerAccessed(node: ReactiveNode): void {
 
   assertConsumerNode(activeConsumer);
 
-  if (idx < activeConsumer.producerNode.length && activeConsumer.producerNode[idx] !== node) {
+  if (idx < activeConsumer.producerNode.length &&
+      activeConsumer.producerNode[idx]?.[GRAPH_EDGE_NODE] !== node) {
     // There's been a change in producers since the last execution of `activeConsumer`.
-    // `activeConsumer.producerNode[idx]` holds a stale dependency which will be be removed and
+    // `edgeRef` holds a stale dependency which will be be removed and
     // replaced with `this`.
     //
     // If `activeConsumer` isn't live, then this is a no-op, since we can replace the producer in
     // `activeConsumer.producerNode` directly. However, if `activeConsumer` is live, then we need
     // to remove it from the stale producer's `liveConsumer`s.
     if (consumerIsLive(activeConsumer)) {
-      const staleProducer = activeConsumer.producerNode[idx];
-      producerRemoveLiveConsumerAtIndex(staleProducer, activeConsumer.producerIndexOfThis[idx]);
+      producerRemoveLiveConsumer(activeConsumer.producerNode[idx]);
 
       // At this point, the only record of `staleProducer` is the reference at
-      // `activeConsumer.producerNode[idx]` which will be overwritten below.
+      // `edgeRef` which will be overwritten below.
     }
   }
 
-  if (activeConsumer.producerNode[idx] !== node) {
-    // We're a new dependency of the consumer (at `idx`).
-    activeConsumer.producerNode[idx] = node;
-
-    // If the active consumer is live, then add it as a live consumer. If not, then use 0 as a
-    // placeholder value.
-    activeConsumer.producerIndexOfThis[idx] =
-        consumerIsLive(activeConsumer) ? producerAddLiveConsumer(node, activeConsumer, idx) : 0;
+  if (activeConsumer.producerNode[idx]?.[GRAPH_EDGE_NODE] !== node) {
+    activeConsumer.producerNode[idx] = createGraphEdge(
+        node, node.version,
+        consumerIsLive(activeConsumer) ? producerAddLiveConsumer(node, activeConsumer, idx) : 0);
+  } else {
+    activeConsumer.producerNode[idx][GRAPH_EDGE_VERSION] = node.version;
   }
-  activeConsumer.producerLastReadVersion[idx] = node.version;
 }
 
 /**
@@ -298,10 +297,12 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
   const prev = inNotificationPhase;
   inNotificationPhase = true;
   try {
-    for (const consumer of node.liveConsumerNode) {
-      if (!consumer.dirty) {
-        consumerMarkDirty(consumer);
+    for (let i = 0; i < node.liveConsumerNode.length; i++) {
+      if (node.liveConsumerNode[i][GRAPH_EDGE_NODE].dirty) {
+        continue;
       }
+
+      consumerMarkDirty(node.liveConsumerNode[i][GRAPH_EDGE_NODE]);
     }
   } finally {
     inNotificationPhase = prev;
@@ -343,8 +344,7 @@ export function consumerAfterComputation(
     node: ReactiveNode|null, prevConsumer: ReactiveNode|null): void {
   setActiveConsumer(prevConsumer);
 
-  if (!node || node.producerNode === undefined || node.producerIndexOfThis === undefined ||
-      node.producerLastReadVersion === undefined) {
+  if (!node || node.producerNode === undefined) {
     return;
   }
 
@@ -352,7 +352,7 @@ export function consumerAfterComputation(
     // For live consumers, we need to remove the producer -> consumer edge for any stale producers
     // which weren't dependencies after the recomputation.
     for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+      producerRemoveLiveConsumer(node.producerNode[i]);
     }
   }
 
@@ -361,8 +361,6 @@ export function consumerAfterComputation(
   // benchmarking has shown that individual pop operations are faster.
   while (node.producerNode.length > node.nextProducerIndex) {
     node.producerNode.pop();
-    node.producerLastReadVersion.pop();
-    node.producerIndexOfThis.pop();
   }
 }
 
@@ -375,22 +373,21 @@ export function consumerPollProducersForChange(node: ReactiveNode): boolean {
 
   // Poll producers for change.
   for (let i = 0; i < node.producerNode.length; i++) {
-    const producer = node.producerNode[i];
-    const seenVersion = node.producerLastReadVersion[i];
-
     // First check the versions. A mismatch means that the producer's value is known to have
     // changed since the last time we read it.
-    if (seenVersion !== producer.version) {
+    if (node.producerNode[i][GRAPH_EDGE_VERSION] !==
+        node.producerNode[i][GRAPH_EDGE_NODE].version) {
       return true;
     }
 
     // The producer's version is the same as the last time we read it, but it might itself be
     // stale. Force the producer to recompute its version (calculating a new value if necessary).
-    producerUpdateValueVersion(producer);
+    producerUpdateValueVersion(node.producerNode[i][GRAPH_EDGE_NODE]);
 
     // Now when we do this check, `producer.version` is guaranteed to be up to date, so if the
     // versions still match then it has not changed since the last time we read it.
-    if (seenVersion !== producer.version) {
+    if (node.producerNode[i][GRAPH_EDGE_VERSION] !==
+        node.producerNode[i][GRAPH_EDGE_NODE].version) {
       return true;
     }
   }
@@ -406,15 +403,14 @@ export function consumerDestroy(node: ReactiveNode): void {
   if (consumerIsLive(node)) {
     // Drop all connections from the graph to this node.
     for (let i = 0; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+      producerRemoveLiveConsumer(node.producerNode[i]);
     }
   }
 
   // Truncate all the arrays to drop all connection from this node to the graph.
-  node.producerNode.length = node.producerLastReadVersion.length = node.producerIndexOfThis.length =
-      0;
+  node.producerNode.length = 0;
   if (node.liveConsumerNode) {
-    node.liveConsumerNode.length = node.liveConsumerIndexOfThis!.length = 0;
+    node.liveConsumerNode.length = 0;
   }
 }
 
@@ -431,51 +427,54 @@ function producerAddLiveConsumer(
   if (node.liveConsumerNode.length === 0) {
     // When going from 0 to 1 live consumers, we become a live consumer to our producers.
     for (let i = 0; i < node.producerNode.length; i++) {
-      node.producerIndexOfThis[i] = producerAddLiveConsumer(node.producerNode[i], node, i);
+      node.producerNode[i][GRAPH_EDGE_INDEX_OF_THIS] =
+          producerAddLiveConsumer(node.producerNode[i][GRAPH_EDGE_NODE], node, i);
     }
   }
-  node.liveConsumerIndexOfThis.push(indexOfThis);
-  return node.liveConsumerNode.push(consumer) - 1;
+
+  return node.liveConsumerNode.push(createGraphEdge(consumer, undefined, indexOfThis)) - 1;
 }
 
 /**
- * Remove the live consumer at `idx`.
+ * Remove the live consumer
  */
-function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): void {
-  assertProducerNode(node);
-  assertConsumerNode(node);
+function producerRemoveLiveConsumer(anEdge: GraphEdge): void {
+  assertProducerNode(anEdge[GRAPH_EDGE_NODE]);
+  assertConsumerNode(anEdge[GRAPH_EDGE_NODE]);
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode && idx >= node.liveConsumerNode.length) {
-    throw new Error(`Assertion error: active consumer index ${idx} is out of bounds of ${
-        node.liveConsumerNode.length} consumers)`);
+  if (typeof ngDevMode !== 'undefined' && ngDevMode &&
+      anEdge[GRAPH_EDGE_INDEX_OF_THIS] >= anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length) {
+    throw new Error(`Assertion error: active consumer index ${
+        anEdge[GRAPH_EDGE_INDEX_OF_THIS]} is out of bounds of ${
+        anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length} consumers)`);
   }
 
-  if (node.liveConsumerNode.length === 1) {
+  if (anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length === 1) {
     // When removing the last live consumer, we will no longer be live. We need to remove
     // ourselves from our producers' tracking (which may cause consumer-producers to lose
     // liveness as well).
-    for (let i = 0; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+    for (let i = 0; i < anEdge[GRAPH_EDGE_NODE].producerNode.length; i++) {
+      producerRemoveLiveConsumer(anEdge[GRAPH_EDGE_NODE].producerNode[i]);
     }
   }
 
-  // Move the last value of `liveConsumers` into `idx`. Note that if there's only a single
-  // live consumer, this is a no-op.
-  const lastIdx = node.liveConsumerNode.length - 1;
-  node.liveConsumerNode[idx] = node.liveConsumerNode[lastIdx];
-  node.liveConsumerIndexOfThis[idx] = node.liveConsumerIndexOfThis[lastIdx];
+  // Move the last value of `liveConsumers` into `anEdge[GRAPH_EDGE_INDEX_OF_THIS]`. Note that if
+  // there's only a single live consumer, this is a no-op.
+  const lastIdx = anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length - 1;
+  anEdge[GRAPH_EDGE_NODE].liveConsumerNode[anEdge[GRAPH_EDGE_INDEX_OF_THIS]] =
+      anEdge[GRAPH_EDGE_NODE].liveConsumerNode[lastIdx];
 
   // Truncate the array.
-  node.liveConsumerNode.length--;
-  node.liveConsumerIndexOfThis.length--;
+  anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length--;
 
   // If the index is still valid, then we need to fix the index pointer from the producer to this
   // consumer, and update it from `lastIdx` to `idx` (accounting for the move above).
-  if (idx < node.liveConsumerNode.length) {
-    const idxProducer = node.liveConsumerIndexOfThis[idx];
-    const consumer = node.liveConsumerNode[idx];
-    assertConsumerNode(consumer);
-    consumer.producerIndexOfThis[idxProducer] = idx;
+  if (anEdge[GRAPH_EDGE_INDEX_OF_THIS] < anEdge[GRAPH_EDGE_NODE].liveConsumerNode.length) {
+    const consumerEdge = anEdge[GRAPH_EDGE_NODE].liveConsumerNode[anEdge[GRAPH_EDGE_INDEX_OF_THIS]];
+    assertConsumerNode(consumerEdge[GRAPH_EDGE_NODE]);
+    consumerEdge[GRAPH_EDGE_NODE]
+        .producerNode[consumerEdge[GRAPH_EDGE_INDEX_OF_THIS]][GRAPH_EDGE_INDEX_OF_THIS] =
+        anEdge[GRAPH_EDGE_INDEX_OF_THIS];
   }
 }
 
@@ -486,11 +485,8 @@ function consumerIsLive(node: ReactiveNode): boolean {
 
 function assertConsumerNode(node: ReactiveNode): asserts node is ConsumerNode {
   node.producerNode ??= [];
-  node.producerIndexOfThis ??= [];
-  node.producerLastReadVersion ??= [];
 }
 
 function assertProducerNode(node: ReactiveNode): asserts node is ProducerNode {
   node.liveConsumerNode ??= [];
-  node.liveConsumerIndexOfThis ??= [];
 }

@@ -1077,6 +1077,15 @@
     "name": "getTView"
   },
   {
+    "name": "GRAPH_EDGE_INDEX_OF_THIS"
+  },
+  {
+    "name": "GRAPH_EDGE_NODE"
+  },
+  {
+    "name": "GRAPH_EDGE_VERSION"
+  },
+  {
     "name": "hasTagAndTypeMatch"
   },
   {
@@ -1356,7 +1365,7 @@
     "name": "processInjectorTypesWithProviders"
   },
   {
-    "name": "producerRemoveLiveConsumerAtIndex"
+    "name": "producerRemoveLiveConsumer"
   },
   {
     "name": "producerUpdateValueVersion"

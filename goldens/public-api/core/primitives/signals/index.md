@@ -32,6 +32,22 @@ export function defaultEquals<T>(a: T, b: T): boolean;
 export function getActiveConsumer(): ReactiveNode | null;
 
 // @public (undocumented)
+export const GRAPH_EDGE_INDEX_OF_THIS = 2;
+
+// @public (undocumented)
+export const GRAPH_EDGE_NODE = 0;
+
+// @public (undocumented)
+export const GRAPH_EDGE_VERSION = 1;
+
+// @public
+export interface GraphEdge extends Array<any> {
+    [GRAPH_EDGE_NODE]: ReactiveNode;
+    [GRAPH_EDGE_VERSION]: Version | undefined;
+    [GRAPH_EDGE_INDEX_OF_THIS]: number;
+}
+
+// @public (undocumented)
 export function isInNotificationPhase(): boolean;
 
 // @public (undocumented)
@@ -68,13 +84,10 @@ export interface ReactiveNode {
     consumerOnSignalRead(node: unknown): void;
     dirty: boolean;
     lastCleanEpoch: Version;
-    liveConsumerIndexOfThis: number[] | undefined;
-    liveConsumerNode: ReactiveNode[] | undefined;
+    liveConsumerNode: GraphEdge[] | undefined;
     nextProducerIndex: number;
-    producerIndexOfThis: number[] | undefined;
-    producerLastReadVersion: Version[] | undefined;
     producerMustRecompute(node: unknown): boolean;
-    producerNode: ReactiveNode[] | undefined;
+    producerNode: GraphEdge[] | undefined;
     // (undocumented)
     producerRecomputeValue(node: unknown): void;
     version: Version;
