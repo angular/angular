@@ -8,7 +8,7 @@
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, MigrateError, Result} from './types';
+import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
 export const ngfor = '*ngFor';
@@ -149,8 +149,8 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
 
   const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
 
-  let startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
-  let endBlock = `${lbString}}`;
+  let startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
+  let endBlock = `${lbString}}${endMarker}`;
   let forBlock = '';
 
   if (tmplPlaceholder !== '') {
@@ -196,9 +196,9 @@ function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number):
   }
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {\n${start}`;
+  const startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {\n${start}`;
 
-  const endBlock = `${end}\n}`;
+  const endBlock = `${end}\n}${endMarker}`;
   const forBlock = startBlock + middle + endBlock;
 
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
