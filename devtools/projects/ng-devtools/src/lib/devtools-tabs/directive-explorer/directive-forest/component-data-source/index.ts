@@ -176,7 +176,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       this._treeControl.expansionModel.changed,
       this._flattenedData,
     ];
-    return merge(...changes)
+    return merge<unknown[]>(...changes)
         .pipe(
             map(() => {
               this._expandedData.next(

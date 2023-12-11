@@ -54,6 +54,9 @@
     "name": "CIRCULAR"
   },
   {
+    "name": "COMPLETE_NOTIFICATION"
+  },
+  {
     "name": "COMPONENT_REGEX"
   },
   {
@@ -90,10 +93,7 @@
     "name": "ComponentRef2"
   },
   {
-    "name": "ConnectableObservable"
-  },
-  {
-    "name": "ConnectableSubscriber"
+    "name": "ConsumerObserver"
   },
   {
     "name": "DEFAULT_APP_ID"
@@ -114,12 +114,6 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "DistinctUntilChangedOperator"
-  },
-  {
-    "name": "DistinctUntilChangedSubscriber"
-  },
-  {
     "name": "DomAdapter"
   },
   {
@@ -129,13 +123,22 @@
     "name": "DomRendererFactory2"
   },
   {
+    "name": "EMPTY"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "EMPTY_OBSERVER"
+  },
+  {
     "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "EMPTY_SUBSCRIPTION"
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
@@ -220,18 +223,6 @@
   },
   {
     "name": "MOVED_VIEWS"
-  },
-  {
-    "name": "MapOperator"
-  },
-  {
-    "name": "MapSubscriber"
-  },
-  {
-    "name": "MergeMapOperator"
-  },
-  {
-    "name": "MergeMapSubscriber"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -348,6 +339,9 @@
     "name": "Observable"
   },
   {
+    "name": "OperatorSubscriber"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -381,12 +375,6 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
-    "name": "RefCountOperator"
-  },
-  {
-    "name": "RefCountSubscriber"
-  },
-  {
     "name": "RendererFactory2"
   },
   {
@@ -417,34 +405,16 @@
     "name": "SimpleChange"
   },
   {
-    "name": "SimpleInnerSubscriber"
-  },
-  {
-    "name": "SimpleOuterSubscriber"
-  },
-  {
     "name": "SkipSelf"
   },
   {
     "name": "Subject"
   },
   {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
     "name": "Subscriber"
   },
   {
     "name": "Subscription"
-  },
-  {
-    "name": "SwitchMapOperator"
-  },
-  {
-    "name": "SwitchMapSubscriber"
   },
   {
     "name": "TESTABILITY"
@@ -540,16 +510,22 @@
     "name": "_NullComponentFactoryResolver"
   },
   {
+    "name": "__asyncValues"
+  },
+  {
+    "name": "__await"
+  },
+  {
     "name": "__forward_ref__"
   },
   {
     "name": "_applyRootElementTransformImpl"
   },
   {
-    "name": "_currentInjector"
+    "name": "_bind"
   },
   {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+    "name": "_currentInjector"
   },
   {
     "name": "_ensureDirtyViewsAreAlwaysReachable"
@@ -642,6 +618,9 @@
     "name": "applyViewChange"
   },
   {
+    "name": "arrRemove"
+  },
+  {
     "name": "assertConsumerNode"
   },
   {
@@ -655,6 +634,9 @@
   },
   {
     "name": "baseElement"
+  },
+  {
+    "name": "bind"
   },
   {
     "name": "bindingUpdated"
@@ -705,13 +687,13 @@
     "name": "configureViewWithDirective"
   },
   {
-    "name": "connectableObservableDescriptor"
-  },
-  {
     "name": "consumerIsLive"
   },
   {
     "name": "consumerPollProducersForChange"
+  },
+  {
+    "name": "context"
   },
   {
     "name": "convertToBitFlags"
@@ -726,10 +708,16 @@
     "name": "createElementRef"
   },
   {
+    "name": "createErrorClass"
+  },
+  {
     "name": "createInjector"
   },
   {
     "name": "createInjectorWithoutInjectorInstances"
+  },
+  {
+    "name": "createInvalidObservableTypeError"
   },
   {
     "name": "createLContainer"
@@ -744,6 +732,12 @@
     "name": "createNodeInjector"
   },
   {
+    "name": "createNotification"
+  },
+  {
+    "name": "createOperatorSubscriber"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {
@@ -754,6 +748,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultCompare"
   },
   {
     "name": "defaultIterableDiffersFactory"
@@ -786,12 +783,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "empty"
-  },
-  {
-    "name": "empty2"
-  },
-  {
     "name": "enterDI"
   },
   {
@@ -799,6 +790,12 @@
   },
   {
     "name": "epoch"
+  },
+  {
+    "name": "errorContext"
+  },
+  {
+    "name": "execFinalizer"
   },
   {
     "name": "executeCheckHooks"
@@ -811,6 +808,9 @@
   },
   {
     "name": "executeListenerWithErrorHandling"
+  },
+  {
+    "name": "executeSchedule"
   },
   {
     "name": "executeTemplate"
@@ -831,9 +831,6 @@
     "name": "findStylingValue"
   },
   {
-    "name": "flattenUnsubscriptionErrors"
-  },
-  {
     "name": "forEachSingleProvider"
   },
   {
@@ -846,7 +843,7 @@
     "name": "from"
   },
   {
-    "name": "fromArray"
+    "name": "fromAsyncIterable"
   },
   {
     "name": "generateInitialInputs"
@@ -1008,6 +1005,15 @@
     "name": "handleError"
   },
   {
+    "name": "handleReset"
+  },
+  {
+    "name": "handleStoppedNotification"
+  },
+  {
+    "name": "handleUnhandledError"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -1015,9 +1021,6 @@
   },
   {
     "name": "hasTagAndTypeMatch"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "icuContainerIterate"
@@ -1065,7 +1068,7 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
-    "name": "innerSubscribe"
+    "name": "innerFrom"
   },
   {
     "name": "insertBloom"
@@ -1086,10 +1089,10 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
-    "name": "isArray"
+    "name": "isArrayLike"
   },
   {
-    "name": "isArrayLike"
+    "name": "isAsyncIterable"
   },
   {
     "name": "isComponentDef"
@@ -1119,6 +1122,12 @@
     "name": "isInlineTemplate"
   },
   {
+    "name": "isInteropObservable"
+  },
+  {
+    "name": "isIterable"
+  },
+  {
     "name": "isLContainer"
   },
   {
@@ -1134,9 +1143,6 @@
     "name": "isNodeMatchingSelectorList"
   },
   {
-    "name": "isObject"
-  },
-  {
     "name": "isPlatformServer"
   },
   {
@@ -1149,7 +1155,7 @@
     "name": "isPromise2"
   },
   {
-    "name": "isScheduler"
+    "name": "isReadableStreamLike"
   },
   {
     "name": "isStableFactory"
@@ -1159,6 +1165,9 @@
   },
   {
     "name": "isStylingValuePresent"
+  },
+  {
+    "name": "isSubscription"
   },
   {
     "name": "isTemplateNode"
@@ -1180,6 +1189,9 @@
   },
   {
     "name": "keyValueArraySet"
+  },
+  {
+    "name": "last"
   },
   {
     "name": "lastNodeWasCreated"
@@ -1206,9 +1218,6 @@
     "name": "makeRecord"
   },
   {
-    "name": "map"
-  },
-  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1225,9 +1234,6 @@
   },
   {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "mergeAll"
   },
   {
     "name": "mergeHostAttribute"
@@ -1272,16 +1278,25 @@
     "name": "noop"
   },
   {
+    "name": "noop2"
+  },
+  {
     "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"
   },
   {
+    "name": "observeOn"
+  },
+  {
     "name": "onEnter"
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "operate"
   },
   {
     "name": "optionsReducer"
@@ -1291,6 +1306,9 @@
   },
   {
     "name": "platformCore"
+  },
+  {
+    "name": "popScheduler"
   },
   {
     "name": "processInjectorTypesWithProviders"
@@ -1305,7 +1323,7 @@
     "name": "profiler"
   },
   {
-    "name": "refCount"
+    "name": "readableStreamLikeToAsyncGenerator"
   },
   {
     "name": "refreshContentQueries"
@@ -1335,6 +1353,9 @@
     "name": "renderView"
   },
   {
+    "name": "reportUnhandledError"
+  },
+  {
     "name": "requiresRefreshOrTraversal"
   },
   {
@@ -1350,16 +1371,13 @@
     "name": "retrieveHydrationInfo"
   },
   {
-    "name": "rxSubscriber"
-  },
-  {
     "name": "saveNameToExportMap"
   },
   {
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "scheduleArray"
+    "name": "scheduleAsyncIterable"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1419,9 +1437,6 @@
     "name": "setupStaticAttributes"
   },
   {
-    "name": "shareSubjectFactory"
-  },
-  {
     "name": "shimStylesContent"
   },
   {
@@ -1437,16 +1452,13 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "subscribeTo"
-  },
-  {
-    "name": "subscribeToArray"
-  },
-  {
-    "name": "switchMap"
+    "name": "subscribeOn"
   },
   {
     "name": "throwProviderNotFoundError"
+  },
+  {
+    "name": "timeoutProvider"
   },
   {
     "name": "toRefArray"

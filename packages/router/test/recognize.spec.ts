@@ -675,7 +675,7 @@ async function recognize(
                      RootComponent, config, tree(url), paramsInheritanceStrategy, serializer)
                      .recognize()
                      .toPromise();
-  return result.state;
+  return result!.state;
 }
 
 function checkActivatedRoute(
