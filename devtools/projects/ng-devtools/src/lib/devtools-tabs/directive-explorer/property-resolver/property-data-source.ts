@@ -69,7 +69,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     const changes =
         [collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._data];
 
-    return merge(...changes).pipe(map(() => {
+    return merge<unknown[]>(...changes).pipe(map(() => {
       this._expandedData.next(
           this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
       return this._expandedData.value;
