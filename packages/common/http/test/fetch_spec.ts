@@ -15,18 +15,17 @@ import {HttpDownloadProgressEvent, HttpErrorResponse, HttpHeaderResponse, HttpPa
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
-  return obs
-      .pipe(
-          // We don't want the promise to fail on HttpErrorResponse
-          catchError((e) => of(e)),
-          scan(
-              (acc, event) => {
-                acc.push(event);
-                return acc;
-              },
-              [] as any[]),
-          )
-      .toPromise();
+  return obs.pipe(
+                // We don't want the promise to fail on HttpErrorResponse
+                catchError((e) => of(e)),
+                scan(
+                    (acc, event) => {
+                      acc.push(event);
+                      return acc;
+                    },
+                    [] as any[]),
+                )
+             .toPromise() as Promise<any[]>;
 }
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
