@@ -214,14 +214,14 @@ export default class Tutorial implements AfterViewInit {
     this.shouldRenderContent.set(routeData.type !== TutorialType.EDITOR_ONLY);
 
     this.nextStepPath = routeData.nextStep
-      ? `/${PagePrefix.TUTORIALS}/${routeData.nextStep}`
+      ? `/${routeData.nextStep}`
       : undefined;
     this.previousStepPath = routeData.previousStep
-      ? `/${PagePrefix.TUTORIALS}/${routeData.previousStep}`
+      ? `/${routeData.previousStep}`
       : undefined;
 
     this.nextTutorialPath.set(
-      routeData.nextTutorial ? `/${PagePrefix.TUTORIALS}/${routeData.nextTutorial}` : null,
+      routeData.nextTutorial ? `/${routeData.nextTutorial}` : null,
     );
   }
 

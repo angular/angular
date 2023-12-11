@@ -13,8 +13,7 @@ import {BehaviorSubject} from 'rxjs';
 import {TutorialMetadata} from '@angular/docs';
 import {
   TUTORIALS_COMMON_DIRECTORY,
-  TUTORIALS_METADATA_WEB_PATH,
-  TUTORIALS_SOURCE_CODE_WEB_PATH,
+  TUTORIALS_ASSETS_WEB_PATH
 } from './constants';
 
 /**
@@ -133,15 +132,15 @@ export class EmbeddedTutorialManager {
   async fetchCommonFiles(): Promise<FileSystemTree> {
     if (this.commonFilesystemTree() !== null) return this.commonFilesystemTree() as FileSystemTree;
 
-    const commonFiles = await this.fetchTutorialSourceCode(TUTORIALS_COMMON_DIRECTORY);
+    //const commonFiles = await this.fetchTutorialSourceCode(TUTORIALS_COMMON_DIRECTORY);
 
-    this.tutorialFilesystemTree.set(commonFiles);
+    //this.tutorialFilesystemTree.set(commonFiles);
 
-    return commonFiles;
+    return {};
   }
 
   private async fetchTutorialSourceCode(tutorial: string): Promise<FileSystemTree> {
-    const tutorialSourceCode = await fetch(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`);
+    const tutorialSourceCode = await fetch(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`);
 
     if (!tutorialSourceCode.ok) throw new Error(`Missing source code for tutorial ${tutorial}`);
 
@@ -149,7 +148,7 @@ export class EmbeddedTutorialManager {
   }
 
   private async fetchTutorialMetadata(tutorial: string): Promise<TutorialMetadata> {
-    const tutorialSourceCode = await fetch(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`);
+    const tutorialSourceCode = await fetch(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`);
 
     if (!tutorialSourceCode.ok) throw new Error(`Missing metadata for ${tutorial}`);
 

@@ -18,4 +18,5 @@ generate_guides(
         "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/schematics/ng-add/index.ts",
         "//adev/src/content/examples/schematics-for-libraries:projects/my-lib/tsconfig.schematics.json",
     ],
+    visibility = ["//adev:__subpackages__"],
 )
