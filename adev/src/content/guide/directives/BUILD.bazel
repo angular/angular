@@ -22,4 +22,5 @@ generate_guides(
         "//adev/src/content/examples/built-in-directives:src/app/item-switch.component.ts",
         "//adev/src/content/examples/structural-directives:src/app/app.component.html",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

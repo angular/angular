@@ -25,7 +25,7 @@ import {ClickOutside, NavigationList} from '@angular/docs';
 import {injectAsync} from '../../core/services/inject-async';
 import {EmbeddedTutorialManager} from  '../../editor/index';
 
-import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/routes/playground.json';
+import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 
 @Component({

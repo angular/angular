@@ -45,4 +45,5 @@ generate_guides(
         "//adev/src/content/examples/testing:src/testing/async-observable-helpers.ts",
         "//adev/src/content/examples/testing:src/testing/index.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )

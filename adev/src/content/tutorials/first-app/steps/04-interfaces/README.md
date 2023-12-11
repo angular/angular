@@ -48,7 +48,7 @@ This step adds the properties to the interface that your app needs to represent 
 1. In the **Edit** pane of your IDE, open the `src/app/housinglocation.ts` file.
 1. In `housinglocation.ts`, replace the default content with the following code to make your new interface to match this example.
 
-    <docs-code header="Update src/app/housinglocation.ts to match this code" path="first-app/steps/05-inputs/src/app/housinglocation.ts"/>
+    <docs-code header="Update src/app/housinglocation.ts to match this code" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/housinglocation.ts"/>
 
 1. Save your changes and confirm the app does not display any errors. Correct any errors before you continue to the next step.
 
@@ -66,15 +66,15 @@ There are a few more lessons to complete before that happens.
 1. In the **Edit** pane of your IDE, open `src/app/home/home.component.ts`.
 1. In `src/app/home/home.component.ts`, add this import statement after the existing `import` statements so that `HomeComponent` can use the new interface.
 
-    <docs-code header="Import HomeComponent in src/app/home/home.component.ts" path="first-app/steps/05-inputs/src/app/home/home.component.ts" visibleLines="[4]"/>
+    <docs-code header="Import HomeComponent in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.component.ts" visibleLines="[4]"/>
 
 1. In `src/app/home/home.component.ts`, replace the empty `export class HomeComponent {}` definition with this code to create a single instance of the new interface in the component.
 
-    <docs-code header="Add sample data to src/app/home/home.component.ts" path="first-app/steps/05-inputs/src/app/home/home.component.ts" visibleLines="[27,38]"/>
+    <docs-code header="Add sample data to src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.component.ts" visibleLines="[27,38]"/>
 
 1. Confirm that your `home.component.ts` file matches like this example.
 
-    <docs-code header="src/app/home/home.component.ts" path="first-app/steps/05-inputs/src/app/home/home.component.ts"/>
+    <docs-code header="src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.component.ts"/>
 
     By adding the `housingLocation` property of type `HousingLocation` to the `HomeComponent` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
 

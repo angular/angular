@@ -31,4 +31,5 @@ generate_guides(
         "//adev/src/content/examples/animations:src/app/open-close.component.ts",
         "//adev/src/content/examples/animations:src/app/status-slider.component.ts",
     ],
+    visibility = ["//adev:__subpackages__"],
 )
