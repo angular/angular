@@ -294,6 +294,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should properly compiler host listeners with an argument",
+      "inputFiles": [
+        "host_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_listeners.js"
+          ]
+        }
+      ]
     }
   ]
 }

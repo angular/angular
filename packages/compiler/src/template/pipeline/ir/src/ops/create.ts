@@ -509,6 +509,11 @@ export interface ListenerOp extends Op<CreateOp> {
    */
   animationPhase: string|null;
 
+  /**
+   * Some event listeners can have a target, e.g. in `document:dragover`.
+   */
+  eventTarget: string|null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -517,8 +522,8 @@ export interface ListenerOp extends Op<CreateOp> {
  */
 export function createListenerOp(
     target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
-    handlerOps: Array<UpdateOp>, animationPhase: string|null, hostListener: boolean,
-    sourceSpan: ParseSourceSpan): ListenerOp {
+    handlerOps: Array<UpdateOp>, animationPhase: string|null, eventTarget: string|null,
+    hostListener: boolean, sourceSpan: ParseSourceSpan): ListenerOp {
   const handlerList = new OpList<UpdateOp>();
   handlerList.push(handlerOps);
   return {
@@ -532,7 +537,8 @@ export function createListenerOp(
     handlerFnName: null,
     consumesDollarEvent: false,
     isAnimationListener: animationPhase !== null,
-    animationPhase: animationPhase,
+    animationPhase,
+    eventTarget,
     sourceSpan,
     ...NEW_OP,
   };
