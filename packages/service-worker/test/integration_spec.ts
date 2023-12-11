@@ -31,7 +31,7 @@ const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').bu
 const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
 
 function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
-  return obs.pipe(take(1)).toPromise();
+  return obs.pipe(take(1)).toPromise() as Promise<T>;
 }
 
 const manifest: Manifest = {

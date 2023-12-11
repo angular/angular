@@ -154,8 +154,8 @@ async function createState(config: Routes, url: string): Promise<RouterStateSnap
   return recognize(
              TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader), RootComponent,
              config, tree(url), new DefaultUrlSerializer())
-      .pipe(map(result => result.state))
-      .toPromise();
+             .pipe(map(result => result.state))
+             .toPromise() as Promise<RouterStateSnapshot>;
 }
 
 function checkActivatedRoute(

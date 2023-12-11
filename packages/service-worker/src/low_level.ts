@@ -193,13 +193,13 @@ export class NgswCommChannel {
 
   waitForOperationCompleted(nonce: number): Promise<boolean> {
     return this.eventsOfType<OperationCompletedEvent>('OPERATION_COMPLETED')
-        .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
-                if (event.result !== undefined) {
-                  return event.result;
-                }
-                throw new Error(event.error!);
-              }))
-        .toPromise();
+               .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
+                       if (event.result !== undefined) {
+                         return event.result;
+                       }
+                       throw new Error(event.error!);
+                     }))
+               .toPromise() as Promise<boolean>;
   }
 
   get isEnabled(): boolean {

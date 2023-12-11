@@ -53,9 +53,9 @@ describe('InitialRenderPendingTasks', () => {
 
 function hasPendingTasks(pendingTasks: InitialRenderPendingTasks): Promise<boolean> {
   return of(EMPTY)
-      .pipe(
-          withLatestFrom(pendingTasks.hasPendingTasks),
-          map(([_, hasPendingTasks]) => hasPendingTasks),
-          )
-      .toPromise();
+             .pipe(
+                 withLatestFrom(pendingTasks.hasPendingTasks),
+                 map(([_, hasPendingTasks]) => hasPendingTasks),
+                 )
+             .toPromise() as Promise<boolean>;
 }

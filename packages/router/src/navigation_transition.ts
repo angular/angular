@@ -599,7 +599,7 @@ export class NavigationTransitions {
                                  return loaders;
                                };
                            return combineLatest(loadComponents(t.targetSnapshot!.root))
-                               .pipe(defaultIfEmpty(), take(1));
+                               .pipe(defaultIfEmpty(null), take(1));
                          }),
 
                          switchTap(() => this.afterPreactivation()),
