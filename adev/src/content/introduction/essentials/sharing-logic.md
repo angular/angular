@@ -42,7 +42,7 @@ import { Component } from '@angular/core';
 import { CalculatorService } from './calculator.service';
 
 @Component({
-  selector: 'app-receipt’,
+  selector: 'app-receipt',
   template: `<h1>The total is {{ totalCost }}</h1>`,
 })
 
