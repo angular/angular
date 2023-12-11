@@ -350,6 +350,24 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should properly compiler host bindings that read a TS wrapped node",
+      "inputFiles": [
+        "host_with_ts_expression_node.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            {
+              "expected": "host_with_ts_expression_node_template.js",
+              "templatePipelineExpected": "host_with_ts_expression_node_template.pipeline.js",
+              "generated": "host_with_ts_expression_node.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
