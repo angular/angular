@@ -767,3 +767,144 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.evil = 'evil';
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "innerHtml": "evil", "href": "evil", "attr.style": "evil", "src": "evil", "sandbox": "evil" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[innerHtml]': 'evil',
+                        '[href]': 'evil',
+                        '[attr.style]': 'evil',
+                        '[src]': 'evil',
+                        '[sandbox]': 'evil',
+                    },
+                }]
+        }] });
+export class HostBindingDir2 {
+    constructor() {
+        this.evil = 'evil';
+    }
+}
+HostBindingDir2.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir2.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir2, isStandalone: true, selector: "a", host: { properties: { "innerHtml": "evil", "href": "evil", "attr.style": "evil", "src": "evil", "sandbox": "evil" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: 'a',
+                    host: {
+                        '[innerHtml]': 'evil',
+                        '[href]': 'evil',
+                        '[attr.style]': 'evil',
+                        '[src]': 'evil',
+                        '[sandbox]': 'evil',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingDir2 {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir2, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir2, "a", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_constant_attributes.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { attributes: { "src": "trusted", "srcdoc": "trusted" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: '[hostBindingDir]',
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                }]
+        }] });
+export class HostBindingDir2 {
+}
+HostBindingDir2.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir2.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir2, isStandalone: true, selector: "img", host: { attributes: { "src": "trusted", "srcdoc": "trusted" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: 'img',
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_constant_attributes.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingDir2 {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir2, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir2, "img", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_style_bindings.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.imgUrl = 'url(foo.jpg)';
+        this.styles = { backgroundImage: this.imgUrl };
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "style.background-image": "imgUrl", "style": "styles" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    standalone: true,
+                    selector: '[hostBindingDir]',
+                    host: { '[style.background-image]': 'imgUrl', '[style]': 'styles' },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_style_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    imgUrl: string;
+    styles: {
+        backgroundImage: string;
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
