@@ -47,7 +47,7 @@ export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;
   private _results: Array<T> = [];
   private _changesDetected: boolean = false;
-  private _changes: EventEmitter<QueryList<T>>|null = null;
+  private _changes: EventEmitter<QueryList<T>>|undefined = undefined;
 
   readonly length: number = 0;
   readonly first: T = undefined!;
@@ -57,7 +57,7 @@ export class QueryList<T> implements Iterable<T> {
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
   get changes(): Observable<any> {
-    return this._changes || (this._changes = new EventEmitter());
+    return this._changes ??= new EventEmitter();
   }
 
   /**
@@ -169,7 +169,7 @@ export class QueryList<T> implements Iterable<T> {
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
   notifyOnChanges(): void {
-    if (this._changes && (this._changesDetected || !this._emitDistinctChangesOnly))
+    if (this._changes !== undefined && (this._changesDetected || !this._emitDistinctChangesOnly))
       this._changes.emit(this);
   }
 
@@ -180,8 +180,10 @@ export class QueryList<T> implements Iterable<T> {
 
   /** internal */
   destroy(): void {
-    (this.changes as EventEmitter<any>).complete();
-    (this.changes as EventEmitter<any>).unsubscribe();
+    if (this._changes !== undefined) {
+      this._changes.complete();
+      this._changes.unsubscribe();
+    }
   }
 
   // The implementation of `Symbol.iterator` should be declared here, but this would cause
