@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "../node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": ".",
   "projects": {
@@ -12,30 +12,33 @@
           "changeDetection": "OnPush"
         }
       },
-      "root": "adev",
-      "sourceRoot": "adev/src",
+      "root": ".",
+      "sourceRoot": "src",
       "prefix": "adev",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "externalDependencies": [
+              "path"
+            ],
             "outputPath": "dist/angular-dev",
-            "index": "adev/src/index.html",
-            "browser": "adev/src/main.ts",
-            "server": "adev/src/main.server.ts",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
             // TODO(josephperrott): enabled prerender
             "prerender": false,
-            "polyfills": ["adev/src/polyfills.ts", "zone.js"],
-            "tsConfig": "adev/tsconfig.app.json",
+            "polyfills": ["src/polyfills.ts", "zone.js"],
+            "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "adev/src/favicon.ico",
-              "adev/src/robots.txt",
-              "adev/src/assets"
+              "src/favicon.ico",
+              "src/robots.txt",
+              "src/assets"
             ],
             "styles": ["@angular/docs/styles/global-styles.scss"],
             "scripts": [],
-            "webWorkerTsConfig": "adev/tsconfig.worker.json",
+            "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
               "fonts": {
                 // TODO(josephperrott): enabled inline scripts

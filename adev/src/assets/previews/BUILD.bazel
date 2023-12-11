@@ -1,0 +1,15 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+# TODO(josephperrott): Generate previews from source instead of using already generated files
+
+exports_files(
+    glob(["*"]),
+)
+
+copy_to_bin(
+    name = "previews",
+    srcs = glob(["*"]),
+    visibility = [
+        "//visibility:public",
+    ],
+)
