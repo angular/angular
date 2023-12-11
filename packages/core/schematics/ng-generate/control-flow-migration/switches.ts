@@ -8,7 +8,7 @@
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, MigrateError, Result} from './types';
+import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
 export const ngswitch = '[ngSwitch]';
@@ -72,8 +72,8 @@ function migrateNgSwitch(etm: ElementToMigrate, tmpl: string, offset: number): R
   const originals = getOriginals(etm, tmpl, offset);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${start}${lbString}@switch (${condition}) {`;
-  const endBlock = `}${lbString}${end}`;
+  const startBlock = `${startMarker}${start}${lbString}@switch (${condition}) {`;
+  const endBlock = `}${lbString}${end}${endMarker}`;
 
   const switchBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + switchBlock + tmpl.slice(etm.end(offset));
