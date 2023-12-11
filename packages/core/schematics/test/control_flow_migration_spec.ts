@@ -4391,6 +4391,50 @@ describe('control flow migration', () => {
       expect(actual).toBe(expected);
     });
 
+    it('should remove empty lines only in parts of template that were changed', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<div>header</div>\n`,
+        `<span>header</span>\n\n\n`,
+        `<div *ngIf="true">changed</div>`,
+        `<div>\n`,
+        `  <ul>`,
+        `    <li *ngFor="let item of items">{{ item }}</li>`,
+        `  </ul>`,
+        `</div>\n\n`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>header</div>\n`,
+        `<span>header</span>\n\n\n`,
+        `@if (true) {`,
+        `  <div>changed</div>`,
+        `}`,
+        `<div>\n`,
+        `  <ul>`,
+        `    @for (item of items; track item) {`,
+        `      <li>{{ item }}</li>`,
+        `    }`,
+        `  </ul>`,
+        `</div>\n\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should reformat properly with if else and mixed content', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
