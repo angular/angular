@@ -9,7 +9,7 @@
 import '../util/ng_jit_mode';
 
 import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {distinctUntilChanged, first, map} from 'rxjs/operators';
 
 import {getCompilerFacade, JitCompilerUsage} from '../compiler/compiler_facade';
@@ -323,7 +323,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-  private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
+  private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE, {optional: true}) ?? of(true);
   private readonly noPendingTasks =
       inject(PendingTasks).hasPendingTasks.pipe(map(pending => !pending));
 
