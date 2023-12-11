@@ -4638,6 +4638,55 @@ describe('control flow migration', () => {
       expect(actual).toBe(expected);
     });
 
+    it('should not remove common module imports post migration if errors prevented migrating the external template file',
+       async () => {
+         writeFile('/comp.ts', [
+           `import {Component} from '@angular/core';`,
+           `import {NgIf} from '@angular/common';`,
+           `@Component({`,
+           `  imports: [NgIf],`,
+           `  templateUrl: './comp.html',`,
+           `})`,
+           `class Comp {`,
+           `  toggle = false;`,
+           `}`,
+         ].join('\n'));
+
+         writeFile('/comp.html', [
+           `<div>`,
+           `  <span *ngIf="toggle; else elseTmpl">shrug</span>`,
+           `</div>`,
+           `<ng-template #elseTmpl>else content</ng-template>`,
+           `<ng-template #elseTmpl>different</ng-template>`,
+         ].join('\n'));
+
+         await runMigration();
+         const actualCmp = tree.readContent('/comp.ts');
+         const expectedCmp = [
+           `import {Component} from '@angular/core';`,
+           `import {NgIf} from '@angular/common';`,
+           `@Component({`,
+           `  imports: [NgIf],`,
+           `  templateUrl: './comp.html',`,
+           `})`,
+           `class Comp {`,
+           `  toggle = false;`,
+           `}`,
+         ].join('\n');
+         const actualTemplate = tree.readContent('/comp.html');
+
+         const expectedTemplate = [
+           `<div>`,
+           `  <span *ngIf="toggle; else elseTmpl">shrug</span>`,
+           `</div>`,
+           `<ng-template #elseTmpl>else content</ng-template>`,
+           `<ng-template #elseTmpl>different</ng-template>`,
+         ].join('\n');
+
+         expect(actualCmp).toBe(expectedCmp);
+         expect(actualTemplate).toBe(expectedTemplate);
+       });
+
     it('should not remove common module imports post migration if other items used', async () => {
       writeFile('/comp.ts', [
         `import {CommonModule} from '@angular/common';`,
