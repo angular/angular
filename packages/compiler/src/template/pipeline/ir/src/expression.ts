@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn, TrustedValueFn} from './enums';
+import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -20,12 +20,11 @@ import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
-    AssignTemporaryExpr|ReadTemporaryExpr|SanitizerExpr|TrustedValueFnExpr|SlotLiteralExpr|
-    ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
+    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
+    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
+    SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -731,54 +730,6 @@ export class ReadTemporaryExpr extends ExpressionBase {
     r.name = this.name;
     return r;
   }
-}
-
-export class SanitizerExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.SanitizerExpr;
-
-  constructor(public fn: SanitizerFn) {
-    super();
-  }
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof SanitizerExpr && e.fn === this.fn;
-  }
-
-  override isConstant() {
-    return true;
-  }
-
-  override clone(): SanitizerExpr {
-    return new SanitizerExpr(this.fn);
-  }
-
-  override transformInternalExpressions(): void {}
-}
-
-export class TrustedValueFnExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.TrustedValueFnExpr;
-
-  constructor(public fn: TrustedValueFn) {
-    super();
-  }
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof TrustedValueFnExpr && e.fn === this.fn;
-  }
-
-  override isConstant() {
-    return true;
-  }
-
-  override clone(): TrustedValueFnExpr {
-    return new TrustedValueFnExpr(this.fn);
-  }
-
-  override transformInternalExpressions(): void {}
 }
 
 export class SlotLiteralExpr extends ExpressionBase {
