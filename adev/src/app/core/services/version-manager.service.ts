@@ -7,7 +7,26 @@
  */
 
 import {Injectable, VERSION, computed, signal} from '@angular/core';
-import VERSIONS_CONFIG from '../../../assets/versions.json';
+
+// TODO(josephperrott): extract this out of the file into a managed location.
+const VERSIONS_CONFIG = {
+  currentVersion: "stable",
+  historicalVersionsLinkPattern: "https://v{{version}}.angular.dev",
+  mainVersions: [
+    {
+      version: "stable",
+      url: "https://angular.dev"
+    },
+    {
+      version: "rc",
+      url: "https://rc.angular.dev"
+    },
+    {
+      version: "next",
+      url: "https://next.angular.dev"
+    }
+  ]
+};
 
 export interface Version {
   displayName: string;
