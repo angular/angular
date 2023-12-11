@@ -40,6 +40,7 @@ export function migrateTemplate(
       migrated = formatTemplate(migrated, templateType);
     }
     file.removeCommonModule = canRemoveCommonModule(template);
+    file.canRemoveImports = true;
 
     // when migrating an external template, we have to pass back
     // whether it's safe to remove the CommonModule to the
@@ -48,6 +49,7 @@ export function migrateTemplate(
         analyzedFiles.has(file.sourceFilePath)) {
       const componentFile = analyzedFiles.get(file.sourceFilePath)!;
       componentFile.removeCommonModule = file.removeCommonModule;
+      componentFile.canRemoveImports = file.canRemoveImports;
     }
 
     errors = [
@@ -56,7 +58,7 @@ export function migrateTemplate(
       ...switchResult.errors,
       ...caseResult.errors,
     ];
-  } else {
+  } else if (file.canRemoveImports) {
     migrated = removeImports(template, node, file.removeCommonModule);
   }
 
