@@ -240,6 +240,7 @@ export class Template {
 export class AnalyzedFile {
   private ranges: Range[] = [];
   removeCommonModule = false;
+  canRemoveImports = false;
   sourceFilePath: string = '';
 
   /** Returns the ranges in the order in which they should be migrated. */
