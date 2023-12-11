@@ -40,7 +40,8 @@ describe('RouterScroller', () => {
   });
 
   function nextScrollEvent(events: Subject<Event>): Promise<Scroll> {
-    return events.pipe(filter((e): e is Scroll => e instanceof Scroll), take(1)).toPromise();
+    return events.pipe(filter((e): e is Scroll => e instanceof Scroll), take(1)).toPromise() as
+        Promise<Scroll>;
   }
 
   describe('scroll to top', () => {

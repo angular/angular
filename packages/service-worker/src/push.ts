@@ -176,8 +176,8 @@ export class SwPush {
     return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
         .toPromise()
         .then(sub => {
-          this.subscriptionChanges.next(sub);
-          return sub;
+          this.subscriptionChanges.next(sub!);
+          return sub!;
         });
   }
 
