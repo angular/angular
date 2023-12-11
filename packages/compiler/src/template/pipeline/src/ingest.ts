@@ -17,6 +17,7 @@ import * as t from '../../../render3/r3_ast';
 import {R3DeferBlockMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage, isSingleI18nIcu} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
+import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {CompilationUnit, ComponentCompilationJob, HostBindingCompilationJob, type CompilationJob, type ViewCompilationUnit} from './compilation';
@@ -48,6 +49,7 @@ export function ingestComponent(
 
 export interface HostBindingInput {
   componentName: string;
+  componentSelector: string;
   properties: e.ParsedProperty[]|null;
   attributes: {[key: string]: o.Expression};
   events: e.ParsedEvent[]|null;
@@ -58,13 +60,31 @@ export interface HostBindingInput {
  * representation.
  */
 export function ingestHostBinding(
-    input: HostBindingInput, constantPool: ConstantPool): HostBindingCompilationJob {
+    input: HostBindingInput, bindingParser: BindingParser,
+    constantPool: ConstantPool): HostBindingCompilationJob {
   const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
   for (const property of input.properties ?? []) {
-    ingestHostProperty(job, property, false);
+    let bindingKind = ir.BindingKind.Property;
+    // TODO: this should really be handled in the parser.
+    if (property.name.startsWith('attr.')) {
+      property.name = property.name.substring('attr.'.length);
+      bindingKind = ir.BindingKind.Attribute;
+    }
+    if (property.isAnimation) {
+      bindingKind = ir.BindingKind.Animation;
+    }
+    const securityContexts =
+        bindingParser
+            .calcPossibleSecurityContexts(
+                input.componentSelector, property.name, bindingKind === ir.BindingKind.Attribute)
+            .filter(context => context !== SecurityContext.NONE);
+    ingestHostProperty(job, property, bindingKind, false, securityContexts);
   }
   for (const [name, expr] of Object.entries(input.attributes) ?? []) {
-    ingestHostAttribute(job, name, expr);
+    const securityContexts =
+        bindingParser.calcPossibleSecurityContexts(input.componentSelector, name, true)
+            .filter(context => context !== SecurityContext.NONE);
+    ingestHostAttribute(job, name, expr, securityContexts);
   }
   for (const event of input.events ?? []) {
     ingestHostEvent(job, event);
@@ -75,7 +95,8 @@ export function ingestHostBinding(
 // TODO: We should refactor the parser to use the same types and structures for host bindings as
 // with ordinary components. This would allow us to share a lot more ingestion code.
 export function ingestHostProperty(
-    job: HostBindingCompilationJob, property: e.ParsedProperty, isTextAttribute: boolean): void {
+    job: HostBindingCompilationJob, property: e.ParsedProperty, bindingKind: ir.BindingKind,
+    isTextAttribute: boolean, securityContexts: SecurityContext[]): void {
   let expression: o.Expression|ir.Interpolation;
   const ast = property.expression.ast;
   if (ast instanceof e.Interpolation) {
@@ -84,27 +105,17 @@ export function ingestHostProperty(
   } else {
     expression = convertAst(ast, job, property.sourceSpan);
   }
-  let bindingKind = ir.BindingKind.Property;
-  // TODO: this should really be handled in the parser.
-  if (property.name.startsWith('attr.')) {
-    property.name = property.name.substring('attr.'.length);
-    bindingKind = ir.BindingKind.Attribute;
-  }
-  if (property.isAnimation) {
-    bindingKind = ir.BindingKind.Animation;
-  }
   job.root.update.push(ir.createBindingOp(
-      job.root.xref, bindingKind, property.name, expression, null,
-      SecurityContext
-          .NONE /* TODO: what should we pass as security context? Passing NONE for now. */,
+      job.root.xref, bindingKind, property.name, expression, null, securityContexts,
       isTextAttribute, false, null, /* TODO: How do Host bindings handle i18n attrs? */ null,
       property.sourceSpan));
 }
 
 export function ingestHostAttribute(
-    job: HostBindingCompilationJob, name: string, value: o.Expression): void {
+    job: HostBindingCompilationJob, name: string, value: o.Expression,
+    securityContexts: SecurityContext[]): void {
   const attrBinding = ir.createBindingOp(
-      job.root.xref, ir.BindingKind.Attribute, name, value, null, SecurityContext.NONE, true, false,
+      job.root.xref, ir.BindingKind.Attribute, name, value, null, securityContexts, true, false,
       null,
       /* TODO */ null,
       /* TODO: host attribute source spans */ null!);
@@ -916,7 +927,7 @@ function ingestTemplateBindings(
     if (templateKind === ir.TemplateKind.Structural &&
         output.type !== e.ParsedEventType.Animation) {
       // Animation bindings are excluded from the structural template's const array.
-      const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, output.name, true);
+      const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, output.name, false);
       unit.create.push(ir.createExtractedAttributeOp(
           op.xref, ir.BindingKind.Property, output.name, null, null, null, securityContext));
     }

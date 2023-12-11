@@ -664,7 +664,7 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext;
+  securityContext: SecurityContext|SecurityContext[];
 
   /**
    * The trusted value function for this property.
@@ -680,7 +680,7 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
 export function createExtractedAttributeOp(
     target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
     i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
-    securityContext: SecurityContext): ExtractedAttributeOp {
+    securityContext: SecurityContext|SecurityContext[]): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
