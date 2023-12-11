@@ -475,8 +475,13 @@ export function classMapInterpolate(
 }
 
 export function hostProperty(
-    name: string, expression: o.Expression, sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
-  return call(Identifiers.hostProperty, [o.literal(name), expression], sourceSpan);
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.hostProperty, args, sourceSpan);
 }
 
 export function syntheticHostProperty(

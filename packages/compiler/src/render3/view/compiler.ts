@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -602,11 +603,12 @@ function createHostBindingsFunction(
     const hostJob = ingestHostBinding(
         {
           componentName: name,
+          componentSelector: selector,
           properties: bindings,
           events: eventBindings,
           attributes: hostBindingsMetadata.attributes,
         },
-        constantPool);
+        bindingParser, constantPool);
     transform(hostJob, CompilationJobKind.Host);
 
     definitionMap.set('hostAttrs', hostJob.root.attributes);

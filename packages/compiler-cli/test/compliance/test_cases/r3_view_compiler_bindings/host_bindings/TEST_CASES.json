@@ -280,6 +280,48 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should sanitize dangerous bindings",
+      "inputFiles": [
+        "sanitization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "sanitization.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle security-sensitive constant attributes",
+      "inputFiles": [
+        "security_sensitive_constant_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "security_sensitive_constant_attributes.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle security-sensitive style bindings",
+      "inputFiles": [
+        "security_sensitive_style_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "security_sensitive_style_bindings.js"
+          ]
+        }
+      ]
     }
   ]
 }

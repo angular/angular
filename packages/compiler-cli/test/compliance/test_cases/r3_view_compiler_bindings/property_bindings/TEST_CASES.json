@@ -182,6 +182,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should sanitize dangerous bindings",
+      "inputFiles": [
+        "sanitization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "sanitization.js"
+          ]
+        }
+      ]
     }
   ]
 }

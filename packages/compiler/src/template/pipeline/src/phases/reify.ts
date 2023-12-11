@@ -317,7 +317,8 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           if (op.isAnimationTrigger) {
             ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
-            ir.OpList.replace(op, ng.hostProperty(op.name, op.expression, op.sourceSpan));
+            ir.OpList.replace(
+                op, ng.hostProperty(op.name, op.expression, op.sanitizer, op.sourceSpan));
           }
         }
         break;
