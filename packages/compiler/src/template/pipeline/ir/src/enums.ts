@@ -423,26 +423,6 @@ export enum CompatibilityMode {
 }
 
 /**
- * Represents functions used to sanitize different pieces of a template.
- */
-export enum SanitizerFn {
-  Html,
-  Script,
-  Style,
-  Url,
-  ResourceUrl,
-  IframeAttribute,
-}
-
-/**
- * Represents functions used to create trusted values.
- */
-export enum TrustedValueFn {
-  Html,
-  ResourceUrl,
-}
-
-/**
  * Enumeration of the different kinds of `@defer` secondary blocks.
  */
 export enum DeferSecondaryKind {
