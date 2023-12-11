@@ -1143,6 +1143,9 @@
     "name": "observeOn"
   },
   {
+    "name": "of"
+  },
+  {
     "name": "onEnter"
   },
   {
