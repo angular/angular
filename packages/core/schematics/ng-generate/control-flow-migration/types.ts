@@ -15,6 +15,9 @@ export const boundngifthenelse = '[ngIfThenElse]';
 export const boundngifthen = '[ngIfThen]';
 export const nakedngfor = 'ngFor';
 
+export const startMarker = '◬';
+export const endMarker = '✢';
+
 function allFormsOf(selector: string): string[] {
   return [
     selector,
