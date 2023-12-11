@@ -801,7 +801,7 @@ function asMessage(i18nMeta: i18n.I18nMeta|null|undefined): i18n.Message|null {
     return null;
   }
   if (!(i18nMeta instanceof i18n.Message)) {
-    throw Error(`Unhandled i18n metadata type for binding: ${i18nMeta.constructor.name}`);
+    throw Error(`Expected i18n meta to be a Message, but got: ${i18nMeta.constructor.name}`);
   }
   return i18nMeta;
 }
@@ -867,11 +867,11 @@ function ingestTemplateBindings(
     if (attr instanceof t.TextAttribute) {
       bindings.push(createTemplateBinding(
           unit, op.xref, e.BindingType.Attribute, attr.name, attr.value, null, SecurityContext.NONE,
-          true, true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
+          true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
     } else {
       bindings.push(createTemplateBinding(
           unit, op.xref, attr.type, attr.name, astOf(attr.value), attr.unit, attr.securityContext,
-          false, true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
+          true, templateKind, asMessage(attr.i18n), attr.sourceSpan));
     }
   }
 
@@ -879,15 +879,14 @@ function ingestTemplateBindings(
     // Attribute literal bindings, such as `attr.foo="bar"`.
     bindings.push(createTemplateBinding(
         unit, op.xref, e.BindingType.Attribute, attr.name, attr.value, null, SecurityContext.NONE,
-        true, false, templateKind, asMessage(attr.i18n), attr.sourceSpan));
+        false, templateKind, asMessage(attr.i18n), attr.sourceSpan));
   }
 
   for (const input of template.inputs) {
     // Dynamic bindings (both attribute and property bindings).
     bindings.push(createTemplateBinding(
         unit, op.xref, input.type, input.name, astOf(input.value), input.unit,
-        input.securityContext, false, false, templateKind, asMessage(input.i18n),
-        input.sourceSpan));
+        input.securityContext, false, templateKind, asMessage(input.i18n), input.sourceSpan));
   }
 
   unit.create.push(bindings.filter(
@@ -905,7 +904,8 @@ function ingestTemplateBindings(
           makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase, false,
           output.sourceSpan));
     }
-    if (templateKind === ir.TemplateKind.Structural && output.type === e.ParsedEventType.Regular) {
+    if (templateKind === ir.TemplateKind.Structural &&
+        output.type !== e.ParsedEventType.Animation) {
       // Animation bindings are excluded from the structural template's const array.
       unit.create.push(ir.createExtractedAttributeOp(
           op.xref, ir.BindingKind.Property, output.name, null, null, null));
@@ -938,14 +938,11 @@ function ingestTemplateBindings(
  *     string literal if the parser considered it a text binding.
  * @param unit If the binding has a unit (e.g. `px` for style bindings), then this is the unit.
  * @param securityContext The security context of the binding.
- * @param isTextBinding Whether the binding is a text binding according to the parser (e.g. `<div
- *     literal="foo">`). Even if this is false, the binding still might be an extractable constant
- *     expression (see the later attribute extraction phase).
  * @param isStructuralTemplateAttribute Whether this binding actually applies to the structural
  *     ng-template. For example, an `ngFor` would actually apply to the structural template. (Most
  *     bindings on structural elements target the inner element, not the template.)
  * @param templateKind Whether this is an explicit `ng-template` or an implicit template created by
- *     a structural directive.
+ *     a structural directive. This should never be a block template.
  * @param i18nMessage The i18n metadata for the binding, if any.
  * @param sourceSpan The source span of the binding.
  * @returns An IR binding op, or null if the binding should be skipped.
@@ -953,9 +950,10 @@ function ingestTemplateBindings(
 function createTemplateBinding(
     view: ViewCompilationUnit, xref: ir.XrefId, type: e.BindingType, name: string,
     value: e.AST|string, unit: string|null, securityContext: SecurityContext,
-    isTextBinding: boolean, isStructuralTemplateAttribute: boolean,
-    templateKind: ir.TemplateKind|null, i18nMessage: i18n.Message|null,
-    sourceSpan: ParseSourceSpan): ir.BindingOp|ir.ExtractedAttributeOp|null {
+    isStructuralTemplateAttribute: boolean, templateKind: ir.TemplateKind|null,
+    i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): ir.BindingOp|
+    ir.ExtractedAttributeOp|null {
+  const isTextBinding = typeof value === 'string';
   // If this is a structural template, then several kinds of bindings should not result in an
   // update instruction.
   if (templateKind === ir.TemplateKind.Structural) {
