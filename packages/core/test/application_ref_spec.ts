@@ -21,6 +21,7 @@ import type {ServerModule} from '@angular/platform-server';
 import {ApplicationRef} from '../src/application/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
+import {take} from 'rxjs/operators';
 
 let serverPlatformModule: Promise<Type<ServerModule>>|null = null;
 if (isNode) {
@@ -794,6 +795,14 @@ describe('AppRef', () => {
      waitForAsync(() => {
        expectStableTexts(MacroMicroTaskComp, ['111']);
      }));
+
+  it('isStable can be subscribed to many times', async () => {
+    const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
+    // Create stable subscription but do not unsubscribe before the second subscription is made
+    appRef.isStable.subscribe();
+    await expectAsync(appRef.isStable.pipe(take(1)).toPromise()).toBeResolved();
+    stableCalled = true;
+  });
 
   describe('unstable', () => {
     let unstableCalled = false;
