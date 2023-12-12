@@ -19,6 +19,7 @@ runInEachFileSystem(() => {
       template: string,
       extraDirectiveMembers?: string[],
       directiveGenerics?: string,
+      extraFileContent?: string,
       component?: string, expected: (string|jasmine.AsymmetricMatcher<string>)[],
       options?: Partial<TypeCheckingConfig>,
       focus?: boolean,
@@ -471,7 +472,28 @@ runInEachFileSystem(() => {
               `TestComponent.html(3, 59): Type 'string' is not assignable to type 'never'.`,
             ],
           },
-          // TODO(devversion): inline constructor test
+          {
+            id: 'inline constructor generic inference',
+            inputs: {
+              bla: {
+                type: 'InputSignal<T, T>',
+                isSignal: true,
+              },
+            },
+            extraFileContent: `
+              class SomeNonExportedClass {}
+            `,
+            extraDirectiveMembers: [
+              `tester: {t: T} = null!`,
+            ],
+            directiveGenerics: '<T extends SomeNonExportedClass>',
+            template: `<div dir [bla]="prop" #ref="dir" (click)="ref.tester = {t: 0}">`,
+            component: `prop: HTMLElement = null!`,
+            expected: [
+              // This verifies that the `ref.tester.t` is correctly inferred to be `HTMLElement`.
+              `TestComponent.html(1, 60): Type 'number' is not assignable to type 'HTMLElement'.`,
+            ],
+          },
         ];
 
     for (const c of bindingCases) {
@@ -482,6 +504,8 @@ runInEachFileSystem(() => {
 
         const testComponent = `
               import {InputSignal} from '@angular/core';
+
+              ${c.extraFileContent ?? ''}
 
               class Dir${c.directiveGenerics ?? ''} {
                 ${inputFields.join('\n')}
