@@ -12,9 +12,9 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   EMBEDDED_EDITOR_SELECTOR,
   EmbeddedEditor,
-} from '../../embedded-editor/embedded-editor.component';
-import {EmbeddedTutorialManager} from '../../embedded-editor/embedded-tutorial-manager.service';
-import {NodeRuntimeSandbox} from '../../embedded-editor/node-runtime-sandbox.service';
+  NodeRuntimeSandbox,
+  EmbeddedTutorialManager,
+} from '../../editor';
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import TutorialPlayground from './playground.component';
