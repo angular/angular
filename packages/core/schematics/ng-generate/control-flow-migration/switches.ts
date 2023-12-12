@@ -25,13 +25,13 @@ export function migrateSwitch(template: string):
     {migrated: string, errors: MigrateError[], changed: boolean} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
-  if (parsed === null) {
+  if (parsed.tree === undefined) {
     return {migrated: template, errors, changed: false};
   }
 
   let result = template;
   const visitor = new ElementCollector(switches);
-  visitAll(visitor, parsed.rootNodes);
+  visitAll(visitor, parsed.tree.rootNodes);
   calculateNesting(visitor, hasLineBreaks(template));
 
   // this tracks the character shift from different lengths of blocks from
