@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Provider, Self, ɵWritable as Writable} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Injector, inject, Input, Optional, Provider, Self, ɵWritable as Writable} from '@angular/core';
 
 import {AbstractControl, AbstractControlSignals, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -108,6 +108,8 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
 
   private _directives = new Set<NgModel>();
 
+  private _injector: Injector = inject(Injector);
+
   /**
    * @description
    * The `FormGroup` instance created for this form.
@@ -130,7 +132,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngFormOptions') options!: {updateOn?: FormHooks, signals?: Partial<AbstractControlSignals<any>>};
+  @Input('ngFormOptions') options!: {updateOn?: FormHooks, signals?: AbstractControlSignals<any>};
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
@@ -333,10 +335,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
 
   private _setUpSignals(): void {
     if (this.options && this.options.signals) {
-      (this.control.signals as Writable<AbstractControlSignals>) = {
-        ...this.control.signals,
-        ...this.options.signals,
-      };
+      this.control._initSignals(this.options.signals, this._injector);
       this.control._updateAllSignals();
     }
   }

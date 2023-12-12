@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, ɵRuntimeError as RuntimeError, Signal, ɵWritable as Writable, WritableSignal, signal} from '@angular/core';
+import {EffectRef, EventEmitter, Injector, ɵRuntimeError as RuntimeError, Signal, ɵWritable as Writable, WritableSignal, effect, runInInjectionContext, signal} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {asyncValidatorsDroppedWithOptsWarning, missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors';
@@ -102,6 +102,25 @@ function coerceToAsyncValidator(asyncValidator?: AsyncValidatorFn|AsyncValidator
                                 null): AsyncValidatorFn|null {
   return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) :
                                          asyncValidator || null;
+}
+
+// TODO(gion@syncrea.ch): Check the default form states after initialization and rawValue behaviour. Also check for behaviour of valueChanges observable.
+export function createFormSignals<TValue = any, TRawValue = TValue>(initialValue: TValue): AbstractControlSignals<TValue, TRawValue> {
+  return {
+    value: signal(initialValue),
+    rawValue: signal(initialValue as unknown as TRawValue) as Signal<TRawValue>,
+    enabled: signal(true) as Signal<boolean>,
+    disabled: signal(false) as Signal<boolean>,
+    dirty: signal(false) as Signal<boolean>,
+    pristine: signal(true) as Signal<boolean>,
+    valid: signal(true) as Signal<boolean>,
+    invalid: signal(false) as Signal<boolean>,
+    pending: signal(true) as Signal<boolean>,
+    status: signal('PENDING') as Signal<FormControlStatus>,
+    touched: signal(false) as Signal<boolean>,
+    untouched: signal(true) as Signal<boolean>,
+    errors: signal(null) as Signal<ValidationErrors|null>,
+  };
 }
 
 export type FormHooks = 'change'|'blur'|'submit';
@@ -328,9 +347,9 @@ export type ɵGetProperty<T, K> =
 
 // clang-format on
 
-export interface AbstractControlSignals<TValue = any> {
-  readonly value: Signal<TValue>;
-  readonly rawValue: Signal<TValue>;
+export interface AbstractControlSignals<TValue = any, TRawValue = TValue> {
+  readonly value: WritableSignal<TValue>;
+  readonly rawValue: Signal<TRawValue>;
   readonly status: Signal<FormControlStatus>;
   readonly disabled: Signal<boolean>;
   readonly enabled: Signal<boolean>;
@@ -386,6 +405,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _updateOn?: FormHooks;
+
+  /** @internal */
+  _valueSignalEffectRef!: EffectRef;
 
   private _parent: FormGroup|FormArray|null = null;
   private _asyncValidationSubscription: any;
@@ -950,12 +972,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as Writable<this>).status = PENDING;
-    this._updateSignals({
-      status: this.status
-    });
 
     if (opts.emitEvent !== false) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+      this._updateSignals({
+        status: this.status
+      });
     }
 
     if (this._parent && !opts.onlySelf) {
@@ -991,18 +1013,18 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
       control.disable({...opts, onlySelf: true});
     });
     this._updateValue();
-    this._updateSignals({
-      value: this.value,
-      rawValue: this.getRawValue(),
-      status: this.status,
-      errors: this.errors,
-      valid: this.valid,
-      invalid: this.invalid,
-    });
 
     if (opts.emitEvent !== false) {
       (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+      this._updateSignals({
+        value: this.value,
+        rawValue: this.getRawValue(),
+        status: this.status,
+        errors: this.errors,
+        valid: this.valid,
+        invalid: this.invalid,
+      });
     }
 
     this._updateAncestors({...opts, skipPristineCheck});
@@ -1116,18 +1138,17 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
       }
     }
 
-    this._updateSignals({
-      value: this.value,
-      rawValue: this.getRawValue(),
-      status: this.status,
-      errors: this.errors,
-      valid: this.valid,
-      invalid: this.invalid,
-    });
-
     if (opts.emitEvent !== false) {
       (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+      this._updateSignals({
+        value: this.value,
+        rawValue: this.getRawValue(),
+        status: this.status,
+        errors: this.errors,
+        valid: this.valid,
+        invalid: this.invalid,
+      });
     }
 
     if (this._parent && !opts.onlySelf) {
@@ -1155,9 +1176,11 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   private _runAsyncValidator(emitEvent?: boolean): void {
     if (this.asyncValidator) {
       (this as Writable<this>).status = PENDING;
-      this._updateSignals({
-        status: this.status
-      });
+      if (emitEvent !== false) {
+        this._updateSignals({
+          status: this.status
+        });
+      }
       this._hasOwnPendingAsyncValidator = true;
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors|null) => {
@@ -1207,11 +1230,13 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   setErrors(errors: ValidationErrors|null, opts: {emitEvent?: boolean} = {}): void {
     (this as Writable<this>).errors = errors;
-    this._updateSignals({
-      errors: this.errors,
-      valid: this.valid,
-      invalid: this.invalid,
-    });
+    if (opts.emitEvent !== false) {
+      this._updateSignals({
+        errors: this.errors,
+        valid: this.valid,
+        invalid: this.invalid,
+      });
+    }
     this._updateControlsErrors(opts.emitEvent !== false);
   }
 
@@ -1354,12 +1379,11 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /** @internal */
   _updateControlsErrors(emitEvent: boolean): void {
     (this as Writable<this>).status = this._calculateStatus();
-    this._updateSignals({
-      status: this.status
-    });
-
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+      this._updateSignals({
+        status: this.status
+      });
     }
 
     if (this._parent) {
@@ -1374,22 +1398,19 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /** @internal */
-  _initSignals() {
-    (this as Writable<this>).signals = {
-      value: signal(this.value),
-      rawValue: signal(this.getRawValue()),
-      pristine: signal(this.pristine),
-      dirty: signal(this.dirty),
-      touched: signal(this.touched),
-      untouched: signal(this.untouched),
-      pending: signal(this.pending),
-      disabled: signal(this.disabled),
-      enabled: signal(this.enabled),
-      status: signal(this.status),
-      errors: signal(this.errors),
-      valid: signal(this.valid),
-      invalid: signal(this.invalid),
-    };
+  _initSignals(signals?: AbstractControlSignals<TValue, TRawValue>, injector?: Injector) {
+    (this as Writable<this>).signals = signals ? signals : createFormSignals(this.getRawValue());
+    if (this._valueSignalEffectRef) {
+      this._valueSignalEffectRef.destroy();
+    }
+    const updateEffect = () => this._valueSignalEffectRef = effect(() => this.patchValue(this.signals.value(), {emitEvent: false}), {
+      allowSignalWrites: true,
+    });
+    if (injector) {
+      runInInjectionContext(injector, updateEffect);
+    } else {
+      updateEffect();
+    }
   }
 
   /** @internal */

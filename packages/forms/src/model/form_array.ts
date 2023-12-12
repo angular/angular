@@ -121,9 +121,9 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this.controls = controls;
     this._initObservables();
-    this._initSignals();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
+    this._initSignals();
     this.updateValueAndValidity({
       onlySelf: true,
       // If `asyncValidator` is present, it will trigger control status change from `PENDING` to

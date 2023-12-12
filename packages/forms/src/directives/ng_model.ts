@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, ɵWritable as Writable} from '@angular/core';
+import {booleanAttribute, ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Injector, inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, ɵWritable as Writable} from '@angular/core';
 
 import {AbstractControlSignals, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -151,6 +151,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   _registered = false;
 
+  private _injector: Injector = inject(Injector);
+
   /**
    * Internal reference to the view model value.
    * @nodoc
@@ -194,7 +196,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks, signals?: Partial<AbstractControlSignals<any>>};
+  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks, signals?: AbstractControlSignals<any>};
 
   /**
    * @description
@@ -294,10 +296,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpSignals(): void {
     if (this.options && this.options.signals) {
-      (this.control.signals as Writable<AbstractControlSignals>) = {
-        ...this.control.signals,
-        ...this.options.signals,
-      };
+      this.control._initSignals(this.options.signals, this._injector);
       this.control._updateAllSignals();
     }
   }
