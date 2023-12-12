@@ -180,9 +180,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "InitialRenderPendingTasks"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -334,6 +331,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PendingTasks"
   },
   {
     "name": "PlatformRef"
@@ -556,6 +556,9 @@
   },
   {
     "name": "collectNativeNodesInLContainer"
+  },
+  {
+    "name": "combineLatest"
   },
   {
     "name": "computeStaticStyling"
@@ -1005,6 +1008,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "map"
+  },
+  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1017,7 +1023,13 @@
     "name": "markViewForRefresh"
   },
   {
+    "name": "maybeSchedule"
+  },
+  {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "merge"
   },
   {
     "name": "mergeHostAttribute"
@@ -1240,6 +1252,15 @@
   },
   {
     "name": "writeToDirectiveInput"
+  },
+  {
+    "name": "{getPrototypeOf:getPrototypeOf,prototype:objectProto,keys:getKeys}"
+  },
+  {
+    "name": "{isArray:isArray2}"
+  },
+  {
+    "name": "{isArray:isArray}"
   },
   {
     "name": "ɵɵdefineComponent"

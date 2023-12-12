@@ -7,7 +7,7 @@
  */
 
 import {isPlatformServer} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
@@ -217,7 +217,7 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
           adaptLegacyInterceptorToChain, interceptorChainEndFn as ChainedInterceptorFn<any>);
     }
 
-    const pendingTasks = inject(InitialRenderPendingTasks);
+    const pendingTasks = inject(PendingTasks);
     const taskId = pendingTasks.add();
     return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
   };
@@ -233,7 +233,7 @@ export function resetFetchBackendWarningFlag() {
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown>|null = null;
-  private readonly pendingTasks = inject(InitialRenderPendingTasks);
+  private readonly pendingTasks = inject(PendingTasks);
 
   constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
     super();
