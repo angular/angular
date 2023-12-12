@@ -10,7 +10,7 @@ import '../util/ng_jit_mode';
 
 import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
 import {Observable, of} from 'rxjs';
-import {distinctUntilChanged, first, share, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, first, switchMap} from 'rxjs/operators';
 
 import {getCompilerFacade, JitCompilerUsage} from '../compiler/compiler_facade';
 import {Console} from '../console';
@@ -351,7 +351,6 @@ export class ApplicationRef {
           .hasPendingTasks.pipe(
               switchMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
               distinctUntilChanged(),
-              share(),
           );
 
   private readonly _injector = inject(EnvironmentInjector);

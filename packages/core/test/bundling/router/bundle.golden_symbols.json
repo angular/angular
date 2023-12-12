@@ -1962,9 +1962,6 @@
     "name": "shallowEqual"
   },
   {
-    "name": "share"
-  },
-  {
     "name": "shareSubjectFactory"
   },
   {
