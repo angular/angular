@@ -302,6 +302,19 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       return resolvePromise(<ZoneAwarePromise<U>>new this(null as any), REJECTED, error);
     }
 
+    static withResolvers<T>(): {
+      promise: Promise<T>,
+      resolve: (value?: T|PromiseLike<T>) => void,
+      reject: (error?: any) => void
+    } {
+      const result: any = {};
+      result.promise = new ZoneAwarePromise((res, rej) => {
+        result.resolve = res;
+        result.reject = rej;
+      });
+      return result;
+    }
+
     static any<T>(values: Iterable<PromiseLike<T>>): Promise<T> {
       if (!values || typeof values[Symbol.iterator] !== 'function') {
         return Promise.reject(new AggregateError([], 'All promises were rejected'));
