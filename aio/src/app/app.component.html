@@ -11,11 +11,11 @@
 <header>
   <mat-toolbar #appToolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
     <mat-toolbar-row class="notification-container">
-      <aio-notification notificationId="angular-dot-dev" expirationDate="2040-01-01" [dismissOnContentClick]="false" (dismissed)="notificationDismissed()">
-        <a href="https://angular.dev">
+      <aio-notification notificationId="state-of-js-2023" expirationDate="2024-02-01" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
+        <a href="https://survey.devographics.com/survey/state-of-js/2023?source=angular_homepage">
           <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
-          <span class="message">Say hello to Angular's future home!</span>
-          <span class="action-button">Check out Angular.dev</span>
+          <span class="message">Share your experience with Angular in <b>The State of JavaScript</b></span>
+          <span class="action-button">Go to survey</span>
         </a>
       </aio-notification>
     </mat-toolbar-row>
