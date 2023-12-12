@@ -1612,8 +1612,8 @@ describe('type check blocks', () => {
       const result = tcb(TEMPLATE);
       expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2: number = null!;');
       expect(result).toContain('"" + (_t1) + (_t2)');
-      expect(result).toContain('for (const _t8 of ((_t1).items)!) { var _t9: number = null!;');
-      expect(result).toContain('"" + (_t1) + (_t2) + (_t8) + (_t9)');
+      expect(result).toContain('for (const _t3 of ((_t1).items)!) { var _t4: number = null!;');
+      expect(result).toContain('"" + (_t1) + (_t2) + (_t3) + (_t4)');
     });
 
     it('should generate the tracking expression of a for loop', () => {
