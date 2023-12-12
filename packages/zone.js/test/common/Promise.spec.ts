@@ -911,4 +911,24 @@ describe(
           });
         });
       });
+
+      describe('Promise.withResolvers', () => {
+        it('should resolve', (done: DoneFn) => {
+          const {promise, resolve, reject} = (Promise as any).withResolvers();
+          promise.then((v: any) => {
+            expect(v).toBe(1);
+            done();
+          });
+          resolve(1);
+        });
+        it('should reject', (done: DoneFn) => {
+          const {promise, resolve, reject} = (Promise as any).withResolvers();
+          const error = new Error('test');
+          promise.catch((e: any) => {
+            expect(e).toBe(error);
+            done();
+          });
+          reject(error);
+        });
+      });
     }));
