@@ -10,7 +10,7 @@ import {Attribute, HtmlParser, ParseTreeResult, visitAll} from '@angular/compile
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, startMarker, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, startMarker, MigrateError, ParseResult, Template, TemplateCollector} from './types';
 
 const importRemovals = [
   'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
@@ -198,7 +198,7 @@ function getNestedCount(etm: ElementToMigrate, aggregator: number[]) {
 /**
  * parses the template string into the Html AST
  */
-export function parseTemplate(template: string): ParseTreeResult|null {
+export function parseTemplate(template: string): ParseResult {
   let parsed: ParseTreeResult;
   try {
     // Note: we use the HtmlParser here, instead of the `parseTemplate` function, because the
@@ -216,12 +216,13 @@ export function parseTemplate(template: string): ParseTreeResult|null {
 
     // Don't migrate invalid templates.
     if (parsed.errors && parsed.errors.length > 0) {
-      return null;
+      const errors = parsed.errors.map(e => ({type: 'parse', error: e}));
+      return {tree: undefined, errors};
     }
-  } catch {
-    return null;
+  } catch (e: any) {
+    return {tree: undefined, errors: [{type: 'parse', error: e}]};
   }
-  return parsed;
+  return {tree: parsed, errors: []};
 }
 
 /**
@@ -280,9 +281,9 @@ export function reduceNestingOffset(
  */
 export function getTemplates(template: string): Map<string, Template> {
   const parsed = parseTemplate(template);
-  if (parsed !== null) {
+  if (parsed.tree !== undefined) {
     const visitor = new TemplateCollector();
-    visitAll(visitor, parsed.rootNodes);
+    visitAll(visitor, parsed.tree.rootNodes);
 
     // count usages of each ng-template
     for (let [key, tmpl] of visitor.templates) {
@@ -387,9 +388,9 @@ function replaceRemainingPlaceholders(template: string): string {
 export function canRemoveCommonModule(template: string): boolean {
   const parsed = parseTemplate(template);
   let removeCommonModule = false;
-  if (parsed !== null) {
+  if (parsed.tree !== undefined) {
     const visitor = new CommonCollector();
-    visitAll(visitor, parsed.rootNodes);
+    visitAll(visitor, parsed.tree.rootNodes);
     removeCommonModule = visitor.count === 0;
   }
   return removeCommonModule;
