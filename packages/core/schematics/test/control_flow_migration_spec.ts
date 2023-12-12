@@ -5042,4 +5042,45 @@ describe('control flow migration', () => {
              'template: `@if (isLoggedIn$ | async; as logIn) {\n  Log In\n} @else {\n  Log Out\n}\n`');
        });
   });
+
+  describe('error handling', () => {
+    it('should not migrate a template that would result in invalid html', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          testOpts = 2;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="stuff; else elseTmpl">`,
+        `    Stuff`,
+        `</div>`,
+        `<ng-template #elseTmpl>`,
+        `  <div>things</div>`,
+        `<ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+      expect(content).toBe([
+        `<div *ngIf="stuff; else elseTmpl">`,
+        `    Stuff`,
+        `</div>`,
+        `<ng-template #elseTmpl>`,
+        `  <div>things</div>`,
+        `<ng-template>`,
+      ].join('\n'));
+
+      const warnings = warnOutput.join(' ');
+
+      expect(warnings).toContain('The migration resulted in invalid HTML for');
+      expect(warnings).toContain(
+          'Please check the template for valid HTML structures and run the migration again.');
+    });
+  });
 });
