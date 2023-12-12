@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
+import {Attribute, HtmlParser, Node, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, startMarker, MigrateError, ParseResult, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, ParseResult, startMarker, Template, TemplateCollector} from './types';
 
 const importRemovals = [
   'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
@@ -415,7 +415,7 @@ export function removeImports(
  * processing
  */
 export function getOriginals(etm: ElementToMigrate, tmpl: string, offset: number):
-    {start: string, end: string, childLength: number} {
+    {start: string, end: string, childLength: number, children: string[], childNodes: Node[]} {
   // original opening block
   if (etm.el.children.length > 0) {
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
@@ -428,13 +428,25 @@ export function getOriginals(etm: ElementToMigrate, tmpl: string, offset: number
         etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset,
         etm.el.sourceSpan.end.offset - offset);
     const childLength = childEnd - childStart;
-    return {start, end, childLength};
+    return {
+      start,
+      end,
+      childLength,
+      children: getOriginalChildren(etm.el.children, tmpl, offset),
+      childNodes: etm.el.children
+    };
   }
   // self closing or no children
   const start =
       tmpl.slice(etm.el.sourceSpan.start.offset - offset, etm.el.sourceSpan.end.offset - offset);
   // original closing block
-  return {start, end: '', childLength: 0};
+  return {start, end: '', childLength: 0, children: [], childNodes: []};
+}
+
+function getOriginalChildren(children: Node[], tmpl: string, offset: number) {
+  return children.map(child => {
+    return tmpl.slice(child.sourceSpan.start.offset - offset, child.sourceSpan.end.offset - offset);
+  });
 }
 
 function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): boolean {

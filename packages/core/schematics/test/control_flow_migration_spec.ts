@@ -5082,5 +5082,46 @@ describe('control flow migration', () => {
       expect(warnings).toContain(
           'Please check the template for valid HTML structures and run the migration again.');
     });
+
+    it('should not migrate a template that would result in invalid switch block contents',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          testOpts = 2;
+        }
+      `);
+
+         writeFile('/comp.html', [
+           `<div [ngSwitch]="testOpts">`,
+           `<strong>`,
+           `<p *ngSwitchCase="1">Option 1</p>`,
+           `<p *ngSwitchCase="2">Option 2</p>`,
+           `<p *ngSwitchDefault>Option 3</p>`,
+           `</strong>`,
+           `</div>`,
+         ].join('\n'));
+
+         await runMigration();
+         const content = tree.readContent('/comp.html');
+         expect(content).toBe([
+           `<div [ngSwitch]="testOpts">`,
+           `<strong>`,
+           `<p *ngSwitchCase="1">Option 1</p>`,
+           `<p *ngSwitchCase="2">Option 2</p>`,
+           `<p *ngSwitchDefault>Option 3</p>`,
+           `</strong>`,
+           `</div>`,
+         ].join('\n'));
+
+         expect(warnOutput.join(' '))
+             .toContain(
+                 `Element node: "strong" would result in invalid migrated @switch block structure. ` +
+                 `@switch can only have @case or @default as children.`);
+       });
   });
 });

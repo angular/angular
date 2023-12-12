@@ -28,6 +28,9 @@ export function migrateTemplate(
     const ifResult = migrateIf(template);
     const forResult = migrateFor(ifResult.migrated);
     const switchResult = migrateSwitch(forResult.migrated);
+    if (switchResult.errors.length > 0) {
+      return {migrated: template, errors: switchResult.errors};
+    }
     const caseResult = migrateCase(switchResult.migrated);
     const templateResult = processNgTemplates(caseResult.migrated);
     if (templateResult.err !== undefined) {
