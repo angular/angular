@@ -11,9 +11,8 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgModuleRef, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵwhenStable as whenStable} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgModuleRef, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation, ɵPendingTasks as PendingTasks, ɵwhenStable as whenStable} from '@angular/core';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
-import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, provideClientHydration, Title} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
@@ -65,7 +64,7 @@ function createAppWithPendingTask(standalone: boolean) {
     completed = 'No';
 
     constructor() {
-      const pendingTasks = coreInject(InitialRenderPendingTasks);
+      const pendingTasks = coreInject(PendingTasks);
       const taskId = pendingTasks.add();
       setTimeout(() => {
         pendingTasks.remove(taskId);

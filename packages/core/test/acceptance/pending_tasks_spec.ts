@@ -8,13 +8,14 @@
 
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, of} from 'rxjs';
-import {map, withLatestFrom} from 'rxjs/operators';
+import {map, take, withLatestFrom} from 'rxjs/operators';
 
-import {InitialRenderPendingTasks} from '../../src/initial_render_pending_tasks';
+import {ApplicationRef} from '../../src/application/application_ref';
+import {PendingTasks} from '../../src/pending_tasks';
 
-describe('InitialRenderPendingTasks', () => {
+describe('PendingTasks', () => {
   it('should wait until all tasks are completed', async () => {
-    const pendingTasks = TestBed.inject(InitialRenderPendingTasks);
+    const pendingTasks = TestBed.inject(PendingTasks);
     const taskA = pendingTasks.add();
     const taskB = pendingTasks.add();
     const taskC = pendingTasks.add();
@@ -26,7 +27,7 @@ describe('InitialRenderPendingTasks', () => {
   });
 
   it('should allow calls to remove the same task multiple times', async () => {
-    const pendingTasks = TestBed.inject(InitialRenderPendingTasks);
+    const pendingTasks = TestBed.inject(PendingTasks);
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
 
     const taskA = pendingTasks.add();
@@ -40,7 +41,7 @@ describe('InitialRenderPendingTasks', () => {
   });
 
   it('should be tolerant to removal of non-existent ids', async () => {
-    const pendingTasks = TestBed.inject(InitialRenderPendingTasks);
+    const pendingTasks = TestBed.inject(PendingTasks);
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
 
     pendingTasks.remove(Math.random());
@@ -49,9 +50,28 @@ describe('InitialRenderPendingTasks', () => {
 
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
   });
+
+  it('contributes to applicationRef stableness', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(PendingTasks);
+
+    const taskA = pendingTasks.add();
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    pendingTasks.remove(taskA);
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+
+    const taskB = pendingTasks.add();
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    pendingTasks.remove(taskB);
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+  });
 });
 
-function hasPendingTasks(pendingTasks: InitialRenderPendingTasks): Promise<boolean> {
+function applicationRefIsStable(applicationRef: ApplicationRef) {
+  return applicationRef.isStable.pipe(take(1)).toPromise();
+}
+
+function hasPendingTasks(pendingTasks: PendingTasks): Promise<boolean> {
   return of(EMPTY)
              .pipe(
                  withLatestFrom(pendingTasks.hasPendingTasks),
