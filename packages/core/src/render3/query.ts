@@ -507,13 +507,13 @@ function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
-function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags) {
+function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): void {
   const queryList = new QueryList<T>(
       (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
   storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
 
-  if (lView[QUERIES] === null) lView[QUERIES] = new LQueries_();
-  lView[QUERIES]!.queries.push(new LQuery_(queryList));
+  const lQueries = (lView[QUERIES] ??= new LQueries_()).queries;
+  lQueries.push(new LQuery_(queryList));
 }
 
 function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number): void {
