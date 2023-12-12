@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {visitAll} from '@angular/compiler';
+import {Element, Node, Text, visitAll} from '@angular/compiler';
 
+import {cases} from './cases';
 import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
@@ -65,11 +66,35 @@ export function migrateSwitch(template: string):
   return {migrated: result, errors, changed};
 }
 
+function assertValidSwitchStructure(children: Node[]): void {
+  for (const child of children) {
+    if (child instanceof Text && child.value.trim() !== '') {
+      throw new Error(
+          `Text node: "${child.value}" would result in invalid migrated @switch block structure. ` +
+          `@switch can only have @case or @default as children.`);
+    } else if (child instanceof Element) {
+      let hasCase = false;
+      for (const attr of child.attrs) {
+        if (cases.includes(attr.name)) {
+          hasCase = true;
+        }
+      }
+      if (!hasCase) {
+        throw new Error(
+            `Element node: "${
+                child.name}" would result in invalid migrated @switch block structure. ` +
+            `@switch can only have @case or @default as children.`);
+      }
+    }
+  }
+}
+
 function migrateNgSwitch(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const lbString = etm.hasLineBreaks ? '\n' : '';
   const condition = etm.attr.value;
 
   const originals = getOriginals(etm, tmpl, offset);
+  assertValidSwitchStructure(originals.childNodes);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
   const startBlock = `${startMarker}${start}${lbString}@switch (${condition}) {`;

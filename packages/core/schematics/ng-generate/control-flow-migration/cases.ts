@@ -17,7 +17,7 @@ export const nakedcase = 'ngSwitchCase';
 export const switchdefault = '*ngSwitchDefault';
 export const nakeddefault = 'ngSwitchDefault';
 
-const cases = [
+export const cases = [
   boundcase,
   switchcase,
   nakedcase,
