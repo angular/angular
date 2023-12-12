@@ -58,13 +58,6 @@ export function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
 export class ApplyRedirects {
   constructor(private urlSerializer: UrlSerializer, private urlTree: UrlTree) {}
 
-  noMatchError(e: NoMatch): any {
-    return new RuntimeError(
-        RuntimeErrorCode.NO_MATCH,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-            `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
-  }
-
   lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
     let res: UrlSegment[] = [];
     let c = urlTree.root;
