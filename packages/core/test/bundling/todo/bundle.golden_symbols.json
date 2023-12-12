@@ -1419,9 +1419,6 @@
     "name": "setupStaticAttributes"
   },
   {
-    "name": "share"
-  },
-  {
     "name": "shareSubjectFactory"
   },
   {
