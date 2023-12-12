@@ -84,51 +84,6 @@ import {isPromise, isSubscribable} from '../util/lang';
  * demo purposes to illustrate how the factory function can work with other providers available
  * through DI.
  *
- * ### Example with NgModule-based application
- * ```
- *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
- *   return () => httpClient.get("https://someUrl.com/api/user")
- *     .pipe(
- *        tap(user => { ... })
- *     );
- *  }
- *
- *  @NgModule({
- *    imports: [BrowserModule, HttpClientModule],
- *    declarations: [AppComponent],
- *    bootstrap: [AppComponent],
- *    providers: [{
- *      provide: APP_INITIALIZER,
- *      useFactory: initializeAppFactory,
- *      deps: [HttpClient],
- *      multi: true
- *    }]
- *  })
- *  export class AppModule {}
- * ```
- *
- * ### Example with standalone application
- * ```
- *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
- *   return () => httpClient.get("https://someUrl.com/api/user")
- *     .pipe(
- *        tap(user => { ... })
- *     );
- *  }
- *
- * bootstrapApplication(App, {
- *   providers: [
- *     provideHttpClient(),
- *     {
- *       provide: APP_INITIALIZER,
- *       useFactory: initializeAppFactory,
- *       multi: true,
- *       deps: [HttpClient],
- *     },
- *   ],
- * });
- * ```
- *
  * @publicApi
  */
 export const APP_INITIALIZER =
