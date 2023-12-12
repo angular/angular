@@ -427,9 +427,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   if (queryList.dirty &&
       (isCreationMode(lView) ===
        ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic))) {
-    if (tQuery.matches === null) {
-      queryList.reset([]);
-    } else {
+    if (tQuery.matches !== null) {
       const result = tQuery.crossesNgTemplate ?
           collectQueryResults(tView, lView, queryIndex, []) :
           materializeViewResults(tView, lView, tQuery, queryIndex);
