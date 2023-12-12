@@ -9,8 +9,8 @@
 import '../util/ng_jit_mode';
 
 import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {Observable, of} from 'rxjs';
-import {distinctUntilChanged, first, switchMap} from 'rxjs/operators';
+import {combineLatest, Observable} from 'rxjs';
+import {distinctUntilChanged, first, map} from 'rxjs/operators';
 
 import {getCompilerFacade, JitCompilerUsage} from '../compiler/compiler_facade';
 import {Console} from '../console';
@@ -21,7 +21,6 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {Type} from '../interface/type';
 import {COMPILER_OPTIONS, CompilerOptions} from '../linker/compiler';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
@@ -29,6 +28,7 @@ import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../metadata/resource_loading';
+import {PendingTasks} from '../pending_tasks';
 import {assertNgModuleType} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
@@ -324,6 +324,8 @@ export class ApplicationRef {
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
+  private readonly noPendingTasks =
+      inject(PendingTasks).hasPendingTasks.pipe(map(pending => !pending));
 
   /**
    * Indicates whether this instance was destroyed.
@@ -347,9 +349,9 @@ export class ApplicationRef {
    * Returns an Observable that indicates when the application is stable or unstable.
    */
   public readonly isStable: Observable<boolean> =
-      inject(InitialRenderPendingTasks)
-          .hasPendingTasks.pipe(
-              switchMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
+      combineLatest([this.zoneIsStable, this.noPendingTasks])
+          .pipe(
+              map(indicators => indicators.every(stable => stable)),
               distinctUntilChanged(),
           );
 
