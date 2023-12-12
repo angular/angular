@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, RecursiveVisitor, Text} from '@angular/compiler';
+import {Attribute, Element, ParseError, ParseTreeResult, RecursiveVisitor, Text} from '@angular/compiler';
 import ts from 'typescript';
 
 export const ngtemplate = 'ng-template';
@@ -89,6 +89,11 @@ export interface ForAttributes {
 export interface AliasAttributes {
   item: string;
   aliases: Map<string, string>;
+}
+
+export interface ParseResult {
+  tree: ParseTreeResult|undefined;
+  errors: MigrateError[];
 }
 
 /**
