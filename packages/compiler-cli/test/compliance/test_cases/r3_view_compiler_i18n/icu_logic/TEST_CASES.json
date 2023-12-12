@@ -231,6 +231,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle ICUs with element tags, as the root message",
+      "inputFiles": [
+        "icu_root.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }
