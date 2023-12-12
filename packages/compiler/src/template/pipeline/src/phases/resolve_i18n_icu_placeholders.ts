@@ -16,6 +16,10 @@ import {CompilationJob} from '../compilation';
 export function resolveI18nIcuPlaceholders(job: CompilationJob) {
   for (const unit of job.units) {
     for (const op of unit.create) {
+      if (op.kind === ir.OpKind.I18nContext) {
+        debugger;
+      }
+
       if (op.kind === ir.OpKind.I18nContext && op.contextKind === ir.I18nContextKind.Icu) {
         for (const node of op.message.nodes) {
           node.visit(new ResolveIcuPlaceholdersVisitor(op.postprocessingParams));

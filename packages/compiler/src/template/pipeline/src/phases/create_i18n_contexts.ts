@@ -29,6 +29,7 @@ export function createI18nContexts(job: CompilationJob) {
   // We use the message instead of the message ID, because placeholder values might differ even
   // when IDs are the same.
   const messageToContext = new Map<i18n.Message, ir.XrefId>();
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
 
   for (const unit of job.units) {
     for (const op of unit.create) {
@@ -39,10 +40,12 @@ export function createI18nContexts(job: CompilationJob) {
           // root block.
           if (op.xref === op.root) {
             xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
-                ir.I18nContextKind.RootI18n, xref, op.xref, op.message, null!));
+            const contextOp = ir.createI18nContextOp(
+                ir.I18nContextKind.RootI18n, xref, op.xref, op.message, null!);
+            unit.create.push(contextOp);
             op.context = xref;
             rootContexts.set(op.xref, xref);
+            i18nContexts.set(contextOp.xref, contextOp);
           }
           break;
         case ir.OpKind.I18nEnd:
@@ -54,16 +57,20 @@ export function createI18nContexts(job: CompilationJob) {
           if (currentI18nOp === null) {
             throw Error('Unexpected ICU outside of an i18n block.');
           }
-          if (op.message.id !== currentI18nOp.message.id) {
+          if (op.message !== currentI18nOp.message) {
             // There was an enclosing i18n block around this ICU somewhere.
             xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
-                ir.I18nContextKind.Icu, xref, currentI18nOp.xref, op.message, null!));
+            const contextOp = ir.createI18nContextOp(
+                ir.I18nContextKind.Icu, xref, currentI18nOp.xref, op.message, null!);
+            unit.create.push(contextOp);
             op.context = xref;
+            i18nContexts.set(contextOp.xref, contextOp);
           } else {
             // The i18n block was generated because of this ICU, OR it was explicit, but the ICU is
-            // the only localizable content inside of it.
+            // the only localizable content inside of it. We need to note that this i18nStart
+            // context is actually for an ICU.
             op.context = currentI18nOp.context;
+            i18nContexts.get(op.context!)!.contextKind = ir.I18nContextKind.Icu;
           }
           break;
       }
