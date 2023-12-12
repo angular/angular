@@ -56,11 +56,12 @@ export class Recognizer {
       private paramsInheritanceStrategy: ParamsInheritanceStrategy,
       private readonly urlSerializer: UrlSerializer) {}
 
-  private noMatchError(e: NoMatch): any {
+  private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
     return new RuntimeError(
         RuntimeErrorCode.NO_MATCH,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-            `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
+        (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            `Cannot match any routes. URL Segment: '${e.segmentGroup}'` :
+            `'${e.segmentGroup}'`);
   }
 
   recognize(): Observable<{state: RouterStateSnapshot, tree: UrlTree}> {
