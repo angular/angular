@@ -258,9 +258,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "InitialRenderPendingTasks"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -448,6 +445,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PendingTasks"
   },
   {
     "name": "PlatformRef"
@@ -705,6 +705,9 @@
     "name": "applyViewChange"
   },
   {
+    "name": "argsArgArrayOrObject"
+  },
+  {
     "name": "arrRemove"
   },
   {
@@ -955,9 +958,6 @@
   },
   {
     "name": "forEachSingleProvider"
-  },
-  {
-    "name": "forkJoin"
   },
   {
     "name": "formArrayNameProvider"
@@ -1401,6 +1401,9 @@
     "name": "map"
   },
   {
+    "name": "mapOneOrManyArgs"
+  },
+  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1414,6 +1417,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "maybeSchedule"
   },
   {
     "name": "maybeUnwrapEmpty"
@@ -1522,6 +1528,9 @@
   },
   {
     "name": "platformCore"
+  },
+  {
+    "name": "popResultSelector"
   },
   {
     "name": "popScheduler"

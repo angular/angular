@@ -213,9 +213,6 @@
     "name": "IS_HYDRATION_DOM_REUSE_ENABLED"
   },
   {
-    "name": "InitialRenderPendingTasks"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -364,6 +361,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PendingTasks"
   },
   {
     "name": "R3Injector"
@@ -607,6 +607,9 @@
   },
   {
     "name": "collectNativeNodesInLContainer"
+  },
+  {
+    "name": "combineLatest"
   },
   {
     "name": "concatStringsWithSpace"
@@ -1065,6 +1068,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "map"
+  },
+  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1077,7 +1083,13 @@
     "name": "markedFeatures"
   },
   {
+    "name": "maybeSchedule"
+  },
+  {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "merge"
   },
   {
     "name": "mergeHostAttribute"
@@ -1129,9 +1141,6 @@
   },
   {
     "name": "observeOn"
-  },
-  {
-    "name": "of"
   },
   {
     "name": "onEnter"
@@ -1315,6 +1324,15 @@
   },
   {
     "name": "writeToDirectiveInput"
+  },
+  {
+    "name": "{getPrototypeOf:getPrototypeOf,prototype:objectProto,keys:getKeys}"
+  },
+  {
+    "name": "{isArray:isArray2}"
+  },
+  {
+    "name": "{isArray:isArray}"
   },
   {
     "name": "ɵɵStandaloneFeature"
