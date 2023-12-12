@@ -12,7 +12,7 @@ import {migrateCase} from './cases';
 import {migrateFor} from './fors';
 import {migrateIf} from './ifs';
 import {migrateSwitch} from './switches';
-import {AnalyzedFile, endMarker, MigrateError, startMarker} from './types';
+import {AnalyzedFile, endI18nMarker, endMarker, MigrateError, startI18nMarker, startMarker} from './types';
 import {canRemoveCommonModule, formatTemplate, parseTemplate, processNgTemplates, removeImports} from './util';
 
 /**
@@ -57,7 +57,8 @@ export function migrateTemplate(
     if (format && changed) {
       migrated = formatTemplate(migrated, templateType);
     }
-    const markerRegex = new RegExp(`${startMarker}|${endMarker}`, 'gm');
+    const markerRegex =
+        new RegExp(`${startMarker}|${endMarker}|${startI18nMarker}|${endI18nMarker}`, 'gm');
     migrated = migrated.replace(markerRegex, '');
 
     file.removeCommonModule = canRemoveCommonModule(template);
