@@ -669,8 +669,8 @@ describe('control flow migration', () => {
       expect(content).toBe([
         `@if (data$ | async; as data) {`,
         `  <ng-container i18n="@@i18n-label">`,
-        `    {{ data }}`,
-        `  </ng-container>`,
+        `  {{ data }}`,
+        `</ng-container>`,
         `}`,
       ].join('\n'));
     });
@@ -842,8 +842,8 @@ describe('control flow migration', () => {
          expect(content).toBe([
            `@if (false) {`,
            `  <ng-container i18n="@@foo">`,
-           `    Foo`,
-           `  </ng-container>`,
+           `  Foo`,
+           `</ng-container>`,
            `} @else {`,
            `  <ng-container i18n="@@bar"> Bar </ng-container>`,
            `}`,
@@ -3866,10 +3866,10 @@ describe('control flow migration', () => {
         `    bla bla`,
         `  } @else {`,
         `    <ng-container i18n="@@test_key">`,
-        `      @for (item of items; track item) {`,
-        `        <div class="test"></div>`,
-        `      }`,
-        `    </ng-container>`,
+        `  @for (item of items; track item) {`,
+        `<div class="test"></div>`,
+        `}`,
+        `</ng-container>`,
         `  }`,
         `</div>\n`,
       ].join('\n');
@@ -4380,8 +4380,8 @@ describe('control flow migration', () => {
         `    <ng-container`,
         `      i18n="{{i18n}}"`,
         `      >`,
-        `      Match <strong>EVERY</strong> rule in this group`,
-        `    </ng-container>`,
+        `Match <strong>EVERY</strong> rule in this group`,
+        `</ng-container>`,
         `  } @else {`,
         `    {{ruleGroupDropdownLabels?.get(JoinOperator.AND)}}`,
         `  }`,
@@ -4649,6 +4649,51 @@ describe('control flow migration', () => {
         `}\n`,
         `</div>`,
       ].join('\n'));
+    });
+
+    it('should ignore formatting on i18n sections', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `  <p i18n>`,
+        `  blah`,
+        `</p>`,
+        `<span *ngIf="show;else elseBlock" i18n>Content here</span>`,
+        `<ng-template #elseBlock i18n>`,
+        `  <p>Else Content</p>`,
+        `</ng-template>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `<div>`,
+        `  <p i18n>`,
+        `  blah`,
+        `</p>`,
+        `  @if (show) {`,
+        `    <span i18n>Content here</span>`,
+        `  } @else {`,
+        `    <ng-container i18n>`,
+        `  <p>Else Content</p>`,
+        `</ng-container>`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
     });
   });
 

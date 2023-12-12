@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, HtmlParser, Node, ParseTreeResult, visitAll} from '@angular/compiler';
+import {Attribute, Element, HtmlParser, Node, ParseTreeResult, visitAll} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endMarker, ParseResult, startMarker, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
 
 const importRemovals = [
   'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
@@ -19,6 +19,8 @@ const importRemovals = [
 const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
 const startMarkerRegex = new RegExp(startMarker, 'gm');
 const endMarkerRegex = new RegExp(endMarker, 'gm');
+const startI18nMarkerRegex = new RegExp(startI18nMarker, 'gm');
+const endI18nMarkerRegex = new RegExp(endI18nMarker, 'gm');
 const replaceMarkerRegex = new RegExp(`${startMarker}|${endMarker}`, 'gm');
 
 /**
@@ -528,20 +530,42 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   return {start, middle, end};
 }
 
-const selfClosingList = 'input|br|img|base|wbr|area|col|embed|hr|link|meta|param|source|track';
+function generateI18nMarkers(tmpl: string): string {
+  let parsed = parseTemplate(tmpl);
+  if (parsed.tree !== undefined) {
+    const visitor = new i18nCollector();
+    visitAll(visitor, parsed.tree.rootNodes);
 
-function isInMigratedBlock(line: string, isCurrentlyInMigratedBlock: boolean) {
-  return line.match(startMarkerRegex) &&
-      (!line.match(endMarkerRegex) ||
-       line.lastIndexOf(startMarker) > line.lastIndexOf(endMarker)) ||
-      (isCurrentlyInMigratedBlock && !line.match(endMarkerRegex));
+    for (const [ix, el] of visitor.elements.entries()) {
+      // we only care about elements with children and i18n tags
+      // elements without children have nothing to translate
+
+      // offset accounts for the addition of the 2 marker characters with each loop.
+      const offset = ix * 2;
+      if (el.children.length > 0) {
+        tmpl = addI18nMarkers(tmpl, el, offset);
+      }
+    }
+  }
+  return tmpl;
 }
+
+function addI18nMarkers(tmpl: string, el: Element, offset: number): string {
+  const startPos = el.children[0].sourceSpan.start.offset + offset;
+  const endPos = el.children[el.children.length - 1].sourceSpan.end.offset + offset;
+  return tmpl.slice(0, startPos) + startI18nMarker + tmpl.slice(startPos, endPos) + endI18nMarker +
+      tmpl.slice(endPos);
+}
+
+const selfClosingList = 'input|br|img|base|wbr|area|col|embed|hr|link|meta|param|source|track';
 
 /**
  * re-indents all the lines in the template properly post migration
  */
 export function formatTemplate(tmpl: string, templateType: string): string {
   if (tmpl.indexOf('\n') > -1) {
+    tmpl = generateI18nMarkers(tmpl);
+
     // tracks if a self closing element opened without closing yet
     let openSelfClosingEl = false;
 
@@ -580,6 +604,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     // matches an open and close of an html element on a single line with no breaks
     // <div>blah</div>
     const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-]+)*>/;
+
     const lines = tmpl.split('\n');
     const formatted = [];
     // the indent applied during formatting
@@ -587,11 +612,16 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     // the pre-existing indent in an inline template that we'd like to preserve
     let mindent = '';
     let depth = 0;
+    let i18nDepth = 0;
     let inMigratedBlock = false;
+    let inI18nBlock = false;
     for (let [index, line] of lines.entries()) {
       depth +=
           [...line.matchAll(startMarkerRegex)].length - [...line.matchAll(endMarkerRegex)].length;
       inMigratedBlock = depth > 0;
+      i18nDepth += [...line.matchAll(startI18nMarkerRegex)].length -
+          [...line.matchAll(endI18nMarkerRegex)].length;
+
       let lineWasMigrated = false;
       if (line.match(replaceMarkerRegex)) {
         line = line.replace(replaceMarkerRegex, '');
@@ -620,7 +650,9 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         indent = indent.slice(2);
       }
 
-      formatted.push(mindent + (line.trim() !== '' ? indent : '') + line.trim());
+      const newLine =
+          inI18nBlock ? line : mindent + (line.trim() !== '' ? indent : '') + line.trim();
+      formatted.push(newLine);
 
       // this matches any self closing element that actually has a />
       if (closeMultiLineElRegex.test(line)) {
@@ -651,6 +683,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         // add to the indent for the properties on it to look nice
         indent += '  ';
       }
+      inI18nBlock = i18nDepth > 0;
     }
     tmpl = formatted.join('\n');
   }

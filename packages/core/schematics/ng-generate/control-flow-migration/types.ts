@@ -18,6 +18,9 @@ export const nakedngfor = 'ngFor';
 export const startMarker = '◬';
 export const endMarker = '✢';
 
+export const startI18nMarker = '⚈';
+export const endI18nMarker = '⚉';
+
 function allFormsOf(selector: string): string[] {
   return [
     selector,
@@ -316,6 +319,18 @@ export class CommonCollector extends RecursiveVisitor {
 
   private hasPipes(input: string): boolean {
     return commonModulePipes.some(regexp => regexp.test(input));
+  }
+}
+
+/** Finds all elements that represent i18n blocks. */
+export class i18nCollector extends RecursiveVisitor {
+  readonly elements: Element[] = [];
+
+  override visitElement(el: Element): void {
+    if (el.attrs.find(a => a.name === 'i18n') !== undefined) {
+      this.elements.push(el);
+    }
+    super.visitElement(el, null);
   }
 }
 
