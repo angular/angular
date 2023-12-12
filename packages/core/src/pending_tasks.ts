@@ -12,16 +12,17 @@ import {Injectable} from './di';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
 /**
- * *Internal* service that keeps track of pending tasks happening in the system
- * during the initial rendering. No tasks are tracked after an initial
- * rendering.
+ * *Internal* service that keeps track of pending tasks happening in the system.
  *
  * This information is needed to make sure that the serialization on the server
  * is delayed until all tasks in the queue (such as an initial navigation or a
  * pending HTTP request) are completed.
+ *
+ * Pending tasks continue to contribute to the stableness of `ApplicationRef`
+ * throughout the lifetime of the application.
  */
 @Injectable({providedIn: 'root'})
-export class InitialRenderPendingTasks implements OnDestroy {
+export class PendingTasks implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
   hasPendingTasks = new BehaviorSubject<boolean>(false);
