@@ -34,10 +34,12 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {PagePrefix} from '../../core/enums/pages';
 import {injectAsync} from '../../core/services/inject-async';
-import {EmbeddedTutorialManager} from '@angular/docs';
-import {LoadingStep} from '@angular/docs';
-import {NodeRuntimeState} from '@angular/docs';
-import {EmbeddedEditor} from '@angular/docs';
+import {
+  EmbeddedTutorialManager,
+  LoadingStep,
+  NodeRuntimeState,
+  EmbeddedEditor
+} from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
 import { TutorialType } from '@angular/docs';
 import { TutorialNavigationData, TutorialNavigationItem, } from '@angular/docs'
@@ -136,7 +138,7 @@ export default class Tutorial implements AfterViewInit {
     this.embeddedTutorialManager.revealAnswer();
 
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('@angular/docs').then(
+      import('../../editor/index').then(
         (s) => s.NodeRuntimeSandbox,
       ),
     );
@@ -156,7 +158,7 @@ export default class Tutorial implements AfterViewInit {
     this.embeddedTutorialManager.resetRevealAnswer();
 
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('@angular/docs').then((s) => s.NodeRuntimeSandbox),
+      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
     );
 
     await Promise.all(
@@ -251,7 +253,7 @@ export default class Tutorial implements AfterViewInit {
 
   private async loadEmbeddedEditor() {
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('@angular/docs').then((s) => s.NodeRuntimeSandbox),
+      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
     );
 
     this.canRevealAnswer = computed(() => this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT);
@@ -260,6 +262,6 @@ export default class Tutorial implements AfterViewInit {
   }
 
   private async loadEmbeddedEditorComponent(): Promise<typeof EmbeddedEditor> {
-    return await import('@angular/docs').then((c) => c.EmbeddedEditor);
+    return await import('../../editor/index').then((c) => c.EmbeddedEditor);
   }
 }
