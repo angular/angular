@@ -1291,9 +1291,7 @@ class TcbBlockImplicitVariableOp extends TcbOp {
     super();
   }
 
-  override get optional() {
-    return false;
-  }
+  override readonly optional = true;
 
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
