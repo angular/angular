@@ -213,9 +213,6 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
-    "name": "InitialRenderPendingTasks"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -382,6 +379,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT_DEFAULT"
+  },
+  {
+    "name": "PendingTasks"
   },
   {
     "name": "R3Injector"
@@ -639,6 +639,9 @@
     "name": "collectNativeNodesInLContainer"
   },
   {
+    "name": "combineLatest"
+  },
+  {
     "name": "computeStaticStyling"
   },
   {
@@ -864,6 +867,9 @@
     "name": "getInsertInFrontOfRNodeWithNoI18n"
   },
   {
+    "name": "getKeys"
+  },
+  {
     "name": "getLDeferBlockDetails"
   },
   {
@@ -925,6 +931,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getPrototypeOf"
   },
   {
     "name": "getSelectedIndex"
@@ -1050,6 +1059,9 @@
     "name": "init_args"
   },
   {
+    "name": "init_argsArgArrayOrObject"
+  },
+  {
     "name": "init_arrRemove"
   },
   {
@@ -1117,6 +1129,9 @@
   },
   {
     "name": "init_collect_native_nodes"
+  },
+  {
+    "name": "init_combineLatest"
   },
   {
     "name": "init_comparison"
@@ -1201,6 +1216,9 @@
   },
   {
     "name": "init_createErrorClass"
+  },
+  {
+    "name": "init_createObject"
   },
   {
     "name": "init_create_application"
@@ -1440,9 +1458,6 @@
     "name": "init_inherit_definition_feature"
   },
   {
-    "name": "init_initial_render_pending_tasks"
-  },
-  {
     "name": "init_initializer_token"
   },
   {
@@ -1578,6 +1593,9 @@
     "name": "init_map"
   },
   {
+    "name": "init_mapOneOrManyArgs"
+  },
+  {
     "name": "init_mark_view_dirty"
   },
   {
@@ -1692,13 +1710,13 @@
     "name": "init_observeOn"
   },
   {
-    "name": "init_of"
-  },
-  {
     "name": "init_operators"
   },
   {
     "name": "init_partial"
+  },
+  {
+    "name": "init_pending_tasks"
   },
   {
     "name": "init_performance"
@@ -1896,9 +1914,6 @@
     "name": "init_subscribeOn"
   },
   {
-    "name": "init_switchMap"
-  },
-  {
     "name": "init_template"
   },
   {
@@ -2061,6 +2076,12 @@
     "name": "invokeTriggerCleanupFns"
   },
   {
+    "name": "isArray"
+  },
+  {
+    "name": "isArray2"
+  },
+  {
     "name": "isArrayLike"
   },
   {
@@ -2172,6 +2193,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "map"
+  },
+  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -2187,7 +2211,13 @@
     "name": "markedFeatures"
   },
   {
+    "name": "maybeSchedule"
+  },
+  {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "merge"
   },
   {
     "name": "mergeHostAttribute"
@@ -2230,6 +2260,9 @@
   },
   {
     "name": "notFoundValueOrThrow"
+  },
+  {
+    "name": "objectProto"
   },
   {
     "name": "observable"
