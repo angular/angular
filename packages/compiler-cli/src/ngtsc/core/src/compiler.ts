@@ -1084,12 +1084,12 @@ export class NgCompiler {
       extraImportsTracker = new ExtraImportsTracker(checker);
     }
 
-    // Cycles are handled in full compilation mode by "remote scoping".
+    // Cycles are handled in full and local compilation modes by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
     // So in partial compilation mode, when building a library, a cycle will cause an error.
-    const cycleHandlingStrategy = compilationMode === CompilationMode.FULL ?
-        CycleHandlingStrategy.UseRemoteScoping :
-        CycleHandlingStrategy.Error;
+    const cycleHandlingStrategy = compilationMode === CompilationMode.PARTIAL ?
+        CycleHandlingStrategy.Error :
+        CycleHandlingStrategy.UseRemoteScoping;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
     const supportJitMode = this.options['supportJitMode'] ?? true;

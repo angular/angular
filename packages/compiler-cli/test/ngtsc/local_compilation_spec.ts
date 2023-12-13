@@ -233,6 +233,49 @@ runInEachFileSystem(() => {
 
         expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
       });
+
+      it('should not include extra import and remote scope runtime for the local component dependencies when cycle is produced',
+         () => {
+           env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+        import {cycleCreatingDep} from './main_comp';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+           env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+
+        @NgModule({declarations: [InternalComp], exports: [InternalComp]})
+        export class InternalModule {
+        }
+        `);
+           env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp>'})
+        export class MainComp {
+        }
+        `);
+           env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('main_comp.js')).not.toContain('import "internal_comp"');
+           expect(env.getContents('main_module.js')).not.toContain('ɵɵsetComponentScope');
+         });
     });
 
     describe('ng module injector def', () => {

@@ -774,6 +774,11 @@ export class NgModuleDecoratorHandler implements
       ngModuleStatements: Statement[], node: ClassDeclaration,
       declarations: Reference<ClassDeclaration>[],
       remoteScopesMayRequireCycleProtection: boolean): void {
+    // Local compilation mode generates its own runtimes to compute the dependencies. So there no
+    // need to add remote scope statements (which also conflicts with local compilation runtimes)
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
     const context = getSourceFile(node);
     for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
