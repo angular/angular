@@ -235,7 +235,7 @@
     {
       "description": "should handle ICUs with element tags, as the root message",
       "inputFiles": [
-        "icu_root.ts"
+        "root_icu_with_elements.ts"
       ],
       "expectations": [
         {
