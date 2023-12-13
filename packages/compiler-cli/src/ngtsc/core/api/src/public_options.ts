@@ -328,6 +328,13 @@ export interface BazelAndG3Options {
    * `@defer` blocks.
    */
   onlyExplicitDeferDependencyImports?: boolean;
+
+  /**
+   * Generates extra imports in local compilation mode which imply the extra imports generated in
+   * full mode compilation (e.g., imports for statically resolved component dependencies). These
+   * extra imports are needed for bundling purposes in g3.
+   */
+  generateExtraImportsInLocalMode?: boolean;
 }
 
 /**
