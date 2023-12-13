@@ -200,6 +200,68 @@ runInEachFileSystem(
                    expect(env.getContents('test.js')).toContain('import "/some_external_file"');
                    expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
                  });
+
+              it('should include extra import for the local component dependencies (component, directive and pipe)',
+                 () => {
+                   env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+                   env.write('internal_dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[internal-dir]'})
+        export class InternalDir {
+        }
+        `);
+                   env.write('internal_pipe.ts', `
+        import {Pipe, PipeTransform} from '@angular/core';
+
+        @Pipe({name: 'internalPipe'})
+        export class InternalPipe implements PipeTransform {
+          transform(value: number): number {
+            return value*2;
+          }
+        }
+        `);
+                   env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+        import {InternalDir} from 'internal_dir';
+        import {InternalPipe} from 'internal_pipe';
+
+        @NgModule({declarations: [InternalComp, InternalDir, InternalPipe], exports: [InternalComp, InternalDir, InternalPipe]})
+        export class InternalModule {
+        }
+        `);
+                   env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp> <span internal-dir></span> <span>{{2 | internalPipe}}</span>'})
+        export class MainComp {
+        }
+        `);
+                   env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_dir"');
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_pipe"');
+                 });
             });
 
             describe('ng module injector def', () => {
