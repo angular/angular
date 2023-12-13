@@ -622,6 +622,10 @@ export class ComponentDecoratorHandler implements
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):
       void {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
+
     if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
       return;
     }
@@ -651,10 +655,6 @@ export class ComponentDecoratorHandler implements
   resolve(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return {};
-    }
-
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
       symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
     }
@@ -945,18 +945,20 @@ export class ComponentDecoratorHandler implements
       data.deferBlocks = this.locateDeferBlocksWithoutScope(metadata.template);
     }
 
-    // Validate `@Component.imports` and `@Component.deferredImports` fields.
-    if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
-      const importDiagnostics = validateStandaloneImports(
-          analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader,
-          false /* isDeferredImport */);
-      diagnostics.push(...importDiagnostics);
-    }
-    if (analysis.resolvedDeferredImports !== null && analysis.rawDeferredImports !== null) {
-      const importDiagnostics = validateStandaloneImports(
-          analysis.resolvedDeferredImports, analysis.rawDeferredImports, this.metaReader,
-          this.scopeReader, true /* isDeferredImport */);
-      diagnostics.push(...importDiagnostics);
+    if (this.compilationMode !== CompilationMode.LOCAL) {
+      // Validate `@Component.imports` and `@Component.deferredImports` fields.
+      if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
+        const importDiagnostics = validateStandaloneImports(
+            analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader,
+            false /* isDeferredImport */);
+        diagnostics.push(...importDiagnostics);
+      }
+      if (analysis.resolvedDeferredImports !== null && analysis.rawDeferredImports !== null) {
+        const importDiagnostics = validateStandaloneImports(
+            analysis.resolvedDeferredImports, analysis.rawDeferredImports, this.metaReader,
+            this.scopeReader, true /* isDeferredImport */);
+        diagnostics.push(...importDiagnostics);
+      }
     }
 
     if (analysis.providersRequiringFactory !== null &&
