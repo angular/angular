@@ -219,7 +219,6 @@ function getNgForParts(expression: string): string[] {
     const char = expression[i];
     const isInString = stringStack.length === 0;
     const isInCommaSeparated = commaSeparatedStack.length === 0;
-
     // Any semicolon is a delimiter, as well as any comma outside
     // of comma-separated syntax, as long as they're outside of a string.
     if (isInString && current.length > 0 &&
@@ -229,10 +228,10 @@ function getNgForParts(expression: string): string[] {
       continue;
     }
 
-    if (stringPairs.has(char)) {
-      stringStack.push(stringPairs.get(char)!);
-    } else if (stringStack.length > 0 && stringStack[stringStack.length - 1] === char) {
+    if (stringStack.length > 0 && stringStack[stringStack.length - 1] === char) {
       stringStack.pop();
+    } else if (stringPairs.has(char)) {
+      stringStack.push(stringPairs.get(char)!);
     }
 
     if (commaSeparatedSyntax.has(char)) {
