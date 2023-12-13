@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {expectCompleteReuse, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -1391,6 +1391,118 @@ runInEachFileSystem(() => {
                .toContain(
                    `Can't bind to 'grandgrandparentA' since it isn't a known property of 'div'.`);
          });
+    });
+
+    describe('program re-use', () => {
+      it('should completely re-use structure when the first signal input is introduced', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input() dir: string = '';
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // introduce the signal input.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input.required<string>();
+          }
+        `);
+        env.driveMain();
+
+        expectCompleteReuse(env.getTsProgram());
+        expectCompleteReuse(env.getReuseTsProgram());
+      });
+
+      // TODO(devversion): look into fixing this for inline TCB and inline type ctors.
+      xit('should completely re-use structure when an inline constructor generic directive starts using input signals',
+          () => {
+            env.tsconfig({strictTemplates: true});
+            env.write('dir.ts', `
+            import {Directive, Input} from '@angular/core';
+
+            class SomeNonExportedClass {}
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir<T extends SomeNonExportedClass> {
+              @Input() dir: T|undefined;
+            }
+          `);
+            env.write('cmp.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<div [dir]="foo"></div>',
+            })
+            export class Cmp {
+              foo = 'foo';
+            }
+          `);
+            env.write('mod.ts', `
+            import {NgModule} from '@angular/core';
+            import {Cmp} from './cmp';
+            import {Dir} from './dir';
+
+            @NgModule({
+              declarations: [Cmp, Dir],
+            })
+            export class Mod {}
+          `);
+            env.driveMain();
+
+            // turn the input into a signal input- causing a new import.
+            env.write('dir.ts', `
+            import {Directive, input} from '@angular/core';
+
+            class SomeNonExportedClass {}
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir<T extends SomeNonExportedClass> {
+              dir = input.required<T>();
+            }
+          `);
+            env.driveMain();
+
+            expectCompleteReuse(env.getTsProgram());
+            expectCompleteReuse(env.getReuseTsProgram());
+          });
     });
   });
 });

@@ -16,6 +16,7 @@ import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
+import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
 
@@ -52,6 +53,12 @@ export class TypeCheckFile extends Environment {
   }
 
   render(removeComments: boolean): string {
+    // NOTE: We are conditionally adding imports whenever we discover signal inputs. This has a
+    // risk of changing the import graph of the TypeScript program, degrading incremental program
+    // re-use due to program structure changes. For type check block files, we are ensuring an
+    // import to e.g. `@angular/core` always exists to guarantee a stable graph.
+    ensureTypeCheckFilePreparationImports(this);
+
     let source: string = this.importManager.getAllImports(this.contextFile.fileName)
                              .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
                              .join('\n') +

@@ -21,7 +21,7 @@ import {ImportManager, translateExpression, translateType} from '../../translato
  */
 export class ReferenceEmitEnvironment {
   constructor(
-      protected importManager: ImportManager, protected refEmitter: ReferenceEmitter,
+      readonly importManager: ImportManager, protected refEmitter: ReferenceEmitter,
       readonly reflector: ReflectionHost, protected contextFile: ts.SourceFile) {}
 
   canReferenceType(

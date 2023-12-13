@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan, R3Identifiers} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
@@ -17,6 +17,20 @@ import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
+
+/**
+ * External modules that always should exist for type check blocks and
+ * file hosting inline type constructors.
+ *
+ * Importing the modules in preparation helps ensuring a stable import graph
+ * that would not degrade TypeScript's incremental program structure re-use.
+ */
+const TCB_FILE_IMPORT_GRAPH_PREPARE_MODULES = [
+  // Imports may be added for signal input checking. We wouldn't want to change the
+  // import graph for incremental compilations when suddenly a signal input is used,
+  // or removed.
+  R3Identifiers.InputSignalBrandWriteType.moduleName,
+];
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
@@ -172,6 +186,17 @@ function getTemplateId(
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText;
   }) as TemplateId || null;
+}
+
+/**
+ * Ensure imports for certain external modules that should always
+ * exist are generated. These are ensures to exist to avoid frequent
+ * import graph changes whenever e.g. a signal input is introduced in user code.
+ */
+export function ensureTypeCheckFilePreparationImports(env: ReferenceEmitEnvironment): void {
+  for (const moduleName of TCB_FILE_IMPORT_GRAPH_PREPARE_MODULES) {
+    env.importManager.generateNamespaceImport(moduleName);
+  }
 }
 
 export function checkIfGenericTypeBoundsCanBeEmitted(
