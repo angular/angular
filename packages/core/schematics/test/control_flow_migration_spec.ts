@@ -2284,6 +2284,64 @@ describe('control flow migration', () => {
       expect(actual).toBe(expected);
     });
 
+    it('should migrate ngFor with a long ternary and trackby', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor,NgForOf],
+          templateUrl: 'comp.html',
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'},{id: 2, text: 'stuff'}];
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div`,
+        `  *ngFor="`,
+        `    let item of section === 'manage'`,
+        `      ? filteredPermissions?.manage`,
+        `      : section === 'customFields'`,
+        `      ? filteredPermissions?.customFields`,
+        `      : section === 'createAndDelete'`,
+        `      ? filteredPermissions?.createAndDelete`,
+        `      : filteredPermissions?.team;`,
+        `    trackBy: trackById`,
+        `  "`,
+        `>`,
+        `  {{ item }}`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@for (`,
+        `  item of section === 'manage'`,
+        `  ? filteredPermissions?.manage`,
+        `  : section === 'customFields'`,
+        `  ? filteredPermissions?.customFields`,
+        `  : section === 'createAndDelete'`,
+        `  ? filteredPermissions?.createAndDelete`,
+        `  : filteredPermissions?.team; track trackById($index,`,
+        `  item)) {`,
+        `  <div`,
+        `    >`,
+        `    {{ item }}`,
+        `  </div>`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate ngForOf with track by and multiple aliases', async () => {
       writeFile('/comp.ts', `
         import {Component} from '@angular/core';
