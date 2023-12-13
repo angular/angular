@@ -93,7 +93,8 @@ function isInputMappingEqual(current: InputMapping, previous: InputMapping): boo
 
 function isInputOrOutputEqual(current: InputOrOutput, previous: InputOrOutput): boolean {
   return current.classPropertyName === previous.classPropertyName &&
-      current.bindingPropertyName === previous.bindingPropertyName;
+      current.bindingPropertyName === previous.bindingPropertyName &&
+      current.isSignal === previous.isSignal;
 }
 
 function isTypeCheckMetaEqual(
@@ -102,9 +103,10 @@ function isTypeCheckMetaEqual(
     return false;
   }
   if (current.isGeneric !== previous.isGeneric) {
-    // Note: changes in the number of type parameters is also considered in `areTypeParametersEqual`
-    // so this check is technically not needed; it is done anyway for completeness in terms of
-    // whether the `DirectiveTypeCheckMeta` struct itself compares equal or not.
+    // Note: changes in the number of type parameters is also considered in
+    // `areTypeParametersEqual` so this check is technically not needed; it is done anyway for
+    // completeness in terms of whether the `DirectiveTypeCheckMeta` struct itself compares
+    // equal or not.
     return false;
   }
   if (!isArrayEqual(current.ngTemplateGuards, previous.ngTemplateGuards, isTemplateGuardEqual)) {
