@@ -100,7 +100,8 @@ export class TypeParameterEmitter {
       };
     }
 
-    return new Reference(declaration.node, owningModule, declaration.viaModule === AmbientImport);
+    return new Reference(
+        declaration.node, declaration.viaModule === AmbientImport ? AmbientImport : owningModule);
   }
 
   private translateTypeReference(

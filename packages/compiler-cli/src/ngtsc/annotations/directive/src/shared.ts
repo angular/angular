@@ -819,7 +819,8 @@ function assertEmittableInputType(
         // exported, otherwise TS won't emit it to the .d.ts.
         if (declaration.node.getSourceFile() !== contextFile) {
           const emittedType = refEmitter.emit(
-              new Reference(declaration.node, null, declaration.viaModule === AmbientImport),
+              new Reference(
+                  declaration.node, declaration.viaModule === AmbientImport ? AmbientImport : null),
               contextFile,
               ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
                   ImportFlags.AllowRelativeDtsImports | ImportFlags.AllowAmbientReferences);
