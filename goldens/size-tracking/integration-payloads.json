@@ -31,7 +31,7 @@
   "animations": {
     "uncompressed": {
       "runtime": 2704,
-      "main": 283017,
+      "main": 276632,
       "polyfills": 33817,
       "src_app_open-close_component_ts": 1321
     }
@@ -39,7 +39,7 @@
   "animations-async": {
     "uncompressed": {
       "runtime": 2906,
-      "main": 221187,
+      "main": 215704,
       "polyfills": 33782,
       "node_modules_angular_animations_fesm2022_browser_mjs": 63981,
       "default-node_modules_angular_animations_fesm2022_animations_mjs": 3828,
