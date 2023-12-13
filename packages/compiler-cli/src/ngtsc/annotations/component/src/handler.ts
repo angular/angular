@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -960,6 +960,25 @@ export class ComponentDecoratorHandler implements
         }
 
         data.declarations = eagerDeclarations;
+
+        // Register extra local imports.
+        if (this.compilationMode === CompilationMode.LOCAL &&
+            this.localCompilationExtraImportsTracker !== null) {
+          // In global compilation mode `eagerDeclarations` contains "all" the component
+          // dependencies, whose import statements will be added to the file. In local compilation
+          // mode `eagerDeclarations` only includes the "local" dependencies, meaning those that are
+          // declared inside this compilation unit.Here the import info of these local dependencies
+          // are added to the tracker so that we can generate extra imports representing these local
+          // dependencies. For non-local dependencies we use another technique of adding some
+          // best-guess extra imports globally to all files using
+          // `localCompilationExtraImportsTracker.addGlobalImportFromIdentifier`.
+          for (const {type} of eagerDeclarations) {
+            if (type instanceof ExternalExpr && type.value.moduleName) {
+              this.localCompilationExtraImportsTracker.addImportForFile(
+                  context, type.value.moduleName);
+            }
+          }
+        }
       } else {
         if (this.cycleHandlingStrategy === CycleHandlingStrategy.UseRemoteScoping) {
           // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
