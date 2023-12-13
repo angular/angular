@@ -239,11 +239,12 @@ export class NgModuleDecoratorHandler implements
     // Resolving declarations
     let declarationRefs: Reference<ClassDeclaration>[] = [];
     const rawDeclarations: ts.Expression|null = ngModule.get('declarations') ?? null;
-    if (this.compilationMode !== CompilationMode.LOCAL && rawDeclarations !== null) {
+    if (rawDeclarations !== null) {
       const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
-      declarationRefs =
-          this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations', 0)
-              .references;
+      declarationRefs = this.resolveTypeList(
+                                rawDeclarations, declarationMeta, name, 'declarations', 0,
+                                this.compilationMode === CompilationMode.LOCAL)
+                            .references;
 
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
@@ -287,9 +288,12 @@ export class NgModuleDecoratorHandler implements
     // Resolving exports
     let exportRefs: Reference<ClassDeclaration>[] = [];
     const rawExports: ts.Expression|null = ngModule.get('exports') ?? null;
-    if (this.compilationMode !== CompilationMode.LOCAL && rawExports !== null) {
+    if (rawExports !== null) {
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
-      exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports', 0).references;
+      exportRefs = this.resolveTypeList(
+                           rawExports, exportsMeta, name, 'exports', 0,
+                           this.compilationMode === CompilationMode.LOCAL)
+                       .references;
       this.referencesRegistry.add(node, ...exportRefs);
     }
 

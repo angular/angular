@@ -28,6 +28,7 @@ import {getContainingImportDeclaration} from '../../reflection/src/typescript';
  * (to be added to all the files in the local compilation)
  */
 export class ExtraImportsTracker {
+  private readonly localImportsMap = new Map<string, Set<string>>();
   private readonly globalImportsSet = new Set<string>();
 
   constructor(private readonly typeChecker: ts.TypeChecker) {}
@@ -36,7 +37,11 @@ export class ExtraImportsTracker {
    * Adds an extra import to be added to the generated file of a specific source file.
    */
   addImportForFile(sf: ts.SourceFile, moduleName: string): void {
-    // TODO(pmvald): Implement this method.
+    if (!this.localImportsMap.has(sf.fileName)) {
+      this.localImportsMap.set(sf.fileName, new Set<string>());
+    }
+
+    this.localImportsMap.get(sf.fileName)!.add(moduleName);
   }
 
   /**
@@ -76,6 +81,7 @@ export class ExtraImportsTracker {
   getImportsForFile(sf: ts.SourceFile): string[] {
     return [
       ...this.globalImportsSet,
+      ...(this.localImportsMap.get(sf.fileName) ?? []),
     ];
   }
 }

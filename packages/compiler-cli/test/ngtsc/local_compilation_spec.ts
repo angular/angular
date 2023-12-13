@@ -193,6 +193,46 @@ runInEachFileSystem(() => {
            expect(env.getContents('test.js')).toContain('import "/some_external_file"');
            expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
          });
+
+      it('should include extra import for the local component dependencies', () => {
+        env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+        env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+
+        @NgModule({declarations: [InternalComp], exports: [InternalComp]})
+        export class InternalModule {
+        }
+        `);
+        env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp>'})
+        export class MainComp {
+        }
+        `);
+        env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+        env.driveMain();
+
+        expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
+      });
     });
 
     describe('ng module injector def', () => {
