@@ -119,3 +119,63 @@ export interface OnDestroy {
 export interface TrackByFunction<T> {
   <U extends T>(index: number, item: T&U): any;
 }
+
+export type Signal<T> = () => T;
+
+/**
+ * -------
+ * Signal inputs
+ * ------
+ */
+
+export interface InputOptions<ReadT, WriteT> {
+  alias?: string;
+  transform?: (v: WriteT) => ReadT;
+}
+
+export type InputOptionsWithoutTransform<ReadT> =
+    InputOptions<ReadT, ReadT>&{transform?: undefined};
+export type InputOptionsWithTransform<ReadT, WriteT> =
+    Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+
+const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
+export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
+
+export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+}
+
+export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
+export function inputFunction<ReadT>(
+    initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+export function inputFunction<ReadT, WriteT>(
+    initialValue: ReadT,
+    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+export function inputFunction<ReadT, WriteT>(
+    _initialValue?: ReadT,
+    _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+  return null!;
+}
+
+export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
+    InputSignal<ReadT>;
+export function inputRequiredFunction<ReadT, WriteT>(
+    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
+    InputSignal<ReadT, WriteT> {
+  return null!;
+}
+
+export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
+
+export const input: InputFunction = (() => {
+  (inputFunction as any).required = inputRequiredFunction;
+  return inputFunction as InputFunction;
+})();
+
+export type ɵUnwrapInputSignalWriteType<Field> =
+    Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
+  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+};
