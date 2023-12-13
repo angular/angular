@@ -92,5 +92,5 @@ function getBaseElementHref(): string|null {
 function relativePath(url: string): string {
   // The base URL doesn't really matter, we just need it so relative paths have something
   // to resolve against. In the browser `HTMLBaseElement.href` is always absolute.
-  return new URL(url, 'http://a').pathname;
+  return new URL(url, document.baseURI).pathname;
 }
