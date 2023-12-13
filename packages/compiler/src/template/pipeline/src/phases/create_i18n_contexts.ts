@@ -21,83 +21,93 @@ import {CompilationJob} from '../compilation';
  * message.)
  */
 export function createI18nContexts(job: CompilationJob) {
-  const rootContexts = new Map<ir.XrefId, ir.XrefId>();
-  let currentI18nOp: ir.I18nStartOp|null = null;
-  let xref: ir.XrefId;
-
-
-  // We use the message instead of the message ID, because placeholder values might differ even
-  // when IDs are the same.
-  const messageToContext = new Map<i18n.Message, ir.XrefId>();
-
+  // Create i18n context ops for i18n attrs.
+  const attrContextByMessage = new Map<i18n.Message, ir.XrefId>();
   for (const unit of job.units) {
-    for (const op of unit.create) {
-      switch (op.kind) {
-        case ir.OpKind.I18nStart:
-          currentI18nOp = op;
-          // Each root i18n block gets its own context, child ones refer to the context for their
-          // root block.
-          if (op.xref === op.root) {
-            xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
-                ir.I18nContextKind.RootI18n, xref, op.xref, op.message, null!));
-            op.context = xref;
-            rootContexts.set(op.xref, xref);
-          }
-          break;
-        case ir.OpKind.I18nEnd:
-          currentI18nOp = null;
-          break;
-        case ir.OpKind.IcuStart:
-          // If an ICU represents a different message than its containing block, we give it its own
-          // i18n context.
-          if (currentI18nOp === null) {
-            throw Error('Unexpected ICU outside of an i18n block.');
-          }
-          if (op.message.id !== currentI18nOp.message.id) {
-            // There was an enclosing i18n block around this ICU somewhere.
-            xref = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
-                ir.I18nContextKind.Icu, xref, currentI18nOp.xref, op.message, null!));
-            op.context = xref;
-          } else {
-            // The i18n block was generated because of this ICU, OR it was explicit, but the ICU is
-            // the only localizable content inside of it.
-            op.context = currentI18nOp.context;
-          }
-          break;
-      }
-    }
-
     for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Binding:
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
         case ir.OpKind.ExtractedAttribute:
-          if (!op.i18nMessage) {
+          if (op.i18nMessage === null) {
             continue;
           }
-          if (!messageToContext.has(op.i18nMessage)) {
-            // create the context
-            const i18nContext = job.allocateXrefId();
-            unit.create.push(ir.createI18nContextOp(
-                ir.I18nContextKind.Attr, i18nContext, null, op.i18nMessage, null!));
-            messageToContext.set(op.i18nMessage, i18nContext);
+          if (!attrContextByMessage.has(op.i18nMessage)) {
+            const i18nContext = ir.createI18nContextOp(
+                ir.I18nContextKind.Attr, job.allocateXrefId(), null, op.i18nMessage, null!);
+            unit.create.push(i18nContext);
+            attrContextByMessage.set(op.i18nMessage, i18nContext.xref);
           }
-
-          op.i18nContext = messageToContext.get(op.i18nMessage)!;
+          op.i18nContext = attrContextByMessage.get(op.i18nMessage)!;
           break;
       }
     }
   }
 
-  // Assign contexts to child i18n blocks, now that all root i18n blocks have their context
-  // assigned.
+  // Create i18n context ops for root i18n blocks.
+  const blockContextByI18nBlock = new Map<ir.XrefId, ir.I18nContextOp>();
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      switch (op.kind) {
+        case ir.OpKind.I18nStart:
+          if (op.xref === op.root) {
+            const contextOp = ir.createI18nContextOp(
+                ir.I18nContextKind.RootI18n, job.allocateXrefId(), op.xref, op.message, null!);
+            unit.create.push(contextOp);
+            op.context = contextOp.xref;
+            blockContextByI18nBlock.set(op.xref, contextOp);
+          }
+          break;
+      }
+    }
+  }
+
+  // Assign i18n contexts for child i18n blocks. These don't need their own conext, instead they
+  // should inherit from their root i18n block.
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.I18nStart && op.xref !== op.root) {
-        op.context = rootContexts.get(op.root)!;
+        const rootContext = blockContextByI18nBlock.get(op.root);
+        if (rootContext === undefined) {
+          throw Error('AssertionError: Root i18n block i18n context should have been created.');
+        }
+        op.context = rootContext.xref;
+        blockContextByI18nBlock.set(op.xref, rootContext);
+      }
+    }
+  }
+
+  // Create or assign i18n contexts for ICUs.
+  let currentI18nOp: ir.I18nStartOp|null = null;
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      switch (op.kind) {
+        case ir.OpKind.I18nStart:
+          currentI18nOp = op;
+          break;
+        case ir.OpKind.I18nEnd:
+          currentI18nOp = null;
+          break;
+        case ir.OpKind.IcuStart:
+          if (currentI18nOp === null) {
+            throw Error('AssertionError: Unexpected ICU outside of an i18n block.');
+          }
+          if (op.message.id !== currentI18nOp.message.id) {
+            // This ICU is a sub-message inside its parent i18n block message. We need to give it
+            // its own context.
+            const contextOp = ir.createI18nContextOp(
+                ir.I18nContextKind.Icu, job.allocateXrefId(), currentI18nOp.xref, op.message, null!
+            );
+            unit.create.push(contextOp);
+            op.context = contextOp.xref;
+          } else {
+            // This ICU is the only translatable content in its parent i18n block. We need to
+            // convert the parent's context into an ICU context.
+            op.context = currentI18nOp.context;
+            blockContextByI18nBlock.get(currentI18nOp.xref)!.contextKind = ir.I18nContextKind.Icu;
+          }
+          break;
       }
     }
   }
