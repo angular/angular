@@ -10,10 +10,10 @@ import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjecto
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
-import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
+import {assertSuccessfulReferenceEmit, LocalCompilationExtraImportsTracker, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol,} from '../../../incremental/semantic_graph';
 import {ExportedProviderStatusResolver, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
-import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
+import {DynamicValue, PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
@@ -179,7 +179,9 @@ export class NgModuleDecoratorHandler implements
       private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       private includeClassMetadata: boolean, private includeSelectorScope: boolean,
-      private readonly compilationMode: CompilationMode) {}
+      private readonly compilationMode: CompilationMode,
+      private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|
+      null) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'NgModuleDecoratorHandler';
@@ -240,9 +242,10 @@ export class NgModuleDecoratorHandler implements
     const rawDeclarations: ts.Expression|null = ngModule.get('declarations') ?? null;
     if (this.compilationMode !== CompilationMode.LOCAL && rawDeclarations !== null) {
       const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
-      declarationRefs =
-          this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations', 0)
-              .references;
+      declarationRefs = this.resolveTypeList(
+                                rawDeclarations, declarationMeta, name, 'declarations', 0,
+                                /* allowUnresolvedReferences */ false)
+                            .references;
 
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
@@ -267,9 +270,30 @@ export class NgModuleDecoratorHandler implements
     // Resolving imports
     let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = ngModule.get('imports') ?? null;
-    if (this.compilationMode !== CompilationMode.LOCAL && rawImports !== null) {
+    if (rawImports !== null) {
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
-      importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports', 0).references;
+
+      const result = this.resolveTypeList(
+          rawImports, importsMeta, name, 'imports', 0,
+          this.compilationMode === CompilationMode.LOCAL);
+
+      if (this.compilationMode === CompilationMode.LOCAL &&
+          this.localCompilationExtraImportsTracker !== null) {
+        // For generating extra imports in local mode, the NgModule imports that are from external
+        // files (i.e., outside of the compilation unit) are to be added to all the files in the
+        // compilation unit. This is because any external component that is a dependency of some
+        // component in the compilation unit must be imported by one of these NgModule's external
+        // imports (or the external component cannot be a dependency of that internal component).
+        // This approach can be further optimized by adding these NgModule external imports to a
+        // subset of files in the compilation unit and not all. See comments in {@link
+        // LocalCompilationExtraImportsTracker} and {@link
+        // LocalCompilationExtraImportsTracker#addGlobalImportFromIdentifier} for more details.
+        for (const d of result.dynamicValues) {
+          this.localCompilationExtraImportsTracker.addGlobalImportFromIdentifier(d.node);
+        }
+      }
+
+      importRefs = result.references;
     }
 
     // Resolving exports
@@ -277,7 +301,10 @@ export class NgModuleDecoratorHandler implements
     const rawExports: ts.Expression|null = ngModule.get('exports') ?? null;
     if (this.compilationMode !== CompilationMode.LOCAL && rawExports !== null) {
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
-      exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports', 0).references;
+      exportRefs = this.resolveTypeList(
+                           rawExports, exportsMeta, name, 'exports', 0,
+                           /* allowUnresolvedReferences */ false)
+                       .references;
       this.referencesRegistry.add(node, ...exportRefs);
     }
 
@@ -286,8 +313,10 @@ export class NgModuleDecoratorHandler implements
     const rawBootstrap: ts.Expression|null = ngModule.get('bootstrap') ?? null;
     if (this.compilationMode !== CompilationMode.LOCAL && rawBootstrap !== null) {
       const bootstrapMeta = this.evaluator.evaluate(rawBootstrap, forwardRefResolver);
-      bootstrapRefs =
-          this.resolveTypeList(rawBootstrap, bootstrapMeta, name, 'bootstrap', 0).references;
+      bootstrapRefs = this.resolveTypeList(
+                              rawBootstrap, bootstrapMeta, name, 'bootstrap', 0,
+                              /* allowUnresolvedReferences */ false)
+                          .references;
 
       // Verify that the `@NgModule.bootstrap` list doesn't have Standalone Components.
       for (const ref of bootstrapRefs) {
@@ -425,8 +454,9 @@ export class NgModuleDecoratorHandler implements
       for (const importExpr of topLevelExpressions) {
         const resolved = this.evaluator.evaluate(importExpr, moduleResolvers);
 
-        const {references, hasModuleWithProviders} =
-            this.resolveTypeList(importExpr, [resolved], node.name.text, 'imports', absoluteIndex);
+        const {references, hasModuleWithProviders} = this.resolveTypeList(
+            importExpr, [resolved], node.name.text, 'imports', absoluteIndex,
+            /* allowUnresolvedReferences */ false);
         absoluteIndex += references.length;
 
         topLevelImports.push({
@@ -840,11 +870,24 @@ export class NgModuleDecoratorHandler implements
    */
   private resolveTypeList(
       expr: ts.Node, resolvedList: ResolvedValue, className: string, arrayName: string,
-      absoluteIndex: number):
-      {references: Reference<ClassDeclaration>[], hasModuleWithProviders: boolean} {
+      absoluteIndex: number, allowUnresolvedReferences: boolean): {
+    references: Reference<ClassDeclaration>[],
+    hasModuleWithProviders: boolean,
+    dynamicValues: DynamicValue[]
+  } {
     let hasModuleWithProviders = false;
     const refList: Reference<ClassDeclaration>[] = [];
+    const dynamicValueSet = new Set<DynamicValue>();
+
     if (!Array.isArray(resolvedList)) {
+      if (allowUnresolvedReferences) {
+        return {
+          references: [],
+          hasModuleWithProviders: false,
+          dynamicValues: [],
+        };
+      }
+
       throw createValueHasWrongTypeError(
           expr, resolvedList,
           `Expected array when reading the NgModule.${arrayName} of ${className}`);
@@ -864,9 +907,14 @@ export class NgModuleDecoratorHandler implements
 
       if (Array.isArray(entry)) {
         // Recurse into nested arrays.
-        const recursiveResult =
-            this.resolveTypeList(expr, entry, className, arrayName, absoluteIndex);
+        const recursiveResult = this.resolveTypeList(
+            expr, entry, className, arrayName, absoluteIndex, allowUnresolvedReferences);
         refList.push(...recursiveResult.references);
+
+        for (const d of recursiveResult.dynamicValues) {
+          dynamicValueSet.add(d);
+        }
+
         absoluteIndex += recursiveResult.references.length;
         hasModuleWithProviders = hasModuleWithProviders || recursiveResult.hasModuleWithProviders;
       } else if (entry instanceof Reference) {
@@ -878,6 +926,9 @@ export class NgModuleDecoratorHandler implements
         }
         refList.push(entry);
         absoluteIndex += 1;
+      } else if (entry instanceof DynamicValue && allowUnresolvedReferences) {
+        dynamicValueSet.add(entry);
+        continue;
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
         throw createValueHasWrongTypeError(
@@ -890,6 +941,7 @@ export class NgModuleDecoratorHandler implements
     return {
       references: refList,
       hasModuleWithProviders,
+      dynamicValues: [...dynamicValueSet],
     };
   }
 }
