@@ -44,7 +44,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
       /* isCore */ false, refEmitter,
       /* annotateForClosureCompiler */ false,
       /* onlyPublishPublicTypings */ false, injectableRegistry, NOOP_PERF_RECORDER, true, true,
-      compilationMode);
+      compilationMode, /* localCompilationExtraImportsTracker */ null);
 
   return {handler, reflectionHost};
 }

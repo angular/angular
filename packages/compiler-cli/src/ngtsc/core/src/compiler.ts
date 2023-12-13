@@ -1097,7 +1097,7 @@ export class NgCompiler {
 
     let localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null = null;
     if (compilationMode === CompilationMode.LOCAL && this.options.generateExtraImportsInLocalMode) {
-      localCompilationExtraImportsTracker = new LocalCompilationExtraImportsTracker();
+      localCompilationExtraImportsTracker = new LocalCompilationExtraImportsTracker(checker);
     }
 
     // Cycles are handled in full compilation mode by "remote scoping".
@@ -1172,7 +1172,7 @@ export class NgCompiler {
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
           injectableRegistry, this.delegatingPerfRecorder, supportTestBed, supportJitMode,
-          compilationMode),
+          compilationMode, localCompilationExtraImportsTracker),
     ];
 
     const traitCompiler = new TraitCompiler(
