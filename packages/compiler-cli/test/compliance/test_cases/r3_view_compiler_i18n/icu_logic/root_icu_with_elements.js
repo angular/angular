@@ -4,8 +4,8 @@ consts: () => {
 		/**
 		 * @desc someText1
 		 */
-		const MSG_EXTERNAL_4505060179465988919$$ICU_WHITESPACE_TS_1 = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
-		i18n_0 = MSG_EXTERNAL_4505060179465988919$$ICU_WHITESPACE_TS_1;
+		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_1$ = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
+		i18n_0 = $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_1$;
 	} else {
         …
 	} i18n_0 = i0.ɵɵi18nPostprocess(i18n_0, { "CLOSE_TAG_STRONG": "</strong>", "START_TAG_STRONG": "<strong>", "VAR_SELECT": "\uFFFD0\uFFFD" });
@@ -14,8 +14,8 @@ consts: () => {
 		/**
 		 * @suppress {msgDescriptions}
 		 */
-		const MSG_EXTERNAL_4505060179465988919$$ICU_WHITESPACE_TS_3 = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
-		i18n_2 = MSG_EXTERNAL_4505060179465988919$$ICU_WHITESPACE_TS_3;
+		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_3$ = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
+		i18n_2 = $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_3$;
 	} else {
         …
 	}
