@@ -23,14 +23,6 @@ genrule(
     cmd = "(echo '/**\n @license' && cat $< && echo '*/') > $@",
 )
 
-# copy this file from //lib to //dist
-genrule(
-    name = "zone_externs",
-    srcs = ["//packages/zone.js/lib:closure/zone_externs.js"],
-    outs = ["zone_externs.js"],
-    cmd = "cp $< $@",
-)
-
 genrule(
     name = "zone_js_d_ts",
     srcs = [
@@ -58,7 +50,6 @@ pkg_npm(
     deps = [
         ":LICENSE.wrapped",
         ":LICENSE_copy",
-        ":zone_externs",
     ] + [
         "//packages/zone.js/bundles:" + b + "-es5.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
