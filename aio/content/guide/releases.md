@@ -117,7 +117,6 @@ Approximate dates are offered as general guidance and are subject to change.
 | v17.3   | Week of 2023-03-11 |
 | v18.0   | Week of 2023-05-20 |
 
-
 ### Support window
 
 All major releases are typically supported for 18 months.
