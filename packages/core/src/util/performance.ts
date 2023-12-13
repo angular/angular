@@ -21,5 +21,5 @@ export function performanceMarkFeature(feature: string): void {
     return;
   }
   markedFeatures.add(feature);
-  performance?.mark?.('mark_use_counter', {detail: {feature}});
+  performance?.mark?.('mark_feature_usage', {detail: {feature}});
 }
