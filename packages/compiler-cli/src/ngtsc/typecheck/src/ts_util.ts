@@ -8,6 +8,9 @@
 
 import ts from 'typescript';
 
+import {Import} from '../../translator';
+
+
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
@@ -159,4 +162,12 @@ export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixU
   }
 
   return ts.factory.createNumericLiteral(value);
+}
+
+export function getImportString(imp: Import): string {
+  if (imp.qualifier === null) {
+    return `import from '${imp.specifier}';`;
+  } else {
+    return `import * as ${imp.qualifier.text} from '${imp.specifier}';`;
+  }
 }
