@@ -8,6 +8,8 @@
 
 import ts from 'typescript';
 
+import {Import} from '../../translator';
+
 import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
 import {wrapForTypeChecker} from './diagnostics';
 
@@ -160,4 +162,12 @@ export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixU
   }
 
   return ts.factory.createNumericLiteral(value);
+}
+
+export function getImportString(imp: Import): string {
+  if (imp.qualifier === null) {
+    return `import from '${imp.specifier}';`;
+  } else {
+    return `import * as ${imp.qualifier.text} from '${imp.specifier}';`;
+  }
 }
