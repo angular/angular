@@ -8,6 +8,8 @@
 
 import ts from 'typescript';
 
+import {getContainingImportDeclaration} from '../../reflection/src/typescript';
+
 
 /**
  * A tool to track extra imports to be added to the generated files. This is mainly to be used in
@@ -26,6 +28,10 @@ import ts from 'typescript';
  * (to be added to all the files in the local compilation)
  */
 export class ExtraImportsTracker {
+  private readonly globalImportsSet = new Set<string>();
+
+  constructor(private readonly typeChecker: ts.TypeChecker) {}
+
   /**
    * Adds an extra import to be added to the generated file of a specific source file.
    */
@@ -39,14 +45,41 @@ export class ExtraImportsTracker {
    * otherwise the method is noop.
    */
   addGlobalImportFromIdentifier(node: ts.Node): void {
-    // TODO(pmvald): Implement this method.
+    let identifier: ts.Identifier|null = null;
+    if (ts.isIdentifier(node)) {
+      identifier = node;
+    } else if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
+      identifier = node.expression;
+    }
+
+    if (identifier === null) {
+      return;
+    }
+
+    const sym = this.typeChecker.getSymbolAtLocation(identifier);
+    if (!sym?.declarations?.length) {
+      return;
+    }
+
+
+    const importClause = sym.declarations[0];
+    const decl = getContainingImportDeclaration(importClause);
+
+    if (decl !== null) {
+      this.globalImportsSet.add(removeQutations(decl.moduleSpecifier.getText()));
+    }
   }
 
   /**
    * Returns the list of all module names that the given file should include as its extra imports.
    */
   getImportsForFile(sf: ts.SourceFile): string[] {
-    // TODO(pmvald): Implement this method.
-    return [];
+    return [
+      ...this.globalImportsSet,
+    ];
   }
+}
+
+function removeQutations(s: string) {
+  return s.substring(1, s.length - 1);
 }

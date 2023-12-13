@@ -46,6 +46,155 @@ runInEachFileSystem(() => {
       expect(diags).toEqual([]);
     });
 
+    describe('extra imports generation', () => {
+      beforeEach(() => {
+        const tsconfig: {[key: string]: any} = {
+          extends: '../tsconfig-base.json',
+          compilerOptions: {
+            baseUrl: '.',
+            rootDirs: ['/app'],
+          },
+          angularCompilerOptions: {
+            compilationMode: 'experimental-local',
+            generateExtraImportsInLocalMode: true,
+          },
+        };
+        env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+      });
+
+      it('should only include NgModule external import as global import', () => {
+        env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import {SomeExternalStuff2} from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [SomeExternalStuff, BModule]})
+        export class AModule {
+        }
+        `);
+        env.write('b.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class BModule {
+        }
+        `);
+        env.write('c.ts', `
+        // Some code
+        `);
+
+        env.driveMain();
+        const aContents = env.getContents('a.js');
+        const bContents = env.getContents('b.js');
+        const cContents = env.getContents('c.js');
+
+        // NgModule external import as global import
+        expect(aContents).toContain('import "/some_external_file"');
+        expect(bContents).toContain('import "/some_external_file"');
+        expect(cContents).toContain('import "/some_external_file"');
+
+        // External import which is not an NgModule import should not be global import
+        expect(aContents).not.toContain('import "/some_external_file2"');
+        expect(bContents).not.toContain('import "/some_external_file2"');
+        expect(cContents).not.toContain('import "/some_external_file2"');
+
+        // NgModule internal import should not be global import
+        expect(aContents).not.toContain('import "b"');
+        expect(bContents).not.toContain('import "b"');
+        expect(cContents).not.toContain('import "b"');
+      });
+
+      it('should include NgModule namespace external import as global import', () => {
+        env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [n.SomeExternalStuff]})
+        export class AModule {
+        }
+        `);
+        env.write('test.ts', `
+        // Some code
+        `);
+
+        env.driveMain();
+
+        expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+      });
+
+      it('should include nested NgModule external import as global import - case of named import',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+         });
+
+      it('should include nested NgModule external import as global import - case of namespace import',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[n.SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+         });
+
+      it('should include NgModule external imports as global imports - case of multiple nested imports including named and namespace imports',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import * as n from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[SomeExternalStuff], [n.SomeExternalStuff]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
+         });
+    });
+
     describe('ng module injector def', () => {
       it('should produce empty injector def imports when module has no imports/exports', () => {
         env.write('test.ts', `

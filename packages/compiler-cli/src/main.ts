@@ -29,6 +29,8 @@ export function main(
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
 
+  // console.warn(">>>> rootNames", rootNames);
+
   let oldProgram: api.Program|undefined;
   if (programReuse !== undefined) {
     oldProgram = programReuse.program;
