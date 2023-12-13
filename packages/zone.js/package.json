@@ -22,7 +22,6 @@
     "mock-require": "3.0.3"
   },
   "scripts": {
-    "closuretest": "./scripts/closure/closure_compiler.sh",
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js ./test/jest/jest.spec.js",
