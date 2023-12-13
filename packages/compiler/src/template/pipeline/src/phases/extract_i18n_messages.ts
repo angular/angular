@@ -55,13 +55,18 @@ const LIST_DELIMITER = '|';
  * used in the final output.
  */
 export function extractI18nMessages(job: CompilationJob): void {
-  // Save the i18n start and i18n context ops for later use.
-  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
+  // Create an i18n message for each context.
+  // TODO: Merge the context op with the message op since they're 1:1 anyways.
+  const i18nMessagesByContext = new Map<ir.XrefId, ir.I18nMessageOp>();
   const i18nBlocks = new Map<ir.XrefId, ir.I18nStartOp>();
+  const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nContext:
+          const i18nMessageOp = createI18nMessage(job, op);
+          unit.create.push(i18nMessageOp);
+          i18nMessagesByContext.set(op.xref, i18nMessageOp);
           i18nContexts.set(op.xref, op);
           break;
         case ir.OpKind.I18nStart:
@@ -71,55 +76,33 @@ export function extractI18nMessages(job: CompilationJob): void {
     }
   }
 
-  // TODO: Miles and I think that contexts have a 1-to-1 correspondence with extracted messages, so
-  // this phase can probably be simplified.
-
-  // Extract messages from contexts of i18n attributes.
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.I18nContext || op.contextKind !== ir.I18nContextKind.Attr) {
-        continue;
-      }
-      const i18nMessageOp = createI18nMessage(job, op);
-      unit.create.push(i18nMessageOp);
-    }
-  }
-
-  // Extract messages from root i18n blocks.
-  const i18nBlockMessages = new Map<ir.XrefId, ir.I18nMessageOp>();
-  for (const unit of job.units) {
-    for (const op of unit.create) {
-      if (op.kind === ir.OpKind.I18nStart && op.xref === op.root) {
-        if (!op.context) {
-          throw Error('I18n start op should have its context set.');
-        }
-        const i18nMessageOp = createI18nMessage(job, i18nContexts.get(op.context)!);
-        i18nBlockMessages.set(op.xref, i18nMessageOp);
-        unit.create.push(i18nMessageOp);
-      }
-    }
-  }
-
-  // Extract messages from ICUs with their own sub-context.
+  // Associate sub-messages for ICUs with their root message. At this point we can also remove the
+  // ICU start/end ops, as they are no longer needed.
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.IcuStart:
-          if (!op.context) {
-            throw Error('ICU op should have its context set.');
-          }
-          const i18nContext = i18nContexts.get(op.context)!;
-          if (i18nContext.contextKind === ir.I18nContextKind.Icu) {
-            if (i18nContext.i18nBlock === null) {
-              throw Error('ICU context should have its i18n block set.');
-            }
-            const subMessage = createI18nMessage(job, i18nContext, op.messagePlaceholder);
-            unit.create.push(subMessage);
-            const rootI18nId = i18nBlocks.get(i18nContext.i18nBlock)!.root;
-            const parentMessage = i18nBlockMessages.get(rootI18nId);
-            parentMessage?.subMessages.push(subMessage.xref);
-          }
           ir.OpList.remove<ir.CreateOp>(op);
+          // Skip any contexts not associated with an ICU.
+          const icuContext = i18nContexts.get(op.context!)!;
+          if (icuContext.contextKind !== ir.I18nContextKind.Icu) {
+            continue;
+          }
+          // Skip ICUs that share a context with their i18n message. These represent root-level
+          // ICUs, not sub-messages.
+          const i18nBlock = i18nBlocks.get(icuContext.i18nBlock!)!;
+          if (i18nBlock.context === icuContext.xref) {
+            continue;
+          }
+          // Find the root message and push this ICUs message as a sub-message.
+          const rootI18nBlock = i18nBlocks.get(i18nBlock.root)!;
+          const rootMessage = i18nMessagesByContext.get(rootI18nBlock.context!);
+          if (rootMessage === undefined) {
+            throw Error('AssertionError: ICU sub-message should belong to a root message.');
+          }
+          const subMessage = i18nMessagesByContext.get(icuContext.xref)!;
+          subMessage.messagePlaceholder = op.messagePlaceholder;
+          rootMessage.subMessages.push(subMessage.xref);
           break;
         case ir.OpKind.IcuEnd:
           ir.OpList.remove<ir.CreateOp>(op);
