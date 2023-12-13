@@ -13,7 +13,7 @@ import {stringify} from '../util/stringify';
 
 
 /**
- * An interface that a function passed into {@link forwardRef} has to implement.
+ * An interface that a function passed into `forwardRef` has to implement.
  *
  * @usageNotes
  * ### Example
