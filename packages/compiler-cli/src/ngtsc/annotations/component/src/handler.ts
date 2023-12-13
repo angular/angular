@@ -677,7 +677,8 @@ export class ComponentDecoratorHandler implements
 
     // Check if there are some import declarations that contain symbols used within
     // the `@Component.deferredImports` field, but those imports contain other symbols
-    // and thus the declaration can not be removed.
+    // and thus the declaration can not be removed. This diagnostics is shared between local and
+    // global compilation modes.
     const nonRemovableImports =
         this.deferredSymbolTracker.getNonRemovableDeferredImports(context, node);
     if (nonRemovableImports.length > 0) {
@@ -695,18 +696,35 @@ export class ComponentDecoratorHandler implements
       return {diagnostics};
     }
 
+    let data: ComponentResolutionData;
+
     if (this.compilationMode === CompilationMode.LOCAL) {
-      return {
-        data: {
-          declarationListEmitMode: (!analysis.meta.isStandalone || analysis.rawImports !== null) ?
-              DeclarationListEmitMode.RuntimeResolved :
-              DeclarationListEmitMode.Direct,
-          declarations: EMPTY_ARRAY,
-          deferBlocks: this.locateDeferBlocksWithoutScope(analysis.template),
-          deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerComponent,
-          deferrableDeclToImportDecl: new Map(),
-          deferrableTypes: new Map(),
-        },
+      // Initial value in local compilation mode.
+      data = {
+        declarations: EMPTY_ARRAY,
+        declarationListEmitMode: (!analysis.meta.isStandalone || analysis.rawImports !== null) ?
+            DeclarationListEmitMode.RuntimeResolved :
+            DeclarationListEmitMode.Direct,
+        deferBlocks: this.locateDeferBlocksWithoutScope(analysis.template),
+        deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerComponent,
+        deferrableDeclToImportDecl: new Map(),
+        deferrableTypes: new Map(),
+      };
+
+      if (this.localCompilationExtraImportsTracker === null) {
+        // In local compilation mode the resolve phase is only needed for generating extra imports.
+        // Otherwise we can skip it.
+        return {data};
+      }
+    } else {
+      // Initial value in global compilation mode.
+      data = {
+        declarations: EMPTY_ARRAY,
+        declarationListEmitMode: DeclarationListEmitMode.Direct,
+        deferBlocks: new Map(),
+        deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
+        deferrableDeclToImportDecl: new Map(),
+        deferrableTypes: new Map(),
       };
     }
 
@@ -717,15 +735,6 @@ export class ComponentDecoratorHandler implements
     if (analysis.isPoisoned && !this.usePoisonedData) {
       return {};
     }
-
-    const data: ComponentResolutionData = {
-      declarations: EMPTY_ARRAY,
-      declarationListEmitMode: DeclarationListEmitMode.Direct,
-      deferBlocks: new Map(),
-      deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
-      deferrableDeclToImportDecl: new Map(),
-      deferrableTypes: new Map(),
-    };
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
@@ -895,7 +904,10 @@ export class ComponentDecoratorHandler implements
                                             eagerlyUsed.has(decl.ref.node));
 
       // Process information related to defer blocks
-      this.resolveDeferBlocks(node, deferBlocks, declarations, data, analysis, eagerlyUsed, bound);
+      if (this.compilationMode !== CompilationMode.LOCAL) {
+        this.resolveDeferBlocks(
+            node, deferBlocks, declarations, data, analysis, eagerlyUsed, bound);
+      }
 
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
@@ -942,13 +954,12 @@ export class ComponentDecoratorHandler implements
         const declarationIsForwardDeclared = eagerDeclarations.some(
             decl => isExpressionForwardReference(decl.type, node.name, context));
 
-        const wrapDirectivesAndPipesInClosure =
-            declarationIsForwardDeclared || standaloneImportMayBeForwardDeclared;
+        if (this.compilationMode !== CompilationMode.LOCAL &&
+            (declarationIsForwardDeclared || standaloneImportMayBeForwardDeclared)) {
+          data.declarationListEmitMode = DeclarationListEmitMode.Closure;
+        }
 
         data.declarations = eagerDeclarations;
-        data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
-            DeclarationListEmitMode.Closure :
-            DeclarationListEmitMode.Direct;
       } else {
         if (this.cycleHandlingStrategy === CycleHandlingStrategy.UseRemoteScoping) {
           // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
@@ -991,54 +1002,57 @@ export class ComponentDecoratorHandler implements
         }
       }
     } else {
-      // If there is no scope, we can still use the binder to retrieve
-      // *some* information about the deferred blocks.
+      // If there is no scope, we can still use the binder to retrieve *some* information about the
+      // deferred blocks.
       data.deferBlocks = this.locateDeferBlocksWithoutScope(metadata.template);
     }
 
-    // Validate `@Component.imports` and `@Component.deferredImports` fields.
-    if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
-      const importDiagnostics = validateStandaloneImports(
-          analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader,
-          false /* isDeferredImport */);
-      diagnostics.push(...importDiagnostics);
-    }
-    if (analysis.resolvedDeferredImports !== null && analysis.rawDeferredImports !== null) {
-      const importDiagnostics = validateStandaloneImports(
-          analysis.resolvedDeferredImports, analysis.rawDeferredImports, this.metaReader,
-          this.scopeReader, true /* isDeferredImport */);
-      diagnostics.push(...importDiagnostics);
-    }
+    // Run diagnostics only in global mode.
+    if (this.compilationMode !== CompilationMode.LOCAL) {
+      // Validate `@Component.imports` and `@Component.deferredImports` fields.
+      if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
+        const importDiagnostics = validateStandaloneImports(
+            analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader,
+            false /* isDeferredImport */);
+        diagnostics.push(...importDiagnostics);
+      }
+      if (analysis.resolvedDeferredImports !== null && analysis.rawDeferredImports !== null) {
+        const importDiagnostics = validateStandaloneImports(
+            analysis.resolvedDeferredImports, analysis.rawDeferredImports, this.metaReader,
+            this.scopeReader, true /* isDeferredImport */);
+        diagnostics.push(...importDiagnostics);
+      }
 
-    if (analysis.providersRequiringFactory !== null &&
-        analysis.meta.providers instanceof WrappedNodeExpr) {
-      const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.meta.providers!.node,
-          this.injectableRegistry);
-      diagnostics.push(...providerDiagnostics);
-    }
+      if (analysis.providersRequiringFactory !== null &&
+          analysis.meta.providers instanceof WrappedNodeExpr) {
+        const providerDiagnostics = getProviderDiagnostics(
+            analysis.providersRequiringFactory, analysis.meta.providers!.node,
+            this.injectableRegistry);
+        diagnostics.push(...providerDiagnostics);
+      }
 
-    if (analysis.viewProvidersRequiringFactory !== null &&
-        analysis.meta.viewProviders instanceof WrappedNodeExpr) {
-      const viewProviderDiagnostics = getProviderDiagnostics(
-          analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
-          this.injectableRegistry);
-      diagnostics.push(...viewProviderDiagnostics);
-    }
+      if (analysis.viewProvidersRequiringFactory !== null &&
+          analysis.meta.viewProviders instanceof WrappedNodeExpr) {
+        const viewProviderDiagnostics = getProviderDiagnostics(
+            analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
+            this.injectableRegistry);
+        diagnostics.push(...viewProviderDiagnostics);
+      }
 
-    const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
-        this.strictCtorDeps, 'Component');
-    if (directiveDiagnostics !== null) {
-      diagnostics.push(...directiveDiagnostics);
-    }
+      const directiveDiagnostics = getDirectiveDiagnostics(
+          node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
+          this.strictCtorDeps, 'Component');
+      if (directiveDiagnostics !== null) {
+        diagnostics.push(...directiveDiagnostics);
+      }
 
-    const hostDirectivesDiagnostics = analysis.hostDirectives && analysis.rawHostDirectives ?
-        validateHostDirectives(
-            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
-        null;
-    if (hostDirectivesDiagnostics !== null) {
-      diagnostics.push(...hostDirectivesDiagnostics);
+      const hostDirectivesDiagnostics = analysis.hostDirectives && analysis.rawHostDirectives ?
+          validateHostDirectives(
+              analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
+          null;
+      if (hostDirectivesDiagnostics !== null) {
+        diagnostics.push(...hostDirectivesDiagnostics);
+      }
     }
 
     if (diagnostics.length > 0) {
