@@ -27,6 +27,7 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
+import {getImportString} from './ts_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -381,9 +382,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
-                      .join('\n');
+    let imports = importManager.getAllImports(sf.fileName).map(getImportString).join('\n');
     code = imports + '\n' + code;
 
     return code;
