@@ -57,12 +57,6 @@ describe('Zone.js npm_package', () => {
       });
     });
 
-    describe('closure', () => {
-      it('should contain externs', () => {
-        expect(shx.cat('zone_externs.js')).toContain('Externs for zone.js');
-      });
-    });
-
     describe('rxjs patch', () => {
       it('should not contain rxjs source', () => {
         checkInSubFolder('./bundles', () => {
