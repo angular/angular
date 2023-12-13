@@ -8,6 +8,7 @@
 export interface BazelAndG3Options {
     annotateForClosureCompiler?: boolean;
     generateDeepReexports?: boolean;
+    generateExtraImportsInLocalMode?: boolean;
     onlyExplicitDeferDependencyImports?: boolean;
     onlyPublishPublicTypingsForNgModules?: boolean;
 }

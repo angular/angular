@@ -15,7 +15,7 @@ import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, Fat
 import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalCompilationExtraImportsTracker, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
@@ -57,6 +57,11 @@ interface LazyCompilationState {
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker|null;
+
+  /**
+   * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
+   */
+  localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null;
 }
 
 
@@ -636,7 +641,8 @@ export class NgCompiler {
     const before = [
       ivyTransformFactory(
           compilation.traitCompiler, compilation.reflector, importRewriter, defaultImportTracker,
-          this.delegatingPerfRecorder, compilation.isCore, this.closureCompilerEnabled),
+          compilation.localCompilationExtraImportsTracker, this.delegatingPerfRecorder,
+          compilation.isCore, this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
@@ -1089,6 +1095,11 @@ export class NgCompiler {
         this.inputProgram.getTypeChecker(),
         this.options.onlyExplicitDeferDependencyImports ?? false);
 
+    let localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null = null;
+    if (compilationMode === CompilationMode.LOCAL && this.options.generateExtraImportsInLocalMode) {
+      localCompilationExtraImportsTracker = new LocalCompilationExtraImportsTracker();
+    }
+
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
     // So in partial compilation mode, when building a library, a cycle will cause an error.
@@ -1201,7 +1212,8 @@ export class NgCompiler {
       refEmitter,
       templateTypeChecker,
       resourceRegistry,
-      extendedTemplateChecker
+      extendedTemplateChecker,
+      localCompilationExtraImportsTracker,
     };
   }
 }
