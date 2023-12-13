@@ -54,6 +54,10 @@ export class ImportManager implements ImportGenerator<ts.Identifier> {
     return {moduleImport, symbol};
   }
 
+  generateSideEffectImport(moduleName: string) {
+    // TODO(pmvald): Implement this method.
+  }
+
   getAllImports(contextPath: string): Import[] {
     const imports: Import[] = [];
     for (const [originalSpecifier, qualifier] of this.specifierToIdentifier) {
