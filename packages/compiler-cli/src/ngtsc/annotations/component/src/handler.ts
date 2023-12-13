@@ -651,6 +651,10 @@ export class ComponentDecoratorHandler implements
   resolve(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
       symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
     }

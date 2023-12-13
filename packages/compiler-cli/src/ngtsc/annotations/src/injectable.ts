@@ -96,6 +96,10 @@ export class InjectableDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>, symbol: null):
       ResolveResult<unknown> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (requiresValidCtor(analysis.meta)) {
       const diagnostic = checkInheritanceOfInjectable(
           node, this.injectableRegistry, this.reflector, this.evaluator, this.strictCtorDeps,

@@ -567,6 +567,10 @@ export class NgModuleDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
       ResolveResult<NgModuleResolution> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics: ts.Diagnostic[] = [];
 

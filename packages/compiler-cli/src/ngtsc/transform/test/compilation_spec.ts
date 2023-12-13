@@ -30,7 +30,8 @@ runInEachFileSystem(() => {
 
     function setup(
         programContents: string, handlers: DecoratorHandler<{}|null, unknown, null, unknown>[],
-        compilationMode: CompilationMode, makeDtsSourceFile = false) {
+        compilationMode: CompilationMode, makeDtsSourceFile = false,
+        generateExtraImportsInLocalMode = false) {
       const filename = makeDtsSourceFile ? 'test.d.ts' : 'test.ts';
       const {program} = makeProgram([{
         name: _('/' + filename),
@@ -40,7 +41,8 @@ runInEachFileSystem(() => {
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const compiler = new TraitCompiler(
           handlers, reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
-          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier,
+          generateExtraImportsInLocalMode);
       const sourceFile = program.getSourceFile(filename)!;
 
       return {compiler, sourceFile, program, filename: _('/' + filename)};
@@ -340,21 +342,37 @@ runInEachFileSystem(() => {
         }
       }
 
-      it('should not run resolve phase', () => {
+      it('should not run resolve phase if generateExtraImportsInLocalMode option is not set',
+         () => {
+           const contents = `
+          export class Test {}
+        `;
+           const handler = new TestDecoratorHandler();
+           spyOn(handler, 'resolve');
+           const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
+
+           compiler.analyzeSync(sourceFile);
+           compiler.resolve();
+
+           expect(handler.resolve).not.toHaveBeenCalled();
+         });
+
+      it('should run resolve phase if generateExtraImportsInLocalMode option is set', () => {
         const contents = `
           export class Test {}
         `;
         const handler = new TestDecoratorHandler();
-        spyOn(handler, 'resolve');
-        const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
+        spyOn(handler, 'resolve').and.returnValue({});
+        const {compiler, sourceFile} =
+            setup(contents, [handler], CompilationMode.LOCAL, false, true);
 
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
 
-        expect(handler.resolve).not.toHaveBeenCalled();
+        expect(handler.resolve).toHaveBeenCalled();
       });
 
-      it('should not register', () => {
+      it('should not register if generateExtraImportsInLocalMode option is not set', () => {
         const contents = `
           export class Test {}
         `;
@@ -366,6 +384,21 @@ runInEachFileSystem(() => {
         compiler.resolve();
 
         expect(handler.register).not.toHaveBeenCalled();
+      });
+
+      it('should register if generateExtraImportsInLocalMode option is set', () => {
+        const contents = `
+          export class Test {}
+        `;
+        const handler = new TestDecoratorHandler();
+        spyOn(handler, 'register');
+        const {compiler, sourceFile} =
+            setup(contents, [handler], CompilationMode.LOCAL, false, true);
+
+        compiler.analyzeSync(sourceFile);
+        compiler.resolve();
+
+        expect(handler.register).toHaveBeenCalled();
       });
 
       it('should not call extendedTemplateCheck', () => {

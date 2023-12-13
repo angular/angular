@@ -95,6 +95,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private handlersByName =
       new Map<string, DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>>();
 
+  // In local compilation mode the resolve phase is needed only when we want to generate extra
+  // imports (see the comment for {@link shouldRunResolvePhase}). To run the resolve phase, we will
+  // need to run the register phase beforehand.
+  private readonly shouldRunRegisterPhase =
+      this.compilationMode !== CompilationMode.LOCAL || this.generateExtraImportsInLocalMode;
+
+  // Resolve phase requires global info and in local compilation mode only local info (limited to a
+  // single file) is available. So this phase is applicable in local mode. Exception is when we want
+  // to generate extra imports. In this case we run the compiler not in single file mode but in
+  // single target mode, and so we do have global info for these files. The resolve phase will be
+  // needed to generate extra imports.
+  private readonly shouldRunResolvePhase =
+      this.compilationMode !== CompilationMode.LOCAL || this.generateExtraImportsInLocalMode;
+
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[],
       private reflector: ReflectionHost,
@@ -105,6 +119,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       private dtsTransforms: DtsTransformRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
+      private readonly generateExtraImportsInLocalMode: boolean,
   ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
@@ -411,7 +426,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
-    if (this.compilationMode !== CompilationMode.LOCAL && result.analysis !== undefined &&
+    if (this.shouldRunRegisterPhase && result.analysis !== undefined &&
         trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
@@ -419,9 +434,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   resolve(): void {
-    // No resolving needed for local compilation (only analysis and compile will be done in this
-    // mode)
-    if (this.compilationMode === CompilationMode.LOCAL) {
+    if (!this.shouldRunResolvePhase) {
       return;
     }
 
@@ -597,12 +610,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     for (const trait of record.traits) {
       let compileRes: CompileResult|CompileResult[];
       if (this.compilationMode === CompilationMode.LOCAL) {
-        if (trait.state !== TraitState.Analyzed || trait.analysis === null ||
-            containsErrors(trait.analysisDiagnostics)) {
-          // Cannot compile a trait in local mode that is not analyzed, or had any errors in its
-          // declaration.
-          continue;
+        if (this.shouldRunResolvePhase) {
+          if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
+              containsErrors(trait.resolveDiagnostics)) {
+            continue;
+          }
+        } else {
+          if (trait.state !== TraitState.Analyzed || trait.analysis === null ||
+              containsErrors(trait.analysisDiagnostics)) {
+            // Cannot compile a trait in local mode that is not analyzed, or had any errors in its
+            // declaration.
+            continue;
+          }
         }
+
         // `trait.analysis` is non-null asserted here because TypeScript does not recognize that
         // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
         // `Readonly` works.
@@ -614,6 +635,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           // declaration.
           continue;
         }
+
         // `trait.resolution` is non-null asserted below because TypeScript does not recognize that
         // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
         // `Readonly` works.
@@ -657,8 +679,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     const decorators: ts.Decorator[] = [];
 
     for (const trait of record.traits) {
-      // In global compilation mode skip the non-resolved traits.
-      if (this.compilationMode !== CompilationMode.LOCAL && trait.state !== TraitState.Resolved) {
+      if (this.shouldRunResolvePhase && trait.state !== TraitState.Resolved) {
         continue;
       }
 

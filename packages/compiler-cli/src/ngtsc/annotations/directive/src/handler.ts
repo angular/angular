@@ -186,6 +186,10 @@ export class DirectiveDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
       ResolveResult<unknown> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
       symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
     }
