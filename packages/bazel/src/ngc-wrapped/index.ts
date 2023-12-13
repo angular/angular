@@ -90,6 +90,7 @@ export async function runOneBuild(
     'extendedDiagnostics',
     'forbidOrphanComponents',
     'onlyExplicitDeferDependencyImports',
+    'generateExtraImportsInLocalMode',
   ]);
 
   const userOverrides = Object.entries(userOptions)
