@@ -832,6 +832,20 @@ export interface Input {
    * Function with which to transform the input value before assigning it to the directive instance.
    */
   transform?: (value: any) => any;
+
+  /**
+   * @internal
+   *
+   * Whether the input is a signal input.
+   *
+   * This option exists for JIT compatibility. Users are not expected to use this.
+   * Angular needs a way to capture inputs from classes so that the internal data
+   * structures can be set up. This needs to happen before the component is instantiated.
+   * Due to this, for JIT compilation, signal inputs need an additional decorator
+   * declaring the input. Angular provides a TS transformer to automatically handle this
+   * for JIT usage (e.g. in tests).
+   */
+  isSignal?: boolean;
 }
 
 /**
