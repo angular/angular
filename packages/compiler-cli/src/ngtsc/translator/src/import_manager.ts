@@ -25,13 +25,14 @@ export class ImportManager implements ImportGenerator<ts.Identifier> {
   private specifierToIdentifier = new Map<string, ts.Identifier>();
   private nextIndex = 0;
 
-  constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
-  }
+  constructor(
+      protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i',
+      private factory = ts.factory) {}
 
   generateNamespaceImport(moduleName: string): ts.Identifier {
     if (!this.specifierToIdentifier.has(moduleName)) {
       this.specifierToIdentifier.set(
-          moduleName, ts.factory.createIdentifier(`${this.prefix}${this.nextIndex++}`));
+          moduleName, this.factory.createIdentifier(`${this.prefix}${this.nextIndex++}`));
     }
     return this.specifierToIdentifier.get(moduleName)!;
   }
