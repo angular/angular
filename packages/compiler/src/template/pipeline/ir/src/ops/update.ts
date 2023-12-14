@@ -604,7 +604,7 @@ export function createRepeaterOp(
   };
 }
 
-export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
+export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, ConsumesVarsTrait {
   kind: OpKind.DeferWhen;
 
   /**
@@ -636,6 +636,7 @@ export function createDeferWhenOp(
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
   };
 }
 

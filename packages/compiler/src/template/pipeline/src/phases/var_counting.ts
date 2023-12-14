@@ -128,6 +128,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
       return op.interpolation.expressions.length;
     case ir.OpKind.I18nExpression:
     case ir.OpKind.Conditional:
+    case ir.OpKind.DeferWhen:
       return 1;
     default:
       throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
