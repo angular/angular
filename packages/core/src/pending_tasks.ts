@@ -25,10 +25,15 @@ import {OnDestroy} from './interface/lifecycle_hooks';
 export class PendingTasks implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
+  private get _hasPendingTasks() {
+    return this.hasPendingTasks.value;
+  }
   hasPendingTasks = new BehaviorSubject<boolean>(false);
 
   add(): number {
-    this.hasPendingTasks.next(true);
+    if (!this._hasPendingTasks) {
+      this.hasPendingTasks.next(true);
+    }
     const taskId = this.taskId++;
     this.pendingTasks.add(taskId);
     return taskId;
@@ -36,13 +41,15 @@ export class PendingTasks implements OnDestroy {
 
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
-    if (this.pendingTasks.size === 0) {
+    if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
       this.hasPendingTasks.next(false);
     }
   }
 
   ngOnDestroy(): void {
     this.pendingTasks.clear();
-    this.hasPendingTasks.next(false);
+    if (this._hasPendingTasks) {
+      this.hasPendingTasks.next(false);
+    }
   }
 }
