@@ -1,3 +1,42 @@
+<a name="17.1.0-next.4"></a>
+# 17.1.0-next.4 (2023-12-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b98d8f79ed](https://github.com/angular/angular/commit/b98d8f79ed4979fb91661dbdfb6266a917b41474) | fix | handle ambient types in input transform function ([#51474](https://github.com/angular/angular/pull/51474)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e5456912a](https://github.com/angular/angular/commit/9e5456912a699315f1f5e8458d35df946c01dc12) | fix | generate less type checking code in for loops ([#53515](https://github.com/angular/angular/pull/53515)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2565121851](https://github.com/angular/angular/commit/25651218512becb3a491b1c94d643a5066a6d3cb) | fix | Avoid refreshing a host view twice when using transplanted views ([#53021](https://github.com/angular/angular/pull/53021)) |
+| [629343f247](https://github.com/angular/angular/commit/629343f24741760e76d98ea1005debaf4775bfc7) | fix | Multiple subscribers to ApplicationRef.isStable should all see values ([#53541](https://github.com/angular/angular/pull/53541)) |
+| [42f4f70e97](https://github.com/angular/angular/commit/42f4f70e97b47f7ffcf15e8af2c1a3fa3f393903) | fix | remove signal equality check short-circuit ([#53446](https://github.com/angular/angular/pull/53446)) |
+| [f35adcb9b2](https://github.com/angular/angular/commit/f35adcb9b255741515d54bbce694f4cd34aac249) | fix | update feature usage marker ([#53542](https://github.com/angular/angular/pull/53542)) |
+| [1fc5442947](https://github.com/angular/angular/commit/1fc5442947b07be7c11fe7c79b9e69f9458c8108) | perf | avoid changes Observable creation on QueryList ([#53498](https://github.com/angular/angular/pull/53498)) |
+| [e3a6bf9b6c](https://github.com/angular/angular/commit/e3a6bf9b6c3bef03df9bfc8f05b817bc875cbad6) | perf | optimize memory allocation when reconcilling lists ([#52245](https://github.com/angular/angular/pull/52245)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a02767956a](https://github.com/angular/angular/commit/a02767956a00e0b44b690411f01584f6660c83ea) | fix | CF Migration - ensure bound ngIfElse cases ignore line breaks ([#53435](https://github.com/angular/angular/pull/53435)) |
+| [6aa1bb78e8](https://github.com/angular/angular/commit/6aa1bb78e8b9ca866b3c2d84f4005a0e67f2b6bc) | fix | cf migration - undo changes when html fails to parse post migration ([#53530](https://github.com/angular/angular/pull/53530)) |
+| [cc02852ac4](https://github.com/angular/angular/commit/cc02852ac44bfea13e8b9d5768694a094fc2c4b5) | fix | CF migration only remove newlines of changed template content ([#53508](https://github.com/angular/angular/pull/53508)) |
+| [ce1076785c](https://github.com/angular/angular/commit/ce1076785c98ecc9660637cafa4a62a63be8d315) | fix | cf migration validate structure of ngswitch before migrating ([#53530](https://github.com/angular/angular/pull/53530)) |
+| [1f5c8bf116](https://github.com/angular/angular/commit/1f5c8bf116783c25234ab7fa301a0be842e58007) | fix | ensure we do not overwrite prior template replacements in migration ([#53393](https://github.com/angular/angular/pull/53393)) |
+| [79f791543b](https://github.com/angular/angular/commit/79f791543b607eea1bb6a28b9c744760ba4fd028) | fix | fix cf migration import removal when errors occur ([#53502](https://github.com/angular/angular/pull/53502)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fdb9cb7a5b](https://github.com/angular/angular/commit/fdb9cb7a5be4695abaa60efc89ecd50ddb9e9e6e) | fix | Get correct base path when using "." as base href when serving from the file:// protocol. ([#53547](https://github.com/angular/angular/pull/53547)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [48c5041687](https://github.com/angular/angular/commit/48c50416872313f23d2759232c990cf8d2de6996) | fix | provide more actionable error message when route is not matched in production mode ([#53523](https://github.com/angular/angular/pull/53523)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.7"></a>
 # 17.0.7 (2023-12-13)
 ### compiler
