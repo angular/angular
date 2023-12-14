@@ -42,7 +42,8 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
               'AssertionError: slot must be assigned bfore extracting defer deps functions');
         }
         op.resolverFn = job.pool.getSharedFunctionReference(
-            depsFnExpr, `${job.componentName}_Defer_${op.handle.slot}_DepsFn`);
+            depsFnExpr, `${job.componentName}_Defer_${op.handle.slot}_DepsFn`,
+            /* Don't use unique names for TDB compatibility */ false);
       }
     }
   }
