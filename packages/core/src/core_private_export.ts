@@ -13,6 +13,7 @@ export {internalCreateApplication as ɵinternalCreateApplication} from './applic
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {getEnsureDirtyViewsAreAlwaysReachable as ɵgetEnsureDirtyViewsAreAlwaysReachable, setEnsureDirtyViewsAreAlwaysReachable as ɵsetEnsureDirtyViewsAreAlwaysReachable} from './change_detection/flags';
 export {ChangeDetectionScheduler as ɵChangeDetectionScheduler} from './change_detection/scheduling/zoneless_scheduling';
+export {provideZonelessChangeDetection as ɵprovideZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {Console as ɵConsole} from './console';
 export {DeferBlockDetails as ɵDeferBlockDetails, getDeferBlocks as ɵgetDeferBlocks} from './defer/discovery';
 export {renderDeferBlockState as ɵrenderDeferBlockState, triggerResourceLoading as ɵtriggerResourceLoading} from './defer/instructions';
