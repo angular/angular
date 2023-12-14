@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ɵinput} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ɵinput} from '@angular/core';
 
 @Component({
   selector: 'greet',
@@ -12,4 +12,6 @@ export class GreetComponent {
   lastName = ɵinput(undefined, {
     transform: (v?: string) => v === undefined ? 'transformed-fallback' : `ng-${v}`,
   });
+
+  @Input() decoratorInput = 0;
 }
