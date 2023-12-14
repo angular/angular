@@ -117,9 +117,6 @@
     "name": "DomRendererFactory2"
   },
   {
-    "name": "EMPTY"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -468,7 +465,7 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
+    "name": "ZoneStablePendingTask"
   },
   {
     "name": "_DOM"
@@ -609,9 +606,6 @@
     "name": "collectNativeNodesInLContainer"
   },
   {
-    "name": "combineLatest"
-  },
-  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -673,9 +667,6 @@
   },
   {
     "name": "deepForEachProvider"
-  },
-  {
-    "name": "defaultCompare"
   },
   {
     "name": "defaultErrorFactory"
@@ -748,9 +739,6 @@
   },
   {
     "name": "freeConsumers"
-  },
-  {
-    "name": "from"
   },
   {
     "name": "fromAsyncIterable"
@@ -880,9 +868,6 @@
   },
   {
     "name": "getTNodeFromLView"
-  },
-  {
-    "name": "handleReset"
   },
   {
     "name": "handleStoppedNotification"
@@ -1017,9 +1002,6 @@
     "name": "isRootView"
   },
   {
-    "name": "isStableFactory"
-  },
-  {
     "name": "isSubscription"
   },
   {
@@ -1033,9 +1015,6 @@
   },
   {
     "name": "iterator"
-  },
-  {
-    "name": "last"
   },
   {
     "name": "lastNodeWasCreated"
@@ -1068,9 +1047,6 @@
     "name": "makeRecord"
   },
   {
-    "name": "map"
-  },
-  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1083,22 +1059,13 @@
     "name": "markedFeatures"
   },
   {
-    "name": "maybeSchedule"
-  },
-  {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "merge"
   },
   {
     "name": "mergeHostAttribute"
   },
   {
     "name": "mergeHostAttrs"
-  },
-  {
-    "name": "mergeMap"
   },
   {
     "name": "nativeAppendChild"
@@ -1156,9 +1123,6 @@
   },
   {
     "name": "performanceMarkFeature"
-  },
-  {
-    "name": "popScheduler"
   },
   {
     "name": "populateDehydratedViewsInLContainerImpl"
@@ -1327,15 +1291,6 @@
   },
   {
     "name": "writeToDirectiveInput"
-  },
-  {
-    "name": "{getPrototypeOf:getPrototypeOf,prototype:objectProto,keys:getKeys}"
-  },
-  {
-    "name": "{isArray:isArray2}"
-  },
-  {
-    "name": "{isArray:isArray}"
   },
   {
     "name": "ɵɵStandaloneFeature"

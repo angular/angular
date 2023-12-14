@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {merge, Observable, Observer, Subscription} from 'rxjs';
-import {share} from 'rxjs/operators';
 
-import {inject, InjectionToken} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
@@ -526,59 +523,6 @@ export class NoopNgZone implements NgZone {
   }
 }
 
-/**
- * Token used to drive ApplicationRef.isStable
- */
-export const ZONE_IS_STABLE_OBSERVABLE =
-    new InjectionToken<Observable<boolean>>(ngDevMode ? 'zone isStable Observable' : '');
-
-export function isStableFactory() {
-  const zone = inject(NgZone);
-  let _stable = true;
-  const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
-    _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
-    zone.runOutsideAngular(() => {
-      observer.next(_stable);
-      observer.complete();
-    });
-  });
-
-  const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
-    // Create the subscription to onStable outside the Angular Zone so that
-    // the callback is run outside the Angular Zone.
-    let stableSub: Subscription;
-    zone.runOutsideAngular(() => {
-      stableSub = zone.onStable.subscribe(() => {
-        NgZone.assertNotInAngularZone();
-
-        // Check whether there are no pending macro/micro tasks in the next tick
-        // to allow for NgZone to update the state.
-        queueMicrotask(() => {
-          if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
-            _stable = true;
-            observer.next(true);
-          }
-        });
-      });
-    });
-
-    const unstableSub: Subscription = zone.onUnstable.subscribe(() => {
-      NgZone.assertInAngularZone();
-      if (_stable) {
-        _stable = false;
-        zone.runOutsideAngular(() => {
-          observer.next(false);
-        });
-      }
-    });
-
-    return () => {
-      stableSub.unsubscribe();
-      unstableSub.unsubscribe();
-    };
-  });
-  return merge(isCurrentlyStable, isStable.pipe(share()));
-}
 
 function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
   if (!Array.isArray(applyArgs)) {
