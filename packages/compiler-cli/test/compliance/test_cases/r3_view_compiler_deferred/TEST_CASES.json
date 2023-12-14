@@ -225,6 +225,24 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a deferred block with implicit trigger references",
+      "inputFiles": [
+        "defer_deps.ts",
+        "defer_deps_ext.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_deps_template.js",
+              "generated": "defer_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
