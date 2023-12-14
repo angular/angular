@@ -181,7 +181,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   const startOp = ir.createElementStartOp(
       elementName, id, namespaceForKey(namespaceKey),
       element.i18n instanceof i18n.TagPlaceholder ? element.i18n : undefined,
-      element.startSourceSpan);
+      element.startSourceSpan, element.sourceSpan);
   unit.create.push(startOp);
 
   ingestElementBindings(unit, startOp, element);
@@ -236,7 +236,7 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
       isPlainTemplate(tmpl) ? ir.TemplateKind.NgTemplate : ir.TemplateKind.Structural;
   const templateOp = ir.createTemplateOp(
       childView.xref, templateKind, tagNameWithoutNamespace, functionNameSuffix, namespace,
-      i18nPlaceholder, tmpl.startSourceSpan);
+      i18nPlaceholder, tmpl.startSourceSpan, tmpl.sourceSpan);
   unit.create.push(templateOp);
 
   ingestTemplateBindings(unit, templateOp, tmpl, templateKind);
@@ -359,7 +359,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
 
     const templateOp = ir.createTemplateOp(
         cView.xref, ir.TemplateKind.Block, tagName, 'Conditional', ir.Namespace.HTML,
-        ifCaseI18nMeta, ifCase.sourceSpan);
+        ifCaseI18nMeta, ifCase.startSourceSpan, ifCase.sourceSpan);
     unit.create.push(templateOp);
 
     if (firstXref === null) {
@@ -397,7 +397,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     }
     const templateOp = ir.createTemplateOp(
         cView.xref, ir.TemplateKind.Block, null, 'Case', ir.Namespace.HTML, switchCaseI18nMeta,
-        switchCase.sourceSpan);
+        switchCase.startSourceSpan, switchCase.sourceSpan);
     unit.create.push(templateOp);
     if (firstXref === null) {
       firstXref = cView.xref;
@@ -430,7 +430,7 @@ function ingestDeferView(
   ingestNodes(secondaryView, children);
   const templateOp = ir.createTemplateOp(
       secondaryView.xref, ir.TemplateKind.Block, null, `Defer${suffix}`, ir.Namespace.HTML,
-      i18nMeta, sourceSpan!);
+      i18nMeta, sourceSpan!, sourceSpan!);
   unit.create.push(templateOp);
   return templateOp;
 }
@@ -627,7 +627,7 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, forBlock);
   const repeaterCreate = ir.createRepeaterCreateOp(
       repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, i18nPlaceholder,
-      emptyI18nPlaceholder, forBlock.sourceSpan);
+      emptyI18nPlaceholder, forBlock.startSourceSpan, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(
