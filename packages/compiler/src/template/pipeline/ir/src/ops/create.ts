@@ -101,7 +101,15 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    */
   nonBindable: boolean;
 
-  sourceSpan: ParseSourceSpan;
+  /**
+   * The span of the element's start tag.
+   */
+  startSourceSpan: ParseSourceSpan;
+
+  /**
+   * The whole source span of the element, including children.
+   */
+  wholeSourceSpan: ParseSourceSpan;
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
@@ -135,7 +143,7 @@ export interface ElementStartOp extends ElementOpBase {
  */
 export function createElementStartOp(
     tag: string, xref: XrefId, namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|undefined,
-    sourceSpan: ParseSourceSpan): ElementStartOp {
+    startSourceSpan: ParseSourceSpan, wholeSourceSpan: ParseSourceSpan): ElementStartOp {
   return {
     kind: OpKind.ElementStart,
     xref,
@@ -146,7 +154,8 @@ export function createElementStartOp(
     nonBindable: false,
     namespace,
     i18nPlaceholder,
-    sourceSpan,
+    startSourceSpan,
+    wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -201,7 +210,7 @@ export interface TemplateOp extends ElementOpBase {
 export function createTemplateOp(
     xref: XrefId, templateKind: TemplateKind, tag: string|null, functionNameSuffix: string,
     namespace: Namespace, i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder|undefined,
-    sourceSpan: ParseSourceSpan): TemplateOp {
+    startSourceSpan: ParseSourceSpan, wholeSourceSpan: ParseSourceSpan): TemplateOp {
   return {
     kind: OpKind.Template,
     xref,
@@ -216,7 +225,8 @@ export function createTemplateOp(
     nonBindable: false,
     namespace,
     i18nPlaceholder,
-    sourceSpan,
+    startSourceSpan,
+    wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -280,8 +290,6 @@ export interface RepeaterCreateOp extends ElementOpBase {
    * The i18n placeholder for the empty template.
    */
   emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined;
-
-  sourceSpan: ParseSourceSpan;
 }
 
 // TODO: add source spans?
@@ -298,8 +306,8 @@ export interface RepeaterVarNames {
 export function createRepeaterCreateOp(
     primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
     varNames: RepeaterVarNames, i18nPlaceholder: i18n.BlockPlaceholder|undefined,
-    emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined,
-    sourceSpan: ParseSourceSpan): RepeaterCreateOp {
+    emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined, startSourceSpan: ParseSourceSpan,
+    wholeSourceSpan: ParseSourceSpan): RepeaterCreateOp {
   return {
     kind: OpKind.RepeaterCreate,
     attributes: null,
@@ -319,7 +327,8 @@ export function createRepeaterCreateOp(
     usesComponentInstance: false,
     i18nPlaceholder,
     emptyI18nPlaceholder,
-    sourceSpan,
+    startSourceSpan,
+    wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
     numSlotsUsed: emptyView === null ? 2 : 3,
