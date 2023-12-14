@@ -41,6 +41,7 @@ describe('DOMElementSchema', () => {
   it('should detect properties on regular elements', () => {
     expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'inert', [])).toBeTruthy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
