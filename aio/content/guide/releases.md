@@ -112,7 +112,7 @@ Approximate dates are offered as general guidance and are subject to change.
 
 | Version | Date               |
 |:--------|:-------------------|
-| v17.1   | Week of 2024-01-08 |
+| v17.1   | Week of 2024-01-15 |
 | v17.2   | Week of 2024-02-12 |
 | v17.3   | Week of 2024-03-11 |
 | v18.0   | Week of 2024-05-20 |
