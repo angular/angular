@@ -106,10 +106,10 @@ function extractAttributeOp(
     return;
   }
 
-  let extractable = op.expression.isConstant();
+  let extractable = op.isTextAttribute || op.expression.isConstant();
   if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
     // TemplateDefinitionBuilder only extracted attributes that were string literals.
-    extractable = ir.isStringLiteral(op.expression);
+    extractable = op.isTextAttribute || ir.isStringLiteral(op.expression);
     if (op.name === 'style' || op.name === 'class') {
       // For style and class attributes, TemplateDefinitionBuilder only extracted them if they were
       // text attributes. For example, `[attr.class]="'my-class'"` was not extracted despite being a
