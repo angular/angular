@@ -20,11 +20,16 @@ function coreDtsWithSignals() {
   return {
     fileName: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
     source: `
-    export class Signal<T> {};
+    export declare const SIGNAL: unique symbol;
+    export declare type Signal<T> = (() => T) & {
+        [SIGNAL]: unknown;
+    };
     export declare function signal<T>(initialValue: T): WritableSignal<T>;
     export declare function computed<T>(computation: () => T): Signal<T>;
 
-    export interface WritableSignal<T> extends Signal<T> {}
+    export interface WritableSignal<T> extends Signal<T> {
+      asReadonly(): Signal<T>;
+    }
   `,
     templates: {},
   };
@@ -95,6 +100,35 @@ runInEachFileSystem(() => {
     expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
     expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal1`);
     expect(getSourceCodeForDiagnostic(diags[1])).toBe(`mySignal2`);
+  });
+
+  it('should produce a warning when a readonly signal isn\'t invoked', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      coreDtsWithSignals(),
+      {
+        fileName,
+        templates: {
+          'TestCmp': `<div>{{ count }}</div>`,
+        },
+        source: `
+          import {signal} from '@angular/core';
+
+          export class TestCmp {
+            count = signal(0).asReadonly();
+          }`,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker, program.getTypeChecker(), [interpolatedSignalFactory], {} /* options */
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe('count');
   });
 
   it('should produce a warning when a computed signal isn\'t invoked', () => {
