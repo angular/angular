@@ -335,8 +335,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
             required: ann.required || false,
-            // TODO(signals): Support JIT signal inputs via decorator transform.
-            isSignal: false,
+            // For JIT, decorators are used to declare signal inputs. That is because of
+            // a technical limitation where it's not possible to statically reflect class
+            // members of a directive/component at runtime before instantiating the class.
+            isSignal: !!ann.isSignal,
             transformFunction: ann.transform != null ? new WrappedNodeExpr(ann.transform) : null,
           };
         } else if (isOutput(ann)) {
