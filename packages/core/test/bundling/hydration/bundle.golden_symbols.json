@@ -24,9 +24,6 @@
     "name": "ApplicationRef"
   },
   {
-    "name": "ArgumentOutOfRangeError"
-  },
-  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {
@@ -52,6 +49,9 @@
   },
   {
     "name": "CIRCULAR"
+  },
+  {
+    "name": "COMPLETE_NOTIFICATION"
   },
   {
     "name": "COMPONENT_REGEX"
@@ -90,10 +90,7 @@
     "name": "ComponentRef2"
   },
   {
-    "name": "ConnectableObservable"
-  },
-  {
-    "name": "ConnectableSubscriber"
+    "name": "ConsumerObserver"
   },
   {
     "name": "DEFAULT_APP_ID"
@@ -114,25 +111,13 @@
     "name": "DefaultDomRenderer2"
   },
   {
-    "name": "DefaultIfEmptyOperator"
-  },
-  {
-    "name": "DefaultIfEmptySubscriber"
-  },
-  {
-    "name": "DistinctUntilChangedOperator"
-  },
-  {
-    "name": "DistinctUntilChangedSubscriber"
-  },
-  {
-    "name": "DoOperator"
-  },
-  {
     "name": "DomAdapter"
   },
   {
     "name": "DomRendererFactory2"
+  },
+  {
+    "name": "EMPTY"
   },
   {
     "name": "EMPTY_ARRAY"
@@ -141,7 +126,13 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "EMPTY_OBSERVER"
+  },
+  {
     "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "EMPTY_SUBSCRIPTION"
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
@@ -175,12 +166,6 @@
   },
   {
     "name": "EventManagerPlugin"
-  },
-  {
-    "name": "FilterOperator"
-  },
-  {
-    "name": "FilterSubscriber"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -256,18 +241,6 @@
   },
   {
     "name": "MULTIPLIER"
-  },
-  {
-    "name": "MapOperator"
-  },
-  {
-    "name": "MapSubscriber"
-  },
-  {
-    "name": "MergeMapOperator"
-  },
-  {
-    "name": "MergeMapSubscriber"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -372,6 +345,9 @@
     "name": "Observable"
   },
   {
+    "name": "OperatorSubscriber"
+  },
+  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -403,12 +379,6 @@
   },
   {
     "name": "RESPONSE_TYPE"
-  },
-  {
-    "name": "RefCountOperator"
-  },
-  {
-    "name": "RefCountSubscriber"
   },
   {
     "name": "RendererFactory2"
@@ -450,34 +420,16 @@
     "name": "SimpleChange"
   },
   {
-    "name": "SimpleInnerSubscriber"
-  },
-  {
-    "name": "SimpleOuterSubscriber"
-  },
-  {
     "name": "StandaloneService"
   },
   {
     "name": "Subject"
   },
   {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
     "name": "Subscriber"
   },
   {
     "name": "Subscription"
-  },
-  {
-    "name": "SwitchMapOperator"
-  },
-  {
-    "name": "SwitchMapSubscriber"
   },
   {
     "name": "TESTABILITY"
@@ -490,21 +442,6 @@
   },
   {
     "name": "TYPE"
-  },
-  {
-    "name": "TakeOperator"
-  },
-  {
-    "name": "TakeSubscriber"
-  },
-  {
-    "name": "TapSubscriber"
-  },
-  {
-    "name": "ThrowIfEmptyOperator"
-  },
-  {
-    "name": "ThrowIfEmptySubscriber"
   },
   {
     "name": "TransferState"
@@ -537,16 +474,22 @@
     "name": "_NullComponentFactoryResolver"
   },
   {
+    "name": "__asyncValues"
+  },
+  {
+    "name": "__await"
+  },
+  {
     "name": "__forward_ref__"
   },
   {
     "name": "_applyRootElementTransformImpl"
   },
   {
-    "name": "_currentInjector"
+    "name": "_bind"
   },
   {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+    "name": "_currentInjector"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -612,6 +555,9 @@
     "name": "applyView"
   },
   {
+    "name": "arrRemove"
+  },
+  {
     "name": "assertConsumerNode"
   },
   {
@@ -619,6 +565,9 @@
   },
   {
     "name": "baseElement"
+  },
+  {
+    "name": "bind"
   },
   {
     "name": "bloomHasToken"
@@ -666,13 +615,13 @@
     "name": "configureViewWithDirective"
   },
   {
-    "name": "connectableObservableDescriptor"
-  },
-  {
     "name": "consumerIsLive"
   },
   {
     "name": "consumerPollProducersForChange"
+  },
+  {
+    "name": "context"
   },
   {
     "name": "convertToBitFlags"
@@ -684,7 +633,13 @@
     "name": "createElementRef"
   },
   {
+    "name": "createErrorClass"
+  },
+  {
     "name": "createInjector"
+  },
+  {
+    "name": "createInvalidObservableTypeError"
   },
   {
     "name": "createLFrame"
@@ -694,6 +649,12 @@
   },
   {
     "name": "createNodeInjector"
+  },
+  {
+    "name": "createNotification"
+  },
+  {
+    "name": "createOperatorSubscriber"
   },
   {
     "name": "createTView"
@@ -706,6 +667,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultCompare"
   },
   {
     "name": "defaultErrorFactory"
@@ -732,12 +696,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "empty"
-  },
-  {
-    "name": "empty3"
-  },
-  {
     "name": "enableHydrationRuntimeSupport"
   },
   {
@@ -750,10 +708,19 @@
     "name": "epoch"
   },
   {
+    "name": "errorContext"
+  },
+  {
+    "name": "execFinalizer"
+  },
+  {
     "name": "executeCheckHooks"
   },
   {
     "name": "executeInitAndCheckHooks"
+  },
+  {
+    "name": "executeSchedule"
   },
   {
     "name": "executeTemplate"
@@ -768,12 +735,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "first"
-  },
-  {
-    "name": "flattenUnsubscriptionErrors"
-  },
-  {
     "name": "forEachSingleProvider"
   },
   {
@@ -786,7 +747,7 @@
     "name": "from"
   },
   {
-    "name": "fromArray"
+    "name": "fromAsyncIterable"
   },
   {
     "name": "generateInitialInputs"
@@ -915,6 +876,15 @@
     "name": "getTNodeFromLView"
   },
   {
+    "name": "handleReset"
+  },
+  {
+    "name": "handleStoppedNotification"
+  },
+  {
+    "name": "handleUnhandledError"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -922,9 +892,6 @@
   },
   {
     "name": "hasSkipHydrationAttrOnTNode"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "icuContainerIterate"
@@ -963,7 +930,7 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
-    "name": "innerSubscribe"
+    "name": "innerFrom"
   },
   {
     "name": "insertBloom"
@@ -981,10 +948,10 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
-    "name": "isArray"
+    "name": "isArrayLike"
   },
   {
-    "name": "isArrayLike"
+    "name": "isAsyncIterable"
   },
   {
     "name": "isComponentDef"
@@ -1011,13 +978,16 @@
     "name": "isInlineTemplate"
   },
   {
+    "name": "isInteropObservable"
+  },
+  {
+    "name": "isIterable"
+  },
+  {
     "name": "isLContainer"
   },
   {
     "name": "isLView"
-  },
-  {
-    "name": "isObject"
   },
   {
     "name": "isPlatformBrowser"
@@ -1035,13 +1005,16 @@
     "name": "isPromise2"
   },
   {
+    "name": "isReadableStreamLike"
+  },
+  {
     "name": "isRootView"
   },
   {
-    "name": "isScheduler"
+    "name": "isStableFactory"
   },
   {
-    "name": "isStableFactory"
+    "name": "isSubscription"
   },
   {
     "name": "isTemplateNode"
@@ -1054,6 +1027,9 @@
   },
   {
     "name": "iterator"
+  },
+  {
+    "name": "last"
   },
   {
     "name": "lastNodeWasCreated"
@@ -1086,9 +1062,6 @@
     "name": "makeRecord"
   },
   {
-    "name": "map"
-  },
-  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1102,9 +1075,6 @@
   },
   {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "mergeAll"
   },
   {
     "name": "mergeHostAttribute"
@@ -1155,6 +1125,9 @@
     "name": "observable"
   },
   {
+    "name": "observeOn"
+  },
+  {
     "name": "of"
   },
   {
@@ -1164,7 +1137,13 @@
     "name": "onLeave"
   },
   {
+    "name": "operate"
+  },
+  {
     "name": "performanceMarkFeature"
+  },
+  {
+    "name": "popScheduler"
   },
   {
     "name": "populateDehydratedViewsInLContainerImpl"
@@ -1185,7 +1164,7 @@
     "name": "provideZoneChangeDetection"
   },
   {
-    "name": "refCount"
+    "name": "readableStreamLikeToAsyncGenerator"
   },
   {
     "name": "refreshContentQueries"
@@ -1215,6 +1194,9 @@
     "name": "renderView"
   },
   {
+    "name": "reportUnhandledError"
+  },
+  {
     "name": "requiresRefreshOrTraversal"
   },
   {
@@ -1230,13 +1212,10 @@
     "name": "retrieveHydrationInfoImpl"
   },
   {
-    "name": "rxSubscriber"
-  },
-  {
     "name": "saveNameToExportMap"
   },
   {
-    "name": "scheduleArray"
+    "name": "scheduleAsyncIterable"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1275,9 +1254,6 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "shareSubjectFactory"
-  },
-  {
     "name": "shimStylesContent"
   },
   {
@@ -1293,19 +1269,16 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "subscribeTo"
-  },
-  {
-    "name": "subscribeToArray"
-  },
-  {
-    "name": "switchMap"
+    "name": "subscribeOn"
   },
   {
     "name": "throwIfEmpty"
   },
   {
     "name": "throwProviderNotFoundError"
+  },
+  {
+    "name": "timeoutProvider"
   },
   {
     "name": "toRefArray"
