@@ -37,16 +37,19 @@ class InterpolatedSignalCheck extends
   }
 }
 
+function isSignal(symbol: ts.Symbol|undefined): boolean {
+  return (symbol?.escapedName === 'WritableSignal' || symbol?.escapedName === 'Signal') &&
+      (symbol as any).parent.escapedName.includes('@angular/core');
+}
+
 function buildDiagnosticForSignal(
     ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>, node: PropertyRead,
     component: ts.ClassDeclaration):
     Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
+
   if (symbol?.kind === SymbolKind.Expression &&
-      /* can this condition be improved ? */
-      (symbol.tsType.symbol?.escapedName === 'WritableSignal' ||
-       symbol.tsType.symbol?.escapedName === 'Signal') &&
-      (symbol.tsType.symbol as any).parent.escapedName.includes('@angular/core')) {
+      (isSignal(symbol.tsType.symbol) || isSignal(symbol.tsType.aliasSymbol))) {
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
 
