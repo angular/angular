@@ -7,42 +7,17 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {ApplicationRef, ChangeDetectorRef,ErrorHandler, Component, ComponentRef, createComponent, DebugElement, ElementRef, EnvironmentInjector, getDebugNode, inject, Injectable, Input, NgZone, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵNoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, ElementRef, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, Input, NgZone, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
-import {filter} from 'rxjs/operators';
-
-
-@Injectable({providedIn: 'root'})
-class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
-  private appRef = inject(ApplicationRef);
-  private taskService = inject(PendingTasks);
-  private pendingRenderTaskId: number|null = null;
-
-  notify(): void {
-    if (this.pendingRenderTaskId !== null) return;
-
-    this.pendingRenderTaskId = this.taskService.add();
-    setTimeout(() => {
-      try {
-        if (!this.appRef.destroyed) {
-          this.appRef.tick();
-        }
-      } finally {
-        this.taskService.remove(this.pendingRenderTaskId!);
-        this.pendingRenderTaskId = null;
-      }
-    });
-  }
-}
-
+import {filter, take, tap} from 'rxjs/operators';
 
 describe('Angular with NoopNgZone', () => {
   function whenStable(): Promise<boolean> {
-    return firstValueFrom(TestBed.inject(EnvironmentInjector).get(ApplicationRef)
-        .isStable.pipe(filter(stable => stable)));
+    return firstValueFrom(TestBed.inject(EnvironmentInjector)
+                              .get(ApplicationRef)
+                              .isStable.pipe(filter(stable => stable)));
   }
 
   function isStable(): boolean {
@@ -60,41 +35,32 @@ describe('Angular with NoopNgZone', () => {
   }
 
   describe('notifies scheduler', () => {
-    let scheduler: ChangeDetectionSchedulerImpl;
-
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          {provide: NgZone, useClass: ɵNoopNgZone},
-          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-          {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-        ]
+      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+    });
+
+    it('contributes to application stableness', async () => {
+      const val = signal('initial');
+      @Component({template: '{{val()}}', standalone: true})
+      class TestComponent {
+        val = val;
+      }
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const component = createComponent(TestComponent, {environmentInjector});
+      const appRef = environmentInjector.get(ApplicationRef);
+
+      appRef.attachView(component.hostView);
+      expect(isStable()).toBeFalse();
+
+      // Cause another pending CD immediately after render and verify app has not stabilized
+      await whenStable().then(() => {
+        val.set('new');
       });
-      scheduler = TestBed.inject(ChangeDetectionSchedulerImpl);
+      expect(isStable()).toBeFalse();
+
+      await whenStable();
+      expect(isStable()).toBeTrue();
     });
-
-  it('contributes to application stableness', async () => {
-    const val = signal('initial');
-    @Component({template: '{{val()}}', standalone: true})
-    class TestComponent {
-      val = val;
-    }
-    const environmentInjector = TestBed.inject(EnvironmentInjector);
-    const component = createComponent(TestComponent, {environmentInjector});
-    const appRef = environmentInjector.get(ApplicationRef);
-
-    appRef.attachView(component.hostView);
-    expect(isStable()).toBeFalse();
-
-    // Cause another pending CD immediately after render and verify app has not stabilized
-    await whenStable().then(() => {
-      val.set('new');
-    });
-    expect(isStable()).toBeFalse();
-
-    await whenStable();
-    expect(isStable()).toBeTrue();
-  });
 
     it('when signal updates', async () => {
       const val = signal('initial');
@@ -323,6 +289,29 @@ describe('Angular with NoopNgZone', () => {
       appRef.attachView(component.hostView);
       expect(isStable()).toBe(true);
     });
+
+    it('when a stable subscription synchronously causes another notification', async () => {
+      const val = signal('initial');
+      @Component({template: '{{val()}}', standalone: true})
+      class TestComponent {
+        val = val;
+      }
+
+      const component = await createAndAttachComponent(TestComponent);
+      expect(component.location.nativeElement.innerText).toEqual('initial');
+
+      val.set('new');
+      await TestBed.inject(ApplicationRef)
+          .isStable
+          .pipe(
+              filter(stable => stable),
+              take(1),
+              tap(() => val.set('newer')),
+              )
+          .toPromise();
+      await whenStable();
+      expect(component.location.nativeElement.innerText).toEqual('newer');
+    });
   });
 
   it('can recover when an error is re-thrown by the ErrorHandler', async () => {
@@ -341,9 +330,7 @@ describe('Angular with NoopNgZone', () => {
     }
     TestBed.configureTestingModule({
       providers: [
-        {provide: NgZone, useClass: ɵNoopNgZone},
-        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+        provideZonelessChangeDetection(),
         {
           provide: ErrorHandler, useClass: class extends ErrorHandler {
             override handleError(error: any): void {
