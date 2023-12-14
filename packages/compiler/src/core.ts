@@ -34,6 +34,9 @@ export interface Input {
   alias?: string;
   required?: boolean;
   transform?: (value: any) => any;
+  // Note: This field is marked as `internal` in `@angular/core`, but in the compiler
+  // we rely on it for JIT processing at runtime.
+  isSignal: boolean;
 }
 
 /** Flags describing an input for a directive. */
