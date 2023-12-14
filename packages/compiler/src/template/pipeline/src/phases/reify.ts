@@ -125,7 +125,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const eventTargetResolver =
             op.eventTarget ? GLOBAL_TARGET_RESOLVERS.get(op.eventTarget) : null;
         if (eventTargetResolver === undefined) {
-          throw new Error(`AssertionError: unknown event target ${op.eventTarget}`);
+          throw new Error(`Unexpected global target '${op.eventTarget}' defined for '${
+              op.name}' event. Supported list of global targets: window,document,body.`);
         }
         ir.OpList.replace(
             op,
