@@ -243,6 +243,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a lazy deferred block with empty and placeholder",
+      "inputFiles": [
+        "lazy_with_blocks.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "lazy_with_blocks_template.js",
+              "generated": "lazy_with_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
