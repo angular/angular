@@ -322,7 +322,7 @@ function transformIvySourceFile(
   const fileOverviewMeta = isClosureCompilerEnabled ? getFileOverviewComment(sf.statements) : null;
 
   // Add new imports for this file.
-  sf = addImports(importManager, sf, constants);
+  sf = addImports(context.factory, importManager, sf, constants);
 
   if (fileOverviewMeta !== null) {
     setFileOverviewComment(sf, fileOverviewMeta);
