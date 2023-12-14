@@ -88,7 +88,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
-        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
+        "//packages/compiler-cli/src/transformers/jit_transforms",
         "@npm//@bazel/concatjs",
         "@npm//@types/node",
         "@npm//@types/yargs",

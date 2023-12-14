@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform} from '../src/transformers/downlevel_decorators_transform/index';
+import {getDownlevelDecoratorsTransform} from '../src/transformers/jit_transforms/index';
 
 import {MockAotContext, MockCompilerHost} from './mocks';
 

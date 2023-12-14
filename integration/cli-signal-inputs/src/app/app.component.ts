@@ -6,7 +6,7 @@ import {GreetComponent} from './greet.component';
   standalone: true,
   selector: 'app-root',
   template: `
-    <greet [firstName]="firstName" [lastName]="lastName" />
+    <greet [firstName]="firstName" [lastName]="lastName" [decoratorInput]="10" />
 
     <p>Unbound last name</p>
     <greet class="unbound-last-name" [firstName]="firstName" />
