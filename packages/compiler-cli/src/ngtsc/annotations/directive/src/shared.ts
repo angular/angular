@@ -17,7 +17,7 @@ import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator
 import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
-import {tryParseInputInitializerAndOptions} from './input_function';
+import {tryParseSignalInputMapping} from './input_function';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const QUERY_TYPES = new Set([
@@ -770,26 +770,10 @@ function tryParseInputFieldMapping(
     };
   }
 
-  // Look for a signal input.
-  const signalInput = tryParseInputInitializerAndOptions(member, reflector, coreModule);
-  if (signalInput !== null) {
-    const optionsNode = signalInput.optionsNode;
-    const options = optionsNode !== undefined ? evaluator.evaluate(optionsNode) : null;
-
-    let bindingPropertyName = classPropertyName;
-    if (options instanceof Map && typeof options.get('alias') === 'string') {
-      bindingPropertyName = options.get('alias') as string;
-    }
-
-    return {
-      isSignal: true,
-      classPropertyName,
-      bindingPropertyName,
-      required: signalInput.isRequired,
-      // Signal inputs do not capture complex transform metadata.
-      // See more details in the `transform` type of `InputMapping`.
-      transform: null,
-    };
+  // Look for signal inputs. e.g. `memberName = input()`
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, evaluator, coreModule);
+  if (signalInputMapping !== null) {
+    return signalInputMapping;
   }
 
   return null;
