@@ -14,7 +14,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
 import {assertGreaterThan} from '../util/assert';
 import {performanceMarkFeature} from '../util/performance';
-import {NgZone} from '../zone';
+import {NgZone} from '../zone/ng_zone';
 
 import {isPlatformBrowser} from './util/misc_utils';
 
