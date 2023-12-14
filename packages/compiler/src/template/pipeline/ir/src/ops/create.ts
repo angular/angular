@@ -14,7 +14,7 @@ import {R3DeferBlockMetadata} from '../../../../../render3/view/api';
 import {BindingKind, DeferTriggerKind, I18nContextKind, I18nParamValueFlags, Namespace, OpKind, TemplateKind} from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
+import {ConsumesSlotOpTrait, ConsumesVarsTrait, TRAIT_CONSUMES_SLOT, TRAIT_CONSUMES_VARS} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -235,7 +235,7 @@ export function createTemplateOp(
 /**
  * An op that creates a repeater (e.g. a for loop).
  */
-export interface RepeaterCreateOp extends ElementOpBase {
+export interface RepeaterCreateOp extends ElementOpBase, ConsumesVarsTrait {
   kind: OpKind.RepeaterCreate;
 
   /**
@@ -331,6 +331,7 @@ export function createRepeaterCreateOp(
     wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
+    ...TRAIT_CONSUMES_VARS,
     numSlotsUsed: emptyView === null ? 2 : 3,
   };
 }
