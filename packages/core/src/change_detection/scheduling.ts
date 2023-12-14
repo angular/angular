@@ -12,8 +12,9 @@ import {ApplicationRef} from '../application/application_ref';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../di';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {PendingTasks} from '../pending_tasks';
 import {NgZone} from '../zone';
-import {InternalNgZoneOptions, isStableFactory, ZONE_IS_STABLE_OBSERVABLE} from '../zone/ng_zone';
+import {InternalNgZoneOptions} from '../zone/ng_zone';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
@@ -68,8 +69,17 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
         return () => ngZoneChangeDetectionScheduler!.initialize();
       },
     },
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const service = inject(ZoneStablePendingTask);
+        return () => {
+          service.initialize();
+        };
+      }
+    },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
-    {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
   ];
 }
 
@@ -170,4 +180,49 @@ export function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions
     shouldCoalesceEventChangeDetection: options?.eventCoalescing ?? false,
     shouldCoalesceRunChangeDetection: options?.runCoalescing ?? false,
   };
+}
+
+@Injectable({providedIn: 'root'})
+export class ZoneStablePendingTask {
+  private readonly subscription = new Subscription();
+  private initialized = false;
+  private readonly zone = inject(NgZone);
+  private readonly pendingTasks = inject(PendingTasks);
+
+  initialize() {
+    if (this.initialized) {
+      return;
+    }
+    this.initialized = true;
+
+    let task: number|null = null;
+    if (!this.zone.isStable && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
+      task = this.pendingTasks.add();
+    }
+
+    this.zone.runOutsideAngular(() => {
+      this.subscription.add(this.zone.onStable.subscribe(() => {
+        NgZone.assertNotInAngularZone();
+
+        // Check whether there are no pending macro/micro tasks in the next tick
+        // to allow for NgZone to update the state.
+        queueMicrotask(() => {
+          if (task !== null && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
+            this.pendingTasks.remove(task);
+            task = null;
+          }
+        });
+      }));
+    });
+
+    this.subscription.add(this.zone.onUnstable.subscribe(() => {
+      NgZone.assertInAngularZone();
+      task ??= this.pendingTasks.add();
+    }));
+  }
+
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }
