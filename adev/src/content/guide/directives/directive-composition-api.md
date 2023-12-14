@@ -126,8 +126,7 @@ export class SpecializedMenuWithTooltip { }
 ### Directive execution order
 
 Host directives go through the same lifecycle as components and directives used directly in a
-template. However, host directives always execute their constructor, lifecycle hooks, and bindings _
-before_ the component or directive on which they are applied.
+template. However, host directives always execute their constructor, lifecycle hooks, and bindings _before_ the component or directive on which they are applied.
 
 The following example shows minimal use of a host directive:
 
