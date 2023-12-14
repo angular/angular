@@ -362,7 +362,6 @@
           "files": [
             {
               "expected": "host_with_ts_expression_node_template.js",
-              "templatePipelineExpected": "host_with_ts_expression_node_template.pipeline.js",
               "generated": "host_with_ts_expression_node.js"
             }
           ]

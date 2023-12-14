@@ -78,7 +78,7 @@ export function ingestHostBinding(
             .calcPossibleSecurityContexts(
                 input.componentSelector, property.name, bindingKind === ir.BindingKind.Attribute)
             .filter(context => context !== SecurityContext.NONE);
-    ingestHostProperty(job, property, bindingKind, false, securityContexts);
+    ingestHostProperty(job, property, bindingKind, securityContexts);
   }
   for (const [name, expr] of Object.entries(input.attributes) ?? []) {
     const securityContexts =
@@ -96,7 +96,7 @@ export function ingestHostBinding(
 // with ordinary components. This would allow us to share a lot more ingestion code.
 export function ingestHostProperty(
     job: HostBindingCompilationJob, property: e.ParsedProperty, bindingKind: ir.BindingKind,
-    isTextAttribute: boolean, securityContexts: SecurityContext[]): void {
+    securityContexts: SecurityContext[]): void {
   let expression: o.Expression|ir.Interpolation;
   const ast = property.expression.ast;
   if (ast instanceof e.Interpolation) {
@@ -106,19 +106,20 @@ export function ingestHostProperty(
     expression = convertAst(ast, job, property.sourceSpan);
   }
   job.root.update.push(ir.createBindingOp(
-      job.root.xref, bindingKind, property.name, expression, null, securityContexts,
-      isTextAttribute, false, null, /* TODO: How do Host bindings handle i18n attrs? */ null,
-      property.sourceSpan));
+      job.root.xref, bindingKind, property.name, expression, null, securityContexts, false, false,
+      null, /* TODO: How do Host bindings handle i18n attrs? */ null, property.sourceSpan));
 }
 
 export function ingestHostAttribute(
     job: HostBindingCompilationJob, name: string, value: o.Expression,
     securityContexts: SecurityContext[]): void {
   const attrBinding = ir.createBindingOp(
-      job.root.xref, ir.BindingKind.Attribute, name, value, null, securityContexts, true, false,
-      null,
+      job.root.xref, ir.BindingKind.Attribute, name, value, null, securityContexts,
+      /* Host attributes should always be extracted to const hostAttrs, even if they are not
+       *strictly* text literals */
+      true, false, null,
       /* TODO */ null,
-      /* TODO: host attribute source spans */ null!);
+      /** TODO: May be null? */ value.sourceSpan!);
   job.root.update.push(attrBinding);
 }
 
