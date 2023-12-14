@@ -130,6 +130,12 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
     case ir.OpKind.Conditional:
     case ir.OpKind.DeferWhen:
       return 1;
+    case ir.OpKind.RepeaterCreate:
+      // Repeaters may require an extra variable binding slot, if they have an empty view, for the
+      // empty block tracking.
+      // TODO: It's a bit odd to have a create mode instruction consume variable slots. Maybe we can
+      // find a way to use the Repeater update op instead.
+      return op.emptyView ? 1 : 0;
     default:
       throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
   }
