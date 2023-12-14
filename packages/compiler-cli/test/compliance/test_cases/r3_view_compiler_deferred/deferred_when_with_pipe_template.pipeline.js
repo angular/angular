@@ -8,7 +8,7 @@ function MyApp_Template(rf, ctx) {
 	if (rf & 2) {
 	  $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
 	  $r3$.ɵɵadvance(2);
-	  $r3$.ɵɵdeferWhen(ctx.isVisible() && $r3$.ɵɵpipeBind1(4, 1, ctx.isReady));
+	  $r3$.ɵɵdeferWhen(ctx.isVisible() && $r3$.ɵɵpipeBind1(4, 2, ctx.isReady));
 	}
   }
   
