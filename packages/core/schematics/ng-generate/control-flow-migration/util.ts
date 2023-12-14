@@ -628,7 +628,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         lineWasMigrated = true;
       }
       if ((line.trim() === '' && index !== 0 && index !== lines.length - 1) &&
-          (inMigratedBlock || lineWasMigrated)) {
+          (inMigratedBlock || lineWasMigrated) && !inI18nBlock) {
         // skip blank lines except if it's the first line or last line
         // this preserves leading and trailing spaces if they are already present
         continue;
