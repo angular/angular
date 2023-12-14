@@ -123,9 +123,6 @@
     "name": "DomRendererFactory2"
   },
   {
-    "name": "EMPTY"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -495,7 +492,7 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
+    "name": "ZoneStablePendingTask"
   },
   {
     "name": "_DOM"
@@ -508,12 +505,6 @@
   },
   {
     "name": "_NullComponentFactoryResolver"
-  },
-  {
-    "name": "__asyncValues"
-  },
-  {
-    "name": "__await"
   },
   {
     "name": "__forward_ref__"
@@ -675,9 +666,6 @@
     "name": "collectStylingFromTAttrs"
   },
   {
-    "name": "combineLatest"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -720,9 +708,6 @@
     "name": "createInjectorWithoutInjectorInstances"
   },
   {
-    "name": "createInvalidObservableTypeError"
-  },
-  {
     "name": "createLContainer"
   },
   {
@@ -738,9 +723,6 @@
     "name": "createNotification"
   },
   {
-    "name": "createOperatorSubscriber"
-  },
-  {
     "name": "createPlatformFactory"
   },
   {
@@ -751,9 +733,6 @@
   },
   {
     "name": "deepForEachProvider"
-  },
-  {
-    "name": "defaultCompare"
   },
   {
     "name": "defaultIterableDiffersFactory"
@@ -813,9 +792,6 @@
     "name": "executeListenerWithErrorHandling"
   },
   {
-    "name": "executeSchedule"
-  },
-  {
     "name": "executeTemplate"
   },
   {
@@ -841,12 +817,6 @@
   },
   {
     "name": "freeConsumers"
-  },
-  {
-    "name": "from"
-  },
-  {
-    "name": "fromAsyncIterable"
   },
   {
     "name": "generateInitialInputs"
@@ -984,9 +954,6 @@
     "name": "getSimpleChangesStore"
   },
   {
-    "name": "getSymbolIterator"
-  },
-  {
     "name": "getTNode"
   },
   {
@@ -1006,9 +973,6 @@
   },
   {
     "name": "handleError"
-  },
-  {
-    "name": "handleReset"
   },
   {
     "name": "handleStoppedNotification"
@@ -1071,9 +1035,6 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
-    "name": "innerFrom"
-  },
-  {
     "name": "insertBloom"
   },
   {
@@ -1090,12 +1051,6 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "isArrayLike"
-  },
-  {
-    "name": "isAsyncIterable"
   },
   {
     "name": "isComponentDef"
@@ -1125,12 +1080,6 @@
     "name": "isInlineTemplate"
   },
   {
-    "name": "isInteropObservable"
-  },
-  {
-    "name": "isIterable"
-  },
-  {
     "name": "isLContainer"
   },
   {
@@ -1155,15 +1104,6 @@
     "name": "isPromise"
   },
   {
-    "name": "isPromise2"
-  },
-  {
-    "name": "isReadableStreamLike"
-  },
-  {
-    "name": "isStableFactory"
-  },
-  {
     "name": "isStylingMatch"
   },
   {
@@ -1182,9 +1122,6 @@
     "name": "isValueProvider"
   },
   {
-    "name": "iterator"
-  },
-  {
     "name": "keyValueArrayGet"
   },
   {
@@ -1192,9 +1129,6 @@
   },
   {
     "name": "keyValueArraySet"
-  },
-  {
-    "name": "last"
   },
   {
     "name": "lastNodeWasCreated"
@@ -1239,22 +1173,13 @@
     "name": "markViewForRefresh"
   },
   {
-    "name": "maybeSchedule"
-  },
-  {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "merge"
   },
   {
     "name": "mergeHostAttribute"
   },
   {
     "name": "mergeHostAttrs"
-  },
-  {
-    "name": "mergeMap"
   },
   {
     "name": "nativeAppendChild"
@@ -1299,16 +1224,10 @@
     "name": "observable"
   },
   {
-    "name": "observeOn"
-  },
-  {
     "name": "onEnter"
   },
   {
     "name": "onLeave"
-  },
-  {
-    "name": "operate"
   },
   {
     "name": "optionsReducer"
@@ -1318,9 +1237,6 @@
   },
   {
     "name": "platformCore"
-  },
-  {
-    "name": "popScheduler"
   },
   {
     "name": "processInjectorTypesWithProviders"
@@ -1333,9 +1249,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "readableStreamLikeToAsyncGenerator"
   },
   {
     "name": "refreshContentQueries"
@@ -1365,9 +1278,6 @@
     "name": "renderView"
   },
   {
-    "name": "reportUnhandledError"
-  },
-  {
     "name": "requiresRefreshOrTraversal"
   },
   {
@@ -1387,9 +1297,6 @@
   },
   {
     "name": "saveResolvedLocalsInData"
-  },
-  {
-    "name": "scheduleAsyncIterable"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1464,9 +1371,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "subscribeOn"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -1510,15 +1414,6 @@
   },
   {
     "name": "writeToDirectiveInput"
-  },
-  {
-    "name": "{getPrototypeOf:getPrototypeOf,prototype:objectProto,keys:getKeys}"
-  },
-  {
-    "name": "{isArray:isArray2}"
-  },
-  {
-    "name": "{isArray:isArray}"
   },
   {
     "name": "ɵɵadvance"

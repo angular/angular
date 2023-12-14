@@ -168,9 +168,6 @@
     "name": "EMAIL_REGEXP"
   },
   {
-    "name": "EMPTY"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -579,7 +576,7 @@
     "name": "ViewRef"
   },
   {
-    "name": "ZONE_IS_STABLE_OBSERVABLE"
+    "name": "ZoneStablePendingTask"
   },
   {
     "name": "_DOM"
@@ -703,9 +700,6 @@
   },
   {
     "name": "applyViewChange"
-  },
-  {
-    "name": "argsArgArrayOrObject"
   },
   {
     "name": "arrRemove"
@@ -870,9 +864,6 @@
     "name": "deepForEachProvider"
   },
   {
-    "name": "defaultCompare"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -930,9 +921,6 @@
     "name": "executeListenerWithErrorHandling"
   },
   {
-    "name": "executeSchedule"
-  },
-  {
     "name": "executeTemplate"
   },
   {
@@ -960,6 +948,9 @@
     "name": "forEachSingleProvider"
   },
   {
+    "name": "forkJoin"
+  },
+  {
     "name": "formArrayNameProvider"
   },
   {
@@ -973,9 +964,6 @@
   },
   {
     "name": "freeConsumers"
-  },
-  {
-    "name": "from"
   },
   {
     "name": "fromAsyncIterable"
@@ -1144,9 +1132,6 @@
   },
   {
     "name": "handleError"
-  },
-  {
-    "name": "handleReset"
   },
   {
     "name": "handleStoppedNotification"
@@ -1335,9 +1320,6 @@
     "name": "isReadableStreamLike"
   },
   {
-    "name": "isStableFactory"
-  },
-  {
     "name": "isStylingMatch"
   },
   {
@@ -1366,9 +1348,6 @@
   },
   {
     "name": "keyValueArraySet"
-  },
-  {
-    "name": "last"
   },
   {
     "name": "lastNodeWasCreated"
@@ -1401,9 +1380,6 @@
     "name": "map"
   },
   {
-    "name": "mapOneOrManyArgs"
-  },
-  {
     "name": "markAncestorsForTraversal"
   },
   {
@@ -1419,16 +1395,10 @@
     "name": "markViewForRefresh"
   },
   {
-    "name": "maybeSchedule"
-  },
-  {
     "name": "maybeUnwrapEmpty"
   },
   {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "merge"
   },
   {
     "name": "mergeErrors"
@@ -1438,9 +1408,6 @@
   },
   {
     "name": "mergeHostAttrs"
-  },
-  {
-    "name": "mergeMap"
   },
   {
     "name": "mergeValidators"
@@ -1503,9 +1470,6 @@
     "name": "observable"
   },
   {
-    "name": "observeOn"
-  },
-  {
     "name": "onEnter"
   },
   {
@@ -1528,12 +1492,6 @@
   },
   {
     "name": "platformCore"
-  },
-  {
-    "name": "popResultSelector"
-  },
-  {
-    "name": "popScheduler"
   },
   {
     "name": "processInjectorTypesWithProviders"
@@ -1617,9 +1575,6 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "scheduleAsyncIterable"
-  },
-  {
     "name": "searchTokensOnInjector"
   },
   {
@@ -1699,9 +1654,6 @@
   },
   {
     "name": "stringifyCSSSelector"
-  },
-  {
-    "name": "subscribeOn"
   },
   {
     "name": "throwProviderNotFoundError"
