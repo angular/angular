@@ -531,6 +531,11 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       deferOnOps.push(deferOnOp);
     }
     if (triggers.when !== undefined) {
+      if (triggers.when.value instanceof e.Interpolation) {
+        // TemplateDefinitionBuilder supports this case, but it's very strange to me. What would it
+        // even mean?
+        throw new Error(`Unexpected interpolation in defer block when trigger`);
+      }
       const deferOnOp = ir.createDeferWhenOp(
           deferXref, convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan), prefetch,
           triggers.when.sourceSpan);
@@ -767,15 +772,15 @@ function convertAst(
 }
 
 function convertAstWithInterpolation(
-    job: CompilationJob, value: e.AST|string,
-    i18nMeta: i18n.I18nMeta|null|undefined): o.Expression|ir.Interpolation {
+    job: CompilationJob, value: e.AST|string, i18nMeta: i18n.I18nMeta|null|undefined,
+    sourceSpan?: ParseSourceSpan): o.Expression|ir.Interpolation {
   let expression: o.Expression|ir.Interpolation;
   if (value instanceof e.Interpolation) {
     expression = new ir.Interpolation(
-        value.strings, value.expressions.map(e => convertAst(e, job, null)),
+        value.strings, value.expressions.map(e => convertAst(e, job, sourceSpan ?? null)),
         Object.keys(asMessage(i18nMeta)?.placeholders ?? {}));
   } else if (value instanceof e.AST) {
-    expression = convertAst(value, job, null);
+    expression = convertAst(value, job, sourceSpan ?? null);
   } else {
     expression = o.literal(value);
   }

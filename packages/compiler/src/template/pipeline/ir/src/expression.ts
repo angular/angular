@@ -964,6 +964,9 @@ export function transformExpressionsInOp(
         op.placeholderConfig =
             transformExpressionsInExpression(op.placeholderConfig, transform, flags);
       }
+      if (op.resolverFn !== null) {
+        op.resolverFn = transformExpressionsInExpression(op.resolverFn, transform, flags);
+      }
       break;
     case OpKind.I18nMessage:
       for (const [placeholder, expr] of op.params) {
