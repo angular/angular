@@ -108,19 +108,9 @@ function extractAttributeOp(
 
   let extractable = op.isTextAttribute || op.expression.isConstant();
   if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-    // TemplateDefinitionBuilder only extracted attributes that were string literals.
-    extractable = op.isTextAttribute || ir.isStringLiteral(op.expression);
-    if (op.name === 'style' || op.name === 'class') {
-      // For style and class attributes, TemplateDefinitionBuilder only extracted them if they were
-      // text attributes. For example, `[attr.class]="'my-class'"` was not extracted despite being a
-      // string literal, because it is not a text attribute.
-      extractable &&= op.isTextAttribute;
-    }
-    if (unit.job.kind === CompilationJobKind.Host) {
-      // TemplateDefinitionBuilder also does not seem to extract string literals if they are part of
-      // a host attribute.
-      extractable &&= op.isTextAttribute;
-    }
+    // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
+    // bindings, even if they are constants.
+    extractable &&= op.isTextAttribute;
   }
 
   if (extractable) {
