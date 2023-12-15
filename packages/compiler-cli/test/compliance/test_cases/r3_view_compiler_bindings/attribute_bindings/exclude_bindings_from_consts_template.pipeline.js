@@ -1,3 +1,3 @@
 
-consts: [["target", "_blank", "aria-label", "link", "foo", "one", "bar", "two", __AttributeMarker.Bindings__, "customEvent", "title", "id"]],
+consts: [["target", "_blank", "aria-label", "link", __AttributeMarker.Bindings__, "customEvent", "title", "id"]],
 …
