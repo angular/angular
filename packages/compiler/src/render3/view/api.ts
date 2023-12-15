@@ -248,6 +248,17 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>;
 
   /**
+   * Map of deferrable symbol names -> corresponding import paths.
+   *
+   * This map is populated **only** in local compilation mode and used by the
+   * TemplateDefinitionBuilder to produce a defer function that loads
+   * all dependencies. In full compilation mode this information is defined
+   * on a `@defer` block level instead and dependency function is generated
+   * on per-block level.
+   */
+  deferrableTypes: Map<string, string>;
+
+  /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
    */
   declarationListEmitMode: DeclarationListEmitMode;
