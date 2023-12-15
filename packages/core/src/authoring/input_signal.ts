@@ -82,6 +82,7 @@ export function createInputSignal<ReadT, WriteT>(
     producerAccessed(node);
 
     if (node.value === REQUIRED_UNSET_VALUE) {
+      // TODO: Use a runtime error w/ error guide.
       throw new Error('Input is required, but no value set yet.');
     }
 
