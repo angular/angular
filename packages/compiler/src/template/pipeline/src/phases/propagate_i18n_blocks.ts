@@ -90,7 +90,8 @@ function wrapTemplateWithI18n(unit: ViewCompilationUnit, parentI18n: ir.I18nStar
   if (unit.create.head.next?.kind !== ir.OpKind.I18nStart) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(
-        ir.createI18nStartOp(id, parentI18n.message, parentI18n.root), unit.create.head);
-    ir.OpList.insertBefore(ir.createI18nEndOp(id), unit.create.tail);
+        // Nested ng-template i18n start/end ops should not recieve source spans.
+        ir.createI18nStartOp(id, parentI18n.message, parentI18n.root, null), unit.create.head);
+    ir.OpList.insertBefore(ir.createI18nEndOp(id, null), unit.create.tail);
   }
 }
