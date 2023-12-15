@@ -1911,6 +1911,9 @@
     "name": "init_weak_ref"
   },
   {
+    "name": "init_write_to_directive_input"
+  },
+  {
     "name": "init_zone"
   },
   {

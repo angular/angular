@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InputSignalNode} from '../../authoring/input_signal_node';
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
@@ -91,6 +92,7 @@ export interface PipeType<T> extends Type<T> {
 export enum InputFlags {
   None = 0,
   SignalBased = 1 << 0,
+  HasTransform = 1 << 1,
 }
 
 /**
@@ -262,8 +264,9 @@ export interface DirectiveDef<T> {
 
   setInput:
       (<U extends T>(
-           this: DirectiveDef<U>, instance: U, value: any, publicName: string, privateName: string,
-           flags: InputFlags) => void)|null;
+           this: DirectiveDef<U>, instance: U,
+           inputSignalNode: null|InputSignalNode<unknown, unknown>, value: any, publicName: string,
+           privateName: string) => void)|null;
 }
 
 /**

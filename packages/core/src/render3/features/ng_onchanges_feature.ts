@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InputSignalNode} from '../../authoring/input_signal_node';
 import {OnChanges} from '../../interface/lifecycle_hooks';
 import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
 import {assertString} from '../../util/assert';
@@ -84,8 +85,8 @@ function rememberChangeHistoryAndInvokeOnChangesHook(this: OnChanges) {
 
 
 function ngOnChangesSetInput<T>(
-    this: DirectiveDef<T>, instance: T, value: unknown, publicName: string, privateName: string,
-    flags: InputFlags): void {
+    this: DirectiveDef<T>, instance: T, inputSignalNode: null|InputSignalNode<unknown, unknown>,
+    value: unknown, publicName: string, privateName: string): void {
   const declaredName = (this.declaredInputs as {[key: string]: string})[publicName];
   ngDevMode && assertString(declaredName, 'Name of input in ngOnChanges has to be a string');
   const simpleChangesStore = getSimpleChangesStore(instance) ||
@@ -96,7 +97,7 @@ function ngOnChangesSetInput<T>(
   current[declaredName] = new SimpleChange(
       previousChange && previousChange.currentValue, value, previous === EMPTY_OBJ);
 
-  applyValueToInputField(instance, privateName, flags, value);
+  applyValueToInputField(instance, inputSignalNode, privateName, value);
 }
 
 const SIMPLE_CHANGES_STORE = '__ngSimpleChanges__';

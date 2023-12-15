@@ -55,6 +55,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, resetPreOr
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
+import {writeToDirectiveInput} from './write_to_directive_input';
 
 /**
  * Invoke `HostBindingsFunction`s for view.
@@ -1360,25 +1361,6 @@ function setInputsFromAttrs<T>(
         setNgReflectProperty(lView, nativeElement, tNode.type, privateName, value);
       }
     }
-  }
-}
-
-function writeToDirectiveInput<T>(
-    def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, flags: InputFlags,
-    value: unknown) {
-  const prevConsumer = setActiveConsumer(null);
-  try {
-    const inputTransforms = def.inputTransforms;
-    if (inputTransforms !== null && inputTransforms.hasOwnProperty(privateName)) {
-      value = inputTransforms[privateName].call(instance, value);
-    }
-    if (def.setInput !== null) {
-      def.setInput(instance, value, publicName, privateName, flags);
-    } else {
-      applyValueToInputField(instance, privateName, flags, value);
-    }
-  } finally {
-    setActiveConsumer(prevConsumer);
   }
 }
 

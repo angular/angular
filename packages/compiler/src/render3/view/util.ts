@@ -214,6 +214,9 @@ export function conditionallyCreateDirectiveBindingLiteral(
       if (value.isSignal) {
         flags = flags | InputFlags.SignalBased;
       }
+      if (hasTransform) {
+        flags = flags | InputFlags.HasTransform;
+      }
 
       // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), or support
       // transform functions, or store flag information if there is any.

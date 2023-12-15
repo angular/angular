@@ -6,19 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SIGNAL} from '@angular/core/primitives/signals';
 
-import {InputSignal} from '../authoring';
-
-import {InputFlags} from './interfaces/definition';
+import {InputSignalNode} from '../authoring/input_signal_node';
 
 export function applyValueToInputField<T>(
-    instance: T, privateName: string, flags: InputFlags, value: unknown) {
-  if ((flags & InputFlags.SignalBased) !== 0) {
-    const field = (instance as any)[privateName] as InputSignal<unknown, unknown>;
-    const node = field[SIGNAL];
-
-    node.applyValueToInputSignal(node, value);
+    instance: T, inputSignalNode: null|InputSignalNode<unknown, unknown>, privateName: string,
+    value: unknown) {
+  if (inputSignalNode !== null) {
+    inputSignalNode.applyValueToInputSignal(inputSignalNode, value);
   } else {
     (instance as any)[privateName] = value;
   }
