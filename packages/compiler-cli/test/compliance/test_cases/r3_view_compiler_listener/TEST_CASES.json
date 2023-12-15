@@ -333,6 +333,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate listener with multiple statements",
+      "inputFiles": [
+        "multiple_statements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
