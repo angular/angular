@@ -62,7 +62,7 @@ function addNamesToView(
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
       case ir.OpKind.Variable:
-        varNames.set(op.xref, getVariableName(op.variable, state));
+        varNames.set(op.xref, getVariableName(unit, op.variable, state));
         break;
       case ir.OpKind.RepeaterCreate:
         if (!(unit instanceof ViewCompilationUnit)) {
@@ -123,15 +123,24 @@ function addNamesToView(
   }
 }
 
-function getVariableName(variable: ir.SemanticVariable, state: {index: number}): string {
+function getVariableName(
+    unit: CompilationUnit, variable: ir.SemanticVariable, state: {index: number}): string {
   if (variable.name === null) {
     switch (variable.kind) {
       case ir.SemanticVariableKind.Context:
         variable.name = `ctx_r${state.index++}`;
         break;
       case ir.SemanticVariableKind.Identifier:
-        // TODO: Prefix increment and `_r` for compatiblity only.
-        variable.name = `${variable.identifier}_r${++state.index}`;
+        if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+          // TODO: Prefix increment and `_r` are for compatiblity with the old naming scheme.
+          // This has the potential to cause collisions when `ctx` is the identifier, so we need a
+          // special check for that as well.
+          const compatPrefix = variable.identifier === 'ctx' ? 'i' : '';
+          variable.name = `${variable.identifier}_${compatPrefix}r${++state.index}`;
+        } else {
+          variable.name = `${variable.identifier}_i${state.index++}`;
+        }
+
         break;
       default:
         // TODO: Prefix increment for compatibility only.
