@@ -73,7 +73,7 @@ const FLYWEIGHT_ARRAY: ReadonlyArray<o.Expression> = Object.freeze<o.Expression[
  * Container for all of the various kinds of attributes which are applied on an element.
  */
 class ElementAttributes {
-  private known = new Set<string>();
+  private known = new Map<ir.BindingKind, Set<string>>();
   private byKind = new Map<ir.BindingKind, o.Expression[]>;
 
   projectAs: string|null = null;
@@ -102,12 +102,22 @@ class ElementAttributes {
     return this.byKind.get(ir.BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
   }
 
+  isKnown(kind: ir.BindingKind, name: string, value: o.Expression|null) {
+    const nameToValue = this.known.get(kind) ?? new Set<string>();
+    this.known.set(kind, nameToValue);
+    if (nameToValue.has(name)) {
+      return true;
+    }
+    nameToValue.add(name);
+    return false;
+  }
+
   add(kind: ir.BindingKind, name: string, value: o.Expression|null,
       trustedValueFn: o.Expression|null): void {
-    if (this.known.has(name)) {
+    if (this.isKnown(kind, name, value)) {
       return;
     }
-    this.known.add(name);
+
     // TODO: Can this be its own phase
     if (name === 'ngProjectAs') {
       if (value === null || !(value instanceof o.LiteralExpr) || (value.value == null) ||
