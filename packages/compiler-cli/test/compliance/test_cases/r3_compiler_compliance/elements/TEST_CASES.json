@@ -254,6 +254,17 @@
           "failureMessage": "Incorrect generated template."
         }
       ]
+    },
+    {
+      "description": "should validate iframe attributes",
+      "inputFiles": [
+        "iframe_attrs.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
     }
   ]
 }
