@@ -83,9 +83,24 @@ export class FakeNavigation implements Navigation {
     return this.currentEntryIndex < this.entriesArr.length - 1;
   }
 
-  constructor(private readonly window: Window, private readonly baseURI: string) {
+  constructor(
+      private readonly window: Window,
+      private baseURI: string,
+  ) {
     // First entry.
     this.setInitialEntryForTesting('.');
+  }
+
+  setBaseURIForTesting(baseURI: string) {
+    this.baseURI = baseURI;
+  }
+
+  getBaseURIForTesting() {
+    return this.baseURI;
+  }
+
+  getWindowForTesting() {
+    return this.window;
   }
 
   /**
@@ -139,10 +154,7 @@ export class FakeNavigation implements Navigation {
   }
 
   /** Equivalent to `navigation.navigate()`. */
-  navigate(
-      url: string,
-      options?: NavigationNavigateOptions,
-      ): FakeNavigationResult {
+  navigate(url: string, options?: NavigationNavigateOptions): FakeNavigationResult {
     const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
     const toUrl = new URL(url, this.baseURI);
 
@@ -228,10 +240,7 @@ export class FakeNavigation implements Navigation {
     const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
     const entry = this.findEntry(key);
     if (!entry) {
-      const domException = new DOMException(
-          'Invalid key',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Invalid key', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -289,10 +298,7 @@ export class FakeNavigation implements Navigation {
   /** Equivalent to `navigation.back()`. */
   back(options?: NavigationOptions): FakeNavigationResult {
     if (this.currentEntryIndex === 0) {
-      const domException = new DOMException(
-          'Cannot go back',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Cannot go back', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -309,10 +315,7 @@ export class FakeNavigation implements Navigation {
   /** Equivalent to `navigation.forward()`. */
   forward(options?: NavigationOptions): FakeNavigationResult {
     if (this.currentEntryIndex === this.entriesArr.length - 1) {
-      const domException = new DOMException(
-          'Cannot go forward',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Cannot go forward', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -434,9 +437,7 @@ export class FakeNavigation implements Navigation {
     // entry.
     this.canSetInitialEntry = false;
     if (this.navigateEvent) {
-      this.navigateEvent.cancel(
-          new DOMException('Navigation was aborted', 'AbortError'),
-      );
+      this.navigateEvent.cancel(new DOMException('Navigation was aborted', 'AbortError'));
       this.navigateEvent = undefined;
     }
 
@@ -485,9 +486,10 @@ export class FakeNavigation implements Navigation {
       this.userAgentTraverse(this.navigateEvent.destination);
     }
     this.navigateEvent.userAgentNavigated(this.currentEntry);
-    const currentEntryChangeEvent = createFakeNavigationCurrentEntryChangeEvent(
-        {from, navigationType: this.navigateEvent.navigationType},
-    );
+    const currentEntryChangeEvent = createFakeNavigationCurrentEntryChangeEvent({
+      from,
+      navigationType: this.navigateEvent.navigationType,
+    });
     this.eventTarget.dispatchEvent(currentEntryChangeEvent);
     if (!this.navigateEvent.skipPopState) {
       const popStateEvent = createPopStateEvent({
@@ -544,13 +546,13 @@ export class FakeNavigation implements Navigation {
     throw new Error('unimplemented');
   }
 
-  set oncurrententrychange(_handler:
-                               ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|
-                           null) {
+  set oncurrententrychange(
+      _handler: ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|null,
+  ) {
     throw new Error('unimplemented');
   }
 
-  get oncurrententrychange():
+  get oncurrententrychange():|
       ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|null {
     throw new Error('unimplemented');
   }
