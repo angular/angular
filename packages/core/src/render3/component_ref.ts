@@ -23,7 +23,6 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
-import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
 import {AfterRenderEventManager} from './after_render_hooks';
@@ -501,7 +500,8 @@ function setRootNodeAttributes(
     hostRenderer: Renderer2, componentDef: ComponentDef<unknown>, hostRNode: RElement,
     rootSelectorOrNode: any) {
   if (rootSelectorOrNode) {
-    setUpAttributes(hostRenderer, hostRNode, ['ng-version', VERSION.full]);
+    // The placeholder will be replaced with the actual version at build time.
+    setUpAttributes(hostRenderer, hostRNode, ['ng-version', '0.0.0-PLACEHOLDER']);
   } else {
     // If host element is created as a part of this function call (i.e. `rootSelectorOrNode`
     // is not defined), also apply attributes and classes extracted from component selector.
