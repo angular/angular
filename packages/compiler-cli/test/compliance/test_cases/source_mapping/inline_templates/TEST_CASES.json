@@ -829,8 +829,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should correctly handle collapsed whitespace in element placeholder i18n message source-mappings (partial compile)",

@@ -252,12 +252,14 @@ export function projection(
   return call(Identifiers.projection, args, sourceSpan);
 }
 
-export function i18nStart(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+export function i18nStart(
+    slot: number, constIndex: number, subTemplateIndex: number,
+    sourceSpan: ParseSourceSpan|null): ir.CreateOp {
   const args = [o.literal(slot), o.literal(constIndex)];
   if (subTemplateIndex !== null) {
     args.push(o.literal(subTemplateIndex));
   }
-  return call(Identifiers.i18nStart, args, null);
+  return call(Identifiers.i18nStart, args, sourceSpan);
 }
 
 export function repeaterCreate(
@@ -299,16 +301,18 @@ export function deferWhen(
   return call(prefetch ? Identifiers.deferPrefetchWhen : Identifiers.deferWhen, [expr], sourceSpan);
 }
 
-export function i18n(slot: number, constIndex: number, subTemplateIndex: number): ir.CreateOp {
+export function i18n(
+    slot: number, constIndex: number, subTemplateIndex: number,
+    sourceSpan: ParseSourceSpan|null): ir.CreateOp {
   const args = [o.literal(slot), o.literal(constIndex)];
   if (subTemplateIndex) {
     args.push(o.literal(subTemplateIndex));
   }
-  return call(Identifiers.i18n, args, null);
+  return call(Identifiers.i18n, args, sourceSpan);
 }
 
-export function i18nEnd(): ir.CreateOp {
-  return call(Identifiers.i18nEnd, [], null);
+export function i18nEnd(endSourceSpan: ParseSourceSpan|null): ir.CreateOp {
+  return call(Identifiers.i18nEnd, [], endSourceSpan);
 }
 
 export function i18nAttributes(slot: number, i18nAttributesConfig: number): ir.CreateOp {

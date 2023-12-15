@@ -80,13 +80,15 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         break;
       case ir.OpKind.I18nStart:
         ir.OpList.replace(
-            op, ng.i18nStart(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!));
+            op,
+            ng.i18nStart(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!, op.sourceSpan));
         break;
       case ir.OpKind.I18nEnd:
-        ir.OpList.replace(op, ng.i18nEnd());
+        ir.OpList.replace(op, ng.i18nEnd(op.sourceSpan));
         break;
       case ir.OpKind.I18n:
-        ir.OpList.replace(op, ng.i18n(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!));
+        ir.OpList.replace(
+            op, ng.i18n(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!, op.sourceSpan));
         break;
       case ir.OpKind.I18nAttributes:
         if (op.i18nAttributesConfig === null) {
