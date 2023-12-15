@@ -65,12 +65,10 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
   diagnostics: ts.Diagnostic[],
 } {
   const flattened: Reference<ClassDeclaration>[] = [];
+  const errorMessage = `'imports' must be an array of components, directives, pipes, or NgModules.`;
 
   if (!Array.isArray(imports)) {
-    const error = createValueHasWrongTypeError(
-                      expr, imports,
-                      `'imports' must be an array of components, directives, pipes, or NgModules.`)
-                      .toDiagnostic();
+    const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
     return {
       imports: [],
       diagnostics: [error],
@@ -89,9 +87,7 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
         flattened.push(ref as Reference<ClassDeclaration>);
       } else {
         diagnostics.push(
-            createValueHasWrongTypeError(
-                ref.getOriginForDiagnostics(expr), ref,
-                `'imports' must be an array of components, directives, pipes, or NgModules.`)
+            createValueHasWrongTypeError(ref.getOriginForDiagnostics(expr), ref, errorMessage)
                 .toDiagnostic());
       }
     } else if (isLikelyModuleWithProviders(ref)) {
@@ -104,15 +100,11 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
       }
       diagnostics.push(makeDiagnostic(
           ErrorCode.COMPONENT_UNKNOWN_IMPORT, origin,
-          `'imports' contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. ` +
+          `Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. ` +
               `These calls are not used to configure components and are not valid in standalone component imports - ` +
               `consider importing them in the application bootstrap instead.`));
     } else {
-      diagnostics.push(
-          createValueHasWrongTypeError(
-              expr, imports,
-              `'imports' must be an array of components, directives, pipes, or NgModules.`)
-              .toDiagnostic());
+      diagnostics.push(createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic());
     }
   }
 
