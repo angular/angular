@@ -10,6 +10,7 @@ import {ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {TemplateSourceMapping, TypeCheckableDirectiveMeta} from './api';
@@ -43,9 +44,9 @@ export interface TypeCheckContext {
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean, preserveWhitespaces: boolean): void;
+      pipes: Map<string, PipeMeta>, schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
+      file: ParseSourceFile, parseErrors: ParseError[]|null, isStandalone: boolean,
+      preserveWhitespaces: boolean): void;
 }
 
 /**

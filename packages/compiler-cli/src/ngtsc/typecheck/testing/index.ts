@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DecoratorInputTransform, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DecoratorInputTransform, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex, PipeMeta} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -669,7 +669,7 @@ function prepareDeclarations(
     declarations: TestDeclaration[], resolveDeclaration: DeclarationResolver,
     metadataRegistry: Map<string, TypeCheckableDirectiveMeta>) {
   const matcher = new SelectorMatcher<DirectiveMeta[]>();
-  const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+  const pipes = new Map<string, PipeMeta>();
   const hostDirectiveResolder = new HostDirectivesResolver(
       getFakeMetadataReader(metadataRegistry as Map<string, DirectiveMeta>));
   const directives: DirectiveMeta[] = [];
@@ -684,7 +684,14 @@ function prepareDeclarations(
     if (decl.type === 'directive') {
       registerDirective(decl);
     } else if (decl.type === 'pipe') {
-      pipes.set(decl.pipeName, new Reference(resolveDeclaration(decl)));
+      pipes.set(decl.pipeName, {
+        kind: MetaKind.Pipe,
+        ref: new Reference(resolveDeclaration(decl)),
+        name: decl.pipeName,
+        nameExpr: null,
+        isStandalone: false,
+        decorator: null,
+      });
     }
   }
 
