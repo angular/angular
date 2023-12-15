@@ -2081,6 +2081,16 @@ class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs));
       }
       return;
+    } else {
+      if (node instanceof TmplAstElement) {
+        const isDeferred = this.tcb.boundTarget.isDeferred(node);
+        if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
+          // This node has directives/components that were defer-loaded (included into
+          // `@Component.deferredImports`), but the node itself was used outside of a
+          // `@defer` block, which is the error.
+          this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+        }
+      }
     }
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
@@ -2369,6 +2379,15 @@ class TcbExpressionTranslator {
       if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
+
+        // Use an 'any' value to at least allow the rest of the expression to be checked.
+        pipe = NULL_AS_ANY;
+      } else if (
+          pipeMeta.isExplicitlyDeferred &&
+          this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)) {
+        // This pipe was defer-loaded (included into `@Component.deferredImports`),
+        // but was used outside of a `@defer` block, which is the error.
+        this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = NULL_AS_ANY;
