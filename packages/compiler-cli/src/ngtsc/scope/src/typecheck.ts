@@ -10,7 +10,7 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind} from '../../metadata';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeKind, ComponentScopeReader} from './api';
@@ -33,7 +33,7 @@ export interface TypeCheckScope {
   /**
    * The pipes that are available in the compilation scope.
    */
-  pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
+  pipes: Map<string, PipeMeta>;
 
   /**
    * The schemas that are used in this scope.
@@ -74,7 +74,7 @@ export class TypeCheckScopeRegistry {
   getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     const directives: DirectiveMeta[] = [];
-    const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+    const pipes = new Map<string, PipeMeta>();
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope === null) {
@@ -111,7 +111,7 @@ export class TypeCheckScopeRegistry {
           throw new Error(`Unexpected non-class declaration ${
               ts.SyntaxKind[meta.ref.node.kind]} for pipe ${meta.ref.debugName}`);
         }
-        pipes.set(meta.name, meta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
+        pipes.set(meta.name, meta);
       }
     }
 
