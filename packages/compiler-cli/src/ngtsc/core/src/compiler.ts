@@ -1072,7 +1072,9 @@ export class NgCompiler {
 
     const resourceRegistry = new ResourceRegistry();
 
-    const deferredSymbolsTracker = new DeferredSymbolTracker(this.inputProgram.getTypeChecker());
+    const deferredSymbolsTracker = new DeferredSymbolTracker(
+        this.inputProgram.getTypeChecker(),
+        this.options.onlyExplicitDeferDependencyImports ?? false);
 
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
