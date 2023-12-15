@@ -68,9 +68,9 @@ export function createInputSignal<ReadT, WriteT>(
 
   node.value = initialValue;
 
-  if (options?.transform !== undefined) {
-    node.transformFn = options.transform;
-  }
+  // Perf note: Always set `transformFn` here to ensure that `node` always
+  // has the same v8 class shape, allowing monomorphic reads on input signals.
+  node.transformFn = options?.transform;
 
   function inputValueFn() {
     // Record that someone looked at this signal.

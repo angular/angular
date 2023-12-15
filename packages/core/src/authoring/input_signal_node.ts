@@ -20,15 +20,17 @@ export interface InputSignalNode<ReadT, WriteT> extends
    * User-configured transform that will run whenever a new value is applied
    * to the input signal node.
    */
-  transformFn?: (value: WriteT) => ReadT;
+  transformFn: ((value: WriteT) => ReadT)|undefined;
 
   /**
-   * Applies a new value to the input signal. This is called by the framework runtime
-   * code whenever a binding changes. The value can be anything- but for typing purposes
-   * we can assume it's either a valid value given type-checking.
+   * Applies a new value to the input signal. Expects transforms to be run
+   * manually before.
+   *
+   * This function is called by the framework runtime code whenever a binding
+   * changes. The value can in practice be anything at runtime, but for typing
+   * purposes we assume it's a valid `ReadT` value. Type-checking will enforce that.
    */
-  applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT|WriteT):
-      void;
+  applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT): void;
 }
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
@@ -37,13 +39,10 @@ export interface InputSignalNode<ReadT, WriteT> extends
 export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__ */ (() => {
   return {
     ...SIGNAL_NODE,
+    transformFn: undefined,
 
-    applyValueToInputSignal<ReadT, WriteT>(
-        node: InputSignalNode<ReadT, WriteT>, value: ReadT|WriteT): void {
-      const finalValue =
-          node.transformFn !== undefined ? node.transformFn(value as WriteT) : (value as ReadT);
-
-      signalSetFn(node, finalValue);
+    applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT) {
+      signalSetFn(node, value);
     }
   };
 })();
