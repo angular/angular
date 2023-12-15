@@ -182,6 +182,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
       // Defer blocks are not yet fully supported in partial compilation.
       deferrableDeclToImportDecl: new Map(),
+      deferrableTypes: new Map(),
 
       encapsulation: metaObj.has('encapsulation') ?
           parseEncapsulation(metaObj.getValue('encapsulation')) :
