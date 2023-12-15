@@ -227,4 +227,9 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * @param trigger Trigger whose target is being looked up.
    */
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null;
+
+  /**
+   * Whether a given node is located in a `@defer` block.
+   */
+  isDeferred(node: Element): boolean;
 }
