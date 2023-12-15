@@ -193,9 +193,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       deferBlocks,
-
-      // TODO: leaving empty in JIT mode for now,
-      // to be implemented as one of the next steps.
+      deferrableTypes: new Map(),
       deferrableDeclToImportDecl: new Map(),
 
       styles: [...facade.styles, ...template.styles],
@@ -475,9 +473,7 @@ function convertDeclareComponentFacadeToMetadata(
                                                       null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     deferBlocks,
-
-    // TODO: leaving empty in JIT mode for now,
-    // to be implemented as one of the next steps.
+    deferrableTypes: new Map(),
     deferrableDeclToImportDecl: new Map(),
 
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
