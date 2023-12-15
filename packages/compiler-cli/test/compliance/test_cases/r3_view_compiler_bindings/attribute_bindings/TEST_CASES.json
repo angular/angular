@@ -110,6 +110,18 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle duplicate bindings",
+      "inputFiles": [
+        "duplicate_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of duplicate bindings"
+        }
+      ],
+      "focusTest": true
     }
   ]
 }
