@@ -22,7 +22,7 @@ async function main() {
   let failing = false;
 
   for (const member of testClazz.members) {
-    if (ts.isPropertyDeclaration(member) === false) {
+    if (!ts.isPropertyDeclaration(member)) {
       continue;
     }
 
