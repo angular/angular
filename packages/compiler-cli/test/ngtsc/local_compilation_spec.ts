@@ -1146,5 +1146,218 @@ runInEachFileSystem(() => {
                 'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", v => v + \'TRANSFORMED!\'] }');
       });
     });
+
+    describe('@defer', () => {
+      it('should handle `@Component.deferredImports` field', () => {
+        env.write('deferred-a.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-a',
+            template: 'DeferredCmpA contents',
+          })
+          export class DeferredCmpA {
+          }
+        `);
+
+        env.write('deferred-b.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-b',
+            template: 'DeferredCmpB contents',
+          })
+          export class DeferredCmpB {
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {DeferredCmpA} from './deferred-a';
+          import {DeferredCmpB} from './deferred-b';
+          @Component({
+            standalone: true,
+            deferredImports: [DeferredCmpA, DeferredCmpB],
+            template: \`
+              @defer {
+                <deferred-cmp-a />
+              }
+              @defer {
+                <deferred-cmp-b />
+              }
+            \`,
+          })
+          export class AppCmp {
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Expect that all deferrableImports in local compilation mode
+        // are located in a single function (since we can't detect in
+        // the local mode which components belong to which block).
+        expect(jsContents)
+            .toContain(
+                'const AppCmp_DeferFn = () => [' +
+                'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                'import("./deferred-b").then(m => m.DeferredCmpB)];');
+
+        // Make sure there are no eager imports present in the output.
+        expect(jsContents).not.toContain(`from './deferred-a'`);
+        expect(jsContents).not.toContain(`from './deferred-b'`);
+
+        // All defer instructions use the same dependency function.
+        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
+        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+
+        // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+        expect(jsContents)
+            .toContain(
+                'ɵsetClassMetadataAsync(AppCmp, () => [' +
+                'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
+                '(DeferredCmpA, DeferredCmpB) => {');
+      });
+
+      it('should handle `@Component.imports` field', () => {
+        env.write('deferred-a.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-a',
+            template: 'DeferredCmpA contents',
+          })
+          export class DeferredCmpA {
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {DeferredCmpA} from './deferred-a';
+          @Component({
+            standalone: true,
+            imports: [DeferredCmpA],
+            template: \`
+              @defer {
+                <deferred-cmp-a />
+              }
+            \`,
+          })
+          export class AppCmp {
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // In local compilation mode we can't detect which components
+        // belong to `@defer` blocks, thus can't determine whether corresponding
+        // classes can be defer-loaded. In this case we retain eager imports
+        // and do not generate defer dependency functions for `@defer` instructions.
+
+        // Eager imports are retained in the output.
+        expect(jsContents).toContain(`from './deferred-a'`);
+
+        // Defer instructions do not have a dependency function,
+        // since all dependencies were defined in `@Component.imports`.
+        expect(jsContents).toContain('ɵɵdefer(1, 0);');
+
+        // Expect `ɵsetClassMetadata` (sync) to be generated.
+        expect(jsContents).toContain('ɵsetClassMetadata(AppCmp,');
+      });
+
+      it('should handle defer blocks that rely on deps from `deferredImports` and `imports`',
+         () => {
+           env.write('eager-a.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'eager-cmp-a',
+                template: 'EagerCmpA contents',
+              })
+              export class EagerCmpA {
+              }
+            `);
+
+           env.write('deferred-a.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+            `);
+
+           env.write('deferred-b.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {DeferredCmpA} from './deferred-a';
+              import {DeferredCmpB} from './deferred-b';
+              import {EagerCmpA} from './eager-a';
+              @Component({
+                standalone: true,
+                imports: [EagerCmpA],
+                deferredImports: [DeferredCmpA, DeferredCmpB],
+                template: \`
+                  @defer {
+                    <eager-cmp-a />
+                    <deferred-cmp-a />
+                  }
+                  @defer {
+                    <eager-cmp-a />
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmp {
+              }
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Expect that all deferrableImports in local compilation mode
+           // are located in a single function (since we can't detect in
+           // the local mode which components belong to which block).
+           // Eager dependencies are **not* included here.
+           expect(jsContents)
+               .toContain(
+                   'const AppCmp_DeferFn = () => [' +
+                   'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                   'import("./deferred-b").then(m => m.DeferredCmpB)];');
+
+           // Make sure there are no eager imports present in the output.
+           expect(jsContents).not.toContain(`from './deferred-a'`);
+           expect(jsContents).not.toContain(`from './deferred-b'`);
+
+           // Eager dependencies retain their imports.
+           expect(jsContents).toContain(`from './eager-a';`);
+
+           // All defer instructions use the same dependency function.
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
+           expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+
+           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmp, () => [' +
+                   'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                   'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
+                   '(DeferredCmpA, DeferredCmpB) => {');
+         });
+    });
   });
 });
