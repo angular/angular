@@ -16,6 +16,9 @@
     {
       "name": "dry-run",
       "type": "boolean",
+      "aliases": [
+        "d"
+      ],
       "default": false,
       "description": "Run through and reports activity without writing out results."
     },
