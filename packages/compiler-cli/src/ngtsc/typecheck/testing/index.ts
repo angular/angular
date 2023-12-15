@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
+import {BindingPipe, CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
@@ -862,6 +862,8 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
+  deferredPipeUsedEagerly(templateId: TemplateId, ast: BindingPipe): void {}
+  deferredComponentUsedEagerly(templateId: TemplateId, element: TmplAstElement): void {}
   illegalAssignmentToTemplateVar(): void {}
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
