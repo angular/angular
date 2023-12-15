@@ -1033,6 +1033,8 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * The i18n context generated from this block. Initially null, until the context is created.
    */
   context: XrefId|null;
+
+  sourceSpan: ParseSourceSpan|null;
 }
 
 /**
@@ -1052,7 +1054,9 @@ export interface I18nStartOp extends I18nOpBase {
 /**
  * Create an `I18nStartOp`.
  */
-export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: XrefId): I18nStartOp {
+export function createI18nStartOp(
+    xref: XrefId, message: i18n.Message, root: XrefId|undefined,
+    sourceSpan: ParseSourceSpan|null): I18nStartOp {
   return {
     kind: OpKind.I18nStart,
     xref,
@@ -1062,6 +1066,7 @@ export function createI18nStartOp(xref: XrefId, message: i18n.Message, root?: Xr
     messageIndex: null,
     subTemplateIndex: null,
     context: null,
+    sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };
@@ -1077,15 +1082,18 @@ export interface I18nEndOp extends Op<CreateOp> {
    * The `XrefId` of the `I18nStartOp` that created this block.
    */
   xref: XrefId;
+
+  sourceSpan: ParseSourceSpan|null;
 }
 
 /**
  * Create an `I18nEndOp`.
  */
-export function createI18nEndOp(xref: XrefId): I18nEndOp {
+export function createI18nEndOp(xref: XrefId, sourceSpan: ParseSourceSpan|null): I18nEndOp {
   return {
     kind: OpKind.I18nEnd,
     xref,
+    sourceSpan,
     ...NEW_OP,
   };
 }
