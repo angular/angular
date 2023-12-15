@@ -70,6 +70,24 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle class that shares its name with other const array items",
+      "inputFiles": [
+        "shared_name_with_consts.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "templatePipelineExpected": "shared_name_with_consts_template.pipeline.js",
+              "expected": "shared_name_with_consts_template.js",
+              "generated": "shared_name_with_consts.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
