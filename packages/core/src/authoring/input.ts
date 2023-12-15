@@ -7,6 +7,7 @@
  */
 
 import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal} from './input_signal';
+import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 /**
  * Initializes an input with an initial value. If no explicit value
@@ -37,7 +38,7 @@ export function inputFunction<ReadT, WriteT>(
 export function inputFunction<ReadT, WriteT>(
     initialValue?: ReadT,
     opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
-  return createInputSignal(initialValue, false, opts);
+  return createInputSignal(initialValue, opts);
 }
 
 /**
@@ -63,7 +64,7 @@ export function inputRequiredFunction<ReadT, WriteT>(
     opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
 export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
     InputSignal<ReadT, WriteT> {
-  return createInputSignal(undefined as never, true, opts);
+  return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
 
 /**

@@ -58,23 +58,18 @@ export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
 /**
  * Creates an input signal.
  *
- * @param initialValue The user-specified initial value. Ignored if the input is required.
- * @param required Whether the input is required. If set, an initial value is ignored.
+ * @param initialValue The initial value.
+ *   Can be set to {@link REQUIRED_UNSET_VALUE} for required inputs.
  * @param options Additional options for the input. e.g. a transform, or an alias.
  */
 export function createInputSignal<ReadT, WriteT>(
-    initialValue: ReadT, required: boolean,
-    options?: InputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT> {
+    initialValue: ReadT, options?: InputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT> {
   const node: InputSignalNode<ReadT, WriteT> = Object.create(INPUT_SIGNAL_NODE);
+
+  node.value = initialValue;
 
   if (options?.transform !== undefined) {
     node.transformFn = options.transform;
-  }
-
-  if (required) {
-    node.value = REQUIRED_UNSET_VALUE;
-  } else {
-    node.value = initialValue;
   }
 
   function inputValueFn() {
