@@ -127,11 +127,9 @@ export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedE
   const [phase, target] = event.type === e.ParsedEventType.Regular ? [null, event.targetOrPhase] :
                                                                      [event.targetOrPhase, null];
   const eventBinding = ir.createListenerOp(
-      job.root.xref, new ir.SlotHandle(), event.name, null, [], phase, target, true,
+      job.root.xref, new ir.SlotHandle(), event.name, null,
+      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan), phase, target, true,
       event.sourceSpan);
-  // TODO: Can this be a chain?
-  eventBinding.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(
-      convertAst(event.handler.ast, job, event.sourceSpan), event.handlerSpan)));
   job.root.create.push(eventBinding);
 }
 
