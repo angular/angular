@@ -230,7 +230,7 @@ The following example re-implements the previous test with `DebugElement.query()
 
 Some noteworthy observations:
 
-* The `By.css()` static method selects `DebugElement` nodes with a [standard CSS selector](https://developer.mozilla.org/docs/Web/Guide/CSS/Getting_started/Selectors 'CSS selectors').
+* The `By.css()` static method selects `DebugElement` nodes with a [standard CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors 'CSS selectors').
 * The query returns a `DebugElement` for the paragraph.
 * You must unwrap that result to get the paragraph element.
 
