@@ -25,6 +25,7 @@ import {collectElementConsts} from './phases/const_collection';
 import {convertI18nBindings} from './phases/convert_i18n_bindings';
 import {createDeferDepsFns} from './phases/create_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
+import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
 import {configureDeferInstructions} from './phases/defer_configs';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
@@ -92,6 +93,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: emitNamespaceChanges},
   {kind: Kind.Tmpl, fn: propagateI18nBlocks},
   {kind: Kind.Tmpl, fn: wrapI18nIcus},
+  {kind: Kind.Both, fn: deduplicateTextBindings},
   {kind: Kind.Both, fn: specializeStyleBindings},
   {kind: Kind.Both, fn: specializeBindings},
   {kind: Kind.Both, fn: extractAttributes},

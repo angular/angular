@@ -25,7 +25,8 @@ export function collectElementConsts(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
-        const attributes = allElementAttributes.get(op.target) || new ElementAttributes();
+        const attributes =
+            allElementAttributes.get(op.target) || new ElementAttributes(job.compatibility);
         allElementAttributes.set(op.target, attributes);
         attributes.add(op.bindingKind, op.name, op.expression, op.trustedValueFn);
         ir.OpList.remove<ir.CreateOp>(op);
@@ -102,6 +103,8 @@ class ElementAttributes {
     return this.byKind.get(ir.BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
   }
 
+  constructor(private compatibility: ir.CompatibilityMode) {}
+
   isKnown(kind: ir.BindingKind, name: string, value: o.Expression|null) {
     const nameToValue = this.known.get(kind) ?? new Set<string>();
     this.known.set(kind, nameToValue);
@@ -114,7 +117,12 @@ class ElementAttributes {
 
   add(kind: ir.BindingKind, name: string, value: o.Expression|null,
       trustedValueFn: o.Expression|null): void {
-    if (this.isKnown(kind, name, value)) {
+    // In compatibility mode, we allow duplicates for attributes to replicate the behavior in
+    // TemplateDefinitionBuilder.
+    const allowDuplicates = this.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
+        kind === ir.BindingKind.Attribute :
+        false;
+    if (this.isKnown(kind, name, value) && !allowDuplicates) {
       return;
     }
 
