@@ -87,25 +87,33 @@ export class TypeCheckScopeRegistry {
       };
     }
 
-    const cacheKey = scope.kind === ComponentScopeKind.NgModule ? scope.ngModule : scope.component;
-    const dependencies = scope.kind === ComponentScopeKind.NgModule ?
-        scope.compilation.dependencies :
-        scope.dependencies;
+    const isNgModuleScope = scope.kind === ComponentScopeKind.NgModule;
+    const cacheKey = isNgModuleScope ? scope.ngModule : scope.component;
+    const dependencies = isNgModuleScope ? scope.compilation.dependencies : scope.dependencies;
 
     if (this.scopeCache.has(cacheKey)) {
       return this.scopeCache.get(cacheKey)!;
     }
 
-    for (const meta of dependencies) {
+    let allDependencies = dependencies;
+    if (!isNgModuleScope && Array.isArray(scope.deferredDependencies) &&
+        scope.deferredDependencies.length > 0) {
+      allDependencies = [...allDependencies, ...scope.deferredDependencies];
+    }
+    for (const meta of allDependencies) {
       if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         if (extMeta === null) {
           continue;
         }
+
+        // Carry over the `isExplicitlyDeferred` flag from the dependency info.
+        const directiveMeta = this.applyExplicitlyDeferredFlag(extMeta, meta.isExplicitlyDeferred);
         matcher.addSelectables(
             CssSelector.parse(meta.selector),
-            [...this.hostDirectivesResolver.resolve(extMeta), extMeta]);
-        directives.push(extMeta);
+            [...this.hostDirectivesResolver.resolve(directiveMeta), directiveMeta]);
+
+        directives.push(directiveMeta);
       } else if (meta.kind === MetaKind.Pipe) {
         if (!ts.isClassDeclaration(meta.ref.node)) {
           throw new Error(`Unexpected non-class declaration ${
@@ -140,5 +148,10 @@ export class TypeCheckScopeRegistry {
     }
     this.flattenedDirectiveMetaCache.set(clazz, meta);
     return meta;
+  }
+
+  private applyExplicitlyDeferredFlag<T extends DirectiveMeta|PipeMeta>(
+      meta: T, isExplicitlyDeferred: boolean): T {
+    return isExplicitlyDeferred === true ? {...meta, isExplicitlyDeferred} : meta;
   }
 }

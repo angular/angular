@@ -62,3 +62,10 @@ export function makeUnknownComponentImportDiagnostic(
       ErrorCode.COMPONENT_UNKNOWN_IMPORT, getDiagnosticNode(ref, rawExpr),
       `Component imports must be standalone components, directives, pipes, or must be NgModules.`);
 }
+
+export function makeUnknownComponentDeferredImportDiagnostic(
+    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression) {
+  return makeDiagnostic(
+      ErrorCode.COMPONENT_UNKNOWN_DEFERRED_IMPORT, getDiagnosticNode(ref, rawExpr),
+      `Component deferred imports must be standalone components, directives or pipes.`);
+}

@@ -652,6 +652,17 @@ export interface Component extends Directive {
   imports?: (Type<any>|ReadonlyArray<any>)[];
 
   /**
+   * The `deferredImports` property specifies a standalone component's template dependencies,
+   * which should be defer-loaded as a part of the `@defer` block. Angular *always* generates
+   * dynamic imports for such symbols and removes the regular/eager import. Make sure that imports
+   * which bring symbols used in the `deferredImports` don't contain other symbols.
+   *
+   * Note: this is an internal-only field, use regular `@Component.imports` field instead.
+   * @internal
+   */
+  deferredImports?: (Type<any>|ReadonlyArray<any>)[];
+
+  /**
    * The set of schemas that declare elements to be allowed in a standalone component. Elements and
    * properties that are neither Angular components nor directives must be declared in a schema.
    *

@@ -60,13 +60,15 @@ export const animationTriggerResolver: ForeignFunctionResolver =
       return res;
     };
 
-export function validateAndFlattenComponentImports(imports: ResolvedValue, expr: ts.Expression): {
+export function validateAndFlattenComponentImports(
+    imports: ResolvedValue, expr: ts.Expression, isDeferred: boolean): {
   imports: Reference<ClassDeclaration>[],
   diagnostics: ts.Diagnostic[],
 } {
   const flattened: Reference<ClassDeclaration>[] = [];
-  const errorMessage = `'imports' must be an array of components, directives, pipes, or NgModules.`;
-
+  const errorMessage = isDeferred ?
+      `'deferredImports' must be an array of components, directives, or pipes.` :
+      `'imports' must be an array of components, directives, pipes, or NgModules.`;
   if (!Array.isArray(imports)) {
     const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
     return {
@@ -79,7 +81,7 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
   for (const ref of imports) {
     if (Array.isArray(ref)) {
       const {imports: childImports, diagnostics: childDiagnostics} =
-          validateAndFlattenComponentImports(ref, expr);
+          validateAndFlattenComponentImports(ref, expr, isDeferred);
       flattened.push(...childImports);
       diagnostics.push(...childDiagnostics);
     } else if (ref instanceof Reference) {

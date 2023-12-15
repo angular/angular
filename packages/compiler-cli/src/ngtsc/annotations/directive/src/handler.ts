@@ -168,6 +168,7 @@ export class DirectiveDecoratorHandler implements
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: null,
+      deferredImports: null,
       schemas: null,
       ngContentSelectors: null,
       decorator: analysis.decorator,
@@ -175,6 +176,7 @@ export class DirectiveDecoratorHandler implements
       // Directives analyzed within our own compilation are not _assumed_ to export providers.
       // Instead, we statically analyze their imports to make a direct determination.
       assumedToExportProviders: false,
+      isExplicitlyDeferred: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {
