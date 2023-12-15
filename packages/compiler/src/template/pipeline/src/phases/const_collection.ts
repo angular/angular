@@ -161,7 +161,7 @@ class ElementAttributes {
  * Gets an array of literal expressions representing the attribute's namespaced name.
  */
 function getAttributeNameLiterals(name: string): o.LiteralExpr[] {
-  const [attributeNamespace, attributeName] = splitNsName(name);
+  const [attributeNamespace, attributeName] = splitNsName(name, false);
   const nameLiteral = o.literal(attributeName);
 
   if (attributeNamespace) {
