@@ -691,6 +691,7 @@ function prepareDeclarations(
         nameExpr: null,
         isStandalone: false,
         decorator: null,
+        isExplicitlyDeferred: false
       });
     }
   }
@@ -741,6 +742,7 @@ function getDirectiveMetaFromDeclaration(
     decorator: null,
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
+    isExplicitlyDeferred: false,
     hostDirectives: decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
       return {
         directive: new Reference(resolveDeclaration(hostDecl.directive)),
@@ -793,11 +795,13 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         isSignal: false,
         imports: null,
+        deferredImports: null,
         schemas: null,
         decorator: null,
         assumedToExportProviders: false,
         ngContentSelectors: decl.ngContentSelectors || null,
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
+        isExplicitlyDeferred: false,
         hostDirectives:
             decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
               return {
@@ -821,6 +825,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         nameExpr: null,
         isStandalone: false,
         decorator: null,
+        isExplicitlyDeferred: false,
       });
     }
   }

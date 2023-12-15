@@ -124,6 +124,12 @@ export enum ErrorCode {
   /** Raised when a component has both `styleUrls` and `styleUrl`. */
   COMPONENT_INVALID_STYLE_URLS = 2021,
 
+  /**
+   * Raised when a type in the `deferredImports` of a component is not a component, directive or
+   * pipe.
+   */
+  COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -308,6 +314,24 @@ export enum ErrorCode {
    * ```
    */
   CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+
+  /**
+   * A pipe imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_PIPE_USED_EAGERLY = 8012,
+
+  /**
+   * A directive/component imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_DIRECTIVE_USED_EAGERLY = 8013,
+
+  /**
+   * A directive/component/pipe imported via `@Component.deferredImports` is
+   * also included into the `@Component.imports` list.
+   */
+  DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
 
   /**
    * A two way binding in a template has an incorrect syntax,

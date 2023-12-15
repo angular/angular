@@ -70,6 +70,7 @@ export interface LocalModuleScope extends ExportScope {
 export interface StandaloneScope {
   kind: ComponentScopeKind.Standalone;
   dependencies: Array<DirectiveMeta|PipeMeta|NgModuleMeta>;
+  deferredDependencies: Array<DirectiveMeta|PipeMeta>;
   component: ClassDeclaration;
   schemas: SchemaMetadata[];
   isPoisoned: boolean;

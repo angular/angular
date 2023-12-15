@@ -28,6 +28,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   isSignal: boolean;
   hostDirectives: HostDirectiveMeta[]|null;
   decorator: ts.Decorator|null;
+  isExplicitlyDeferred: boolean;
 }
 
 export type TemplateId = string&{__brand: 'TemplateId'};
