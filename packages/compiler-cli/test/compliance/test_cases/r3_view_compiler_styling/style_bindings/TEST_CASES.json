@@ -60,6 +60,16 @@
           "files": ["empty_style_bindings.js"]
         }
       ]
+    },
+    {
+      "description": "should support style bindings with a colon at the start of the applied style",
+      "inputFiles": ["colon_style.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["colon_style.js"]
+        }
+      ]
     }
   ]
 }
