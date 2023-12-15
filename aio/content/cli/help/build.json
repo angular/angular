@@ -148,7 +148,7 @@
     {
       "name": "output-path",
       "type": "string",
-      "description": "The full path for the new output directory, relative to the current workspace."
+      "description": "Specify the output path relative to workspace root."
     },
     {
       "name": "poll",
