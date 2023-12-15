@@ -91,7 +91,7 @@ runInEachFileSystem(() => {
     });
 
 
-    it('should handle a non-primitive initial values', () => {
+    it('should handle a non-primitive initial value', () => {
       env.write('test.ts', `
         import {Directive, input} from '@angular/core';
 
