@@ -618,6 +618,12 @@ export function createTNode(
   return tNode;
 }
 
+/** Mode for capturing node bindings. */
+const enum CaptureNodeBindingMode {
+  Inputs,
+  Outputs,
+}
+
 /**
  * Captures node input bindings for the given directive based on the inputs metadata.
  * This will be called multiple times to combine inputs from various directives on a node.
@@ -627,7 +633,7 @@ export function createTNode(
  * name inputs/outputs should be exposed under.
  */
 function captureNodeBindings<T>(
-    type: 'inputs', inputs: DirectiveDef<T>['inputs'], directiveIndex: number,
+    mode: CaptureNodeBindingMode.Inputs, inputs: DirectiveDef<T>['inputs'], directiveIndex: number,
     bindingsResult: NodeInputBindings|null,
     hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeInputBindings|null;
 /**
@@ -639,25 +645,29 @@ function captureNodeBindings<T>(
  * name inputs/outputs should be exposed under.
  */
 function captureNodeBindings<T>(
-    type: 'outputs', outputs: DirectiveDef<T>['outputs'], directiveIndex: number,
-    bindingsResult: NodeOutputBindings|null,
+    mode: CaptureNodeBindingMode.Outputs, outputs: DirectiveDef<T>['outputs'],
+    directiveIndex: number, bindingsResult: NodeOutputBindings|null,
     hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeOutputBindings|null;
 
 function captureNodeBindings<T>(
-    type: 'inputs'|'outputs', aliasMap: DirectiveDef<T>['inputs']|DirectiveDef<T>['outputs'],
+    mode: CaptureNodeBindingMode, aliasMap: DirectiveDef<T>['inputs']|DirectiveDef<T>['outputs'],
     directiveIndex: number, bindingsResult: NodeInputBindings|NodeOutputBindings|null,
     hostDirectiveAliasMap: HostDirectiveBindingMap|null): NodeInputBindings|NodeOutputBindings|
     null {
   for (let publicName in aliasMap) {
+    if (!aliasMap.hasOwnProperty(publicName)) {
+      continue;
+    }
+
     const value = aliasMap[publicName];
     if (value === undefined) {
       continue;
     }
 
-    bindingsResult = bindingsResult === null ? {} : bindingsResult;
+    bindingsResult ??= {};
 
     let internalName: string;
-    let inputFlags: InputFlags = 0;
+    let inputFlags = InputFlags.None;
 
     // For inputs, the value might be an array capturing additional
     // input flags.
@@ -684,7 +694,7 @@ function captureNodeBindings<T>(
       finalPublicName = hostDirectiveAliasMap[publicName];
     }
 
-    if (type === 'inputs') {
+    if (mode === CaptureNodeBindingMode.Inputs) {
       addPropertyBinding(
           bindingsResult as NodeInputBindings, directiveIndex, finalPublicName, internalName,
           inputFlags);
@@ -744,9 +754,11 @@ function initializeInputAndOutputAliases(
     const aliasedOutputs = aliasData ? aliasData.outputs : null;
 
     inputsStore = captureNodeBindings(
-        'inputs', directiveDef.inputs, directiveIndex, inputsStore, aliasedInputs);
+        CaptureNodeBindingMode.Inputs, directiveDef.inputs, directiveIndex, inputsStore,
+        aliasedInputs);
     outputsStore = captureNodeBindings(
-        'outputs', directiveDef.outputs, directiveIndex, outputsStore, aliasedOutputs);
+        CaptureNodeBindingMode.Outputs, directiveDef.outputs, directiveIndex, outputsStore,
+        aliasedOutputs);
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
     // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which

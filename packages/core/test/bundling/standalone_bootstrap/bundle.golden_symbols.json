@@ -768,9 +768,6 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeHostBindingsInCreationMode"
   },
   {
@@ -892,6 +889,9 @@
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "processInjectorTypesWithProviders"

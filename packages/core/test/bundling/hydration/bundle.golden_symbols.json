@@ -945,9 +945,6 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeHostBindingsInCreationMode"
   },
   {
@@ -1132,6 +1129,9 @@
   },
   {
     "name": "operate"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "performanceMarkFeature"

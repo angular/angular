@@ -1947,9 +1947,6 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeAllTriggerCleanupFns"
   },
   {
@@ -2113,6 +2110,9 @@
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "performanceMarkFeature"

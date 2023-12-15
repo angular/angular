@@ -1104,9 +1104,6 @@
     "name": "invalidTimingValue"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeDirectivesHostBindings"
   },
   {
@@ -1285,6 +1282,9 @@
   },
   {
     "name": "optionsReducer"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "parseTimelineCommand"

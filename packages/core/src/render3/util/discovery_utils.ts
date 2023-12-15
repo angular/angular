@@ -482,8 +482,11 @@ function extractInputDebugMetadata<T>(inputs: DirectiveDef<T>['inputs']) {
   const res: DirectiveDebugMetadata['inputs'] = {};
 
   for (const key in inputs) {
-    const value = inputs[key];
+    if (!inputs.hasOwnProperty(key)) {
+      continue;
+    }
 
+    const value = inputs[key];
     if (value === undefined) {
       continue;
     }

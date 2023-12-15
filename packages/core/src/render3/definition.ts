@@ -23,6 +23,75 @@ import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
 
+/**
+ * Map of inputs for a given directive/component.
+ *
+ * Given:
+ * ```
+ * class MyComponent {
+ *   @Input()
+ *   publicInput1: string;
+ *
+ *   @Input('publicInput2')
+ *   declaredInput2: string;
+ *
+ *   @Input({transform: (value: boolean) => value ? 1 : 0})
+ *   transformedInput3: number;
+ *
+ *   signalInput = input(3);
+ * }
+ * ```
+ *
+ * is described as:
+ * ```
+ * {
+ *   publicInput1: 'publicInput1',
+ *   declaredInput2: [InputFlags.None, 'declaredInput2', 'publicInput2'],
+ *   transformedInput3: [
+ *     InputFlags.None,
+ *     'transformedInput3',
+ *     'transformedInput3',
+ *     (value: boolean) => value ? 1 : 0
+ *   ],
+ *   signalInput: [InputFlags.SignalBased, "signalInput"],
+ * }
+ * ```
+ *
+ * Which the minifier may translate to:
+ * ```
+ * {
+ *   minifiedPublicInput1: 'publicInput1',
+ *   minifiedDeclaredInput2: [InputFlags.None, 'publicInput2', 'declaredInput2'],
+ *   minifiedTransformedInput3: [
+ *     InputFlags.None,
+ *     'transformedInput3',
+ *     'transformedInput3',
+ *     (value: boolean) => value ? 1 : 0
+ *   ],
+ *   minifiedSignalInput: [InputFlags.SignalBased, "signalInput"],
+ * }
+ * ```
+ *
+ * This allows the render to re-construct the minified, public, and declared names
+ * of properties.
+ *
+ * NOTE:
+ *  - Because declared and public name are usually same we only generate the array
+ *    `['declared', 'public']` format when they differ, or there is a transform.
+ *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+ *    inconsistent behavior in that it uses declared names rather than minified or public. For
+ *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+ *    API will be simplified to be consistent with `output`.
+ */
+type DirectiveInputs<T> = {
+  [P in keyof T]?:
+      // Basic case. Mapping minified name to public name.
+  string|
+  // Complex input when there are flags, or differing public name and declared name, or there
+  // is a transform. Such inputs are not as common, so the array form is only generated then.
+  [flags: InputFlags, publicName: string, declaredName?: string, transform?: InputTransformFunction]
+};
+
 interface DirectiveDefinition<T> {
   /**
    * Directive type, needed to configure the injector.
@@ -34,73 +103,8 @@ interface DirectiveDefinition<T> {
 
   /**
    * A map of input names.
-   *
-   * Given:
-   * ```
-   * class MyComponent {
-   *   @Input()
-   *   publicInput1: string;
-   *
-   *   @Input('publicInput2')
-   *   declaredInput2: string;
-   *
-   *   @Input({transform: (value: boolean) => value ? 1 : 0})
-   *   transformedInput3: number;
-   *
-   *   signalInput = input(3);
-   * }
-   * ```
-   *
-   * is described as:
-   * ```
-   * {
-   *   publicInput1: 'publicInput1',
-   *   declaredInput2: [InputFlags.None, 'declaredInput2', 'publicInput2'],
-   *   transformedInput3: [
-   *     InputFlags.None,
-   *     'transformedInput3',
-   *     'transformedInput3',
-   *     (value: boolean) => value ? 1 : 0
-   *   ],
-   *   signalInput: [InputFlags.SignalBased, "signalInput"],
-   * }
-   * ```
-   *
-   * Which the minifier may translate to:
-   * ```
-   * {
-   *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [InputFlags.None, 'publicInput2', 'declaredInput2'],
-   *   minifiedTransformedInput3: [
-   *     InputFlags.None,
-   *     'transformedInput3',
-   *     'transformedInput3',
-   *     (value: boolean) => value ? 1 : 0
-   *   ],
-   *   minifiedSignalInput: [InputFlags.SignalBased, "signalInput"],
-   * }
-   * ```
-   *
-   * This allows the render to re-construct the minified, public, and declared names
-   * of properties.
-   *
-   * NOTE:
-   *  - Because declared and public name are usually same we only generate the array
-   *    `['declared', 'public']` format when they differ, or there is a transform.
-   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-   *    inconsistent behavior in that it uses declared names rather than minified or public. For
-   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
    */
-  inputs?: {
-    [P in keyof T]?:
-        // Basic case. Mapping minified name to public name.
-    string|
-    // Complex input when there are flags, or differing public name and declared name, or there
-    // is a transform. Such inputs are not as common, so the array form is only generated then.
-    [flags: InputFlags,
-        publicName: string, declaredName?: string, transform?: InputTransformFunction]
-  };
+  inputs?: DirectiveInputs<T>;
 
   /**
    * A map of output names.
@@ -406,9 +410,14 @@ export function ɵɵdefineNgModule<T>(def: {
 }
 
 /**
- * Inverts an inputs or outputs lookup such that the keys, which were the
- * minified keys, are part of the values, and the values are parsed so that
- * the publicName of the property is the new key
+ * Converts binding objects from the `DirectiveDefinition` into more efficient
+ * lookup dictionaries that are optimized for the framework runtime.
+ *
+ * This function converts inputs or output directive information into new objects
+ * where the public name conveniently maps to the minified internal field name.
+ *
+ * For inputs, the input flags are additionally persisted into the new data structure,
+ * so that those can be quickly retrieved when needed.
  *
  * e.g. for
  *
@@ -467,13 +476,14 @@ export function ɵɵdefineNgModule<T>(def: {
  *
 
  */
-function invertObject<T>(obj: DirectiveDefinition<T>['outputs']): Record<keyof T, string>;
-function invertObject<T>(
-    obj: DirectiveDefinition<T>['inputs'], declaredInputs: Record<string, string>):
+function parseAndConvertBindingsForDefinition<T>(obj: DirectiveDefinition<T>['outputs']|
+                                                 undefined): Record<keyof T, string>;
+function parseAndConvertBindingsForDefinition<T>(
+    obj: DirectiveInputs<T>|undefined, declaredInputs: Record<string, string>):
     Record<keyof T, string|[minifiedName: string, flags: InputFlags]>;
 
-function invertObject<T>(
-    obj: DirectiveDefinition<T>['inputs']|DirectiveDefinition<T>['outputs'],
+function parseAndConvertBindingsForDefinition<T>(
+    obj: undefined|DirectiveInputs<T>|DirectiveDefinition<T>['outputs'],
     declaredInputs?: Record<string, string>):
     Record<keyof T, string|[minifiedName: string, flags: InputFlags]> {
   if (obj == null) return EMPTY_OBJ as any;
@@ -483,7 +493,7 @@ function invertObject<T>(
       const value = obj[minifiedKey]!;
       let publicName: string;
       let declaredName: string;
-      let inputFlags: InputFlags = 0;
+      let inputFlags = InputFlags.None;
 
       if (Array.isArray(value)) {
         inputFlags = value[0];
@@ -497,7 +507,8 @@ function invertObject<T>(
       // For inputs, capture the declared name, or if some flags are set.
       if (declaredInputs) {
         // Perf note: An array is only allocated for the input if there are flags.
-        newLookup[publicName] = inputFlags !== 0 ? [minifiedKey, inputFlags] : minifiedKey;
+        newLookup[publicName] =
+            inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
         declaredInputs[publicName] = declaredName as string;
       } else {
         newLookup[publicName] = minifiedKey;
@@ -639,8 +650,8 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     setInput: null,
     findHostDirectiveDefs: null,
     hostDirectives: null,
-    inputs: invertObject(directiveDefinition.inputs, declaredInputs),
-    outputs: invertObject(directiveDefinition.outputs),
+    inputs: parseAndConvertBindingsForDefinition(directiveDefinition.inputs, declaredInputs),
+    outputs: parseAndConvertBindingsForDefinition(directiveDefinition.outputs),
     debugInfo: null,
   };
 }
