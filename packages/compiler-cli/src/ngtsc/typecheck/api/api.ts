@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping} from '../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 
@@ -73,7 +73,7 @@ export interface TypeCheckBlockMetadata {
   /*
    * Pipes used in the template of the component.
    */
-  pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
+  pipes: Map<string, PipeMeta>;
 
   /**
    * Schemas that apply to this template.
