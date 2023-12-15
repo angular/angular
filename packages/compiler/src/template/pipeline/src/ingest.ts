@@ -190,7 +190,8 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   let i18nBlockId: ir.XrefId|null = null;
   if (element.i18n instanceof i18n.Message) {
     i18nBlockId = unit.job.allocateXrefId();
-    unit.create.push(ir.createI18nStartOp(i18nBlockId, element.i18n));
+    unit.create.push(
+        ir.createI18nStartOp(i18nBlockId, element.i18n, undefined, element.startSourceSpan));
   }
 
   ingestNodes(unit, element.children);
@@ -205,7 +206,8 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   // If there is an i18n message associated with this element, insert i18n start and end ops.
   if (i18nBlockId !== null) {
-    ir.OpList.insertBefore<ir.CreateOp>(ir.createI18nEndOp(i18nBlockId), endOp);
+    ir.OpList.insertBefore<ir.CreateOp>(
+        ir.createI18nEndOp(i18nBlockId, element.endSourceSpan ?? element.startSourceSpan), endOp);
   }
 }
 
@@ -251,8 +253,11 @@ function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
   // element/template the directive is placed on.
   if (templateKind === ir.TemplateKind.NgTemplate && tmpl.i18n instanceof i18n.Message) {
     const id = unit.job.allocateXrefId();
-    ir.OpList.insertAfter(ir.createI18nStartOp(id, tmpl.i18n), childView.create.head);
-    ir.OpList.insertBefore(ir.createI18nEndOp(id), childView.create.tail);
+    ir.OpList.insertAfter(
+        ir.createI18nStartOp(id, tmpl.i18n, undefined, tmpl.startSourceSpan),
+        childView.create.head);
+    ir.OpList.insertBefore(
+        ir.createI18nEndOp(id, tmpl.endSourceSpan ?? tmpl.startSourceSpan), childView.create.tail);
   }
 }
 
