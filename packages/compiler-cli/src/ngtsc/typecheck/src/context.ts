@@ -12,6 +12,7 @@ import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
+import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
@@ -209,9 +210,9 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean, preserveWhitespaces: boolean): void {
+      pipes: Map<string, PipeMeta>, schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
+      file: ParseSourceFile, parseErrors: ParseError[]|null, isStandalone: boolean,
+      preserveWhitespaces: boolean): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
@@ -268,7 +269,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       if (!pipes.has(name)) {
         continue;
       }
-      usedPipes.push(pipes.get(name)!);
+      usedPipes.push(pipes.get(name)!.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
     const inliningRequirement =
