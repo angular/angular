@@ -317,6 +317,17 @@ export interface BazelAndG3Options {
    * Insert JSDoc type annotations needed by Closure Compiler
    */
   annotateForClosureCompiler?: boolean;
+
+  /**
+   * Specifies whether Angular compiler should rely on explicit imports
+   * via `@Component.deferredImports` field for `@defer` blocks and generate
+   * dynamic imports only for types from that list.
+   *
+   * This flag is needed to enable stricter behavior internally to make sure
+   * that local compilation with specific internal configuration can support
+   * `@defer` blocks.
+   */
+  onlyExplicitDeferDependencyImports?: boolean;
 }
 
 /**
