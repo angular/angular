@@ -248,6 +248,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private i18nUseExternalIds: boolean,
       private deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>,
       private elementLocations: Map<t.Element, {index: number, level: number}>,
+      private allDeferrableDepsFn: o.ReadVarExpr|null,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
@@ -958,7 +959,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const visitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, index, name,
         this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds, this.deferBlocks,
-        this.elementLocations, this._constants);
+        this.elementLocations, this.allDeferrableDepsFn, this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1354,7 +1355,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         deferred.sourceSpan, R3.defer, trimTrailingNulls([
           o.literal(deferredIndex),
           o.literal(primaryTemplateIndex),
-          this.createDeferredDepsFunction(depsFnName, metadata),
+          this.allDeferrableDepsFn ?? this.createDeferredDepsFunction(depsFnName, metadata),
           o.literal(loadingIndex),
           o.literal(placeholderIndex),
           o.literal(errorIndex),

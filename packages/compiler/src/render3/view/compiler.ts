@@ -159,6 +159,32 @@ export function compileDirectiveFromMetadata(
 }
 
 /**
+ * Creates an AST for a function that contains dynamic imports representing
+ * deferrable dependencies.
+ */
+function createDeferredDepsFunction(
+    constantPool: ConstantPool, name: string, deps: Map<string, string>) {
+  // This defer block has deps for which we need to generate dynamic imports.
+  const dependencyExp: o.Expression[] = [];
+
+  for (const [symbolName, importPath] of deps) {
+    // Callback function, e.g. `m () => m.MyCmp;`.
+    const innerFn =
+        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
+
+    // Dynamic import, e.g. `import('./a').then(...)`.
+    const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
+    dependencyExp.push(importExpr);
+  }
+
+  const depsFnExpr = o.arrowFn([], o.literalArr(dependencyExp));
+
+  constantPool.statements.push(depsFnExpr.toDeclStmt(name, o.StmtModifier.Final));
+
+  return o.variable(name);
+}
+
+/**
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */
 export function compileComponentFromMetadata(
@@ -193,11 +219,20 @@ export function compileComponentFromMetadata(
     // This is the main path currently used in compilation, which compiles the template with the
     // legacy `TemplateDefinitionBuilder`.
 
+    // `deferrableTypes` become available only when local compilation mode is
+    // activated, in which case we generate a single function with all deferred
+    // dependencies.
+    let allDeferrableDepsFn: o.ReadVarExpr|null = null;
+    if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0) {
+      const fnName = `${templateTypeName}_DeferFn`;
+      allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
+    }
+
     const template = meta.template;
     const templateBuilder = new TemplateDefinitionBuilder(
         constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
         R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.deferBlocks,
-        new Map());
+        new Map(), allDeferrableDepsFn);
 
     const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
