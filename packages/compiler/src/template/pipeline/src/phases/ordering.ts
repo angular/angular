@@ -7,7 +7,7 @@
  */
 
 import * as ir from '../../ir';
-import type {CompilationJob} from '../compilation';
+import {CompilationJobKind, type CompilationJob} from '../compilation';
 
 function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
   return (op: ir.UpdateOp) => op.kind === kind;
@@ -41,16 +41,27 @@ const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
  * op kinds.
  */
 const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
   {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
   {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
   {test: kindTest(ir.OpKind.StyleProp)},
   {test: kindTest(ir.OpKind.ClassProp)},
-  {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
   {test: kindWithInterpolationTest(ir.OpKind.Attribute, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
   {test: kindWithInterpolationTest(ir.OpKind.Property, false)},
   {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
+];
+
+/**
+ * Host bindings have their own update ordering.
+ */
+const UPDATE_HOST_ORDERING: Array<Rule<ir.UpdateOp>> = [
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
+  {test: kindTest(ir.OpKind.Attribute)},
+  {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
+  {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
+  {test: kindTest(ir.OpKind.StyleProp)},
+  {test: kindTest(ir.OpKind.ClassProp)},
 ];
 
 /**
@@ -77,7 +88,9 @@ export function orderOps(job: CompilationJob) {
 
 
     // Update mode:
-    orderWithin(unit.update, UPDATE_ORDERING as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
+    const ordering =
+        unit.job.kind === CompilationJobKind.Host ? UPDATE_HOST_ORDERING : UPDATE_ORDERING;
+    orderWithin(unit.update, ordering as Array<Rule<ir.CreateOp|ir.UpdateOp>>);
   }
 }
 
