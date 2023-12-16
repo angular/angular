@@ -1,4 +1,9 @@
+hostAttrs: ["literal1", "foo"]
+// ...
 function MyCmp_HostBindings(rf, ctx) {
+	if (rf & 1) {
+		i0.ɵɵlistener("event1", function MyCmp_event1_HostBindingHandler() { return ctx.foo(); });
+	}
 	if (rf & 2) {
 		i0.ɵɵhostProperty("prop1", ctx.foo);
 		i0.ɵɵattribute("attr1", ctx.foo);
@@ -13,7 +18,11 @@ function MyCmp_HostBindings(rf, ctx) {
 
 function MyCmp_Template(rf, ctx) {
 	if (rf & 1) {
-		i0.ɵɵelement(0, "some-elem", 0);
+		i0.ɵɵelementStart(0, "some-elem", 0);
+		i0.ɵɵlistener("event1", function MyCmp_Template_some_elem_event1_0_listener() {
+			return ctx.foo();
+		});
+		i0.ɵɵelementEnd();
 	} if (rf & 2) {
 		i0.ɵɵstyleProp("style1", ctx.foo);
 		i0.ɵɵclassProp("class1", ctx.foo);
