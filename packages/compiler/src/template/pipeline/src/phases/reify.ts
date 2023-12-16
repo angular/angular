@@ -36,6 +36,34 @@ export function reify(job: CompilationJob): void {
   }
 }
 
+/**
+ * This function can be used a sanity check -- it walks every expression in the const pool, and
+ * every expression reachable from an op, and makes sure that there are no IR expressions
+ * left. This is nice to use for debugging mysterious failures where an IR expression cannot be
+ * output from the output AST code.
+ */
+function ensureNoIrForDebug(job: CompilationJob) {
+  for (const stmt of job.pool.statements) {
+    ir.transformExpressionsInStatement(stmt, expr => {
+      if (ir.isIrExpression(expr)) {
+        throw new Error(
+            `AssertionError: IR expression found during reify: ${ir.ExpressionKind[expr.kind]}`);
+      }
+      return expr;
+    }, ir.VisitorContextFlag.None);
+  }
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
+      ir.visitExpressionsInOp(op, expr => {
+        if (ir.isIrExpression(expr)) {
+          throw new Error(
+              `AssertionError: IR expression found during reify: ${ir.ExpressionKind[expr.kind]}`);
+        }
+      });
+    }
+  }
+}
+
 function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);

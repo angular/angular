@@ -1072,6 +1072,14 @@ export function transformExpressionsInExpression(
     expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
     expr.template.expressions =
         expr.template.expressions.map(e => transformExpressionsInExpression(e, transform, flags));
+  } else if (expr instanceof o.ArrowFunctionExpr) {
+    if (Array.isArray(expr.body)) {
+      for (let i = 0; i < expr.body.length; i++) {
+        transformExpressionsInStatement(expr.body[i], transform, flags);
+      }
+    } else {
+      expr.body = transformExpressionsInExpression(expr.body, transform, flags);
+    }
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?
   } else if (
