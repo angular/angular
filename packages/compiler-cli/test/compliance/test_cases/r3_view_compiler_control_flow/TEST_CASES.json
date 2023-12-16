@@ -617,6 +617,23 @@
         }
       ],
       "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should generate tracking function in a nested for loop",
+      "inputFiles": [
+        "nested_for_tracking_function.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_tracking_function_template.js",
+              "generated": "nested_for_tracking_function.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

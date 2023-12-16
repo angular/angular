@@ -1926,3 +1926,54 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_tracking_function.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.items = [];
+        this.trackByGrandparent = (item, index) => index;
+        this.trackByParent = (item, index) => index;
+        this.trackByChild = (item, index) => index;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @for (grandparent of items; track trackByGrandparent(grandparent, $index)) {
+      @for (parent of grandparent.items; track trackByParent(parent, $index)) {
+        @for (child of parent.items; track trackByChild(child, $index)) {
+
+        }
+      }
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (grandparent of items; track trackByGrandparent(grandparent, $index)) {
+      @for (parent of grandparent.items; track trackByParent(parent, $index)) {
+        @for (child of parent.items; track trackByChild(child, $index)) {
+
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_tracking_function.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    items: any[];
+    trackByGrandparent: (item: any, index: number) => number;
+    trackByParent: (item: any, index: number) => number;
+    trackByChild: (item: any, index: number) => number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
