@@ -33,6 +33,9 @@ export function generateTrackFns(job: CompilationJob): void {
       // Find all component context reads.
       let usesComponentContext = false;
       op.track = ir.transformExpressionsInExpression(op.track, expr => {
+        if (expr instanceof ir.PipeBindingExpr || expr instanceof ir.PipeBindingVariadicExpr) {
+          throw new Error(`Illegal State: Pipes are not allowed in this context`);
+        }
         if (expr instanceof ir.TrackContextExpr) {
           usesComponentContext = true;
           return o.variable('this');
