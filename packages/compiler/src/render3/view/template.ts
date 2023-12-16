@@ -2550,11 +2550,16 @@ export class BindingScope implements LocalResolver {
 class TrackByBindingScope extends BindingScope {
   private componentAccessCount = 0;
 
-  constructor(parentScope: BindingScope, private globalAliases: Record<string, string>) {
+  constructor(parentScope: BindingScope, private globalOverrides: Record<string, string>) {
     super(parentScope.bindingLevel + 1, parentScope);
   }
 
   override get(name: string): o.Expression|null {
+    // Intercept any overridden globals.
+    if (this.globalOverrides.hasOwnProperty(name)) {
+      return o.variable(this.globalOverrides[name]);
+    }
+
     let current: BindingScope|null = this.parent;
 
     // Prevent accesses of template variables outside the `for` loop.
@@ -2563,11 +2568,6 @@ class TrackByBindingScope extends BindingScope {
         return null;
       }
       current = current.parent;
-    }
-
-    // Intercept any aliased globals.
-    if (this.globalAliases[name]) {
-      return o.variable(this.globalAliases[name]);
     }
 
     // When the component scope is accessed, we redirect it through `this`.
