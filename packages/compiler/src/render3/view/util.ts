@@ -212,10 +212,10 @@ export function conditionallyCreateDirectiveBindingLiteral(
       // Build up input flags
       let flags: o.Expression|null = null;
       if (value.isSignal) {
-        flags = o.importExpr(R3.InputFlags).prop(InputFlags[InputFlags.SignalBased]);
+        flags = bitwiseAndInputFlagsExpr(InputFlags.SignalBased, flags);
       }
-      if (hasTransform) {
-        flags = flags | InputFlags.HasTransform;
+      if (value.transformFunction !== null) {
+        flags = bitwiseAndInputFlagsExpr(InputFlags.HasTransform, flags);
       }
 
       // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), or support
@@ -245,6 +245,23 @@ export function conditionallyCreateDirectiveBindingLiteral(
       value: expressionValue,
     };
   }));
+}
+
+/** Gets an output AST expression referencing the given flag. */
+function getInputFlagExpr(flag: InputFlags): o.Expression {
+  return o.importExpr(R3.InputFlags).prop(InputFlags[flag]);
+}
+
+/** Combines a given input flag with an existing flag expression, if present. */
+function bitwiseAndInputFlagsExpr(flag: InputFlags, expr: o.Expression|null): o.Expression {
+  if (expr === null) {
+    return getInputFlagExpr(flag);
+  }
+  return new o.BinaryOperatorExpr(
+      o.BinaryOperator.BitwiseAnd,
+      expr,
+      getInputFlagExpr(flag),
+  );
 }
 
 /**
