@@ -1025,6 +1025,14 @@
     "website": "https://labs.thisdot.co/",
     "bio": "Tracy is the Co-Founder of This Dot Labs, a consultancy focused on helping companies with digital transformations. She is also a Google Developer Expert, RxJS Core Team member, a Women Techmakers Lead, and a frequent keynote speaker at conferences. She heads up Community Relations for Node.js at OpenJS Foundation, is the host of the Modern Web podcast, organizer of This.JavaScript, Contributor Days, Google Developer Group Silicon Valley and Triangle, and RxWorkshop. You can find her on Twitter @ladyleet or at https://labs.thisdot.co/."
   },
+  "trungvose": {
+    "name": "Trung Vo",
+    "picture": "trungvo.jpg",
+    "groups": ["GDE"],
+    "twitter": "trungvose",
+    "website": "https://trungk18.com",
+    "bio": "Trung Vo is a web expert and a Google Developer Expert in Angular, recognized for his open-source projects like Angular Spotify and Jira Clone. He contributes significantly to web development communities in Vietnam and Singapore, particularly through Angular Vietnam and Angular Singapore. Additionally, Trung is a seasoned speaker, having presented at global tech events worldwide."
+  },
   "twerske": {
     "name": "Emma Twersky",
     "picture": "twerske.jpg",
