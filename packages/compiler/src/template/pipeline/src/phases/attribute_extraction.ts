@@ -69,6 +69,11 @@ export function extractAttributes(job: CompilationJob): void {
                 /* i18nContext */ null,
                 /* i18nMessage */ null, SecurityContext.NONE);
             if (job.kind === CompilationJobKind.Host) {
+              if (job.compatibility) {
+                // TemplateDefinitionBuilder does not extract listener bindings to the const array
+                // (which is honestly pretty inconsistent).
+                break;
+              }
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
               unit.create.push(extractedAttributeOp);
