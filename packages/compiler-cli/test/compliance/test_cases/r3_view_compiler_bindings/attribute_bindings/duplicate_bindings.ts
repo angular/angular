@@ -11,6 +11,7 @@ import {Component} from '@angular/core';
     <div [tabindex]="value1" [tabindex]="value2"></div>
     <div [class]="value1" [class]="value2"></div>
     <div [style]="value1" [style]="value2"></div>
+    <div (click)="$event.stopPropagation()" (click)="$event.preventDefault()"></div>
   `,
 })
 export class MyComponent {
