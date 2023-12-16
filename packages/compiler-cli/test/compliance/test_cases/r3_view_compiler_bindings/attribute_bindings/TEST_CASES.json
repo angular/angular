@@ -120,8 +120,7 @@
         {
           "failureMessage": "Incorrect handling of duplicate bindings"
         }
-      ],
-      "focusTest": true
+      ]
     }
   ]
 }
