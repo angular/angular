@@ -117,12 +117,13 @@ class ElementAttributes {
 
   add(kind: ir.BindingKind, name: string, value: o.Expression|null,
       trustedValueFn: o.Expression|null): void {
-    // In compatibility mode, we allow duplicates for attributes to replicate the behavior in
-    // TemplateDefinitionBuilder.
-    const allowDuplicates = this.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
-        kind === ir.BindingKind.Attribute :
-        false;
-    if (this.isKnown(kind, name, value) && !allowDuplicates) {
+    // TemplateDefinitionBuilder puts duplicate attribute, class, and style values into the consts
+    // array. This seems inefficient, we can probably keep just the first one or the last value
+    // (whichever actually gets applied when multiple values are listed for the same attribute).
+    const allowDuplicates = this.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+        (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.ClassName ||
+         kind === ir.BindingKind.StyleProperty);
+    if (!allowDuplicates && this.isKnown(kind, name, value)) {
       return;
     }
 
