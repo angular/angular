@@ -1732,16 +1732,20 @@ describe('HtmlLexer', () => {
       ]);
     });
 
-    it('should not decode entities without trailing ";"', () => {
-      expect(tokenizeAndHumanizeParts('<t a="&amp" b="c&&d">')).toEqual([
+    it('should decode entities without trailing ";"', () => {
+      expect(tokenizeAndHumanizeParts('<t a="&amp" b="&frac12">')).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
         [TokenType.ATTR_NAME, '', 'a'],
         [TokenType.ATTR_QUOTE, '"'],
-        [TokenType.ATTR_VALUE_TEXT, '&amp'],
+        [TokenType.ATTR_VALUE_TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '&', '&amp'],
+        [TokenType.ATTR_VALUE_TEXT, ''],
         [TokenType.ATTR_QUOTE, '"'],
         [TokenType.ATTR_NAME, '', 'b'],
         [TokenType.ATTR_QUOTE, '"'],
-        [TokenType.ATTR_VALUE_TEXT, 'c&&d'],
+        [TokenType.ATTR_VALUE_TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '½', '&frac12'],
+        [TokenType.ATTR_VALUE_TEXT, ''],
         [TokenType.ATTR_QUOTE, '"'],
         [TokenType.TAG_OPEN_END],
         [TokenType.EOF],
