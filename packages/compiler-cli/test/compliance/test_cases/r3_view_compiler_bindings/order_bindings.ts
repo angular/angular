@@ -1,4 +1,4 @@
-import {Component, HostBinding, HostListener} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'some-elem',
@@ -14,6 +14,8 @@ export class SomeCmp {
   standalone: true,
   imports: [SomeCmp],
   host: {
+    'literal1': 'foo',
+    '(event1)': 'foo()',
     '[attr.attr1]': 'foo',
     '[prop1]': 'foo',
     '[class.class1]': 'false',
@@ -23,6 +25,8 @@ export class SomeCmp {
   },
   template: `
 		<some-elem
+			literal1="foo"
+			(event1)="foo()"
 			[attr.attr1]="foo"
 			[prop1]="foo",
 			[class.class1]="foo",
