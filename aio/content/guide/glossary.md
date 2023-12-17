@@ -437,7 +437,7 @@ To learn more, see also [TypeScript][AioGuideGlossaryTypescript].
 
 The Angular just-in-time \(JIT\) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code at run time, as part of bootstrapping.
 
-JIT compilation is the default \(as opposed to AOT compilation\) when you run the `ng build` and `ng serve` Angular CLI commands, and is a good choice during development.
+JIT compilation is the default \(as opposed to AOT compilation\) when you run the `ng serve` Angular CLI command, and is a good choice during development.
 JIT mode is strongly discouraged for production use because it results in large application payloads that hinder the bootstrap performance.
 
 Compare to [ahead-of-time (AOT) compilation][AioGuideGlossaryAheadOfTimeAotCompilation].
