@@ -217,10 +217,8 @@
     },
     {
       "description": "should generate a deferred block with implicit trigger references",
-      "inputFiles": [
-        "defer_deps.ts",
-        "defer_deps_ext.ts"
-      ],
+      "inputFiles": ["defer_deps.ts", "defer_deps_ext.ts"],
+      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -235,9 +233,8 @@
     },
     {
       "description": "should generate a lazy deferred block with empty and placeholder",
-      "inputFiles": [
-        "lazy_with_blocks.ts"
-      ],
+      "inputFiles": ["lazy_with_blocks.ts"],
+      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
