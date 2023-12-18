@@ -5196,6 +5196,42 @@ suppress
             `not be projected into the specific slot because the surrounding @for has more than one node at its root.`);
       });
 
+      it('should report when an @empty block prevents content from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @for (i of [1, 2, 3]; track i) {
+
+                } @empty {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @empty has more than one node at its root.`);
+      });
+
       it('should report nodes that are targeting different slots but cannot be projected', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';

@@ -388,6 +388,71 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
     });
 
+    it('should project an @empty block with a single root node into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {} @empty {
+          <span foo>Empty</span>
+        } After</test>
+      `
+      })
+      class App {
+        items = [];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: Empty');
+    });
+
+    it('should allow @for and @empty blocks to be projected into different slots', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template:
+            'Main: <ng-content/> Loop slot: <ng-content select="[loop]"/> Empty slot: <ng-content select="[empty]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <span loop>{{item}}</span>
+        } @empty {
+          <span empty>Empty</span>
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+          .toBe('Main: Before  After Loop slot: 123 Empty slot: ');
+
+      fixture.componentInstance.items = [];
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent)
+          .toBe('Main: Before  After Loop slot:  Empty slot: Empty');
+    });
+
     it('should project an @for with multiple root nodes into the catch-all slot', () => {
       @Component({
         standalone: true,

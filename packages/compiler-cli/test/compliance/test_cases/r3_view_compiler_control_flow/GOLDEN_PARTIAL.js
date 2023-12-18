@@ -1740,6 +1740,8 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     @for (item of items; track item) {
       <div foo="1" bar="2">{{item}}</div>
+    } @empty {
+      <span empty-foo="1" empty-bar="2">Empty!</span>
     }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1748,6 +1750,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @for (item of items; track item) {
       <div foo="1" bar="2">{{item}}</div>
+    } @empty {
+      <span empty-foo="1" empty-bar="2">Empty!</span>
     }
   `,
                 }]
@@ -1777,6 +1781,8 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     @for (item of items; track item) {
       <ng-template foo="1" bar="2">{{item}}</ng-template>
+    } @empty {
+      <ng-template empty-foo="1" empty-bar="2">Empty!</ng-template>
     }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1785,6 +1791,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @for (item of items; track item) {
       <ng-template foo="1" bar="2">{{item}}</ng-template>
+    } @empty {
+      <ng-template empty-foo="1" empty-bar="2">Empty!</ng-template>
     }
   `,
                 }]
