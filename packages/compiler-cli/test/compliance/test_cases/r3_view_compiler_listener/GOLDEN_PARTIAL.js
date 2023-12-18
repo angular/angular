@@ -818,3 +818,35 @@ export declare class AppModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: multiple_statements.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", host: { listeners: { "click": "$event.preventDefault(); $event.target.blur()" } }, ngImport: i0, template: `
+    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    standalone: true,
+                    host: { '(click)': '$event.preventDefault(); $event.target.blur()' },
+                    template: `
+    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: multiple_statements.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
+}
+
