@@ -367,6 +367,24 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle deceptive attribute names",
+      "inputFiles": [
+        "deceptive_attrs.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            {
+              "generated": "deceptive_attrs.js",
+              "expected": "deceptive_attrs.template.js",
+              "templatePipelineExpected": "deceptive_attrs.pipeline.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
