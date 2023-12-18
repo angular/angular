@@ -10,13 +10,8 @@ import {Attribute, Element, HtmlParser, Node, ParseTreeResult, visitAll} from '@
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, importRemovals, importWithCommonRemovals, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
 
-const importRemovals = [
-  'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
-  'NgSwitchCase', 'NgSwitchDefault'
-];
-const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
 const startMarkerRegex = new RegExp(startMarker, 'gm');
 const endMarkerRegex = new RegExp(endMarker, 'gm');
 const startI18nMarkerRegex = new RegExp(startI18nMarker, 'gm');
