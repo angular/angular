@@ -9,10 +9,10 @@
 import ts from 'typescript';
 
 export function lookupIdentifiersInSourceFile(
-    sourceFile: ts.SourceFile, name: string): Set<ts.Identifier> {
+    sourceFile: ts.SourceFile, names: string[]): Set<ts.Identifier> {
   const results = new Set<ts.Identifier>();
   const visit = (node: ts.Node): void => {
-    if (ts.isIdentifier(node) && node.text === name) {
+    if (ts.isIdentifier(node) && names.includes(node.text)) {
       results.add(node);
     }
     ts.forEachChild(node, visit);

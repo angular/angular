@@ -23,6 +23,13 @@ export const endMarker = '✢';
 export const startI18nMarker = '⚈';
 export const endI18nMarker = '⚉';
 
+export const importRemovals = [
+  'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
+  'NgSwitchCase', 'NgSwitchDefault'
+];
+
+export const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
+
 function allFormsOf(selector: string): string[] {
   return [
     selector,
@@ -308,7 +315,7 @@ export class AnalyzedFile {
     // skip this check entirely
     if (this.removeCommonModule) {
       const importDeclaration = this.importRanges.find(r => r.type === 'importDeclaration');
-      const instances = lookupIdentifiersInSourceFile(this.sourceFile, 'CommonModule');
+      const instances = lookupIdentifiersInSourceFile(this.sourceFile, importWithCommonRemovals);
       let foundImportDeclaration = false;
       let count = 0;
       for (let range of this.importRanges) {
