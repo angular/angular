@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingPipe, PropertyRead, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstHoverDeferredTrigger, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
+import {BindingPipe, PropertyRead, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
@@ -107,7 +107,7 @@ export interface OutOfBandDiagnosticRecorder {
   controlFlowPreventingContentProjection(
       templateId: TemplateId, category: ts.DiagnosticCategory,
       projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
-      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty,
       preservesWhitespaces: boolean): void;
 }
 
@@ -353,9 +353,17 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   controlFlowPreventingContentProjection(
       templateId: TemplateId, category: ts.DiagnosticCategory,
       projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
-      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty,
       preservesWhitespaces: boolean): void {
-    const blockName = controlFlowNode instanceof TmplAstIfBlockBranch ? '@if' : '@for';
+    let blockName: string;
+    if (controlFlowNode instanceof TmplAstForLoopBlockEmpty) {
+      blockName = '@empty';
+    } else if (controlFlowNode instanceof TmplAstForLoopBlock) {
+      blockName = '@for';
+    } else {
+      blockName = '@if';
+    }
+
     const lines = [
       `Node matches the "${slotSelector}" slot of the "${
           componentName}" component, but will not be projected into the specific slot because the surrounding ${

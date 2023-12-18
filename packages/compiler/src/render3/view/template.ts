@@ -1498,7 +1498,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * node.
    * @param node Node for which to infer the projection data.
    */
-  private inferProjectionDataFromInsertionPoint(node: t.IfBlockBranch|t.ForLoopBlock) {
+  private inferProjectionDataFromInsertionPoint(node: t.IfBlockBranch|t.ForLoopBlock|
+                                                t.ForLoopBlockEmpty) {
     let root: t.Element|t.Template|null = null;
     let tagName: string|null = null;
     let attrsExprs: o.Expression[]|undefined;
@@ -1560,8 +1561,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const {expression: trackByExpression, usesComponentInstance: trackByUsesComponentInstance} =
         this.createTrackByFunction(block);
     let emptyData: TemplateData|null = null;
+    let emptyTagName: string|null = null;
+    let emptyAttrsExprs: o.Expression[]|undefined;
 
     if (block.empty !== null) {
+      const emptyInferred = this.inferProjectionDataFromInsertionPoint(block.empty);
+      emptyTagName = emptyInferred.tagName;
+      emptyAttrsExprs = emptyInferred.attrsExprs;
       emptyData = this.prepareEmbeddedTemplateFn(
           block.empty.children, '_ForEmpty', undefined, block.empty.i18n);
       // Allocate an extra slot for the empty block tracking.
@@ -1585,13 +1591,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (emptyData !== null) {
         params.push(
             o.literal(trackByUsesComponentInstance), o.variable(emptyData.name),
-            o.literal(emptyData.getConstCount()), o.literal(emptyData.getVarCount()));
+            o.literal(emptyData.getConstCount()), o.literal(emptyData.getVarCount()),
+            o.literal(emptyTagName), this.addAttrsToConsts(emptyAttrsExprs || null));
       } else if (trackByUsesComponentInstance) {
         // If the tracking function doesn't use the component instance, we can omit the flag.
         params.push(o.literal(trackByUsesComponentInstance));
       }
 
-      return params;
+      return trimTrailingNulls(params);
     });
 
     // Note: the expression needs to be processed *after* the template,
