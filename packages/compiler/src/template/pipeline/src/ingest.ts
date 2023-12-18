@@ -268,9 +268,8 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   if (content.i18n !== undefined && !(content.i18n instanceof i18n.TagPlaceholder)) {
     throw Error(`Unhandled i18n metadata type for element: ${content.i18n.constructor.name}`);
   }
-  const attrs = content.attributes.flatMap(a => [a.name, a.value]);
   const op = ir.createProjectionOp(
-      unit.job.allocateXrefId(), content.selector, content.i18n, attrs, content.sourceSpan);
+      unit.job.allocateXrefId(), content.selector, content.i18n, content.sourceSpan);
   for (const attr of content.attributes) {
     const securityContext = domSchema.securityContext(content.name, attr.name, true);
     unit.update.push(ir.createBindingOp(
