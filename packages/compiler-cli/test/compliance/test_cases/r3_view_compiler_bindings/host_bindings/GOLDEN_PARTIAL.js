@@ -1007,3 +1007,56 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deceptive_attrs.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-comp", host: { attributes: { "class.is-compact": "false", "style.width": "0", "attr.tabindex": "5" } }, ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp',
+                    standalone: true,
+                    template: '',
+                    host: {
+                        ['class.is-compact']: 'false',
+                        ['style.width']: '0',
+                        ['attr.tabindex']: '5',
+                    }
+                }]
+        }] });
+export class MyComponent2 {
+}
+MyComponent2.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent2, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent2.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent2, isStandalone: true, selector: "my-comp-2", host: { properties: { "class.is-compact": "false", "style.width": "0", "attr.tabindex": "5" } }, ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent2, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp-2',
+                    standalone: true,
+                    template: '',
+                    host: {
+                        '[class.is-compact]': 'false',
+                        '[style.width]': '0',
+                        '[attr.tabindex]': '5',
+                    }
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deceptive_attrs.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, true, never>;
+}
+export declare class MyComponent2 {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent2, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent2, "my-comp-2", never, {}, {}, never, never, true, never>;
+}
+
