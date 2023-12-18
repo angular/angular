@@ -27,7 +27,7 @@ export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|Eleme
     ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
     DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
     ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
-    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|I18nContextOp|I18nAttributesOp;
+    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|IcuPlaceholderOp|I18nContextOp|I18nAttributesOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -465,6 +465,12 @@ export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   initialValue: string;
 
+  /**
+   * The placeholder for this text in its parent ICU. If this text is not part of an ICU, the
+   * placeholder is null.
+   */
+  icuPlaceholder: string|null;
+
   sourceSpan: ParseSourceSpan|null;
 }
 
@@ -472,12 +478,14 @@ export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
  * Create a `TextOp`.
  */
 export function createTextOp(
-    xref: XrefId, initialValue: string, sourceSpan: ParseSourceSpan|null): TextOp {
+    xref: XrefId, initialValue: string, icuPlaceholder: string|null,
+    sourceSpan: ParseSourceSpan|null): TextOp {
   return {
     kind: OpKind.Text,
     xref,
     handle: new SlotHandle(),
     initialValue,
+    icuPlaceholder,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
@@ -1163,6 +1171,51 @@ export function createIcuEndOp(xref: XrefId): IcuEndOp {
   return {
     kind: OpKind.IcuEnd,
     xref,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that represents a placeholder in an ICU expression.
+ */
+export interface IcuPlaceholderOp extends Op<CreateOp> {
+  kind: OpKind.IcuPlaceholder;
+
+  /**
+   * The ID of the ICU placeholder.
+   */
+  xref: XrefId;
+
+  /**
+   * The name of the placeholder in the ICU expression.
+   */
+  name: string;
+
+  /**
+   * The static strings to be combined with dynamic expression values to form the text. This works
+   * like interpolation, but the strings are combined at compile time, using special placeholders
+   * for the dynamic expressions, and put into the translated message.
+   */
+  strings: string[];
+
+  /**
+   * Placeholder values for the i18n expressions to be combined with the static strings to form the
+   * full placeholder value.
+   */
+  expressionPlaceholders: I18nParamValue[];
+}
+
+/**
+ * Creates an ICU placeholder op.
+ */
+export function createIcuPlaceholderOp(
+    xref: XrefId, name: string, strings: string[]): IcuPlaceholderOp {
+  return {
+    kind: OpKind.IcuPlaceholder,
+    xref,
+    name,
+    strings,
+    expressionPlaceholders: [],
     ...NEW_OP,
   };
 }
