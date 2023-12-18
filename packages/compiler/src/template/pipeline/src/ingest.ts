@@ -145,9 +145,9 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
     } else if (node instanceof t.Content) {
       ingestContent(unit, node);
     } else if (node instanceof t.Text) {
-      ingestText(unit, node);
+      ingestText(unit, node, null);
     } else if (node instanceof t.BoundText) {
-      ingestBoundText(unit, node);
+      ingestBoundText(unit, node, null);
     } else if (node instanceof t.IfBlock) {
       ingestIfBlock(unit, node);
     } else if (node instanceof t.SwitchBlock) {
@@ -282,15 +282,16 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
 /**
  * Ingest a literal text node from the AST into the given `ViewCompilation`.
  */
-function ingestText(unit: ViewCompilationUnit, text: t.Text): void {
-  unit.create.push(ir.createTextOp(unit.job.allocateXrefId(), text.value, text.sourceSpan));
+function ingestText(unit: ViewCompilationUnit, text: t.Text, icuPlaceholder: string|null): void {
+  unit.create.push(
+      ir.createTextOp(unit.job.allocateXrefId(), text.value, icuPlaceholder, text.sourceSpan));
 }
 
 /**
  * Ingest an interpolated text node from the AST into the given `ViewCompilation`.
  */
 function ingestBoundText(
-    unit: ViewCompilationUnit, text: t.BoundText, i18nPlaceholders?: string[]): void {
+    unit: ViewCompilationUnit, text: t.BoundText, icuPlaceholder: string|null): void {
   let value = text.value;
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
@@ -304,21 +305,18 @@ function ingestBoundText(
         `Unhandled i18n metadata type for text interpolation: ${text.i18n?.constructor.name}`);
   }
 
-  if (i18nPlaceholders === undefined) {
-    // TODO: We probably can just use the placeholders field, instead of walking the AST.
-    i18nPlaceholders = text.i18n instanceof i18n.Container ?
-        text.i18n.children
-            .filter((node): node is i18n.Placeholder => node instanceof i18n.Placeholder)
-            .map(placeholder => placeholder.name) :
-        [];
-  }
+  const i18nPlaceholders = text.i18n instanceof i18n.Container ?
+      text.i18n.children
+          .filter((node): node is i18n.Placeholder => node instanceof i18n.Placeholder)
+          .map(placeholder => placeholder.name) :
+      [];
   if (i18nPlaceholders.length > 0 && i18nPlaceholders.length !== value.expressions.length) {
     throw Error(`Unexpected number of i18n placeholders (${
         value.expressions.length}) for BoundText with ${value.expressions.length} expressions`);
   }
 
   const textXref = unit.job.allocateXrefId();
-  unit.create.push(ir.createTextOp(textXref, '', text.sourceSpan));
+  unit.create.push(ir.createTextOp(textXref, '', icuPlaceholder, text.sourceSpan));
   // TemplateDefinitionBuilder does not generate source maps for sub-expressions inside an
   // interpolation. We copy that behavior in compatibility mode.
   // TODO: is it actually correct to generate these extra maps in modern mode?
@@ -564,9 +562,9 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
     unit.create.push(ir.createIcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
     for (const [placeholder, text] of Object.entries({...icu.vars, ...icu.placeholders})) {
       if (text instanceof t.BoundText) {
-        ingestBoundText(unit, text, [placeholder]);
+        ingestBoundText(unit, text, placeholder);
       } else {
-        ingestText(unit, text);
+        ingestText(unit, text, placeholder);
       }
     }
     unit.create.push(ir.createIcuEndOp(xref));

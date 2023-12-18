@@ -78,10 +78,12 @@ export function extractI18nMessages(job: CompilationJob): void {
 
   // Associate sub-messages for ICUs with their root message. At this point we can also remove the
   // ICU start/end ops, as they are no longer needed.
+  let currentIcu: ir.IcuStartOp|null = null;
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.IcuStart:
+          currentIcu = op;
           ir.OpList.remove<ir.CreateOp>(op);
           // Skip any contexts not associated with an ICU.
           const icuContext = i18nContexts.get(op.context!)!;
@@ -105,6 +107,16 @@ export function extractI18nMessages(job: CompilationJob): void {
           rootMessage.subMessages.push(subMessage.xref);
           break;
         case ir.OpKind.IcuEnd:
+          currentIcu = null;
+          ir.OpList.remove<ir.CreateOp>(op);
+          break;
+        case ir.OpKind.IcuPlaceholder:
+          // Add ICU placeholders to the message, then remove the ICU placeholder ops.
+          if (currentIcu === null || currentIcu.context == null) {
+            throw Error('AssertionError: Unexpected ICU placeholder outside of i18n context');
+          }
+          const msg = i18nMessagesByContext.get(currentIcu.context)!;
+          msg.postprocessingParams.set(op.name, o.literal(formatIcuPlaceholder(op)));
           ir.OpList.remove<ir.CreateOp>(op);
           break;
       }
@@ -119,16 +131,23 @@ function createI18nMessage(
     job: CompilationJob, context: ir.I18nContextOp, messagePlaceholder?: string): ir.I18nMessageOp {
   let formattedParams = formatParams(context.params);
   const formattedPostprocessingParams = formatParams(context.postprocessingParams);
-  let needsPostprocessing = formattedPostprocessingParams.size > 0;
-  for (const values of context.params.values()) {
-    if (values.length > 1) {
-      needsPostprocessing = true;
-    }
-  }
+  let needsPostprocessing = [...context.params.values()].some(v => v.length > 1);
   return ir.createI18nMessageOp(
       job.allocateXrefId(), context.xref, context.i18nBlock, context.message,
       messagePlaceholder ?? null, formattedParams, formattedPostprocessingParams,
       needsPostprocessing);
+}
+
+/**
+ * Formats an ICU placeholder into a single string with expression placeholders.
+ */
+function formatIcuPlaceholder(op: ir.IcuPlaceholderOp) {
+  if (op.strings.length !== op.expressionPlaceholders.length + 1) {
+    throw Error(`AsserionError: Invalid ICU placeholder with ${op.strings.length} strings and ${
+        op.expressionPlaceholders.length} expressions`);
+  }
+  const values = op.expressionPlaceholders.map(formatValue);
+  return op.strings.flatMap((str, i) => [str, values[i] || '']).join('');
 }
 
 /**
