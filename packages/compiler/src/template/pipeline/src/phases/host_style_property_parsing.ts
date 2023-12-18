@@ -25,7 +25,7 @@ const BANG_IMPORTANT = '!important';
  */
 export function parseHostStyleProperties(job: CompilationJob): void {
   for (const op of job.root.update) {
-    if (op.kind !== ir.OpKind.Binding) {
+    if (!(op.kind === ir.OpKind.Binding && op.bindingKind === ir.BindingKind.Property)) {
       continue;
     }
 
