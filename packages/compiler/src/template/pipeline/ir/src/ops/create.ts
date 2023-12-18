@@ -630,7 +630,7 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   projectionSlotIndex: number;
 
-  attributes: string[];
+  attributes: null|o.LiteralArrayExpr;
 
   localRefs: string[];
 
@@ -643,7 +643,7 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
 export function createProjectionOp(
     xref: XrefId, selector: string, i18nPlaceholder: i18n.TagPlaceholder|undefined,
-    attributes: string[], sourceSpan: ParseSourceSpan): ProjectionOp {
+    sourceSpan: ParseSourceSpan): ProjectionOp {
   return {
     kind: OpKind.Projection,
     xref,
@@ -651,7 +651,7 @@ export function createProjectionOp(
     selector,
     i18nPlaceholder,
     projectionSlotIndex: 0,
-    attributes,
+    attributes: null,
     localRefs: [],
     sourceSpan,
     ...NEW_OP,
