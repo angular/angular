@@ -4,6 +4,8 @@ import {Component} from '@angular/core';
   template: `
     @for (item of items; track item) {
       <div foo="1" bar="2">{{item}}</div>
+    } @empty {
+      <span empty-foo="1" empty-bar="2">Empty!</span>
     }
   `,
 })
