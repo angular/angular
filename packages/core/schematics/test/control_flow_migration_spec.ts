@@ -5087,6 +5087,68 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should not remove imports when mismatch in counts', async () => {
+      writeFile('/comp.ts', [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';`,
+        `@Component({`,
+        `  selector: 'description',`,
+        `  template: \`<span>{{getDescription()}}</span>\`,`,
+        `})`,
+        `export class DescriptionController {`,
+        `  getDescription(): string {`,
+        `    return 'stuff';`,
+        `  }`,
+        `}`,
+        ``,
+        `@Pipe({name: 'description'})`,
+        `export class DescriptionPipe implements PipeTransform {`,
+        `  transform(nameString?: string): string {`,
+        `    return nameString ?? '';`,
+        `  }`,
+        `}`,
+        `@NgModule({`,
+        `  declarations: [DescriptionController, DescriptionPipe],`,
+        `  imports: [CommonModule],`,
+        `  providers: [],`,
+        `  exports: [DescriptionController, DescriptionPipe],`,
+        `})`,
+        `export class DescriptionModule {}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';`,
+        `@Component({`,
+        `  selector: 'description',`,
+        `  template: \`<span>{{getDescription()}}</span>\`,`,
+        `})`,
+        `export class DescriptionController {`,
+        `  getDescription(): string {`,
+        `    return 'stuff';`,
+        `  }`,
+        `}`,
+        ``,
+        `@Pipe({name: 'description'})`,
+        `export class DescriptionPipe implements PipeTransform {`,
+        `  transform(nameString?: string): string {`,
+        `    return nameString ?? '';`,
+        `  }`,
+        `}`,
+        `@NgModule({`,
+        `  declarations: [DescriptionController, DescriptionPipe],`,
+        `  imports: [CommonModule],`,
+        `  providers: [],`,
+        `  exports: [DescriptionController, DescriptionPipe],`,
+        `})`,
+        `export class DescriptionModule {}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {

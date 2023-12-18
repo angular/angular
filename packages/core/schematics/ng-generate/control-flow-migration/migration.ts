@@ -82,6 +82,7 @@ export function migrateTemplate(
       // and in that case we can't safely remove the common module import.
       componentFile.verifyCanRemoveImports();
     }
+    file.verifyCanRemoveImports();
 
     errors = [
       ...ifResult.errors,
