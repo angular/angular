@@ -687,10 +687,15 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   expression: o.Expression;
 
+  icuPlaceholder: XrefId|null;
+
   /**
-   * The i18n placeholder associated with this expression.
+   * The i18n placeholder associated with this expression. This can be null if the expression is
+   * part of an ICU placeholder. In this case it gets combined with the string literal value and
+   * other expressions in the ICU placeholder and assigned to the translated message under the ICU
+   * placeholder name.
    */
-  i18nPlaceholder: string;
+  i18nPlaceholder: string|null;
 
   /**
    * The time that this expression is resolved.
@@ -716,8 +721,9 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  */
 export function createI18nExpressionOp(
     context: XrefId, target: XrefId, i18nOwner: XrefId, handle: SlotHandle,
-    expression: o.Expression, i18nPlaceholder: string, resolutionTime: I18nParamResolutionTime,
-    usage: I18nExpressionFor, name: string, sourceSpan: ParseSourceSpan): I18nExpressionOp {
+    expression: o.Expression, icuPlaceholder: XrefId|null, i18nPlaceholder: string|null,
+    resolutionTime: I18nParamResolutionTime, usage: I18nExpressionFor, name: string,
+    sourceSpan: ParseSourceSpan): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     context,
@@ -725,6 +731,7 @@ export function createI18nExpressionOp(
     i18nOwner,
     handle,
     expression,
+    icuPlaceholder,
     i18nPlaceholder,
     resolutionTime,
     usage,
