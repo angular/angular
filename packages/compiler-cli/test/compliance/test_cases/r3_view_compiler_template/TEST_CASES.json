@@ -389,6 +389,18 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle implict contezt in ng-template",
+      "inputFiles": [
+        "ng_template_implicit.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
