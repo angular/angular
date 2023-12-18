@@ -138,6 +138,8 @@ class RepeaterMetadata {
  * @param emptyTemplateFn Reference to the template function of the empty block.
  * @param emptyDecls The number of nodes, local refs, and pipes for the empty block.
  * @param emptyVars The number of bindings for the empty block.
+ * @param emptyTagName The name of the empty block container element, if applicable
+ * @param emptyAttrsIndex Index of the empty block template attributes in the `consts` array.
  *
  * @codeGenApi
  */
@@ -145,7 +147,8 @@ export function ɵɵrepeaterCreate(
     index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
     tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
     trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
-    emptyDecls?: number, emptyVars?: number): void {
+    emptyDecls?: number, emptyVars?: number, emptyTagName?: string|null,
+    emptyAttrsIndex?: number|null): void {
   performanceMarkFeature('NgControlFlow');
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
@@ -165,7 +168,7 @@ export function ɵɵrepeaterCreate(
     ngDevMode &&
         assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
-    ɵɵtemplate(index + 2, emptyTemplateFn, emptyDecls!, emptyVars!);
+    ɵɵtemplate(index + 2, emptyTemplateFn, emptyDecls!, emptyVars!, emptyTagName, emptyAttrsIndex);
   }
 }
 
