@@ -38,7 +38,16 @@ export function collectElementConsts(job: CompilationJob): void {
   if (job instanceof ComponentCompilationJob) {
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (ir.isElementOrContainerOp(op)) {
+        // TODO: Simplify and combine these cases.
+        if (op.kind == ir.OpKind.Projection) {
+          const attributes = allElementAttributes.get(op.xref);
+          if (attributes !== undefined) {
+            const attrArray = serializeAttributes(attributes);
+            if (attrArray.entries.length > 0) {
+              op.attributes = attrArray;
+            }
+          }
+        } else if (ir.isElementOrContainerOp(op)) {
           op.attributes = getConstIndex(job, allElementAttributes, op.xref);
 
           // TODO(dylhunn): `@for` loops with `@empty` blocks need to be special-cased here,

@@ -240,13 +240,13 @@ export function projectionDef(def: o.Expression|null): ir.CreateOp {
 }
 
 export function projection(
-    slot: number, projectionSlotIndex: number, attributes: string[],
+    slot: number, projectionSlotIndex: number, attributes: o.LiteralArrayExpr|null,
     sourceSpan: ParseSourceSpan): ir.CreateOp {
   const args: o.Expression[] = [o.literal(slot)];
-  if (projectionSlotIndex !== 0 || attributes.length > 0) {
+  if (projectionSlotIndex !== 0 || attributes !== null) {
     args.push(o.literal(projectionSlotIndex));
-    if (attributes.length > 0) {
-      args.push(o.literalArr(attributes.map(attr => o.literal(attr))));
+    if (attributes !== null) {
+      args.push(attributes);
     }
   }
   return call(Identifiers.projection, args, sourceSpan);
