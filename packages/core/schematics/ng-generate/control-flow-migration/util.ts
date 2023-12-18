@@ -582,6 +582,19 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
     const openElRegex = /^\s*<([a-z0-9]+)(?![^>]*\/>)[^>]*>?/;
 
+    // regex for matching an attribute string that was left open at the endof a line
+    // so we can ensure we have the proper indent
+    // <div thing="aefaefwe
+    const openAttrDoubleRegex = /="([^"]|\\")*$/;
+    const openAttrSingleRegex = /='([^']|\\')*$/;
+
+    // regex for matching an attribute string that was closes on a separate line
+    // from when it was opened.
+    // <div thing="aefaefwe
+    //             i18n message is here">
+    const closeAttrDoubleRegex = /^\s*([^><]|\\")*"/;
+    const closeAttrSingleRegex = /^\s*([^><]|\\')*'/;
+
     // regex for matching a self closing html element that has no />
     // <input type="button" [binding]="true">
     const selfClosingRegex = new RegExp(`^\\s*<(${selfClosingList}).+\\/?>`);
@@ -620,6 +633,8 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     let i18nDepth = 0;
     let inMigratedBlock = false;
     let inI18nBlock = false;
+    let inAttribute = false;
+    let isDoubleQuotes = false;
     for (let [index, line] of lines.entries()) {
       depth +=
           [...line.matchAll(startMarkerRegex)].length - [...line.matchAll(endMarkerRegex)].length;
@@ -633,7 +648,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         lineWasMigrated = true;
       }
       if ((line.trim() === '' && index !== 0 && index !== lines.length - 1) &&
-          (inMigratedBlock || lineWasMigrated) && !inI18nBlock) {
+          (inMigratedBlock || lineWasMigrated) && !inI18nBlock && !inAttribute) {
         // skip blank lines except if it's the first line or last line
         // this preserves leading and trailing spaces if they are already present
         continue;
@@ -655,9 +670,24 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         indent = indent.slice(2);
       }
 
-      const newLine =
-          inI18nBlock ? line : mindent + (line.trim() !== '' ? indent : '') + line.trim();
+      // if a line ends in an unclosed attribute, we need to note that and close it later
+      if (!inAttribute && openAttrDoubleRegex.test(line)) {
+        inAttribute = true;
+        isDoubleQuotes = true;
+      } else if (!inAttribute && openAttrSingleRegex.test(line)) {
+        inAttribute = true;
+        isDoubleQuotes = false;
+      }
+
+      const newLine = (inI18nBlock || inAttribute) ?
+          line :
+          mindent + (line.trim() !== '' ? indent : '') + line.trim();
       formatted.push(newLine);
+
+      if ((inAttribute && isDoubleQuotes && closeAttrDoubleRegex.test(line)) ||
+          (inAttribute && !isDoubleQuotes && closeAttrSingleRegex.test(line))) {
+        inAttribute = false;
+      }
 
       // this matches any self closing element that actually has a />
       if (closeMultiLineElRegex.test(line)) {
