@@ -25,15 +25,6 @@ export function removeContentSelectors(job: CompilationJob): void {
             ir.OpList.remove<ir.UpdateOp>(op);
           }
           break;
-        case ir.OpKind.Projection:
-          // op.attributes is an array of [attr1-name, attr1-value, attr2-name, attr2-value, ...],
-          // find the "select" attribute and remove its name and corresponding value.
-          for (let i = op.attributes.length - 2; i >= 0; i -= 2) {
-            if (isSelectAttribute(op.attributes[i])) {
-              op.attributes.splice(i, 2);
-            }
-          }
-          break;
       }
     }
   }
