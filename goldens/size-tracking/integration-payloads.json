@@ -16,7 +16,7 @@
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2734,
-      "main": 238106,
+      "main": 232898,
       "polyfills": 33810,
       "src_app_lazy_lazy_routes_ts": 487
     }
