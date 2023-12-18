@@ -1004,6 +1004,7 @@ export function transformExpressionsInOp(
     case OpKind.Template:
     case OpKind.Text:
     case OpKind.I18nAttributes:
+    case OpKind.IcuPlaceholder:
       // These operations contain no expressions.
       break;
     default:
