@@ -4755,6 +4755,83 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should indent multi-line attribute strings to the right place', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="show">show</div>`,
+        `<span i18n-message="this is a multi-`,
+        `                    line attribute`,
+        `                    with cool things">`,
+        `  Content here`,
+        `</span>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `@if (show) {`,
+        `  <div>show</div>`,
+        `}`,
+        `<span i18n-message="this is a multi-`,
+        `                    line attribute`,
+        `                    with cool things">`,
+        `  Content here`,
+        `</span>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should indent multi-line attribute strings as single quotes to the right place',
+       async () => {
+         writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+         writeFile('/comp.html', [
+           `<div *ngIf="show">show</div>`,
+           `<span i18n-message='this is a multi-`,
+           `                    line attribute`,
+           `                    with cool things'>`,
+           `  Content here`,
+           `</span>`,
+         ].join('\n'));
+
+         await runMigration();
+         const actual = tree.readContent('/comp.html');
+         const expected = [
+           `@if (show) {`,
+           `  <div>show</div>`,
+           `}`,
+           `<span i18n-message='this is a multi-`,
+           `                    line attribute`,
+           `                    with cool things'>`,
+           `  Content here`,
+           `</span>`,
+         ].join('\n');
+
+         expect(actual).toBe(expected);
+       });
   });
 
   describe('imports', () => {
