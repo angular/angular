@@ -245,6 +245,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handles ICUs with html content that has interpolated attributes",
+      "inputFiles": [
+        "attribute_interpolation.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -219,7 +219,7 @@ function collectMessage(
 
   // If nescessary, add a post-processing step and resolve any placeholder params that are
   // set in post-processing.
-  if (messageOp.needsPostprocessing) {
+  if (messageOp.needsPostprocessing || messageOp.postprocessingParams.size > 0) {
     // Sort the post-processing params for consistency with TemaplateDefinitionBuilder output.
     const postprocessingParams =
         Object.fromEntries([...messageOp.postprocessingParams.entries()].sort());
@@ -257,7 +257,6 @@ function addSubMessageParams(
       messageOp.params.set(
           placeholder, o.literal(`${ESCAPE}${I18N_ICU_MAPPING_PREFIX}${placeholder}${ESCAPE}`));
       messageOp.postprocessingParams.set(placeholder, o.literalArr(subMessages));
-      messageOp.needsPostprocessing = true;
     }
   }
 }
