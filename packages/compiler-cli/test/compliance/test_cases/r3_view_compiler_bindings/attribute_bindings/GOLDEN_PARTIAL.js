@@ -386,6 +386,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "
     <div [tabindex]="value1" [tabindex]="value2"></div>
     <div [class]="value1" [class]="value2"></div>
     <div [style]="value1" [style]="value2"></div>
+    <div (click)="$event.stopPropagation()" (click)="$event.preventDefault()"></div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
@@ -400,6 +401,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div [tabindex]="value1" [tabindex]="value2"></div>
     <div [class]="value1" [class]="value2"></div>
     <div [style]="value1" [style]="value2"></div>
+    <div (click)="$event.stopPropagation()" (click)="$event.preventDefault()"></div>
   `,
                 }]
         }] });
