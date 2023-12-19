@@ -331,10 +331,14 @@ export function property(
 }
 
 export function attribute(
-    name: string, expression: o.Expression, sanitizer: o.Expression|null): ir.UpdateOp {
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    namespace: string|null): ir.UpdateOp {
   const args = [o.literal(name), expression];
-  if (sanitizer !== null) {
-    args.push(sanitizer);
+  if (sanitizer !== null || namespace !== null) {
+    args.push(sanitizer ?? o.literal(null));
+  }
+  if (namespace !== null) {
+    args.push(o.literal(namespace));
   }
   return call(Identifiers.attribute, args, null);
 }
