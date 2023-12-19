@@ -8,7 +8,6 @@
 
 
 import * as core from '../../../../core';
-import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
@@ -28,7 +27,7 @@ export function collectElementConsts(job: CompilationJob): void {
         const attributes =
             allElementAttributes.get(op.target) || new ElementAttributes(job.compatibility);
         allElementAttributes.set(op.target, attributes);
-        attributes.add(op.bindingKind, op.name, op.expression, op.trustedValueFn);
+        attributes.add(op.bindingKind, op.name, op.expression, op.namespace, op.trustedValueFn);
         ir.OpList.remove<ir.CreateOp>(op);
       }
     }
@@ -139,7 +138,7 @@ class ElementAttributes {
     return false;
   }
 
-  add(kind: ir.BindingKind, name: string, value: o.Expression|null,
+  add(kind: ir.BindingKind, name: string, value: o.Expression|null, namespace: string|null,
       trustedValueFn: o.Expression|null): void {
     // TemplateDefinitionBuilder puts duplicate attribute, class, and style values into the consts
     // array. This seems inefficient, we can probably keep just the first one or the last value
@@ -164,7 +163,7 @@ class ElementAttributes {
 
 
     const array = this.arrayFor(kind);
-    array.push(...getAttributeNameLiterals(name));
+    array.push(...getAttributeNameLiterals(namespace, name));
     if (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.StyleProperty) {
       if (value === null) {
         throw Error('Attribute, i18n attribute, & style element attributes must have a value');
@@ -193,14 +192,11 @@ class ElementAttributes {
 /**
  * Gets an array of literal expressions representing the attribute's namespaced name.
  */
-function getAttributeNameLiterals(name: string): o.LiteralExpr[] {
-  const [attributeNamespace, attributeName] = splitNsName(name, false);
-  const nameLiteral = o.literal(attributeName);
+function getAttributeNameLiterals(namespace: string|null, name: string): o.LiteralExpr[] {
+  const nameLiteral = o.literal(name);
 
-  if (attributeNamespace) {
-    return [
-      o.literal(core.AttributeMarker.NamespaceURI), o.literal(attributeNamespace), nameLiteral
-    ];
+  if (namespace) {
+    return [o.literal(core.AttributeMarker.NamespaceURI), o.literal(namespace), nameLiteral];
   }
 
   return [nameLiteral];

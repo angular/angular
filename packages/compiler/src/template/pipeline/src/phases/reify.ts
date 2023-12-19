@@ -354,7 +354,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
                   op.name, op.expression.strings, op.expression.expressions, op.sanitizer,
                   op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
+          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
         }
         break;
       case ir.OpKind.HostProperty:

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {splitNsName} from '../../../../ml_parser/tags';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationJobKind} from '../compilation';
 
@@ -44,12 +45,13 @@ export function specializeBindings(job: CompilationJob): void {
             const target = lookupElement(elements, op.target);
             target.nonBindable = true;
           } else {
+            const [namespace, name] = splitNsName(op.name);
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createAttributeOp(
-                    op.target, op.name, op.expression, op.securityContext, op.isTextAttribute,
-                    op.isStructuralTemplateAttribute, op.templateKind, op.i18nMessage,
-                    op.sourceSpan));
+                    op.target, namespace, name, op.expression, op.securityContext,
+                    op.isTextAttribute, op.isStructuralTemplateAttribute, op.templateKind,
+                    op.i18nMessage, op.sourceSpan));
           }
           break;
         case ir.BindingKind.Property:
