@@ -265,8 +265,8 @@ export function getInherited(
     };
   } else {
     inherited = {
-      params: route.params,
-      data: route.data,
+      params: {...route.params},
+      data: {...route.data},
       resolve: {...route.data, ...(route._resolvedData ?? {})}
     };
   }
