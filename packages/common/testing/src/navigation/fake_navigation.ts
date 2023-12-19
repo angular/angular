@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Prevents deletion of `Event` from `globalThis` during module loading.
-const Event = globalThis.Event;
-
 /**
  * Fake implementation of user agent history and navigation behavior. This is a
  * high-fidelity implementation of browser behavior that attempts to emulate
