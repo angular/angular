@@ -74,16 +74,8 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
         superContentQueries && inheritContentQueries(definition, superContentQueries);
 
         // Merge inputs and outputs
-        fillProperties(definition.inputs, superDef.inputs);
-        fillProperties(definition.declaredInputs, superDef.declaredInputs);
+        mergeInputsWithTransforms(definition, superDef);
         fillProperties(definition.outputs, superDef.outputs);
-
-        if (superDef.inputTransforms !== null) {
-          if (writeableDef.inputTransforms === null) {
-            writeableDef.inputTransforms = {};
-          }
-          fillProperties(writeableDef.inputTransforms, superDef.inputTransforms);
-        }
 
         // Merge animations metadata.
         // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
@@ -120,6 +112,38 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
     superType = Object.getPrototypeOf(superType);
   }
   mergeHostAttrsAcrossInheritance(inheritanceChain);
+}
+
+function mergeInputsWithTransforms<T>(target: WritableDef, source: DirectiveDef<any>) {
+  for (const key in source.inputs) {
+    if (!source.inputs.hasOwnProperty(key)) {
+      continue;
+    }
+    if (target.inputs.hasOwnProperty(key)) {
+      continue;
+    }
+    const value = source.inputs[key];
+    if (value === undefined) {
+      continue;
+    }
+
+    target.inputs[key] = value;
+    target.declaredInputs[key] = source.declaredInputs[key];
+
+    // If the input is inherited, and we have a transform for it, we also inherit it.
+    // Note that transforms should not be inherited if the input has its own metadata
+    // in the `source` directive itself already (i.e. the input is re-declared/overridden).
+    if (source.inputTransforms !== null) {
+      // Note: transforms are stored with their minified names.
+      // Perf: only access the minified name when there are source transforms.
+      const minifiedName = Array.isArray(value) ? value[0] : value;
+      if (!source.inputTransforms.hasOwnProperty(minifiedName)) {
+        continue;
+      }
+      target.inputTransforms ??= {};
+      target.inputTransforms[minifiedName] = source.inputTransforms[minifiedName];
+    }
+  }
 }
 
 /**
