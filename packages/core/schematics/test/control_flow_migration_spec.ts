@@ -5226,6 +5226,56 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should not remove other imports when mismatch in counts', async () => {
+      writeFile('/comp.ts', [
+        `import {DatePipe, NgIf} from '@angular/common';`,
+        `import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';`,
+        `@Component({`,
+        `  selector: 'example',`,
+        `  template: \`<span>{{ example | date }}</span>\`,`,
+        `})`,
+        `export class ExampleCmp {`,
+        `  example: 'stuff',`,
+        `}`,
+        `const NG_MODULE_IMPORTS = [`,
+        `  DatePipe,`,
+        `  NgIf,`,
+        `];`,
+        `@NgModule({`,
+        `  declarations: [ExampleCmp],`,
+        `  imports: [NG_MODULE_IMPORTS],`,
+        `  exports: [ExampleCmp],`,
+        `})`,
+        `export class ExampleModule {}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {DatePipe, NgIf} from '@angular/common';`,
+        `import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';`,
+        `@Component({`,
+        `  selector: 'example',`,
+        `  template: \`<span>{{ example | date }}</span>\`,`,
+        `})`,
+        `export class ExampleCmp {`,
+        `  example: 'stuff',`,
+        `}`,
+        `const NG_MODULE_IMPORTS = [`,
+        `  DatePipe,`,
+        `  NgIf,`,
+        `];`,
+        `@NgModule({`,
+        `  declarations: [ExampleCmp],`,
+        `  imports: [NG_MODULE_IMPORTS],`,
+        `  exports: [ExampleCmp],`,
+        `})`,
+        `export class ExampleModule {}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {
