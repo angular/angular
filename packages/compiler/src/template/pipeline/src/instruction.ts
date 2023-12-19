@@ -264,6 +264,7 @@ export function repeaterCreate(
     slot: number, viewFnName: string, decls: number, vars: number, tag: string|null,
     constIndex: number|null, trackByFn: o.Expression, trackByUsesComponentInstance: boolean,
     emptyViewFnName: string|null, emptyDecls: number|null, emptyVars: number|null,
+    emptyTag: string|null, emptyConstIndex: number|null,
     sourceSpan: ParseSourceSpan|null): ir.CreateOp {
   const args = [
     o.literal(slot),
@@ -278,6 +279,12 @@ export function repeaterCreate(
     args.push(o.literal(trackByUsesComponentInstance));
     if (emptyViewFnName !== null) {
       args.push(o.variable(emptyViewFnName), o.literal(emptyDecls), o.literal(emptyVars));
+      if (emptyTag !== null || emptyConstIndex !== null) {
+        args.push(o.literal(emptyTag));
+      }
+      if (emptyConstIndex !== null) {
+        args.push(o.literal(emptyConstIndex));
+      }
     }
   }
   return call(Identifiers.repeaterCreate, args, sourceSpan);

@@ -550,7 +550,6 @@
     },
     {
       "description": "should generate a for block with an element root node",
-      "skipForTemplatePipeline": true,
       "inputFiles": [
         "for_element_root_node.ts"
       ],
@@ -568,7 +567,6 @@
     },
     {
       "description": "should generate a for block with an ng-template root node",
-      "skipForTemplatePipeline": true,
       "inputFiles": [
         "for_template_root_node.ts"
       ],
