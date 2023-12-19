@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
+import {CommonModule, HashLocationStrategy, Location, LocationStrategy, ɵPlatformNavigation as PlatformNavigation} from '@angular/common';
+import {ɵFakeNavigation as FakeNavigation, ɵprovideFakeNavigation as provideFakeNavigation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, Type, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -16,12 +17,6 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
-// @ng_package: ignore-cross-repo-import
-import {PlatformNavigation} from '../../common/src/navigation/platform_navigation';
-// @ng_package: ignore-cross-repo-import
-import {FakeNavigation} from '../../common/testing/src/navigation/fake_navigation';
-// @ng_package: ignore-cross-repo-import
-import {provideFakeNavigation} from '../../common/testing/src/navigation/provide_fake_navigation';
 import {CanActivateChildFn, CanActivateFn, CanMatchFn, Data, ResolveFn} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
 import {wrapIntoObservable} from '../src/utils/collection';
