@@ -5511,5 +5511,47 @@ describe('control flow migration', () => {
                  `Element node: "strong" would result in invalid migrated @switch block structure. ` +
                  `@switch can only have @case or @default as children.`);
        });
+
+    it('should not migrate a template that would result in invalid i18n nesting', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          testOpts = 2;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container i18n="messageid">`,
+        `  <div *ngIf="condition; else elseTmpl">`,
+        `    If content here`,
+        `  </div>`,
+        `</ng-container>`,
+        `<ng-template #elseTmpl i18n="elsemessageid">`,
+        `  <div>Else content here</div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+      expect(content).toBe([
+        `<ng-container i18n="messageid">`,
+        `  <div *ngIf="condition; else elseTmpl">`,
+        `    If content here`,
+        `  </div>`,
+        `</ng-container>`,
+        `<ng-template #elseTmpl i18n="elsemessageid">`,
+        `  <div>Else content here</div>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      expect(warnOutput.join(' '))
+          .toContain(
+              `Element with i18n attribute "ng-container" would result having a child of element with i18n attribute ` +
+              `"ng-container". Please fix and re-run the migration.`);
+    });
   });
 });
