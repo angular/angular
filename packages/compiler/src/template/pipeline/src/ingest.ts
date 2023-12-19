@@ -605,9 +605,11 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   ingestNodes(repeaterView, forBlock.children);
 
   let emptyView: ViewCompilationUnit|null = null;
+  let emptyTagName: string|null = null;
   if (forBlock.empty !== null) {
     emptyView = unit.job.allocateView(unit.xref);
     ingestNodes(emptyView, forBlock.empty.children);
+    emptyTagName = ingestControlFlowInsertionPoint(unit, emptyView.xref, forBlock.empty);
   }
 
   const varNames: ir.RepeaterVarNames = {
@@ -632,8 +634,8 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
 
   const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, forBlock);
   const repeaterCreate = ir.createRepeaterCreateOp(
-      repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, i18nPlaceholder,
-      emptyI18nPlaceholder, forBlock.startSourceSpan, forBlock.sourceSpan);
+      repeaterView.xref, emptyView?.xref ?? null, tagName, track, varNames, emptyTagName,
+      i18nPlaceholder, emptyI18nPlaceholder, forBlock.startSourceSpan, forBlock.sourceSpan);
   unit.create.push(repeaterCreate);
 
   const expression = convertAst(
@@ -1126,7 +1128,8 @@ function convertSourceSpan(
  * @returns Tag name to be used for the control flow template.
  */
 function ingestControlFlowInsertionPoint(
-    unit: ViewCompilationUnit, xref: ir.XrefId, node: t.IfBlockBranch|t.ForLoopBlock): string|null {
+    unit: ViewCompilationUnit, xref: ir.XrefId,
+    node: t.IfBlockBranch|t.ForLoopBlock|t.ForLoopBlockEmpty): string|null {
   let root: t.Element|t.Template|null = null;
 
   for (const child of node.children) {
