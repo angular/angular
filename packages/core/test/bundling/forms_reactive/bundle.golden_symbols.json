@@ -1416,6 +1416,9 @@
     "name": "mergeHostAttrs"
   },
   {
+    "name": "mergeInputsWithTransforms"
+  },
+  {
     "name": "mergeValidators"
   },
   {
