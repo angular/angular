@@ -78,9 +78,10 @@ export function extractDirectiveMetadata(
 
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated fields.
-  const inputsFromMeta = parseInputsArray(clazz, directive, evaluator, reflector, refEmitter);
-  const inputsFromFields =
-      parseInputFields(clazz, members, evaluator, reflector, refEmitter, coreModule);
+  const inputsFromMeta =
+      parseInputsArray(clazz, directive, evaluator, reflector, refEmitter, compilationMode);
+  const inputsFromFields = parseInputFields(
+      clazz, members, evaluator, reflector, refEmitter, coreModule, compilationMode);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
@@ -616,8 +617,8 @@ function parseDecoratedFields(
 /** Parses the `inputs` array of a directive/component decorator. */
 function parseInputsArray(
     clazz: ClassDeclaration, decoratorMetadata: Map<string, ts.Expression>,
-    evaluator: PartialEvaluator, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter): Record<string, InputMapping> {
+    evaluator: PartialEvaluator, reflector: ReflectionHost, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): Record<string, InputMapping> {
   const inputsField = decoratorMetadata.get('inputs');
 
   if (inputsField === undefined) {
@@ -669,7 +670,7 @@ function parseInputsArray(
         }
 
         transform = parseDecoratorInputTransformFunction(
-            clazz, name, transformValue, reflector, refEmitter);
+            clazz, name, transformValue, reflector, refEmitter, compilationMode);
       }
 
       inputs[name] = {
@@ -711,8 +712,8 @@ function tryGetDecoratorOnMember(
 
 function tryParseInputFieldMapping(
     clazz: ClassDeclaration, member: ClassMember, evaluator: PartialEvaluator,
-    reflector: ReflectionHost, coreModule: string|undefined,
-    refEmitter: ReferenceEmitter): InputMapping|null {
+    reflector: ReflectionHost, coreModule: string|undefined, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): InputMapping|null {
   const classPropertyName = member.name;
 
   // Look for a decorator first.
@@ -757,7 +758,7 @@ function tryParseInputFieldMapping(
       }
 
       transform = parseDecoratorInputTransformFunction(
-          clazz, classPropertyName, transformValue, reflector, refEmitter);
+          clazz, classPropertyName, transformValue, reflector, refEmitter, compilationMode);
     }
 
     return {
@@ -797,8 +798,8 @@ function tryParseInputFieldMapping(
 /** Parses the class members that declare inputs (via decorator or initializer). */
 function parseInputFields(
     clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
-    reflector: ReflectionHost, refEmitter: ReferenceEmitter,
-    coreModule: string|undefined): Record<string, InputMapping> {
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter, coreModule: string|undefined,
+    compilationMode: CompilationMode): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
   for (const member of members) {
@@ -814,6 +815,7 @@ function parseInputFields(
         reflector,
         coreModule,
         refEmitter,
+        compilationMode,
     );
     if (inputMapping !== null) {
       inputs[classPropertyName] = inputMapping;
@@ -836,7 +838,28 @@ function parseInputFields(
  */
 export function parseDecoratorInputTransformFunction(
     clazz: ClassDeclaration, classPropertyName: string, value: DynamicValue|Reference,
-    reflector: ReflectionHost, refEmitter: ReferenceEmitter): DecoratorInputTransform {
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): DecoratorInputTransform {
+  // In local compilation mode we can skip type checking the function args. This is because usually
+  // the type check is done in a separate build which runs in full compilation mode. So here we skip
+  // all the diagnostics.
+  if (compilationMode === CompilationMode.LOCAL) {
+    const node =
+        value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+
+    // This should never be null since we know the reference originates
+    // from the same file, but we null check it just in case.
+    if (node === null) {
+      throw createValueHasWrongTypeError(
+          value.node, value, 'Input transform function could not be referenced');
+    }
+
+    return {
+      node,
+      type: new Reference(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword))
+    };
+  }
+
   const definition = reflector.getDefinitionOfFunction(value.node);
 
   if (definition === null) {

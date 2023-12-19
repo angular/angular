@@ -1033,5 +1033,109 @@ runInEachFileSystem(() => {
                .toContain('ɵɵsetNgModuleScope(AppModule, { declarations: [App] }); })();');
          });
     });
+
+    describe('input transform', () => {
+      it('should generate input info for transform function imported externally using name', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+        import {externalFunc} from './some_where';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: externalFunc})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('inputs: { x: ["x", "x", externalFunc] }');
+      });
+
+      it('should generate input info for transform function imported externally using namespace',
+         () => {
+           env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+        import * as n from './some_where';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: n.externalFunc})
+          x: string = '';
+        }
+     `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toContain('inputs: { x: ["x", "x", n.externalFunc] }');
+         });
+
+      it('should generate input info for transform function defined locally', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';        
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: localFunc})
+          x: string = '';
+        }
+
+        function localFunc(value: string) {
+          return value;
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('inputs: { x: ["x", "x", localFunc] }');
+      });
+
+      it('should generate input info for inline transform function', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';        
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: (v: string) => v + 'TRANSFORMED!'})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('inputs: { x: ["x", "x", (v) => v + \'TRANSFORMED!\'] }');
+      });
+
+      it('should not check inline function param type', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';        
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: v => v + 'TRANSFORMED!'})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('inputs: { x: ["x", "x", v => v + \'TRANSFORMED!\'] }');
+      });
+    });
   });
 });
