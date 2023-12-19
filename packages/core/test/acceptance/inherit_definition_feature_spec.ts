@@ -708,6 +708,67 @@ describe('inheritance', () => {
         expect(subDir.baz).toBe('c');
         expect(subDir.qux).toBe('d');
       });
+
+      it('should not inherit transforms if inputs are re-declared', () => {
+        @Directive()
+        class Base {
+          @Input({transform: v => `${v}-transformed`}) someInput: string = '';
+        }
+
+        @Directive({
+          standalone: true,
+          selector: 'dir',
+          inputs: ['someInput'],
+        })
+        class ActualDir extends Base {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ActualDir],
+          template: `<dir someInput="newValue">`,
+        })
+        class TestCmp {
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+
+        const actualDir =
+            fixture.debugElement.query(By.directive(ActualDir)).injector.get(ActualDir);
+
+        expect(actualDir.someInput).toEqual('newValue');
+      });
+
+      it('should inherit transforms if inputs are aliased', () => {
+        @Directive()
+        class Base {
+          @Input({transform: v => `${v}-transformed`, alias: 'publicName'}) fieldName: string = '';
+        }
+
+        @Directive({
+          standalone: true,
+          selector: 'dir',
+        })
+        class ActualDir extends Base {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ActualDir],
+          template: `<dir publicName="newValue">`,
+        })
+        class TestCmp {
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+
+        const actualDir =
+            fixture.debugElement.query(By.directive(ActualDir)).injector.get(ActualDir);
+
+        expect(actualDir.fieldName).toEqual('newValue-transformed');
+      });
     });
 
     describe('outputs', () => {
