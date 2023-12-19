@@ -1,3 +1,19 @@
+## [0.14.3](https://github.com/angular/angular/compare/zone.js-0.14.2...zone.js-0.14.3) (2023-12-19)
+
+
+### Bug Fixes
+
+* **zone.js:** handle fetch with AbortSignal ([#49595](https://github.com/angular/angular/issues/49595)) ([b06b24b](https://github.com/angular/angular/commit/b06b24b5049c07fbc18c76fd2a10e49fc93870be))
+* **zone.js:** Promise.resolve(subPromise) should return subPromise ([#53423](https://github.com/angular/angular/issues/53423)) ([08b0c87](https://github.com/angular/angular/commit/08b0c87a948007e086a2c5a5c17ccca5fd7a24c4)), closes [/promisesaplus.com/#point-51](https://github.com//promisesaplus.com//issues/point-51)
+* **zone.js:** support addEventListener with signal option. ([#49595](https://github.com/angular/angular/issues/49595)) ([d4973ff](https://github.com/angular/angular/commit/d4973ff9b074f4db918f71163e79b7d112c309f5)), closes [#49591](https://github.com/angular/angular/issues/49591)
+
+
+### Features
+
+* **zone.js:** implement Promise.withResolvers() ([#53514](https://github.com/angular/angular/issues/53514)) ([7a28f50](https://github.com/angular/angular/commit/7a28f50711535fcc285c7ee9021e8e7dc34a655d))
+
+
+
 ## [0.14.2](https://github.com/angular/angular/compare/zone.js-0.14.1...zone.js-0.14.2) (2023-11-03)
 
 
