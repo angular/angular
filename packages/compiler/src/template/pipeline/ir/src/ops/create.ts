@@ -684,6 +684,11 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
   bindingKind: BindingKind;
 
   /**
+   * The namespace of the attribute (or null if none).
+   */
+  namespace: string|null;
+
+  /**
    * The name of the extracted attribute.
    */
   name: string;
@@ -716,13 +721,14 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
  * Create an `ExtractedAttributeOp`.
  */
 export function createExtractedAttributeOp(
-    target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
-    i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
+    target: XrefId, bindingKind: BindingKind, namespace: string|null, name: string,
+    expression: o.Expression|null, i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
     securityContext: SecurityContext|SecurityContext[]): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
     bindingKind,
+    namespace,
     name,
     expression,
     i18nContext,
