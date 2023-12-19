@@ -10,7 +10,7 @@ import {Attribute, Element, HtmlParser, Node, ParseTreeResult, visitAll} from '@
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, importRemovals, importWithCommonRemovals, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
+import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, importRemovals, importWithCommonRemovals, MigrateError, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
 
 const startMarkerRegex = new RegExp(startMarker, 'gm');
 const endMarkerRegex = new RegExp(endMarker, 'gm');
@@ -231,6 +231,49 @@ export function parseTemplate(template: string): ParseResult {
     return {tree: undefined, errors: [{type: 'parse', error: e}]};
   }
   return {tree: parsed, errors: []};
+}
+
+export function validateMigratedTemplate(migrated: string, fileName: string): MigrateError[] {
+  const parsed = parseTemplate(migrated);
+  let errors: MigrateError[] = [];
+  if (parsed.errors.length > 0) {
+    errors.push({
+      type: 'parse',
+      error: new Error(
+          `The migration resulted in invalid HTML for ${fileName}. ` +
+          `Please check the template for valid HTML structures and run the migration again.`)
+    });
+  }
+  if (parsed.tree) {
+    const i18nError = validateI18nStructure(parsed.tree, fileName);
+    if (i18nError !== null) {
+      errors.push({type: 'i18n', error: i18nError});
+    }
+  }
+  return errors;
+}
+
+export function validateI18nStructure(parsed: ParseTreeResult, fileName: string): Error|null {
+  const visitor = new i18nCollector();
+  visitAll(visitor, parsed.rootNodes);
+  const parents = visitor.elements.filter(el => el.children.length > 0);
+  for (const p of parents) {
+    for (const el of visitor.elements) {
+      if (el === p) continue;
+      if (isChildOf(p, el)) {
+        return new Error(
+            `i18n Nesting error: The migration would result in invalid i18n nesting for ` +
+            `${fileName}. Element with i18n attribute "${p.name}" would result having a child of ` +
+            `element with i18n attribute "${el.name}". Please fix and re-run the migration.`);
+      }
+    }
+  }
+  return null;
+}
+
+function isChildOf(parent: Element, el: Element): boolean {
+  return parent.sourceSpan.start.offset < el.sourceSpan.start.offset &&
+      parent.sourceSpan.end.offset > el.sourceSpan.end.offset;
 }
 
 /**
