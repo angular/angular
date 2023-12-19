@@ -282,6 +282,17 @@ export interface RepeaterCreateOp extends ElementOpBase, ConsumesVarsTrait {
   functionNameSuffix: string;
 
   /**
+   * Tag name for the empty block.
+   */
+  emptyTag: string|null;
+
+  /**
+   * Attributes of various kinds on the empty block. Represented as a `ConstIndex` pointer into the
+   * shared `consts` array of the component compilation.
+   */
+  emptyAttributes: ConstIndex|null;
+
+  /**
    * The i18n placeholder for the repeated item template.
    */
   i18nPlaceholder: i18n.BlockPlaceholder|undefined;
@@ -305,7 +316,8 @@ export interface RepeaterVarNames {
 
 export function createRepeaterCreateOp(
     primaryView: XrefId, emptyView: XrefId|null, tag: string|null, track: o.Expression,
-    varNames: RepeaterVarNames, i18nPlaceholder: i18n.BlockPlaceholder|undefined,
+    varNames: RepeaterVarNames, emptyTag: string|null,
+    i18nPlaceholder: i18n.BlockPlaceholder|undefined,
     emptyI18nPlaceholder: i18n.BlockPlaceholder|undefined, startSourceSpan: ParseSourceSpan,
     wholeSourceSpan: ParseSourceSpan): RepeaterCreateOp {
   return {
@@ -317,6 +329,8 @@ export function createRepeaterCreateOp(
     track,
     trackByFn: null,
     tag,
+    emptyTag,
+    emptyAttributes: null,
     functionNameSuffix: 'For',
     namespace: Namespace.HTML,
     nonBindable: false,

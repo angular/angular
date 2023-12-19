@@ -239,7 +239,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             ng.repeaterCreate(
                 op.handle.slot, repeaterView.fnName, op.decls!, op.vars!, op.tag, op.attributes,
                 op.trackByFn!, op.usesComponentInstance, emptyViewFnName, emptyDecls, emptyVars,
-                op.wholeSourceSpan));
+                op.emptyTag, op.emptyAttributes, op.wholeSourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
