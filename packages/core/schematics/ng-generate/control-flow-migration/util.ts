@@ -671,10 +671,12 @@ export function formatTemplate(tmpl: string, templateType: string): string {
       }
 
       // if a line ends in an unclosed attribute, we need to note that and close it later
-      if (!inAttribute && openAttrDoubleRegex.test(line)) {
+      const isOpenDoubleAttr = openAttrDoubleRegex.test(line);
+      const isOpenSingleAttr = openAttrSingleRegex.test(line);
+      if (!inAttribute && isOpenDoubleAttr) {
         inAttribute = true;
         isDoubleQuotes = true;
-      } else if (!inAttribute && openAttrSingleRegex.test(line)) {
+      } else if (!inAttribute && isOpenSingleAttr) {
         inAttribute = true;
         isDoubleQuotes = false;
       }
@@ -684,8 +686,9 @@ export function formatTemplate(tmpl: string, templateType: string): string {
           mindent + (line.trim() !== '' ? indent : '') + line.trim();
       formatted.push(newLine);
 
-      if ((inAttribute && isDoubleQuotes && closeAttrDoubleRegex.test(line)) ||
-          (inAttribute && !isDoubleQuotes && closeAttrSingleRegex.test(line))) {
+      if (!isOpenDoubleAttr && !isOpenSingleAttr &&
+          ((inAttribute && isDoubleQuotes && closeAttrDoubleRegex.test(line)) ||
+           (inAttribute && !isDoubleQuotes && closeAttrSingleRegex.test(line)))) {
         inAttribute = false;
       }
 

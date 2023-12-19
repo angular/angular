@@ -4776,6 +4776,13 @@ describe('control flow migration', () => {
         `                    with cool things">`,
         `  Content here`,
         `</span>`,
+        `<span`,
+        `    i18n-message="this is a multi-`,
+        `                    line attribute`,
+        `                    that starts`,
+        `                    on a newline">`,
+        `  Different Content`,
+        `</span>`,
       ].join('\n'));
 
       await runMigration();
@@ -4788,6 +4795,13 @@ describe('control flow migration', () => {
         `                    line attribute`,
         `                    with cool things">`,
         `  Content here`,
+        `</span>`,
+        `<span`,
+        `    i18n-message="this is a multi-`,
+        `                    line attribute`,
+        `                    that starts`,
+        `                    on a newline">`,
+        `  Different Content`,
         `</span>`,
       ].join('\n');
 
@@ -4815,6 +4829,13 @@ describe('control flow migration', () => {
            `                    with cool things'>`,
            `  Content here`,
            `</span>`,
+           `<span`,
+           `    i18n-message='this is a multi-`,
+           `                    line attribute`,
+           `                    that starts`,
+           `                    on a newline'>`,
+           `  Different here`,
+           `</span>`,
          ].join('\n'));
 
          await runMigration();
@@ -4827,6 +4848,13 @@ describe('control flow migration', () => {
            `                    line attribute`,
            `                    with cool things'>`,
            `  Content here`,
+           `</span>`,
+           `<span`,
+           `    i18n-message='this is a multi-`,
+           `                    line attribute`,
+           `                    that starts`,
+           `                    on a newline'>`,
+           `  Different here`,
            `</span>`,
          ].join('\n');
 
