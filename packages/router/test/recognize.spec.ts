@@ -31,6 +31,16 @@ describe('recognize', async () => {
     expect(Object.isFrozen(child.params)).toBeTruthy();
   });
 
+  it('should freeze data object (but not original route data)', async () => {
+    const someData = {a: 1};
+    const s: RouterStateSnapshot =
+        await recognize([{path: '**', component: ComponentA, data: someData}], 'a');
+    checkActivatedRoute(s.root, '', {}, RootComponent);
+    const child = s.root.firstChild!;
+    expect(Object.isFrozen(child.data)).toBeTruthy();
+    expect(Object.isFrozen(someData)).toBeFalsy();
+  });
+
   it('should support secondary routes', async () => {
     const s: RouterStateSnapshot = await recognize(
         [
