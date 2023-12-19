@@ -39,12 +39,14 @@ export function collectElementConsts(job: CompilationJob): void {
     for (const unit of job.units) {
       for (const op of unit.create) {
         if (ir.isElementOrContainerOp(op)) {
-          const attributes = allElementAttributes.get(op.xref);
-          if (attributes !== undefined) {
-            const attrArray = serializeAttributes(attributes);
-            if (attrArray.entries.length > 0) {
-              op.attributes = job.addConst(attrArray);
-            }
+          op.attributes = getConstIndex(job, allElementAttributes, op.xref);
+
+          // TODO(dylhunn): `@for` loops with `@empty` blocks need to be special-cased here,
+          // because the slot consumer trait currently only supports one slot per consumer and we
+          // need two. This should be revisited when making the refactors mentioned in:
+          // https://github.com/angular/angular/pull/53620#discussion_r1430918822
+          if (op.kind === ir.OpKind.RepeaterCreate && op.emptyView !== null) {
+            op.emptyAttributes = getConstIndex(job, allElementAttributes, op.emptyView);
           }
         }
       }
@@ -63,6 +65,19 @@ export function collectElementConsts(job: CompilationJob): void {
       }
     }
   }
+}
+
+function getConstIndex(
+    job: ComponentCompilationJob, allElementAttributes: Map<ir.XrefId, ElementAttributes>,
+    xref: ir.XrefId): ir.ConstIndex|null {
+  const attributes = allElementAttributes.get(xref);
+  if (attributes !== undefined) {
+    const attrArray = serializeAttributes(attributes);
+    if (attrArray.entries.length > 0) {
+      return job.addConst(attrArray);
+    }
+  }
+  return null;
 }
 
 /**
