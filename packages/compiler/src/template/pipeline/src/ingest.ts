@@ -938,7 +938,7 @@ function ingestTemplateBindings(
       // Animation bindings are excluded from the structural template's const array.
       const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, output.name, false);
       unit.create.push(ir.createExtractedAttributeOp(
-          op.xref, ir.BindingKind.Property, output.name, null, null, null, securityContext));
+          op.xref, ir.BindingKind.Property, null, output.name, null, null, null, securityContext));
     }
   }
 
@@ -995,7 +995,7 @@ function createTemplateBinding(
       // the ng-template's consts (e.g. for the purposes of directive matching). However, we should
       // not generate an update instruction for it.
       return ir.createExtractedAttributeOp(
-          xref, ir.BindingKind.Property, name, null, null, i18nMessage, securityContext);
+          xref, ir.BindingKind.Property, null, name, null, null, i18nMessage, securityContext);
     }
 
     if (!isTextBinding && (type === e.BindingType.Attribute || type === e.BindingType.Animation)) {
