@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
+import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵPlatformNavigation as PlatformNavigation} from '@angular/common';
+import {Inject, inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
+
+import {FakeNavigation} from './navigation/fake_navigation';
 
 /**
  * Parser from https://tools.ietf.org/html/rfc3986#appendix-B
@@ -248,5 +250,84 @@ export class MockPlatformLocation implements PlatformLocation {
       this.hashUpdate.next(
           {type: 'hashchange', state: null, oldUrl, newUrl: this.url} as LocationChangeEvent);
     }
+  }
+}
+
+/**
+ * Mock implementation of URL state.
+ */
+@Injectable()
+export class NavigationBasedMockPlatformLocation implements PlatformLocation {
+  private _platformNavigation = inject(PlatformNavigation) as FakeNavigation;
+  private window = inject(DOCUMENT).defaultView!;
+
+  constructor() {
+    if (!(this._platformNavigation instanceof FakeNavigation)) {
+      throw new Error(
+          'FakePlatformNavigation cannot be used without FakeNavigation. Use ' +
+              '`provideFakeNavigation` to have all these services provided together.',
+      );
+    }
+  }
+
+  private config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
+  getBaseHrefFromDOM(): string {
+    return this.config?.appBaseHref ?? '';
+  }
+
+  onPopState(fn: LocationChangeListener): VoidFunction {
+    this.window.addEventListener('popstate', fn);
+    return () => this.window.removeEventListener('popstate', fn);
+  }
+
+  onHashChange(fn: LocationChangeListener): VoidFunction {
+    this.window.addEventListener('hashchange', fn as any);
+    return () => this.window.removeEventListener('hashchange', fn as any);
+  }
+
+  get href(): string {
+    return this._platformNavigation.currentEntry.url!;
+  }
+  get protocol(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).protocol;
+  }
+  get hostname(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).hostname;
+  }
+  get port(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).port;
+  }
+  get pathname(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).pathname;
+  }
+  get search(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).search;
+  }
+  get hash(): string {
+    return new URL(this._platformNavigation.currentEntry.url!).hash;
+  }
+
+  pushState(state: any, title: string, url: string): void {
+    this._platformNavigation.pushState(state, title, url);
+  }
+
+  replaceState(state: any, title: string, url: string): void {
+    this._platformNavigation.replaceState(state, title, url);
+  }
+
+  forward(): void {
+    this._platformNavigation.forward();
+  }
+
+  back(): void {
+    this._platformNavigation.back();
+  }
+
+  historyGo(relativePosition: number = 0): void {
+    this._platformNavigation.go(relativePosition);
+  }
+
+  getState(): unknown {
+    return this._platformNavigation.currentEntry.getHistoryState();
   }
 }
