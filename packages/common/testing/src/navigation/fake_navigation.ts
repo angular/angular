@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Prevents deletion of `Event` from `globalThis` during module loading.
-const Event = globalThis.Event;
+import {NavigateEvent, Navigation, NavigationCurrentEntryChangeEvent, NavigationDestination, NavigationHistoryEntry, NavigationInterceptOptions, NavigationNavigateOptions, NavigationOptions, NavigationReloadOptions, NavigationResult, NavigationTransition, NavigationTypeString, NavigationUpdateCurrentEntryOptions} from './navigation_types';
 
 /**
  * Fake implementation of user agent history and navigation behavior. This is a

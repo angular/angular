@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="@types/dom-view-transitions" />
+/// <reference types="dom-view-transitions" />
 
 import {DOCUMENT} from '@angular/common';
 import {afterNextRender, InjectionToken, Injector, NgZone, runInInjectionContext} from '@angular/core';

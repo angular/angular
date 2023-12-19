@@ -78,7 +78,6 @@
     "@types/chrome": "^0.0.258",
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
-    "@types/dom-navigation": "^1.0.2",
     "@types/dom-view-transitions": "^1.0.1",
     "@types/hammerjs": "2.0.45",
     "@types/jasmine": "^5.0.0",
