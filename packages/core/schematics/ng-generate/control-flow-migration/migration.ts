@@ -13,7 +13,7 @@ import {migrateFor} from './fors';
 import {migrateIf} from './ifs';
 import {migrateSwitch} from './switches';
 import {AnalyzedFile, endI18nMarker, endMarker, MigrateError, startI18nMarker, startMarker} from './types';
-import {canRemoveCommonModule, formatTemplate, parseTemplate, processNgTemplates, removeImports} from './util';
+import {canRemoveCommonModule, formatTemplate, parseTemplate, processNgTemplates, removeImports, validateI18nStructure, validateMigratedTemplate} from './util';
 
 /**
  * Actually migrates a given template to the new syntax
@@ -42,15 +42,9 @@ export function migrateTemplate(
     if (changed) {
       // determine if migrated template is a valid structure
       // if it is not, fail out
-      const parsed = parseTemplate(migrated);
-      if (parsed.errors.length > 0) {
-        const parsingError = {
-          type: 'parse',
-          error: new Error(
-              `The migration resulted in invalid HTML for ${file.sourceFile.fileName}. ` +
-              `Please check the template for valid HTML structures and run the migration again.`)
-        };
-        return {migrated: template, errors: [parsingError]};
+      const errors = validateMigratedTemplate(migrated, file.sourceFile.fileName);
+      if (errors.length > 0) {
+        return {migrated: template, errors};
       }
     }
 
