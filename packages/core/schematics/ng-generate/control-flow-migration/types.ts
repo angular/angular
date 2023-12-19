@@ -311,26 +311,22 @@ export class AnalyzedFile {
    * It is only run on .ts files.
    */
   verifyCanRemoveImports() {
-    // if we already know it's not safe to remove the common module import
-    // skip this check entirely
-    if (this.removeCommonModule) {
-      const importDeclaration = this.importRanges.find(r => r.type === 'importDeclaration');
-      const instances = lookupIdentifiersInSourceFile(this.sourceFile, importWithCommonRemovals);
-      let foundImportDeclaration = false;
-      let count = 0;
-      for (let range of this.importRanges) {
-        for (let instance of instances) {
-          if (instance.getStart() >= range.start && instance.getEnd() <= range.end!) {
-            if (range === importDeclaration) {
-              foundImportDeclaration = true;
-            }
-            count++;
+    const importDeclaration = this.importRanges.find(r => r.type === 'importDeclaration');
+    const instances = lookupIdentifiersInSourceFile(this.sourceFile, importWithCommonRemovals);
+    let foundImportDeclaration = false;
+    let count = 0;
+    for (let range of this.importRanges) {
+      for (let instance of instances) {
+        if (instance.getStart() >= range.start && instance.getEnd() <= range.end!) {
+          if (range === importDeclaration) {
+            foundImportDeclaration = true;
           }
+          count++;
         }
       }
-      if (instances.size !== count && importDeclaration !== undefined && foundImportDeclaration) {
-        importDeclaration.remove = false;
-      }
+    }
+    if (instances.size !== count && importDeclaration !== undefined && foundImportDeclaration) {
+      importDeclaration.remove = false;
     }
   }
 }
