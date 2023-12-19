@@ -407,6 +407,11 @@ export interface AttributeOp extends Op<UpdateOp> {
   target: XrefId;
 
   /**
+   * The namespace of the attribute (or null if none).
+   */
+  namespace: string|null;
+
+  /**
    * The name of the attribute.
    */
   name: string;
@@ -456,13 +461,14 @@ export interface AttributeOp extends Op<UpdateOp> {
  * Create an `AttributeOp`.
  */
 export function createAttributeOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    target: XrefId, namespace: string|null, name: string, expression: o.Expression|Interpolation,
     securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
     isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
+    namespace,
     name,
     expression,
     securityContext,

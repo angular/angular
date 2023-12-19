@@ -275,8 +275,7 @@
         {
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "focusTest": true
+      ]
     }
   ]
 }
