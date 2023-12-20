@@ -1197,6 +1197,12 @@
     "date": {
       "start": "2023-06-01"
     },
+    "name": "RenderATL"
+  },
+  {
+    "date": {
+      "start": "2023-06-01"
+    },
     "name": "JSNation"
   },
   {
@@ -1210,6 +1216,24 @@
       "start": "2023-06-14"
     },
     "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2023-06-21"
+    },
+    "name": "Google I/O Extended: Amsterdam"
+  },
+  {
+    "date": {
+      "start": "2023-07-03"
+    },
+    "name": "FlutterCon"
+  },
+  {
+    "date": {
+      "start": "2023-08-07"
+    },
+    "name": "Citro Hacks"
   },
   {
     "date": {
@@ -1267,6 +1291,12 @@
   },
   {
     "date": {
+      "start": "2023-11-16"
+    },
+    "name": "NWCJS"
+  },
+  {
+    "date": {
       "start": "2023-12-01"
     },
     "name": "ngRome"
@@ -1282,5 +1312,29 @@
       "start": "2023-09-26"
     },
     "name": "JSDayIE"
+  },
+  {
+    "date": {
+      "start": "2024-02-29"
+    },
+    "name": "DevWorld"
+  },
+  {
+    "date": {
+      "start": "2024-03-18"
+    },
+    "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2024-05-24"
+    },
+    "name": "NG Belgrade Conf"
+  },
+  {
+    "date": {
+      "start": "2024-06-13"
+    },
+    "name": "JSNation"
   }
 ]
