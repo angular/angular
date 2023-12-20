@@ -385,3 +385,42 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: css_custom_properties.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-dir", ngImport: i0, template: `
+    <div 
+      [style.--camelCase]="value" 
+      [style.--kebab-case]="value" 
+      style="--camelCase: foo; --kebab-case: foo">
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-dir',
+                    template: `
+    <div 
+      [style.--camelCase]="value" 
+      [style.--kebab-case]="value" 
+      style="--camelCase: foo; --kebab-case: foo">
+    </div>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: css_custom_properties.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    value: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-dir", never, {}, {}, never, never, false, never>;
+}
+
