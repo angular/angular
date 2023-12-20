@@ -584,25 +584,48 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
 function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): void {
   const repeaterView = unit.job.allocateView(unit.xref);
 
-  const createRepeaterAlias = (ident: string, repeaterVar: ir.DerivedRepeaterVarIdentity) => {
-    repeaterView.aliases.add({
-      kind: ir.SemanticVariableKind.Alias,
-      name: null,
-      identifier: ident,
-      expression: new ir.DerivedRepeaterVarExpr(repeaterView.xref, repeaterVar),
-    });
-  };
-
   // Set all the context variables and aliases available in the repeater.
   repeaterView.contextVariables.set(forBlock.item.name, forBlock.item.value);
   repeaterView.contextVariables.set(
       forBlock.contextVariables.$index.name, forBlock.contextVariables.$index.value);
   repeaterView.contextVariables.set(
       forBlock.contextVariables.$count.name, forBlock.contextVariables.$count.value);
-  createRepeaterAlias(forBlock.contextVariables.$first.name, ir.DerivedRepeaterVarIdentity.First);
-  createRepeaterAlias(forBlock.contextVariables.$last.name, ir.DerivedRepeaterVarIdentity.Last);
-  createRepeaterAlias(forBlock.contextVariables.$even.name, ir.DerivedRepeaterVarIdentity.Even);
-  createRepeaterAlias(forBlock.contextVariables.$odd.name, ir.DerivedRepeaterVarIdentity.Odd);
+
+  // We copy TemplateDefinitionBuilder's scheme of creating names for `$count` and `$index` that are
+  // suffixed with special information, to disambiguate which level of nested loop the below aliases
+  // refer to.
+  // TODO: We should refactor Template Pipeline's variable phases to gracefully handle shadowing,
+  // and arbitrarily many levels of variables depending on each other.
+  const indexName = `ɵ${forBlock.contextVariables.$index.name}_${repeaterView.xref}`;
+  const countName = `ɵ${forBlock.contextVariables.$count.name}_${repeaterView.xref}`;
+  repeaterView.contextVariables.set(indexName, forBlock.contextVariables.$index.value);
+  repeaterView.contextVariables.set(countName, forBlock.contextVariables.$count.value);
+
+  repeaterView.aliases.add({
+    kind: ir.SemanticVariableKind.Alias,
+    name: null,
+    identifier: forBlock.contextVariables.$first.name,
+    expression: new ir.LexicalReadExpr(indexName).identical(o.literal(0))
+  });
+  repeaterView.aliases.add({
+    kind: ir.SemanticVariableKind.Alias,
+    name: null,
+    identifier: forBlock.contextVariables.$last.name,
+    expression: new ir.LexicalReadExpr(indexName).identical(
+        new ir.LexicalReadExpr(countName).minus(o.literal(1)))
+  });
+  repeaterView.aliases.add({
+    kind: ir.SemanticVariableKind.Alias,
+    name: null,
+    identifier: forBlock.contextVariables.$even.name,
+    expression: new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).identical(o.literal(0))
+  });
+  repeaterView.aliases.add({
+    kind: ir.SemanticVariableKind.Alias,
+    name: null,
+    identifier: forBlock.contextVariables.$odd.name,
+    expression: new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).notIdentical(o.literal(0))
+  });
 
   const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
   const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
