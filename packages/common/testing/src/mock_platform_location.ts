@@ -221,31 +221,28 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 
   forward(): void {
-    const oldUrl = this.url;
     const oldHash = this.hash;
     if (this.urlChangeIndex < this.urlChanges.length) {
       this.urlChangeIndex++;
     }
-    this.emitEvents(oldHash, oldUrl);
+    this.emitEvents(oldHash);
   }
 
   back(): void {
-    const oldUrl = this.url;
     const oldHash = this.hash;
     if (this.urlChangeIndex > 0) {
       this.urlChangeIndex--;
     }
-    this.emitEvents(oldHash, oldUrl);
+    this.emitEvents(oldHash);
   }
 
   historyGo(relativePosition: number = 0): void {
-    const oldUrl = this.url;
     const oldHash = this.hash;
     const nextPageIndex = this.urlChangeIndex + relativePosition;
     if (nextPageIndex >= 0 && nextPageIndex < this.urlChanges.length) {
       this.urlChangeIndex = nextPageIndex;
     }
-    this.emitEvents(oldHash, oldUrl);
+    this.emitEvents(oldHash);
   }
 
   getState(): unknown {
@@ -262,20 +259,10 @@ export class MockPlatformLocation implements PlatformLocation {
    * popstate is always sent before hashchange:
    * https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
    */
-  private emitEvents(oldHash: string, oldUrl: string) {
-    this.popStateSubject.next({
-      type: 'popstate',
-      state: this.getState(),
-      oldUrl,
-      newUrl: this.url,
-    } as LocationChangeEvent);
+  private emitEvents(oldHash: string) {
+    this.popStateSubject.next({type: 'popstate', state: this.getState()});
     if (oldHash !== this.hash) {
-      this.hashUpdate.next({
-        type: 'hashchange',
-        state: null,
-        oldUrl,
-        newUrl: this.url,
-      } as LocationChangeEvent);
+      this.hashUpdate.next({type: 'hashchange', state: null});
     }
   }
 }
