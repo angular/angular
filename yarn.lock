@@ -593,9 +593,9 @@
     "@material/typography" "15.0.0-canary.a246a4439.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#c407f99769a89b44cd431c9e22a877e9271ab39c":
-  version "0.0.0-e52eb8237f2ed71195f87ce8046467a176568e58"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c407f99769a89b44cd431c9e22a877e9271ab39c"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#b3144f194bc969216ec1ac07145f02f11d0ef0ce":
+  version "0.0.0-f2dbdeb62601fa259e10be581758fc147eb75094"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#b3144f194bc969216ec1ac07145f02f11d0ef0ce"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -13253,7 +13253,7 @@ prettier@3.1.0:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.1.0.tgz#c6d16474a5f764ea1a4a373c593b779697744d5e"
   integrity sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==
 
-prettier@^3.0.0:
+prettier@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.1.1.tgz#6ba9f23165d690b6cbdaa88cb0807278f7019848"
   integrity sha512-22UbSzg8luF4UuZtzgiUOfcGM8s4tjBv6dJRT7j275NXsy2jb4aJa4NNveul5x4eqlF1wuhuR2RElK71RvmVaw==
