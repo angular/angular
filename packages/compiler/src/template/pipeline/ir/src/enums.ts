@@ -563,16 +563,6 @@ export enum DeferTriggerKind {
 }
 
 /**
- * Repeaters implicitly define these derived variables, and child nodes may read them.
- */
-export enum DerivedRepeaterVarIdentity {
-  First,
-  Last,
-  Even,
-  Odd,
-}
-
-/**
  * Kinds of i18n contexts. They can be created because of root i18n blocks, or ICUs.
  */
 export enum I18nContextKind {

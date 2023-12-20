@@ -303,6 +303,7 @@
           "files": [
             {
               "expected": "for_template_variables_template.js",
+              "templatePipelineExpected": "for_template_variables_template.pipeline.js",
               "generated": "for_template_variables.js"
             }
           ],
@@ -320,6 +321,7 @@
           "files": [
             {
               "expected": "for_aliased_template_variables_template.js",
+              "templatePipelineExpected": "for_aliased_template_variables_template.pipeline.js",
               "generated": "for_aliased_template_variables.js"
             }
           ],
@@ -354,6 +356,7 @@
           "files": [
             {
               "expected": "for_template_variables_listener_template.js",
+              "templatePipelineExpected": "for_template_variables_listener_template.pipeline.js",
               "generated": "for_template_variables_listener.js"
             }
           ],
@@ -405,6 +408,7 @@
           "files": [
             {
               "expected": "for_template_variables_scope_template.js",
+              "templatePipelineExpected": "for_template_variables_scope_template.pipeline.js",
               "generated": "for_template_variables_scope.js"
             }
           ],
@@ -597,8 +601,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate computed for loop variables that depend on shadowed $index and $count inside of listeners",
@@ -615,8 +618,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate tracking function in a nested for loop",
