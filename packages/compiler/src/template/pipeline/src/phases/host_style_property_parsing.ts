@@ -38,7 +38,7 @@ export function parseHostStyleProperties(job: CompilationJob): void {
       op.bindingKind = ir.BindingKind.StyleProperty;
       op.name = op.name.substring(STYLE_DOT.length);
 
-      if (isCssCustomProperty(op.name)) {
+      if (!isCssCustomProperty(op.name)) {
         op.name = hyphenate(op.name);
       }
 
