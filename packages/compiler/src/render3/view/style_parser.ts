@@ -70,6 +70,7 @@ export function parse(value: string): string[] {
         break;
       case Char.Colon:
         if (!currentProp && parenDepth === 0 && quote === Char.QuoteNone) {
+          // TODO: Do not hyphenate CSS custom property names like: `--intentionallyCamelCase`
           currentProp = hyphenate(value.substring(propStart, i - 1).trim());
           valueStart = i;
         }

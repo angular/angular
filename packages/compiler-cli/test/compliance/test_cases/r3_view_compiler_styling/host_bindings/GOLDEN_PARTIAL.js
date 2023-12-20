@@ -471,3 +471,34 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: css_custom_properties.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+}
+MyDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "my-dir", host: { properties: { "style.--camelCase": "value", "style.--kebab-case": "value" }, styleAttribute: "--camelCase: foo; --kebab-case: foo" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'my-dir',
+                    host: {
+                        '[style.--camelCase]': 'value',
+                        '[style.--kebab-case]': 'value',
+                        'style': '--camelCase: foo; --kebab-case: foo',
+                    }
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: css_custom_properties.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    value: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "my-dir", never, {}, {}, never, never, false, never>;
+}
+
