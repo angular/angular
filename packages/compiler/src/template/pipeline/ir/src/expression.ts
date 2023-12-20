@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind} from './enums';
+import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -20,11 +20,11 @@ import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
+    AssignTemporaryExpr|ReadTemporaryExpr|SlotLiteralExpr|ConditionalCaseExpr|ConstCollectedExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -796,31 +796,6 @@ export class ConditionalCaseExpr extends ExpressionBase {
   }
 }
 
-export class DerivedRepeaterVarExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.DerivedRepeaterVar;
-
-  constructor(readonly xref: XrefId, readonly identity: DerivedRepeaterVarIdentity) {
-    super();
-  }
-
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {}
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any) {}
-
-  override isEquivalent(e: o.Expression): boolean {
-    return e instanceof DerivedRepeaterVarExpr && e.identity === this.identity &&
-        e.xref === this.xref;
-  }
-
-  override isConstant(): boolean {
-    return false;
-  }
-
-  override clone(): o.Expression {
-    return new DerivedRepeaterVarExpr(this.xref, this.identity);
-  }
-}
 
 export class ConstCollectedExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ConstCollected;

@@ -57,7 +57,6 @@ import {reify} from './phases/reify';
 import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
 import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
-import {generateRepeaterDerivedVars} from './phases/repeater_derived_vars';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
@@ -116,7 +115,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
-  {kind: Kind.Tmpl, fn: generateRepeaterDerivedVars},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
