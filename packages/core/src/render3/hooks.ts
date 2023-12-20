@@ -8,7 +8,7 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
-import {runInInjectionContext} from '../di';
+import {runInInjectionContext} from '../di/contextual';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
