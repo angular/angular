@@ -4729,6 +4729,7 @@ describe('control flow migration', () => {
         `</p>`,
         `<span *ngIf="show;else elseBlock" i18n>Content here</span>`,
         `<ng-template #elseBlock i18n>`,
+        `  `,
         `  <p>Else Content</p>`,
         `</ng-template>`,
         `</div>`,
@@ -4745,6 +4746,7 @@ describe('control flow migration', () => {
         `    <span i18n>Content here</span>`,
         `  } @else {`,
         `    <ng-container i18n>`,
+        `  `,
         `  <p>Else Content</p>`,
         `</ng-container>`,
         `  }`,
@@ -5015,6 +5017,72 @@ describe('control flow migration', () => {
         `class Comp {`,
         `  toggle = false;`,
         `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not remove common module when more common module symbols are found', async () => {
+      writeFile('/comp.ts', [
+        `import {Component, NgModule} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  selector: 'example-cmp',`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `export class ExampleCmp {`,
+        `}`,
+        `@Component({`,
+        `  standalone: true`,
+        `  selector: 'example2-cmp',`,
+        `  imports: [CommonModule],`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `export class Example2Cmp {`,
+        `}`,
+        `const NG_MODULE_IMPORTS = [CommonModule, OtherModule];`,
+        ``,
+        `@NgModule({`,
+        `  declarations: [ExampleCmp],`,
+        `  exports: [ExampleCmp],`,
+        `  imports: [NG_MODULE_IMPORTS],`,
+        `})`,
+        `export class ExampleModule {}`,
+      ].join('\n'));
+
+      writeFile('/comp.html', [
+        `<div>`,
+        `<span *ngIf="show">Content here</span>`,
+        `</div>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component, NgModule} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  selector: 'example-cmp',`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `export class ExampleCmp {`,
+        `}`,
+        `@Component({`,
+        `  standalone: true`,
+        `  selector: 'example2-cmp',`,
+        `  imports: [],`,
+        `  templateUrl: './comp.html',`,
+        `})`,
+        `export class Example2Cmp {`,
+        `}`,
+        `const NG_MODULE_IMPORTS = [CommonModule, OtherModule];`,
+        ``,
+        `@NgModule({`,
+        `  declarations: [ExampleCmp],`,
+        `  exports: [ExampleCmp],`,
+        `  imports: [NG_MODULE_IMPORTS],`,
+        `})`,
+        `export class ExampleModule {}`,
       ].join('\n');
 
       expect(actual).toBe(expected);

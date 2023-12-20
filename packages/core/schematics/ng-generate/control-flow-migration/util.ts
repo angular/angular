@@ -38,13 +38,18 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
   });
 }
 
-function checkIfShouldChange(decl: ts.ImportDeclaration, removeCommonModule: boolean) {
+function checkIfShouldChange(decl: ts.ImportDeclaration, file: AnalyzedFile) {
+  const range = file.importRanges.find(r => r.type === 'importDeclaration');
+  if (range === undefined || !range.remove) {
+    return false;
+  }
+
   // should change if you can remove the common module
   // if it's not safe to remove the common module
   // and that's the only thing there, we should do nothing.
   const clause = decl.getChildAt(1) as ts.ImportClause;
   return !(
-      !removeCommonModule && clause.namedBindings && ts.isNamedImports(clause.namedBindings) &&
+      !file.removeCommonModule && clause.namedBindings && ts.isNamedImports(clause.namedBindings) &&
       clause.namedBindings.elements.length === 1 &&
       clause.namedBindings.elements[0].getText() === 'CommonModule');
 }
@@ -109,9 +114,13 @@ function analyzeImportDeclarations(
     const elements =
         clause.namedBindings.elements.filter(el => importWithCommonRemovals.includes(el.getText()));
     if (elements.length > 0) {
-      AnalyzedFile.addRange(
-          sourceFile.fileName, sourceFile.fileName, analyzedFiles,
-          {start: node.getStart(), end: node.getEnd(), node, type: 'import'});
+      AnalyzedFile.addRange(sourceFile.fileName, sourceFile, analyzedFiles, {
+        start: node.getStart(),
+        end: node.getEnd(),
+        node,
+        type: 'importDeclaration',
+        remove: true
+      });
     }
   }
 }
@@ -148,20 +157,22 @@ function analyzeDecorators(
     switch (prop.name.text) {
       case 'template':
         // +1/-1 to exclude the opening/closing characters from the range.
-        AnalyzedFile.addRange(sourceFile.fileName, sourceFile.fileName, analyzedFiles, {
+        AnalyzedFile.addRange(sourceFile.fileName, sourceFile, analyzedFiles, {
           start: prop.initializer.getStart() + 1,
           end: prop.initializer.getEnd() - 1,
           node: prop,
-          type: 'template'
+          type: 'template',
+          remove: true,
         });
         break;
 
       case 'imports':
-        AnalyzedFile.addRange(sourceFile.fileName, sourceFile.fileName, analyzedFiles, {
+        AnalyzedFile.addRange(sourceFile.fileName, sourceFile, analyzedFiles, {
           start: prop.name.getStart(),
           end: prop.initializer.getEnd(),
           node: prop,
-          type: 'import'
+          type: 'importDecorator',
+          remove: true,
         });
         break;
 
@@ -170,8 +181,8 @@ function analyzeDecorators(
         if (ts.isStringLiteralLike(prop.initializer)) {
           const path = join(dirname(sourceFile.fileName), prop.initializer.text);
           AnalyzedFile.addRange(
-              path, sourceFile.fileName, analyzedFiles,
-              {start: 0, node: prop, type: 'templateUrl'});
+              path, sourceFile, analyzedFiles,
+              {start: 0, node: prop, type: 'templateUrl', remove: true});
         }
         break;
     }
@@ -401,13 +412,12 @@ export function canRemoveCommonModule(template: string): boolean {
 /**
  * removes imports from template imports and import declarations
  */
-export function removeImports(
-    template: string, node: ts.Node, removeCommonModule: boolean): string {
+export function removeImports(template: string, node: ts.Node, file: AnalyzedFile): string {
   if (template.startsWith('imports') && ts.isPropertyAssignment(node)) {
-    const updatedImport = updateClassImports(node, removeCommonModule);
+    const updatedImport = updateClassImports(node, file.removeCommonModule);
     return updatedImport ?? template;
-  } else if (ts.isImportDeclaration(node) && checkIfShouldChange(node, removeCommonModule)) {
-    return updateImportDeclaration(node, removeCommonModule);
+  } else if (ts.isImportDeclaration(node) && checkIfShouldChange(node, file)) {
+    return updateImportDeclaration(node, file.removeCommonModule);
   }
   return template;
 }
@@ -628,7 +638,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         lineWasMigrated = true;
       }
       if ((line.trim() === '' && index !== 0 && index !== lines.length - 1) &&
-          (inMigratedBlock || lineWasMigrated)) {
+          (inMigratedBlock || lineWasMigrated) && !inI18nBlock) {
         // skip blank lines except if it's the first line or last line
         // this preserves leading and trailing spaces if they are already present
         continue;
