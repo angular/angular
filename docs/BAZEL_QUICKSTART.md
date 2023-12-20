@@ -107,7 +107,7 @@ ng_module(
     ],
 )
 ```
-doesn't include the `@angular/code` in its `deps`. Add the `"//packages/core",`:
+doesn't include the `@angular/core` in its `deps`. Add the `"//packages/core",`:
 ```python
 ng_module(
     name = "state-serializer",
