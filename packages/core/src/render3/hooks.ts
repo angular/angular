@@ -8,6 +8,7 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
+import {runInInjectionContext} from '../di';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
@@ -15,11 +16,9 @@ import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, InitPhaseState, INJECTOR, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
 import {profiler, ProfilerEvent} from './profiler';
 import {isInCheckNoChangesMode} from './state';
-
-
 
 /**
  * Adds all directive lifecycle hooks from the given `DirectiveDef` to the given `TView`.
@@ -269,6 +268,7 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
   const hook = arr[i + 1] as () => void;
   const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
   const directive = currentView[directiveIndex];
+  const injector = currentView[INJECTOR]!;
   if (isInitHook) {
     const indexWithintInitPhase = currentView[FLAGS] >> LViewFlags.IndexWithinInitPhaseShift;
     // The init phase state must be always checked here as it may have been recursively updated.
@@ -276,7 +276,7 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-      callHookInternal(directive, hook);
+      runInInjectionContext(injector, () => callHookInternal(directive, hook));
     }
   } else {
     callHookInternal(directive, hook);

@@ -1035,4 +1035,30 @@ describe('component', () => {
       forbidOrphanRendering: true,
     });
   });
+
+  it('should run init lifecycle hooks in injection context', () => {
+    const TOKEN = new InjectionToken<string>('token', {factory: () => 'value'});
+    @Component({template: ``})
+    class SimpleComp {
+      logs: string[] = [];
+      ngOnInit() {
+        this.logs.push('ngOnInit' + inject(TOKEN));
+      }
+      ngAfterContentInit() {
+        this.logs.push('ngAfterContentInit' + inject(TOKEN));
+      }
+      ngAfterViewInit() {
+        this.logs.push('ngAfterViewInit' + inject(TOKEN));
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [SimpleComp]});
+    const fixture = TestBed.createComponent(SimpleComp);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.logs).toEqual([
+      'ngOnInitvalue',
+      'ngAfterContentInitvalue',
+      'ngAfterViewInitvalue',
+    ]);
+  });
 });
