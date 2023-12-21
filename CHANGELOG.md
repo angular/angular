@@ -1,3 +1,33 @@
+<a name="17.1.0-next.5"></a>
+# 17.1.0-next.5 (2023-12-21)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3a689c2050](https://github.com/angular/angular/commit/3a689c20509ed5972b3831988fc0014d293d0cc3) | fix | correctly intercept index in loop tracking function ([#53604](https://github.com/angular/angular/pull/53604)) |
+| [df8a825910](https://github.com/angular/angular/commit/df8a825910951bebf34a4eede42f3ce5cd3e6fb7) | fix | project empty block root node ([#53620](https://github.com/angular/angular/pull/53620)) |
+| [478d622265](https://github.com/angular/angular/commit/478d6222650884478314985e3d5132587c4f670c) | fix | project empty block root node in template pipeline ([#53620](https://github.com/angular/angular/pull/53620)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aecb675fa5](https://github.com/angular/angular/commit/aecb675fa5059e510e0223e00fa114d92e799b04) | fix | avoid repeated work when parsing version ([#53598](https://github.com/angular/angular/pull/53598)) |
+| [872e7f25fe](https://github.com/angular/angular/commit/872e7f25fea8a01f980e4e406ad382a9e187ce5c) | fix | tree shake version class ([#53598](https://github.com/angular/angular/pull/53598)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d49333edc3](https://github.com/angular/angular/commit/d49333edc3fe170c57d953aa2d8df58d0db379e0) | fix | cf migration - detect and error when result is invalid i18n nesting ([#53638](https://github.com/angular/angular/pull/53638)) ([#53639](https://github.com/angular/angular/pull/53639)) |
+| [8e2178792d](https://github.com/angular/angular/commit/8e2178792d474e84817c27851cd6b9600deb15b5) | fix | cf migration - ensure full check runs for all imports ([#53637](https://github.com/angular/angular/pull/53637)) |
+| [22b95de9bc](https://github.com/angular/angular/commit/22b95de9bcb92267b8f848a1aafa71af70d5577b) | fix | cf migration - fix bug in attribute formatting ([#53636](https://github.com/angular/angular/pull/53636)) |
+| [b40bb22a66](https://github.com/angular/angular/commit/b40bb22a66a3c2ae478778f3ef0be0ce971a1b2c) | fix | cf migration - improve import declaration handling ([#53622](https://github.com/angular/angular/pull/53622)) |
+| [8bf752539f](https://github.com/angular/angular/commit/8bf752539f6b4b5955e3d61a76423910af55181b) | fix | cf migration - preserve indentation on attribute strings ([#53625](https://github.com/angular/angular/pull/53625)) |
+| [7bb312fcf6](https://github.com/angular/angular/commit/7bb312fcf612c57d6606ae14f21707f10d8ff9ce) | fix | cf migration - stop removing empty newlines from i18n blocks ([#53578](https://github.com/angular/angular/pull/53578)) |
+| [db6b4a6bc4](https://github.com/angular/angular/commit/db6b4a6bc479b0fac0a4a99e1a202c38d1ea8944) | fix | Fix cf migration bug with parsing for loop conditions properly ([#53558](https://github.com/angular/angular/pull/53558)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [502f300757](https://github.com/angular/angular/commit/502f3007575a5445c2876c92548415cb003582b1) | fix | Should not freeze original object used for route data ([#53635](https://github.com/angular/angular/pull/53635)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.8"></a>
 # 17.0.8 (2023-12-21)
 ### compiler
