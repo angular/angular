@@ -266,7 +266,7 @@ Add the following to the `HeroesComponent` class:
 When the given name isn't blank, the handler creates an object based on the hero's name.
 The handler passes the object name to the service's `addHero()` method.
 
-When `addHero()` creates a new object, the `subscribe()` callback receives the new hero and pushes it into to the `heroes` list for display.
+When `addHero()` creates a new object, the `subscribe()` callback receives the new hero and pushes it into the `heroes` list for display.
 
 Add the following `addHero()` method to the `HeroService` class.
 
